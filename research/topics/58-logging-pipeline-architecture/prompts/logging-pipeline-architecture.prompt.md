@@ -12,7 +12,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Whether a rotating file log sink exists, its rotation policy, and its own independent level; R59 (`file-log-sink`) owns F255-F261 — this item designs the console/structured pipeline itself, not the file sink attached to it.
 - The separate XDG data/state/cache directory set a file sink's default path might need; R57 (`xdg-directory-set`) owns F249.
 - Whether `rs-launch-blueprint` ships an optional web surface at all (the `web-extra-surface` parameter); R69 (`web-framework-stack`) owns that decision — this item's per-front-end-profile design (F263) must work whether or not a web surface exists, and must not assume one.
-- The relative `-v`/`-q`/`--debug` flag-counting-to-level mapping mechanics themselves (as opposed to this item's F274 resolution-ladder precedence); `cli-framework-ux`'s other CLI-parsing items own the flag definitions — this item only decides where the config-file/flag/env override sits relative to that ladder.
+- The repeatable `-v`/`--verbose` flag's existence and repeat-counting mechanics themselves (as opposed to this item's F274 resolution-ladder precedence); F273, `COMMON → REUSE`, is already inherited (both repos count repeated `-v` occurrences the same way) — it is not a research item, so there is nothing to defer to on that point. The CLI-parsing framework/library that provides those flags (`clap` or equivalent) is R60's (`cli-parsing-framework`) decision (F264) — this item's pipeline design must not assume a specific framework.
 - Prior art in the owner's other Rust repositories — do not look for or cite it.
 
 ## Couplings
