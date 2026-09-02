@@ -86,5 +86,27 @@ Authoritative verdicts for every atomic feature of `py-launch-blueprint` (b08bcc
 | F080 | CLI version-check recipe | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free Justfile-recipe convention |
 | F081 | release runbook / setup doc | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free maintainer-doc convention |
 | F082 | documented opt-out from automated releases | release-versioning | py-only | ADOPT | — | doc-only instructions, nothing to choose |
+| F083 | one linter and one formatter run in CI and via the git-hook manager | lint-format | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free pattern (one linter + one formatter, wired to CI and the hook manager) |
+| F084 | primary code formatter tool | lint-format | different | DIVERGENT | R29 | bundle; rustfmt is the near-certain tool, but its config surface (F087, F089, F091, F092) is the research question |
+| F085 | primary code linter tool | lint-format | different | DIVERGENT | R30 | bundle; clippy is the near-certain tool, but its config surface (F086, F093, F094, F096) is the research question |
+| F086 | linter rule-selection mechanism | lint-format | different | DIVERGENT | R30 | bundle |
+| F087 | formatter max line width | lint-format | different | DIVERGENT | R29 | bundle |
+| F088 | formatter quote style | lint-format | different | OMIT | — | Rust string literals are always double-quoted; no formatter option, no Rust analogue |
+| F089 | formatter line-ending normalization | lint-format | different | DIVERGENT | R29 | bundle |
+| F090 | formatter semicolon insertion | lint-format | ts-only | OMIT | — | Rust's grammar requires statement-terminating semicolons; not a formatter choice, no Rust analogue |
+| F091 | formatter trailing-comma style | lint-format | ts-only | DIVERGENT | R29 | bundle |
+| F092 | import-sorting ownership | lint-format | different | DIVERGENT | R29 | bundle |
+| F093 | linter default autofix behavior | lint-format | different | DIVERGENT | R30 | bundle |
+| F094 | per-context lint relaxation for test files | lint-format | different | DIVERGENT | R30 | bundle |
+| F095 | per-file ignore for package `__init__.py` | lint-format | py-only | OMIT | — | Rust's `mod.rs`/`lib.rs` re-export surface has no equivalent unused-import exemption need |
+| F096 | security-rule coverage via the linter | lint-format | different | DIVERGENT | R30 | bundle |
+| F097 | TOML formatter as a separate tool | lint-format | py-only | DIVERGENT | R31 | bundle; Rust's own config files (Cargo.toml, rustfmt.toml) make TOML formatting directly relevant — decided jointly with F098/F099; confirmed ts has no TOML-specific Oxfmt setting and carries zero `.toml` files, so origin stays py-only |
+| F098 | YAML formatting ownership | lint-format | different | DIVERGENT | R31 | bundle |
+| F099 | JSON and Markdown formatting coverage | lint-format | ts-only | DIVERGENT | R31 | bundle |
+| F100 | formatter/linter exclude-list configuration scope | lint-format | different | DIVERGENT | R32 | whether Rust shares one exclude list across rustfmt/clippy or keeps them per-tool |
+| F101 | editor extension recommendation for lint/format | lint-format | different | DIVERGENT | R33 | rust-analyzer is the dominant candidate; origin `different` forces DIVERGENT rather than ADOPT per the verdict table |
+| F102 | composite recipe bundling format/lint/typecheck/test | lint-format | different | DIVERGENT | R34 | whether Rust's `check`-style composite recipe includes a format-check step |
+| F103 | lint/format tool version-pinning strategy | lint-format | different | DIVERGENT | R35 | Cargo.toml supports the same floating-range-vs-exact-pin choice py/ts differ on |
+| F104 | pre-commit formatter hook mode (check vs. write) | lint-format | different | DIVERGENT | R36 | whether the Rust formatter hook blocks on unformatted code or auto-fixes and re-stages |
 
 ## Override arguments
