@@ -18,7 +18,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R11
 - owns: ci-job-structure
 - consumes: R69: web-extra-surface
-- related (not a registry dependency): R02 (`crate-boundary-enforcement`) decides whether a crate-boundary/import-boundary-lint job exists in CI at all; this item's job-topology answer must have room for it either way. R12 (`aggregate-required-status-check`) consumes this item's `ci-job-structure` value to decide what an aggregate status-check job folds together.
+- related (not a registry dependency): R02 (`crate-boundary-enforcement`) decides whether a crate-boundary/import-boundary-lint job exists in CI at all; this item's job-topology answer must have room for it either way. R12 (`aggregate-required-status-check`) consumes this item's `ci-job-structure` value to decide what an aggregate status-check job folds together. R13 (`dependency-vulnerability-scanning`) consumes this item's `ci-job-structure` value to decide whether its always-on SCA scaffold (F049) lands as a step inside a shared job or as its own dedicated job.
 
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 
