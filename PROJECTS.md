@@ -5,6 +5,7 @@
 - Presumption of reuse; overrides labeled `OVERRIDE (OV-nn)` with argument and options
 - Target shape: CLI + library + web service
 - Design: `docs/superpowers/specs/2026-09-01-rs-port-research-program-design.md`
+- Plan: `docs/superpowers/plans/2026-09-01-p01-research-tree.md` (Tasks 1–18 = Phases 1–5)
 
 **Out of Scope**
 - Executing the research prompts
@@ -42,3 +43,40 @@ $ scripts/test-check-research-tree.sh | tail -1
 
 ### Manual Verification
 - Every `OVERRIDE` row in `COMMONALITY.md` reads as a genuine Rust-specific argument, not a preference
+
+## [ ] Project P02: Execute research program (v0.2.0)
+**Goal/Requirement**: Run every research item the owner accepted in Phase 3.5 under `research/RUNBOOK.md`, producing one audited `DECISION.md` per item and a filled `docs/port/PARAMETERS.md`.
+- Gate: P01 merged and tagged `v0.1.0`; only items with disposition `accept`, `narrow` or `force` in `docs/port/OWNER-REVIEW.md` are run.
+- Engine and invocation: exactly as recorded in `research/RUNBOOK.md` §2; Doxa runs are paid and each batch is confirmed by the owner before submission.
+- Plan: written with `superpowers:writing-plans` after v0.1.0 — not part of P01's plan.
+
+**Out of Scope**
+- Any Rust code, `Cargo.toml`, CI workflow, or template file (the port itself)
+- Re-opening ledger verdicts except through P02-TS02 (an OVERRIDE whose research answers "Override justified: no")
+- Items dropped in Phase 3.5
+
+### Tests & Tasks
+- [ ] [P02-T01] Run the pilot item end-to-end (prompt → raw answer → `check-answer-shape.sh` → `DECISION.md` → both audits) — this run is binding, unlike P01-TS07
+- [ ] [P02-T02] Run all remaining items in topological batches of at most 4 (`RUNBOOK.md` §1 order); raw answers saved under `topics/<nn>-<slug>/raw/`
+- [ ] [P02-T03] Resolve every `CONFLICT:` line by the `RUNBOOK.md` §4 rule (registry first, owner prompt re-run, consumer re-run)
+- [ ] [P02-T04] Write `audit-codex.md` and `audit-fable.md` for every item; the producer of a decision never audits it
+- [ ] [P02-T05] Copy every `owns <param> = <value>` into `docs/port/PARAMETERS.md` and set the row's `owner` value column
+- [ ] [P02-T06] Flip every index row to `resolved`; `scripts/check-research-tree.sh --require-owner-review` exits 0
+- [ ] [P02-T07] PR, owner review, merge (merge commit), `pull --ff-only`, tag `v0.2.0`
+- [ ] [P02-TS01] Every `DECISION.md` has an `## Empirical check` whose command was actually executed and whose output is pasted
+- [ ] [P02-TS02] A reviewer re-reads every OVERRIDE item's "Override justified" field; any `no` flips the ledger row back to the inherited verdict and records the reversal under `### OV-nn`
+- [ ] Regression Test Status
+
+### Deliverable
+```bash
+$ grep -c '| resolved |' research/CLAUDE.md          # equals the number of index rows
+$ scripts/check-research-tree.sh --require-owner-review
+OK: research tree structure valid
+```
+
+### Automated Verification
+- `scripts/check-research-tree.sh --require-owner-review` exits 0 with every index row `resolved`
+- every `research/topics/*/DECISION.md` passes `scripts/check-answer-shape.sh` for its kind (with `override` where the ledger says OVERRIDE)
+
+### Manual Verification
+- Owner reads every OVERRIDE decision and every `audit-*.md` that disagrees with its decision
