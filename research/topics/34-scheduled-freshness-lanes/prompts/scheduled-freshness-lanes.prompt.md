@@ -11,7 +11,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 
 ## Out of scope
 - The base test runner and its execution-behavior configuration; R32 (`test-harness-and-execution`) owns F117/F118/F124/F125/F128-F132/F173 — this item decides only whether a scheduled or advisory-lane workflow exists, not the harness those workflows invoke.
-- Dependency-vulnerability scanning workflows; that is a distinct research item (see the index for the dependency-vulnerability-scanning bundle) — do not conflate a freshness canary with a security-advisory scan.
+- Dependency-vulnerability scanning workflows; R13 (`dependency-vulnerability-scanning`) owns that — do not conflate a freshness canary with a security-advisory scan.
 - Prior art in the owner's other Rust repositories — do not look for or cite it.
 
 ## Couplings

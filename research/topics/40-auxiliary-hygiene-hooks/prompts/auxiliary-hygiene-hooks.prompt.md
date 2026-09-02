@@ -11,7 +11,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 
 ## Out of scope
 - The git hook manager itself — its distribution/install mechanism and the full-hook-suite CI re-run; R37 (`hook-manager-distribution`) owns F143/F144/F174 — this item picks the four auxiliary tools and their config, not the manager wrapping the pre-commit stage they run inside.
-- YAML *formatting* (reformatting YAML files), as distinct from YAML structural/style linting (F168); the non-code-file-formatting item owns YAML formatting — this item owns only the lint check.
+- YAML *formatting* (reformatting YAML files), as distinct from YAML structural/style linting (F168); R29 (`non-code-file-formatting`) owns YAML formatting (F098) — this item owns only the lint check.
 - actionlint's *config content* for self-hosted-runner labels, `RUNNER_*` variables, and stale-metadata suppression; R09 (`self-hosted-runner-indirection`) owns that — this item decides only whether actionlint runs at hook tier at all, not its self-hosted-runner-specific rule content.
 - Prior art in the owner's other Rust repositories — do not look for or cite it.
 

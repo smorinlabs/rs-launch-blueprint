@@ -11,7 +11,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 
 ## Out of scope
 - The git hook manager itself — its distribution/install mechanism and the full-hook-suite CI re-run; R37 (`hook-manager-distribution`) owns F143/F144/F174 — this item picks the secret-scanning tool and its config, not the manager wrapping the pre-commit/pre-push stages it runs inside.
-- Any dependency-vulnerability-scanning workflow (a distinct concern from secret scanning); do not conflate the two.
+- Any dependency-vulnerability-scanning workflow; R13 (`dependency-vulnerability-scanning`) owns that concern — do not conflate the two.
 - Prior art in the owner's other Rust repositories — do not look for or cite it.
 
 ## Couplings
