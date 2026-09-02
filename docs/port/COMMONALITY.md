@@ -66,5 +66,25 @@ Authoritative verdicts for every atomic feature of `py-launch-blueprint` (b08bcc
 | F060 | Automated contributors-list bot-PR workflow | ci-workflows | same | COMMON → REUSE | — | rust-ok: yes; live: 2026-06; tool: smorinlabs/contributors-please-action v1.3.9 (github.com/smorinlabs/contributors-please-action, checked 2026-09-02); language-neutral, operates on git history |
 | F061 | Contributors-bot credential source for the PAT fallback | ci-workflows | different | DIVERGENT | R23 | dedicated repo secret (py) vs. zero-extra-secret GITHUB_TOKEN (ts) |
 | F062 | Difftree PR-comment workflow | ci-workflows | same | COMMON → REUSE | — | rust-ok: yes; live: 2026-09; tool: smorinlabs/difftree-action v0.7.2 (github.com/smorinlabs/difftree-action, checked 2026-09-02); byte-identical canonical template in both repos, language-neutral |
+| F063 | version source of truth | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: 2026-04; tool: release-please (googleapis/release-please-action v5.0.0, checked 2026-09-02); Cargo.toml `[package] version` is the uncontested Rust manifest field |
+| F064 | runtime version accessor | release-versioning | different | DIVERGENT | R24 | compile-time `env!("CARGO_PKG_VERSION")` (ts-like, build-time) vs. a runtime metadata lookup (py-like) |
+| F065 | lockfile version sync in release commit | release-versioning | different | DIVERGENT | R25 | whether release-please's extra-files config must also bump Cargo.lock's workspace-member version entries |
+| F066 | changelog file generation | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: 2026-04; tool: release-please |
+| F067 | changelog section type mapping (visible vs hidden) | release-versioning | different | DIVERGENT | R26 | which Conventional-Commits types surface in CHANGELOG.md vs. stay hidden |
+| F068 | changelog file preamble | release-versioning | ts-only | ADOPT | — | one-line boilerplate naming Keep a Changelog/SemVer, nothing to choose |
+| F069 | release PR title customization | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: 2026-04; tool: release-please; exact wording is a content choice, not a research question |
+| F070 | pre-1.0 semver bump strategy | release-versioning | ts-only | DIVERGENT | R27 | whether rs-launch-blueprint starts pre-1.0 (bump-minor-pre-major/bump-patch-for-minor-pre-major) or post-1.0 like py |
+| F071 | release-please bootstrap-sha pin | release-versioning | py-only | ADOPT | — | mechanical: pin the commit release-please starts scanning from when first configured |
+| F072 | release-please auth token mechanism | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: 2026-05; tool: actions/create-github-app-token v3.2.0 (github.com/actions/create-github-app-token, checked 2026-09-02) |
+| F073 | release trigger (push opens PR, merge tags) | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: 2026-04; tool: release-please |
+| F074 | publish workflow tag/version consistency guard | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free CI-script pattern (tag reachability plus manifest-version equality checks) |
+| F075 | OIDC Trusted Publishing (no stored publish token) | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; native GitHub OIDC (`id-token: write`) pattern; crates.io supports Trusted Publishing |
+| F076 | staged publish to test registry before production | release-versioning | py-only | OMIT | — | crates.io has no test/staging registry; `cargo publish --dry-run` never uploads, so there is no Rust analogue to research |
+| F077 | protected environment gate before publish | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; native GitHub protected-environment feature, no external tool |
+| F078 | packed-artifact content guard in publish workflow | release-versioning | ts-only | DIVERGENT | R28 | whether Rust's publish workflow needs a guard against `cargo publish` silently altering package metadata |
+| F079 | release version-surface drift-check recipe | release-versioning | ts-only | ADOPT | — | low-stakes diagnostic Justfile recipe mirroring F074's already-decided consistency check; nothing to research |
+| F080 | CLI version-check recipe | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free Justfile-recipe convention |
+| F081 | release runbook / setup doc | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free maintainer-doc convention |
+| F082 | documented opt-out from automated releases | release-versioning | py-only | ADOPT | — | doc-only instructions, nothing to choose |
 
 ## Override arguments
