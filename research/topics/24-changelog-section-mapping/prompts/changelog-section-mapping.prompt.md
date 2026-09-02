@@ -55,11 +55,11 @@ Use exactly these field names as H3 headings, in this order.
 
 ### Dominant choice
 ### Options
-name · where documented · adopters that practice it · date of the most recent authoritative write-up.
+name · where documented · adopters that practice it · date of the most recent authoritative write-up — no download columns.
 ### Excluded by gate
 ### Up-and-comers
 ### Fit for this template
-CLI · library · web, separately.
+Argues per target shape — CLI · library · web, separately.
 ### Recommendation
 ### Ranked runner-up
 And the condition under which it wins.

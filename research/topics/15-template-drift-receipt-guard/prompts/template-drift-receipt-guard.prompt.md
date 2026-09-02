@@ -54,9 +54,9 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 Use exactly these field names as H3 headings, in this order.
 
 ### Options
-name · where documented · adopters that practice it · date of the most recent authoritative write-up
+name · where documented · adopters that practice it · date of the most recent authoritative write-up — no download columns.
 ### Fit for this template
-CLI · library · web, separately.
+Argues per target shape — CLI · library · web, separately.
 ### Recommendation
 ### Ranked runner-up
 And the condition under which it wins.

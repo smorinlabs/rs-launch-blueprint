@@ -59,7 +59,7 @@ name · where documented · adopters that practice it · date of the most recent
 ### Excluded by gate
 ### Up-and-comers
 ### Fit for this template
-CLI · library · web, separately.
+Argues per target shape — CLI · library · web, separately.
 ### Recommendation
 ### Ranked runner-up
 And the condition under which it wins.
