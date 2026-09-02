@@ -42,38 +42,38 @@ Authoritative verdicts for every atomic feature of `py-launch-blueprint` (b08bcc
 | F036 | Dependency caching built into the language-setup action (tool) | ci-workflows | same | COMMON → SUBSTITUTE | R10 | parent: F035; py/ts each get caching free from their language-setup action, Rust has no single canonical equivalent |
 | F037 | Package-manager install must run before the cache-aware setup step (ordering constraint) | ci-workflows | ts-only | OMIT | — | cargo/rustup need no separate package-manager pre-install step; no Rust analogue |
 | F038 | Consolidated lint workflow (actionlint, yamllint, bandit, codespell, editorconfig-check) with path-filtered skip | ci-workflows | py-only | DIVERGENT | R11 | bundle; CI-owned workflow-file structure plus path-filtered skip-gating, not the five tools' own selection |
-| F039 | Packed-artifact file-list assertion (only expected files ship) | ci-workflows | ts-only | DIVERGENT | R12 | `cargo package --list`/`cargo publish --dry-run` is the plausible Rust analogue; whether/how to assert it in CI is a real choice |
+| F039 | Packed-artifact file-list assertion (only expected files ship) | ci-workflows | ts-only | DIVERGENT | R26 | bundle, decided together with F078 (release-versioning's packed-artifact content guard) as one publish-content-verification item; `cargo package --list`/`cargo publish --dry-run` is the plausible Rust analogue; whether/how to assert it in CI is a real choice |
 | F040 | A changes-detector job skips heavy jobs on docs-only PRs | ci-workflows | py-only | DIVERGENT | R11 | bundle; same path-filtered skip-gating question as F038 |
-| F041 | Single aggregate required-status-check job folding in all other job results | ci-workflows | py-only | DIVERGENT | R13 | whether Rust CI needs one required-status-check job vs. listing every job individually as required |
-| F042 | Scheduled full-dependency-graph vulnerability audit | ci-workflows | py-only | DIVERGENT | R14 | bundle; one Rust SCA/vulnerability-scanning strategy (scheduled audit + manual on-demand tool + always-on intent) — decides F048, F049 |
-| F043 | Large-file size guard on new files | ci-workflows | py-only | DIVERGENT | R15 | CI-level redundancy question, distinct tier from git-hooks-commit-hygiene's hook-level large-file check |
-| F044 | Template drift/receipt guard workflows | ci-workflows | py-only | DIVERGENT | R16 | whether rs-launch-blueprint is itself a template-press-rebrandable template; ts (a same-family port) did not carry this forward either |
-| F045 | CodeQL custom config file (query pack selection plus paths-ignore) | ci-workflows | py-only | DIVERGENT | R17 | whether Rust's CodeQL scan gets a custom query-pack/paths-ignore config or the tool default |
+| F041 | Single aggregate required-status-check job folding in all other job results | ci-workflows | py-only | DIVERGENT | R12 | whether Rust CI needs one required-status-check job vs. listing every job individually as required |
+| F042 | Scheduled full-dependency-graph vulnerability audit | ci-workflows | py-only | DIVERGENT | R13 | bundle; one Rust SCA/vulnerability-scanning strategy (scheduled audit + manual on-demand tool + always-on intent) — decides F048, F049 |
+| F043 | Large-file size guard on new files | ci-workflows | py-only | DIVERGENT | R14 | CI-level redundancy question, distinct tier from git-hooks-commit-hygiene's hook-level large-file check |
+| F044 | Template drift/receipt guard workflows | ci-workflows | py-only | DIVERGENT | R15 | whether rs-launch-blueprint is itself a template-press-rebrandable template; ts (a same-family port) did not carry this forward either |
+| F045 | CodeQL custom config file (query pack selection plus paths-ignore) | ci-workflows | py-only | DIVERGENT | R16 | whether Rust's CodeQL scan gets a custom query-pack/paths-ignore config or the tool default |
 | F046 | Dependency-review PR gate | ci-workflows | same | COMMON → REUSE | — | rust-ok: yes; live: 2026-05; tool: actions/dependency-review-action v5.0.0 (github.com/actions/dependency-review-action, checked 2026-09-02); supports Cargo.lock ecosystem detection |
 | F047 | Manual, environment-gated PR security scan (workflow_dispatch) | ci-workflows | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free pattern (workflow_dispatch inputs + protected GitHub environment); the scan tool itself is F048 |
-| F048 | Manual security-scan tool | ci-workflows | different | DIVERGENT | R14 | bundle |
-| F049 | Always-on SCA audit as commented, uncomment-to-enable scaffolding inside the main CI workflow | ci-workflows | ts-only | DIVERGENT | R14 | bundle |
-| F050 | Dedicated secret-scanning CI workflow | ci-workflows | py-only | DIVERGENT | R18 | distinct tool and tier from git-hooks-commit-hygiene's gitleaks pre-commit/pre-push hooks; not bundled with that area |
-| F051 | AI-assisted PR code review workflow | ci-workflows | py-only | DIVERGENT | R19 | bundle; same claude-code-action family as F052, plausibly adopted or dropped together |
-| F052 | AI assistant workflow triggered by @mention comments | ci-workflows | py-only | DIVERGENT | R19 | bundle |
-| F053 | Dependabot ecosystems configured | ci-workflows | different | DIVERGENT | R20 | bundle; ecosystems and grouping are one Dependabot-config-shape decision |
-| F054 | Dependabot update grouping strategy | ci-workflows | different | DIVERGENT | R20 | bundle |
-| F055 | Third-party GitHub Action pinning policy | ci-workflows | different | DIVERGENT | R21 | major-tag pin (py) vs. full-SHA pin plus version comment (ts) for third-party actions |
+| F048 | Manual security-scan tool | ci-workflows | different | DIVERGENT | R13 | bundle |
+| F049 | Always-on SCA audit as commented, uncomment-to-enable scaffolding inside the main CI workflow | ci-workflows | ts-only | DIVERGENT | R13 | bundle |
+| F050 | Dedicated secret-scanning CI workflow | ci-workflows | py-only | DIVERGENT | R17 | distinct tool and tier from git-hooks-commit-hygiene's gitleaks pre-commit/pre-push hooks; not bundled with that area |
+| F051 | AI-assisted PR code review workflow | ci-workflows | py-only | DIVERGENT | R18 | bundle; same claude-code-action family as F052, plausibly adopted or dropped together |
+| F052 | AI assistant workflow triggered by @mention comments | ci-workflows | py-only | DIVERGENT | R18 | bundle |
+| F053 | Dependabot ecosystems configured | ci-workflows | different | DIVERGENT | R19 | bundle; ecosystems and grouping are one Dependabot-config-shape decision |
+| F054 | Dependabot update grouping strategy | ci-workflows | different | DIVERGENT | R19 | bundle |
+| F055 | Third-party GitHub Action pinning policy | ci-workflows | different | DIVERGENT | R20 | major-tag pin (py) vs. full-SHA pin plus version comment (ts) for third-party actions |
 | F056 | actionlint config: self-hosted runner labels declared | ci-workflows | py-only | DIVERGENT | R09 | bundle; only needed if F031's vars.RUNNER_*/Blacksmith indirection is adopted |
 | F057 | actionlint config: RUNNER_* config-variables declared | ci-workflows | py-only | DIVERGENT | R09 | bundle |
-| F058 | actionlint config: stale-metadata suppression scope for create-github-app-token | ci-workflows | different | DIVERGENT | R22 | contingent on release-versioning's release-please-auth choice (whether create-github-app-token is used at all), but the suppression-scope call is CI's own actionlint-config decision |
+| F058 | actionlint config: stale-metadata suppression scope for create-github-app-token | ci-workflows | different | DIVERGENT | R09 | bundle, decided together with F031/F056/F057 (R09's self-hosted-runner-indirection/actionlint-config bundle); contingent on release-versioning's release-please-auth choice (whether create-github-app-token is used at all) |
 | F059 | Publish workflow triggered on a `v*` tag push | ci-workflows | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; native GitHub Actions tag-push trigger syntax, no external tool |
 | F060 | Automated contributors-list bot-PR workflow | ci-workflows | same | COMMON → REUSE | — | rust-ok: yes; live: 2026-06; tool: smorinlabs/contributors-please-action v1.3.9 (github.com/smorinlabs/contributors-please-action, checked 2026-09-02); language-neutral, operates on git history |
-| F061 | Contributors-bot credential source for the PAT fallback | ci-workflows | different | DIVERGENT | R23 | dedicated repo secret (py) vs. zero-extra-secret GITHUB_TOKEN (ts) |
+| F061 | Contributors-bot credential source for the PAT fallback | ci-workflows | different | DIVERGENT | R21 | dedicated repo secret (py) vs. zero-extra-secret GITHUB_TOKEN (ts) |
 | F062 | Difftree PR-comment workflow | ci-workflows | same | COMMON → REUSE | — | rust-ok: yes; live: 2026-09; tool: smorinlabs/difftree-action v0.7.2 (github.com/smorinlabs/difftree-action, checked 2026-09-02); byte-identical canonical template in both repos, language-neutral |
 | F063 | version source of truth | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: 2026-04; tool: release-please (googleapis/release-please-action v5.0.0, checked 2026-09-02); Cargo.toml `[package] version` is the uncontested Rust manifest field |
-| F064 | runtime version accessor | release-versioning | different | DIVERGENT | R24 | compile-time `env!("CARGO_PKG_VERSION")` (ts-like, build-time) vs. a runtime metadata lookup (py-like) |
-| F065 | lockfile version sync in release commit | release-versioning | different | DIVERGENT | R25 | whether release-please's extra-files config must also bump Cargo.lock's workspace-member version entries |
+| F064 | runtime version accessor | release-versioning | different | DIVERGENT | R22 | compile-time `env!("CARGO_PKG_VERSION")` (ts-like, build-time) vs. a runtime metadata lookup (py-like) |
+| F065 | lockfile version sync in release commit | release-versioning | different | DIVERGENT | R23 | whether release-please's extra-files config must also bump Cargo.lock's workspace-member version entries |
 | F066 | changelog file generation | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: 2026-04; tool: release-please |
-| F067 | changelog section type mapping (visible vs hidden) | release-versioning | different | DIVERGENT | R26 | which Conventional-Commits types surface in CHANGELOG.md vs. stay hidden |
+| F067 | changelog section type mapping (visible vs hidden) | release-versioning | different | DIVERGENT | R24 | which Conventional-Commits types surface in CHANGELOG.md vs. stay hidden |
 | F068 | changelog file preamble | release-versioning | ts-only | ADOPT | — | one-line boilerplate naming Keep a Changelog/SemVer, nothing to choose |
 | F069 | release PR title customization | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: 2026-04; tool: release-please; exact wording is a content choice, not a research question |
-| F070 | pre-1.0 semver bump strategy | release-versioning | ts-only | DIVERGENT | R27 | whether rs-launch-blueprint starts pre-1.0 (bump-minor-pre-major/bump-patch-for-minor-pre-major) or post-1.0 like py |
+| F070 | pre-1.0 semver bump strategy | release-versioning | ts-only | DIVERGENT | R25 | whether rs-launch-blueprint starts pre-1.0 (bump-minor-pre-major/bump-patch-for-minor-pre-major) or post-1.0 like py |
 | F071 | release-please bootstrap-sha pin | release-versioning | py-only | ADOPT | — | mechanical: pin the commit release-please starts scanning from when first configured |
 | F072 | release-please auth token mechanism | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: 2026-05; tool: actions/create-github-app-token v3.2.0 (github.com/actions/create-github-app-token, checked 2026-09-02) |
 | F073 | release trigger (push opens PR, merge tags) | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: 2026-04; tool: release-please |
@@ -81,32 +81,32 @@ Authoritative verdicts for every atomic feature of `py-launch-blueprint` (b08bcc
 | F075 | OIDC Trusted Publishing (no stored publish token) | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; native GitHub OIDC (`id-token: write`) pattern; crates.io supports Trusted Publishing |
 | F076 | staged publish to test registry before production | release-versioning | py-only | OMIT | — | crates.io has no test/staging registry; `cargo publish --dry-run` never uploads, so there is no Rust analogue to research |
 | F077 | protected environment gate before publish | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; native GitHub protected-environment feature, no external tool |
-| F078 | packed-artifact content guard in publish workflow | release-versioning | ts-only | DIVERGENT | R28 | whether Rust's publish workflow needs a guard against `cargo publish` silently altering package metadata |
+| F078 | packed-artifact content guard in publish workflow | release-versioning | ts-only | DIVERGENT | R26 | bundle, decided together with F039 (ci-workflows' packed-artifact file-list assertion) as one publish-content-verification item; whether Rust's publish workflow needs a guard against `cargo publish` silently altering package metadata |
 | F079 | release version-surface drift-check recipe | release-versioning | ts-only | ADOPT | — | low-stakes diagnostic Justfile recipe mirroring F074's already-decided consistency check; nothing to research |
 | F080 | CLI version-check recipe | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free Justfile-recipe convention |
 | F081 | release runbook / setup doc | release-versioning | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free maintainer-doc convention |
 | F082 | documented opt-out from automated releases | release-versioning | py-only | ADOPT | — | doc-only instructions, nothing to choose |
 | F083 | one linter and one formatter run in CI and via the git-hook manager | lint-format | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free pattern (one linter + one formatter, wired to CI and the hook manager) |
-| F084 | primary code formatter tool | lint-format | different | DIVERGENT | R29 | bundle; rustfmt is the near-certain tool, but its config surface (F087, F089, F091, F092) is the research question |
-| F085 | primary code linter tool | lint-format | different | DIVERGENT | R30 | bundle; clippy is the near-certain tool, but its config surface (F086, F093, F094, F096) is the research question |
-| F086 | linter rule-selection mechanism | lint-format | different | DIVERGENT | R30 | bundle |
-| F087 | formatter max line width | lint-format | different | DIVERGENT | R29 | bundle |
+| F084 | primary code formatter tool | lint-format | different | DIVERGENT | R27 | bundle; rustfmt is the near-certain tool, but its config surface (F087, F089, F091, F092) is the research question |
+| F085 | primary code linter tool | lint-format | different | DIVERGENT | R28 | bundle; clippy is the near-certain tool, but its config surface (F086, F093, F094, F096) is the research question |
+| F086 | linter rule-selection mechanism | lint-format | different | DIVERGENT | R28 | bundle |
+| F087 | formatter max line width | lint-format | different | DIVERGENT | R27 | bundle |
 | F088 | formatter quote style | lint-format | different | OMIT | — | Rust string literals are always double-quoted; no formatter option, no Rust analogue |
-| F089 | formatter line-ending normalization | lint-format | different | DIVERGENT | R29 | bundle |
+| F089 | formatter line-ending normalization | lint-format | different | DIVERGENT | R27 | bundle |
 | F090 | formatter semicolon insertion | lint-format | ts-only | OMIT | — | Rust's grammar requires statement-terminating semicolons; not a formatter choice, no Rust analogue |
-| F091 | formatter trailing-comma style | lint-format | ts-only | DIVERGENT | R29 | bundle |
-| F092 | import-sorting ownership | lint-format | different | DIVERGENT | R29 | bundle |
-| F093 | linter default autofix behavior | lint-format | different | DIVERGENT | R30 | bundle |
-| F094 | per-context lint relaxation for test files | lint-format | different | DIVERGENT | R30 | bundle |
+| F091 | formatter trailing-comma style | lint-format | ts-only | DIVERGENT | R27 | bundle |
+| F092 | import-sorting ownership | lint-format | different | DIVERGENT | R27 | bundle |
+| F093 | linter default autofix behavior | lint-format | different | DIVERGENT | R28 | bundle |
+| F094 | per-context lint relaxation for test files | lint-format | different | DIVERGENT | R28 | bundle |
 | F095 | per-file ignore for package `__init__.py` | lint-format | py-only | OMIT | — | Rust's `mod.rs`/`lib.rs` re-export surface has no equivalent unused-import exemption need |
-| F096 | security-rule coverage via the linter | lint-format | different | DIVERGENT | R30 | bundle |
-| F097 | TOML formatter as a separate tool | lint-format | py-only | DIVERGENT | R31 | bundle; Rust's own config files (Cargo.toml, rustfmt.toml) make TOML formatting directly relevant — decided jointly with F098/F099; confirmed ts has no TOML-specific Oxfmt setting and carries zero `.toml` files, so origin stays py-only |
-| F098 | YAML formatting ownership | lint-format | different | DIVERGENT | R31 | bundle |
-| F099 | JSON and Markdown formatting coverage | lint-format | ts-only | DIVERGENT | R31 | bundle |
-| F100 | formatter/linter exclude-list configuration scope | lint-format | different | DIVERGENT | R32 | whether Rust shares one exclude list across rustfmt/clippy or keeps them per-tool |
-| F101 | editor extension recommendation for lint/format | lint-format | different | DIVERGENT | R33 | rust-analyzer is the dominant candidate; origin `different` forces DIVERGENT rather than ADOPT per the verdict table |
-| F102 | composite recipe bundling format/lint/typecheck/test | lint-format | different | DIVERGENT | R34 | whether Rust's `check`-style composite recipe includes a format-check step |
-| F103 | lint/format tool version-pinning strategy | lint-format | different | DIVERGENT | R35 | Cargo.toml supports the same floating-range-vs-exact-pin choice py/ts differ on |
-| F104 | pre-commit formatter hook mode (check vs. write) | lint-format | different | DIVERGENT | R36 | whether the Rust formatter hook blocks on unformatted code or auto-fixes and re-stages |
+| F096 | security-rule coverage via the linter | lint-format | different | DIVERGENT | R28 | bundle |
+| F097 | TOML formatter as a separate tool | lint-format | py-only | DIVERGENT | R29 | bundle; Rust's own config files (Cargo.toml, rustfmt.toml) make TOML formatting directly relevant — decided jointly with F098/F099; confirmed ts has no TOML-specific Oxfmt setting and carries zero `.toml` files, so origin stays py-only |
+| F098 | YAML formatting ownership | lint-format | different | DIVERGENT | R29 | bundle |
+| F099 | JSON and Markdown formatting coverage | lint-format | ts-only | DIVERGENT | R29 | bundle |
+| F100 | formatter/linter exclude-list configuration scope | lint-format | different | DIVERGENT | R27 | bundle, decided together with F084/F087/F089/F091/F092 (rustfmt's config surface); whether Rust shares one exclude list across rustfmt/clippy or keeps them per-tool |
+| F101 | editor extension recommendation for lint/format | lint-format | different | DIVERGENT | R28 | bundle, decided together with F085/F086/F093/F094/F096 (clippy's config surface); rust-analyzer is the dominant editor-extension candidate once rustfmt/clippy are chosen |
+| F102 | composite recipe bundling format/lint/typecheck/test | lint-format | different | DIVERGENT | R27 | bundle, decided together with F084/F087/F089/F091/F092 (rustfmt's config surface); whether Rust's `check`-style composite recipe includes a format-check step |
+| F103 | lint/format tool version-pinning strategy | lint-format | different | DIVERGENT | R27 | bundle, decided together with F084/F087/F089/F091/F092 (rustfmt's config surface); rustfmt/clippy are rustup components pinned via `rust-toolchain.toml`, largely governed by the already-fixed `msrv-policy` parameter, not an independent Cargo-dependency version-pinning choice |
+| F104 | pre-commit formatter hook mode (check vs. write) | lint-format | different | DIVERGENT | R27 | bundle, decided together with F084/F087/F089/F091/F092 (rustfmt's config surface); whether the Rust formatter hook blocks on unformatted code or auto-fixes and re-stages |
 
 ## Override arguments
