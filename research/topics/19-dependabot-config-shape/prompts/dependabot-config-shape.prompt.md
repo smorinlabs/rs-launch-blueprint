@@ -10,7 +10,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 
 ## Out of scope
 - Whether a competing dependency-update bot (e.g. Renovate) should replace Dependabot entirely; both source repos use Dependabot and D-022(8) explicitly considered and rejected Renovate for ts — this item configures Dependabot, it does not re-open the bot-choice question.
-- The scheduled full-dependency-graph vulnerability audit and the manual on-demand SCA scan tool; those are bundled as a separate vulnerability-scanning decision, not this config-shape item.
+- The scheduled full-dependency-graph vulnerability audit and the manual on-demand SCA scan tool; those are bundled into R13 (`dependency-vulnerability-scanning`)'s separate vulnerability-scanning decision, not this config-shape item.
 - Prior art in the owner's other Rust repositories — do not look for or cite it.
 
 ## Couplings

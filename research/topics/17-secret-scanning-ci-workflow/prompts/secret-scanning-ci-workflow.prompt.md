@@ -10,7 +10,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 
 ## Out of scope
 - The pre-commit/pre-push hook-tier secret-scanning tool and its allowlist/fingerprint-suppression configuration (a gitleaks-equivalent); R39 (`secret-scanning-hooks`) owns F163-F166 — this item decides only the CI-workflow-tier tool, a genuinely separate tool and tier from R39's hook-tier scanner, not bundled with it.
-- Where in the job graph the resulting workflow's result is aggregated into a single required check; that structural question belongs to whichever item resolves the CI job-structure and required-status-check aggregation pattern, not to this item's tool choice.
+- Where in the job graph the resulting workflow's result is aggregated into a single required check; R11 (`ci-workflow-job-structure`) decides what jobs exist and R12 (`aggregate-required-status-check`) decides how their results fold into one required check — this item's tool choice is independent of both.
 - Prior art in the owner's other Rust repositories — do not look for or cite it.
 
 ## Couplings
