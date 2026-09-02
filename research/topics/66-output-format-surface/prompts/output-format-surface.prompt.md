@@ -1,0 +1,78 @@
+# Deep-research prompt — Output format surface (R66, bundle)
+
+## Objective
+Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template shaped as CLI + library + web service. Deliver a named stack of crates and reference pattern (with versions) for: which text-serialization output formats `rs-launch-blueprint`'s CLI supports (text, JSON, and a third format — py's markdown vs. ts's csv), and how the format-selection flag and the file-redirection flag are named to resolve the naming collision between py's `--output-file`/`-o`(`--output`) split and ts's single `--output` file-sink flag. Item kind: `bundle`. Value test: if this answer is wrong, the output-format enum, the flag names and any mutual-exclusion declarations between them, and the format-specific renderer implementations, all get rewritten.
+
+## Context
+- Inherited pattern (spec §2, presumption of reuse): py and ts diverge on both the format list and the flag naming. py's format enum is text/json/markdown; ts's is text/json/csv. py's format-selection flag is `-o`/`--output`, and file redirection is a separate `--output-file` flag; ts's single `--output <file>` flag is the file sink, with a distinct `--format` flag selecting the output format. Evidence: F291 py `src/py_launch_blueprint/cli/output.py:47` — `class OutputMode(StrEnum):` (`text`/`json`/`markdown`); ts `src/lib/format.ts:16` — `export const OUTPUT_FORMATS = ['text', 'json', 'csv'] as const;`. F293 py `src/py_launch_blueprint/cli/options.py:72` — `"--output-file",`, separate from format selection; ts `src/commands/projects.ts:83` — `.option('--output <file>', 'write results to file')` — a naming collision: ts's `--output` is py's `--output-file`; py's format flag is `-o`/`--output`, ts's is `--format`. Ledger rows: F291, F293 (`docs/port/COMMONALITY.md`), verdict `DIVERGENT`.
+- Already decided, do not re-open: that a `--json` shorthand flag exists (F292) is inherited as-is (`COMMON → REUSE`); this item decides the underlying format-selection flag it aliases to and its naming, not whether `--json` exists. Target shape is CLI + library + web service (spec §4 D7); `rust-edition` = `2024`, `msrv-policy` = "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI", `license` = `MIT OR Apache-2.0`, `target-os-matrix` = `ubuntu-latest, macos-latest` (`docs/port/PARAMETERS.md`, fixed, owner-decided 2026-09-02).
+- Prior decisions of the TypeScript port that explain the current shape: D-033 (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — while resolving an unrelated interactive-prompt-cancellation gate, the same change set implemented a `--json` alias for `--format json` and explicitly kept `--output` as the file-sink flag: "`--output` remains the file sink (source parity; documented divergence from cli-standards' `-o` output-format enum, noted in EXAMPLECLI)" — a deliberate, acknowledged departure from an external CLI-standards convention that would have made `-o`/`--output` the format-selection flag instead.
+
+## Out of scope
+- Which CLI-parsing framework hosts these flags; R60 (`cli-parsing-framework`) owns that bundle — this item's flag names only need to be declarable by whatever R60 selects.
+- Rich-only terminal presentation niceties (OSC-8 hyperlinks, relative timestamps) layered on top of the text-mode table's individual cells; R85 (`rich-terminal-row-niceties`) owns F359 — this item decides which formats exist and their flag names, not per-cell terminal styling within the text format.
+- Whether long text-mode output gets paged through the user's pager; R64 (`pager-integration`) owns F284/F285 — this item decides the text format's content shape, not whether it is paged.
+- Prior art in the owner's other Rust repositories — do not look for or cite it.
+
+## Couplings
+- id: R66
+- owns:
+- consumes:
+- related (not a registry dependency): R85 (`rich-terminal-row-niceties`) owns F359, terminal-only presentation additions layered on top of whatever text-mode row rendering this item's answer produces; R85 needs no registered parameter from this item, only its text-format row shape as a starting point.
+
+If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
+
+## Questions
+Decision: which text-serialization output formats `rs-launch-blueprint`'s CLI supports, and how the format-selection and file-redirection flags are named to resolve the `--output`/`--output-file`/`-o`/`--format` naming collision between the two sources.
+- HIGH: Should the third format (beyond text and JSON) be py's markdown, ts's csv, both, or neither — what use case does each serve (markdown for human-readable/paste-into-PR output vs. csv for spreadsheet import), and does supporting either require a Rust crate (a markdown-table writer, or the `csv` crate) or can it be hand-rolled?
+- HIGH: How should the format-selection flag and the file-redirection flag be named to resolve the collision — keep `--output` as the file sink and `--format` as format selection (ts's D-033 choice, an acknowledged divergence from an external `-o`-as-format-flag convention), or follow py's split (`-o`/`--output` selects format, a separate `--output-file` writes to a file)?
+- MEDIUM: Does `--json` remain a shorthand/alias for `--format json` (ts's D-033 choice), and does the chosen CLI framework (R60) support declaring that alias with a mutual-exclusion the way Commander's `.conflicts()` does (F292)?
+- MEDIUM: Does rendering markdown or csv require a dedicated Rust crate, and if the text format later carries R85's terminal-only niceties (OSC-8 hyperlinks, relative timestamps), do markdown/csv need to stay strictly plain or can they carry equivalent non-terminal formatting (e.g. markdown links)?
+- LOW: What should the file-redirection flag do when the target file already exists — overwrite, append, or error — given neither source repo's evidence cited here documents this behavior explicitly?
+
+## Required evidence
+Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):
+| Figure | Source | Field / rule |
+|---|---|---|
+| 90-day downloads | `GET https://crates.io/api/v1/crates/<name>` | `crate.recent_downloads` |
+| All-time downloads | same | `crate.downloads` |
+| Last release | `GET https://crates.io/api/v1/crates/<name>/versions` | newest with `yanked: false`: `num`, `created_at` |
+| Stars, archived | `GET https://api.github.com/repos/<o>/<r>` | `stargazers_count`, `archived`, `pushed_at` |
+| Open issues | `GET https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+is:open` | `total_count` (never `open_issues_count`) |
+| Issue responsiveness | 10 most recently opened issues | median days to first maintainer response; unanswered count |
+| Advisories | `https://rustsec.org/packages/<name>.html` | open advisories |
+| Adopters | reverse-dependencies page + the projects' `Cargo.toml` | name + link; "well-known" = nameable without lookup |
+
+Maintenance state by rubric, one of `active | stable-quiet | at-risk | dormant | archived`: no release in 6 months is a trigger to investigate, never the verdict; `at-risk` needs a concrete signal; `dormant` needs an unpatched advisory, a broken build on current stable, or a maintainer's own notice.
+
+Fitness gates, answered per candidate **before** popularity is weighed; a failed gate lists the candidate under *Excluded by gate*:
+1. license compatible with `MIT OR Apache-2.0`;
+2. crate and dependency-tree MSRV within `stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI`;
+3. no open RustSec advisory; `unsafe` posture stated;
+4. builds and is tested on every OS in `ubuntu-latest, macos-latest` (CI badge or a stated platform list); Windows support noted, not required;
+5. default features and any async-runtime coupling stated;
+6. binary-size and compile-time cost stated qualitatively.
+
+## Answer template
+Use exactly these field names as H3 headings, in this order.
+
+### Recommendation
+One stack.
+### Members
+The full `crate` field set for each member.
+### Compatibility
+Proof the members are tested together: a shared adopter, a shared example repository, or a version matrix.
+### Parameters
+`owns <param> = <value>` per owned parameter; `assumes <param> = <value>` per consumed one; any `CONFLICT:` lines.
+### Migration implications
+File-level changes in the template.
+### Validation strategy
+Commands that prove the choice landed.
+### Confidence & re-verify trigger
+### Sources
+
+## Constraints
+- Fresh ecosystem survey; no prior-art baseline.
+- Stable Rust only; edition `2024`; MSRV policy `stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI`; license `MIT OR Apache-2.0`.
+- CI on `ubuntu-latest, macos-latest` — every recommendation must work on all of them.
+- Every claim carries a source URL and retrieval date; every number carries its endpoint.
