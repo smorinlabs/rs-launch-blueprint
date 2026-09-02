@@ -346,5 +346,23 @@ Authoritative verdicts for every atomic feature of `py-launch-blueprint` (b08bcc
 | F338 | production entrypoint runs the ASGI server with settings-driven graceful shutdown | web-service | py-only | DIVERGENT | R69 | bundle |
 | F339 | dev server recipe runs with auto-reload and pretty console logs | web-service | py-only | DIVERGENT | R69 | bundle; also needs a Rust file-watch/auto-rebuild tool (e.g. `cargo-watch`/`bacon`) for the dev-mode reload loop |
 | F340 | importing the web package without the extra installed raises an actionable error | web-service | py-only | OMIT | — | Cargo feature gating is compile-time: code behind an unenabled `web` feature simply does not exist in the binary, so there is no runtime import-failure path to raise an actionable error from |
+| F341 | docs delivery model | docs-system | different | DIVERGENT | R81 | bundle; whether rs-launch-blueprint ships a generated, hosted docs site (mdBook-style, py's shape) or a README-centric plain-markdown tree (ts's shape) — decides F343, F344, F345, F346, F351, F352, F353 |
+| F342 | documentation information architecture | docs-system | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; the Diátaxis category set (about/tasks/tools/tutorials/reference/contributing) is a language-neutral information-architecture convention, independent of the generator R81 picks |
+| F343 | markdown dialect | docs-system | different | DIVERGENT | R81 | bundle; mdBook's extended-CommonMark surface vs. plain CommonMark/GFM, downstream of R81's delivery-model pick |
+| F344 | section navigation mechanism | docs-system | different | DIVERGENT | R81 | bundle; mdBook's `SUMMARY.md` vs. a plain bullet-list index, downstream of R81 |
+| F345 | root-README vs. site-landing-page duplication | docs-system | different | DIVERGENT | R81 | bundle; duplication only exists if R81 adopts a separate hosted site |
+| F346 | root README "documentation" pointer | docs-system | different | DIVERGENT | R81 | bundle; whether the README links to a hosted site or an in-repo tree follows R81 |
+| F347 | documentation authoring guide (how to add a page) | docs-system | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; a contributor-facing "how to add a doc page" guide is a language-neutral pattern; its content mechanics (toctree/labels vs. relative links) are downstream of whatever R81 picks, not a separate decision |
+| F348 | doc content correctness gate | docs-system | different | DIVERGENT | R82 | bundle; whether Rust adopts a link-checking tool/strategy (e.g. `lychee`) covering both internal and external links, and how it gates CI — decides F349, F350 |
+| F349 | offline relative-link checker tool | docs-system | ts-only | DIVERGENT | R82 | bundle |
+| F350 | external URL link-check | docs-system | py-only | DIVERGENT | R82 | bundle |
+| F351 | local docs preview server (hot reload) | docs-system | py-only | DIVERGENT | R81 | bundle; `mdbook serve`'s built-in live reload is the plausible analogue, downstream of R81 |
+| F352 | docs scaffold/init recipe | docs-system | py-only | DIVERGENT | R81 | bundle; `mdbook init`'s analogue, downstream of R81 |
+| F353 | API reference doc generator | docs-system | different | DIVERGENT | R81 | bundle; whether `cargo doc`/rustdoc is CI-gated (`-D warnings` on broken intra-doc links) as part of the docs-correctness posture, and how it relates to whatever site R81 picks |
+| F354 | ADR (Architecture Decision Record) system | docs-system | py-only | ADOPT | — | language-neutral process convention (a numbered decision-record directory); nothing Rust-specific to research |
+| F355 | design-spec doc system | docs-system | py-only | ADOPT | — | language-neutral process convention, same shape as F354 |
+| F356 | research doc system | docs-system | py-only | ADOPT | — | language-neutral process convention, same shape as F354 |
+| F357 | internal-docs top-level orientation page | docs-system | py-only | ADOPT | — | doc-convenience artifact whose content tracks F354/F355/F356's adoption; nothing separate to research |
+| F358 | documented (unshipped) future docs-site upgrade path | docs-system | ts-only | ADOPT | — | tracks R81's delivery-model decision; noting a future upgrade path (if any) is optional documentation color, not a separate research question |
 
 ## Override arguments
