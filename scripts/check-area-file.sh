@@ -9,11 +9,12 @@ hdr='| feature | py | ts | origin | ts-decisions | notes |'
 hdr_id='| id | feature | py | ts | origin | ts-decisions | notes |'
 grep -qxF -- "$hdr" "$f" || grep -qxF -- "$hdr_id" "$f" || err "table header must be exactly: $hdr (or with a leading id column after Phase 2)"
 [ "$(grep -c '^|' "$f")" -gt 2 ] || err "table has no data rows"
+has_id=0; grep -qxF -- "$hdr_id" "$f" && has_id=1
 # data rows: skip header and separator; awk -F'|' gives leading empty field
 while IFS= read -r line; do
   case "$line" in '| feature |'*|'| id |'*|'|---'*) continue ;; esac
   n=$(printf '%s' "$line" | awk -F'|' '{print NF-2}')
-  if [ "$n" -eq 7 ]; then off=1; elif [ "$n" -eq 6 ]; then off=0; else err "row has $n cells, want 6 (or 7 with id): $line"; continue; fi
+  if [ "$n" -eq 7 ] && [ "$has_id" -eq 1 ]; then off=1; elif [ "$n" -eq 6 ]; then off=0; else err "row has $n cells, want 6 (or 7 with id): $line"; continue; fi
   feat=$(printf '%s' "$line" | awk -F'|' -v o="$off" '{gsub(/^ +| +$/,"",$(2+o)); print $(2+o)}')
   py=$(printf '%s' "$line"   | awk -F'|' -v o="$off" '{gsub(/^ +| +$/,"",$(3+o)); print $(3+o)}')
   ts=$(printf '%s' "$line"   | awk -F'|' -v o="$off" '{gsub(/^ +| +$/,"",$(4+o)); print $(4+o)}')
