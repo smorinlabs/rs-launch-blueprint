@@ -8,44 +8,69 @@ Produced per `docs/superpowers/specs/2026-09-01-rs-port-research-program-design.
    table of how `py-launch-blueprint` and `ts-launch-blueprint` handle every
    feature in that area, with file references and any `TS_PORT_DECISIONS.md`
    ids that explain a difference. Written by survey agents; **no verdicts**.
-2. `COMMONALITY.md` — the authoritative ledger. One row per feature, columns
-   `Feature · Origin · Verdict · Notes`; verdicts from the closed set below.
+2. `COVERAGE.md` — every source file of both repos (`git ls-files`) mapped to
+   the feature ids it contributed to, or `EXCLUDED: <reason>`. Proves no file
+   was silently skipped by the survey (spec §6.4).
+3. `COMMONALITY.md` — the authoritative ledger. One row per atomic feature,
+   columns `ID · Feature · Area · Origin · Verdict · Item · Notes`; verdicts
+   from the closed set below and legal for the row's origin. A pattern and the
+   tool implementing it are separate rows: the tool row's Notes carry
+   `parent: F###`. `REUSE` rows carry `rust-ok: yes` and `live: YYYY-MM`.
+   `Item` is the `R##` for verdicts that need research, `—` otherwise.
    Override arguments live under `## Override arguments` as `### OV-nn`.
-3. `PY_INVENTORY.md`, `TS_INVENTORY.md` — per-repo views derived from the
+4. `PARAMETERS.md` — the shared-parameter registry, `param · kind · owner ·
+   value · description`. `fixed` parameters are decided by the owner up front
+   (`msrv-policy`, `rust-edition`, `target-os-matrix`, `license`, …);
+   `researched` parameters are owned by exactly one `R##` (spec §6.3).
+5. `OWNER-REVIEW.md` — Phase 3.5, one row per item: `item · disposition
+   (accept | narrow | force | drop) · rationale · date`. Not waivable.
+6. `PY_INVENTORY.md`, `TS_INVENTORY.md` — per-repo views derived from the
    same rows, for reading one source repo end to end.
-4. `../../research/CLAUDE.md` — every row whose verdict needs research becomes
-   an `R##` item with a prompt. Columns: `R## · slug · origin · verdict · owns ·
-   prompt · status`. `owns` lists the repo-wide parameters that item alone
-   decides (spec §6.3); `status` is `open` until execution, then `resolved`
-   only once `DECISION.md`, `audit-codex.md`, and `audit-fable.md` exist.
-5. `ts-research-method-review.md` — how the TypeScript port's research was
+7. `../../research/CLAUDE.md` — every ledger row whose verdict needs research
+   maps to an `R##` item with a prompt (several rows may share one `bundle`
+   item). Columns: `id · slug · kind (crate | pattern | bundle) · origin ·
+   verdict · owns · prompt · status (open | in-progress | resolved | dropped)`.
+   `resolved` requires a non-empty `DECISION.md`, `audit-codex.md`, and
+   `audit-fable.md`. `../../research/RUNBOOK.md` is the execution contract
+   for the session that runs the prompts (spec §11).
+8. `ts-research-method-review.md` — how the TypeScript port's research was
    actually run, what to copy, and what it got wrong; the source of the
    couplings rule, the owner review phase, and the audit files.
 
 ## Verdict vocabulary (closed set — enforced by `scripts/check-research-tree.sh`)
 
-| Verdict | Meaning | Research prompt |
-|---|---|---|
-| `COMMON → REUSE` | Same in py and ts; language-neutral | none |
-| `COMMON → SUBSTITUTE` | Same pattern in both; the tool is language-bound | yes |
-| `COMMON → OVERRIDE (OV-nn)` | Same in both; a strong Rust-specific reason to change the *pattern* | yes — burden of proof on deviating |
-| `DIVERGENT` | py and ts differ | yes |
-| `RUST-ONLY` | No precedent in either repo | yes |
-| `OMIT` | Python/TS-only, no Rust analogue | none |
+Origin (from the area tables): `same` · `different` · `py-only` · `ts-only` · `none`.
+
+| Verdict | Legal origin | Meaning | Research item |
+|---|---|---|---|
+| `COMMON → REUSE` | `same` | Language-neutral; inherited unchanged (`rust-ok: yes`, `live:` in Notes) | none |
+| `COMMON → SUBSTITUTE` | `same` | Same pattern; the tool is language-bound (`parent: F###` in Notes) | yes |
+| `COMMON → OVERRIDE (OV-nn)` | `same` | A strong Rust-specific reason to change the *pattern* | yes — burden of proof on deviating |
+| `ADOPT` | `py-only`, `ts-only` | One-sided precedent, language-neutral; taken as-is | none |
+| `DIVERGENT` | `different`, `py-only`, `ts-only` | Precedents disagree, or one exists and Rust needs a decision | yes |
+| `RUST-ONLY` | `none` | No precedent in either repo | yes |
+| `OMIT` | any except `none` | No Rust analogue | none |
 
 **Pattern vs tool.** "One formatter + one linter, in CI and in the pre-commit
 hook" is a pattern; `ruff` and `oxlint`/`oxfmt` are tools. Swapping the tool is
 `SUBSTITUTE`. Only changing the pattern is `OVERRIDE`.
 
-## Prompt sections (enforced)
+## Prompt sections (enforced: exactly these, in order, outside code fences)
 
 `## Objective` · `## Context` · `## Out of scope` · `## Couplings` (`- id: R##`,
-`- owns: …`, `- consumes: R##: param; …`) · `## Questions` · `## Required
-evidence` · `## Answer template` · `## Constraints` — spec §7.
+`- owns: a, b`, `- consumes: R##: param; owner: param`) · `## Questions` ·
+`## Required evidence` · `## Answer template` · `## Constraints` — spec §7.
+Parameter names are lowercase-kebab slugs.
 
-## Areas (12)
+## Areas (13)
 
 `ci-workflows` · `release-versioning` · `lint-format` · `static-analysis` ·
 `testing-coverage` · `cli-framework-ux` · `config-env-logging` · `docs-system`
 · `git-hooks-commit-hygiene` · `packaging-distribution` · `web-service` ·
-`dev-experience-repo-hygiene`
+`dev-experience-repo-hygiene` · `workspace-architecture`
+
+## Checking
+
+`scripts/check-research-tree.sh` (add `--require-owner-review` from Phase 3.5
+on) enforces all of the above; `scripts/test-check-research-tree.sh` is its
+regression suite (53 cases, each asserting the exit status).
