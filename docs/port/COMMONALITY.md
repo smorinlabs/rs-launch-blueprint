@@ -108,5 +108,17 @@ Authoritative verdicts for every atomic feature of `py-launch-blueprint` (b08bcc
 | F102 | composite recipe bundling format/lint/typecheck/test | lint-format | different | DIVERGENT | R27 | bundle, decided together with F084/F087/F089/F091/F092 (rustfmt's config surface); whether Rust's `check`-style composite recipe includes a format-check step |
 | F103 | lint/format tool version-pinning strategy | lint-format | different | DIVERGENT | R27 | bundle, decided together with F084/F087/F089/F091/F092 (rustfmt's config surface); rustfmt/clippy are rustup components pinned via `rust-toolchain.toml`, largely governed by the already-fixed `msrv-policy` parameter, not an independent Cargo-dependency version-pinning choice |
 | F104 | pre-commit formatter hook mode (check vs. write) | lint-format | different | DIVERGENT | R27 | bundle, decided together with F084/F087/F089/F091/F092 (rustfmt's config surface); whether the Rust formatter hook blocks on unformatted code or auto-fixes and re-stages |
+| F105 | primary type-checker tool | static-analysis | different | DIVERGENT | R30 | bundle; ty (py, CI-authoritative plus pre-push hook mirror) vs tsc (ts, sole CI/pre-commit/editor engine); rustc/cargo check is the Rust baseline, but whether a wrapper or stricter layer is adopted is the open question — decides F106-F113 |
+| F106 | type-checker hook-tier placement | static-analysis | different | DIVERGENT | R30 | bundle; py deliberately excludes its type checker from pre-commit (pre-push only, full-tree scan judged too slow per-commit); ts runs it every commit |
+| F107 | single type-checker engine serving both CI and the editor | static-analysis | ts-only | DIVERGENT | R30 | bundle |
+| F108 | dedicated IDE-only type checker distinct from the CI-authoritative one | static-analysis | py-only | DIVERGENT | R30 | bundle |
+| F109 | type-checker editor-extension recommendation | static-analysis | py-only | DIVERGENT | R30 | bundle; rust-analyzer is the plausible pick — also touches F195/F196 (dev-experience-repo-hygiene) and F101 (lint-format's clippy bundle); a known cross-item overlap for Task 10/owner, not a defect |
+| F110 | type-checker opt-in quality-rule / strictness configuration | static-analysis | different | DIVERGENT | R30 | bundle |
+| F111 | type-checker suppression-comment discipline | static-analysis | py-only | DIVERGENT | R30 | bundle |
+| F112 | type-checker warning-vs-error severity tier | static-analysis | py-only | DIVERGENT | R30 | bundle |
+| F113 | type-check gate scope: whether tests are included | static-analysis | different | DIVERGENT | R30 | bundle |
+| F114 | dedicated AST-based security scanner beyond the linter's built-in security rules | static-analysis | py-only | DIVERGENT | R31 | bundle; whether Rust adopts a standalone security-focused static analyzer beyond clippy's built-in lints, distinct from lint-format's F096 (security-rule coverage via the linter itself) — decides F115 |
+| F115 | security scanner hook-tier placement | static-analysis | py-only | DIVERGENT | R31 | bundle |
+| F116 | architectural-boundary check hook-tier placement | static-analysis | py-only | DIVERGENT | R02 | bundle, decided together with F003-F011/F020/F021 (workspace-architecture's boundary-enforcement mechanism) — where in the hook pipeline the chosen mechanism's check runs |
 
 ## Override arguments
