@@ -17,13 +17,14 @@ This file binds the session that runs the prompts (project P02). Nothing here is
 - Items with no unresolved dependencies run in batches of **at most 4**; a batch finishes (all `resolved` or escalated) before the next starts.
 
 ## 2. Engine invocation
-Verified by the Phase 3 conformance pilot (plan Task 14) on <date>: **<engine: /deep-research | doxa mode>**.
+Not yet verified. The Phase 3 conformance pilot (plan Task 14, P01-TS07) was deferred on 2026-09-02 to P02-T01: the built-in `/deep-research` skill is user-invoked only (`disable-model-invocation` — an agent's Skill tool refuses it), and Doxa is a paid run that needs an explicit owner yes and is not installed on this machine. Engine: **`/deep-research`, typed by the owner** (Doxa `all_deep_research` as the fallback).
 - Input: the item's `prompts/<slug>.prompt.md`, unmodified.
 - Output path: `research/topics/<nn>-<slug>/raw/<engine>-<YYYY-MM-DD>.md` (raw engine output, committed as evidence).
-- Invocation: <exact call recorded by Task 14>
+- Invocation: the owner types `/deep-research /Users/<home>/c/rs-launch-blueprint/research/topics/<nn>-<slug>/prompts/<slug>.prompt.md` in a Claude Code session and saves the raw answer to the output path above. Doxa fallback: `doxa ask --mode all_deep_research --prompt-file research/topics/<nn>-<slug>/prompts/<slug>.prompt.md --output-dir research/topics/<nn>-<slug>/raw/doxa --combined --async --json` (see the `doxa-research` skill).
+- The first real run (P02-T01) records the engine and date here.
 - Before anyone reads the content, check the answer fills the template:
   ```bash
-  scripts/check-answer-shape.sh research/topics/<nn>-<slug>/raw/<file>   # written by Task 14; exits 1 listing missing fields
+  scripts/check-answer-shape.sh research/topics/<nn>-<slug>/raw/<file> <crate|pattern|bundle> [override]   # exits 1 listing missing fields
   ```
 
 ## 3. Failure and retry
