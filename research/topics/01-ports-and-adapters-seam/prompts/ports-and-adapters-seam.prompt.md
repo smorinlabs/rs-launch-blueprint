@@ -49,7 +49,7 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 1. license compatible with `MIT OR Apache-2.0`;
 2. crate and dependency-tree MSRV within `stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI`;
 3. no open RustSec advisory; `unsafe` posture stated;
-4. builds and is tested on Windows;
+4. builds and is tested on every OS in `ubuntu-latest, macos-latest` (CI badge or a stated platform list); Windows support noted, not required;
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
 

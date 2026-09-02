@@ -15,8 +15,8 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 
 ## Couplings
 - id: <R##>
-- owns: <param, param | —>
-- consumes: <R##: param; owner: param | —>
+- owns: <param, param — leave the value empty when none>
+- consumes: <R##: param; owner: param — leave the value empty when none>
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 
 ## Questions
@@ -45,7 +45,7 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 1. license compatible with `<license value>`;
 2. crate and dependency-tree MSRV within `<msrv-policy value>`;
 3. no open RustSec advisory; `unsafe` posture stated;
-4. builds and is tested on Windows;
+4. builds and is tested on every OS in `<target-os-matrix value>` (CI badge or a stated platform list); Windows support noted, not required;
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
 
