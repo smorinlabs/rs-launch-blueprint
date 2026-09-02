@@ -14,10 +14,14 @@
 ### Tests & Tasks
 - [x] [P01-T01] Shell repo: README, LICENSE, PROJECTS.md, AGENTS.md, docs/port/README.md, spec; pushed to smorinlabs/rs-launch-blueprint
 - [x] [P01-TS01] `scripts/check-research-tree.sh` written first; proven green on a valid fixture and red on orphan prompt, missing section, out-of-set verdict, dangling OV id, missing Options
-- [ ] [P01-T02] Phase 1 — 12 area survey agents produce `docs/port/areas/<area>.md` (no verdicts)
-- [ ] [P01-T03] Phase 2 — `docs/port/COMMONALITY.md` with verdicts and OV arguments; derive `PY_INVENTORY.md`, `TS_INVENTORY.md`
+- [x] [P01-T06] Review how the TS port researched (`docs/port/ts-research-method-review.md`); fold R1–R8 into the spec: couplings ownership, owner review Phase 3.5, empirical gate, dual audits, extended answer template, framing, dormancy, batched fan-out
+- [x] [P01-TS04] Check script extended for 8 prompt sections, single-owner couplings, consumed-parameter resolution, resolved→audit files; proven red on each
+- [ ] [P01-TS05] Adversarial review of the revised spec by Codex (different model family); findings triaged and folded in
+- [ ] [P01-T02] Phase 1 — 12 area survey agents, batches of 3–4, produce `docs/port/areas/<area>.md` (no verdicts; cross-area parameters listed)
+- [ ] [P01-T03] Phase 2 — `docs/port/COMMONALITY.md` with verdicts and OV arguments; shared-parameter registry; derive `PY_INVENTORY.md`, `TS_INVENTORY.md`
 - [ ] [P01-T04] Phase 3 — `research/CLAUDE.md` index + one `<slug>.prompt.md` per SUBSTITUTE / OVERRIDE / DIVERGENT / RUST-ONLY row
 - [ ] [P01-TS02] `scripts/check-research-tree.sh` green on the real tree
+- [ ] [P01-T07] Phase 3.5 — owner technology-selection review, one line per item (not waivable); answers recorded in the index
 - [ ] [P01-TS03] Phase 4 — independent reviewer agent spot-checks ≥15 `COMMON → REUSE` rows against both repos and reads every OVERRIDE argument adversarially; findings fixed
 - [ ] [P01-T05] Phase 5 — PR reviewed by owner, merged, `pull --ff-only`, worktree removed; tag v0.1.0
 - [ ] Regression Test Status

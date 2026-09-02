@@ -14,7 +14,13 @@ Produced per `docs/superpowers/specs/2026-09-01-rs-port-research-program-design.
 3. `PY_INVENTORY.md`, `TS_INVENTORY.md` — per-repo views derived from the
    same rows, for reading one source repo end to end.
 4. `../../research/CLAUDE.md` — every row whose verdict needs research becomes
-   an `R##` item with a prompt.
+   an `R##` item with a prompt. Columns: `R## · slug · origin · verdict · owns ·
+   prompt · status`. `owns` lists the repo-wide parameters that item alone
+   decides (spec §6.3); `status` is `open` until execution, then `resolved`
+   only once `DECISION.md`, `audit-codex.md`, and `audit-fable.md` exist.
+5. `ts-research-method-review.md` — how the TypeScript port's research was
+   actually run, what to copy, and what it got wrong; the source of the
+   couplings rule, the owner review phase, and the audit files.
 
 ## Verdict vocabulary (closed set — enforced by `scripts/check-research-tree.sh`)
 
@@ -30,6 +36,12 @@ Produced per `docs/superpowers/specs/2026-09-01-rs-port-research-program-design.
 **Pattern vs tool.** "One formatter + one linter, in CI and in the pre-commit
 hook" is a pattern; `ruff` and `oxlint`/`oxfmt` are tools. Swapping the tool is
 `SUBSTITUTE`. Only changing the pattern is `OVERRIDE`.
+
+## Prompt sections (enforced)
+
+`## Objective` · `## Context` · `## Out of scope` · `## Couplings` (`- id: R##`,
+`- owns: …`, `- consumes: R##: param; …`) · `## Questions` · `## Required
+evidence` · `## Answer template` · `## Constraints` — spec §7.
 
 ## Areas (12)
 
