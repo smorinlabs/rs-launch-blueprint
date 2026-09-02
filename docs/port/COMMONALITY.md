@@ -269,4 +269,44 @@ Authoritative verdicts for every atomic feature of `py-launch-blueprint` (b08bcc
 | F262 | logging reconfiguration only tears down handlers it owns (idempotent, host-safe) | config-env-logging | py-only | DIVERGENT | R58 | bundle; a design property of the console pipeline's own re-init behavior, decided together with F250-F253 |
 | F263 | one shared logging pipeline expressed as per-front-end policy profiles | config-env-logging | py-only | DIVERGENT | R58 | bundle; depends on cross-area `web-extra-surface` (whether Rust carries a second front-end sharing the pipeline) as well as R58's own pipeline-architecture decision |
 
+| F264 | CLI framework/parsing library | cli-framework-ux | different | DIVERGENT | R60 | click (py) vs commander (ts) — Rust's analogue is a CLI-parsing crate (e.g. `clap`); decides F265, F267-F270, F272 |
+| F265 | Command surface shape: noun-verb subcommand groups vs. one default command | cli-framework-ux | different | DIVERGENT | R60 | bundle |
+| F266 | `-V`/`--version` flag | cli-framework-ux | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free pattern (a `--version` flag exists); the parsing framework that provides it is F264 |
+| F267 | Extended version output (runtime/platform info) | cli-framework-ux | py-only | DIVERGENT | R60 | bundle; whether rs-launch-blueprint's `--version` also prints extended (target-triple/rustc) info |
+| F268 | Shell completion script generation command | cli-framework-ux | py-only | DIVERGENT | R60 | bundle; clap's `clap_complete` crate is the plausible framework-native answer, decided together with F264 |
+| F269 | Blanket env-var binding for every global option | cli-framework-ux | py-only | DIVERGENT | R60 | bundle |
+| F270 | Global options stackable on every (sub)command | cli-framework-ux | different | DIVERGENT | R60 | bundle; py's design lets flags land after the verb — an architectural property of whichever framework F264 picks |
+| F271 | Did-you-mean suggestion on an unknown command | cli-framework-ux | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; pattern row (tool-free): a did-you-mean suggestion exists on both; the matching mechanism is F272 |
+| F272 | Did-you-mean matching implementation | cli-framework-ux | different | DIVERGENT | R60 | bundle; stdlib `difflib` (py) vs Commander's built-in matcher (ts) — whether the chosen Rust framework provides this natively |
+| F273 | Repeatable `-v`/`--verbose` flag | cli-framework-ux | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free pattern: both count repeated occurrences |
+| F274 | Verbosity-to-log-level resolution ladder | cli-framework-ux | different | DIVERGENT | R58 | bundle, decided together with config-env-logging's console-logging-pipeline item (F250-F253, F254, F262, F263) — same underlying resolution chain (`--log-level`/env > `-q`/`-v` > config > default), cited from both areas' angles; kept as one cross-area item rather than two per §6.3's cross-topic-contradiction concern |
+| F275 | `--no-input` flag disables interactive prompting | cli-framework-ux | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free pattern: a `--no-input` flag exists on both; py fails the command on it, ts selects every fetched result instead — a real behavioral fork logged here rather than silently inherited, per the governing rule |
+| F276 | Interactive yes/no confirmation prompt for destructive actions | cli-framework-ux | py-only | DIVERGENT | R61 | bundle; whether Rust adopts an interactive-prompt crate (e.g. `dialoguer`) for confirm/guided-value/multi-select prompts — decides F277-F280 |
+| F277 | `--dry-run` mutation-safety flag | cli-framework-ux | py-only | DIVERGENT | R61 | bundle |
+| F278 | `-y`/`--yes` mutation-safety flag | cli-framework-ux | py-only | DIVERGENT | R61 | bundle |
+| F279 | Interactive guided value prompt (config init) | cli-framework-ux | py-only | DIVERGENT | R61 | bundle |
+| F280 | Interactive multi-select prompt over fetched results | cli-framework-ux | ts-only | DIVERGENT | R61 | bundle; `@inquirer/prompts` checkbox — same crate-choice question as F276's confirm/guided prompts |
+| F281 | Clipboard-copy flag for command results | cli-framework-ux | ts-only | DIVERGENT | R62 | bundle; whether Rust adopts a clipboard-write crate (e.g. `arboard`) — decides F282 |
+| F282 | Clipboard write with headless-degrade handling | cli-framework-ux | ts-only | DIVERGENT | R62 | bundle |
+| F283 | Progress spinner during network fetch | cli-framework-ux | ts-only | DIVERGENT | R63 | standalone; whether Rust adopts a stderr spinner crate (e.g. `indicatif`) gated on TTY and absence of `CI` |
+| F284 | Text-mode output paged through the user's pager | cli-framework-ux | py-only | DIVERGENT | R64 | bundle; whether Rust pages long text output through the user's pager — decides F285 |
+| F285 | Pager command resolution precedence | cli-framework-ux | py-only | DIVERGENT | R64 | bundle |
+| F286 | `--no-color` flag | cli-framework-ux | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free pattern: a `--no-color` flag exists on both |
+| F287 | Color enablement precedence chain | cli-framework-ux | different | DIVERGENT | R65 | bundle; py chain flag > `NO_COLOR` env > config; ts chain flag > `NO_COLOR` > `FORCE_COLOR` > TTY — decides F288-F290 |
+| F288 | `FORCE_COLOR` env var forces color on | cli-framework-ux | ts-only | DIVERGENT | R65 | bundle |
+| F289 | Color gated once for both streams vs. per-stream on stderr only | cli-framework-ux | different | DIVERGENT | R65 | bundle |
+| F290 | TTY detection mechanism gating interactive behavior | cli-framework-ux | different | DIVERGENT | R65 | bundle |
+| F291 | Output-format choices | cli-framework-ux | different | DIVERGENT | R66 | bundle; py offers markdown, ts offers csv instead — decides F293 |
+| F292 | `--json` shorthand flag | cli-framework-ux | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free pattern: both have a `--json` shortcut; ts declares an explicit conflict with `--format`, py resolves precedence in code — an implementation nuance within the same shared pattern |
+| F293 | Result-to-file redirection flag | cli-framework-ux | different | DIVERGENT | R66 | bundle; naming collision between py's `--output-file`/`-o`/`--output` split and ts's single `--output` — part of the same output-surface-naming decision as F291 |
+| F294 | JSON machine-readable error envelope on stderr | cli-framework-ux | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free pattern: both emit a JSON error envelope on stderr; its field content is F295/F296 |
+| F295 | Error-envelope "code" field source | cli-framework-ux | different | DIVERGENT | R67 | bundle; py's stable append-only error-code catalog vs ts's transient exception-class-name code — the whole error/exit-code/signal-handling contract (cross-area `error-taxonomy-exit-codes`, owned by this area) — decides F296-F300, F302 |
+| F296 | Structured `hint` field on an error, rendered separately from the message | cli-framework-ux | py-only | DIVERGENT | R67 | bundle |
+| F297 | Exit-code taxonomy | cli-framework-ux | different | DIVERGENT | R67 | bundle |
+| F298 | Process-interrupt (Ctrl-C) exit-code contract | cli-framework-ux | different | DIVERGENT | R67 | bundle |
+| F299 | Interactive-prompt cancellation (^C mid-prompt) | cli-framework-ux | ts-only | DIVERGENT | R67 | bundle; contingent on R61 adopting an interactive-prompt crate at all |
+| F300 | Broken-pipe (EPIPE) handling | cli-framework-ux | ts-only | DIVERGENT | R67 | bundle |
+| F301 | Unexpected-error stack trace shown to the user only under verbose/debug | cli-framework-ux | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free pattern: both gate the stack trace on a verbose/debug flag |
+| F302 | Unexpected errors persisted to a crash log file | cli-framework-ux | py-only | DIVERGENT | R67 | bundle; same fact as config-env-logging's forward-referenced crash-log row (`crash_path = paths.state_file("crash")`, `cli/options.py:143`) — owned here since it's part of this area's error/exit-code contract |
+
 ## Override arguments
