@@ -9,8 +9,8 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Prior decisions of the TypeScript port that explain the current shape: D-022(9) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — "Hybrid: major-tag pins for official `actions/*` and `github/*` actions; full-SHA pin + version comment for security-sensitive/third-party actions, kept fresh by Dependabot's `github-actions` ecosystem", chosen to follow the org's newest deliberate precedent (`difftree-action`'s `release-please.yml`) and because SHA pins pair with an update bot that keeps them current.
 
 ## Out of scope
-- Which actionlint config entries (self-hosted runner labels, `RUNNER_*` config-variables) are needed; those are contingent on the separate self-hosted-runner-indirection decision, not this item's pinning-format question.
-- The Dependabot ecosystem list and grouping strategy that keeps SHA pins current; that is a separate config-shape decision — this item only decides whether third-party actions are SHA-pinned, not how the update bot is configured.
+- Which actionlint config entries (self-hosted runner labels, `RUNNER_*` config-variables) are needed; R09 (`self-hosted-runner-indirection`) owns that decision — this item's pinning-format question is contingent on nothing R09 decides.
+- The Dependabot ecosystem list and grouping strategy that keeps SHA pins current; R19 (`dependabot-config-shape`) owns that config-shape decision — this item only decides whether third-party actions are SHA-pinned, not how the update bot is configured.
 - Prior art in the owner's other Rust repositories — do not look for or cite it.
 
 ## Couplings

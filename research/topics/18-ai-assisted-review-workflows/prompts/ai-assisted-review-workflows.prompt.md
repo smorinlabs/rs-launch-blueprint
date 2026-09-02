@@ -9,7 +9,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Prior decisions of the TypeScript port that explain the current shape: none — ts never adopted either workflow, so `TS_PORT_DECISIONS.md` has no entry to carry forward.
 
 ## Out of scope
-- The general permission-hardening pattern (deny-all baseline with per-job least-privilege grants) applied across every workflow in the repository; this item states what permissions these two specific workflows need, not the repo-wide hardening convention itself.
+- The general permission-hardening pattern (deny-all baseline with per-job least-privilege grants) applied across every workflow in the repository; R08 (`workflow-permission-hardening`) owns that repo-wide convention — this item states what permissions these two specific workflows need, not the repo-wide hardening pattern itself.
 - Whether the two workflows should be adopted independently rather than as one bundle is itself a question this item answers — do not treat "bundled together" as pre-decided; argue it from the same-action-family evidence above.
 - Prior art in the owner's other Rust repositories — do not look for or cite it.
 
