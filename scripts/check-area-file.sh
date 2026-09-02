@@ -20,7 +20,11 @@ while IFS= read -r line; do
   ts=$(printf '%s' "$line"   | awk -F'|' -v o="$off" '{gsub(/^ +| +$/,"",$(4+o)); print $(4+o)}')
   org=$(printf '%s' "$line"  | awk -F'|' -v o="$off" '{gsub(/^ +| +$/,"",$(5+o)); print $(5+o)}')
   [ -n "$feat" ] || err "empty feature cell: $line"
-  case "$org" in same|different|py-only|ts-only) ;; *) err "origin '$org' not in same|different|py-only|ts-only: $feat" ;; esac
+  case "$org" in
+    same|different|py-only|ts-only) ;;
+    none) [ "$py" = "—" ] && [ "$ts" = "—" ] || err "none rows have no citations: $feat" ;;
+    *) err "origin '$org' not in same|different|py-only|ts-only|none: $feat" ;;
+  esac
   cite='`[^`]*:[0-9][0-9]*`'
   case "$org" in
     same|different) printf '%s' "$py" | grep -Eq "$cite" || err "py cell needs \`path:line\`: $feat"
