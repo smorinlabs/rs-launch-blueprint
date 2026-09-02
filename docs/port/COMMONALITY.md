@@ -145,5 +145,39 @@ Authoritative verdicts for every atomic feature of `py-launch-blueprint` (b08bcc
 | F139 | OpenAPI contract snapshot test | testing-coverage | py-only | DIVERGENT | R36 | bundle; contingent on web-service adopting an optional web surface (cross-area `web-extra-surface`, not yet classified) — decides F140 |
 | F140 | API contract fuzz-testing tool | testing-coverage | py-only | DIVERGENT | R36 | bundle |
 | F141 | meta-tests validating tooling-config internal consistency | testing-coverage | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free pattern (a test suite guarding the repo's own config files); same pattern as F133 |
+| F142 | git hook manager tool | git-hooks-commit-hygiene | same | COMMON → REUSE | — | rust-ok: yes; live: 2026-08; tool: lefthook (evilmartians/lefthook v2.1.12, checked 2026-09-02); language-neutral hook manager, identical usage in any repo |
+| F143 | lefthook distribution/install mechanism | git-hooks-commit-hygiene | different | DIVERGENT | R37 | bundle; py's separate Bun-based installer script vs ts's pnpm devDependency — cargo does not manage non-crate binaries, so Rust has no analogous package-manager-scoped install path — decides F144, F161, F174 |
+| F144 | hook-wiring trigger mechanism | git-hooks-commit-hygiene | different | DIVERGENT | R37 | bundle |
+| F145 | manual hook re-wire recipe | git-hooks-commit-hygiene | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free Justfile-recipe convention |
+| F146 | pre-commit stage jobs execute in parallel | git-hooks-commit-hygiene | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; native lefthook YAML option, same tool as F142 |
+| F147 | hook staging tiering (fast staged checks at commit, slower full-tree checks deferred later) | git-hooks-commit-hygiene | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free tiering philosophy; per-check placement is decided by each check's own item (e.g. F106 for the type checker, F115 for the security scanner) |
+| F148 | commit-message linting enforced at commit-msg hook time (pattern) | git-hooks-commit-hygiene | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; pattern row (tool-free); the specific linter tool is F149 |
+| F149 | commit-msg linter tool | git-hooks-commit-hygiene | same | COMMON → SUBSTITUTE | R38 | parent: F148; commitlint is an npm package — even py (a Python project) pulls in Bun/Node solely to run it; whether Rust does the same or adopts a native alternative (e.g. committed, cocogitto) is the open question — decides F150-F160 |
+| F150 | commit-msg hook invocation mechanism | git-hooks-commit-hygiene | different | DIVERGENT | R38 | bundle |
+| F151 | commitlint base config | git-hooks-commit-hygiene | same | COMMON → SUBSTITUTE | R38 | parent: F148; bundle, decided together with F149 (commit-msg linter tool) |
+| F152 | commit subject (header) max length override | git-hooks-commit-hygiene | ts-only | DIVERGENT | R38 | bundle |
+| F153 | commit body max line-length override | git-hooks-commit-hygiene | different | DIVERGENT | R38 | bundle |
+| F154 | commit footer max line-length override | git-hooks-commit-hygiene | py-only | DIVERGENT | R38 | bundle |
+| F155 | commit type-enum restriction | git-hooks-commit-hygiene | ts-only | DIVERGENT | R38 | bundle |
+| F156 | per-author relaxed commit-lint ruleset for bot PRs | git-hooks-commit-hygiene | py-only | DIVERGENT | R38 | bundle |
+| F157 | commit-message linting re-run in CI (beyond the local hook) | git-hooks-commit-hygiene | py-only | DIVERGENT | R38 | bundle |
+| F158 | commit-message template file | git-hooks-commit-hygiene | ts-only | DIVERGENT | R38 | bundle |
+| F159 | commit-message template wired via git config | git-hooks-commit-hygiene | ts-only | DIVERGENT | R38 | bundle |
+| F160 | commit-message template/commitlint type-list consistency, enforced by test | git-hooks-commit-hygiene | ts-only | DIVERGENT | R38 | bundle |
+| F161 | lefthook config internal-consistency, enforced by test | git-hooks-commit-hygiene | ts-only | DIVERGENT | R37 | bundle |
+| F162 | lefthook per-job exclude-list mirrors the linter/formatter ignore config, enforced by test | git-hooks-commit-hygiene | ts-only | DIVERGENT | R27 | bundle, decided together with F100 (lint-format's exclude-list configuration scope) — consistency-test pattern for hook config |
+| F163 | staged secret-scanning hook | git-hooks-commit-hygiene | py-only | DIVERGENT | R39 | bundle; whether Rust adopts gitleaks (or an alternative) as a staged pre-commit secret scanner — decides F164-F166 |
+| F164 | pre-push range secret-scanning hook | git-hooks-commit-hygiene | py-only | DIVERGENT | R39 | bundle |
+| F165 | secret-scanner allowlist configuration | git-hooks-commit-hygiene | py-only | DIVERGENT | R39 | bundle |
+| F166 | secret-scanner fingerprint suppression file | git-hooks-commit-hygiene | py-only | DIVERGENT | R39 | bundle |
+| F167 | whitespace/EOL/format-validity hygiene linter (pre-commit) | git-hooks-commit-hygiene | py-only | DIVERGENT | R40 | bundle; Rust's auxiliary pre-commit hygiene/structural-validity tool stack beyond rustfmt/clippy — decides F168-F170 |
+| F168 | YAML lint hook | git-hooks-commit-hygiene | py-only | DIVERGENT | R40 | bundle; distinct from YAML formatting (F098/R29) — structural/style linting, not reformatting |
+| F169 | spell-check hook | git-hooks-commit-hygiene | py-only | DIVERGENT | R40 | bundle |
+| F170 | GitHub Actions workflow syntax lint hook | git-hooks-commit-hygiene | py-only | DIVERGENT | R40 | bundle; whether actionlint runs at hook tier at all — its config content (self-hosted-runner labels, RUNNER_* vars, stale-metadata suppression) is R09's separate concern |
+| F171 | dependency-manifest lockfile-freshness check hook | git-hooks-commit-hygiene | py-only | DIVERGENT | R41 | standalone; Rust's plausible analogue is a Cargo lockfile-freshness check, with no single canonical `--check`-style flag equivalent to `uv lock --check` |
+| F172 | large-file size guard hook | git-hooks-commit-hygiene | different | DIVERGENT | R14 | bundle, decided together with F043 (ci-workflows' CI-tier large-file guard) — same large-file-guard-strategy decision, hook tier; py's 1 MB threshold plus assets-path exemption vs ts's 500 KB threshold with no exemption |
+| F173 | full test-suite execution as a git hook | git-hooks-commit-hygiene | ts-only | DIVERGENT | R32 | bundle, decided together with F117 (testing-coverage's test-runner/execution-behavior bundle) — whether Rust also gates via an opt-in pre-push test-suite hook |
+| F174 | CI job aggregating every hook-suite check for full-tree dual enforcement | git-hooks-commit-hygiene | ts-only | DIVERGENT | R37 | bundle; resolution target for ci-workflows' and lint-format's forward-referenced "full hook suite re-run against all files" primary-assignment rows |
+| F175 | local recipe to re-run the pre-commit hook suite against the whole tree | git-hooks-commit-hygiene | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free Justfile-recipe convention, same underlying lefthook invocation as F142 |
 
 ## Override arguments
