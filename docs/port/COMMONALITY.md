@@ -120,5 +120,30 @@ Authoritative verdicts for every atomic feature of `py-launch-blueprint` (b08bcc
 | F114 | dedicated AST-based security scanner beyond the linter's built-in security rules | static-analysis | py-only | DIVERGENT | R31 | bundle; whether Rust adopts a standalone security-focused static analyzer beyond clippy's built-in lints, distinct from lint-format's F096 (security-rule coverage via the linter itself) — decides F115 |
 | F115 | security scanner hook-tier placement | static-analysis | py-only | DIVERGENT | R31 | bundle |
 | F116 | architectural-boundary check hook-tier placement | static-analysis | py-only | DIVERGENT | R02 | bundle, decided together with F003-F011/F020/F021 (workspace-architecture's boundary-enforcement mechanism) — where in the hook pipeline the chosen mechanism's check runs |
+| F117 | test runner tool | testing-coverage | different | DIVERGENT | R32 | bundle; pytest (py) vs Vitest (ts) — Rust's test harness and its execution-behavior configuration (tiering, mocking, fixtures, ordering, timeouts) is one decision — decides F118-F120, F124, F125, F128-F132 |
+| F118 | CLI test tiers (in-process vs. built-binary) | testing-coverage | different | DIVERGENT | R32 | bundle |
+| F119 | mock/test-double library | testing-coverage | different | DIVERGENT | R32 | bundle |
+| F120 | HTTP transport mocking mechanism in tests | testing-coverage | different | DIVERGENT | R32 | bundle |
+| F121 | port-contract substitutability suite (fake vs. real adapter parity) | testing-coverage | py-only | DIVERGENT | R01 | bundle, decided together with F001 (workspace-architecture's port/adapter split) — this test pattern only exists if R01 adopts ports |
+| F122 | property-based (generative) testing | testing-coverage | py-only | DIVERGENT | R33 | bundle; whether Rust adopts a property-based testing crate (e.g. proptest) — decides F123 |
+| F123 | CLI golden-snapshot testing | testing-coverage | py-only | DIVERGENT | R33 | bundle |
+| F124 | randomized test execution order | testing-coverage | py-only | DIVERGENT | R32 | bundle |
+| F125 | per-test timeout enforcement | testing-coverage | py-only | DIVERGENT | R32 | bundle |
+| F126 | scheduled dependency-freshness canary run | testing-coverage | py-only | DIVERGENT | R34 | bundle; whether Rust runs a scheduled test pass against upgraded dependencies to catch breakage early — decides F127 |
+| F127 | advisory alternate JS runtime test lane | testing-coverage | ts-only | DIVERGENT | R34 | bundle; Rust's analogue would be a non-blocking alternate-toolchain (e.g. nightly) test lane |
+| F128 | shared cross-test fixture file (autouse setup) | testing-coverage | py-only | DIVERGENT | R32 | bundle |
+| F129 | test file organization (subdirected vs. flat) | testing-coverage | different | DIVERGENT | R32 | bundle |
+| F130 | opt-in test marker taxonomy (skip slow/live by default) | testing-coverage | py-only | DIVERGENT | R32 | bundle |
+| F131 | opt-in parallel test execution flag | testing-coverage | py-only | DIVERGENT | R32 | bundle |
+| F132 | Rust doc-test execution policy | testing-coverage | none | RUST-ONLY | R32 | bundle; `cargo test --doc` runs doc-comment examples by default and neither source repo has an analogous convention to port; whether Rust's CI-authoritative gate includes doc-tests is a Rust-only decision |
+| F133 | test asserting the version stays single-sourced across manifests | testing-coverage | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free pattern (a hand-written test asserting manifest/accessor version equality); manifest set is Cargo.toml, plus Cargo.lock if R25 requires sync |
+| F134 | coverage tool | testing-coverage | different | DIVERGENT | R35 | bundle; pytest-cov (py) vs @vitest/coverage-v8 (ts) — Rust's coverage tool and its configuration (scope, thresholds, gate, report formats) is one decision — decides F135-F138 |
+| F135 | coverage instrumentation scope and exclusions | testing-coverage | different | DIVERGENT | R35 | bundle |
+| F136 | coverage threshold definition location and values | testing-coverage | different | DIVERGENT | R35 | bundle |
+| F137 | coverage gate enforcement in CI | testing-coverage | different | DIVERGENT | R35 | bundle |
+| F138 | coverage report output formats | testing-coverage | py-only | DIVERGENT | R35 | bundle |
+| F139 | OpenAPI contract snapshot test | testing-coverage | py-only | DIVERGENT | R36 | bundle; contingent on web-service adopting an optional web surface (cross-area `web-extra-surface`, not yet classified) — decides F140 |
+| F140 | API contract fuzz-testing tool | testing-coverage | py-only | DIVERGENT | R36 | bundle |
+| F141 | meta-tests validating tooling-config internal consistency | testing-coverage | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free pattern (a test suite guarding the repo's own config files); same pattern as F133 |
 
 ## Override arguments
