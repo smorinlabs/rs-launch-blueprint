@@ -26,7 +26,7 @@ Every tracked file of `py-launch-blueprint` (b08bccf) and `ts-launch-blueprint` 
 - `.github/SECURITY.md` — community-health governance doc, prose only
 - `.github/ISSUE_TEMPLATE/*.yml` — additional instances of the already-cited issue-template mechanism (dev-experience-repo-hygiene.md); individual template files carry no separate decision
 - `docs/adr/*` — architecture decision record: rationale/history background reading; the feature itself is evidenced by code citations elsewhere in the ledger (several ADRs are cited directly, e.g. 0013, 0017; the rest were read for context, per each area's `## Files read`)
-- `docs/design/*` — internal design spec: rationale/history background reading, same reasoning as `docs/adr/*`
+- `docs/design/*` — internal design spec: either rationale/history whose feature is evidenced by code citations elsewhere (same reasoning as `docs/adr/*`), or template-press subsystem documentation that is out of scope for this research program (same reasoning as `press/*`)
 - `docs/research/*` — py-launch-blueprint's own internal research/wishlist notes about its own development, not a feature of the shipped tool
 - `docs/superpowers/*` — this repo's own SDD planning artifacts (plans/specs used to build py-launch-blueprint itself), not a feature of the shipped tool
 - `docs/source/*` — Sphinx documentation content page (prose describing already-cited tooling/CLI behavior); docs-system.md covers the generator itself, not each content page
@@ -163,12 +163,12 @@ Every tracked file of `py-launch-blueprint` (b08bccf) and `ts-launch-blueprint` 
 | py | docs/adr/README.md | F354 |
 | py | docs/adr/template.md | F354 |
 | py | docs/api/openapi.json | EXCLUDED: the committed artifact itself, cited from the snapshot-staleness row; contains no new decisions to report |
-| py | docs/design/0001-plbp-cli-conventions.md | EXCLUDED: internal design spec: rationale/history background reading, same reasoning as `docs/adr/*` |
-| py | docs/design/0002-web-api-conventions.md | EXCLUDED: internal design spec: rationale/history background reading, same reasoning as `docs/adr/*` |
-| py | docs/design/0003-logging-conventions.md | EXCLUDED: internal design spec: rationale/history background reading, same reasoning as `docs/adr/*` |
-| py | docs/design/0004-template-press-plan.md | EXCLUDED: internal design spec: rationale/history background reading, same reasoning as `docs/adr/*` |
+| py | docs/design/0001-plbp-cli-conventions.md | EXCLUDED: internal design spec: either rationale/history whose feature is evidenced by code citations elsewhere (same reasoning as `docs/adr/*`), or template-press subsystem documentation that is out of scope for this research program (same reasoning as `press/*`) |
+| py | docs/design/0002-web-api-conventions.md | EXCLUDED: internal design spec: either rationale/history whose feature is evidenced by code citations elsewhere (same reasoning as `docs/adr/*`), or template-press subsystem documentation that is out of scope for this research program (same reasoning as `press/*`) |
+| py | docs/design/0003-logging-conventions.md | EXCLUDED: internal design spec: either rationale/history whose feature is evidenced by code citations elsewhere (same reasoning as `docs/adr/*`), or template-press subsystem documentation that is out of scope for this research program (same reasoning as `press/*`) |
+| py | docs/design/0004-template-press-plan.md | EXCLUDED: internal design spec: either rationale/history whose feature is evidenced by code citations elsewhere (same reasoning as `docs/adr/*`), or template-press subsystem documentation that is out of scope for this research program (same reasoning as `press/*`) |
 | py | docs/design/0005-hexagonal-architecture-and-enforcement.md | F015 |
-| py | docs/design/0005-template-press-tui-design.md | EXCLUDED: internal design spec: rationale/history background reading, same reasoning as `docs/adr/*` |
+| py | docs/design/0005-template-press-tui-design.md | EXCLUDED: internal design spec: either rationale/history whose feature is evidenced by code citations elsewhere (same reasoning as `docs/adr/*`), or template-press subsystem documentation that is out of scope for this research program (same reasoning as `press/*`) |
 | py | docs/design/README.md | F355 |
 | py | docs/research/0001-skill-trigger-optimization.md | EXCLUDED: py-launch-blueprint's own internal research/wishlist notes about its own development, not a feature of the shipped tool |
 | py | docs/research/0002-dev-tooling-wishlist.md | EXCLUDED: py-launch-blueprint's own internal research/wishlist notes about its own development, not a feature of the shipped tool |
