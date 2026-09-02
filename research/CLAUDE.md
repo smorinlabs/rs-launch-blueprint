@@ -1,0 +1,89 @@
+# Research index
+
+One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern | bundle; `status` ∈ open | in-progress | resolved | dropped. Ledger rows in `../docs/port/COMMONALITY.md` name their item in `Item`. Execution contract: `RUNBOOK.md`.
+
+| id | slug | kind | origin | verdict | owns | prompt | status |
+|---|---|---|---|---|---|---|---|
+| R01 | ports-and-adapters-seam | bundle | different | DIVERGENT | http-transport-injection-seam | [prompt](topics/01-ports-and-adapters-seam/prompts/ports-and-adapters-seam.prompt.md) | open |
+| R02 | crate-boundary-enforcement | bundle | py-only | DIVERGENT | — | [prompt](topics/02-crate-boundary-enforcement/prompts/crate-boundary-enforcement.prompt.md) | open |
+| R03 | port-absence-vs-failure-contract | pattern | different | DIVERGENT | — | [prompt](topics/03-port-absence-vs-failure-contract/prompts/port-absence-vs-failure-contract.prompt.md) | open |
+| R04 | public-api-surface-enforcement | pattern | different | DIVERGENT | — | [prompt](topics/04-public-api-surface-enforcement/prompts/public-api-surface-enforcement.prompt.md) | open |
+| R05 | sync-async-execution-model | bundle | different | DIVERGENT | — | [prompt](topics/05-sync-async-execution-model/prompts/sync-async-execution-model.prompt.md) | open |
+| R06 | unsafe-code-policy | pattern | none | RUST-ONLY | — | [prompt](topics/06-unsafe-code-policy/prompts/unsafe-code-policy.prompt.md) | open |
+| R07 | contributors-bot-trigger-cadence | pattern | different | DIVERGENT | — | [prompt](topics/07-contributors-bot-trigger-cadence/prompts/contributors-bot-trigger-cadence.prompt.md) | open |
+| R08 | workflow-permission-hardening | bundle | different | DIVERGENT | — | [prompt](topics/08-workflow-permission-hardening/prompts/workflow-permission-hardening.prompt.md) | open |
+| R09 | self-hosted-runner-indirection | bundle | py-only | DIVERGENT | — | [prompt](topics/09-self-hosted-runner-indirection/prompts/self-hosted-runner-indirection.prompt.md) | open |
+| R10 | dependency-cache-action | crate | same | COMMON → SUBSTITUTE | — | [prompt](topics/10-dependency-cache-action/prompts/dependency-cache-action.prompt.md) | open |
+| R11 | ci-workflow-job-structure | bundle | py-only | DIVERGENT | ci-job-structure | [prompt](topics/11-ci-workflow-job-structure/prompts/ci-workflow-job-structure.prompt.md) | open |
+| R12 | aggregate-required-status-check | pattern | py-only | DIVERGENT | — | [prompt](topics/12-aggregate-required-status-check/prompts/aggregate-required-status-check.prompt.md) | open |
+| R13 | dependency-vulnerability-scanning | bundle | py-only | DIVERGENT | — | [prompt](topics/13-dependency-vulnerability-scanning/prompts/dependency-vulnerability-scanning.prompt.md) | open |
+| R14 | large-file-guard-strategy | bundle | py-only | DIVERGENT | — | [prompt](topics/14-large-file-guard-strategy/prompts/large-file-guard-strategy.prompt.md) | open |
+| R15 | template-drift-receipt-guard | pattern | py-only | DIVERGENT | — | [prompt](topics/15-template-drift-receipt-guard/prompts/template-drift-receipt-guard.prompt.md) | open |
+| R16 | codeql-config-customization | pattern | py-only | DIVERGENT | — | [prompt](topics/16-codeql-config-customization/prompts/codeql-config-customization.prompt.md) | open |
+| R17 | secret-scanning-ci-workflow | crate | py-only | DIVERGENT | — | [prompt](topics/17-secret-scanning-ci-workflow/prompts/secret-scanning-ci-workflow.prompt.md) | open |
+| R18 | ai-assisted-review-workflows | bundle | py-only | DIVERGENT | — | [prompt](topics/18-ai-assisted-review-workflows/prompts/ai-assisted-review-workflows.prompt.md) | open |
+| R19 | dependabot-config-shape | bundle | different | DIVERGENT | — | [prompt](topics/19-dependabot-config-shape/prompts/dependabot-config-shape.prompt.md) | open |
+| R20 | third-party-action-pinning-policy | pattern | different | DIVERGENT | — | [prompt](topics/20-third-party-action-pinning-policy/prompts/third-party-action-pinning-policy.prompt.md) | open |
+| R21 | contributors-bot-credential-source | pattern | different | DIVERGENT | — | [prompt](topics/21-contributors-bot-credential-source/prompts/contributors-bot-credential-source.prompt.md) | open |
+| R22 | runtime-version-accessor | pattern | different | DIVERGENT | — | [prompt](topics/22-runtime-version-accessor/prompts/runtime-version-accessor.prompt.md) | open |
+| R23 | lockfile-version-sync | pattern | different | DIVERGENT | — | [prompt](topics/23-lockfile-version-sync/prompts/lockfile-version-sync.prompt.md) | open |
+| R24 | changelog-section-mapping | pattern | different | DIVERGENT | — | [prompt](topics/24-changelog-section-mapping/prompts/changelog-section-mapping.prompt.md) | open |
+| R25 | semver-bump-strategy | pattern | ts-only | DIVERGENT | — | [prompt](topics/25-semver-bump-strategy/prompts/semver-bump-strategy.prompt.md) | open |
+| R26 | packed-artifact-content-guard | bundle | ts-only | DIVERGENT | — | [prompt](topics/26-packed-artifact-content-guard/prompts/packed-artifact-content-guard.prompt.md) | open |
+| R27 | formatter-config-surface | bundle | different | DIVERGENT | — | [prompt](topics/27-formatter-config-surface/prompts/formatter-config-surface.prompt.md) | open |
+| R28 | linter-and-editor-tooling | bundle | different | DIVERGENT | — | [prompt](topics/28-linter-and-editor-tooling/prompts/linter-and-editor-tooling.prompt.md) | open |
+| R29 | non-code-file-formatting | bundle | py-only | DIVERGENT | — | [prompt](topics/29-non-code-file-formatting/prompts/non-code-file-formatting.prompt.md) | open |
+| R30 | type-check-gate | bundle | different | DIVERGENT | — | [prompt](topics/30-type-check-gate/prompts/type-check-gate.prompt.md) | open |
+| R31 | standalone-security-analyzer | bundle | py-only | DIVERGENT | — | [prompt](topics/31-standalone-security-analyzer/prompts/standalone-security-analyzer.prompt.md) | open |
+| R32 | test-harness-and-execution | bundle | different | DIVERGENT | — | [prompt](topics/32-test-harness-and-execution/prompts/test-harness-and-execution.prompt.md) | open |
+| R33 | property-and-snapshot-testing | bundle | py-only | DIVERGENT | — | [prompt](topics/33-property-and-snapshot-testing/prompts/property-and-snapshot-testing.prompt.md) | open |
+| R34 | scheduled-freshness-lanes | bundle | py-only | DIVERGENT | — | [prompt](topics/34-scheduled-freshness-lanes/prompts/scheduled-freshness-lanes.prompt.md) | open |
+| R35 | coverage-tooling | bundle | different | DIVERGENT | — | [prompt](topics/35-coverage-tooling/prompts/coverage-tooling.prompt.md) | open |
+| R37 | hook-manager-distribution | bundle | different | DIVERGENT | — | [prompt](topics/37-hook-manager-distribution/prompts/hook-manager-distribution.prompt.md) | open |
+| R38 | commit-message-linter | crate | same | COMMON → SUBSTITUTE | commit-message-convention | [prompt](topics/38-commit-message-linter/prompts/commit-message-linter.prompt.md) | open |
+| R39 | secret-scanning-hooks | bundle | py-only | DIVERGENT | — | [prompt](topics/39-secret-scanning-hooks/prompts/secret-scanning-hooks.prompt.md) | open |
+| R40 | auxiliary-hygiene-hooks | bundle | py-only | DIVERGENT | — | [prompt](topics/40-auxiliary-hygiene-hooks/prompts/auxiliary-hygiene-hooks.prompt.md) | open |
+| R41 | lockfile-freshness-check | pattern | py-only | DIVERGENT | — | [prompt](topics/41-lockfile-freshness-check/prompts/lockfile-freshness-check.prompt.md) | open |
+| R42 | dev-toolchain-provisioning | bundle | py-only | DIVERGENT | package-manager-invocation | [prompt](topics/42-dev-toolchain-provisioning/prompts/dev-toolchain-provisioning.prompt.md) | open |
+| R43 | ai-assistant-repo-furniture | bundle | ts-only | DIVERGENT | — | [prompt](topics/43-ai-assistant-repo-furniture/prompts/ai-assistant-repo-furniture.prompt.md) | open |
+| R44 | devcontainer-environment | pattern | py-only | DIVERGENT | — | [prompt](topics/44-devcontainer-environment/prompts/devcontainer-environment.prompt.md) | open |
+| R45 | pr-comment-bot-trigger-block | pattern | py-only | DIVERGENT | — | [prompt](topics/45-pr-comment-bot-trigger-block/prompts/pr-comment-bot-trigger-block.prompt.md) | open |
+| R46 | per-file-license-header | pattern | different | DIVERGENT | — | [prompt](topics/46-per-file-license-header/prompts/per-file-license-header.prompt.md) | open |
+| R47 | contributors-recipe-mode | pattern | different | DIVERGENT | — | [prompt](topics/47-contributors-recipe-mode/prompts/contributors-recipe-mode.prompt.md) | open |
+| R48 | mocking-crates | bundle | different | DIVERGENT | — | [prompt](topics/48-mocking-crates/prompts/mocking-crates.prompt.md) | open |
+| R49 | build-target-declaration | crate | same | COMMON → SUBSTITUTE | build-tool-output-shape | [prompt](topics/49-build-target-declaration/prompts/build-target-declaration.prompt.md) | open |
+| R50 | install-smoke-test | bundle | different | DIVERGENT | — | [prompt](topics/50-install-smoke-test/prompts/install-smoke-test.prompt.md) | open |
+| R51 | container-image | bundle | py-only | DIVERGENT | — | [prompt](topics/51-container-image/prompts/container-image.prompt.md) | open |
+| R52 | toml-crate | bundle | different | DIVERGENT | — | [prompt](topics/52-toml-crate/prompts/toml-crate.prompt.md) | open |
+| R53 | config-schema-validation | crate | different | DIVERGENT | — | [prompt](topics/53-config-schema-validation/prompts/config-schema-validation.prompt.md) | open |
+| R54 | config-discovery-tiers | bundle | py-only | DIVERGENT | — | [prompt](topics/54-config-discovery-tiers/prompts/config-discovery-tiers.prompt.md) | open |
+| R55 | config-error-tolerance | bundle | different | DIVERGENT | — | [prompt](topics/55-config-error-tolerance/prompts/config-error-tolerance.prompt.md) | open |
+| R56 | config-secret-policy | bundle | different | DIVERGENT | — | [prompt](topics/56-config-secret-policy/prompts/config-secret-policy.prompt.md) | open |
+| R57 | xdg-directory-set | pattern | py-only | DIVERGENT | — | [prompt](topics/57-xdg-directory-set/prompts/xdg-directory-set.prompt.md) | open |
+| R58 | logging-pipeline-architecture | bundle | py-only | DIVERGENT | — | [prompt](topics/58-logging-pipeline-architecture/prompts/logging-pipeline-architecture.prompt.md) | open |
+| R59 | file-log-sink | bundle | py-only | DIVERGENT | — | [prompt](topics/59-file-log-sink/prompts/file-log-sink.prompt.md) | open |
+| R60 | cli-parsing-framework | bundle | different | DIVERGENT | — | [prompt](topics/60-cli-parsing-framework/prompts/cli-parsing-framework.prompt.md) | open |
+| R61 | interactive-prompts | bundle | py-only | DIVERGENT | — | [prompt](topics/61-interactive-prompts/prompts/interactive-prompts.prompt.md) | open |
+| R62 | clipboard-integration | bundle | ts-only | DIVERGENT | — | [prompt](topics/62-clipboard-integration/prompts/clipboard-integration.prompt.md) | open |
+| R63 | progress-spinner | crate | ts-only | DIVERGENT | — | [prompt](topics/63-progress-spinner/prompts/progress-spinner.prompt.md) | open |
+| R64 | pager-integration | bundle | py-only | DIVERGENT | — | [prompt](topics/64-pager-integration/prompts/pager-integration.prompt.md) | open |
+| R65 | color-enablement-chain | bundle | different | DIVERGENT | — | [prompt](topics/65-color-enablement-chain/prompts/color-enablement-chain.prompt.md) | open |
+| R66 | output-format-surface | bundle | different | DIVERGENT | — | [prompt](topics/66-output-format-surface/prompts/output-format-surface.prompt.md) | open |
+| R67 | error-and-exit-code-contract | bundle | different | DIVERGENT | error-taxonomy-exit-codes | [prompt](topics/67-error-and-exit-code-contract/prompts/error-and-exit-code-contract.prompt.md) | open |
+| R68 | release-binary-artifacts | crate | different | DIVERGENT | — | [prompt](topics/68-release-binary-artifacts/prompts/release-binary-artifacts.prompt.md) | open |
+| R69 | web-framework-stack | bundle | py-only | DIVERGENT | web-extra-surface | [prompt](topics/69-web-framework-stack/prompts/web-framework-stack.prompt.md) | open |
+| R70 | http-problem-envelope | bundle | py-only | DIVERGENT | — | [prompt](topics/70-http-problem-envelope/prompts/http-problem-envelope.prompt.md) | open |
+| R71 | openapi-generation-pipeline | bundle | py-only | DIVERGENT | — | [prompt](topics/71-openapi-generation-pipeline/prompts/openapi-generation-pipeline.prompt.md) | open |
+| R72 | api-pagination | bundle | py-only | DIVERGENT | — | [prompt](topics/72-api-pagination/prompts/api-pagination.prompt.md) | open |
+| R73 | idempotency-middleware | bundle | py-only | DIVERGENT | — | [prompt](topics/73-idempotency-middleware/prompts/idempotency-middleware.prompt.md) | open |
+| R74 | rate-limiting-middleware | bundle | py-only | DIVERGENT | — | [prompt](topics/74-rate-limiting-middleware/prompts/rate-limiting-middleware.prompt.md) | open |
+| R75 | http-middleware-stack | bundle | py-only | DIVERGENT | — | [prompt](topics/75-http-middleware-stack/prompts/http-middleware-stack.prompt.md) | open |
+| R76 | cors-middleware | crate | py-only | DIVERGENT | — | [prompt](topics/76-cors-middleware/prompts/cors-middleware.prompt.md) | open |
+| R77 | web-env-settings | crate | py-only | DIVERGENT | — | [prompt](topics/77-web-env-settings/prompts/web-env-settings.prompt.md) | open |
+| R78 | opentelemetry-integration | crate | py-only | DIVERGENT | — | [prompt](topics/78-opentelemetry-integration/prompts/opentelemetry-integration.prompt.md) | open |
+| R79 | prometheus-metrics | crate | py-only | DIVERGENT | — | [prompt](topics/79-prometheus-metrics/prompts/prometheus-metrics.prompt.md) | open |
+| R80 | health-probe-endpoints | bundle | py-only | DIVERGENT | — | [prompt](topics/80-health-probe-endpoints/prompts/health-probe-endpoints.prompt.md) | open |
+| R81 | docs-delivery-model | bundle | different | DIVERGENT | — | [prompt](topics/81-docs-delivery-model/prompts/docs-delivery-model.prompt.md) | open |
+| R82 | docs-correctness-gate | bundle | different | DIVERGENT | — | [prompt](topics/82-docs-correctness-gate/prompts/docs-correctness-gate.prompt.md) | open |
+| R83 | openapi-contract-fuzzing | crate | py-only | DIVERGENT | — | [prompt](topics/83-openapi-contract-fuzzing/prompts/openapi-contract-fuzzing.prompt.md) | open |
+| R84 | openapi-typed-client-generation | crate | py-only | DIVERGENT | — | [prompt](topics/84-openapi-typed-client-generation/prompts/openapi-typed-client-generation.prompt.md) | open |
