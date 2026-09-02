@@ -360,5 +360,6 @@ Authoritative verdicts for every atomic feature of `py-launch-blueprint` (b08bcc
 | F356 | research doc system | docs-system | py-only | ADOPT | — | language-neutral process convention, same shape as F354 |
 | F357 | internal-docs top-level orientation page | docs-system | py-only | ADOPT | — | doc-convenience artifact whose content tracks F354/F355/F356's adoption; nothing separate to research |
 | F358 | documented (unshipped) future docs-site upgrade path | docs-system | ts-only | ADOPT | — | tracks R81's delivery-model decision; noting a future upgrade path (if any) is optional documentation color, not a separate research question |
+| F359 | Rich-only table row variant for terminal presentation (OSC-8 hyperlinks, relative timestamps) | cli-framework-ux | py-only | DIVERGENT | R85 | ADR 0010; whether Rust's text-mode table rendering adds terminal-only presentation niceties on top of the plain row data, and how; found during the Task 11 coverage sweep (`core/models.py`/`core/format.py` were unread) |
 
 ## Override arguments

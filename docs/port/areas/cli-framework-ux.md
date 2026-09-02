@@ -43,6 +43,7 @@ Sources: py-launch-blueprint @ b08bccf · ts-launch-blueprint @ cb1cbcb
 | F300 | Broken-pipe (EPIPE) handling | — | `src/cli.ts:17` — `process.stdout.on('error', ignoreEpipe);` | ts-only | — | Lets a downstream pipe reader (e.g. `head`) close early without a crash. |
 | F301 | Unexpected-error stack trace shown to the user only under verbose/debug | `src/py_launch_blueprint/cli/options.py:227` — `if app.verbose:` then `app.renderer.err.print_exception()` | `src/router.ts:223` — debug or verbose >= 1 gate before printing `err.stack` | same | — | — |
 | F302 | Unexpected errors persisted to a crash log file | `src/py_launch_blueprint/cli/options.py:143` — `crash_path = paths.state_file("crash")` | — | py-only | — | Best-effort append to `<state>/plbp/plbp_crash.log`; ADR 0006. |
+| F359 | Rich-only table row variant for terminal presentation (OSC-8 hyperlinks, relative timestamps) | `src/py_launch_blueprint/core/models.py:59` — `table_rows_rich()` hook, defaults to `table_rows()`; helpers `src/py_launch_blueprint/core/format.py:46` (`relative_time()`) and `src/py_launch_blueprint/core/format.py:73` (`rich_link()`, OSC-8 markup, link text escaped) | — | py-only | — | ADR 0010; consumed only by the text renderer (`cli/output.py:237`), JSON/Markdown output stay plain. Found during Task 11 coverage sweep — no surveyor read `core/models.py`/`core/format.py`. |
 
 ## Language-bound tools
 - `click` (py) — CLI parsing framework: groups, options, eager callbacks, shell-completion helpers
@@ -69,7 +70,7 @@ Sources: py-launch-blueprint @ b08bccf · ts-launch-blueprint @ cb1cbcb
 - py: `src/py_launch_blueprint/cli/exit_codes.py` — no feature: re-exports `core.errors.ExitCode` for a local import point
 - py: `src/py_launch_blueprint/cli/commands/__init__.py`
 - py: `src/py_launch_blueprint/cli/commands/config.py`
-- py: `src/py_launch_blueprint/cli/commands/projects.py`
+- py: `src/py_launch_blueprint/cli/commands/projects.py` — no feature: the example noun's command glue (global-options wiring, composition-root call, typed error to exit code); every convention it demonstrates is already cited from `options.py`/`context.py`/`composition.py`/`core/services`
 - py: `src/py_launch_blueprint/core/errors.py`
 - py: `docs/adr/0006-stable-error-codes-hints-crash-log.md`
 - py: `docs/adr/0007-did-you-mean-stdlib-difflib.md`

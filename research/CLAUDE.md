@@ -87,3 +87,4 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R82 | docs-correctness-gate | bundle | different | DIVERGENT | — | [prompt](topics/82-docs-correctness-gate/prompts/docs-correctness-gate.prompt.md) | open |
 | R83 | openapi-contract-fuzzing | crate | py-only | DIVERGENT | — | [prompt](topics/83-openapi-contract-fuzzing/prompts/openapi-contract-fuzzing.prompt.md) | open |
 | R84 | openapi-typed-client-generation | crate | py-only | DIVERGENT | — | [prompt](topics/84-openapi-typed-client-generation/prompts/openapi-typed-client-generation.prompt.md) | open |
+| R85 | rich-terminal-row-niceties | pattern | py-only | DIVERGENT | — | [prompt](topics/85-rich-terminal-row-niceties/prompts/rich-terminal-row-niceties.prompt.md) | open |

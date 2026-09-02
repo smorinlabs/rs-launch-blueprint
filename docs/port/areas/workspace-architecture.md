@@ -58,7 +58,7 @@ Sources: py-launch-blueprint @ b08bccf · ts-launch-blueprint @ cb1cbcb
 - py: `src/py_launch_blueprint/composition.py`
 - py: `src/py_launch_blueprint/web/deps.py`
 - py: `src/py_launch_blueprint/web/routers/projects.py`
-- py: `src/py_launch_blueprint/cli/commands/projects.py`
+- py: `src/py_launch_blueprint/cli/commands/projects.py` — no feature: the example noun's command glue, not an independent boundary-enforcement decision; already covered by the composition-root/core-import rows cited from `composition.py`/`core/__init__.py`
 - ts: `docs/port/TS_PORT_DECISIONS.md`
 - ts: `package.json`
 - ts: `tsconfig.json`

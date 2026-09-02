@@ -68,7 +68,7 @@ Sources: py-launch-blueprint @ b08bccf · ts-launch-blueprint @ cb1cbcb
 - py: `.gitleaks.toml`
 - py: `.gitleaksignore`
 - py: `.editorconfig`
-- py: `.yamllint`
+- py: `.yamllint` — no feature: rule values for the already-cited yamllint hook (F168); no independent decision beyond that citation
 - py: `scripts/check-gitleaks.sh`
 - py: `scripts/install-lefthook.sh`
 - py: `Justfile`
@@ -82,7 +82,7 @@ Sources: py-launch-blueprint @ b08bccf · ts-launch-blueprint @ cb1cbcb
 - ts: `.gitignore`
 - ts: `.gitattributes` — no feature: file does not exist in this repo
 - ts: `commitlint.config.mjs`
-- ts: `commitlint.config.d.mts`
+- ts: `commitlint.config.d.mts` — no feature: TypeScript type declarations for the already-cited `commitlint.config.mjs` (F151/F155), consumed only by the repo-hygiene meta-test
 - ts: `.gitmessage`
 - ts: `package.json`
 - ts: `Justfile`
