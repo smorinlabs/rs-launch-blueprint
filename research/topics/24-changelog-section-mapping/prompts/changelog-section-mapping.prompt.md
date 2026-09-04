@@ -10,7 +10,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 
 ## Out of scope
 - The full Conventional-Commits type enum and the header/body/footer length limits enforced on commits — R38 (`commit-message-linter`) owns `commit-message-convention`; assume its type enum as a consumed parameter and map each of its types to visible/hidden here, do not re-derive the type list.
-- Whether release-please itself (versus git-cliff or cocogitto) is the changelog-generation tool; ts's D-021(3) already answers that for the org's release-tooling pattern generally, and this template's release-tooling choice is decided elsewhere — this item only maps commit types to sections within whatever tool is chosen.
+- Whether release-please itself (versus git-cliff or cocogitto) is the changelog-generation tool; ts's D-021(3) already answers that for the org's release-tooling pattern generally, and this template's release tool is inherited under spec §2 (ledger rows F063 and F066, `COMMON → REUSE`) — this item only maps commit types to sections within whatever tool is chosen.
 - Prior art in the owner's other Rust repositories — do not look for or cite it.
 
 ## Couplings
@@ -23,10 +23,10 @@ If your recommendation needs a consumed parameter to change, do not change it: w
 Decision: for each Conventional-Commits type in `rs-launch-blueprint`'s commit-message convention, whether it appears as a visible `CHANGELOG.md` section or is hidden, and what release-please `changelog-sections` config expresses that mapping.
 - HIGH: Given R38's consumed type enum, which types have no obvious py-or-ts precedent (if the enum differs from both sources' sets) and need a fresh visible/hidden call for this template specifically?
 - HIGH: Does a Rust template's audience (library/CLI/web consumers reading the changelog to decide whether to upgrade) make `refactor` and `test` entries noise (py's stance) or useful signal (ts's stance), and does that differ from py/ts's own audience reasoning?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 - MEDIUM: Should `deps` (py visible, dependency-bump commits) be its own visible section for a Rust template, given `cargo update`/Dependabot-driven dependency-bump commits may be frequent and low-signal individually?
 - MEDIUM: Does release-please's `changelog-sections` schema (current version) support any config this template should adopt beyond a flat visible/hidden split — e.g. custom section headings or per-type ordering — that neither py nor ts uses but would suit this template?
 - LOW: Should `ci`/`build` commit types (hidden in py, not present as distinct ts categories) get an explicit hidden entry, or does release-please's default (any unmapped type is hidden) make an explicit entry redundant?
-- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

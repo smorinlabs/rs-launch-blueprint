@@ -1,6 +1,6 @@
 # Research index
 
-One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern | bundle; `status` ∈ open | in-progress | resolved | dropped. Ledger rows in `../docs/port/COMMONALITY.md` name their item in `Item`. Execution contract: `RUNBOOK.md`.
+One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern | bundle; `status` ∈ open | in-progress | resolved | dropped. Ledger rows in `../docs/port/COMMONALITY.md` name their item in `Item`. Execution contract: `RUNBOOK.md`. Ids are never reused: R36 was vacated at the Task 10 reconciliation (its rows folded into F332/F334 under R71/R83).
 
 | id | slug | kind | origin | verdict | owns | prompt | status |
 |---|---|---|---|---|---|---|---|

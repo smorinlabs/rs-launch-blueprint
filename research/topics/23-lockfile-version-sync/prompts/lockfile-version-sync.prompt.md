@@ -9,7 +9,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Prior decisions of the TypeScript port that explain the current shape: none — ts's decision here is a negative one ("no sync needed") that does not transfer, since `Cargo.lock`, unlike `pnpm-lock.yaml`, does encode a workspace member's version.
 
 ## Out of scope
-- The publish workflow's separate tag/version consistency guard (verifying the pushed tag matches the manifest version before publishing); that is a distinct release-versioning decision from this item's release-commit lockfile sync.
+- The publish workflow's separate tag/version consistency guard (verifying the pushed tag matches the manifest version before publishing); that is ledger row F074 (`COMMON → REUSE`, inherited, no research item), distinct from this item's release-commit lockfile sync.
 - Whether release-please's `extra-files` mechanism itself (versus some other bump mechanism) is used at all for any file; that tool choice is settled — release-please is inherited under spec §2 (ledger rows F063, F066 and F073, `COMMON → REUSE`, no research item) — this item only asks whether `Cargo.lock` is one of the files it targets.
 - Prior art in the owner's other Rust repositories — do not look for or cite it.
 

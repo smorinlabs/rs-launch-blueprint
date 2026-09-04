@@ -30,7 +30,7 @@
 | F029 | Checkout credential-persistence hardening (persist-credentials: false) | ci-workflows | DIVERGENT | R08 |
 | F030 | Contributors-bot workflow permission declaration style | ci-workflows | DIVERGENT | R08 |
 | F031 | Runner OS selection overridable via repo vars with self-hosted fallback | ci-workflows | DIVERGENT | R09 |
-| F032 | Multi-OS test matrix (ubuntu, macOS, windows) | ci-workflows | OMIT | — |
+| F032 | Multi-OS test matrix (ubuntu, macOS, windows) | ci-workflows | ADOPT | — |
 | F033 | Runtime-version matrix is a two-entry floor-plus-next set | ci-workflows | COMMON → REUSE | — |
 | F034 | Matrix job uses fail-fast: false to surface every leg's failure | ci-workflows | COMMON → REUSE | — |
 | F035 | Dependency caching integrated into the language-setup step (pattern) | ci-workflows | COMMON → REUSE | — |
@@ -319,3 +319,4 @@
 | F356 | research doc system | docs-system | ADOPT | — |
 | F357 | internal-docs top-level orientation page | docs-system | ADOPT | — |
 | F359 | Rich-only table row variant for terminal presentation (OSC-8 hyperlinks, relative timestamps) | cli-framework-ux | DIVERGENT | R85 |
+| F360 | `--no-input` behavior when a prompt would have been shown | cli-framework-ux | DIVERGENT | R61 |

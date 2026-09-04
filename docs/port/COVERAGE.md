@@ -283,7 +283,7 @@ Every tracked file of `py-launch-blueprint` (b08bccf) and `ts-launch-blueprint` 
 | py | src/py_launch_blueprint/cli/exit_codes.py | EXCLUDED: re-exports `core.errors.ExitCode` for a local import point |
 | py | src/py_launch_blueprint/cli/groups.py | F271 F272 |
 | py | src/py_launch_blueprint/cli/main.py | F264 F266 F267 F268 F269 |
-| py | src/py_launch_blueprint/cli/options.py | F234 F254 F258 F270 F273 F275 F276 F277 F278 F286 F292 F293 F298 F301 F302 — |
+| py | src/py_launch_blueprint/cli/options.py | F234 F254 F258 F270 F273 F275 F276 F277 F278 F286 F292 F293 F298 F301 F302 F360 — |
 | py | src/py_launch_blueprint/cli/output.py | F284 F285 F289 F290 F291 F294 F296 |
 | py | src/py_launch_blueprint/composition.py | F002 |
 | py | src/py_launch_blueprint/core/__init__.py | F014 |
@@ -343,7 +343,7 @@ Every tracked file of `py-launch-blueprint` (b08bccf) and `ts-launch-blueprint` 
 | py | tests/meta/test_version_consistency.py | F133 — |
 | py | tests/test_guard.py | EXCLUDED: subprocess-driven bash-script test, not a CLI test tier |
 | py | tests/web/__init__.py | EXCLUDED: test modules exercise implementation rows already cited elsewhere; test *strategy* itself is testing-coverage.md's territory, not each individual test file |
-| py | tests/web/conftest.py | EXCLUDED: fixture wiring only, no new WEB-xx convention beyond what app.py/settings.py already cover |
+| py | tests/web/conftest.py | EXCLUDED: fixture wiring only, no new WEB-numbered convention beyond what app.py/settings.py already cover |
 | py | tests/web/test_app.py | EXCLUDED: exercises rows already cited from app.py/problems.py, no new citable behavior |
 | py | tests/web/test_contract.py | F334 — |
 | py | tests/web/test_idempotency.py | EXCLUDED: exercises the idempotency.py row already cited |
@@ -453,7 +453,7 @@ Every tracked file of `py-launch-blueprint` (b08bccf) and `ts-launch-blueprint` 
 | ts | release-please-config.json | F066 F067 F069 F070 |
 | ts | scripts/check-links.mjs | F349 |
 | ts | src/cli.ts | F020 F298 F300 |
-| ts | src/commands/projects.ts | F265 F280 F281 F283 F292 F293 |
+| ts | src/commands/projects.ts | F265 F280 F281 F283 F292 F293 F360 |
 | ts | src/lib.ts | F014 |
 | ts | src/lib/adapters.ts | F280 F282 |
 | ts | src/lib/api.ts | F012 F016 |

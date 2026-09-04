@@ -203,3 +203,4 @@
 | F349 | offline relative-link checker tool | docs-system | DIVERGENT | R82 |
 | F353 | API reference doc generator | docs-system | DIVERGENT | R82 |
 | F358 | documented (unshipped) future docs-site upgrade path | docs-system | ADOPT | — |
+| F360 | `--no-input` behavior when a prompt would have been shown | cli-framework-ux | DIVERGENT | R61 |

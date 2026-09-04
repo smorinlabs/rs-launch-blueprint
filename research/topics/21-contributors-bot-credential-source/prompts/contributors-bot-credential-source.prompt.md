@@ -11,7 +11,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 
 ## Out of scope
 - The contributors-bot workflow's trigger cadence (push-with-paths-ignore vs. a weekly cron schedule); R07 (`contributors-bot-trigger-cadence`) owns F026 — this item decides only the PAT-fallback credential source, not when the workflow runs.
-- Whether the workflow uses `mode: pull-request` at all, or the action's other invocation modes — both source repos already agree on this, it is not a research question for this item.
+- Whether the workflow uses `mode: pull-request` at all, or the action's other invocation modes — both source repos already agree on this (ledger row F060, `COMMON → REUSE`), it is not a research question for this item.
 - Prior art in the owner's other Rust repositories — do not look for or cite it.
 
 ## Couplings
@@ -24,9 +24,9 @@ If your recommendation needs a consumed parameter to change, do not change it: w
 Decision: whether the contributors-bot workflow's PAT-fallback token is sourced from a dedicated repo secret the maintainer must configure (py's shape) or from the ambient `secrets.GITHUB_TOKEN` (ts's shape), for a public template repository whose consumers fork it.
 - HIGH: Does the default `GITHUB_TOKEN` in a forked/templated repository have sufficient permissions (with the workflow's declared `permissions:` grants) to open a bot PR via `peter-evans/create-pull-request` or `smorinlabs/contributors-please-action`'s `pull-request` mode, without any consumer setup step?
 - HIGH: What capability, if any, does a dedicated PAT provide that `GITHUB_TOKEN` cannot — e.g. triggering downstream workflows on the bot's own PR (a known `GITHUB_TOKEN` limitation), or writing to protected branches — and does the contributors-bot PR actually need that capability?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 - MEDIUM: Is there a security trade-off between a long-lived dedicated PAT stored as a repo secret versus the ambient, automatically-scoped, automatically-rotated `GITHUB_TOKEN`, and how does that trade-off weigh for a public template whose consumers may not follow least-privilege PAT hygiene?
 - LOW: Does documenting a "zero extra secret" setup story materially reduce first-run friction for template consumers compared to py's documented PAT-setup step, based on any adopter feedback or setup-guide comparison across similar GitHub template repositories?
-- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

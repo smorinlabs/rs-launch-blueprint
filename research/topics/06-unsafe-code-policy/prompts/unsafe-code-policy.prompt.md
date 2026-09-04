@@ -10,7 +10,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 
 ## Out of scope
 - The Cargo workspace crate topology that would contain any `unsafe` code; R02 (`crate-boundary-enforcement`) owns F021 — this item sets the repo-wide policy and its enforcement mechanism, not which crate a future `unsafe` block would live in.
-- Auditing specific dependency crates for their own internal `unsafe` usage; this item states the policy for code written in this template, not a review of the dependency tree's `unsafe` footprint.
+- Auditing specific dependency crates for their own internal `unsafe` usage; this item states the policy for code written in this template, not a review of the dependency tree's `unsafe` footprint — dependency-tree audit tooling belongs to R13 (`dependency-vulnerability-scanning`).
 - How the policy's enforcement check is wired into a specific CI job or hook tier; R11 (`ci-workflow-job-structure`) and R28 (`linter-and-editor-tooling`) own CI job shape and clippy/lint wiring respectively — this item names the lint/attribute that enforces the policy, not which job runs it.
 - Prior art in the owner's other Rust repositories — do not look for or cite it.
 

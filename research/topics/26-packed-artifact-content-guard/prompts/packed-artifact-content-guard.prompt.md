@@ -10,7 +10,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 
 ## Out of scope
 - Whether the packed artifact, once published, actually installs and runs (an ephemeral install-and-run smoke test); R50 (`install-smoke-test`) owns F222 — confirmed as a separate decision at the Task 10 reconciliation: this item verifies packaged *content* before publish ("does what's packaged match expectations"), R50 verifies the installed artifact *runs*, and answering one does not settle the other.
-- The publish workflow's tag/version consistency guard (tag reachable from main, tag equals the manifest version) and its OIDC Trusted Publishing mechanism; those are `same`-verdict, non-research facts already common to both source repos, not part of this item's content-integrity guard.
+- The publish workflow's tag/version consistency guard (tag reachable from main, tag equals the manifest version) and its OIDC Trusted Publishing mechanism; those are `COMMON → REUSE` rows F074 and F075, non-research facts already common to both source repos, not part of this item's content-integrity guard.
 - Prior art in the owner's other Rust repositories — do not look for or cite it.
 
 ## Couplings

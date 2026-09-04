@@ -1,8 +1,8 @@
 # Owner review — research items (spec §6.5)
 
-Every index item has a disposition. `accept` = run as written; `narrow` = HIGH questions only (a `.narrowed.prompt.md` copy is written and the index row's prompt link points at it); `force` = run even though the ledger says REUSE; `drop` = removed from the index, ledger row keeps the verdict with `Item` set to `—` and a `dropped by owner YYYY-MM-DD` note.
+Every index item has a disposition, with the effects spec §6.5 defines: `accept` = no effect on the tree; `narrow` = the prompt's `## Out of scope` and `## Questions` are edited to the owner's rationale, ledger row unchanged; `force <tool>` = the prompt is rewritten as a fitness check of the named tool, `## Objective` states the choice is forced; `drop` = index status `dropped`, every ledger row that pointed at the item re-verdicted to a non-research verdict with Item `—`, prompt kept as history.
 
-Collected 2026-09-04 through a codesign page (`html-codesign` skill; the page and the export are kept outside the repo). Each of the 84 sections offered five choices that map onto the four dispositions: `a` accept, Rust alone; `b` accept plus one cross-repo question appended to the prompt; `c` narrow; `d` force; `e` drop. Every section pre-selected the recommendation argued from `DIVERGENCE-ANALYSIS.md`; the owner confirmed 69 and overrode 15. Result: 84 × `accept` (60 × b, 24 × a); no narrow, force or drop, so no index or ledger row changed.
+Collected 2026-09-04 through a codesign page (`html-codesign` skill; the page and the export are kept outside the repo). Each of the 84 sections (R36 was vacated at the Task 10 reconciliation; ids are never reused) offered five choices that map onto the four dispositions: `a` accept, Rust alone; `b` accept plus one cross-repo question appended to the prompt; `c` narrow; `d` force; `e` drop. Every section pre-selected the recommendation argued from `DIVERGENCE-ANALYSIS.md`; the owner confirmed 69 and overrode 15. Result: 84 × `accept` (60 × b, 24 × a); no narrow, force or drop, so no index or ledger row changed. Sub-choice `b` appends one cross-repo question to the prompt's `## Questions` and every owner note lands in `## Context`; that is the owner's extension of §6.5 decided on 2026-09-02 (harmonize items stay `accept` and gain one question), recorded here because the checker sees only `accept`.
 
 ## Owner direction (2026-09-04, verbatim)
 
@@ -15,7 +15,7 @@ Collected 2026-09-04 through a codesign page (`html-codesign` skill; the page an
 How this binds P02 (the controller's reading, confirmed by the owner on 2026-09-04):
 
 - Principle over library. The more mature implementation, usually py-launch-blueprint, supplies the principle; research finds the language-native equivalent for ts and rs, never the same crate or code pattern.
-- Differences get resolved, not preserved. Where py and ts differ, from maturity or drift, the answer names one value for all three repos. Propagating it into py and ts stays a follow-on project; the `b` prompts carry the question as their last HIGH line.
+- Differences get resolved, not preserved. Where py and ts differ, from maturity or drift, the answer names one value for all three repos. Propagating it into py and ts stays a follow-on project; the `b` prompts carry the question as the last HIGH line of `## Questions`.
 - All three repos ship all three example shapes (CLI, library, web service). This answers the cross-repo scope question parked on R69 (`web-extra-surface`): the ts repo should also ship the web tier.
 - Follow-on work in the ts repo, recorded here and not research items of this program: tRPC as the ts web equivalent (R69 note); template-press for ts (R15 note); a Bandit-class security analyzer for ts if one exists (R31 note).
 - Six items chosen `a` carry cross-repo notes (R22, R31, R42, R58, R71, R73). The note binds through the prompt's `## Context`; no cross-repo question was added, honoring the pick.

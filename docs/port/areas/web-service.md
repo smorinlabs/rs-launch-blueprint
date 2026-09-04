@@ -85,7 +85,7 @@ Sources: py-launch-blueprint @ b08bccf · ts-launch-blueprint @ cb1cbcb
 - py: `src/py_launch_blueprint/web/routers/projects.py`
 - py: `tests/web/test_contract.py`
 - py: `tests/web/test_openapi_snapshot.py`
-- py: `tests/web/conftest.py` — no feature: fixture wiring only, no new WEB-xx convention beyond what app.py/settings.py already cover
+- py: `tests/web/conftest.py` — no feature: fixture wiring only, no new WEB-numbered convention beyond what app.py/settings.py already cover
 - py: `tests/web/test_app.py` — no feature: exercises rows already cited from app.py/problems.py, no new citable behavior
 - py: `tests/web/test_idempotency.py` — no feature: exercises the idempotency.py row already cited
 - py: `tests/web/test_logging.py` — no feature: exercises the logging.py row already cited
