@@ -26,6 +26,7 @@ Decision: for each Conventional-Commits type in `rs-launch-blueprint`'s commit-m
 - MEDIUM: Should `deps` (py visible, dependency-bump commits) be its own visible section for a Rust template, given `cargo update`/Dependabot-driven dependency-bump commits may be frequent and low-signal individually?
 - MEDIUM: Does release-please's `changelog-sections` schema (current version) support any config this template should adopt beyond a flat visible/hidden split — e.g. custom section headings or per-type ordering — that neither py nor ts uses but would suit this template?
 - LOW: Should `ci`/`build` commit types (hidden in py, not present as distinct ts categories) get an explicit hidden entry, or does release-please's default (any unmapped type is hidden) make an explicit entry redundant?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

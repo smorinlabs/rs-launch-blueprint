@@ -25,6 +25,7 @@ Decision: whether `rs-launch-blueprint` runs a dedicated CI-tier secret-scanning
 - HIGH: Should the CI-tier scan run in diff-scan mode on pull requests and full-repository mode on pushes to `main` (py's split), or is a single scan mode sufficient given the template also (per R39) may run a hook-tier scanner locally?
 - MEDIUM: What is the maintenance and false-positive-rate trade-off between TruffleHog and alternative secret-detection engines (e.g. Gitleaks used as a CI action rather than a hook, detect-secrets) when run as a standalone CI job rather than a pre-commit hook?
 - LOW: Does the chosen tool need any repository-specific configuration (custom detectors, path exclusions) beyond its default ruleset for a Rust CLI/library/web template?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

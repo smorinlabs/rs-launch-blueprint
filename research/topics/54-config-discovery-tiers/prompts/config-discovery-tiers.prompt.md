@@ -28,6 +28,7 @@ Decision: does `rs-launch-blueprint` adopt py's layered config discovery (system
 - MEDIUM: What is the idiomatic Rust pattern for a project-local upward directory search (matching py's `project_config_file()` cwd-relative discovery) — a hand-rolled walk-up loop, or a crate?
 - MEDIUM: Is the `--config` env-var alias (F234) a plain `clap` `env(...)` attribute, or does it need custom precedence logic interacting with the discovery layers?
 - LOW: Do any published Rust CLI templates implement a multi-tier config discovery chain, for comparison?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

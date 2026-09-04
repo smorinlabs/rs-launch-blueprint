@@ -28,6 +28,7 @@ Decision: what Rust coverage tool, instrumentation scope, threshold definition/v
 - MEDIUM: What are idiomatic threshold values and instrumentation exclusions for this template's shape (CLI + library + web), and should thin I/O-adapter files be excluded the way ts explicitly excludes two files (F135)?
 - MEDIUM: What report formats should the chosen tool emit locally vs. in CI (e.g. `lcov`, `html`, `json`, terminal summary) to match py's three-format local output (F138)?
 - LOW: Does the chosen tool integrate with `cargo test --doc` (Rust's doc-test execution, decided by R32/F132) for combined coverage, or does doc-test coverage require separate handling?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`). Scope this to the shared, language-neutral part identified for this item in `docs/port/DIVERGENCE-ANALYSIS.md`; the Rust-specific part is still answered for Rust alone.
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

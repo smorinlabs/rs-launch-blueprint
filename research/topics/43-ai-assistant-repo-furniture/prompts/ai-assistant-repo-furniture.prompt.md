@@ -26,6 +26,7 @@ Decision: whether `rs-launch-blueprint` ships vendor-specific Cursor/Windsurf ru
 - MEDIUM: Is a glob-scoped rule file (ts's `Justfile`-scoped Windsurf rule) still the idiomatic way to steer an AI editor toward a specific file, or has a simpler single hub-pointer rule superseded it?
 - MEDIUM: Should the Claude Code repo-welcome announcement (F199) name Rust-specific commands (`cargo build`, `cargo test`) alongside or instead of `just` recipes, given the template's task-runner tool is already `just` (`docs/port/COMMONALITY.md` F176, `COMMON → REUSE`)?
 - LOW: Is there a maintenance cost (staleness risk) to committing vendor-specific rule files that argues for omitting them and relying on the AGENTS.md hub alone, given both vendors already read AGENTS.md natively?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

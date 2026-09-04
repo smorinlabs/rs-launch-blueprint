@@ -28,6 +28,7 @@ Decision: which Rust crate renders a stderr progress spinner during the network 
 - MEDIUM: What is the idiomatic way to gate the spinner on the absence of a `CI` environment variable in Rust — reading `std::env::var("CI")` directly, or is there a crate convention for this that composes with whatever TTY check R65 selects?
 - MEDIUM: Does the candidate crate degrade gracefully on a 0-column-width terminal (the shipped ts implementation explicitly guards against this per D-033), and if not, what wrapping does the template need to add?
 - LOW: Does the candidate crate support being disabled entirely via a runtime flag (composing with `--quiet`/`--no-input`), or does that gating have to live in the call site rather than the crate?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

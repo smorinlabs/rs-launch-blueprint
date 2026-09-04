@@ -28,6 +28,7 @@ Decision: does `rs-launch-blueprint` resolve a full XDG-style directory set (con
 - MEDIUM: Does the candidate crate handle the Windows-analogue directories (`%LOCALAPPDATA%`, `%PROGRAMDATA%`) even though `target-os-matrix` excludes Windows from CI — is carrying that capability free, or does it add meaningful complexity/dependencies for an unused path?
 - MEDIUM: What is the idiomatic Rust surface for these accessors — free functions (matching py's `data_home()`/`state_home()`/`cache_home()`), or a struct with methods?
 - LOW: Do any published Rust CLI templates or style guides document a full XDG directory-set pattern, for comparison?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

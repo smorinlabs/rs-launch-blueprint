@@ -25,6 +25,7 @@ Decision: whether `rs-launch-blueprint`'s PR template documents a "Review Trigge
 - HIGH: Is a documented re-review trigger block still a common, actively-recommended pattern among current GitHub PR-template conventions, or has auto-review-on-push made explicit re-trigger documentation redundant?
 - MEDIUM: Does documenting bot-specific comment commands in the PR template create a maintenance burden (staleness when a bot's command syntax changes) that argues for a lighter-weight approach — e.g. linking to each bot's own docs instead of inlining the command syntax?
 - LOW: Should the trigger block live in the PR template itself (py's placement) or in a contributor-facing doc (e.g. `CONTRIBUTING.md`) that the PR template links to, given the PR template is user-facing per-PR content?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

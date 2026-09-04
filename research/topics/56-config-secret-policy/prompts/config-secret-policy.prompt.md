@@ -28,6 +28,7 @@ Decision: does `rs-launch-blueprint` follow py's ADR-0002 rule (config file may 
 - MEDIUM: How does the chosen precedence chain compose with R54's discovery tiers — does "config file" mean the single resolved/merged config value, or does each discovered layer independently get token-extraction priority?
 - MEDIUM: What warning mechanism (see R58/R59's eventual logging pipeline) surfaces the loose-permissions warning, and is it emitted once at config-load time or on every token read?
 - LOW: Is there published Rust CLI security guidance (e.g. from RustSec or a CLI style guide) on whether config files should ever be a credential-file source, for a second opinion on the ADR-0002-vs-ts tradeoff?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`). Scope this to the shared, language-neutral part identified for this item in `docs/port/DIVERGENCE-ANALYSIS.md`; the Rust-specific part is still answered for Rust alone.
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

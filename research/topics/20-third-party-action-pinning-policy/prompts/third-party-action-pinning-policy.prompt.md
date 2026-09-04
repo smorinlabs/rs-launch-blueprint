@@ -25,6 +25,7 @@ Decision: whether `rs-launch-blueprint`'s third-party (non-`actions/*`, non-`git
 - HIGH: Does SHA-pinning meaningfully increase maintenance burden for a template repository (versus an application repository) given the template ships example workflows a consumer will fork and may not re-pin themselves?
 - MEDIUM: Is there a linting or CI tool (e.g. `zizmor`, actionlint extensions, or a dedicated SHA-pin-checker action) that enforces the chosen policy automatically, and would adopting it change the answer?
 - LOW: Does the version-comment convention next to a SHA pin (`@<sha> # vX.Y.Z`) have an established idiom the template should follow verbatim, or does it vary meaningfully across adopters?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

@@ -28,6 +28,7 @@ Decision: whether `rs-launch-blueprint` runs a scheduled dependency-freshness ca
 - MEDIUM: Should the freshness canary open an issue or fail loudly on breakage, matching py's `canary.yml` intent, and what is the current idiomatic GitHub Actions pattern for that (e.g. `actions/github-script`, a dedicated issue-filing action)?
 - MEDIUM: What crates or actions handle the dependency-upgrade step itself — plain `cargo update`, or a crate like `cargo-edit`'s `cargo upgrade` for bumping semver-incompatible ranges too?
 - LOW: What CI concurrency/cost guardrails (schedule frequency, job timeout) keep a weekly canary from becoming noisy or expensive on a public template repo?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`). Scope this to the shared, language-neutral part identified for this item in `docs/port/DIVERGENCE-ANALYSIS.md`; the Rust-specific part is still answered for Rust alone.
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

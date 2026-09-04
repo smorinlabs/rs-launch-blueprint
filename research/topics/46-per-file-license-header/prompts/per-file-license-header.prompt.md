@@ -25,6 +25,7 @@ Decision: whether `rs-launch-blueprint`'s `.rs` source files carry a per-file em
 - HIGH: Is per-file license-header stamping (of either shape) still common practice among current, actively-maintained Rust template/library repositories with a dual MIT/Apache-2.0 license, or has the ecosystem converged on relying on the root `LICENSE`/`Cargo.toml` `license` field alone with no per-file header?
 - MEDIUM: If a header is adopted, is there a maintained Rust tool (e.g. a `cargo` subcommand, a lefthook-invokable script) that inserts or verifies the header across the tree, avoiding ts's documented "no header-insertion automation" gap that left its conversion incomplete?
 - LOW: Does Rust doc-comment convention (`//!` module-level docs) create a placement conflict with a header comment at the top of a file that also carries crate-level documentation?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

@@ -2,6 +2,8 @@
 
 This file binds the session that runs the prompts (project P02). Nothing here is optional.
 
+Owner review (Phase 3.5, 2026-09-04): every index item is `accept` in `docs/port/OWNER-REVIEW.md`. Its *Owner direction* section binds every run: principle over library, and one value for py, ts and rs wherever they differ. Prompts flagged for harmonization carry that question as the last HIGH line of `## Questions`; owner notes sit as the last bullet of `## Context`.
+
 ## 1. Run order
 - Fixed parameters (`docs/port/PARAMETERS.md`, kind `fixed`) are already valued; never research them.
 - An item runs only after every item named in its prompt's `- consumes:` line is `resolved` in `CLAUDE.md`.

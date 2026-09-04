@@ -26,6 +26,7 @@ Decision: whether `rs-launch-blueprint` ships an automatic AI-assisted PR code-r
 - MEDIUM: What triggers should gate the `@mention` assistant workflow (issue comments, PR review comments, issue bodies) for a template repository, and does the action support scoping to just those three event types cleanly?
 - MEDIUM: What secrets/credentials does the action require (an Anthropic API key, a GitHub App token, or both), and how does that requirement interact with a public template repository that downstream consumers fork?
 - LOW: Are there known cost, rate-limit, or false-trigger issues reported by adopters running this action family on public template/starter repositories specifically?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

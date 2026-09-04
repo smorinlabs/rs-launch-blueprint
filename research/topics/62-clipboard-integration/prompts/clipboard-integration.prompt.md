@@ -28,6 +28,7 @@ Decision: whether/which Rust crate provides cross-platform clipboard write for `
 - MEDIUM: Does the candidate crate require any external system binary at runtime (as `xsel`/`wl-clipboard` are external processes `clipboardy` shells out to on Linux), or does it use native platform APIs/libraries with no external process dependency?
 - MEDIUM: What is the idiomatic Rust error type for a clipboard-write failure that lets the call site convert it into the template's domain error uniformly, without this item pre-deciding the catalog entry R67 owns?
 - LOW: Should the flag be named `--copy` (matching ts) or does the chosen CLI framework's (R60) conventions suggest a different name or short form?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

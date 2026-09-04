@@ -27,6 +27,7 @@ Decision: how broadly `rs-launch-blueprint` applies `persist-credentials: false`
 - HIGH: Should the contributors-bot workflow follow the same deny-all-plus-re-grant pattern as every other workflow (ts's choice) or is an explicit top-level grant (py's choice) an acceptable, equally auditable alternative for a workflow with a fixed, small permission set?
 - MEDIUM: Is there a case where `persist-credentials: false` breaks a legitimate downstream step (e.g., a step that needs the checked-out credential to push) that the template must special-case?
 - LOW: Does a lint or CI check (e.g., zizmor itself) exist that could enforce "every checkout step sets `persist-credentials: false`" mechanically, closing the gap between a stated policy and actual per-workflow conformance?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

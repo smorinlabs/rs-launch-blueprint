@@ -29,6 +29,7 @@ Decision: whether `rs-launch-blueprint` adopts property-based (generative) testi
 - MEDIUM: How does `insta`'s review workflow (`cargo insta review`) compare to syrupy's snapshot-update workflow (`--snapshot-update`) for contributor ergonomics and CI enforcement of unreviewed snapshot changes?
 - MEDIUM: Does either candidate crate have a lighter-weight or more actively maintained alternative worth listing as a runner-up (e.g. `proptest` vs. `quickcheck`; `insta` vs. hand-rolled fixture comparison)?
 - LOW: Should property-based and snapshot tests be gated behind a Cargo feature or test-target split, or run unconditionally as part of the default `cargo test` invocation?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

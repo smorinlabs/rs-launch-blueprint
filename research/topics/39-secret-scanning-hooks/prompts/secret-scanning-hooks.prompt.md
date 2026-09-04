@@ -28,6 +28,7 @@ Decision: whether `rs-launch-blueprint` adopts gitleaks (or an alternative) as a
 - MEDIUM: What allowlist configuration (path exemptions, named regex exemptions for known example/test secrets) is appropriate for a Rust CLI + library + web template, and should it start from py's `.gitleaks.toml` narrowed-by-path pattern or be built fresh?
 - MEDIUM: Should the fingerprint-suppression file (`.gitleaksignore`-equivalent) ship pre-populated or empty, matching py's empty-at-baseline precedent?
 - LOW: Does the chosen scanner need any CI-side re-run beyond the local hooks (a `gitleaks detect` full-history scan job), and if so, where would it sit given `ci-job-structure` (R11) is still undecided?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`).
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):

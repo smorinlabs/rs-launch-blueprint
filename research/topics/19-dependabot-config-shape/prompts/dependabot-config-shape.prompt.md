@@ -26,6 +26,7 @@ Decision: which package ecosystems `rs-launch-blueprint`'s `dependabot.yml` decl
 - MEDIUM: Should the config also declare an ecosystem entry for the CI workflow files themselves (`github-actions`), and does that ecosystem's grouping need any Rust-specific adjustment versus py/ts's shared `github-actions` config?
 - MEDIUM: Does py's 5-day cooldown and commit-message-prefix contract have a direct Dependabot-schema equivalent that a Cargo-ecosystem config can reuse unchanged?
 - LOW: What labels (if any) should Dependabot apply to opened PRs, and does that choice depend on any label taxonomy already established elsewhere in the template's CI/lint conventions?
+- HIGH (owner review 2026-09-04): Recommend one value or convention for py-launch-blueprint, ts-launch-blueprint and rs-launch-blueprint together. Take the principle from the more mature implementation (py-launch-blueprint unless the evidence says otherwise), not its library or code pattern, and name the language-native equivalent for ts and rs. Where py and ts differ, whether from maturity or arbitrary drift, name the single value all three should adopt. Propagating that value into py and ts is a follow-on project; this answer is its input (owner direction, `docs/port/OWNER-REVIEW.md`). Scope this to the shared, language-neutral part identified for this item in `docs/port/DIVERGENCE-ANALYSIS.md`; the Rust-specific part is still answered for Rust alone.
 
 ## Required evidence
 Collect every figure exactly this way and cite endpoint + retrieval date (spec §7.6):
