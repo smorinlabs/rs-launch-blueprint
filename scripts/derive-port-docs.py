@@ -6,9 +6,13 @@ usage: derive-port-docs.py coverage    [--root DIR] [--files LIST] [--check]
 COVERAGE.md keeps its hand-written '## Exclusion rules' bullets (- `glob` — reason); the table is regenerated.
 Exit 1 on UNCOVERED files or, with --check, on drift between committed and regenerated output.
 """
-import argparse, fnmatch, pathlib, re, subprocess, sys, tempfile
+import argparse, fnmatch, pathlib, re, subprocess, sys
 
 REPOS = {"py": pathlib.Path.home() / "c/py-launch-blueprint", "ts": pathlib.Path.home() / "c/ts-launch-blueprint"}
+SOURCE_REVISIONS = {
+    "py": "b08bccfb55d05f15e46a83b52c5660b1881d19f5",
+    "ts": "cb1cbcb2e88b898e8c081b0abbfabc1630079c00",
+}
 CITE = re.compile(r"`([^`:]+):(\d+)`")
 ROW = re.compile(r"^\|\s*(F\d{3})\s*\|(.*)\|\s*$")
 
@@ -25,7 +29,13 @@ def list_files(files_arg):
         return [l.strip() for l in pathlib.Path(files_arg).read_text().splitlines() if l.strip()]
     acc = []
     for tag, repo in REPOS.items():
-        ls = subprocess.run(["git", "-C", str(repo), "ls-files"], check=True, capture_output=True, text=True).stdout
+        # Read the recorded tree, independent of the live checkout and its index.
+        revision = SOURCE_REVISIONS[tag]
+        try:
+            ls = subprocess.run(["git", "-C", str(repo), "ls-tree", "-r", "--name-only", revision],
+                                check=True, capture_output=True, text=True).stdout
+        except subprocess.CalledProcessError as error:
+            sys.exit(f"FAIL: cannot read pinned source {tag} at {revision} in {repo}: {error.stderr.strip()}")
         acc += [f"{tag}:{p}" for p in ls.splitlines() if p]
     return acc
 
@@ -52,7 +62,6 @@ def coverage(root, files_arg, check):
     cov = root / "docs/port/COVERAGE.md"
     text = cov.read_text() if cov.exists() else "# Coverage manifest\n\n## Exclusion rules\n"
     rules = re.findall(r"^- `([^`]+)` — (.+)$", text.split("## Exclusion rules", 1)[1], re.M) if "## Exclusion rules" in text else []
-    head = text.split("| repo |")[0].rstrip() + "\n\n"
     lines = ["| repo | path | features |", "|---|---|---|"]
     uncovered = []
     for f in list_files(files_arg):
@@ -68,7 +77,11 @@ def coverage(root, files_arg, check):
             else:
                 val = f"EXCLUDED: {reason}"
         lines.append(f"| {tag} | {path} | {val} |")
-    out = head + "\n".join(lines) + "\n"
+    table = "\n".join(lines) + "\n"
+    previous = re.search(r"^\| repo \| path \| features \|\n(?:\|[^\n]*\|\n?)*", text, re.M)
+    # Replace only the generated table; preserve rules and prose on either side.
+    out = (text[:previous.start()] + table + text[previous.end():]
+           if previous else text.rstrip() + "\n\n" + table)
     return write_or_check(cov, out, check, uncovered)
 
 def inventories(root, check):

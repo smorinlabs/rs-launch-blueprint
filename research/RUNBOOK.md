@@ -50,7 +50,7 @@ Every item is researched by **every configured engine, in parallel, each run as 
 ## 4. Conflict rule
 - An answer whose `Parameters` field contains `CONFLICT: R## <param> — <needed value> — <reason>`:
   1. the consuming item is **blocked** (status stays `in-progress`; no `DECISION.md`);
-  2. the owner item `R##` is re-opened: append a `## Conflict from R<consumer>` block with the line verbatim to the **end of the owner prompt's `## Context`** (append-only), and re-run it;
+  2. the owner item `R##` is re-opened: append a `### Conflict from R<consumer>` subsection with the line verbatim to the **end of the owner prompt's `## Context`** (append-only), and re-run it;
   3. the owner's new `DECISION.md` entry cites the old one under `## Supersedes`;
   4. `PARAMETERS.md` is updated from the owner's new value; only then does the consumer re-run.
 - A consumer never adopts a value the registry does not hold.

@@ -15,7 +15,7 @@ realistic acceptance example. P02 reviews inherited mechanisms under the
    table of how `py-launch-blueprint` and `ts-launch-blueprint` handle every
    feature in that area, with file references and any `TS_PORT_DECISIONS.md`
    ids that explain a difference. Written by survey agents; **no verdicts**.
-2. `COVERAGE.md` — every source file of both repos (`git ls-files`) mapped to
+2. `COVERAGE.md` — every source file in both pinned Git trees (`git ls-tree -r --name-only <pinned-sha>`) mapped to
    the feature ids it contributed to, or `EXCLUDED: <reason>`. Proves no file
    was silently skipped by the survey (spec §6.4).
 3. `COMMONALITY.md` — the authoritative ledger. One row per atomic feature,

@@ -10,6 +10,8 @@
 
 **Spec:** `docs/superpowers/specs/2026-09-01-rs-port-research-program-design.md` (sections cited as §n below).
 
+**Authority during execution:** This plan records P01 preparation. Later approved spec amendments and owner dispositions take precedence over its original examples. P02 uses the current `PROJECTS.md`, `research/RUNBOOK.md`, and prompts; the P02 block below records the initial scope, not a replacement for those maintained files.
+
 ## Global Constraints
 
 - Worktree: `~/c/rs-launch-blueprint-research`, branch `docs/p01-research-tree`, based on `origin/main`. Never edit `~/c/rs-launch-blueprint` (the live checkout). Push and fetch by explicit HTTPS URL `https://github.com/smorinlabs/rs-launch-blueprint.git` (ssh-agent is flaky on this machine).
@@ -18,6 +20,7 @@
 - Origins (§3): `same | different | py-only | ts-only | none`. Verdicts (§3): `COMMON → REUSE`, `COMMON → SUBSTITUTE`, `COMMON → OVERRIDE (OV-nn)`, `ADOPT`, `DIVERGENT`, `RUST-ONLY`, `OMIT`, legal per the §3 table. `Item` = `R##` for SUBSTITUTE/OVERRIDE/DIVERGENT/RUST-ONLY, `—` otherwise.
 - Parameter slugs match `^[a-z0-9]+(-[a-z0-9]+)*$`. Required fixed parameters: `msrv-policy`, `rust-edition`, `target-os-matrix`, `license` (§6.3).
 - Prompt files have exactly these H2s in order outside fences (§7): `## Objective`, `## Context`, `## Out of scope`, `## Couplings`, `## Questions`, `## Required evidence`, `## Answer template`, `## Constraints`.
+- Verification: filtered checker output is diagnostic while the tree is incomplete; it never proves the whole-tree gate passed. Preserve the checker exit status when displaying filtered output. Run every final gate unfiltered, and stop on failure before closing tasks or committing.
 - Table dialect (§5): one pipe table per file, leading and trailing pipes, no `|` in cells, columns by header name.
 - Agent fan-out: batches of **≤4** parallel agents (§6). Surveyors are `sonnet`, the Phase 4 reviewer is `opus`, classification stays in the main loop (§4 D9, CLAUDE.md model matrix).
 - Commits: Conventional Commits, one commit per area/batch, trailer `Claude-Session: https://claude.ai/code/session_014W5murKc9M98GyzVGn7JCV`.
@@ -46,7 +49,7 @@ research/RUNBOOK.md                       Task 12
 research/topics/<nn>-<slug>/prompts/
   <slug>.prompt.md                        Tasks 13, 15
 docs/port/OWNER-REVIEW.md                 Task 16
-PROJECTS.md                               Tasks 1, 14, 19
+PROJECTS.md                               Tasks 1, 14, 18
 scripts/check-area-file.sh                Task 2
 scripts/derive-port-docs.py               Task 11
 ```
@@ -74,7 +77,7 @@ Expected: HEAD is the merge commit of PR #2 or later (`git log -1` shows `.claud
 
 - [ ] **Step 2: Verify the checker suite is green before touching anything**
 
-Run: `bash scripts/test-check-research-tree.sh | tail -1`
+Run: `bash scripts/test-check-research-tree.sh`
 Expected: `53 passed, 0 failed`
 
 - [ ] **Step 3: Verify the checker is red on the empty tree (this is the failing test for the whole program)**
@@ -704,7 +707,9 @@ Then append the rows.
 - [ ] **Step 5: Verify — the checker's only remaining complaints are missing prompts and the runbook body**
 
 ```bash
-bash scripts/check-research-tree.sh 2>&1 | grep -v 'links missing prompt' ; echo "exit=$?"
+bash scripts/check-research-tree.sh > "$CLAUDE_JOB_DIR/tmp/tree-check.log" 2>&1; tree_status=$?
+grep -v 'links missing prompt' "$CLAUDE_JOB_DIR/tmp/tree-check.log" || :
+printf 'checker exit=%s\n' "$tree_status"
 ```
 Expected: no FAIL lines other than `links missing prompt` for every index row (filtered out above, so the output is empty) — in particular no `is not in the index`, `not declared by '- owns:'` is expected to appear **once per researched parameter** and is resolved in Task 15; note the count.
 
@@ -726,7 +731,7 @@ git push https://github.com/smorinlabs/rs-launch-blueprint.git docs/p01-research
 - Modify: `PROJECTS.md` (P01-T03 → `[x]`)
 
 **Interfaces:**
-- Produces: `python3 scripts/derive-port-docs.py coverage|inventories [--check]` — `coverage` writes `docs/port/COVERAGE.md` from `git ls-files` of both pinned repos, the `id`-bearing citations in `docs/port/areas/*.md`, the `## Files read` lists, and the exclusion rules in `docs/port/COVERAGE.md`'s own `## Exclusion rules` bullet list; it exits 1 and prints `UNCOVERED: <repo>:<path>` for any file with neither a feature id nor an exclusion. `inventories` writes the two per-repo views from the ledger. `--check` regenerates to a temp file and exits 1 if it differs from the committed one (Phase 4 uses this).
+- Produces: `python3 scripts/derive-port-docs.py coverage|inventories [--check]` — `coverage` writes `docs/port/COVERAGE.md` from the recorded Git trees of both source repos (`git ls-tree -r --name-only <pinned-sha>`), the `id`-bearing citations in `docs/port/areas/*.md`, the `## Files read` lists, and the exclusion rules in `docs/port/COVERAGE.md`'s own `## Exclusion rules` bullet list; it exits 1 and prints `UNCOVERED: <repo>:<path>` for any file with neither a feature id nor an exclusion. `inventories` writes the two per-repo views from the ledger. `--check` compares regenerated content in memory and exits 1 if the committed output is missing or differs (Phase 4 uses this).
 - Consumes: area files (`id` column, Task 8/9), ledger (Task 10).
 
 - [ ] **Step 1: Write the failing test — a fixture with one uncovered file must make `coverage` exit 1**
@@ -768,7 +773,7 @@ cat > docs/port/COVERAGE.md <<'MD'
 MD
 cd - >/dev/null
 ```
-(`files.txt` stands in for `git ls-files`; the script accepts `--files <path>` for tests.)
+(`files.txt` supplies an explicit fixture listing; the script accepts `--files <path>` for tests. Without it, the generator reads the two pinned commit trees, independent of live checkout or index changes.)
 
 - [ ] **Step 2: Run to confirm the script does not exist**
 
@@ -786,9 +791,13 @@ usage: derive-port-docs.py coverage    [--root DIR] [--files LIST] [--check]
 COVERAGE.md keeps its hand-written '## Exclusion rules' bullets (- `glob` — reason); the table is regenerated.
 Exit 1 on UNCOVERED files or, with --check, on drift between committed and regenerated output.
 """
-import argparse, fnmatch, pathlib, re, subprocess, sys, tempfile
+import argparse, fnmatch, pathlib, re, subprocess, sys
 
 REPOS = {"py": pathlib.Path.home() / "c/py-launch-blueprint", "ts": pathlib.Path.home() / "c/ts-launch-blueprint"}
+SOURCE_REVISIONS = {
+    "py": "b08bccfb55d05f15e46a83b52c5660b1881d19f5",
+    "ts": "cb1cbcb2e88b898e8c081b0abbfabc1630079c00",
+}
 CITE = re.compile(r"`([^`:]+):(\d+)`")
 ROW = re.compile(r"^\|\s*(F\d{3})\s*\|(.*)\|\s*$")
 
@@ -805,7 +814,13 @@ def list_files(files_arg):
         return [l.strip() for l in pathlib.Path(files_arg).read_text().splitlines() if l.strip()]
     acc = []
     for tag, repo in REPOS.items():
-        ls = subprocess.run(["git", "-C", str(repo), "ls-files"], check=True, capture_output=True, text=True).stdout
+        # Read the recorded tree, independent of the live checkout and its index.
+        revision = SOURCE_REVISIONS[tag]
+        try:
+            ls = subprocess.run(["git", "-C", str(repo), "ls-tree", "-r", "--name-only", revision],
+                                check=True, capture_output=True, text=True).stdout
+        except subprocess.CalledProcessError as error:
+            sys.exit(f"FAIL: cannot read pinned source {tag} at {revision} in {repo}: {error.stderr.strip()}")
         acc += [f"{tag}:{p}" for p in ls.splitlines() if p]
     return acc
 
@@ -832,7 +847,6 @@ def coverage(root, files_arg, check):
     cov = root / "docs/port/COVERAGE.md"
     text = cov.read_text() if cov.exists() else "# Coverage manifest\n\n## Exclusion rules\n"
     rules = re.findall(r"^- `([^`]+)` — (.+)$", text.split("## Exclusion rules", 1)[1], re.M) if "## Exclusion rules" in text else []
-    head = text.split("| repo |")[0].rstrip() + "\n\n"
     lines = ["| repo | path | features |", "|---|---|---|"]
     uncovered = []
     for f in list_files(files_arg):
@@ -848,7 +862,11 @@ def coverage(root, files_arg, check):
             else:
                 val = f"EXCLUDED: {reason}"
         lines.append(f"| {tag} | {path} | {val} |")
-    out = head + "\n".join(lines) + "\n"
+    table = "\n".join(lines) + "\n"
+    previous = re.search(r"^\| repo \| path \| features \|\n(?:\|[^\n]*\|\n?)*", text, re.M)
+    # Replace only the generated table; preserve rules and prose on either side.
+    out = (text[:previous.start()] + table + text[previous.end():]
+           if previous else text.rstrip() + "\n\n" + table)
     return write_or_check(cov, out, check, uncovered)
 
 def inventories(root, check):
@@ -868,10 +886,13 @@ def write_or_check(path, out, check, uncovered):
     for u in uncovered:
         print(f"UNCOVERED: {u}")
     if check:
-        if path.exists() and path.read_text() == out and not uncovered:
+        if not path.exists():
+            print(f"DRIFT: {path} is missing"); return 1
+        current = path.read_text()
+        if current == out and not uncovered:
             print(f"OK: {path} is current"); return 0
-        print(f"DRIFT: {path} differs from regenerated output" if path.exists() and path.read_text() != out else f"OK: {path} content current")
-        return 1 if (uncovered or path.read_text() != out) else 0
+        print(f"DRIFT: {path} differs from regenerated output" if current != out else f"OK: {path} content current")
+        return 1 if (uncovered or current != out) else 0
     path.write_text(out)
     print(f"wrote {path} ({out.count(chr(10))} lines)")
     return 1 if uncovered else 0
@@ -986,7 +1007,7 @@ Verified by the Phase 3 conformance pilot (plan Task 14) on <date>: **<engine: /
 ## 4. Conflict rule
 - An answer whose `Parameters` field contains `CONFLICT: R## <param> — <needed value> — <reason>`:
   1. the consuming item is **blocked** (status stays `in-progress`; no `DECISION.md`);
-  2. the owner item `R##` is re-opened: append a `## Conflict from R<consumer>` block with the line verbatim to the **end of the owner prompt's `## Context`** (append-only), and re-run it;
+  2. the owner item `R##` is re-opened: append a `### Conflict from R<consumer>` subsection with the line verbatim to the **end of the owner prompt's `## Context`** (append-only), and re-run it;
   3. the owner's new `DECISION.md` entry cites the old one under `## Supersedes`;
   4. `PARAMETERS.md` is updated from the owner's new value; only then does the consumer re-run.
 - A consumer never adopts a value the registry does not hold.
@@ -1219,7 +1240,7 @@ Expected: FAIL lines for the missing fields (e.g. `Excluded by gate`), `exit=1`.
 
 1. **`/deep-research` built-in**: invoke the `Skill` tool with `skill: "deep-research"` and the `R01` prompt file path as `args`. If the skill is not listed, it is unavailable in this session — go to 2.
 2. **Doxa** via the `doxa-research` skill: this is a **paid** run. Before submitting, tell the owner: 1 prompt, the selected provider and mode (single provider, deep-research mode), output dir `$CLAUDE_JOB_DIR/tmp/pilot/doxa/`, blocking or `--async`, number of provider calls (1). Proceed only on an explicit yes (`AskUserQuestion`, evidence inline, options: "run it (1 paid call)" / "skip the pilot — record as untested").
-3. Neither → record `engine: none available on 2026-09-xx; pilot deferred to P02 Task 01` in the runbook §2 and PROJECTS.md, and continue with Task 15 (the template is then untested; P02's pilot item is the first real check).
+3. Neither → record `engine: none available on 2026-09-xx; pilot deferred to P02 Task 01` in the runbook §2 and PROJECTS.md, keep P01-TS07 unchecked, skip Steps 4–5, and continue with Task 15 (the template is then untested; P02's pilot item is the first real check).
 
 - [ ] **Step 4: Run the pilot on `R01` and check only the shape**
 
@@ -1229,9 +1250,9 @@ bash scripts/check-answer-shape.sh "$CLAUDE_JOB_DIR/tmp/pilot/R01-answer.md" <ki
 ```
 Expected: `OK:`. On `FAIL`, the template — not the engine — is fixed: adjust the field wording in `research/PROMPT-TEMPLATE.md` and both existing prompts so the engine can fill it, re-run once, re-check. Do **not** read or act on the technology content; delete the directory when done (`rm -rf "$CLAUDE_JOB_DIR/tmp/pilot"`).
 
-- [ ] **Step 5: Record the verified invocation in the runbook §2 and close TS07**
+- [ ] **Step 5: Only after Step 4 passes, record the verified invocation and close TS07**
 
-Replace the three `<…>` placeholders in `research/RUNBOOK.md` §2 (engine, date, exact invocation) with what actually ran; commit.
+This step is conditional on an actual pilot answer passing `scripts/check-answer-shape.sh`. A deferred or failed pilot leaves P01-TS07 unchecked. Replace the three `<…>` placeholders in `research/RUNBOOK.md` §2 (engine, date, exact invocation) with what actually ran; commit.
 ```bash
 python3 - <<'PY'
 p='PROJECTS.md'; s=open(p).read()
@@ -1261,7 +1282,9 @@ Expected: the number of index rows minus 2.
 - [ ] **Step 2: Write prompts in batches of one area at a time** (index order within the area). For each prompt follow Task 13 Step 3 exactly. After each area's batch:
 
 ```bash
-bash scripts/check-research-tree.sh 2>&1 | grep -vE 'links missing prompt' ; echo "exit=$?"
+bash scripts/check-research-tree.sh > "$CLAUDE_JOB_DIR/tmp/tree-check.log" 2>&1; tree_status=$?
+grep -vE 'links missing prompt' "$CLAUDE_JOB_DIR/tmp/tree-check.log" || :
+printf 'checker exit=%s\n' "$tree_status"
 git add research/topics
 git commit -m "docs: prompts for <area> (R0n-R0m)" -m "Claude-Session: https://claude.ai/code/session_014W5murKc9M98GyzVGn7JCV"
 ```
@@ -1269,8 +1292,8 @@ Expected after every batch: no FAIL line other than `links missing prompt` for p
 
 - [ ] **Step 3: Whole-tree green**
 
-Run: `bash scripts/check-research-tree.sh; echo "exit=$?"`
-Expected: `OK: research tree structure valid`, `exit=0`.
+Run: `bash scripts/check-research-tree.sh`
+Expected: `OK: research tree structure valid`, exit 0. Stop on any failure.
 
 - [ ] **Step 4: Cross-check the index against the ledger by hand-readable counts**
 
@@ -1309,7 +1332,12 @@ This is an owner-reserved decision: the executor prepares evidence and a suggest
 
 - [ ] **Step 1: Confirm the flag is currently red for the right reason**
 
-Run: `bash scripts/check-research-tree.sh --require-owner-review 2>&1 | tail -3; echo "exit=$?"`
+```bash
+bash scripts/check-research-tree.sh --require-owner-review > "$CLAUDE_JOB_DIR/tmp/tree-check.log" 2>&1; tree_status=$?
+tail -3 "$CLAUDE_JOB_DIR/tmp/tree-check.log"
+printf 'checker exit=%s\n' "$tree_status"
+test "$tree_status" -eq 1
+```
 Expected: `FAIL: --require-owner-review set but docs/port/OWNER-REVIEW.md is missing` (or the checker's equivalent wording), non-zero exit.
 
 - [ ] **Step 2: Build the review table for chat**
@@ -1335,7 +1363,7 @@ Print the filled table as visible text, then one `AskUserQuestion` (header `Disp
 ```markdown
 # Owner review — research items (spec §6.5)
 
-Every index item has a disposition. `accept` = run as written; `narrow` = HIGH questions only (a `.narrowed.prompt.md` copy is written and the index row's prompt link points at it); `force` = run even though the ledger says REUSE; `drop` = removed from the index, ledger row keeps the verdict with `Item` set to `—` and a `dropped by owner <date>` note.
+Every index item has a disposition, with the effects spec §6.5 defines: `accept` = no effect on the tree; `narrow` = the prompt's `## Out of scope` and `## Questions` are edited to the owner's rationale, ledger row unchanged; `force <tool>` = the prompt is rewritten as a fitness check of the named tool, `## Objective` states the choice is forced; `drop` = index status `dropped`, every ledger row that pointed at the item re-verdicted to a non-research verdict with Item `—`, prompt kept as history.
 
 | item | disposition | rationale | date |
 |---|---|---|---|
@@ -1346,15 +1374,15 @@ One row per index item, dates as `YYYY-MM-DD`.
 
 - [ ] **Step 5: Apply the effects**
 
-- `narrow`: `cp` the prompt to `prompts/<slug>.narrowed.prompt.md`, delete MEDIUM/LOW lines under `## Questions`, point the index row's `prompt` cell at the narrowed file.
-- `drop`: delete the index row; in the ledger set `Item` to `—` and append `dropped by owner YYYY-MM-DD` to Notes; if the item owned parameters, change those registry rows' `owner` to `owner` and set the value the owner gives (a dropped owner leaves consumers with an unresolved parameter, so the owner must state the value in the same answer — ask back if missing).
-- `force`: no file effect; the item is already in the index.
+- `narrow`: edit the existing prompt's `## Out of scope` and `## Questions` to the owner's rationale; leave the ledger unchanged.
+- `drop`: keep the index row with status `dropped` and preserve the prompt as history. Re-verdict every linked ledger row to a legal non-research verdict with `Item` set to `—`. Reconcile any owned parameters and consumers with the owner before running dependent items.
+- `force <tool>`: rewrite the existing item's prompt as a fitness check of that tool and state the forced choice in `## Objective`; retain the empirical gate and both audits. This disposition does not create research items for REUSE rows.
 - `accept`: none.
 
 - [ ] **Step 6: Green with the flag, close T07, commit, push**
 
 ```bash
-bash scripts/check-research-tree.sh --require-owner-review; echo "exit=$?"
+bash scripts/check-research-tree.sh --require-owner-review || exit "$?"
 python3 - <<'PY'
 p='PROJECTS.md'; s=open(p).read(); s=s.replace('- [ ] [P01-T07]','- [x] [P01-T07]',1); open(p,'w').write(s)
 PY
@@ -1398,13 +1426,18 @@ Write the reviewer's table verbatim into `docs/port/REVIEW-PHASE4.md` under `## 
 - [ ] **Step 3: Re-run every gate**
 
 ```bash
-bash scripts/check-research-tree.sh --require-owner-review; echo "tree=$?"
-bash scripts/test-check-research-tree.sh | tail -1
-for a in docs/port/areas/*.md; do bash scripts/check-area-file.sh "$a" >/dev/null || echo "AREA FAIL $a"; done
-python3 scripts/derive-port-docs.py coverage --check; echo "cov=$?"
-python3 scripts/derive-port-docs.py inventories --check; echo "inv=$?"
+bash -e <<'SH'
+bash scripts/check-research-tree.sh --require-owner-review
+bash scripts/test-check-research-tree.sh
+for a in docs/port/areas/*.md; do
+  [ "${a##*/}" = SURVEY-PROMPT.md ] && continue
+  bash scripts/check-area-file.sh "$a"
+done
+python3 scripts/derive-port-docs.py coverage --check
+python3 scripts/derive-port-docs.py inventories --check
+SH
 ```
-Expected: `tree=0`, `53 passed, 0 failed`, no `AREA FAIL`, `cov=0`, `inv=0`.
+Expected: exit 0, `53 passed, 0 failed`, and every tree, area, coverage and inventory check reports success. The survey prompt is a template, not an area evidence file; the loop excludes it. Stop before Step 4 on any failure.
 
 - [ ] **Step 4: Close TS03, commit, push**
 
@@ -1474,7 +1507,7 @@ Expected: the last command prints one line ending in `refs/tags/v0.1.0`.
 
 ## P02 entry in PROJECTS.md (shipped with this plan, not by a task)
 
-The owner chose option A: research execution is a follow-on project. This block is already in `PROJECTS.md` on the plan branch so that P02 exists before P01's execution starts; it is reproduced here because P02's tasks name files this plan creates (`check-answer-shape.sh`, `RUNBOOK.md` sections, `OWNER-REVIEW.md` dispositions).
+The owner chose option A: research execution is a follow-on project. This block is already in `PROJECTS.md` on the plan branch so that P02 exists before P01's execution starts; it is reproduced here because P02's tasks name files this plan creates (`scripts/check-answer-shape.sh`, `RUNBOOK.md` sections, `OWNER-REVIEW.md` dispositions).
 
 ~~~markdown
 ## [ ] Project P02: Execute research program (v0.2.0)
@@ -1489,7 +1522,7 @@ The owner chose option A: research execution is a follow-on project. This block 
 - Items dropped in Phase 3.5
 
 ### Tests & Tasks
-- [ ] [P02-T01] Run the pilot item end-to-end (prompt → raw answer → `check-answer-shape.sh` → `DECISION.md` → both audits) — this run is binding, unlike P01-TS07
+- [ ] [P02-T01] Run the pilot item end-to-end (prompt → raw answer → `scripts/check-answer-shape.sh` → `DECISION.md` → both audits) — this run is binding, unlike P01-TS07
 - [ ] [P02-T02] Run all remaining items in topological batches of at most 4 (`RUNBOOK.md` §1 order); raw answers saved under `topics/<nn>-<slug>/raw/`
 - [ ] [P02-T03] Resolve every `CONFLICT:` line by the `RUNBOOK.md` §4 rule (registry first, owner prompt re-run, consumer re-run)
 - [ ] [P02-T04] Write `audit-codex.md` and `audit-fable.md` for every item; the producer of a decision never audits it
@@ -1509,7 +1542,8 @@ OK: research tree structure valid
 
 ### Automated Verification
 - `scripts/check-research-tree.sh --require-owner-review` exits 0 with every index row `resolved`
-- every `research/topics/*/DECISION.md` passes `scripts/check-answer-shape.sh` for its kind (with `override` where the ledger says OVERRIDE)
+- Every raw answer in `research/topics/*/raw/*.md` passes `scripts/check-answer-shape.sh` for its item's kind (with `override` where the ledger says OVERRIDE).
+- `scripts/check-research-tree.sh` checks decision structure and audit-file presence. P02-TS01 separately requires review of the executed empirical check.
 
 ### Manual Verification
 - Owner reads every OVERRIDE decision and every `audit-*.md` that disagrees with its decision
