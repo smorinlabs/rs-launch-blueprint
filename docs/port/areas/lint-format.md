@@ -38,7 +38,7 @@ Sources: py-launch-blueprint @ b08bccf · ts-launch-blueprint @ cb1cbcb
 ## Cross-area parameters
 - `package-manager-invocation` — Justfile recipes prefix tool calls with `uv run` (py) or `pnpm exec` (ts); the package-manager choice itself belongs to a separate topic.
 - `git-hooks-manager` — lint/format run as staged-file jobs inside `lefthook.yml` in both repos; choosing lefthook over the source's pre-commit framework is decided by the git-hooks topic (D-020).
-- `toml-file-survival` — whether the ts repo carries any `.toml` files at all (and so whether TOML formatting matters) is a consequence of the release-tooling topic's cog.toml keep/drop decision.
+- `toml-file-survival` — whether the ts repo carries any `.toml` files at all (and so whether TOML formatting matters) followed from its release-tooling choice: release-please (`COMMONALITY.md` F063/F066, `COMMON → REUSE`) replaced the source's cog.toml, so ts carries no `.toml` file; for Rust the question is moot because `Cargo.toml` always exists (F097).
 - `ci-job-structure` — py splits lint checks across two workflow files (`ci.yml`, `lint.yml`); ts runs them as sequential steps inside one job; overall workflow layout is decided by the CI topic (D-022).
 
 ## Files read

@@ -14,7 +14,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - The linter's own config; R28 (`linter-and-editor-tooling`) owns F085/F086/F093/F094/F096/F101/F109/F195/F196.
 - The shape of the CI job(s) that run these formatters; R11 (`ci-workflow-job-structure`) owns `ci-job-structure`.
 - The Justfile/lefthook invocation syntax; R42 (`dev-toolchain-provisioning`) owns `package-manager-invocation`.
-- Whether the template's release tooling keeps or drops a `cog.toml`-equivalent config file (which would affect how many TOML files exist beyond `Cargo.toml`/`rustfmt.toml`); that decision belongs to a release-versioning topic outside this batch — treat TOML formatting as needed regardless of its outcome, since `Cargo.toml` and `rust-toolchain.toml` always exist.
+- Whether the template's release tooling keeps or drops a `cog.toml`-equivalent config file (which would affect how many TOML files exist beyond `Cargo.toml`/`rustfmt.toml`); that decision is settled — release-please is inherited (ledger rows F063 and F066, `COMMON → REUSE`), so no `cog.toml` exists — treat TOML formatting as needed regardless, since `Cargo.toml` and `rust-toolchain.toml` always exist.
 - Prior art in the owner's other Rust repositories — do not look for or cite it.
 
 ## Couplings
