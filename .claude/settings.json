@@ -1,5 +1,5 @@
 {
   "companyAnnouncements": [
-    "rs-launch-blueprint: the Rust sibling of py-launch-blueprint and ts-launch-blueprint (CLI + library + web service), currently in research phase — no Rust code yet. Commands: scripts/check-research-tree.sh (validate index/prompts/ledger/registry; add --require-owner-review before Phase 4), scripts/test-check-research-tree.sh (53-case regression suite for the checker). See docs/port/COMMONALITY.md for reuse/override verdicts, research/CLAUDE.md for the research index, and PROJECTS.md P01 for phase status."
+    "rs-launch-blueprint: the Rust sibling of py-launch-blueprint and ts-launch-blueprint (CLI + library + web service), currently in research phase — no Rust code yet. Commands: scripts/check-research-tree.sh (validate index/prompts/ledger/registry; add --require-owner-review before Phase 4), scripts/test-check-research-tree.sh (53-case regression suite for the checker). See docs/port/README.md for the research method and verdict vocabulary, and PROJECTS.md P01 for phase status."
   ]
 }
