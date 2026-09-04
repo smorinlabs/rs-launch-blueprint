@@ -2,13 +2,20 @@
 
 Produced per `docs/superpowers/specs/2026-09-01-rs-port-research-program-design.md`.
 
+Owner amendment A5 makes principles and evidence the selection rule. The ledger
+records source facts and classified baselines, not proof that an architecture
+is best. Shared principles can have different native implementations. Research
+must justify the chosen architecture and libraries, useful differences, and a
+realistic acceptance example. P02 reviews inherited mechanisms under the
+`BASELINE-REVIEW:` process in `research/RUNBOOK.md` before relying on them.
+
 ## How the files relate
 
 1. `areas/<area>.md` — raw evidence. One file per area, each a side-by-side
    table of how `py-launch-blueprint` and `ts-launch-blueprint` handle every
    feature in that area, with file references and any `TS_PORT_DECISIONS.md`
    ids that explain a difference. Written by survey agents; **no verdicts**.
-2. `COVERAGE.md` — every source file of both repos (`git ls-files`) mapped to
+2. `COVERAGE.md` — every source file in both pinned Git trees (`git ls-tree -r --name-only <pinned-sha>`) mapped to
    the feature ids it contributed to, or `EXCLUDED: <reason>`. Proves no file
    was silently skipped by the survey (spec §6.4).
 3. `COMMONALITY.md` — the authoritative ledger. One row per atomic feature,
@@ -22,20 +29,29 @@ Produced per `docs/superpowers/specs/2026-09-01-rs-port-research-program-design.
    value · description`. `fixed` parameters are decided by the owner up front
    (`msrv-policy`, `rust-edition`, `target-os-matrix`, `license`, …);
    `researched` parameters are owned by exactly one `R##` (spec §6.3).
-5. `OWNER-REVIEW.md` — Phase 3.5, one row per item: `item · disposition
-   (accept | narrow | force | drop) · rationale · date`. Not waivable.
-6. `PY_INVENTORY.md`, `TS_INVENTORY.md` — per-repo views derived from the
+5. `DIVERGENCE-ANALYSIS.md` — Phase 3.5 input: for every research item, the
+   py state, the ts state, why they differ (cause class A–G), the Rust
+   question, and whether one value should serve all three repos
+   (`harmonize`). Evidence base for the owner review's rationale column.
+6. `OWNER-REVIEW.md` — Phase 3.5, one row per item: `item · disposition
+   (accept | narrow | force | drop) · rationale · date`. Not waivable. Its
+   *Owner direction* section binds the P02 research runs.
+7. `REVIEW-PHASE4.md` — Phase 4, the independent reviewer's findings table
+   verbatim, each row marked `fixed` or `accepted` with the reason.
+8. `PY_INVENTORY.md`, `TS_INVENTORY.md` — per-repo views derived from the
    same rows, for reading one source repo end to end.
-7. `../../research/CLAUDE.md` — every ledger row whose verdict needs research
+9. `../../research/CLAUDE.md` — every ledger row whose verdict needs research
    maps to an `R##` item with a prompt (several rows may share one `bundle`
    item). Columns: `id · slug · kind (crate | pattern | bundle) · origin ·
    verdict · owns · prompt · status (open | in-progress | resolved | dropped)`.
    `resolved` requires a non-empty `DECISION.md`, `audit-codex.md`, and
    `audit-fable.md`. `../../research/RUNBOOK.md` is the execution contract
-   for the session that runs the prompts (spec §11).
-8. `ts-research-method-review.md` — how the TypeScript port's research was
-   actually run, what to copy, and what it got wrong; the source of the
-   couplings rule, the owner review phase, and the audit files.
+   for the session that runs the prompts (spec §11);
+   `../../research/PROMPT-TEMPLATE.md` is the eight-section prompt shape every
+   `<slug>.prompt.md` follows.
+10. `ts-research-method-review.md` — how the TypeScript port's research was
+    actually run, what to copy, and what it got wrong; the source of the
+    couplings rule, the owner review phase, and the audit files.
 
 ## Verdict vocabulary (closed set — enforced by `scripts/check-research-tree.sh`)
 

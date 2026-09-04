@@ -11,20 +11,69 @@ a research tree whose prompts a later session executes under the contract in
 
 ## 1. Purpose
 
-Decide, with evidence, which parts of the two existing launch blueprints carry
-over to a Rust template unchanged, which need a Rust tool substituted under the
-same pattern, and which — rarely — justify changing the pattern. Every open
+Identify the engineering principles and current industry practices that make
+the CLI, library, and web-service examples dependable and useful. Research the
+architectures and libraries that best realize those principles in Rust, using
+the existing blueprints and their research as evidence. Every open
 choice becomes one deep-research prompt with a fixed answer template so results
 are comparable, and the prompts themselves are committed (the TS port kept only
 its answers, so its questions are unauditable).
 
-## 2. Governing rule — presumption of reuse
+## 2. Governing rule — principles and evidence before implementation
 
-Anything `py-launch-blueprint` and `ts-launch-blueprint` do the same way is
-inherited by `rs-launch-blueprint` by default. Deviating requires a very strong
-Rust-specific reason. Every deviation is labeled **OVERRIDE** in
-`docs/port/COMMONALITY.md` and in the item's decision record, and carries the
-argument and the options that were considered.
+Owner clarification A5 (2026-09-04) supersedes the original presumption of
+reuse and the requirement to choose one value wherever the repos differ.
+The objective is a carefully researched, idiomatic example in each ecosystem,
+with deliberate agreement at the level the owner intends.
+Repository agreement, existing implementation, popularity, and benchmark rank
+are evidence to investigate; none establishes the correct choice by itself.
+
+Separate three levels: the **principle** is the intended engineering outcome
+and its observable acceptance criteria; the **architecture** is how components
+and responsibilities realize it; the **implementation** is the libraries,
+interfaces, configuration, and code. Record the required level of agreement
+before comparing alternatives; do not infer it from how a source happens to be
+implemented. A language or library may justify a different architecture while
+preserving the principle. If an architectural pattern itself is intended to
+be shared, explicitly test its fitness in the target ecosystem and justify
+any adaptation. Do not silently weaken a concrete requirement into a vague goal.
+Explicit owner requirements and fixed parameters remain binding. Other source
+choices, including recorded REUSE/ADOPT mechanisms, require a fitness argument.
+
+| Agreement level | What must be captured | What may vary when justified |
+|---|---|---|
+| Capability or standard | The named requirement, such as using OpenTelemetry in every web example, with observable behavior | The SDK, instrumentation library and initialization or export integration |
+| Architectural pattern | The responsibilities and relationships that matter, such as layered configuration with explicitly named scopes and precedence | The library, data representation, discovery mechanism or a custom implementation; test whether the shared pattern fits the ecosystem |
+| Policy or mechanism | Any deliberately shared value, protocol detail or tool, with its owner decision or evidence | Only the aspects outside that agreement; low-level choices can be shared when that level is intentional |
+
+Each answer records the shared requirement, its agreement level and source,
+the essential behaviors, the ecosystem-specific design, and an acceptance
+check connecting the design back to the requirement. For layered configuration,
+state which global, user, project or other scopes are required and the intended
+precedence; distinguish those requirements from filenames, APIs and libraries.
+Do not import source-specific scopes or precedence without establishing that
+they belong to the shared contract. Where the boundary is unresolved, state the
+gap and recommend a boundary with evidence instead of treating it as decided.
+
+For example, the web example must demonstrate traceability using OpenTelemetry
+(OTel, an open telemetry standard) and useful request metrics. Research the
+framework, instrumentation boundaries, context propagation, and export path
+that best support that outcome. FastAPI in Python and the owner's selected
+Hono direction for TypeScript are precedent and rationale, not Rust selectors.
+An SDK (software development kit) import alone does not demonstrate the outcome:
+the proposed example must carry a request through a handler and an outbound
+operation, expose correlated telemetry, and specify a runnable acceptance check.
+
+Investigate the significant alternatives and why each deserves consideration.
+Compare architecture fit, demonstrated adoption, maintenance, dependability,
+performance under the intended workload, and clarity of the example. State
+tradeoffs and uncertainty. A different design that better preserves the
+principle is a valid result; shared values require a fit argument at the chosen
+agreement level. A Rust library difference is not itself architectural drift,
+and preserving the name of a pattern is not proof that its behavior survived.
+Changing a recorded shared pattern is tracked as **OVERRIDE** in the ledger and
+decision with evidence and alternatives. That label records a departure; it
+does not require inventing a uniquely Rust-specific reason to improve a design.
 
 Distinguish the **pattern** from the **tool**. "One formatter + one linter, run
 in CI and in the pre-commit hook" is a pattern shared by both repos; `ruff` and
@@ -245,12 +294,13 @@ plus the TS port's answer fields.
    at what specificity (a named crate or a named pattern, with version), the
    item kind (`crate`, `pattern`, `bundle`) and the value test: what changes in
    the template if this answer is wrong.
-2. `## Context` — target shape (CLI + lib + web); the inherited pattern quoted
+2. `## Context` — target shape (CLI + lib + web); the source precedent quoted
    with `path:line` references from both repos; the verdict class; any existing
-   decision from the area tables the researcher must not re-decide. Written to
-   pre-empt clarifying questions so the run never stalls. OVERRIDE candidates
-   add: *"The default is to keep pattern X. Argue whether Rust specifically
-   justifies deviating; if not, say so."*
+   owner-fixed requirement, distinguished from recorded implementation choices.
+   Source choices remain evidence to assess under §2. Dependency ownership is
+   respected, and a challenged baseline is reported under §11 rather than
+   silently rewritten. OVERRIDE candidates compare keeping and changing the
+   pattern against its principle, with current evidence for either result.
 3. `## Out of scope` — what the search must not spend budget on.
 4. `## Couplings` — `- id:`, `- owns:`, `- consumes:` lines per §6.3; a
    recommendation that needs a consumed parameter changed records
@@ -270,6 +320,9 @@ plus the TS port's answer fields.
 
 Numbers are collected the same way by every run, or they are not comparable
 (Codex finding 20). Each figure carries its endpoint and retrieval date.
+Before any figure is collected, the prompt's survey method (landscape first ·
+established authority · practice evidence · fit; owner amendment A1, §13) maps
+the field; its output is the `Landscape` answer field.
 
 | Figure | Source | Field / rule |
 |---|---|---|
@@ -312,7 +365,7 @@ gate and excluded from the shortlist:
 
 ### 7.7 Answer template by item kind
 
-**`crate` items:** `Dominant choice` · `Qualified shortlist` — up to five
+**`crate` items:** `Landscape` (§7.6 survey-method output) · `Principles and implementation` (principles, acceptance criteria, architectural alternatives, library fit, and justified differences; A5) · `Dominant choice` · `Qualified shortlist` — up to five
 entries that passed the gates (fewer is a finding, not a failure; Codex
 finding 21) with name, role, 90-day downloads, all-time downloads, stars, last
 release, maintenance state, notable adopters, one-line trade-off ·
@@ -330,7 +383,7 @@ where documented, adopters that practice it, date of the most recent
 authoritative write-up) with no download columns, and `Fit` is argued per
 target shape.
 
-**`bundle` items:** one `Recommendation` for the stack, then the `crate`
+**`bundle` items:** `Landscape`, `Principles and implementation`, then one `Recommendation` for the stack, then the `crate`
 fields for each member, then a `Compatibility` field proving the members are
 tested together (a shared adopter, a shared example repo, or a version matrix).
 
@@ -338,7 +391,10 @@ tested together (a shared adopter, a shared example repo, or a version matrix).
 default` (the pattern as py and ts have it) · `Rust-specific argument` ·
 `Options rejected` · `Override justified: yes | no` · `Resulting verdict` —
 and a `no` sends the ledger row back to `REUSE` or `SUBSTITUTE` at execution
-time under the append-only rule.
+time under the append-only rule. The legacy `Rust-specific argument` heading
+records why the design fits this Rust template, including industry evidence
+that may also justify improving Python or TypeScript; uniqueness to Rust is
+not required (A5).
 
 ## 8. Verification
 
@@ -424,11 +480,15 @@ reconstruct it (Codex finding 25). `RUNBOOK.md` is written in Phase 3 and
 contains:
 
 1. **Run order.** Fixed parameters are already valued. Researched items run in
-   topological order of `consumes`: an item runs only after every item it
-   consumes is `resolved`; items with no dependencies run in batches of ≤4.
-2. **Engine invocation.** The exact `/deep-research` (or Doxa) call per item,
-   the output path, and the check that the answer fills the §7.7 template
-   before anyone reads its content.
+   dependency waves: a `consumes` entry is a hard edge and a non-owner's
+   `related` mention of a parameter owner is a soft edge (A3, §13); an item runs
+   only after every item it has an edge to is `resolved`, and a wave's items
+   run in parallel under the concurrency cap.
+2. **Engine invocation.** Every item runs on every configured engine in
+   parallel, each as its own subagent (Claude Opus, Codex, Doxa; A2, §13), one
+   raw file per engine, the check that each fills the §7.7 template before
+   anyone reads its content, and a synthesis by a non-producer into
+   `DECISION.md`.
 3. **Failure and retry.** One retry on an engine failure; a second failure
    narrows the prompt (`## Questions` HIGH only) and records that in the
    decision; a third is escalated to the owner.
@@ -480,3 +540,16 @@ Their disposition (24 folded, 1 rejected by the owner):
 | 23 | dormancy rule false positives | fixed | maintenance rubric §7.6, D8 |
 | 24 | D6 discards owner's own Rust evidence | rejected by owner (keep D6: anchor-free survey) | D6 |
 | 25 | no executable handoff | fixed | §11, `RUNBOOK.md` |
+
+## 13. Owner amendments (2026-09-04)
+
+Made during Phase 3.5 and the Phase 4 review, before v0.1.0; each is in force
+in the prompts and `RUNBOOK.md`.
+
+| # | Amendment | Effect | Where |
+|---|---|---|---|
+| A1 | Survey method: forest before trees | every prompt's `## Required evidence` opens with four steps (landscape in three bins · established authority · practice evidence · fit); new first answer field `Landscape` for every kind; `check-answer-shape.sh` requires it | §7.6, §7.7, `research/PROMPT-TEMPLATE.md`, all prompts |
+| A2 | Multi-engine research | every item runs on Claude Opus, Codex and Doxa in parallel, each a subagent; a non-producer synthesizes `DECISION.md` (`## Engines` section); at most 4 Claude subagents at once, out-of-process engines uncounted | §11, `RUNBOOK.md` §2, §5 |
+| A3 | Dependency waves | run order from `consumes` (hard) plus non-owner → parameter-owner `related` mentions (soft); waves run in parallel; keystones first | §11, `RUNBOOK.md` §1 |
+| A4 | `accept` sub-choice `b` | Phase 3.5 `accept` may append one cross-repo question to `## Questions` (harmonize items); not a `narrow`; the checker sees `accept` | §6.5, `docs/port/OWNER-REVIEW.md` |
+| A5 | Principles and evidence before implementation | supersedes automatic reuse and compulsory cross-repo uniformity; research principles, native architectures and libraries; require acceptance criteria, evidence-backed differences and a realistic example; assess inherited baselines in P02 | §2, §7.7, `AGENTS.md`, `RUNBOOK.md`, prompt template and all prompts, `OWNER-REVIEW.md` |

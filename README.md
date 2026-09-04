@@ -16,12 +16,15 @@ currently holds the analysis that decides what the template will be made of:
 
 ## Governing rule
 
-Anything both existing blueprints do the same way is inherited here by default.
-Deviating requires a very strong Rust-specific reason, and every deviation is
-labeled **OVERRIDE** with its argument and the options considered. Replacing a
-language-bound tool (e.g. `ruff` → a Rust linter) under the same pattern is a
-substitution, not an override. Full vocabulary: `docs/port/README.md`.
+Research the best engineering principles, architectures, and libraries for a
+realistic CLI, library, and web-service example. Existing blueprints supply
+evidence and lessons; agreement between them does not establish best practice.
+Preserve the intended outcomes with designs suited to each ecosystem, and
+justify both shared conventions and useful differences. Changes to recorded
+patterns remain auditable as **OVERRIDE** decisions with the argument and
+options considered. Full vocabulary: `docs/port/README.md`; authority: design
+spec §2 and owner amendment A5.
 
 ## License
 
-MIT — see `LICENSE`.
+MIT OR Apache-2.0, at your option — see `LICENSE` (Apache-2.0) and `LICENSE-MIT`.
