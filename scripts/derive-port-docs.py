@@ -88,10 +88,13 @@ def write_or_check(path, out, check, uncovered):
     for u in uncovered:
         print(f"UNCOVERED: {u}")
     if check:
-        if path.exists() and path.read_text() == out and not uncovered:
+        if not path.exists():
+            print(f"DRIFT: {path} is missing"); return 1
+        current = path.read_text()
+        if current == out and not uncovered:
             print(f"OK: {path} is current"); return 0
-        print(f"DRIFT: {path} differs from regenerated output" if path.exists() and path.read_text() != out else f"OK: {path} content current")
-        return 1 if (uncovered or path.read_text() != out) else 0
+        print(f"DRIFT: {path} differs from regenerated output" if current != out else f"OK: {path} content current")
+        return 1 if (uncovered or current != out) else 0
     path.write_text(out)
     print(f"wrote {path} ({out.count(chr(10))} lines)")
     return 1 if uncovered else 0

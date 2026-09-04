@@ -22,7 +22,7 @@ Sources: py-launch-blueprint @ b08bccf · ts-launch-blueprint @ cb1cbcb
 Rules for the table:
 1. One row per **atomic** feature. Split "pattern" from "tool": the row "one formatter and one linter, run in CI and in the pre-commit hook" is a pattern; the rows "formatter tool = ruff / oxfmt" and "linter tool = ruff / oxlint" are tools. If a row could be described two ways, split it.
 2. `py` and `ts` cells: one or more citations `` `path:line` `` followed by ` — ` and how it is done, in ten words or fewer. Use `—` only when that repo has no instance of the feature.
-3. `origin`: `same` (both repos, same way — the tool may differ, the pattern is the same), `different` (both repos, different ways), `py-only`, `ts-only`. Never `none`.
+3. `origin`: `same` (both repos, same way — the tool may differ, the pattern is the same), `different` (both repos, different ways), `py-only`, `ts-only`. Phase 1 surveyors never write `none`: they only report features found in the two source repos. During Phase 2, the controller adds Rust-only decisions with `origin = none` and `—` in both source cells (plan Task 8, Step 3). Those later additions explain the `none` rows in the completed area files; they do not expand the Phase 1 survey's scope.
 4. `ts-decisions`: the `D-###` ids that explain a difference, or `—`.
 5. No `|` inside a cell. Leading and trailing pipes on every row. One table in the file.
 6. Do not assign verdicts, recommend crates, or mention Rust tooling. Do not consult any other repository.
