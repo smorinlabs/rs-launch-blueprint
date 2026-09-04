@@ -56,7 +56,7 @@ $ scripts/test-check-research-tree.sh | tail -1
 - Items dropped in Phase 3.5
 
 ### Tests & Tasks
-- [ ] [P02-T01] Run the pilot item end-to-end (prompt → raw answer → `check-answer-shape.sh` → `DECISION.md` → both audits) — this run is binding, unlike P01-TS07
+- [ ] [P02-T01] Run the pilot item end-to-end (prompt → raw answer → `scripts/check-answer-shape.sh` → `DECISION.md` → both audits) — this run is binding, unlike P01-TS07
 - [ ] [P02-T02] Run all remaining items in topological batches of at most 4 (`RUNBOOK.md` §1 order); raw answers saved under `topics/<nn>-<slug>/raw/`
 - [ ] [P02-T03] Resolve every `CONFLICT:` line by the `RUNBOOK.md` §4 rule (registry first, owner prompt re-run, consumer re-run)
 - [ ] [P02-T04] Write `audit-codex.md` and `audit-fable.md` for every item; the producer of a decision never audits it
@@ -76,7 +76,8 @@ OK: research tree structure valid
 
 ### Automated Verification
 - `scripts/check-research-tree.sh --require-owner-review` exits 0 with every index row `resolved`
-- every `research/topics/*/DECISION.md` passes `scripts/check-answer-shape.sh` for its kind (with `override` where the ledger says OVERRIDE)
+- Every raw answer in `research/topics/*/raw/*.md` passes `scripts/check-answer-shape.sh` for its item's kind (with `override` where the ledger says OVERRIDE).
+- `scripts/check-research-tree.sh` checks decision structure and audit-file presence. P02-TS01 separately requires review of the executed empirical check.
 
 ### Manual Verification
 - Owner reads every OVERRIDE decision and every `audit-*.md` that disagrees with its decision
