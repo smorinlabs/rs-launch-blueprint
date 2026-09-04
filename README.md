@@ -24,4 +24,4 @@ substitution, not an override. Full vocabulary: `docs/port/README.md`.
 
 ## License
 
-MIT — see `LICENSE`.
+MIT OR Apache-2.0, at your option — see `LICENSE` (Apache-2.0) and `LICENSE-MIT`.

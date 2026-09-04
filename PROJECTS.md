@@ -1,6 +1,6 @@
 # PROJECTS.md — rs-launch-blueprint
 
-## [~] Project P01: Port research program (v0.1.0)
+## [x] Project P01: Port research program (v0.1.0)
 **Goal/Requirement**: Decide, with evidence, what a Rust launch blueprint inherits from py-launch-blueprint and ts-launch-blueprint, what gets a Rust tool substituted, and what (rarely) overrides the shared pattern — ending with a research index and one deep-research prompt per open item.
 - Presumption of reuse; overrides labeled `OVERRIDE (OV-nn)` with argument and options
 - Target shape: CLI + library + web service
@@ -27,7 +27,7 @@
 - [x] [P01-T07a] Phase 3.5 input — `docs/port/DIVERGENCE-ANALYSIS.md`: one row per research item giving the py state, the ts state, why they differ (cause class A–G), the Rust question, and whether the right fix is one value for all three repos (`harmonize`); feeds the rationale column of `OWNER-REVIEW.md` and the "recommend one value for py, ts and rs" question added to harmonize-flagged prompts (owner decision 2026-09-02)
 - [x] [P01-T07] Phase 3.5 — owner technology-selection review: `docs/port/OWNER-REVIEW.md`, one row per item (not waivable); `scripts/check-research-tree.sh --require-owner-review` green
 - [x] [P01-TS03] Phase 4 — independent reviewer agent spot-checks ≥15 `COMMON → REUSE` rows and sampled `path:line` citations against both repos, confirms `COVERAGE.md` complete, reads every non-REUSE row adversarially; findings fixed
-- [ ] [P01-T05] Phase 5 — PR reviewed by owner, merged, `pull --ff-only`, worktree removed; tag v0.1.0
+- [x] [P01-T05] Phase 5 — PR reviewed by owner, merged, `pull --ff-only`, worktree removed; tag v0.1.0
 - [ ] Regression Test Status
 
 ### Deliverable
