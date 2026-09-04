@@ -12,14 +12,29 @@ Collected 2026-09-04 through a codesign page (`html-codesign` skill; the page an
 >
 > If the principles have multiple layers of configuration, we should use that. If it supports OTel, we should find the best libraries for OTel and do the same. For each one of these principles, we should look at the portion that's most mature and apply it to the next one.
 
-How this binds P02 (the controller's reading, confirmed by the owner on 2026-09-04):
+## Later owner clarification (2026-09-04, verbatim excerpts)
 
-- Principle over library. The more mature implementation, usually py-launch-blueprint, supplies the principle; research finds the language-native equivalent for ts and rs, never the same crate or code pattern.
-- Differences get resolved, not preserved. Where py and ts differ, from maturity or drift, the answer names one value for all three repos. Propagating it into py and ts stays a follow-on project; the `b` prompts carry the question as the last HIGH line of `## Questions`.
+> As we research each point and where there's drift, we want to take the best architectural principles and patterns, not the specific implementation, and apply the best patterns and practices that keep those principles.
+
+> The principles should be there. For example, the best principle for OTel is that we're using OTel and all of them use it, but we use the best library and implementation pattern for each one.
+
+> There is a push for agreement, but the agreement needs to be careful about what level is involved. For example, multi-level config may include custom implementations with user- and project-level configs, etc., or global configs. That's the principle.
+
+> We need to make sure we've captured the principle and applied it correctly, and not mistaken something too low-level for it. In some cases, it may be an architectural pattern, and then we need to see if that pattern is still correct in that other language.
+
+Current binding interpretation for P02 (spec §2, amendment A5). This replaces the earlier interpretation that every difference must yield one value:
+
+- Agreement at an explicit level. Capture the shared capability, standard, architectural pattern or policy and its source before choosing a library or mechanism. OpenTelemetry use is a shared requirement, not merely a suggestion to provide generic observability. Layered configuration requires the intended scopes and precedence, not a copy of a source library's API.
+- Preserve principles through native designs. Existing implementations and their research supply lessons and evidence; maturity alone does not make one repo authoritative. Research significant alternatives and the best-supported implementation pattern in each ecosystem. If the architectural pattern itself is shared, test whether it remains appropriate in the other language.
+- Classify differences by level. Distinguish missing capability, violation of the shared principle, accidental drift and justified ecosystem adaptation. Converge where the shared contract requires it; permit different libraries and mechanisms when they preserve that contract. Changes to py and ts remain a follow-on project. The 60 `b` questions now request this analysis instead of one value for every difference.
+- Require evidence of application. Each answer maps the shared principle and agreement level to the recommended architecture, libraries, reference examples and observable acceptance checks. A crate name, popularity ranking or structurally valid answer alone is insufficient.
 - All three repos ship all three example shapes (CLI, library, web service). This answers the cross-repo scope question parked on R69 (`web-extra-surface`): the ts repo should also ship the web tier.
 - Follow-on work in the ts repo, recorded here and not research items of this program: tRPC as the ts web equivalent (R69 note); template-press for ts (R15 note); a Bandit-class security analyzer for ts if one exists (R31 note).
 - Six items chosen `a` carry cross-repo notes (R22, R31, R42, R58, R71, R73). The note binds through the prompt's `## Context`; no cross-repo question was added, honoring the pick.
 - Every owner note is reproduced verbatim in its prompt's `## Context` as the last bullet and in the rationale column below.
+- Survey method, forest before trees (2026-09-04): every prompt's `## Required evidence` opens with four steps — landscape in three bins (built-in or first-party · industry standard · up-and-comer), authority established not assumed, practice evidence from well-regarded projects, fit over abstract best — and every answer opens with a `Landscape` field (spec §13 A1).
+- Multi-engine research (2026-09-04): every item runs on Claude Opus, Codex and Doxa deep research in parallel, each as its own subagent; a non-producer synthesizes the decision; at most 4 Claude subagents at once, out-of-process engines uncounted (spec §13 A2, `research/RUNBOOK.md` §2).
+- Dependency waves (2026-09-04): keystone decisions such as the web framework (R69) are researched before the items that hang off them, independent items run in parallel (spec §13 A3, `research/RUNBOOK.md` §1).
 
 ## Dispositions
 

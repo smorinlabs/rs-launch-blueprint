@@ -1,8 +1,8 @@
 # PROJECTS.md — rs-launch-blueprint
 
 ## [x] Project P01: Port research program (v0.1.0)
-**Goal/Requirement**: Decide, with evidence, what a Rust launch blueprint inherits from py-launch-blueprint and ts-launch-blueprint, what gets a Rust tool substituted, and what (rarely) overrides the shared pattern — ending with a research index and one deep-research prompt per open item.
-- Presumption of reuse; overrides labeled `OVERRIDE (OV-nn)` with argument and options
+**Goal/Requirement**: Prepare evidence-based research that captures the shared engineering principles and agreement levels, then evaluates the Rust architectures and libraries that best preserve them — ending with a research index and one deep-research prompt per open item.
+- Principles and agreement levels explicit (spec §2/A5); departures from recorded patterns labeled `OVERRIDE (OV-nn)` with argument and options
 - Target shape: CLI + library + web service
 - Design: `docs/superpowers/specs/2026-09-01-rs-port-research-program-design.md`
 - Plan: `docs/superpowers/plans/2026-09-01-p01-research-tree.md` (Tasks 1–18 = Phases 1–5)
@@ -24,7 +24,7 @@
 - [x] [P01-T04] Phase 3 — `research/CLAUDE.md` index, `research/RUNBOOK.md`, one `<slug>.prompt.md` per item (crate / pattern / bundle)
 - [ ] [P01-TS07] Phase 3 conformance pilot — after the first two prompts, one `/deep-research` run checked only for filling the answer template; content discarded — deferred 2026-09-02 to P02-T01 (`/deep-research` is owner-typed only; Doxa is paid); `scripts/check-answer-shape.sh` shipped by Task 14
 - [x] [P01-TS02] `scripts/check-research-tree.sh` green on the real tree
-- [x] [P01-T07a] Phase 3.5 input — `docs/port/DIVERGENCE-ANALYSIS.md`: one row per research item giving the py state, the ts state, why they differ (cause class A–G), the Rust question, and whether the right fix is one value for all three repos (`harmonize`); feeds the rationale column of `OWNER-REVIEW.md` and the "recommend one value for py, ts and rs" question added to harmonize-flagged prompts (owner decision 2026-09-02)
+- [x] [P01-T07a] Phase 3.5 input — `docs/port/DIVERGENCE-ANALYSIS.md`: one row per research item giving the py state, the ts state, why they differ (cause class A–G), the Rust question, and the original cross-repo comparison scope (`harmonize`); feeds `OWNER-REVIEW.md`. Amendment A5 replaces the original one-value question with explicit agreement levels and evidence-backed native designs
 - [x] [P01-T07] Phase 3.5 — owner technology-selection review: `docs/port/OWNER-REVIEW.md`, one row per item (not waivable); `scripts/check-research-tree.sh --require-owner-review` green
 - [x] [P01-TS03] Phase 4 — independent reviewer agent spot-checks ≥15 `COMMON → REUSE` rows and sampled `path:line` citations against both repos, confirms `COVERAGE.md` complete, reads every non-REUSE row adversarially; findings fixed
 - [x] [P01-T05] Phase 5 — PR reviewed by owner, merged, `pull --ff-only`, worktree removed; tag v0.1.0
@@ -46,26 +46,26 @@ $ scripts/test-check-research-tree.sh | tail -1
 - Every `OVERRIDE` row in `COMMONALITY.md` reads as a genuine Rust-specific argument, not a preference
 
 ## [ ] Project P02: Execute research program (v0.2.0)
-**Goal/Requirement**: Run every research item the owner accepted in Phase 3.5 under `research/RUNBOOK.md`, producing one audited `DECISION.md` per item and a filled `docs/port/PARAMETERS.md`.
+**Goal/Requirement**: Run every research item the owner accepted in Phase 3.5 under `research/RUNBOOK.md`, producing one audited `DECISION.md` per item and a filled `docs/port/PARAMETERS.md`. Each decision demonstrates the intended principle at its declared agreement level with an appropriate native design and a realistic acceptance example.
 - Gate: P01 merged and tagged `v0.1.0`; only items with disposition `accept`, `narrow` or `force` in `docs/port/OWNER-REVIEW.md` are run.
-- Engine and invocation: exactly as recorded in `research/RUNBOOK.md` §2; Doxa runs are paid and each batch is confirmed by the owner before submission.
+- Engines and invocation: exactly as recorded in `research/RUNBOOK.md` §2 — Claude Opus, Codex and Doxa deep research per item, in parallel, each a subagent, synthesized by a non-producer; Doxa runs are paid and each wave is confirmed by the owner before submission.
 - Plan: written with `superpowers:writing-plans` after v0.1.0 — not part of P01's plan.
 
 **Out of Scope**
 - Any Rust code, `Cargo.toml`, CI workflow, or template file (the port itself)
-- Re-opening ledger verdicts except through P02-TS02 (an OVERRIDE whose research answers "Override justified: no")
+- Unrecorded changes to ledger verdicts; evidence-backed baseline corrections follow `RUNBOOK.md` §4 (A5), and OVERRIDE reversals follow P02-TS02
 - Items dropped in Phase 3.5
 
 ### Tests & Tasks
-- [ ] [P02-T01] Run the pilot item end-to-end (prompt → raw answer → `check-answer-shape.sh` → `DECISION.md` → both audits) — this run is binding, unlike P01-TS07
-- [ ] [P02-T02] Run all remaining items in topological batches of at most 4 (`RUNBOOK.md` §1 order); raw answers saved under `topics/<nn>-<slug>/raw/`
+- [ ] [P02-T01] First review REUSE/ADOPT baselines for agreement-level mistakes and record/reconcile `BASELINE-REVIEW:` findings under A5; then run the pilot item end-to-end (prompt → three raw answers in parallel → `check-answer-shape.sh` on each → synthesized `DECISION.md` with `## Engines` → both audits) — this run is binding, unlike P01-TS07
+- [ ] [P02-T02] Run all remaining items in dependency waves (`RUNBOOK.md` §1 rules: keystones such as R69 first, independent items in parallel under the §2 cap), every engine per item; raw answers saved under `topics/<nn>-<slug>/raw/`
 - [ ] [P02-T03] Resolve every `CONFLICT:` line by the `RUNBOOK.md` §4 rule (registry first, owner prompt re-run, consumer re-run)
 - [ ] [P02-T04] Write `audit-codex.md` and `audit-fable.md` for every item; the producer of a decision never audits it
 - [ ] [P02-T05] Copy every `owns <param> = <value>` into `docs/port/PARAMETERS.md` and set the row's `owner` value column
 - [ ] [P02-T06] Flip every index row to `resolved`; `scripts/check-research-tree.sh --require-owner-review` exits 0
 - [ ] [P02-T07] PR, owner review, merge (merge commit), `pull --ff-only`, tag `v0.2.0`
 - [ ] [P02-TS01] Every `DECISION.md` has an `## Empirical check` whose command was actually executed and whose output is pasted
-- [ ] [P02-TS02] A reviewer re-reads every OVERRIDE item's "Override justified" field; any `no` flips the ledger row back to the inherited verdict and records the reversal under `### OV-nn`
+- [ ] [P02-TS02] A reviewer verifies the principle-to-design mapping and agreement level in every decision, then re-reads every OVERRIDE item's "Override justified" field; any `no` flips the ledger row back to the inherited verdict and records the reversal under `### OV-nn`
 - [ ] Regression Test Status
 
 ### Deliverable

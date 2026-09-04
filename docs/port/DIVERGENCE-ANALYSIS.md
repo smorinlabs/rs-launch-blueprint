@@ -2,6 +2,8 @@
 
 Phase 3.5 input (owner decision 2026-09-02, `P01-T07a`). The ledger `docs/port/COMMONALITY.md` records *that* `py-launch-blueprint` (`b08bccf`) and `ts-launch-blueprint` (`cb1cbcb`) differ on a feature (its `origin` column). This document records *why*, for every research item in `research/CLAUDE.md`, and separates the Rust question from the question of whether the two source repos should themselves be brought into line.
 
+Owner clarification A5 (2026-09-04) supersedes the original uniformity recommendations below. Source facts and historical classifications remain unchanged. The `harmonize` column now supplies comparison scope, not a required result: identify the shared principle and agreement level, then distinguish accidental drift from justified native designs. No historical suggestion of "no research" exempts an inherited mechanism from P02's baseline review.
+
 ## How to read a row
 
 | column | meaning |
@@ -10,8 +12,8 @@ Phase 3.5 input (owner decision 2026-09-02, `P01-T07a`). The ledger `docs/port/C
 | py state / ts state | what each source repo does, with a `path:line` citation into the pinned commit; `absent` when the repo has no such feature |
 | why they differ | the recorded reason — `D-0nn` cites `ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`, the TypeScript port's own decision log; `inferred:` marks a reason not recorded anywhere |
 | class | cause class, table below |
-| Rust question | what remains to decide for the Rust template — `none` when the answer is to inherit a harmonized value |
-| harmonize | `yes` = the right fix is one value or convention for py, ts and rs together (propagation to py/ts is a follow-on project, not this branch); `no` = Rust decides alone because the mechanics are per-language; `partly` = mixed, see sub-rows |
+| Rust question | the original Rust question; a historical `none` is a baseline claim to assess under A5, not an exemption from evidence |
+| harmonize | original comparison scope: `yes` = all three repos; `no` = Rust alone; `partly` = shared portion plus native mechanics. Later owner choices determine the actual prompt scope; A5 determines the level of agreement |
 
 ## Cause classes
 
@@ -25,13 +27,13 @@ Phase 3.5 input (owner decision 2026-09-02, `P01-T07a`). The ledger `docs/port/C
 | F · genuine design disagreement | both viable, language-neutral; the two repos simply chose differently | decide once and apply to all three, or accept per-repo choice — owner call |
 | G · Rust-only | no precedent in either source | research |
 
-Effect on the owner review (`docs/port/OWNER-REVIEW.md`): every item keeps a disposition from the spec's vocabulary (`accept`, `narrow`, `force`, `drop`); an item with `harmonize: yes` or `partly` additionally gets one question appended to its prompt — "recommend a single value for py, ts and rs" — so the P02 research answers the cross-repo question at the same time.
+Effect on the owner review (`docs/port/OWNER-REVIEW.md`): every item keeps a disposition from the spec's vocabulary (`accept`, `narrow`, `force`, `drop`); an item with `harmonize: yes` or `partly` additionally gets one question appended to its prompt — "identify the shared principle and agreement level, then recommend and justify ecosystem-appropriate designs" — so the P02 research answers the cross-repo question at the same time.
 
 ## Summary
 
 84 research items analysed; 165 table rows (84 item rows + 81 fact sub-rows where facts inside one item have different causes).
 
-**Cause class × harmonize** (item level). `harmonize` = whether the right fix is one value for py, ts and rs rather than a third answer for rs.
+**Cause class × harmonize** (item level). `harmonize` records the original comparison classification; it does not prescribe identical implementation values (A5).
 
 | class | meaning | items | harmonize yes | partly | no |
 |---|---|---|---|---|---|
@@ -45,7 +47,7 @@ Effect on the owner review (`docs/port/OWNER-REVIEW.md`): every item keeps a dis
 | mixed | facts inside the item fall in different classes — see sub-rows | 4 | 0 | 4 | 0 |
 | **total** | | **84** | **22** | **24** | **38** |
 
-**Harmonize = yes (22 items)** — the divergence is a value or an omission that is not language-bound; the owner-review prompt for each gains the question "recommend a single value for py, ts and rs", and propagating the answer to py and ts is a follow-on project:
+**Harmonize = yes (22 items)** — the divergence is a value or an omission that is not language-bound; the owner-review prompt for each gains the question "identify the shared principle and agreement level, then recommend and justify ecosystem-appropriate designs", and propagating the answer to py and ts is a follow-on project:
 
 R07 `contributors-bot-trigger-cadence`, R08 `workflow-permission-hardening`, R09 `self-hosted-runner-indirection`, R17 `secret-scanning-ci-workflow`, R18 `ai-assisted-review-workflows`, R20 `third-party-action-pinning-policy`, R21 `contributors-bot-credential-source`, R24 `changelog-section-mapping`, R25 `semver-bump-strategy`, R33 `property-and-snapshot-testing`, R39 `secret-scanning-hooks`, R43 `ai-assistant-repo-furniture`, R45 `pr-comment-bot-trigger-block`, R46 `per-file-license-header`, R47 `contributors-recipe-mode`, R54 `config-discovery-tiers`, R57 `xdg-directory-set`, R62 `clipboard-integration`, R63 `progress-spinner`, R65 `color-enablement-chain`, R81 `docs-delivery-model`, R85 `rich-terminal-row-niceties`
 

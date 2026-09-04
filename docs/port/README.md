@@ -2,6 +2,13 @@
 
 Produced per `docs/superpowers/specs/2026-09-01-rs-port-research-program-design.md`.
 
+Owner amendment A5 makes principles and evidence the selection rule. The ledger
+records source facts and classified baselines, not proof that an architecture
+is best. Shared principles can have different native implementations. Research
+must justify the chosen architecture and libraries, useful differences, and a
+realistic acceptance example. P02 reviews inherited mechanisms under the
+`BASELINE-REVIEW:` process in `research/RUNBOOK.md` before relying on them.
+
 ## How the files relate
 
 1. `areas/<area>.md` — raw evidence. One file per area, each a side-by-side

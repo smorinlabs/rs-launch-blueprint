@@ -4,9 +4,9 @@ set -uf
 f="${1:?answer file}"; kind="${2:?kind}"; ov="${3:-}"; fail=0
 common="Recommendation|Ranked runner-up|Tradeoffs|Parameters|Migration implications|Validation strategy|Confidence & re-verify trigger|Sources"
 case "$kind" in
-  crate)   want="Dominant choice|Qualified shortlist|Excluded by gate|Up-and-comers|Fit for this template|$common" ;;
-  pattern) want="Dominant choice|Options|Excluded by gate|Up-and-comers|Fit for this template|$common" ;;
-  bundle)  want="Recommendation|Members|Compatibility|Parameters|Migration implications|Validation strategy|Confidence & re-verify trigger|Sources" ;;
+  crate)   want="Landscape|Principles and implementation|Dominant choice|Qualified shortlist|Excluded by gate|Up-and-comers|Fit for this template|$common" ;;
+  pattern) want="Landscape|Principles and implementation|Dominant choice|Options|Excluded by gate|Up-and-comers|Fit for this template|$common" ;;
+  bundle)  want="Landscape|Principles and implementation|Recommendation|Members|Compatibility|Parameters|Migration implications|Validation strategy|Confidence & re-verify trigger|Sources" ;;
   *) echo "FAIL: kind '$kind' not crate|pattern|bundle"; exit 1 ;;
 esac
 [ "$ov" = override ] && want="$want|Inherited default|Rust-specific argument|Options rejected|Override justified|Resulting verdict"
