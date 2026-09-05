@@ -127,6 +127,29 @@ repository-relative inputs and expected hashes. The runner independently checks
 the prepared prompt, policy, fixed/consumed parameters and prerequisite evidence.
 The incomplete example above is refused by the acceptance validator.
 
+`scripts/research_package.py build --item R38 --run-id <run> --staged-dir <dir>`
+assembles that manifest and the whole acceptance bundle from a completed run
+directory instead of by hand, using the same JSON contract and offline command
+as the runner. It reads `research/runs/R##/<run-id>/`: `review/DECISION.md`,
+`review/audit-codex.md`, `review/audit-fable.md`, each `raw/<engine>.md` (or
+its `raw/<engine>.normalized.md` sibling when the run recorded one), every
+`review/evidence/*.log`, and `review/identities.json`. That identities file
+records the `actor`, `model`, `family` and run-relative `file` of each engine
+report, each Light evidence check and both audits, plus the synthesis identity
+and the `argv`, `cwd`, `toolchain`, `output_log` and `exit_code` of the
+empirical rerun. The tool copies those files into `<dir>` under their published
+paths (`raw/<engine>-<run-id>.md`, `evidence/<run-id>-<name>.log`), marks the
+item `resolved` in `research/CLAUDE.md`, copies every `- owns <param> = <value>`
+decision line into that parameter's registry value column, derives
+`acceptance.json` under the acceptance schema, and writes `<dir>/manifest.json`
+listing only the staged files whose bytes differ from the repository. It
+refuses a run whose copied prompt is no longer current, an audit whose verdict
+is not `approve` or whose unresolved findings are not `none`, a missing
+identity, evidence or prerequisite decision, and a prerequisite that is not an
+accepted resolved topic. It never writes inside the repository and takes no
+publication lock: review the staged tree, then publish it with
+`publication apply`, which repeats every check while holding that lock.
+
 A short wrapper returns only the run directory, state, operation ID when known,
 output-file paths and hashes, and the next required action. Full provider results
 stay in the run directory. Record the approved currency and remaining amount
