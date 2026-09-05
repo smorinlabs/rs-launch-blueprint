@@ -1,0 +1,4 @@
+Written: [raw/codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R42/2026-09-05T155503Z-4141a35b69e0/raw/codex.md)  
+SHA-256: `b3e8e5204f27a67f06e503c277846a55e38dbae9d30944a7bb37638e07ed998a`  
+H3 fields: 10; `BASELINE-REVIEW:` lines: 2; `CONFLICT:` lines: 0.  
+Unverified: GitHub issue responsiveness was rate-limited; RustSec page returned 404; validation commands are planned, not run.  

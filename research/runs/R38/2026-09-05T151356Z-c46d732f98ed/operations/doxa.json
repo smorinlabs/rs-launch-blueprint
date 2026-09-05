@@ -1,0 +1,14 @@
+{
+  "actor": "research-doxa-2026-09-05T151356Z-c46d732f98ed",
+  "actual_model": "gpt-5.6-sol",
+  "actual_provider": "openai job resp_004c14d621f391d2006a9c3ad2f14887d0b228550d2c17554f running; perplexity submit failed (API key not found); gemini not attempted",
+  "at": "2026-09-05T15:52:47Z",
+  "collected_at": "2026-09-05T15:55:00Z",
+  "model": "all_deep_research (openai gpt-5.6-sol)",
+  "operation_id": "research-20260905-085249-d20c27b4d6c642cd",
+  "provider": "doxa",
+  "reason": "attempt 2 (Doxa op research-20260905-085249-d20c27b4d6c642cd): OpenAI job resp_004c14d621f391d2006a9c3ad2f14887d0b228550d2c17554f was created and failed immediately with credit_balance_exhausted (no credits on the OpenAI account; no tokens billed); Perplexity submit failed (Doxa: API key not found, HTTP 401 suspected); Gemini not attempted. Provider-wide billing/auth failures: Doxa admissions paused pending owner action",
+  "request_id": "768eda824dbb4f5d950fa1d933088c96",
+  "returned_at": "2026-09-05T15:53:59Z",
+  "state": "failed"
+}

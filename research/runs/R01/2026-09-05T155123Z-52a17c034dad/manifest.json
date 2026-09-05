@@ -1,0 +1,130 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-05T15:51:23Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-05T15:51:23Z",
+      "state": "ready"
+    },
+    {
+      "actor": "research-codex-2026-09-05T155123Z-52a17c034dad",
+      "at": "2026-09-05T15:51:24Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T155123Z-52a17c034dad",
+        "at": "2026-09-05T15:51:24Z",
+        "model": "gpt-5.6-terra",
+        "provider": "codex",
+        "request_id": "8504426d7f3e42148e3f9b161f17555d",
+        "state": "submitting"
+      },
+      "provider": "codex",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-opus-2026-09-05T155123Z-52a17c034dad",
+      "at": "2026-09-05T15:51:49Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T155123Z-52a17c034dad",
+        "at": "2026-09-05T15:51:49Z",
+        "model": "claude-opus-5[1m]",
+        "provider": "opus",
+        "request_id": "a7acd078d1c7484283cf10e4127d453d",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-codex-2026-09-05T155123Z-52a17c034dad",
+      "at": "2026-09-05T15:58:09Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T155123Z-52a17c034dad",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T15:51:24Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a07244-a0cf-7523-b8f9-1d7663784799",
+        "provider": "codex",
+        "request_id": "8504426d7f3e42148e3f9b161f17555d",
+        "returned_at": "2026-09-05T15:58:09Z",
+        "state": "submitted"
+      },
+      "provider": "codex",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-codex-2026-09-05T155123Z-52a17c034dad",
+      "at": "2026-09-05T15:58:09Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T155123Z-52a17c034dad",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T15:51:24Z",
+        "collected_at": "2026-09-05T15:58:09Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a07244-a0cf-7523-b8f9-1d7663784799",
+        "provider": "codex",
+        "raw": "research/runs/R01/2026-09-05T155123Z-52a17c034dad/raw/codex-2e63259d939bcbc2cbc73f6b888220594cd1c5c134970364da1a1f28477a3758.md",
+        "raw_sha256": "2e63259d939bcbc2cbc73f6b888220594cd1c5c134970364da1a1f28477a3758",
+        "reason": "",
+        "request_id": "8504426d7f3e42148e3f9b161f17555d",
+        "returned_at": "2026-09-05T15:58:09Z",
+        "state": "succeeded"
+      },
+      "provider": "codex",
+      "state": "succeeded"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "1c35293a773f7e60b0c47232966c661433b845b9b21685a08792143ed8650d1a",
+    "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+    "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+    "policy": "0023242a0337eade8fcd4f025fe7543b84338bf82916850a3659b8d949efb4e2",
+    "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+    "prerequisites": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "prompt": "9bb7e40203bd5f6c8e302d4e7aec5fe19f59c8df3333f085e94283fc84c8bb64",
+    "registry": "31a19e71ca9592be335161acdf0caaa3ae13ec0202ea38633ff192319def4cbf"
+  },
+  "item": "R01",
+  "model": "claude-fable-5-1",
+  "operations": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T155123Z-52a17c034dad",
+      "actual_model": "gpt-5.6-terra",
+      "actual_provider": "codex-cli-0.153.2",
+      "at": "2026-09-05T15:51:24Z",
+      "collected_at": "2026-09-05T15:58:09Z",
+      "model": "gpt-5.6-terra",
+      "operation_id": "01a07244-a0cf-7523-b8f9-1d7663784799",
+      "provider": "codex",
+      "raw": "research/runs/R01/2026-09-05T155123Z-52a17c034dad/raw/codex-2e63259d939bcbc2cbc73f6b888220594cd1c5c134970364da1a1f28477a3758.md",
+      "raw_sha256": "2e63259d939bcbc2cbc73f6b888220594cd1c5c134970364da1a1f28477a3758",
+      "reason": "",
+      "request_id": "8504426d7f3e42148e3f9b161f17555d",
+      "returned_at": "2026-09-05T15:58:09Z",
+      "state": "succeeded"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T155123Z-52a17c034dad",
+      "at": "2026-09-05T15:51:49Z",
+      "model": "claude-opus-5[1m]",
+      "provider": "opus",
+      "request_id": "a7acd078d1c7484283cf10e4127d453d",
+      "state": "submitting"
+    }
+  },
+  "prompt_source": "research/topics/01-ports-and-adapters-seam/prompts/ports-and-adapters-seam.prompt.md",
+  "remaining_budget": "USD 300.00 remaining of USD 300.00 bulk Deep ceiling (no Doxa submission before the pilot publishes; no automatic retry)",
+  "required_engines": [
+    "codex",
+    "opus",
+    "doxa"
+  ],
+  "run_id": "2026-09-05T155123Z-52a17c034dad",
+  "schema_version": 1,
+  "state": "partial",
+  "tier": "deep",
+  "updated_at": "2026-09-05T15:58:09Z"
+}

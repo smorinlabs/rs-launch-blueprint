@@ -1,0 +1,26 @@
+[
+  {
+    "kind": "fixed",
+    "owner": "owner",
+    "param": "msrv-policy",
+    "value": "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI"
+  },
+  {
+    "kind": "fixed",
+    "owner": "owner",
+    "param": "rust-edition",
+    "value": "2024"
+  },
+  {
+    "kind": "fixed",
+    "owner": "owner",
+    "param": "target-os-matrix",
+    "value": "ubuntu-latest, macos-latest"
+  },
+  {
+    "kind": "fixed",
+    "owner": "owner",
+    "param": "license",
+    "value": "MIT OR Apache-2.0"
+  }
+]

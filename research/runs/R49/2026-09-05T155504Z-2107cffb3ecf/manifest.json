@@ -1,0 +1,108 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-05T15:55:04Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-05T15:55:04Z",
+      "state": "ready"
+    },
+    {
+      "actor": "research-codex-2026-09-05T155504Z-2107cffb3ecf",
+      "at": "2026-09-05T15:55:04Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T155504Z-2107cffb3ecf",
+        "at": "2026-09-05T15:55:04Z",
+        "model": "gpt-5.6-terra",
+        "provider": "codex",
+        "request_id": "aff360d5d132448793754cb34235daa4",
+        "state": "submitting"
+      },
+      "provider": "codex",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-codex-2026-09-05T155504Z-2107cffb3ecf",
+      "at": "2026-09-05T16:02:40Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T155504Z-2107cffb3ecf",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T15:55:04Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a07248-7b36-7f71-8f97-30c87ab1c8de",
+        "provider": "codex",
+        "request_id": "aff360d5d132448793754cb34235daa4",
+        "returned_at": "2026-09-05T16:02:40Z",
+        "state": "submitted"
+      },
+      "provider": "codex",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-codex-2026-09-05T155504Z-2107cffb3ecf",
+      "at": "2026-09-05T16:02:40Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T155504Z-2107cffb3ecf",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T15:55:04Z",
+        "collected_at": "2026-09-05T16:02:40Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a07248-7b36-7f71-8f97-30c87ab1c8de",
+        "provider": "codex",
+        "raw": "research/runs/R49/2026-09-05T155504Z-2107cffb3ecf/raw/codex-cd14ccfbbefdabb73358b9b75dd288f863c9984100d6d5e3d21f796e3c37f183.md",
+        "raw_sha256": "cd14ccfbbefdabb73358b9b75dd288f863c9984100d6d5e3d21f796e3c37f183",
+        "reason": "",
+        "request_id": "aff360d5d132448793754cb34235daa4",
+        "returned_at": "2026-09-05T16:02:40Z",
+        "state": "succeeded"
+      },
+      "provider": "codex",
+      "state": "succeeded"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "1c35293a773f7e60b0c47232966c661433b845b9b21685a08792143ed8650d1a",
+    "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+    "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+    "policy": "0023242a0337eade8fcd4f025fe7543b84338bf82916850a3659b8d949efb4e2",
+    "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+    "prerequisites": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "prompt": "a20ad1ab0bd69b364e6cc09b5d159b1a348f908c8c3bd9c3260683eb25c6d028",
+    "registry": "31a19e71ca9592be335161acdf0caaa3ae13ec0202ea38633ff192319def4cbf"
+  },
+  "item": "R49",
+  "model": "claude-fable-5-1",
+  "operations": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T155504Z-2107cffb3ecf",
+      "actual_model": "gpt-5.6-terra",
+      "actual_provider": "codex-cli-0.153.2",
+      "at": "2026-09-05T15:55:04Z",
+      "collected_at": "2026-09-05T16:02:40Z",
+      "model": "gpt-5.6-terra",
+      "operation_id": "01a07248-7b36-7f71-8f97-30c87ab1c8de",
+      "provider": "codex",
+      "raw": "research/runs/R49/2026-09-05T155504Z-2107cffb3ecf/raw/codex-cd14ccfbbefdabb73358b9b75dd288f863c9984100d6d5e3d21f796e3c37f183.md",
+      "raw_sha256": "cd14ccfbbefdabb73358b9b75dd288f863c9984100d6d5e3d21f796e3c37f183",
+      "reason": "",
+      "request_id": "aff360d5d132448793754cb34235daa4",
+      "returned_at": "2026-09-05T16:02:40Z",
+      "state": "succeeded"
+    }
+  },
+  "prompt_source": "research/topics/49-build-target-declaration/prompts/build-target-declaration.prompt.md",
+  "remaining_budget": "USD 300.00 remaining of USD 300.00 bulk Deep ceiling (Doxa admissions paused; no automatic retry)",
+  "required_engines": [
+    "codex",
+    "opus",
+    "doxa"
+  ],
+  "run_id": "2026-09-05T155504Z-2107cffb3ecf",
+  "schema_version": 1,
+  "state": "partial",
+  "tier": "deep",
+  "updated_at": "2026-09-05T16:02:40Z"
+}

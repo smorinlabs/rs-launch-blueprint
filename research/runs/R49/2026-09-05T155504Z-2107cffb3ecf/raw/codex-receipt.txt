@@ -1,0 +1,7 @@
+Wrote [raw/codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R49/2026-09-05T155504Z-2107cffb3ecf/raw/codex.md).
+
+SHA-256: `cd14ccfbbefdabb73358b9b75dd288f863c9984100d6d5e3d21f796e3c37f183`  
+H3 fields: 15  
+Emitted: `BASELINE-REVIEW: F218`  
+Unverified: RustSec 404 responses and GitHub issue responsiveness after rate limiting.
+

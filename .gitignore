@@ -2,3 +2,5 @@
 __pycache__/
 research/runs/.locks/
 **/target/
+research/runs/*/*/raw/*-transcript.txt
+research/runs/*/*/review/*-transcript.txt
