@@ -64,9 +64,18 @@
     },
     {
       "at": "2026-09-05T16:14:34Z",
-      "state": "succeeded",
+      "correction": "controller corrected operation_id from 01a0724f-933e-7e93-9d87-1f6bd96ae5f9 (R46's research thread, picked by a text-match lookup error) to 01a0724f-a200-7411-9436-84685e82ae66 (rollout session_meta cwd match); raw report and hashes unchanged",
       "provider": "codex",
-      "correction": "controller corrected operation_id from 01a0724f-933e-7e93-9d87-1f6bd96ae5f9 (R46's research thread, picked by a text-match lookup error) to 01a0724f-a200-7411-9436-84685e82ae66 (rollout session_meta cwd match); raw report and hashes unchanged"
+      "state": "succeeded"
+    },
+    {
+      "at": "2026-09-05T18:31:52Z",
+      "publication": {
+        "acceptance_sha256": "b837659020ec358ee2aaafbe44b4f1466918f55800f63035b3cd03f43575fd64",
+        "decision_sha256": "20693ce171bcde1e4e0bbe1c8b03e3b11a5619d2824ed6578af8abf6305791ba",
+        "transaction": "8c7ee7d8b716428a9bb34d174399ba81"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -100,13 +109,18 @@
     }
   },
   "prompt_source": "research/topics/47-contributors-recipe-mode/prompts/contributors-recipe-mode.prompt.md",
+  "publication": {
+    "acceptance_sha256": "b837659020ec358ee2aaafbe44b4f1466918f55800f63035b3cd03f43575fd64",
+    "decision_sha256": "20693ce171bcde1e4e0bbe1c8b03e3b11a5619d2824ed6578af8abf6305791ba",
+    "transaction": "8c7ee7d8b716428a9bb34d174399ba81"
+  },
   "remaining_budget": "no paid engine (Light tier)",
   "required_engines": [
     "codex"
   ],
   "run_id": "2026-09-05T160304Z-99a3dd6456c0",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "light",
-  "updated_at": "2026-09-05T16:13:45Z"
+  "updated_at": "2026-09-05T18:31:52Z"
 }
