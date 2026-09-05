@@ -57,3 +57,19 @@ https://claude.ai/code/session_013Dvsi7FhLemRfUyFSQi87A):
 Retry policy for all paid work: none automatic; a failed or ambiguous
 provider job is recorded and re-approved individually. Merging remains a
 separate approval.
+
+## Controller ruling — OpenAI model substitution (2026-09-05)
+
+OpenAI shut down `o3-deep-research` and `o4-mini-deep-research` on 2026-07-23
+(announced 2026-04-22; https://developers.openai.com/api/docs/deprecations,
+retrieved 2026-09-05) and names `gpt-5.6-sol` as the replacement. The first
+pilot submission (Doxa checkpoint `research-20260905-082108-efa8d00fdd884231`)
+failed at the OpenAI create call with `model_not_found` before any provider
+job existed, so no paid work occurred. Under the recorded authorization
+`OWNER-2026-09-05-P02-EXEC` and the unchanged USD 40 ceiling, the controller
+substitutes `gpt-5.6-sol` (USD 4 per 1M input, USD 20 per 1M output; cheaper
+than the shut-down model) for the OpenAI job of batch `B0-R38` and of every
+later Deep operation, driven through `scripts/doxa_no_retry.py`'s shim. The
+owner's acknowledgment of this substitution is requested in the session report;
+Perplexity `sonar-deep-research` and Gemini `deep-research-preview-04-2026`
+are unchanged.
