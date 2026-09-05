@@ -4,3 +4,8 @@ research/runs/.locks/
 **/target/
 research/runs/*/*/raw/*-transcript.txt
 research/runs/*/*/review/*-transcript.txt
+research/runs/*/*/raw/fixture-*/
+research/runs/*/*/review/empirical/
+research/runs/*/*/review/empirical-audit/
+research/runs/*/*/review/tools/
+research/runs/*/*/review/*/tools/

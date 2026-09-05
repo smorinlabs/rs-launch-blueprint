@@ -1,0 +1,1 @@
+Wrote `raw/codex.md` — SHA-256 `33d7b890f55db3720ef09131dab13f6e799db277d2b2c296f77021a75fd29431`; 15 H3 fields; no `CONFLICT:`/`BASELINE-REVIEW:` lines; issue-response metrics remain unverified due API rate limiting.

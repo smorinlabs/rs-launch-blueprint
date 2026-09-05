@@ -1,0 +1,59 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-05T16:36:16Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-05T16:36:16Z",
+      "state": "ready"
+    },
+    {
+      "actor": "research-codex-2026-09-05T163616Z-1ab131aed82d",
+      "at": "2026-09-05T16:36:16Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T163616Z-1ab131aed82d",
+        "at": "2026-09-05T16:36:16Z",
+        "model": "gpt-5.6-terra",
+        "provider": "codex",
+        "request_id": "b429121e811f433aaf11bdf569b3b2bc",
+        "state": "submitting"
+      },
+      "provider": "codex",
+      "state": "submitting"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "1c35293a773f7e60b0c47232966c661433b845b9b21685a08792143ed8650d1a",
+    "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+    "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+    "policy": "0023242a0337eade8fcd4f025fe7543b84338bf82916850a3659b8d949efb4e2",
+    "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+    "prerequisites": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "prompt": "62a938ecd75ecfe1765e7ff68582cb8e92ef958e98457e8fccc4dc2594d34ce5",
+    "registry": "31a19e71ca9592be335161acdf0caaa3ae13ec0202ea38633ff192319def4cbf"
+  },
+  "item": "R21",
+  "model": "claude-fable-5-1",
+  "operations": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T163616Z-1ab131aed82d",
+      "at": "2026-09-05T16:36:16Z",
+      "model": "gpt-5.6-terra",
+      "provider": "codex",
+      "request_id": "b429121e811f433aaf11bdf569b3b2bc",
+      "state": "submitting"
+    }
+  },
+  "prompt_source": "research/topics/21-contributors-bot-credential-source/prompts/contributors-bot-credential-source.prompt.md",
+  "remaining_budget": "no paid engine (Focused tier)",
+  "required_engines": [
+    "codex",
+    "opus"
+  ],
+  "run_id": "2026-09-05T163616Z-1ab131aed82d",
+  "schema_version": 1,
+  "state": "submitting",
+  "tier": "focused",
+  "updated_at": "2026-09-05T16:36:16Z"
+}

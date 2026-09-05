@@ -21,6 +21,46 @@
       },
       "provider": "codex",
       "state": "submitting"
+    },
+    {
+      "actor": "research-codex-2026-09-05T162400Z-58ba22bff8ca",
+      "at": "2026-09-05T16:29:42Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T162400Z-58ba22bff8ca",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T16:24:00Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a07262-94c1-7130-9fd2-d7b5a57163ba",
+        "provider": "codex",
+        "request_id": "91d47e4eb4b946e8b0a9d3f3d10c6f98",
+        "returned_at": "2026-09-05T16:29:42Z",
+        "state": "submitted"
+      },
+      "provider": "codex",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-codex-2026-09-05T162400Z-58ba22bff8ca",
+      "at": "2026-09-05T16:29:42Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T162400Z-58ba22bff8ca",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T16:24:00Z",
+        "collected_at": "2026-09-05T16:29:42Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a07262-94c1-7130-9fd2-d7b5a57163ba",
+        "provider": "codex",
+        "raw": "research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/raw/codex-fec48e36bb5a3183da6f2a133cdccc223fcaf722a49a3410e30fe1c45501af04.md",
+        "raw_sha256": "fec48e36bb5a3183da6f2a133cdccc223fcaf722a49a3410e30fe1c45501af04",
+        "reason": "",
+        "request_id": "91d47e4eb4b946e8b0a9d3f3d10c6f98",
+        "returned_at": "2026-09-05T16:29:42Z",
+        "state": "succeeded"
+      },
+      "provider": "codex",
+      "state": "succeeded"
     }
   ],
   "input_hashes": {
@@ -38,11 +78,19 @@
   "operations": {
     "codex": {
       "actor": "research-codex-2026-09-05T162400Z-58ba22bff8ca",
+      "actual_model": "gpt-5.6-terra",
+      "actual_provider": "codex-cli-0.153.2",
       "at": "2026-09-05T16:24:00Z",
+      "collected_at": "2026-09-05T16:29:42Z",
       "model": "gpt-5.6-terra",
+      "operation_id": "01a07262-94c1-7130-9fd2-d7b5a57163ba",
       "provider": "codex",
+      "raw": "research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/raw/codex-fec48e36bb5a3183da6f2a133cdccc223fcaf722a49a3410e30fe1c45501af04.md",
+      "raw_sha256": "fec48e36bb5a3183da6f2a133cdccc223fcaf722a49a3410e30fe1c45501af04",
+      "reason": "",
       "request_id": "91d47e4eb4b946e8b0a9d3f3d10c6f98",
-      "state": "submitting"
+      "returned_at": "2026-09-05T16:29:42Z",
+      "state": "succeeded"
     }
   },
   "prompt_source": "research/topics/07-contributors-bot-trigger-cadence/prompts/contributors-bot-trigger-cadence.prompt.md",
@@ -53,7 +101,7 @@
   ],
   "run_id": "2026-09-05T162400Z-58ba22bff8ca",
   "schema_version": 1,
-  "state": "submitting",
+  "state": "partial",
   "tier": "focused",
-  "updated_at": "2026-09-05T16:24:00Z"
+  "updated_at": "2026-09-05T16:29:42Z"
 }

@@ -12,5 +12,10 @@ line_length = 72
 subject_capitalized = false
 subject_not_punctuated = true
 imperative_subject = false
+# merge_commit = false disallows merge commits on the range path with an explicit
+# error. Even when allowed, a merge commit's message fails the Conventional
+# grammar, so PR branches must be linear (rebase onto main; never merge main in).
 merge_commit = true
-ignore_author_re = "(dependabot|renovate)"
+# No ignore_author_re: a whole-commit author exemption would skip the type
+# check for bots. Bot pull requests use committed.bot.toml, selected in CI by
+# PR-author login, which relaxes only the width rules.

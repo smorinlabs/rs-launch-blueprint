@@ -21,6 +21,60 @@
       },
       "provider": "codex",
       "state": "submitting"
+    },
+    {
+      "actor": "research-codex-2026-09-05T162359Z-3c50443de1e8",
+      "at": "2026-09-05T16:30:02Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T162359Z-3c50443de1e8",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T16:24:00Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a07262-7089-7232-a8dc-9462049a929b",
+        "provider": "codex",
+        "request_id": "90e1380b6c774cf198240b68522c4bce",
+        "returned_at": "2026-09-05T16:30:02Z",
+        "state": "submitted"
+      },
+      "provider": "codex",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-codex-2026-09-05T162359Z-3c50443de1e8",
+      "at": "2026-09-05T16:30:02Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T162359Z-3c50443de1e8",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T16:24:00Z",
+        "collected_at": "2026-09-05T16:30:02Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a07262-7089-7232-a8dc-9462049a929b",
+        "provider": "codex",
+        "raw": "research/runs/R04/2026-09-05T162359Z-3c50443de1e8/raw/codex-581d44c532bf6eed136e89fd5702367a2369aa616ace9656baf64e51d4d60ae4.md",
+        "raw_sha256": "581d44c532bf6eed136e89fd5702367a2369aa616ace9656baf64e51d4d60ae4",
+        "reason": "",
+        "request_id": "90e1380b6c774cf198240b68522c4bce",
+        "returned_at": "2026-09-05T16:30:02Z",
+        "state": "succeeded"
+      },
+      "provider": "codex",
+      "state": "succeeded"
+    },
+    {
+      "actor": "research-opus-2026-09-05T162359Z-3c50443de1e8",
+      "at": "2026-09-05T16:31:26Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T162359Z-3c50443de1e8",
+        "at": "2026-09-05T16:31:26Z",
+        "model": "claude-opus-5[1m]",
+        "provider": "opus",
+        "request_id": "00c79c3c42a541e59df1ac3dd899ac20",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
     }
   ],
   "input_hashes": {
@@ -38,10 +92,26 @@
   "operations": {
     "codex": {
       "actor": "research-codex-2026-09-05T162359Z-3c50443de1e8",
+      "actual_model": "gpt-5.6-terra",
+      "actual_provider": "codex-cli-0.153.2",
       "at": "2026-09-05T16:24:00Z",
+      "collected_at": "2026-09-05T16:30:02Z",
       "model": "gpt-5.6-terra",
+      "operation_id": "01a07262-7089-7232-a8dc-9462049a929b",
       "provider": "codex",
+      "raw": "research/runs/R04/2026-09-05T162359Z-3c50443de1e8/raw/codex-581d44c532bf6eed136e89fd5702367a2369aa616ace9656baf64e51d4d60ae4.md",
+      "raw_sha256": "581d44c532bf6eed136e89fd5702367a2369aa616ace9656baf64e51d4d60ae4",
+      "reason": "",
       "request_id": "90e1380b6c774cf198240b68522c4bce",
+      "returned_at": "2026-09-05T16:30:02Z",
+      "state": "succeeded"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T162359Z-3c50443de1e8",
+      "at": "2026-09-05T16:31:26Z",
+      "model": "claude-opus-5[1m]",
+      "provider": "opus",
+      "request_id": "00c79c3c42a541e59df1ac3dd899ac20",
       "state": "submitting"
     }
   },
@@ -53,7 +123,7 @@
   ],
   "run_id": "2026-09-05T162359Z-3c50443de1e8",
   "schema_version": 1,
-  "state": "submitting",
+  "state": "partial",
   "tier": "focused",
-  "updated_at": "2026-09-05T16:24:00Z"
+  "updated_at": "2026-09-05T16:31:26Z"
 }

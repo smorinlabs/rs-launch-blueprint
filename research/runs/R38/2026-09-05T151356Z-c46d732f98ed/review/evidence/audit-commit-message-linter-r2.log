@@ -1,0 +1,134 @@
+------------------------------------------------------------------------
+R38 empirical check: committed 1.1.11 vs rs-launch-blueprint commit-message-convention
+date (UTC): 2026-09-05T16:36:58Z
+cwd: /private/tmp/r38-empirical-audit.tjGjjy/empirical-audit
+toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew); cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew); git version 2.50.1 (Apple Git-155)
+os: Darwin 25.4.0 arm64; ProductName:		macOS ProductVersion:		26.4 BuildVersion:		25E246 
+------------------------------------------------------------------------
+0. provision committed 1.1.11 into ./tools (cargo install --locked)
+  Installing /private/tmp/r38-empirical-audit.tjGjjy/empirical-audit/tools/bin/committed
+   Installed package `committed v1.1.11` (executable `committed`)
+warning: be sure to add `/private/tmp/r38-empirical-audit.tjGjjy/empirical-audit/tools/bin` to your PATH to be able to run the installed binaries
+binary: /private/tmp/r38-empirical-audit.tjGjjy/empirical-audit/tools/bin/committed
+version: committed 1.1.11
+size:  3868064 bytes
+effective configuration (committed --dump-config -), read from repo-root committed.toml with no --config flag:
+       | subject_length = 50
+       | subject_capitalized = false
+       | subject_not_punctuated = true
+       | imperative_subject = false
+       | no_fixup = true
+       | no_wip = true
+       | hard_line_length = 0
+       | line_length = 72
+       | style = "conventional"
+       | allowed_types = [
+       |     "build",
+       |     "chore",
+       |     "ci",
+       |     "docs",
+       |     "feat",
+       |     "fix",
+       |     "perf",
+       |     "refactor",
+       |     "revert",
+       |     "style",
+       |     "test",
+       | ]
+       | allowed_scopes = []
+       | merge_commit = false
+------------------------------------------------------------------------
+1. hook path: committed --commit-file <message file>  (the commit-msg contract)
+01   expected=0      observed=0    PASS   conforming message: type in enum, 33-col subject, 66-col body, Refs footer
+02   expected=1      observed=1    PASS   type not in the enum (wibble)
+       | /private/tmp/r38-empirical-audit.tjGjjy/empirical-audit/messages/02-bad-type.txt: error Disallowed type `wibble` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+03   expected=1      observed=1    PASS   71-col subject with spaces (soft length 63 > 50)
+       | /private/tmp/r38-empirical-audit.tjGjjy/empirical-audit/messages/03-long-subject.txt: error Commit subject is too long, 71 exceeds the max length of 50
+04   expected=1      observed=1    PASS   83-col body line with spaces (soft length 78 > 72)
+       | /private/tmp/r38-empirical-audit.tjGjjy/empirical-audit/messages/04-long-body-line.txt: error Line is too long, 83 exceeds the max length of 72
+05   expected=0      observed=0    PASS   body line is one bare 116-col permalink URL (un-wrappable token exempt)
+06   expected=1      observed=1    PASS   subject ends with a period
+       | /private/tmp/r38-empirical-audit.tjGjjy/empirical-audit/messages/06-subject-period.txt: error Subject should not be punctuated but found `.`
+07   expected=0      observed=0    PASS   107-col 'Claude-Session: <url>' footer trailer (URL is the final token)
+08   expected=1      observed=1    PASS   96-col footer line with spaces (footer lines share the 72 cap)
+       | /private/tmp/r38-empirical-audit.tjGjjy/empirical-audit/messages/08-long-footer-line.txt: error Line is too long, 96 exceeds the max length of 72
+09   expected=0      observed=0    PASS   capitalised subject accepted: no subject-case rule (documented divergence from commitlint)
+10   expected=0      observed=0    PASS   noun-phrase subject 'docs: P01 port research tree' (imperative_subject = false; matches repo history)
+11   expected=1      observed=1    PASS   'fixup! ...' WITHOUT --fixup --wip (bare hook form would break git commit --fixup)
+       | /private/tmp/r38-empirical-audit.tjGjjy/empirical-audit/messages/11-fixup.txt: error Fixup commits must be squashed
+12   expected=0      observed=0    PASS   'fixup! ...' WITH --fixup --wip (crate-ci's canonical commit-msg args)
+13   expected=1      observed=1    PASS   'WIP: still working' with the flags: WIP rule relaxed, grammar still enforced
+       | /private/tmp/r38-empirical-audit.tjGjjy/empirical-audit/messages/13-wip.txt: error Commit is not in Conventional format: Missing type in the commit summary, expected `type: description`
+14   expected=record observed=1    RECORD subject immediately followed by body (no blank line)
+       | /private/tmp/r38-empirical-audit.tjGjjy/empirical-audit/messages/14-no-blank-line.txt: error Commit is not in Conventional format: Incorrect body syntax
+15   expected=1      observed=1    PASS   NO committed.toml present: lower-case conventional subject fails (config is load-bearing)
+       | /private/tmp/r38-empirical-audit.tjGjjy/empirical-audit/messages/15-lowercase-conventional.txt: error Subject should be capitalized but found `ci(deps):`
+16   expected=127    observed=127  PASS   binary absent from PATH: loud failure, never a silent pass
+       | env: committed: No such file or directory
+17   expected=1      observed=1    PASS   DEFECT REPRO: hard_line_length = 200 variant, 100-col space-free line rejected at 72 (checks.rs:98-100)
+       | /private/tmp/r38-empirical-audit.tjGjjy/empirical-audit/messages/17-spacefree-100.txt: error Line is too long, 100 exceeds the max length of 72
+18   expected=0      observed=0    PASS   recommended config (hard_line_length 0): same 100-col space-free line accepted
+19   expected=1      observed=1    PASS   dependabot-style message on the hook path (71-col subject, 103-col body line): the hook always uses the main config
+       | /private/tmp/r38-empirical-audit.tjGjjy/empirical-audit/messages/19-dependabot-body.txt: error Commit subject is too long, 71 exceeds the max length of 50
+20   expected=record observed=1    RECORD git's default merge message via --commit-file (git runs commit-msg for git merge)
+       | /private/tmp/r38-empirical-audit.tjGjjy/empirical-audit/messages/20-merge-message.txt: error Commit is not in Conventional format: Missing type in the commit summary, expected `type: description`
+------------------------------------------------------------------------
+2. range path: committed <rev|range>  (the CI contract; author known)
+R1   expected=0      observed=0    PASS   conforming commit, committed HEAD
+R2   expected=1      observed=1    PASS   bad-type commit authored by a human
+       | 7eec909: error Disallowed type `wibble` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+R3   expected=1      observed=1    PASS   same bad-type commit authored by dependabot[bot], main config: no author exemption exists
+       | 2b0df58: error Disallowed type `wibble` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+R3b  expected=1      observed=1    PASS   same bot commit under committed.bot.toml: the type enum is still enforced for bots (intended outcome)
+       | 2b0df58: error Disallowed type `wibble` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+R4   expected=1      observed=1    PASS   realistic dependabot message authored by dependabot[bot], main config: subject 71 > 50 (why CI selects the bot config for bot PRs)
+       | dfd74fb: error Commit subject is too long, 71 exceeds the max length of 50
+R4b  expected=0      observed=0    PASS   same bot commit under committed.bot.toml: widths relaxed, grammar and type still checked
+R5   expected=1      observed=1    PASS   the same dependabot message authored by a human, main config: rejected
+       | 02b2767: error Commit subject is too long, 71 exceeds the max length of 50
+R5b  expected=record observed=0    RECORD same human commit under committed.bot.toml: the bot config is author-agnostic; selecting it by PR author is CI's job
+R6   expected=1      observed=1    PASS   range base..HEAD containing bad commits, main config
+       | 02b2767: error Commit subject is too long, 71 exceeds the max length of 50
+       | dfd74fb: error Commit subject is too long, 71 exceeds the max length of 50
+       | 2b0df58: error Disallowed type `wibble` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+       | 7eec909: error Disallowed type `wibble` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+R7   expected=0      observed=0    PASS   PR-range form HEAD~..HEAD^2 on a merge checkout (the action default): linear topic commits only
+R8   expected=1      observed=1    PASS   HEAD~..HEAD including the merge commit, merge_commit = false: explicit 'Merge commits are disallowed'
+       | 233b7bd: error Commit is not in Conventional format: Missing type in the commit summary, expected `type: description`
+       | 233b7bd: error Merge commits are disallowed
+R9   expected=record observed=1    RECORD same range with merge_commit = true variant: merge message still fails the Conventional grammar
+       | 233b7bd: error Commit is not in Conventional format: Missing type in the commit summary, expected `type: description`
+------------------------------------------------------------------------
+3. hook integration: raw .git/hooks/commit-msg running the recommended command (stand-in for the R37 hook manager)
+H0   expected=0      observed=0    PASS   git commit with a conforming message passes the hook
+H1   expected=1      observed=1    PASS   git commit with a bad type is blocked by the hook
+       | .git/COMMIT_EDITMSG: error Disallowed type `wibble` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+       | HEAD unchanged after the blocked commit: 2c873d5355abcc677d2dee442d91e39102f3704a
+H2   expected=0      observed=0    PASS   git commit --no-verify with the same bad type bypasses the hook (commit is created)
+H3   expected=1      observed=1    PASS   ...and committed HEAD (the CI re-run, F157) catches the bypassed commit
+       | c2e4e59: error Disallowed type `wibble` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+H4   expected=0      observed=0    PASS   git commit --fixup <the conforming H0 commit> passes the hook thanks to --fixup --wip
+       | fixup commit subject: fixup! feat(cli): add --json output flag
+H5   expected=record observed=1    RECORD git merge --no-ff topic: git runs commit-msg for merges, so the default merge message meets the hook
+       | .git/MERGE_MSG: error Commit is not in Conventional format: Missing type in the commit summary, expected `type: description`
+       | Not committing merge; use 'git commit' to complete the merge.
+------------------------------------------------------------------------
+4. F160 adapter: cargo test asserts committed.toml, committed.bot.toml and .gitmessage express one convention
+T1   expected=0      observed=0    PASS   cargo test --manifest-path repo-hygiene/Cargo.toml --locked
+       | 
+       | running 0 tests
+       | 
+       | test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+       | 
+       | 
+       | running 4 tests
+       | ....
+       | test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+       | 
+       | 
+       | running 0 tests
+       | 
+       | test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+------------------------------------------------------------------------
+summary: PASS=34 FAIL=0 RECORD=5
+RESULT: PASS

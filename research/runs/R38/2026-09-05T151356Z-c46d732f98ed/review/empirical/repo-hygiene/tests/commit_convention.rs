@@ -78,5 +78,20 @@ fn committed_config_expresses_the_convention() {
     assert_eq!(cfg["merge_commit"].as_bool(), Some(false), "merge commits are rejected explicitly on the range path; PR branches are linear");
     let hard = cfg.get("hard_line_length").and_then(|v| v.as_integer()).unwrap_or(0);
     assert_eq!(hard, 0, "hard_line_length must stay disabled on committed 1.1.x (checks.rs:98-100 defect)");
-    assert!(cfg["ignore_author_re"].as_str().is_some(), "bot exemption regex is present");
+    assert!(cfg.get("ignore_author_re").is_none(), "no whole-commit author exemption: it would skip the type check for bots");
+}
+
+#[test]
+fn bot_config_relaxes_only_the_width_rules() {
+    let main = committed_config();
+    let text = fs::read_to_string(root().join("committed.bot.toml")).expect("read committed.bot.toml");
+    let bot: toml::Value = toml::from_str(&text).expect("parse committed.bot.toml");
+    assert_eq!(bot["style"], main["style"], "bots keep the Conventional grammar");
+    assert_eq!(bot["allowed_types"], main["allowed_types"], "bots keep the eleven-type enum");
+    assert_eq!(bot["subject_not_punctuated"], main["subject_not_punctuated"]);
+    assert_eq!(bot["subject_capitalized"], main["subject_capitalized"]);
+    assert_eq!(bot["subject_length"].as_integer(), Some(0), "subject width check off for bots");
+    assert_eq!(bot["line_length"].as_integer(), Some(0), "line width check off for bots");
+    assert!(bot.get("hard_line_length").map_or(true, |v| v.as_integer() == Some(0)));
+    assert!(bot.get("ignore_author_re").is_none(), "no author exemption in the bot config either");
 }

@@ -1,0 +1,700 @@
+
+===== S0 toolchain =====
+--- rustc --version
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ rustc --version
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+[exit 0, expected 0]
+PASS: rustc --version
+--- cargo --version
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ cargo --version
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+[exit 0, expected 0]
+PASS: cargo --version
+--- floor toolchain 1.96.0 (cargo and rustc)
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ tc_env 1.96.0 sh -c command -v cargo; cargo --version; rustc --version
+/Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo
+cargo 1.96.0 (30a34c682 2026-05-25)
+rustc 1.96.0 (ac68faa20 2026-05-25)
+[exit 0, expected 0]
+PASS: floor toolchain 1.96.0 (cargo and rustc)
+--- below-floor toolchain 1.91.1 (cargo and rustc)
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ tc_env 1.91.1 sh -c command -v cargo; cargo --version; rustc --version
+/Users/stevemorin/.rustup/toolchains/1.91.1-aarch64-apple-darwin/bin/cargo
+cargo 1.91.1 (ea2d97820 2025-10-10)
+rustc 1.91.1 (ed61e7d7e 2025-11-07)
+[exit 0, expected 0]
+PASS: below-floor toolchain 1.91.1 (cargo and rustc)
+--- node --version
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ node --version
+v26.5.0
+[exit 0, expected 0]
+PASS: node --version
+--- release-please resolved version
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ node -p require('/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/node_modules/release-please/package.json').version
+17.11.2
+[exit 0, expected 0]
+PASS: release-please resolved version
+--- OS (recorded)
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ uname -srm
+Darwin 25.4.0 arm64
+[exit 0]
+--- macOS version (if macOS) (recorded)
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ sh -c sw_vers 2>/dev/null || cat /etc/os-release
+ProductName:		macOS
+ProductVersion:		26.4
+BuildVersion:		25E246
+[exit 0]
+
+===== S1 single crate, committed lock consistent with Cargo.toml =====
+--- S1 cargo build --locked
+(cwd .work/s1)
+$ cargo build --locked
+   Compiling demo-single v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s1)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.55s
+[exit 0, expected 0]
+PASS: S1 cargo build --locked
+--- S1 cargo metadata --locked
+(cwd .work/s1)
+$ sh -c cargo metadata --locked --format-version 1 >/dev/null
+
+[exit 0, expected 0]
+PASS: S1 cargo metadata --locked
+--- S1 cargo test --locked (F133 meta-tests at consistent state)
+(cwd .work/s1)
+$ cargo test --locked --test version_consistency
+   Compiling serde_core v1.0.229
+   Compiling zmij v1.0.23
+   Compiling serde_json v1.0.151
+   Compiling winnow v1.0.4
+   Compiling itoa v1.0.18
+   Compiling memchr v2.8.3
+   Compiling toml_writer v1.1.2+spec-1.1.0
+   Compiling toml_parser v1.1.3+spec-1.1.0
+   Compiling serde_spanned v1.1.1
+   Compiling toml_datetime v1.1.1+spec-1.1.0
+   Compiling toml v1.1.5+spec-1.1.0
+   Compiling demo-single v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s1)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 2.88s
+     Running tests/version_consistency.rs (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/target/debug/deps/version_consistency-91b242663bac345e)
+
+running 3 tests
+test release_config_uses_native_rust_strategy_without_lock_extra_file ... ok
+test release_please_manifest_matches_cargo_toml ... ok
+test cargo_lock_entry_matches_cargo_toml ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+[exit 0, expected 0]
+PASS: S1 cargo test --locked (F133 meta-tests at consistent state)
+PASS: S1 three meta-tests pass (output contains '3 passed')
+--- S1 Cargo.lock entry for demo-single (recorded)
+(cwd .work/s1)
+$ grep -A1 name = "demo-single" Cargo.lock
+name = "demo-single"
+version = "0.1.0"
+[exit 0]
+
+===== S2 single crate, Cargo.toml bumped 0.1.0 -> 0.2.0, Cargo.lock left stale =====
+--- diff S2 Cargo.toml
+@@ -1,6 +1,6 @@
+ [package]
+ name = "demo-single"
+-version = "0.1.0"
++version = "0.2.0"
+ edition = "2024"
+ rust-version = "1.96"
+ license = "MIT OR Apache-2.0"
+[end diff]
+--- S2 cargo build --locked refuses the stale lock
+(cwd .work/s2)
+$ cargo build --locked
+error: cannot update the lock file /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s2/Cargo.lock because --locked was passed to prevent this
+help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+[exit 101, expected 101]
+PASS: S2 cargo build --locked refuses the stale lock
+PASS: S2 refusal names --locked (output contains '--locked')
+--- S2 cargo metadata --locked refuses the stale lock
+(cwd .work/s2)
+$ sh -c cargo metadata --locked --format-version 1 >/dev/null
+error: cannot update the lock file /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s2/Cargo.lock because --locked was passed to prevent this
+help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+[exit 101, expected 101]
+PASS: S2 cargo metadata --locked refuses the stale lock
+--- S2 Cargo.lock untouched by the refusals
+(cwd .work/s2)
+$ cmp Cargo.lock /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/single/Cargo.lock
+
+[exit 0, expected 0]
+PASS: S2 Cargo.lock untouched by the refusals
+
+===== S3 is a test-level Cargo.toml<->Cargo.lock assertion observable through cargo? =====
+--- S3 cargo test WITHOUT --locked, lock assertion only
+(cwd .work/s3)
+$ cargo test --test version_consistency cargo_lock_entry_matches_cargo_toml
+   Compiling demo-single v0.2.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s3)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.23s
+     Running tests/version_consistency.rs (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/target/debug/deps/version_consistency-b918f2ec80fbcc5c)
+
+running 1 test
+test cargo_lock_entry_matches_cargo_toml ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+[exit 0, expected 0]
+PASS: S3 cargo test WITHOUT --locked, lock assertion only
+PASS: S3 lock assertion passed although the committed lock was stale (output contains '1 passed')
+--- diff S3 Cargo.lock after plain cargo test (cargo rewrote it before the test ran)
+@@ -4,7 +4,7 @@
+ 
+ [[package]]
+ name = "demo-single"
+-version = "0.1.0"
++version = "0.2.0"
+ dependencies = [
+  "serde_json",
+  "toml",
+[end diff]
+PASS: S3 cargo rewrote exactly one lock line (1)
+--- S3 the .release-please-manifest.json assertion is observable (fails at this state)
+(cwd .work/s3)
+$ cargo test --test version_consistency release_please_manifest_matches_cargo_toml
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running tests/version_consistency.rs (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/target/debug/deps/version_consistency-b918f2ec80fbcc5c)
+
+running 1 test
+test release_please_manifest_matches_cargo_toml ... FAILED
+
+failures:
+
+---- release_please_manifest_matches_cargo_toml stdout ----
+
+thread 'release_please_manifest_matches_cargo_toml' (436922440) panicked at tests/version_consistency.rs:25:5:
+assertion `left == right` failed
+  left: "0.1.0"
+ right: "0.2.0"
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+
+failures:
+    release_please_manifest_matches_cargo_toml
+
+test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 2 filtered out; finished in 0.00s
+
+error: test failed, to rerun pass `--test version_consistency`
+[exit 101, expected 101]
+PASS: S3 the .release-please-manifest.json assertion is observable (fails at this state)
+PASS: S3 manifest assertion failed (output contains '1 failed')
+--- S3 cargo test --locked never reaches the tests
+(cwd .work/s3b)
+$ cargo test --locked --test version_consistency
+error: cannot update the lock file /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s3b/Cargo.lock because --locked was passed to prevent this
+help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+[exit 101, expected 101]
+PASS: S3 cargo test --locked never reaches the tests
+PASS: S3 no test binary ran under --locked (0)
+
+===== S4 single crate, release-please release-type rust (Rust strategy -> CargoToml + CargoLock) =====
+--- S4 Rust.buildUpdates at path '.' 0.1.0 -> 0.2.0
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ node /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/rp-driver.cjs rust-strategy /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s4 . 0.1.0 0.2.0
+release-please 17.11.2 (node v26.5.0)
+✔ single crate found, updating Cargo.toml
+Rust.buildUpdates scheduled 2 update(s): Cargo.toml, Cargo.lock
+  Cargo.toml: updated by CargoToml
+✔ updating demo-single in
+  Cargo.lock: updated by CargoLock
+[exit 0, expected 0]
+PASS: S4 Rust.buildUpdates at path '.' 0.1.0 -> 0.2.0
+PASS: S4 strategy scheduled Cargo.lock (output contains 'Cargo.toml, Cargo.lock')
+PASS: S4 Cargo.lock updated by CargoLock (output contains 'Cargo.lock: updated by CargoLock')
+--- S4 manifest-layer bump of .release-please-manifest.json
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ node /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/rp-driver.cjs bump-rp-manifest /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s4/.release-please-manifest.json . 0.2.0
+release-please 17.11.2 (node v26.5.0)
+ReleasePleaseManifest: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s4/.release-please-manifest.json updated
+[exit 0, expected 0]
+PASS: S4 manifest-layer bump of .release-please-manifest.json
+--- diff S4 Cargo.toml
+@@ -1,6 +1,6 @@
+ [package]
+ name = "demo-single"
+-version = "0.1.0"
++version = "0.2.0"
+ edition = "2024"
+ rust-version = "1.96"
+ license = "MIT OR Apache-2.0"
+[end diff]
+--- diff S4 Cargo.lock
+@@ -4,7 +4,7 @@
+ 
+ [[package]]
+ name = "demo-single"
+-version = "0.1.0"
++version = "0.2.0"
+ dependencies = [
+  "serde_json",
+  "toml",
+[end diff]
+--- diff S4 .release-please-manifest.json
+@@ -1,3 +1,3 @@
+ {
+-  ".": "0.1.0"
++  ".": "0.2.0"
+ }
+[end diff]
+PASS: S4 Cargo.lock diff is exactly one line (1)
+--- S4 cargo build --locked accepts the release-please-updated lock
+(cwd .work/s4)
+$ cargo build --locked
+   Compiling demo-single v0.2.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s4)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.14s
+[exit 0, expected 0]
+PASS: S4 cargo build --locked accepts the release-please-updated lock
+--- S4 cargo test --locked (F133 meta-tests pass after the release update)
+(cwd .work/s4)
+$ cargo test --locked --test version_consistency
+   Compiling demo-single v0.2.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s4)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.23s
+     Running tests/version_consistency.rs (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/target/debug/deps/version_consistency-b918f2ec80fbcc5c)
+
+running 3 tests
+test release_config_uses_native_rust_strategy_without_lock_extra_file ... ok
+test release_please_manifest_matches_cargo_toml ... ok
+test cargo_lock_entry_matches_cargo_toml ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+[exit 0, expected 0]
+PASS: S4 cargo test --locked (F133 meta-tests pass after the release update)
+PASS: S4 three meta-tests pass (output contains '3 passed')
+
+===== S5 runner-up: generic TOML extra-files jsonpath against Cargo.lock =====
+--- S5 CargoToml 0.2.0
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ node /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/rp-driver.cjs cargo-toml /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s5/Cargo.toml 0.2.0 demo-single=0.2.0
+release-please 17.11.2 (node v26.5.0)
+CargoToml: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s5/Cargo.toml updated
+[exit 0, expected 0]
+PASS: S5 CargoToml 0.2.0
+--- S5a GenericToml with the natural jsonpath silently changes nothing (exit 0)
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ node /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/rp-driver.cjs generic-toml /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s5/Cargo.lock $.package[?(@.name=="demo-single")].version 0.2.0
+release-please 17.11.2 (node v26.5.0)
+⚠ No entries modified in $.package[?(@.name=="demo-single")].version
+GenericToml: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s5/Cargo.lock unchanged
+[exit 0, expected 0]
+PASS: S5a GenericToml with the natural jsonpath silently changes nothing (exit 0)
+PASS: S5a only a warning is emitted (output contains 'No entries modified')
+--- S5a Cargo.lock untouched
+(cwd .work/s5)
+$ cmp Cargo.lock /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/single/Cargo.lock
+
+[exit 0, expected 0]
+PASS: S5a Cargo.lock untouched
+--- S5a cargo build --locked therefore still refuses
+(cwd .work/s5)
+$ cargo build --locked
+error: cannot update the lock file /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s5/Cargo.lock because --locked was passed to prevent this
+help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+[exit 101, expected 101]
+PASS: S5a cargo build --locked therefore still refuses
+--- S5b GenericToml with the tagged-AST jsonpath (.name.value)
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ node /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/rp-driver.cjs generic-toml /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s5/Cargo.lock $.package[?(@.name.value=="demo-single")].version 0.2.0
+release-please 17.11.2 (node v26.5.0)
+GenericToml: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s5/Cargo.lock updated
+[exit 0, expected 0]
+PASS: S5b GenericToml with the tagged-AST jsonpath (.name.value)
+--- diff S5b Cargo.lock
+@@ -4,7 +4,7 @@
+ 
+ [[package]]
+ name = "demo-single"
+-version = "0.1.0"
++version = "0.2.0"
+ dependencies = [
+  "serde_json",
+  "toml",
+[end diff]
+PASS: S5b Cargo.lock diff is exactly one line (1)
+--- S5b cargo build --locked accepts the jsonpath-updated lock
+(cwd .work/s5)
+$ cargo build --locked
+   Compiling demo-single v0.2.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s5)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.14s
+[exit 0, expected 0]
+PASS: S5b cargo build --locked accepts the jsonpath-updated lock
+--- S5b GenericToml output is byte-identical to the CargoLock output
+(cwd .work/s5)
+$ cmp Cargo.lock /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s4/Cargo.lock
+
+[exit 0, expected 0]
+PASS: S5b GenericToml output is byte-identical to the CargoLock output
+
+===== S6 virtual-root workspace, members with literal versions =====
+--- S6 cargo build --locked --workspace (pristine)
+(cwd .work/s6)
+$ cargo build --locked --workspace
+   Compiling demo-lib v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6/crates/demo-lib)
+   Compiling demo-app v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6/crates/demo-app)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.12s
+[exit 0, expected 0]
+PASS: S6 cargo build --locked --workspace (pristine)
+--- S6a Rust strategy at '.' on a virtual root (glob members)
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ node /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/rp-driver.cjs rust-strategy /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6 . 0.1.0 0.2.0
+release-please 17.11.2 (node v26.5.0)
+⚠ No workspace manifest package name found
+✔ found workspace with 1 members, upgrading all
+⚠ member crates/* declared but did not find Cargo.toml
+✔ updating 0 submodules
+❯ versions map: Map(0) {}
+Rust.buildUpdates scheduled 2 update(s): Cargo.toml, Cargo.lock
+✖ is not a package manifest (might be a cargo workspace)
+  Cargo.toml: CargoToml THREW Error: is not a package manifest (might be a cargo workspace)
+  Cargo.lock: unchanged by CargoLock
+1 updater(s) threw; github.js buildChangeSet has no try/catch around updateContent, so a real run aborts here
+[exit 3, expected 3]
+PASS: S6a Rust strategy at '.' on a virtual root (glob members)
+PASS: S6a strategy does not expand member globs (output contains 'member crates/* declared but did not find Cargo.toml')
+PASS: S6a root CargoToml throws on a virtual manifest (output contains 'is not a package manifest (might be a cargo workspace)')
+--- S6c Rust strategy at '.' on a virtual root (literal members)
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ node /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/rp-driver.cjs rust-strategy /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6c . 0.1.0 0.2.0
+release-please 17.11.2 (node v26.5.0)
+⚠ No workspace manifest package name found
+✔ found workspace with 2 members, upgrading all
+✔ updating 2 submodules
+❯ versions map: Map(2) {
+  'demo-lib' => Version {
+    major: 0,
+    minor: 2,
+    patch: 0,
+    preRelease: undefined,
+    build: undefined
+  },
+  'demo-app' => Version {
+    major: 0,
+    minor: 2,
+    patch: 0,
+    preRelease: undefined,
+    build: undefined
+  }
+}
+Rust.buildUpdates scheduled 4 update(s): crates/demo-lib/Cargo.toml, crates/demo-app/Cargo.toml, Cargo.toml, Cargo.lock
+  crates/demo-lib/Cargo.toml: updated by CargoToml
+✔ updating dependencies.demo-lib from 0.1.0 to 0.2.0
+  crates/demo-app/Cargo.toml: updated by CargoToml
+✖ is not a package manifest (might be a cargo workspace)
+  Cargo.toml: CargoToml THREW Error: is not a package manifest (might be a cargo workspace)
+✔ updating demo-app in
+✔ updating demo-lib in
+  Cargo.lock: updated by CargoLock
+1 updater(s) threw; github.js buildChangeSet has no try/catch around updateContent, so a real run aborts here
+[exit 3, expected 3]
+PASS: S6c Rust strategy at '.' on a virtual root (literal members)
+PASS: S6c members found (output contains 'found workspace with 2 members')
+PASS: S6c root CargoToml still throws (output contains 'is not a package manifest (might be a cargo workspace)')
+--- S6d cargo-workspace plugin enumerates the members
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ node /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/rp-driver.cjs cargo-workspace-plugin /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6d
+release-please 17.11.2 (node v26.5.0)
+✔ looking for candidate with path: crates/demo-app
+✔ looking for candidate with path: crates/demo-lib
+✔ looking for candidate with path: .
+⚠ package manifest at Cargo.toml is missing [package.name]
+CargoWorkspace.buildAllPackages: 2 package(s)
+  crates/demo-app  demo-app  0.1.0
+  crates/demo-lib  demo-lib  0.1.0
+[exit 0, expected 0]
+PASS: S6d cargo-workspace plugin enumerates the members
+PASS: S6d plugin sees demo-app (output contains 'crates/demo-app  demo-app  0.1.0')
+PASS: S6d plugin sees demo-lib (output contains 'crates/demo-lib  demo-lib  0.1.0')
+--- S6d Rust strategy at path crates/demo-app (manifest-mode per-crate package)
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ node /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/rp-driver.cjs rust-strategy /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6d crates/demo-app 0.1.0 0.2.0
+release-please 17.11.2 (node v26.5.0)
+✔ single crate found, updating Cargo.toml
+Rust.buildUpdates scheduled 2 update(s): crates/demo-app/Cargo.toml, crates/demo-app/Cargo.lock
+  crates/demo-app/Cargo.toml: updated by CargoToml
+  crates/demo-app/Cargo.lock: did not exist and createIfMissing=false -> skipped (as github.js buildChangeSet does)
+[exit 0, expected 0]
+PASS: S6d Rust strategy at path crates/demo-app (manifest-mode per-crate package)
+PASS: S6d per-crate Cargo.lock is absent and skipped (output contains 'crates/demo-app/Cargo.lock: did not exist')
+--- S6d plugin step: CargoLock(updatedVersions) on the root Cargo.lock
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ node /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/rp-driver.cjs cargo-lock /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6d/Cargo.lock demo-app=0.2.0
+release-please 17.11.2 (node v26.5.0)
+✔ updating demo-app in
+CargoLock: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6d/Cargo.lock updated
+[exit 0, expected 0]
+PASS: S6d plugin step: CargoLock(updatedVersions) on the root Cargo.lock
+--- diff S6d crates/demo-app/Cargo.toml
+@@ -1,6 +1,6 @@
+ [package]
+ name = "demo-app"
+-version = "0.1.0"
++version = "0.2.0"
+ edition.workspace = true
+ rust-version.workspace = true
+ license.workspace = true
+[end diff]
+--- diff S6d root Cargo.lock
+@@ -4,7 +4,7 @@
+ 
+ [[package]]
+ name = "demo-app"
+-version = "0.1.0"
++version = "0.2.0"
+ dependencies = [
+  "demo-lib",
+ ]
+[end diff]
+PASS: S6d root Cargo.lock diff is exactly one line (demo-lib entry and the dependency edge untouched) (1)
+--- S6d demo-lib manifest untouched
+(cwd .work/s6d)
+$ cmp crates/demo-lib/Cargo.toml /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/ws/crates/demo-lib/Cargo.toml
+
+[exit 0, expected 0]
+PASS: S6d demo-lib manifest untouched
+--- S6d cargo build --locked --workspace
+(cwd .work/s6d)
+$ cargo build --locked --workspace
+   Compiling demo-lib v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6d/crates/demo-lib)
+   Compiling demo-app v0.2.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6d/crates/demo-app)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s
+[exit 0, expected 0]
+PASS: S6d cargo build --locked --workspace
+--- S6e both members bump: CargoToml demo-lib
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ node /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/rp-driver.cjs cargo-toml /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6e/crates/demo-lib/Cargo.toml 0.2.0 demo-lib=0.2.0 demo-app=0.2.0
+release-please 17.11.2 (node v26.5.0)
+CargoToml: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6e/crates/demo-lib/Cargo.toml updated
+[exit 0, expected 0]
+PASS: S6e both members bump: CargoToml demo-lib
+--- S6e both members bump: CargoToml demo-app (path dep requirement follows)
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ node /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/rp-driver.cjs cargo-toml /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6e/crates/demo-app/Cargo.toml 0.2.0 demo-lib=0.2.0 demo-app=0.2.0
+release-please 17.11.2 (node v26.5.0)
+✔ updating dependencies.demo-lib from 0.1.0 to 0.2.0
+CargoToml: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6e/crates/demo-app/Cargo.toml updated
+[exit 0, expected 0]
+PASS: S6e both members bump: CargoToml demo-app (path dep requirement follows)
+PASS: S6e dependency requirement on demo-lib bumped (output contains 'updating dependencies.demo-lib from 0.1.0 to 0.2.0')
+--- S6e CargoLock both members
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ node /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/rp-driver.cjs cargo-lock /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6e/Cargo.lock demo-lib=0.2.0 demo-app=0.2.0
+release-please 17.11.2 (node v26.5.0)
+✔ updating demo-app in
+✔ updating demo-lib in
+CargoLock: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6e/Cargo.lock updated
+[exit 0, expected 0]
+PASS: S6e CargoLock both members
+--- diff S6e crates/demo-app/Cargo.toml
+@@ -1,9 +1,9 @@
+ [package]
+ name = "demo-app"
+-version = "0.1.0"
++version = "0.2.0"
+ edition.workspace = true
+ rust-version.workspace = true
+ license.workspace = true
+ 
+ [dependencies]
+-demo-lib = { path = "../demo-lib", version = "0.1.0" }
++demo-lib = { path = "../demo-lib", version = "0.2.0" }
+[end diff]
+--- diff S6e root Cargo.lock
+@@ -4,11 +4,11 @@
+ 
+ [[package]]
+ name = "demo-app"
+-version = "0.1.0"
++version = "0.2.0"
+ dependencies = [
+  "demo-lib",
+ ]
+ 
+ [[package]]
+ name = "demo-lib"
+-version = "0.1.0"
++version = "0.2.0"
+[end diff]
+PASS: S6e root Cargo.lock diff is exactly two lines (2)
+--- S6e cargo build --locked --workspace
+(cwd .work/s6e)
+$ cargo build --locked --workspace
+   Compiling demo-lib v0.2.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6e/crates/demo-lib)
+   Compiling demo-app v0.2.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6e/crates/demo-app)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s
+[exit 0, expected 0]
+PASS: S6e cargo build --locked --workspace
+
+===== S7 workspace with [workspace.package] version inheritance =====
+--- S7 cargo build --locked --workspace (pristine)
+(cwd .work/s7)
+$ cargo build --locked --workspace
+   Compiling demo-lib v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s7/crates/demo-lib)
+   Compiling demo-app v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s7/crates/demo-app)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s
+[exit 0, expected 0]
+PASS: S7 cargo build --locked --workspace (pristine)
+--- diff S7 root Cargo.toml
+@@ -3,7 +3,7 @@
+ members = ["crates/*"]
+ 
+ [workspace.package]
+-version = "0.1.0"
++version = "0.2.0"
+ edition = "2024"
+ rust-version = "1.96"
+ license = "MIT OR Apache-2.0"
+[end diff]
+--- S7 inherited bump: cargo build --locked refuses (demo-app's demo-lib ^0.1.0 requirement is unsatisfiable)
+(cwd .work/s7)
+$ cargo build --locked --workspace
+error: failed to select a version for the requirement `demo-lib = "^0.1.0"`
+candidate versions found which didn't match: 0.2.0
+location searched: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s7/crates/demo-lib
+required by package `demo-app v0.2.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s7/crates/demo-app)`
+[exit 101, expected 101]
+PASS: S7 inherited bump: cargo build --locked refuses (demo-app's demo-lib ^0.1.0 requirement is unsatisfiable)
+--- S7 cargo update -w cannot resolve either: the requirement, not the lock, is the blocker
+(cwd .work/s7)
+$ cargo update -w
+error: failed to select a version for the requirement `demo-lib = "^0.1.0"`
+candidate versions found which didn't match: 0.2.0
+location searched: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s7/crates/demo-lib
+required by package `demo-app v0.2.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s7/crates/demo-app)`
+[exit 101, expected 101]
+PASS: S7 cargo update -w cannot resolve either: the requirement, not the lock, is the blocker
+PASS: S7 the intra-workspace requirement is the blocker (output contains 'failed to select a version for the requirement `demo-lib = "^0.1.0"`')
+--- diff S7 crates/demo-app/Cargo.toml (requirement bumped, as CargoToml versionsMap does)
+@@ -6,4 +6,4 @@
+ license.workspace = true
+ 
+ [dependencies]
+-demo-lib = { path = "../demo-lib", version = "0.1.0" }
++demo-lib = { path = "../demo-lib", version = "0.2.0" }
+[end diff]
+--- S7 with the requirement bumped, --locked now refuses purely on the stale lock (both inherited entries)
+(cwd .work/s7)
+$ cargo build --locked --workspace
+error: cannot update the lock file /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s7/Cargo.lock because --locked was passed to prevent this
+help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+[exit 101, expected 101]
+PASS: S7 with the requirement bumped, --locked now refuses purely on the stale lock (both inherited entries)
+PASS: S7 refusal names --locked (output contains '--locked')
+--- S7 cargo update -w after the requirement bump
+(cwd .work/s7)
+$ cargo update -w
+     Locking 2 packages to latest Rust 1.96 compatible versions
+    Updating demo-app v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s7/crates/demo-app) -> v0.2.0
+    Updating demo-lib v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s7/crates/demo-lib) -> v0.2.0
+[exit 0, expected 0]
+PASS: S7 cargo update -w after the requirement bump
+--- diff S7 root Cargo.lock after cargo update -w
+@@ -4,11 +4,11 @@
+ 
+ [[package]]
+ name = "demo-app"
+-version = "0.1.0"
++version = "0.2.0"
+ dependencies = [
+  "demo-lib",
+ ]
+ 
+ [[package]]
+ name = "demo-lib"
+-version = "0.1.0"
++version = "0.2.0"
+[end diff]
+PASS: S7 two lock lines moved (2)
+--- S7c cargo-workspace plugin rejects version.workspace = true
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ node /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/rp-driver.cjs cargo-workspace-plugin /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s7c
+release-please 17.11.2 (node v26.5.0)
+✔ looking for candidate with path: crates/demo-app
+ERROR ConfigurationError: cargo-workspace (example/fixture): package manifest at crates/demo-app/Cargo.toml has an invalid [package.version]
+[exit 2, expected 2]
+PASS: S7c cargo-workspace plugin rejects version.workspace = true
+PASS: S7c ConfigurationError (output contains 'invalid [package.version]')
+--- S7c Rust strategy at crates/demo-app on an inheriting member (recorded)
+(cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical)
+$ node /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/rp-driver.cjs rust-strategy /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s7c crates/demo-app 0.1.0 0.2.0
+release-please 17.11.2 (node v26.5.0)
+✔ single crate found, updating Cargo.toml
+Rust.buildUpdates scheduled 2 update(s): crates/demo-app/Cargo.toml, crates/demo-app/Cargo.lock
+  crates/demo-app/Cargo.toml: CargoToml THREW Error: value at path package.version is not tagged
+  crates/demo-app/Cargo.lock: did not exist and createIfMissing=false -> skipped (as github.js buildChangeSet does)
+1 updater(s) threw; github.js buildChangeSet has no try/catch around updateContent, so a real run aborts here
+[exit 3]
+--- diff S7c crates/demo-app/Cargo.toml after the strategy
+[end diff]
+--- S7c cargo metadata after the strategy (recorded)
+(cwd .work/s7c)
+$ sh -c cargo metadata --locked --format-version 1 >/dev/null
+
+[exit 0]
+
+===== S8 msrv-policy floor and declared rust-version =====
+--- S8 floor toolchain builds the release-updated single crate --locked
+(cwd .work/s4)
+$ tc_env 1.96.0 cargo build --locked
+   Compiling demo-single v0.2.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s4)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.48s
+[exit 0, expected 0]
+PASS: S8 floor toolchain builds the release-updated single crate --locked
+--- S8 floor toolchain builds the release-updated workspace --locked
+(cwd .work/s6d)
+$ tc_env 1.96.0 cargo build --locked --workspace
+   Compiling demo-lib v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6d/crates/demo-lib)
+   Compiling demo-app v0.2.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s6d/crates/demo-app)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.11s
+[exit 0, expected 0]
+PASS: S8 floor toolchain builds the release-updated workspace --locked
+--- S8 a toolchain below rust-version is refused
+(cwd .work/s4)
+$ tc_env 1.91.1 cargo build --locked
+error: rustc 1.91.1 is not supported by the following packages:
+  demo-single@0.2.0 requires rustc 1.96
+  demo-single@0.2.0 requires rustc 1.96
+[exit 101, expected 101]
+PASS: S8 a toolchain below rust-version is refused
+PASS: S8 refusal cites the declared rust-version (output contains 'requires rustc 1.96')
+
+===== S9 excluded alternative: cargo-native repair after the manifest bump (a second commit) =====
+--- S9 cargo update -w
+(cwd .work/s9)
+$ cargo update -w
+     Locking 1 package to latest Rust 1.96 compatible version
+    Updating demo-single v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s9) -> v0.2.0
+[exit 0, expected 0]
+PASS: S9 cargo update -w
+--- diff S9 Cargo.lock
+@@ -4,7 +4,7 @@
+ 
+ [[package]]
+ name = "demo-single"
+-version = "0.1.0"
++version = "0.2.0"
+ dependencies = [
+  "serde_json",
+  "toml",
+[end diff]
+PASS: S9 Cargo.lock diff is exactly one line (1)
+--- S9 release-please CargoLock output is byte-identical to cargo's own update
+(cwd .work/s9)
+$ cmp Cargo.lock /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R23/2026-09-05T160304Z-11020e4e7e38/review/empirical/.work/s4/Cargo.lock
+
+[exit 0, expected 0]
+PASS: S9 release-please CargoLock output is byte-identical to cargo's own update
+
+===== summary =====
+summary: PASS=77 FAIL=0 RECORD=5
+RESULT: PASS

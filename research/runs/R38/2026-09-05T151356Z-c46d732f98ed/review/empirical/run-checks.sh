@@ -6,10 +6,12 @@
 # Exit status 0 only when every case with an expectation matches; RECORD cases
 # document behaviour without asserting it. Provisions the pinned binary into
 # ./tools (git-ignored) when absent; all git repositories are created under
-# ./.work and removed on exit.
+# ./.work and removed on exit. COMMITTED_VERSION=<x.y.z> reruns the whole check
+# against another release (the recorded upgrade acceptance gate); the binary is
+# installed only when ./tools holds no binary, so remove ./tools first.
 set -uo pipefail
 HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TOOLS="$HERE/tools"; BIN="$TOOLS/bin/committed"; WANT="1.1.11"
+TOOLS="$HERE/tools"; BIN="$TOOLS/bin/committed"; WANT="${COMMITTED_VERSION:-1.1.11}"  # upgrade gate: COMMITTED_VERSION=<new> bash run-checks.sh
 WORK="$HERE/.work"; M="$HERE/messages"
 PASS=0; FAIL=0; REC=0
 trap 'rm -rf "$WORK"' EXIT
@@ -82,7 +84,7 @@ run_case 15 1 "NO committed.toml present: lower-case conventional subject fails 
 run_case 16 127 "binary absent from PATH: loud failure, never a silent pass" "$REPO" env PATH=/nonexistent committed --commit-file "$M/01-valid.txt"
 run_case 17 1 "DEFECT REPRO: hard_line_length = 200 variant, 100-col space-free line rejected at 72 (checks.rs:98-100)" "$REPO" committed --config "$HERE/committed-hardline.toml" --commit-file "$M/17-spacefree-100.txt"
 run_case 18 0 "recommended config (hard_line_length 0): same 100-col space-free line accepted" "$REPO" committed --commit-file "$M/17-spacefree-100.txt"
-run_case 19 1 "dependabot-style message on the hook path (72-col subject, 103-col body line): no author, so no exemption" "$REPO" committed --commit-file "$M/19-dependabot-body.txt"
+run_case 19 1 "dependabot-style message on the hook path (71-col subject, 103-col body line): the hook always uses the main config" "$REPO" committed --commit-file "$M/19-dependabot-body.txt"
 run_case 20 record "git's default merge message via --commit-file (git runs commit-msg for git merge)" "$REPO" committed --fixup --wip --commit-file "$M/20-merge-message.txt"
 
 hr; echo "2. range path: committed <rev|range>  (the CI contract; author known)"
@@ -91,12 +93,15 @@ run_case R1 0 "conforming commit, committed HEAD" "$REPO" committed HEAD
 commit_as "$REPO" "$HUMAN_N" "$HUMAN_E" "$M/02-bad-type.txt"
 run_case R2 1 "bad-type commit authored by a human" "$REPO" committed HEAD
 commit_as "$REPO" "$BOT_N" "$BOT_E" "$M/02-bad-type.txt"
-run_case R3 0 "same bad-type commit authored by dependabot[bot]: ignore_author_re exempts the whole commit" "$REPO" committed HEAD
+run_case R3 1 "same bad-type commit authored by dependabot[bot], main config: no author exemption exists" "$REPO" committed HEAD
+run_case R3b 1 "same bot commit under committed.bot.toml: the type enum is still enforced for bots (intended outcome)" "$REPO" committed --config "$HERE/committed.bot.toml" HEAD
 commit_as "$REPO" "$BOT_N" "$BOT_E" "$M/19-dependabot-body.txt"
-run_case R4 0 "realistic dependabot message authored by dependabot[bot]: exempt" "$REPO" committed HEAD
+run_case R4 1 "realistic dependabot message authored by dependabot[bot], main config: subject 71 > 50 (why CI selects the bot config for bot PRs)" "$REPO" committed HEAD
+run_case R4b 0 "same bot commit under committed.bot.toml: widths relaxed, grammar and type still checked" "$REPO" committed --config "$HERE/committed.bot.toml" HEAD
 commit_as "$REPO" "$HUMAN_N" "$HUMAN_E" "$M/19-dependabot-body.txt"
-run_case R5 1 "the same dependabot message authored by a human: rejected (subject 72 > 50, body line > 72)" "$REPO" committed HEAD
-run_case R6 1 "range base..HEAD containing human-authored bad commits" "$REPO" committed "$BASE..HEAD"
+run_case R5 1 "the same dependabot message authored by a human, main config: rejected" "$REPO" committed HEAD
+run_case R5b record "same human commit under committed.bot.toml: the bot config is author-agnostic; selecting it by PR author is CI's job" "$REPO" committed --config "$HERE/committed.bot.toml" HEAD
+run_case R6 1 "range base..HEAD containing bad commits, main config" "$REPO" committed "$BASE..HEAD"
 git -C "$REPO" checkout -q -b topic "$BASE"
 commit_as "$REPO" "$HUMAN_N" "$HUMAN_E" "$M/01-valid.txt"
 commit_as "$REPO" "$HUMAN_N" "$HUMAN_E" "$M/10-noun-phrase-subject.txt"
@@ -121,7 +126,7 @@ git -C "$REPO3" log -1 --format='       | fixup commit subject: %s'
 git -C "$REPO3" checkout -q -b topic; git -C "$REPO3" commit -q --allow-empty -F "$M/01-valid.txt"; git -C "$REPO3" checkout -q main
 run_case H5 record "git merge --no-ff topic: git runs commit-msg for merges, so the default merge message meets the hook" "$REPO3" git merge -q --no-ff topic
 
-hr; echo "4. F160 adapter: cargo test asserts committed.toml and .gitmessage express one convention"
+hr; echo "4. F160 adapter: cargo test asserts committed.toml, committed.bot.toml and .gitmessage express one convention"
 run_case T1 0 "cargo test --manifest-path repo-hygiene/Cargo.toml --locked" "$HERE" cargo test --manifest-path "$HERE/repo-hygiene/Cargo.toml" --locked -q
 
 hr; echo "summary: PASS=$PASS FAIL=$FAIL RECORD=$REC"

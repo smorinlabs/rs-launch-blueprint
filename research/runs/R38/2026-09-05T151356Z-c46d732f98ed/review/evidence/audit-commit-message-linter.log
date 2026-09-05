@@ -1,0 +1,419 @@
+R38 audit evidence — auditor audit-codex-2026-09-05T151356Z-c46d732f98ed, model gpt-5.6-terra
+Decision sha256: 3d313fbbabef1d10ff549861d583cb25dddf82f726b58d13f47aa48eb34fe419
+Fresh fixture: review/empirical-audit (created from review/empirical; copied tools cache deleted before rerun)
+
+===== exact empirical rerun: bash run-checks.sh =====
+------------------------------------------------------------------------
+R38 empirical check: committed 1.1.11 vs rs-launch-blueprint commit-message-convention
+date (UTC): 2026-09-05T16:26:27Z
+cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical-audit
+toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew); cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew); git version 2.50.1 (Apple Git-155)
+os: Darwin 25.4.0 arm64; ProductName:		macOS ProductVersion:		26.4 BuildVersion:		25E246 
+------------------------------------------------------------------------
+0. provision committed 1.1.11 into ./tools (cargo install --locked)
+  Installing /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical-audit/tools/bin/committed
+   Installed package `committed v1.1.11` (executable `committed`)
+warning: be sure to add `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical-audit/tools/bin` to your PATH to be able to run the installed binaries
+binary: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical-audit/tools/bin/committed
+version: committed 1.1.11
+size:  3868064 bytes
+effective configuration (committed --dump-config -), read from repo-root committed.toml with no --config flag:
+       | ignore_author_re = "(dependabot|renovate)"
+       | subject_length = 50
+       | subject_capitalized = false
+       | subject_not_punctuated = true
+       | imperative_subject = false
+       | no_fixup = true
+       | no_wip = true
+       | hard_line_length = 0
+       | line_length = 72
+       | style = "conventional"
+       | allowed_types = [
+       |     "build",
+       |     "chore",
+       |     "ci",
+       |     "docs",
+       |     "feat",
+       |     "fix",
+       |     "perf",
+       |     "refactor",
+       |     "revert",
+       |     "style",
+       |     "test",
+       | ]
+       | allowed_scopes = []
+       | merge_commit = false
+------------------------------------------------------------------------
+1. hook path: committed --commit-file <message file>  (the commit-msg contract)
+01   expected=0      observed=0    PASS   conforming message: type in enum, 33-col subject, 66-col body, Refs footer
+02   expected=1      observed=1    PASS   type not in the enum (wibble)
+       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical-audit/messages/02-bad-type.txt: error Disallowed type `wibble` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+03   expected=1      observed=1    PASS   71-col subject with spaces (soft length 63 > 50)
+       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical-audit/messages/03-long-subject.txt: error Commit subject is too long, 71 exceeds the max length of 50
+04   expected=1      observed=1    PASS   83-col body line with spaces (soft length 78 > 72)
+       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical-audit/messages/04-long-body-line.txt: error Line is too long, 83 exceeds the max length of 72
+05   expected=0      observed=0    PASS   body line is one bare 116-col permalink URL (un-wrappable token exempt)
+06   expected=1      observed=1    PASS   subject ends with a period
+       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical-audit/messages/06-subject-period.txt: error Subject should not be punctuated but found `.`
+07   expected=0      observed=0    PASS   107-col 'Claude-Session: <url>' footer trailer (URL is the final token)
+08   expected=1      observed=1    PASS   96-col footer line with spaces (footer lines share the 72 cap)
+       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical-audit/messages/08-long-footer-line.txt: error Line is too long, 96 exceeds the max length of 72
+09   expected=0      observed=0    PASS   capitalised subject accepted: no subject-case rule (documented divergence from commitlint)
+10   expected=0      observed=0    PASS   noun-phrase subject 'docs: P01 port research tree' (imperative_subject = false; matches repo history)
+11   expected=1      observed=1    PASS   'fixup! ...' WITHOUT --fixup --wip (bare hook form would break git commit --fixup)
+       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical-audit/messages/11-fixup.txt: error Fixup commits must be squashed
+12   expected=0      observed=0    PASS   'fixup! ...' WITH --fixup --wip (crate-ci's canonical commit-msg args)
+13   expected=1      observed=1    PASS   'WIP: still working' with the flags: WIP rule relaxed, grammar still enforced
+       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical-audit/messages/13-wip.txt: error Commit is not in Conventional format: Missing type in the commit summary, expected `type: description`
+14   expected=record observed=1    RECORD subject immediately followed by body (no blank line)
+       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical-audit/messages/14-no-blank-line.txt: error Commit is not in Conventional format: Incorrect body syntax
+15   expected=1      observed=1    PASS   NO committed.toml present: lower-case conventional subject fails (config is load-bearing)
+       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical-audit/messages/15-lowercase-conventional.txt: error Subject should be capitalized but found `ci(deps):`
+16   expected=127    observed=127  PASS   binary absent from PATH: loud failure, never a silent pass
+       | env: committed: No such file or directory
+17   expected=1      observed=1    PASS   DEFECT REPRO: hard_line_length = 200 variant, 100-col space-free line rejected at 72 (checks.rs:98-100)
+       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical-audit/messages/17-spacefree-100.txt: error Line is too long, 100 exceeds the max length of 72
+18   expected=0      observed=0    PASS   recommended config (hard_line_length 0): same 100-col space-free line accepted
+19   expected=1      observed=1    PASS   dependabot-style message on the hook path (72-col subject, 103-col body line): no author, so no exemption
+       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical-audit/messages/19-dependabot-body.txt: error Commit subject is too long, 71 exceeds the max length of 50
+20   expected=record observed=1    RECORD git's default merge message via --commit-file (git runs commit-msg for git merge)
+       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical-audit/messages/20-merge-message.txt: error Commit is not in Conventional format: Missing type in the commit summary, expected `type: description`
+------------------------------------------------------------------------
+2. range path: committed <rev|range>  (the CI contract; author known)
+R1   expected=0      observed=0    PASS   conforming commit, committed HEAD
+R2   expected=1      observed=1    PASS   bad-type commit authored by a human
+       | 6f92271: error Disallowed type `wibble` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+R3   expected=0      observed=0    PASS   same bad-type commit authored by dependabot[bot]: ignore_author_re exempts the whole commit
+R4   expected=0      observed=0    PASS   realistic dependabot message authored by dependabot[bot]: exempt
+R5   expected=1      observed=1    PASS   the same dependabot message authored by a human: rejected (subject 72 > 50, body line > 72)
+       | 409eea4: error Commit subject is too long, 71 exceeds the max length of 50
+R6   expected=1      observed=1    PASS   range base..HEAD containing human-authored bad commits
+       | 409eea4: error Commit subject is too long, 71 exceeds the max length of 50
+       | 6f92271: error Disallowed type `wibble` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+R7   expected=0      observed=0    PASS   PR-range form HEAD~..HEAD^2 on a merge checkout (the action default): linear topic commits only
+R8   expected=1      observed=1    PASS   HEAD~..HEAD including the merge commit, merge_commit = false: explicit 'Merge commits are disallowed'
+       | 48e9d15: error Commit is not in Conventional format: Missing type in the commit summary, expected `type: description`
+       | 48e9d15: error Merge commits are disallowed
+R9   expected=record observed=1    RECORD same range with merge_commit = true variant: merge message still fails the Conventional grammar
+       | 48e9d15: error Commit is not in Conventional format: Missing type in the commit summary, expected `type: description`
+------------------------------------------------------------------------
+3. hook integration: raw .git/hooks/commit-msg running the recommended command (stand-in for the R37 hook manager)
+H0   expected=0      observed=0    PASS   git commit with a conforming message passes the hook
+H1   expected=1      observed=1    PASS   git commit with a bad type is blocked by the hook
+       | .git/COMMIT_EDITMSG: error Disallowed type `wibble` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+       | HEAD unchanged after the blocked commit: 87b38fe275c6e2d151140e5cf06821b313904a8c
+H2   expected=0      observed=0    PASS   git commit --no-verify with the same bad type bypasses the hook (commit is created)
+H3   expected=1      observed=1    PASS   ...and committed HEAD (the CI re-run, F157) catches the bypassed commit
+       | 8c6eb12: error Disallowed type `wibble` used, please use one of ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+H4   expected=0      observed=0    PASS   git commit --fixup <the conforming H0 commit> passes the hook thanks to --fixup --wip
+       | fixup commit subject: fixup! feat(cli): add --json output flag
+H5   expected=record observed=1    RECORD git merge --no-ff topic: git runs commit-msg for merges, so the default merge message meets the hook
+       | .git/MERGE_MSG: error Commit is not in Conventional format: Missing type in the commit summary, expected `type: description`
+       | Not committing merge; use 'git commit' to complete the merge.
+------------------------------------------------------------------------
+4. F160 adapter: cargo test asserts committed.toml and .gitmessage express one convention
+T1   expected=0      observed=0    PASS   cargo test --manifest-path repo-hygiene/Cargo.toml --locked
+       | 
+       | running 0 tests
+       | 
+       | test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+       | 
+       | 
+       | running 3 tests
+       | ...
+       | test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+       | 
+       | 
+       | running 0 tests
+       | 
+       | test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+------------------------------------------------------------------------
+summary: PASS=32 FAIL=0 RECORD=4
+RESULT: PASS
+
+===== citation spot-checks: curl output =====
+
+===== citation spot-checks (2026-09-05 UTC) =====
+
+--- https://raw.githubusercontent.com/crate-ci/committed/v1.1.11/crates/committed/Cargo.toml ---
+[package]
+name = "committed"
+version = "1.1.11"
+description = "Nitpicking commit history since beabf39"
+readme = "../../README.md"
+categories = ["development-tools", "text-processing"]
+keywords = ["development"]
+repository.workspace = true
+license.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+include.workspace = true
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--generate-link-to-definition"]
+
+[package.metadata.release]
+tag-prefix = ""
+pre-release-replacements = [
+  {file="../../CHANGELOG.md", search="Unreleased", replace="{{version}}", min=1},
+  {file="../../CHANGELOG.md", search="\\.\\.\\.HEAD", replace="...{{tag_name}}", exactly=1},
+  {file="../../CHANGELOG.md", search="ReleaseDate", replace="{{date}}", min=1},
+  {file="../../CHANGELOG.md", search="<!-- next-header -->", replace="<!-- next-header -->\n## [Unreleased] - ReleaseDate\n", exactly=1},
+  {file="../../CHANGELOG.md", search="<!-- next-url -->", replace="<!-- next-url -->\n[Unreleased]: https://github.com/crate-ci/committed/compare/{{tag_name}}...HEAD", exactly=1},
+  {file="../../action/entrypoint.sh", search="VERSION=.*", replace="VERSION={{version}}", min=1},
+  {file="../../README.md", search="rev: .*", replace="rev: {{tag_name}}", exactly=1},
+  {file="../../setup.py", search="COMMITTED_VERSION = .*", replace="COMMITTED_VERSION = '{{version}}'", exactly=1},
+]
+
+[features]
+unstable-schema = ["dep:schemars"]
+
+[dependencies]
+regex = "1.12"
+git-conventional = "0.12"
+unicase = "2.8.1"
+anyhow = "1.0"
+git2 = { version = "0.20", default-features = false }
+clap = { version = "4.5", features = ["derive"] }
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+toml = "0.9.10"
+unicode-segmentation = "1.12.0"
+log = "0.4"
+env_logger = "0.11.8"
+clap-verbosity-flag = "3.0"
+colorchoice-clap = "1.0.7"
+grep-cli = "0.1"
+imperative = "1.0.7"
+derive_more = { version = "2.1.1", features = ["from", "display"] }
+itertools = "0.14.0"
+proc-exit = "2.0"
+human-panic = "2.0.6"
+anstream = "0.6.21"
+anstyle = "1.0.13"
+schemars = { version = "1.2.0", features = ["preserve_order"], optional = true }
+
+[dev-dependencies]
+snapbox = { version = "0.6.23", features = ["cmd", "path"] }
+
+[lints]
+workspace = true
+curl-exit=0
+
+--- https://raw.githubusercontent.com/crate-ci/committed/v1.1.11/.github/workflows/ci.yml ---
+name: CI
+
+permissions:
+  contents: read
+
+on:
+  pull_request:
+  push:
+    branches:
+    - master
+
+env:
+  RUST_BACKTRACE: 1
+  CARGO_TERM_COLOR: always
+  CLICOLOR: 1
+
+concurrency:
+  group: "${{ github.workflow }}-${{ github.ref }}"
+  cancel-in-progress: true
+
+jobs:
+  ci:
+    permissions:
+      contents: none
+    name: CI
+    needs: [test, msrv, lockfile, docs, rustfmt, clippy]
+    runs-on: ubuntu-latest
+    if: "always()"
+    steps:
+      - name: Failed
+        run: exit 1
+        if: "contains(needs.*.result, 'failure') || contains(needs.*.result, 'cancelled') || contains(needs.*.result, 'skipped')"
+  test:
+    name: Test
+    strategy:
+      matrix:
+        os: ["ubuntu-latest", "windows-latest", "macos-latest"]
+        rust: ["stable"]
+    continue-on-error: ${{ matrix.rust != 'stable' }}
+    runs-on: ${{ matrix.os }}
+    env:
+      # Reduce amount of data cached
+      CARGO_PROFILE_DEV_DEBUG: line-tables-only
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: ${{ matrix.rust }}
+    - uses: Swatinem/rust-cache@v2
+    - uses: taiki-e/install-action@cargo-hack
+    - name: Configure git
+      run: |
+        git config --global user.name "Test User"
+        git config --global user.email "test_user@example.com"
+    - name: Build
+      run: cargo test --workspace --no-run
+    - name: Test
+      run: cargo hack test --each-feature --workspace
+  msrv:
+    name: "Check MSRV"
+    strategy:
+      matrix:
+        os: ["ubuntu-latest"]
+    runs-on: ${{ matrix.os }}
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: stable
+    - uses: Swatinem/rust-cache@v2
+    - uses: taiki-e/install-action@cargo-hack
+    - name: Default features
+      run: cargo hack check --each-feature --locked --rust-version --ignore-private --workspace --all-targets --keep-going
+  lockfile:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: stable
+    - uses: Swatinem/rust-cache@v2
+    - name: "Is lockfile updated?"
+      run: cargo update --workspace --locked
+  docs:
+    name: Docs
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v6
+    - name: Install Rust
+      uses: dtolnay/rust-toolchain@stable
+      with:
+        toolchain: "1.93"  # STABLE
+    - uses: Swatinem/rust-cache@v2
+curl-exit=0
+
+--- https://raw.githubusercontent.com/crate-ci/committed/v1.1.11/.pre-commit-hooks.yaml ---
+- id: committed
+  name: committed
+  description: Nitpicking commit history since beabf39
+  language: python
+  entry: committed
+  args: [--fixup, --wip, --commit-file]
+  stages: [commit-msg]
+
+- id: committed-src
+  name: committed
+  description: Nitpicking commit history since beabf39
+  language: rust
+  entry: committed
+  args: [--fixup, --wip, --commit-file]
+  stages: [commit-msg]
+curl-exit=0
+
+--- https://raw.githubusercontent.com/crate-ci/committed/v1.1.11/action/entrypoint.sh ---
+#!/bin/bash
+
+set -eu
+
+log() {
+    echo -e "$1" >&2
+}
+
+_DEFAULT_INSTALL_DIR=${HOME}/bin
+_INSTALL_DIR=${INSTALL_DIR:-${_DEFAULT_INSTALL_DIR}}
+CMD_NAME="committed"
+COMMAND="${_INSTALL_DIR}/${CMD_NAME}"
+
+if [[ -z ${INPUT_COMMITS:-} ]]; then
+    log "'INPUT_COMMITS' is required"
+    exit 1
+fi
+
+if [[ ! -x ${COMMAND} ]]; then
+    VERSION=1.1.11
+    if [[ "$(uname -m)" == "arm64" || "$(uname -m)" == "aarch64" ]]; then
+        ARCH="aarch64"
+    else
+        ARCH="x86_64"
+    fi
+    UNAME=$(uname -s)
+    if [[ "$UNAME" == "Darwin" ]]; then
+        TARGET_FILE="${ARCH}-apple-darwin"
+        FILE_EXT="tar.gz"
+    elif [[ "$UNAME" == CYGWIN* || "$UNAME" == MINGW* || "$UNAME" == MSYS* ]] ; then
+        TARGET_FILE="${ARCH}-pc-windows-msvc"
+        FILE_EXT="zip"
+    else
+        TARGET_FILE="${ARCH}-unknown-linux-musl"
+        FILE_EXT="tar.gz"
+    fi
+    FILE_NAME="${CMD_NAME}-v${VERSION}-${TARGET_FILE}.${FILE_EXT}"
+    log "Downloading '${CMD_NAME}' v${VERSION}"
+    wget --progress=dot:mega "https://github.com/crate-ci/committed/releases/download/v${VERSION}/${FILE_NAME}"
+    mkdir -p ${_INSTALL_DIR}
+    if [[ "$FILE_EXT" == "zip" ]]; then
+        unzip -o "${FILE_NAME}" -d ${_INSTALL_DIR} ${CMD_NAME}.exe
+    else
+        tar -xzvf "${FILE_NAME}" -C ${_INSTALL_DIR} ./${CMD_NAME}
+    fi
+    rm "${FILE_NAME}"
+fi
+
+echo "Linting commits:"
+git config --global --add safe.directory "$PWD"
+git log --color=always --graph --oneline "${INPUT_COMMITS}" || true
+echo ""
+echo "Against 'committed.toml':"
+${COMMAND} --dump-config - || true
+echo ""
+echo "If this fails, don't sweat it. We're trying to encourage clear communication and not hinder contributions."
+echo "If it is a reasonable issue and you lack time or feel uncomfortable fixing it yourself,"
+echo "let us know and we can mentor or fix it."
+${COMMAND} --color=always ${INPUT_ARGS:-} "${INPUT_COMMITS}"
+curl-exit=0
+
+--- https://crates.io/api/v1/crates/committed ---
+curl: (56) The requested URL returned error: 403
+curl-exit=56
+
+--- https://rustsec.org/packages/committed.html ---
+curl: (56) The requested URL returned error: 404
+curl-exit=56
+
+===== tag-pin spot-check =====
+{
+  "node_id": "TA_kwDOC915gNoAKDBhOGI0NThjNmFhNjY0NTVlMWY0Nzc2MTg3ODNlY2MzZjQyNzdlN2E",
+  "sha": "0a8b458c6aa66455e1f477618783ecc3f4277e7a",
+  "url": "https://api.github.com/repos/crate-ci/committed/git/tags/0a8b458c6aa66455e1f477618783ecc3f4277e7a",
+  "tagger": {
+    "name": "Ed Page",
+    "email": "eopage@gmail.com",
+    "date": "2026-02-24T16:16:06Z"
+  },
+  "object": {
+    "sha": "faeed42f2e10c244533a01525f13c4d8b6ce383f",
+    "type": "commit",
+    "url": "https://api.github.com/repos/crate-ci/committed/git/commits/faeed42f2e10c244533a01525f13c4d8b6ce383f"
+  },
+  "tag": "v1.1.11",
+  "message": "chore: Release committed version 1.1.11\n",
+  "verification": {
+    "verified": false,
+    "reason": "unsigned",
+    "signature": null,
+    "payload": null,
+    "verified_at": null
+  }
+}

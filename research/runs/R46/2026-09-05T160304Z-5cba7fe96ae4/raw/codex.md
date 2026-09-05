@@ -218,19 +218,19 @@ OpenZeppelin template show the low-boilerplate source shape. ([Rust API Guidelin
 
 | Candidate | Gate result | Reason |
 |---|---|---|
-| Root-only Cargo metadata | Pass | License is the fixed SPDX expression; no crate or dependency tree, so MSRV, RustSec, async runtime, binary-size, and compile-time gates are inapplicable. Cargo and repository root files work on both required CI operating systems because they are platform-neutral text and Cargo metadata. ([Cargo manifest reference](https://doc.rust-lang.org/cargo/reference/manifest.html), retrieved 2026-09-05.) |
-| Plain SPDX header | Pass as a pattern; not selected | The expression is license-compatible and has no dependency, runtime, binary, or platform cost. It is not REUSE-compliant without a copyright companion. ([SPDX handling guidance](https://spdx.dev/learn/handling-license-info/), retrieved 2026-09-05; [REUSE Specification](https://reuse.software/spec-3.3/), retrieved 2026-09-05.) |
-| REUSE header and `reuse lint` | Excluded for this template's default path | The specification is license-compatible and the tool is cross-platform at the process level, but it adds an external Python tool, `LICENSES/`/metadata rules, copyright-owner maintenance, and a new required gate for every source and repository file. Those costs are not justified by the target's single uniform license. Rust Project practice demonstrates that REUSE is useful for a much larger mixed-origin tree, not that this template needs it. ([REUSE tutorial](https://reuse.software/tutorial/), retrieved 2026-09-05; [Rust `REUSE.toml`](https://github.com/rust-lang/rust/blob/main/REUSE.toml), retrieved 2026-09-05.) |
-| `file_header` | Excluded by gate: required platform/maintenance evidence unverified | The maintained-looking Rust library can add or check arbitrary headers and has an SPDX feature, but the surveyed documentation does not establish the required `ubuntu-latest` and `macos-latest` CI matrix or a composite dual-expression workflow. It is therefore not a justified default dependency. ([file_header docs](https://docs.rs/file-header/latest/file_header/), retrieved 2026-09-05; [file_header source](https://github.com/google/file-header), retrieved 2026-09-05.) |
-| `addlicense` | Excluded by gate: ecosystem-fit and toolchain evidence | It is a Go program with useful check-only and SPDX-only modes, but it introduces a Go toolchain for a Rust template and documents fixed license modes rather than the target's exact dual expression as the primary interface. Its source-header automation is unnecessary when the selected pattern has no headers. ([addlicense](https://github.com/google/addlicense), retrieved 2026-09-05.) |
-| Full-text block | Excluded by fitness and drift risk | It is technically license-compatible only when the complete block states both licenses correctly. The observed clap block states MIT while its repository is dual licensed, so copied boilerplate fails the exact-expression acceptance criterion. ([Clap `lib.rs`](https://raw.githubusercontent.com/clap-rs/clap/master/clap_builder/src/lib.rs), retrieved 2026-09-05.) |
+| Root-only Cargo metadata | OS gate **unverified**; provisional preference | The fixed expression passes the license-expression requirement. No added crate or dependency tree: crate MSRV and RustSec gates are inapplicable; the text adds no `unsafe` code, Cargo features, or async-runtime coupling. Runtime binary/compile cost is inapplicable to metadata; the proposed shell check has repository-scan cost. Execution of this acceptance check on `ubuntu-latest` and `macos-latest` is **unverified**; a local shell-control probe is not either CI runner. Windows execution is also unverified and is not required. The syntax reference is not OS-test evidence. ([Cargo manifest reference](https://doc.rust-lang.org/cargo/reference/manifest.html), retrieved 2026-09-05.) |
+| Plain SPDX header | OS gate **unverified**; not selected | The expression passes the license-expression requirement. Crate/dependency MSRV and RustSec gates are inapplicable to an ordinary comment; it introduces no `unsafe` code, features, or async-runtime coupling. It adds source bytes, with no runtime behavior or benchmarked compile-time effect. No execution of header placement, compilation, and checking on `ubuntu-latest` and `macos-latest` was verified. Windows execution is unverified and not required. Syntax validity does not establish platform testing; a bare SPDX line also does not establish REUSE conformance. ([SPDX handling guidance](https://spdx.dev/learn/handling-license-info/), retrieved 2026-09-05; [REUSE Specification](https://reuse.software/spec-3.3/), retrieved 2026-09-05.) |
+| REUSE header and `reuse lint` | OS gate **unverified**; conditional runner-up | The header can express the fixed dual license. The comment has no crate MSRV, RustSec advisory, `unsafe` code, features, or async-runtime coupling. The Python verifier is a separate development tool: Rust MSRV/features are inapplicable, and its dependency security/posture has not been audited. No execution of `reuse annotate`/`reuse lint` on both `ubuntu-latest` and `macos-latest` was verified; Windows execution is also unverified and not required. Neither the REUSE specification nor the tutorial proves that matrix. The tool adds installation and repository-scan cost, with no link-time dependency in the Rust application. Its metadata/copyright maintenance is a tradeoff, not a failed platform test. ([REUSE tutorial](https://reuse.software/tutorial/), retrieved 2026-09-05; [Rust `REUSE.toml`](https://github.com/rust-lang/rust/blob/main/REUSE.toml), retrieved 2026-09-05.) |
+| `file_header` | Not admitted: tool fitness and maintenance **unverified** | The Rust library documents arbitrary-header check/add operations and an SPDX feature. This report has not established a complete license/dependency-MSRV/RustSec/`unsafe`/default-feature audit, the exact composite-expression workflow, or execution on both required operating systems. Windows execution is unverified. A development-only use would add compile/setup cost without linking into the shipped application. It remains a lead, not a gate-passed dependency. ([file_header docs](https://docs.rs/file-header/latest/file_header/), retrieved 2026-09-05; [file_header source](https://github.com/google/file-header), retrieved 2026-09-05.) |
+| `addlicense` | Not admitted: tool fitness and maintenance **unverified** | It is an Apache-2.0 Go tool documenting check-only and SPDX-only modes. Rust MSRV, Cargo features, and RustSec package metrics are inapplicable; Go dependency security and unsafe posture were not audited. No exact dual-expression check or required OS execution matrix was verified; Windows is unverified and not required. Source installation adds a Go toolchain, and checking adds repository I/O. Those integration costs do not themselves constitute a license or OS-gate failure. ([addlicense](https://github.com/google/addlicense), retrieved 2026-09-05.) |
+| Full-text block | Legacy MIT-only form fails the fixed-expression requirement; correct dual form is disfavored | Copying the observed MIT-only block does not implement the requested repository-wide dual declaration. A correctly authored dual block would avoid that defect, but its required OS execution gate is **unverified**. Crate MSRV, RustSec, features, and runtime coupling are inapplicable to comments; no `unsafe` code is introduced. Repeated legal text adds source and review cost; compile-time cost was not measured. Windows execution is unverified and not required. ([Clap `lib.rs`](https://raw.githubusercontent.com/clap-rs/clap/master/clap_builder/src/lib.rs), retrieved 2026-09-05.) |
 
-For all pattern candidates, crate download, release, RustSec, open-issue,
-responsiveness, default-feature, dependency-tree MSRV, and binary-size figures
-are inapplicable unless a candidate is adopted as a crate dependency. No such
-dependency is selected. The only tool candidate requiring a detailed crate
-fitness audit, `file_header`, is excluded because the required platform and
-integration evidence was not established. ([file_header docs](https://docs.rs/file-header/latest/file_header/), retrieved 2026-09-05.)
+No pattern has a verified overall gate pass. The preference below is conditional
+on completing the required OS checks. An unverified gate is an evidence gap,
+not a demonstrated incompatibility. Pattern download/release/advisory figures
+are inapplicable to metadata itself; a tool considered for installation still
+needs its own fitness audit. Reference maintenance is explicitly unverified in
+the Landscape table and is not waived by the absence of a runtime dependency.
 
 ### Up-and-comers
 
@@ -238,8 +238,10 @@ integration evidence was not established. ([file_header docs](https://docs.rs/fi
 single-binary Rust CLI and library that manages SPDX/REUSE-compatible headers,
 declarative metadata, drift classification, and reconciliation. That is a
 promising future alternative if the repository later needs file-level licensing
-for mixed-origin assets, but its recent, small ecosystem does not outweigh the
-zero-dependency root-only design for R46. ([`licet` documentation](https://docs.rs/licet/latest/licet/), retrieved 2026-09-05; [`licet` crate metadata](https://docs.rs/crate/licet/latest/source/Cargo.toml), retrieved 2026-09-05.)
+for mixed-origin assets. Its maintenance, adoption, license/dependency-MSRV,
+RustSec/`unsafe`, default-feature, required-OS, and build-cost gates were not
+verified; it is a research lead rather than an installation recommendation.
+No claim about its age or ecosystem size is made. ([`licet` documentation](https://docs.rs/licet/latest/licet/), retrieved 2026-09-05; [`licet` crate metadata](https://docs.rs/crate/licet/latest/source/Cargo.toml), retrieved 2026-09-05.)
 
 `file_header` remains useful as a library building block for a project that has
 already decided on a uniform full or SPDX-derived header. It supports recursive
@@ -247,10 +249,12 @@ check/add/delete operations and an SPDX-oriented module, but its API is a
 library surface rather than a repository policy, and the survey found no
 evidence that it is the accepted Rust-project convention. ([`file_header` API](https://docs.rs/file-header/latest/file_header/), retrieved 2026-09-05; [`file_header` README](https://raw.githubusercontent.com/google/file-header/master/README.md), retrieved 2026-09-05.)
 
-`cargo-about` is an adjacent mature practice for generating a license listing
+`cargo-about` is an adjacent tool for generating a license listing
 for all dependencies. It can complement root-only metadata when the web service
 or binary later ships third-party notices, but it does not insert or verify
-headers in the template's own `.rs` files. ([`cargo-about` README](https://raw.githubusercontent.com/EmbarkStudios/cargo-about/main/README.md), retrieved 2026-09-05.)
+headers in the template's own `.rs` files. Its maintenance is unverified after
+the REST retry; it is not selected or gate-audited for installation here.
+([`cargo-about` README](https://raw.githubusercontent.com/EmbarkStudios/cargo-about/main/README.md), retrieved 2026-09-05.)
 
 ### Fit for this template
 
@@ -274,8 +278,13 @@ license comments before `//!` module documentation in the web crate and adds no
 async-runtime, latency, throughput, memory, binary, or compile-time cost. Axum's
 representative library follows this documentation-first shape. ([Axum `lib.rs`](https://raw.githubusercontent.com/tokio-rs/axum/main/axum/src/lib.rs), retrieved 2026-09-05; [Rust comments reference](https://doc.rust-lang.org/reference/comments.html), retrieved 2026-09-05.)
 
-Operational performance comparison: the selected pattern performs no file scan
-at build or runtime. `reuse lint`, `file_header`, and `addlicense` are
+These shape-specific arguments concern architecture. They do not establish
+execution on `ubuntu-latest` or `macos-latest`; that gate is unverified for the
+preferred pattern and both SPDX/REUSE alternatives.
+
+Operational performance comparison: metadata performs no application-runtime
+scan. The proposed acceptance probe does scan repository files. `reuse lint`,
+`file_header`, and `addlicense` are
 repository-tree I/O workloads whose cost grows with files and bytes and whose
 instrumentation would be wall-clock scan time, files inspected, and failures;
 they do not affect request latency or service throughput when run only in CI.
@@ -283,11 +292,16 @@ No benchmark was run, so no absolute speed ranking is claimed. ([REUSE lint docu
 
 ### Recommendation
 
-Adopt root-only metadata and no per-file embedded license header for
+Provisional recommendation: adopt root-only metadata and no per-file embedded license header for
 repository-owned `.rs` files. Implement the fixed dual license as
 `license = "MIT OR Apache-2.0"` in the Cargo manifest and ship
 `LICENSE-APACHE` plus `LICENSE-MIT` at the repository root. Do not add
 `reuse`, `file_header`, `addlicense`, or a custom header inserter for R46.
+
+This is an architectural preference, not an implementation-ready gate pass.
+Execution on `ubuntu-latest` and `macos-latest`, and current maintenance of the
+reference implementations, remain **unverified**. Obtain that evidence before
+calling the recommendation fully validated.
 
 This preserves the shared policy-level principle while choosing the Rust-native
 mechanism prescribed by Cargo guidance and demonstrated by current Rust
@@ -300,7 +314,7 @@ REUSE-style SPDX header, ranked first among header-bearing choices and second
 overall. It wins if a future scope change introduces mixed-origin source,
 vendored code, independently redistributed file fragments, or a compliance
 requirement for file-level copyright attribution. In that case use the exact
-dual expression and a maintained copyright line:
+dual expression and an accurate copyright line:
 
 ```rust
 // SPDX-FileCopyrightText: 2026 Steve Morin
@@ -308,7 +322,9 @@ dual expression and a maintained copyright line:
 // SPDX-License-Identifier: MIT OR Apache-2.0
 ```
 
-Run `reuse lint` in CI and use `reuse annotate` only for intentional additions;
+First establish the selected REUSE tool version's maintenance and execution on
+both required CI operating systems; neither is verified here. Then run
+`reuse lint` in CI and use `reuse annotate` only for intentional additions;
 do not use a full license-text block. This condition follows REUSE's requirement
 for both tags and its recommendation that comment headers be close to the top
 of commentable files. ([REUSE Specification](https://reuse.software/spec-3.3/), retrieved 2026-09-05; [REUSE annotate documentation](https://reuse.readthedocs.io/en/stable/man/reuse-annotate.html), retrieved 2026-09-05.)
@@ -354,8 +370,9 @@ The implementation plan should:
   `"MIT OR Apache-2.0"`;
 - do not prepend a full block, SPDX line, or REUSE header to generated
   `src/main.rs`, `src/lib.rs`, web modules, tests, examples, or benches;
-- do not add a header inserter, header verifier, `REUSE.toml`, or `LICENSES/`
-  directory for this item; and
+- do not add a header-stamping dependency, `REUSE.toml`, or `LICENSES/`
+  directory for this item; the source-policy probe below is an acceptance
+  check for this migration, not a new insertion tool; and
 - document the root license pair in the README's license section, following
   the Rust API Guidelines wording and links.
 
@@ -367,31 +384,89 @@ py stamps headers broadly, while ts's attempted conversion was incomplete.
 
 ### Validation strategy
 
-Planned checks; not executed because this research checkout contains no Rust
-implementation:
+The corrected checker below has a direct exit-code contract: no prohibited
+header returns `0`; a prohibited header returns `1`. An `awk` or `xargs`
+execution error is also normalized to `1`. A nonzero result from file discovery
+fails the caller through Bash's `pipefail`; it cannot silently count as a pass.
+`awk` returns `0` when it finds no match and `1` for a match. `xargs` may map a
+child failure to a different nonzero code, so the enclosing `if !` converts
+every checker failure to `1` rather than depending on a particular `xargs`
+implementation's status.
 
-```sh
-# From the implementation repository root.
-set -eu
+The following is a proposed implementation-repository acceptance sequence.
+The extracted `r46_check_headers` function and the caller's no-source-roots
+branch were exercised during this revision, with the controls described below.
+Full discovery, manifest,
+formatting, compilation, testing, and packaging remain unexecuted. Use Bash on
+each required CI runner; no claim of execution on either runner is made here.
+
+```bash
+# Execute with Bash from the implementation repository root.
+set -euo pipefail
 
 test -s LICENSE-MIT
 test -s LICENSE-APACHE
 grep -Fx 'license = "MIT OR Apache-2.0"' Cargo.toml
 cargo metadata --no-deps --format-version 1 >/dev/null
 
-# Repository-owned Rust files must not acquire the rejected header forms.
-if find src tests examples benches -type f -name '*.rs' -print0 \
-  | xargs -0 awk '
-      FNR <= 20 && ($0 ~ /SPDX-License-Identifier:/ ||
-                    $0 ~ /SPDX-FileCopyrightText:/ ||
-                    $0 ~ /Licensed under the MIT license/ ||
-                    $0 ~ /Permission is hereby granted/) {
-        print FILENAME ":" FNR ":" $0; found = 1
+# Consume NUL-delimited source paths on stdin. Do not invert this contract.
+#
+# The detector's complete supported header set is explicit: within the first
+# 40 lines of each repository-owned `.rs` file, reject either SPDX marker;
+# the canonical MIT notice phrases `Licensed under the MIT license`,
+# `Permission is hereby granted, free of charge, to any person obtaining a
+# copy`, or `THE SOFTWARE IS PROVIDED "AS IS"`; or the canonical Apache notice
+# phrases `Licensed under the Apache License, Version 2.0`, `you may not use
+# this file except in compliance with the License`, or `Unless required by
+# applicable law or agreed to in writing, software distributed under the
+# License is distributed on an "AS IS" BASIS`. A source file with none of
+# those exact signatures is outside this detector's prohibited-header set and
+# is accepted. The limit is 40 lines so a header cannot hide after the earlier
+# 20-line heuristic boundary.
+r46_check_headers() {
+  if ! xargs -0 awk '
+      FNR <= 40 {
+        signature = ""
+        if ($0 ~ /SPDX-License-Identifier:/) {
+          signature = "SPDX-License-Identifier:"
+        } else if ($0 ~ /SPDX-FileCopyrightText:/) {
+          signature = "SPDX-FileCopyrightText:"
+        } else if ($0 ~ /Licensed under the MIT license/) {
+          signature = "MIT license header"
+        } else if ($0 ~ /Permission is hereby granted, free of charge, to any person obtaining a copy/) {
+          signature = "MIT permission header"
+        } else if ($0 ~ /THE SOFTWARE IS PROVIDED "AS IS"/) {
+          signature = "MIT warranty header"
+        } else if ($0 ~ /Licensed under the Apache License, Version 2\.0/) {
+          signature = "Apache-2.0 license header"
+        } else if ($0 ~ /you may not use this file except in compliance with the License/) {
+          signature = "Apache-2.0 compliance header"
+        } else if ($0 ~ /Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS/) {
+          signature = "Apache-2.0 warranty header"
+        }
+        if (signature != "") {
+          print FILENAME ":" FNR ":" signature
+          found = 1
+        }
       }
       END { exit found ? 1 : 0 }
     '; then
-  echo 'unexpected per-file license header' >&2
-  exit 1
+    echo 'unexpected per-file license header or header-check failure' >&2
+    return 1
+  fi
+  return 0
+}
+
+# Scope to repository-owned source roots in the generated layout.
+# Optional directories need not exist; add any other workspace source roots.
+r46_roots=()
+for r46_dir in src tests examples benches crates; do
+  if [[ -d "$r46_dir" ]]; then
+    r46_roots+=("$r46_dir")
+  fi
+done
+if (( ${#r46_roots[@]} > 0 )); then
+  find "${r46_roots[@]}" -type f -name '*.rs' -print0 | r46_check_headers
 fi
 
 cargo fmt --all -- --check
@@ -399,16 +474,69 @@ cargo test --workspace --all-targets
 cargo package --workspace --allow-dirty --no-verify
 ```
 
-Expected behavior: the manifest and both root files pass; `cargo metadata`
-reports the dual expression; the header-policy probe exits zero when all
-repository-owned Rust files are header-free; formatting, tests, and packaging
-pass; and the package contains the root license files. The inverse control is
-to add the proposed legacy MIT block or SPDX marker to a fixture source file and
-confirm the header-policy probe exits nonzero. A separate positive control is a
-fixture containing `//!` documentation as its first Rust documentation element;
-it should compile and remain untouched. ([Cargo package command](https://doc.rust-lang.org/cargo/commands/cargo-package.html), retrieved 2026-09-05; [Rust comments reference](https://doc.rust-lang.org/reference/comments.html), retrieved 2026-09-05.)
+Executed control-flow checks on the local Darwin host on 2026-09-05: extract
+`r46_check_headers` verbatim from this report and execute it with `/bin/bash`,
+the host `xargs`, and `/usr/bin/awk`. Feed each fixture through an inherited
+file descriptor and give the checker its NUL-delimited path; no fixture files
+are written. Expected/observed exit codes and diagnostics are recorded below.
+These controls test the actual checker pipeline and conditional, not a rewrite
+of the AWK predicate. They do not test `find` traversal or a Cargo workspace.
 
-The checks prove the selected repository policy, not legal validity of a
+| Input control | Expected checker exit | Observed checker exit |
+|---|---|---|
+| Header-free Rust with leading `//!` docs | `0`, no failure diagnostic | `0`, no failure diagnostic |
+| SPDX license identifier at the top | `1`, failure diagnostic | `1`, failure diagnostic |
+| Legacy MIT-only header | `1`, failure diagnostic | `1`, failure diagnostic |
+| Full-text MIT permission line | `1`, failure diagnostic | `1`, failure diagnostic |
+| Full-text Apache-2.0 header | `1`, failure diagnostic | `1`, failure diagnostic |
+| Copyright SPDX marker | `1`, failure diagnostic | `1`, failure diagnostic |
+| Empty path list | `0`, no failure diagnostic | `0`, no failure diagnostic |
+| Unreadable input path, `/dev/fd/99` | `1`, failure diagnostic | `1`, failure diagnostic |
+
+The entire Bash block passed `/bin/bash -n`. Running the discovery/check portion
+in this run directory, which has none of the listed source roots, returned `0`.
+That verifies optional-directory handling, not traversal of an implemented
+source tree. All local control results in this section were observed on
+2026-09-05.
+
+The integration caller also exits nonzero on a failed check because it uses
+`set -euo pipefail`. The original unnegated `if` would instead fail the clean
+control and accept a prohibited-header control. Executing that broken form as
+an in-memory inverse control produced exactly `1` for clean input and `0` for
+the SPDX-header input on 2026-09-05. This distinguishes the corrected behavior
+from the original defect.
+
+Planned integration result: the manifest and both root files satisfy the
+prerequisites; `cargo metadata` shows each applicable package's dual expression;
+formatting/tests/package creation succeed; an explicit package-content review
+confirms that both license files are shipped. File existence and a discarded
+`cargo metadata` response alone do not prove package contents or per-member
+metadata. This sequence is not a legal-text validator. Run it against the final
+workspace on `ubuntu-latest` and `macos-latest`, recording the selected stable
+and MSRV toolchains, before marking the OS gate verified. Windows remains
+unverified and is not required. Compilation and rustdoc checks of `//!` placement
+are also still planned. ([Cargo package command](https://doc.rust-lang.org/cargo/commands/cargo-package.html), retrieved 2026-09-05; [Rust comments reference](https://doc.rust-lang.org/reference/comments.html), retrieved 2026-09-05.)
+
+The MIT and Apache inverse controls were fixture-file tests. The command used
+the exact checker function above and NUL-delimited paths:
+
+```bash
+cd /private/tmp/r46-license-controls
+printf 'mit.rs\\0' | r46_check_headers
+printf 'apache.rs\\0' | r46_check_headers
+```
+
+Observed output:
+
+```text
+mit.rs:1:MIT license header
+apache.rs:1:Apache-2.0 license header
+```
+
+The first command returned `1`; the second command returned `1`. The clean
+fixture and SPDX, MIT, full-text MIT, copyright-marker, empty-input, and
+unreadable-input controls in the same table were also run with the stated
+results on 2026-09-05. The executed controls prove only the checker's exit-code behavior, not legal validity of a
 copyright ownership claim. If the later implementation adopts REUSE instead,
 replace the negative header probe with `reuse lint`, and verify both
 `SPDX-FileCopyrightText` and `SPDX-License-Identifier` on every covered file.
@@ -416,13 +544,19 @@ replace the negative header probe with `reuse lint`, and verify both
 
 ### Confidence & re-verify trigger
 
-Confidence: high for the Rust implementation choice and medium for the claim
-about ecosystem prevalence. The direct evidence includes the Rust Project,
-Serde, Tokio, Axum, clap, and a maintained Rust template, but it is a
-representative survey rather than a census. The exact SPDX expression and the
-REUSE copyright distinction are high-confidence standards findings. ([SPDX handling guidance](https://spdx.dev/learn/handling-license-info/), retrieved 2026-09-05; [REUSE Specification](https://reuse.software/spec-3.3/), retrieved 2026-09-05.)
+Confidence: moderate in the architectural preference and limited for claims
+about prevalence among actively maintained projects. The surveyed sources
+establish representative file layouts; the failed repository rechecks leave
+their maintenance **unverified**. The required `ubuntu-latest` and
+`macos-latest` execution gate is **unverified** for root-only metadata, plain
+SPDX, and REUSE. The local checker controls cannot close that gate. The exact
+SPDX expression and the REUSE copyright distinction remain high-confidence
+standards findings. ([SPDX handling guidance](https://spdx.dev/learn/handling-license-info/), retrieved 2026-09-05; [REUSE Specification](https://reuse.software/spec-3.3/), retrieved 2026-09-05; repository recheck endpoints in Landscape, retrieved 2026-09-05.)
 
-Re-verify before implementation if any of these triggers occurs: the owner
+Before declaring this research fully validated, obtain both required OS runs
+and current maintenance evidence through a successful REST query, a dated
+release page, or a maintainer notice. This follow-up is required even without
+any change to the recommendation. Re-evaluate the design if the owner
 changes the fixed `license` parameter; the repository begins shipping vendored
 or mixed-license source; a downstream compliance requirement demands file-level
 copyright attribution; Cargo changes its manifest license semantics; or the
@@ -435,17 +569,31 @@ Method notes: I surveyed the category before selecting candidates, then read
 first-party Rust/Cargo guidance, SPDX and REUSE standards, current source files
 and manifests from Serde, Tokio, Axum, clap, Rust, and OpenZeppelin's Rust
 template, and tool documentation for `reuse`, `file_header`, `addlicense`,
-`licet`, and `cargo-about`. I queried GitHub REST repository endpoints of the
-form `GET https://api.github.com/repos/<owner>/<repo>` and open-issue endpoints
-of the form `GET https://api.github.com/search/issues?q=repo:<owner>/<repo>+is:issue+is:open`;
-the unauthenticated API returned rate-limit responses, so no REST-derived
-figures are reported. The crates.io endpoints
+`licet`, and `cargo-about`. During this correction I read `raw/evidence-terra.md`
+and re-queried every repository endpoint listed in Landscape, using
+`curl -sS --max-time 30 -A 'rs-launch-blueprint-R46-evidence-recheck/1.0'`.
+Each returned HTTP 403 with `API rate limit exceeded` on 2026-09-05. Release
+pages were not consulted; maintenance is explicitly **unverified** for those
+references and tools. No archive flag, push timestamp, star count, release age,
+or issue responsiveness is inferred from those errors. The original run also
+queried open-issue endpoints of the form
+`GET https://api.github.com/search/issues?q=repo:<owner>/<repo>+is:issue+is:open`;
+some searches succeeded, but their counts were not used and they do not
+establish maintenance. The crates.io endpoints
 `GET https://crates.io/api/v1/crates/<name>` and
 `GET https://crates.io/api/v1/crates/<name>/versions`, and RustSec package pages
 of the form `https://rustsec.org/packages/<name>.html`, were not queried because
 R46 is a pattern item and no crate is recommended or added; their figures are
-inapplicable. I did not run the implementation acceptance commands because the
-repository has no Rust code yet.
+inapplicable to the selected metadata pattern. Optional tool installation is
+not approved by these metric omissions and would need a complete tool audit.
+During this correction I executed the report's actual checker function with
+in-memory clean/prohibited-header controls and reproduced the original
+inversion as a broken control. The local host was Darwin; this is not evidence
+of execution on `macos-latest` or `ubuntu-latest`. Full repository traversal,
+Cargo compilation/tests/package checks, and REUSE execution on both required
+CI operating systems remain **unverified**. Standards citations establish
+syntax and conformance, not OS execution. The control results are local
+observations recorded in Validation strategy, not external endpoint figures.
 
 - [Rust API Guidelines — C-PERMISSIVE](https://rust-lang.github.io/api-guidelines/necessities.html) — retrieved 2026-09-05.
 - [Cargo manifest reference](https://doc.rust-lang.org/cargo/reference/manifest.html) — retrieved 2026-09-05.

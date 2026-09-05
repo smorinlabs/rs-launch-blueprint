@@ -1,0 +1,7 @@
+Wrote [audit-codex.md](review/audit-codex.md) and [audit evidence](review/evidence/audit-commit-message-linter.log).
+
+Audit SHA-256: `07afe92ada79d5972a84a32833d0fab3d2850ee3713fd1624e579a5e8a1c1b90`  
+Verdict: `reject`; fresh rerun exit: `0`.
+
+Findings: the bot exemption accepts invalid types, and the broad version range conflicts with exact executable pins.
+

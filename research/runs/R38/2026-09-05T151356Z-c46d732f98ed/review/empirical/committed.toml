@@ -16,4 +16,6 @@ imperative_subject = false
 # error. Even when allowed, a merge commit's message fails the Conventional
 # grammar, so PR branches must be linear (rebase onto main; never merge main in).
 merge_commit = false
-ignore_author_re = "(dependabot|renovate)"
+# No ignore_author_re: a whole-commit author exemption would skip the type
+# check for bots. Bot pull requests use committed.bot.toml, selected in CI by
+# PR-author login, which relaxes only the width rules.
