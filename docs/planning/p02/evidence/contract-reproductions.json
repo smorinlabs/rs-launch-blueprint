@@ -1,0 +1,23 @@
+{
+  "source_commit": "2f3569051af2c2089f60f6cad129bc6e55482c30",
+  "valid_baseline": {
+    "exit_code": 0,
+    "stdout": "OK: research tree structure valid\n",
+    "stderr": ""
+  },
+  "C11_documented_retry_filename": {
+    "exit_code": 1,
+    "stdout": "FAIL: prompt not linked from index: research/topics/47-contributors-recipe-mode/prompts/contributors-recipe-mode.narrowed.prompt.md\n",
+    "stderr": ""
+  },
+  "C12_empty_decision_reject_audits": {
+    "exit_code": 0,
+    "stdout": "OK: research tree structure valid\n",
+    "stderr": ""
+  },
+  "C10_fenced_empty_answer": {
+    "exit_code": 0,
+    "stdout": "OK: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/p02-contract-probes-kzgymz2c/empty-answer.md fills the bundle template\n",
+    "stderr": ""
+  }
+}

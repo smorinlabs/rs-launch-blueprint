@@ -19,9 +19,13 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 ## Couplings
 - id: R78
 - owns:
-- consumes:
+- consumes: R58: logging-pipeline-contract
+- effort: deep
+- engines: codex, opus, doxa
+- evidence-checks:
+- acceptance-after:
+- related (integration guidance; registry dependency above): R58 (`logging-pipeline-architecture`) decides the base `tracing`-crate subscriber pipeline this item's OTel layer plugs into; use the logging architecture that R58 establishes; compare direct OpenTelemetry instrumentation with a bridge from that architecture, and record any required change rather than assuming a specific logging crate.
 - related (not a registry dependency): R69 (`web-framework-stack`) owns `web-extra-surface` and picks the framework this item's tracing spans instrument; treat the framework choice as open.
-- related (not a registry dependency): R58 (`logging-pipeline-architecture`) decides the base `tracing`-crate subscriber pipeline this item's OTel layer plugs into; use the logging architecture that R58 establishes; compare direct OpenTelemetry instrumentation with a bridge from that architecture, and record any required change rather than assuming a specific logging crate.
 - related (not a registry dependency): R79 (`prometheus-metrics`) is the sibling metrics decision for the same web service; using OpenTelemetry and useful request metrics in the example is shared; coordinate compatible integration boundaries while each item retains its own decision scope.
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 
@@ -66,6 +70,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 4. builds and is tested on every OS in `ubuntu-latest, macos-latest` (CI badge or a stated platform list); Windows support noted, not required;
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
+
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
 
 ## Answer template
 Use exactly these field names as H3 headings, in this order.

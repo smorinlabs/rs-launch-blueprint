@@ -21,6 +21,10 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R69
 - owns: web-extra-surface
 - consumes: R01: http-transport-injection-seam
+- effort: deep
+- engines: codex, opus, doxa
+- evidence-checks:
+- acceptance-after:
 - related (not a registry dependency): `web-extra-surface`'s value (this item's `owns` parameter) is consumed by R11 (`ci-workflow-job-structure`, CI job and skip-gating structure), R32 (`test-harness-and-execution`, test tiers), R37 (`hook-manager-distribution`, hook wiring for the OpenAPI snapshot check), R51 (`container-image`), R58 (`logging-pipeline-architecture`, shared logging pipeline profiles), and R71/R82/R83/R84 (the OpenAPI and docs gates) — the Parameters field of this item's answer must state a value precise enough for all of them to consume directly: whether the surface exists as a named Cargo feature, that feature's name, and what crates/capabilities it gates. R01 (`ports-and-adapters-seam`) decides the driven-I/O seam's shape (F001, `http-transport-injection-seam`); this item's web adapter must wire through whichever shape R01 lands on — treat R01's choice as open, do not block on it.
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 
@@ -66,6 +70,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
 
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
+
 ## Answer template
 Use exactly these field names as H3 headings, in this order.
 
@@ -76,7 +86,7 @@ State the shared requirement, its source and agreement level, the essential beha
 ### Recommendation
 One stack.
 ### Members
-The full `crate` field set for each member.
+For each member, use a `#### <member name>` heading. Under it, use these `#####` headings in this exact order: `Landscape`, `Principles and implementation`, `Dominant choice`, `Qualified shortlist`, `Excluded by gate`, `Up-and-comers`, `Fit for this template`, `Recommendation`, `Ranked runner-up`, `Tradeoffs`, `Parameters`, `Migration implications`, `Validation strategy`, `Confidence & re-verify trigger`, `Sources`. Fill every field with member-specific evidence.
 ### Compatibility
 Proof the members are tested together: a shared adopter, a shared example repository, or a version matrix.
 ### Parameters

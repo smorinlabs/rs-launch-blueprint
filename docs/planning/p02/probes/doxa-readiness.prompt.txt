@@ -1,0 +1,8 @@
+Readiness probe only, not an accepted Rust blueprint research decision.
+Using the official Cargo Book as the primary source, identify what the package
+version field represents and give one documented cargo metadata command that
+reports package information. Cite the exact official source URL and retrieval
+date. Limit the answer to 200 words. Do not survey libraries, run commands,
+modify files, or expand into template architecture. Report missing access or
+source evidence explicitly. This prompt tests provider operation recovery and
+artifact collection, not a claim that shorter output bounds provider cost.

@@ -74,7 +74,8 @@ hook" is a pattern; `ruff` and `oxlint`/`oxfmt` are tools. Swapping the tool is
 ## Prompt sections (enforced: exactly these, in order, outside code fences)
 
 `## Objective` · `## Context` · `## Out of scope` · `## Couplings` (`- id: R##`,
-`- owns: a, b`, `- consumes: R##: param; owner: param`) · `## Questions` ·
+`- owns: a, b`, `- consumes: R##: param; owner: param`, plus the effort, engine,
+evidence-check and acceptance-prerequisite mirrors from `research/EXECUTION.json`) · `## Questions` ·
 `## Required evidence` · `## Answer template` · `## Constraints` — spec §7.
 Parameter names are lowercase-kebab slugs.
 
@@ -89,4 +90,12 @@ Parameter names are lowercase-kebab slugs.
 
 `scripts/check-research-tree.sh` (add `--require-owner-review` from Phase 3.5
 on) enforces all of the above; `scripts/test-check-research-tree.sh` is its
-regression suite (53 cases, each asserting the exit status).
+original regression suite (53 cases, each asserting the exit status). P02 adds
+`research/EXECUTION.json` policy validation and strict resolved-topic evidence
+under [the acceptance schema](../planning/p02/acceptance-schema.md).
+`scripts/test-research-validation.py` exercises answer and acceptance failures;
+`scripts/test-research-answer-parser.py` checks Markdown boundaries and current
+decision history;
+`scripts/test-research-runner.py` exercises offline run recovery and publication.
+These checks establish record integrity. Source quality, execution truth, and
+architectural fitness remain review responsibilities.

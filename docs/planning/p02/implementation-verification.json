@@ -1,0 +1,59 @@
+{
+  "date": "2026-09-04",
+  "base_commit": "2f3569051af2c2089f60f6cad129bc6e55482c30",
+  "branch": "docs/p02-execution-plan-review",
+  "status": "local implementation validated; committed under the owner's 2026-09-04 commit direction",
+  "suites": {
+    "structural_regressions": 53,
+    "acceptance_validation": 10,
+    "markdown_and_history": 9,
+    "reader_lock": 3,
+    "durable_runner_integration": 19,
+    "port_document_generator": 6
+  },
+  "tests_total": 100,
+  "deliberate_runner_mutations_detected": 6,
+  "cli_cases": 16,
+  "live_tree_require_owner_review": "pass",
+  "temporary_production_R38_first_publication": "pass; synthetic evidence only",
+  "prompt_count": 84,
+  "tiers": {
+    "light": 6,
+    "focused": 53,
+    "deep": 25
+  },
+  "research_graph_edges": 69,
+  "research_layers": [
+    32,
+    19,
+    13,
+    20
+  ],
+  "acceptance_after": {
+    "R83": [
+      "R71"
+    ],
+    "R84": [
+      "R71"
+    ]
+  },
+  "canonical_statuses": {
+    "open": 84
+  },
+  "binding_research_jobs": 0,
+  "paid_doxa_jobs": 0,
+  "commits_created": 0,
+  "tags_created": 0,
+  "remaining_gates": [
+    "P01 release tag approval and verification",
+    "full REUSE/ADOPT baseline adjudication",
+    "research route and provider retry validation",
+    "Doxa credentials and approved spend envelope",
+    "binding R38 research pilot"
+  ],
+  "commit_authorization": {
+    "date": "2026-09-04",
+    "source": "owner direction recorded in docs/planning/p02/APPROVAL.md addendum; tag push, merge and paid research remain gated"
+  },
+  "note": "counts are as of the verification run; the preparation commit followed under the 2026-09-04 owner direction"
+}

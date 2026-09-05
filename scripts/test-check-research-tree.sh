@@ -30,12 +30,16 @@ fixture() {  # fixture DIR — write a valid tree
 | R02 | web-framework | crate | none | RUST-ONLY | — | [prompt](topics/02-web-framework/prompts/web-framework.prompt.md) | open |
 | R03 | old-thing | crate | different | DIVERGENT | — | [prompt](topics/03-old-thing/prompts/old-thing.prompt.md) | dropped |
 EOF
-  prompt R01 '- owns: async-runtime' '- consumes: owner: msrv-policy' > "$d/research/topics/01-async-runtime/prompts/async-runtime.prompt.md"
-  prompt R02 '- consumes: R01: async-runtime; owner: target-os-matrix' > "$d/research/topics/02-web-framework/prompts/web-framework.prompt.md"
-  prompt R03 > "$d/research/topics/03-old-thing/prompts/old-thing.prompt.md"
-  printf '## Decision\nx\n\n## Parameters\n- owns async-runtime = tokio 1.x\n\n## Empirical check\ncargo build: ok\n' > "$d/research/topics/01-async-runtime/DECISION.md"
-  echo ran > "$d/research/topics/01-async-runtime/audit-codex.md"
-  echo read > "$d/research/topics/01-async-runtime/audit-fable.md"
+  prompt R01 '- owns: async-runtime' '- consumes: owner: msrv-policy' '- effort: focused' '- engines: codex, opus' '- evidence-checks:' '- acceptance-after:' > "$d/research/topics/01-async-runtime/prompts/async-runtime.prompt.md"
+  prompt R02 '- consumes: R01: async-runtime; owner: target-os-matrix' '- effort: focused' '- engines: codex, opus, doxa' '- evidence-checks:' '- acceptance-after:' > "$d/research/topics/02-web-framework/prompts/web-framework.prompt.md"
+  prompt R03 '- effort: focused' '- engines: codex, opus' '- evidence-checks:' '- acceptance-after:' > "$d/research/topics/03-old-thing/prompts/old-thing.prompt.md"
+  printf '## Decision\nx\n\n### Principles and implementation\nfixture principle\n\nre-verify: 2027-01-01\n\n## Parameters\n- owns async-runtime = tokio 1.x\n\n## Empirical check\ncargo build: ok\n\n## Engines\ncodex and opus\n' > "$d/research/topics/01-async-runtime/DECISION.md"
+  printf 'placeholder\n' > "$d/research/topics/01-async-runtime/audit-codex.md"
+  printf 'placeholder\n' > "$d/research/topics/01-async-runtime/audit-fable.md"
+  mkdir -p "$d/research/topics/01-async-runtime/raw" "$d/research/topics/01-async-runtime/evidence"
+  echo codex > "$d/research/topics/01-async-runtime/raw/codex.md"
+  echo opus > "$d/research/topics/01-async-runtime/raw/opus.md"
+  echo command-output > "$d/research/topics/01-async-runtime/evidence/command.log"
   echo '# Runbook' > "$d/research/RUNBOOK.md"
   cat > "$d/docs/port/PARAMETERS.md" <<'EOF'
 # Shared parameters
@@ -46,7 +50,7 @@ EOF
 | rust-edition | fixed | owner | 2024 | Cargo edition |
 | target-os-matrix | fixed | owner | ubuntu, macos, windows | CI runners |
 | license | fixed | owner | MIT | repo license |
-| async-runtime | researched | R01 | — | the one async runtime every crate uses |
+| async-runtime | researched | R01 | tokio 1.x | the one async runtime every crate uses |
 EOF
   cat > "$d/docs/port/COMMONALITY.md" <<'EOF'
 # Commonality ledger
@@ -75,6 +79,30 @@ EOF
 | R02 | narrow | only frameworks with tower middleware | 2026-09-01 |
 | R03 | drop | not worth a prompt | 2026-09-01 |
 EOF
+  cat > "$d/research/EXECUTION.json" <<'EOF'
+{"schema_version":1,"approved_on":"2026-09-04","pilot":"R02","items":{"R01":{"tier":"focused","engines":["codex","opus"],"evidence_checks":[],"acceptance_after":[]},"R02":{"tier":"focused","engines":["codex","opus","doxa"],"evidence_checks":[],"acceptance_after":[]},"R03":{"tier":"focused","engines":["codex","opus"],"evidence_checks":[],"acceptance_after":[]}}}
+EOF
+  python3 - "$d" <<'PY'
+import hashlib, json, pathlib, sys
+d = pathlib.Path(sys.argv[1]); topic = d / 'research/topics/01-async-runtime'
+def sha(path): return hashlib.sha256(path.read_bytes()).hexdigest()
+def identity(actor, family): return {'actor': actor, 'model': actor + '-model', 'family': family}
+def art(path, actor, family): return {'path': str(path.relative_to(d)), 'sha256': sha(path), 'identity': identity(actor, family)}
+decision = topic / 'DECISION.md'; prompt = topic / 'prompts/async-runtime.prompt.md'
+fixed = {'msrv-policy':'stable minus 2', 'rust-edition':'2024', 'target-os-matrix':'ubuntu, macos, windows', 'license':'MIT'}
+decision.write_text(decision.read_text().replace('## Parameters\n', '## Parameters\n' + ''.join('- assumes %s = %s\n' % pair for pair in fixed.items())))
+for name, actor, family in [('audit-codex.md', 'auditor-openai', 'openai'), ('audit-fable.md', 'auditor-claude', 'anthropic')]:
+    (topic / name).write_text('decision-sha256: %s\nactor: %s\nmodel: %s-model\nfamily: %s\nverdict: approve\nunresolved-findings: none\nanalysis: fixture evidence reviewed\n' % (sha(decision), actor, actor, family))
+fields = ['Landscape', 'Principles and implementation', 'Dominant choice', 'Qualified shortlist', 'Excluded by gate', 'Up-and-comers', 'Fit for this template', 'Recommendation', 'Ranked runner-up', 'Tradeoffs', 'Parameters', 'Migration implications', 'Validation strategy', 'Confidence & re-verify trigger', 'Sources']
+answer = '\n\n'.join('### %s\nfixture evidence' % field for field in fields) + '\n'
+(topic / 'raw/codex.md').write_text(answer); (topic / 'raw/opus.md').write_text(answer)
+audits = []
+for kind, name, actor, family in [('empirical', 'audit-codex.md', 'auditor-openai', 'openai'), ('judgment', 'audit-fable.md', 'auditor-claude', 'anthropic')]:
+    path = topic / name
+    audits.append(dict(kind=kind, **art(path, actor, family), decision_sha256=sha(decision), verdict='approve', unresolved_findings=[]))
+data = {'item':'R01','schema_version':1,'decision_sha256':sha(decision),'prompt_sha256':sha(prompt),'policy_snapshot':{'tier':'focused','engines':['codex','opus'],'evidence_checks':[],'acceptance_after':[]},'engine_reports':[dict(engine='codex', **art(topic/'raw/codex.md','producer-codex','openai')),dict(engine='opus', **art(topic/'raw/opus.md','producer-opus','anthropic'))],'evidence_checks':[],'synthesis':identity('synthesizer','anthropic'),'audits':audits,'empirical':{'argv':['cargo','test'],'cwd':'fixture','toolchain':'rustc fixture','output_log':str((topic/'evidence/command.log').relative_to(d)),'output_sha256':sha(topic/'evidence/command.log'),'exit_code':0,'executed_by':identity('auditor-openai','openai')},'parameters':{'consumed':{},'fixed':{'msrv-policy':'stable minus 2','rust-edition':'2024','target-os-matrix':'ubuntu, macos, windows','license':'MIT'}},'prerequisites':{'research':{},'acceptance_after':{}},'reverify':'2027-01-01','engines':'codex and opus agreed','principles':'fixture principle'}
+(topic / 'acceptance.json').write_text(json.dumps(data), encoding='utf-8')
+PY
 }
 
 run() { "$check" "$@" >"$work/out" 2>&1; echo $?; }

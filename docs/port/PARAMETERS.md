@@ -15,6 +15,7 @@ Registry of every repo-wide parameter (spec §6.3). `fixed` rows are owner decis
 | build-tool-output-shape | researched | R49 | — | where cargo build artifacts land and what the binary and library targets are named; consumed by R22 (version accessor), R32 (built-binary test tier) and R68 (release binary artifacts) |
 | error-taxonomy-exit-codes | researched | R67 | — | the stable error-code catalog and its process exit-code mapping; consumed by R03 (port absence-vs-failure contract), R52 through R56 (config error handling) and R70 (domain-error-to-HTTP-status table) |
 | web-extra-surface | researched | R69 | — | whether the template ships an optional web and API surface behind a Cargo feature, and what that surface contains; consumed by R11 (CI job and skip-gating structure), R32 (test tiers), R37 (hook wiring for the OpenAPI snapshot check), R51 (container image), R58 (shared logging pipeline profiles) and R71, R82, R83, R84 (the OpenAPI and docs gates) |
+| logging-pipeline-contract | researched | R58 | — | selected tracing/logging stack, initialization and extension interface, structured-field/redaction contract, CLI/web profile boundary, and optional OTel feature boundary; consumed by R59 (file log sink), R75 (HTTP middleware stack) and R78 (OpenTelemetry integration) |
 
 ## Owner decisions (2026-09-02)
 

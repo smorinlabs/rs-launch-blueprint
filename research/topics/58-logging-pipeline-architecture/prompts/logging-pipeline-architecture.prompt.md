@@ -19,8 +19,12 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 
 ## Couplings
 - id: R58
-- owns:
+- owns: logging-pipeline-contract
 - consumes: R69: web-extra-surface
+- effort: deep
+- engines: codex, opus, doxa
+- evidence-checks:
+- acceptance-after:
 - related (not a registry dependency): R59 (`file-log-sink`) builds its file sink on top of whatever pipeline this item recommends; treat R59 as downstream of this item. R57 (`xdg-directory-set`) may supply a state-directory default this item's pipeline does not itself need but R59 will.
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 
@@ -63,6 +67,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
 
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
+
 ## Answer template
 Use exactly these field names as H3 headings, in this order.
 
@@ -73,7 +83,7 @@ State the shared requirement, its source and agreement level, the essential beha
 ### Recommendation
 One stack.
 ### Members
-The full `crate` field set for each member.
+For each member, use a `#### <member name>` heading. Under it, use these `#####` headings in this exact order: `Landscape`, `Principles and implementation`, `Dominant choice`, `Qualified shortlist`, `Excluded by gate`, `Up-and-comers`, `Fit for this template`, `Recommendation`, `Ranked runner-up`, `Tradeoffs`, `Parameters`, `Migration implications`, `Validation strategy`, `Confidence & re-verify trigger`, `Sources`. Fill every field with member-specific evidence.
 ### Compatibility
 Proof the members are tested together: a shared adopter, a shared example repository, or a version matrix.
 ### Parameters

@@ -19,6 +19,10 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R38
 - owns: commit-message-convention
 - consumes:
+- effort: focused
+- engines: codex, opus, doxa
+- evidence-checks:
+- acceptance-after:
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 - related (not a registry dependency): R24 (`changelog-section-mapping`) and the release-please configuration (ledger rows F063, F066, F073) consume the `commit-message-convention` parameter this item owns — coordinate the type-enum's naming so it maps cleanly to changelog sections, but do not decide that mapping here. R37 (`hook-manager-distribution`) owns the hook manager wrapping the `commit-msg` stage this item's tool runs inside.
 
@@ -61,6 +65,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 4. builds and is tested on every OS in `ubuntu-latest, macos-latest` (CI badge or a stated platform list); Windows support noted, not required;
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
+
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
 
 ## Answer template
 Use exactly these field names as H3 headings, in this order.

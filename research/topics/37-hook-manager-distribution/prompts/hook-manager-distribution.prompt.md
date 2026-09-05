@@ -22,6 +22,10 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - id: R37
 - owns:
 - consumes: R11: ci-job-structure; R42: package-manager-invocation; R69: web-extra-surface
+- effort: focused
+- engines: codex, opus
+- evidence-checks:
+- acceptance-after:
 If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
 - related (not a registry dependency): R38 (`commit-message-linter`), R39 (`secret-scanning-hooks`), R40 (`auxiliary-hygiene-hooks`), and R41 (`lockfile-freshness-check`) each own a specific hook *job's* tool and config; this item owns the hook *manager*'s distribution, install trigger, and full-suite CI re-run — the container those jobs run inside, not their contents. R32 (`test-harness-and-execution`) owns F173 (the opt-in pre-push test-suite hook) — coordinate on where in the stage tiering it lands but do not re-decide it.
 
@@ -65,6 +69,12 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 5. default features and any async-runtime coupling stated;
 6. binary-size and compile-time cost stated qualitatively.
 
+Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
+- Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
+- The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
+
 ## Answer template
 Use exactly these field names as H3 headings, in this order.
 
@@ -75,7 +85,7 @@ State the shared requirement, its source and agreement level, the essential beha
 ### Recommendation
 One stack.
 ### Members
-The full `crate` field set for each member.
+For each member, use a `#### <member name>` heading. Under it, use these `#####` headings in this exact order: `Landscape`, `Principles and implementation`, `Dominant choice`, `Qualified shortlist`, `Excluded by gate`, `Up-and-comers`, `Fit for this template`, `Recommendation`, `Ranked runner-up`, `Tradeoffs`, `Parameters`, `Migration implications`, `Validation strategy`, `Confidence & re-verify trigger`, `Sources`. Fill every field with member-specific evidence.
 ### Compatibility
 Proof the members are tested together: a shared adopter, a shared example repository, or a version matrix.
 ### Parameters
