@@ -228,7 +228,20 @@ def consumed_owners(root: Path, key: str, prompt: str) -> dict[str, str]:
     return owners
 
 
+def empty_directory(value: str) -> Path:
+    """A used staged directory is refused: a partial rebuild must never leave a
+    superseded manifest.json standing beside freshly overwritten evidence."""
+    directory = Path(value)
+    if directory.exists():
+        if not directory.is_dir() or directory.is_symlink():
+            raise UsageError("--staged-dir must be a directory: %s" % value)
+        require(not any(directory.iterdir()),
+                "staged directory already holds a staged tree; package into an empty directory: %s" % value)
+    return directory
+
+
 def build(args: argparse.Namespace, root: Path) -> dict[str, Any]:
+    staged_directory = empty_directory(args.staged_dir)
     key = runner.item(args.item)
     entry = runner.policy(root)["items"].get(key)
     require(isinstance(entry, dict), "%s absent from execution policy" % key)
@@ -251,7 +264,7 @@ def build(args: argparse.Namespace, root: Path) -> dict[str, Any]:
     decision_text = text_of(decision_file, "review/DECISION.md")
     decision_sha = runner.digest_bytes(decision_bytes)
 
-    staged = Staged(Path(args.staged_dir))
+    staged = Staged(staged_directory)
     staged.write("%s/DECISION.md" % topic, decision_bytes)
 
     reports = []

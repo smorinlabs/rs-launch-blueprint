@@ -80,25 +80,30 @@ class PackageTests(unittest.TestCase):
 
     # ---- process helpers -------------------------------------------------
 
-    def cli(self, script, *args, expect_ok=True):
+    def cli(self, script, *args, expect_ok=True, code="refused"):
+        """A refusal exits 1, a usage error exits 2; both keep stdout empty."""
         result = subprocess.run([sys.executable, str(script), "--root", str(self.root), "--json", *args],
                                 text=True, capture_output=True)
         if expect_ok:
             self.assertEqual(0, result.returncode, result.stdout + result.stderr)
             self.assertEqual("", result.stderr, result.stderr)
             return json.loads(result.stdout)
-        self.assertIn(result.returncode, (1, 2), result.stdout + result.stderr)
+        self.assertEqual({"refused": 1, "usage": 2}[code], result.returncode, result.stdout + result.stderr)
         self.assertEqual("", result.stdout, result.stdout)
-        return dict(ok=False, **json.loads(result.stderr))
+        failure = json.loads(result.stderr)
+        self.assertEqual(code, failure["error"]["code"], failure)
+        return dict(ok=False, **failure)
 
     def runner(self, *args, expect_ok=True):
         return self.cli(RUNNER, *args, expect_ok=expect_ok)
 
-    def build(self, item="R38", expect_ok=True):
-        self.staged_count += 1
-        self.staged = self.work / ("staged-%d" % self.staged_count)
+    def build(self, item="R38", expect_ok=True, code="refused", staged=None):
+        if staged is None:
+            self.staged_count += 1
+            staged = self.work / ("staged-%d" % self.staged_count)
+        self.staged = staged
         return self.cli(PACKAGER, "build", "--item", item, "--run-id", self.run_id,
-                        "--staged-dir", str(self.staged), expect_ok=expect_ok)
+                        "--staged-dir", str(staged), expect_ok=expect_ok, code=code)
 
     # ---- fixture helpers -------------------------------------------------
 
@@ -251,6 +256,21 @@ class PackageTests(unittest.TestCase):
         stale = self.build(expect_ok=False)
         self.assertFalse(stale["ok"])
         self.assertIn("prepared prompt copy differs", stale["error"]["message"])
+        # An incomplete invocation is a usage error, not a refusal.
+        self.cli(PACKAGER, "build", "--item", "R38", expect_ok=False, code="usage")
+
+    def test_refuses_rebuilding_into_a_used_staged_directory(self):
+        self.build()
+        used, manifest = self.staged, sha(self.staged / "manifest.json")
+        write(self.run_dir / "review/audit-fable.md",
+              self.audit_text("audit-fable-%s" % self.run_id, "claude-fable-5-1", "anthropic",
+                              verdict="reject", findings="missing gate"))
+        refused = self.build(expect_ok=False, staged=used)
+        self.assertIn("staged directory already holds a staged tree", refused["error"]["message"])
+        # The superseded bundle is left whole, so nothing half-rebuilt can publish.
+        self.assertEqual(manifest, sha(used / "manifest.json"))
+        self.assertIn("verdict: approve",
+                      (used / "research/topics/38-commit-message-linter/audit-fable.md").read_text())
 
     def test_light_item_records_evidence_check(self):
         acceptance = self.build_light("R22")
