@@ -63,11 +63,11 @@
       "Codex worker network and web-search tool (stdin closed)",
       "Doxa provider keys present; o3-deep-research and deep-research-preview-04-2026 visible",
       "create retries isolated by scripts/doxa_no_retry.py",
-      "paid envelope prepared"
+      "paid envelope prepared",
+      "full REUSE/ADOPT baseline adjudication and reconciliation (docs/port/BASELINE-REVIEW.md)"
     ],
     "remaining_gates": [
       "P01 release tag approval and verification",
-      "full REUSE/ADOPT baseline adjudication (in progress)",
       "owner spend approval and provider caps for batch B0-R38",
       "binding R38 research pilot"
     ]

@@ -24,6 +24,8 @@ the `## Reconciliation` section; classification history is preserved in the
 ledger rows themselves.
 
 ## Reviewers
+
+Claude workers ran through the Agent tool (model `opus`, resolved as `claude-opus-5` per `docs/planning/p02/probes/claude-opus.json`); Codex workers and the adversarial reviewer ran through `codex exec`, whose CLI header identities and timestamps are recorded in `docs/planning/p02/probes/codex-baseline-workers.txt`.
 - B1: Reviewed: 2026-09-04. Reviewer: `baseline-b1-opus`, model `claude-opus-5[1m]`.
 - B2: Reviewed: 2026-09-04. Reviewer: baseline-b2-terra (gpt-5.6-terra).
 - B3: Reviewed: 2026-09-04. Reviewer: `baseline-b3-opus`, model `claude-opus-5[1m]`.

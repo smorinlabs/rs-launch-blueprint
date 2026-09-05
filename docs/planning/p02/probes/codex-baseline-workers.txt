@@ -1,0 +1,35 @@
+# Codex CLI identity record for the baseline-review workers and the adversarial reviewer, 2026-09-04
+# Binary: /Users/stevemorin/.local/share/mise/installs/node/26.5.0/bin/codex; each block is the CLI's own header, followed by start/end UTC timestamps.
+
+## B2
+OpenAI Codex v0.153.2
+model: gpt-5.6-terra
+provider: openai
+sandbox: workspace-write [workdir, /tmp, $TMPDIR] (network a
+reasoning effort: high
+started: 2026-09-05T04:52:07Z
+ended:   2026-09-05T04:56:56Z
+exit:    exit=0
+tokens used: 143,017
+
+## B4
+OpenAI Codex v0.153.2
+model: gpt-5.6-terra
+provider: openai
+sandbox: workspace-write [workdir, /tmp, $TMPDIR] (network a
+reasoning effort: high
+started: 2026-09-05T04:52:09Z
+ended:   2026-09-05T04:57:12Z
+exit:    exit=0
+tokens used: 129,662
+
+## ASTRA
+OpenAI Codex v0.153.2
+model: gpt-6-astra
+provider: openai
+sandbox: workspace-write [workdir, /tmp, $TMPDIR] (network a
+reasoning effort: high
+started: 2026-09-05T04:58:56Z
+ended:   2026-09-05T05:13:17Z
+exit:    exit=0
+tokens used: 151,491
