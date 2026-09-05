@@ -1,0 +1,133 @@
+== R47 independent audit rerun ==
+decision-sha256: 20693ce171bcde1e4e0bbe1c8b03e3b11a5619d2824ed6578af8abf6305791ba
+fixture: /private/tmp/R47-empirical-audit.sj6svc
+npm-cache: /private/tmp/R47-npm-cache.tJrJSa (isolated writable cache)
+argv: bash run-checks.sh
+-- empirical check output --
+== R47 acceptance run: 2026-09-05T16:44:21Z ==
+fixture: /private/tmp/R47-empirical-audit.sj6svc
+-- toolchain --
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+node v26.5.0; npx 12.0.1; just just 1.57.0; git version 2.50.1 (Apple Git-155); bun 1.4.0
+Darwin 25.4.0 arm64; macOS 26.4
+runner: npx --yes contributors-please@1.4.3
+fake-github: fake-github listening on http://127.0.0.1:47470
+-- case 01: version pin resolves --
+  ok   c01 exit = 0
+  ok   c01 version = 1.4.3
+-- case 02: steady-state render via just (committed ledger + marked CONTRIBUTORS.md) --
+    | npm notice run npx
+    | npm notice run 'contributors-please' render --config-file .contributors.yml
+    | contributors-please rendered 1 contributor
+  ok   c02 exit = 0
+  ok   c02 stdout matches /contributors-please rendered 1 contributor/
+  ok   c02 CONTRIBUTORS.md matches /^- \[Alice Example\](https://github.com/alice) - Code Contributor (2 commits)$/
+  ok   c02 CONTRIBUTORS.md lacks /dependabot/
+  ok   c02 ledger sha unchanged = 57bf136eba6d90eba35afca70de7df8da2e482c68f84417b2c0e672ddf4d354a
+  ok   c02 fake-github requests = 0
+   direct engine render in a copy, for byte comparison
+  ok   c02b direct render exit = 0
+  ok   c02b recipe output vs direct render: byte-identical
+  ok   c02b git status of A (only CONTRIBUTORS.md changed) =  M CONTRIBUTORS.md
+-- case 03: projection determinism (second recipe run) --
+  ok   c03 exit = 0
+  ok   c03 second run: byte-identical
+  ok   c03 ledger sha unchanged = 57bf136eba6d90eba35afca70de7df8da2e482c68f84417b2c0e672ddf4d354a
+  ok   c03 fake-github requests = 0
+-- case 04: missing ledger -> recipe bootstraps via init (fake GitHub on 127.0.0.1) --
+    | npm notice run npx
+    | npm notice run 'contributors-please' init --non-interactive --owner smorinlabs --repo rs-launch-blueprint --config-file .contributors.yml --github-server-url http://127.0.0.1:47470
+    | contributors-please initialized 1 contributor
+  ok   c04 exit = 0
+  ok   c04 stdout matches /contributors-please initialized 1 contributor/
+  ok   c04 ledger created: /private/tmp/R47-empirical-audit.sj6svc/.work/B/.contributors.jsonl present
+    ledger: {"login":"alice","name":"alice","profile":"http://127.0.0.1:47470/alice","avatar":"http://127.0.0.1:47470/avatars/alice.png","source":"commit","pinned":false,"categories":["code","docs"],"title":"Documentation Contributor","commits":2,"first_seen":"2026-09-05","last_updated":"2026-09-05"}
+  ok   c04 ledger records|alice|commits|categories|source|pinned|profile = 1|1|2|code,docs|commit|False|http://127.0.0.1:47470/alice
+    observed title: Documentation Contributor
+  ok   c04 CONTRIBUTORS.md matches /^- \[alice\](http://127.0.0.1:47470/alice) - .* Contributor (2 commits)$/
+    rendered: - [alice](http://127.0.0.1:47470/alice) - Documentation Contributor (2 commits)
+  ok   c04 fake-github requests = 1
+  ok   c04 request = GET /api/v3/repos/smorinlabs/rs-launch-blueprint/contributors?per_page=100
+  ok   c04 git status of B (ledger + output untracked/modified, nothing else) =  M CONTRIBUTORS.md
+?? .contributors.jsonl
+-- case 05: guard flips to render once the ledger exists (no discovery) --
+  ok   c05 exit = 0
+  ok   c05 stdout matches /contributors-please rendered 1 contributor/
+  ok   c05 output unchanged: byte-identical
+  ok   c05 ledger sha unchanged = a25829bbd457e3456e00eb5eee07f6bc1fba6781e5305e305dc2b41e6caf61bb
+  ok   c05 fake-github requests (still 1) = 1
+-- case 06: inverse control — bootstrap without owner fails loudly, writes nothing --
+    | npm notice run npx
+    | npm notice run 'contributors-please' init --non-interactive --owner  --repo rs-launch-blueprint --config-file .contributors.yml --github-server-url http://127.0.0.1:47470
+    | Provide --owner and --repo, or set GITHUB_REPOSITORY.
+    | error: recipe `contributors-update` failed with exit code 1
+  ok   c06 exit = 1
+  ok   c06 stderr matches /Provide --owner and --repo, or set GITHUB_REPOSITORY/
+  ok   c06 no ledger: /private/tmp/R47-empirical-audit.sj6svc/.work/C/.contributors.jsonl absent
+  ok   c06 output untouched: byte-identical
+  ok   c06 fake-github requests (still 1) = 1
+-- case 07: GitHub API failure during bootstrap -> nonzero, no fabricated ledger --
+    | npm notice run npx
+    | npm notice run 'contributors-please' init --non-interactive --owner smorinlabs --repo rs-launch-blueprint --config-file .contributors.yml --github-server-url http://127.0.0.1:47470
+    | GitHub API request failed: 500
+    | error: recipe `contributors-update` failed with exit code 1
+  ok   c07 exit = 1
+  ok   c07 the failing discovery call was made (requests +1) = 2
+  ok   c07 stderr matches /GitHub API request failed: 500/
+  ok   c07 no ledger: /private/tmp/R47-empirical-audit.sj6svc/.work/D/.contributors.jsonl absent
+  ok   c07 output untouched: byte-identical
+-- case 08: direct render with no ledger (Codex negative control reproduced) --
+    | npm notice run npx
+    | npm notice run 'contributors-please' render --config-file .contributors.yml
+    | ENOENT: no such file or directory, open '/private/tmp/R47-empirical-audit.sj6svc/.work/E/.contributors.jsonl'
+  ok   c08 exit = 1
+  ok   c08 stderr matches /ENOENT.*\.contributors\.jsonl/
+-- case 09: ledger present but CONTRIBUTORS.md absent (in_place precondition) --
+    | npm notice run npx
+    | npm notice run 'contributors-please' render --config-file .contributors.yml
+    | ENOENT: no such file or directory, open '/private/tmp/R47-empirical-audit.sj6svc/.work/F/CONTRIBUTORS.md'
+    | error: recipe `contributors-update` failed with exit code 1
+  ok   c09 exit = 1
+  ok   c09 stderr matches /ENOENT.*CONTRIBUTORS\.md/
+-- case 10: shallow clone cannot bootstrap (engine demands full history) --
+  ok   c10 clone is shallow = true
+  ok   c10 clone has no ledger (never committed in B): /private/tmp/R47-empirical-audit.sj6svc/.work/G/.contributors.jsonl absent
+    | npm notice run npx
+    | npm notice run 'contributors-please' init --non-interactive --owner smorinlabs --repo rs-launch-blueprint --config-file .contributors.yml --github-server-url http://127.0.0.1:47470
+    | contributors-please requires a full checkout. Set actions/checkout fetch-depth: 0.
+    | error: recipe `contributors-update` failed with exit code 1
+  ok   c10 exit = 1
+  ok   c10 stderr matches /requires a full checkout/
+  ok   c10 no ledger: /private/tmp/R47-empirical-audit.sj6svc/.work/G/.contributors.jsonl absent
+-- case 11: runner override (R42's parameter) leaves the recipe body and output unchanged --
+    | contributors-please rendered 1 contributor
+  ok   c11 exit = 0
+  ok   c11 bun-x output vs npx output: byte-identical
+  ok   c11 fake-github requests unchanged = 2
+  ok   c11 git status of A (no runner artifacts) =  M CONTRIBUTORS.md
+summary: PASS=51 FAIL=0
+RESULT: PASS
+-- citation spot checks (curl, retrieved 2026-09-05) --
+curl status=200 bytes=42039 url=https://registry.npmjs.org/contributors-please
+assert latest=1.4.3 version=1.4.3 license=MIT node=>=24
+curl status=200 bytes=6011 url=https://raw.githubusercontent.com/smorinlabs/contributors-please-action/main/action.yml
+100:  bootstrap:
+174:runs:
+175:  using: node24
+curl status=200 bytes=9646 url=https://raw.githubusercontent.com/smorinlabs/contributors-please/main/src/cli.ts
+107:        bootstrap: true,
+curl status=200 bytes=20222 url=https://raw.githubusercontent.com/smorinlabs/contributors-please/main/src/engine/contributors.ts
+25:  readStateFile,
+129:  async run(): Promise<RunResult> {
+141:        `No state file found at \`${this.config.stateFile}\`. Run npx contributors-please init locally to bootstrap, then commit the result.`
+145:    const existingState = stateExists ? await readStateFile(statePath) : [];
+278:  async openPullRequest(
+336:    const pr = await this.github.openPullRequest({
+curl status=200 bytes=30216 url=https://raw.githubusercontent.com/smorinlabs/py-launch-blueprint/b08bccfb55d05f15e46a83b52c5660b1881d19f5/Justfile
+461:update-contributors:
+462:    npx {{contributors_package}} init --non-interactive --owner {{contributors_owner}} --repo {{repo_name}} --config-file .contributors.yml
+curl status=404 bytes=14 url=https://raw.githubusercontent.com/smorinlabs/ts-launch-blueprint/cb1cbcb2e88b898e8c081b0abbfabc1630079c00/Justfile
+curl status=404 bytes=14 url=https://raw.githubusercontent.com/smorinlabs/ts-launch-blueprint/cb1cbcb2e88b898e8c081b0abbfabc1630079c00/.github/workflows/update-contributors.yml
+rerun-exit-code: 0
+

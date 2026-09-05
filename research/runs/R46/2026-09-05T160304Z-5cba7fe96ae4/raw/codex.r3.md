@@ -143,8 +143,8 @@ Essential behaviors and acceptance criteria:
   has a different origin or license, that exception must be made explicit in a
   targeted metadata mechanism before it is shipped.
 - A check must fail if the manifest expression changes, either root license
-  file disappears, or a newly added repository-owned source file contains one
-  of the five exact prohibited forms stated in Migration implications.
+  file disappears, or a newly added repository-owned source file reintroduces
+  the rejected legacy full-text/MIT-only header pattern.
 - A crate-level `//!` module or crate documentation comment remains the first
   Rust documentation element in files that need it.
 
@@ -362,23 +362,13 @@ parameter registry](https://github.com/smorinlabs/rs-launch-blueprint/blob/main/
 
 ### Migration implications
 
-The migration policy is exactly this, with no additional or vaguer prohibited
-forms: the prohibited set is these canonical forms and nothing vaguer: (a) any
-line containing 'SPDX-License-Identifier:'; (b) the MIT boilerplate first line
-'Permission is hereby granted, free of charge'; (c) the Apache appendix
-boilerplate line 'Licensed under the Apache License, Version 2.0'; (d) the
-Apache full-text title lines 'Apache License' followed within three lines by
-'Version 2.0, January 2004'; (e) the MIT title line 'MIT License' followed
-within two lines by 'Copyright (c)'. The detector is case-sensitive and applies
-anywhere in the first 40 lines of a source file.
-
 The implementation plan should:
 
 - create or retain root `LICENSE-APACHE` with the Apache License 2.0 text;
 - create or retain root `LICENSE-MIT` with the MIT text;
 - set the workspace/package manifest's `license` field to exactly
   `"MIT OR Apache-2.0"`;
-- do not add any of the five prohibited forms above to generated
+- do not prepend a full block, SPDX line, or REUSE header to generated
   `src/main.rs`, `src/lib.rs`, web modules, tests, examples, or benches;
 - do not add a header-stamping dependency, `REUSE.toml`, or `LICENSES/`
   directory for this item; the source-policy probe below is an acceptance
@@ -421,61 +411,47 @@ cargo metadata --no-deps --format-version 1 >/dev/null
 
 # Consume NUL-delimited source paths on stdin. Do not invert this contract.
 #
-# The detector is exactly the five-form migration policy above: it is
-# case-sensitive and scans anywhere in the first 40 lines. It emits the first
-# matching form per line; any match rejects the input. It does not reject other
-# license prose.
+# The detector's complete supported header set is explicit: within the first
+# 40 lines of each repository-owned `.rs` file, reject either SPDX marker;
+# the canonical MIT notice phrases `Licensed under the MIT license`,
+# `Permission is hereby granted, free of charge, to any person obtaining a
+# copy`, or `THE SOFTWARE IS PROVIDED "AS IS"`; or the canonical Apache notice
+# phrases `Licensed under the Apache License, Version 2.0`, `you may not use
+# this file except in compliance with the License`, or `Unless required by
+# applicable law or agreed to in writing, software distributed under the
+# License is distributed on an "AS IS" BASIS`. A source file with none of
+# those exact signatures is outside this detector's prohibited-header set and
+# is accepted. The limit is 40 lines so a header cannot hide after the earlier
+# 20-line heuristic boundary.
 r46_check_headers() {
   if ! xargs -0 awk '
-      function check_file( i, j, line) {
-        for (i = 1; i <= line_count; i++) {
-          line = lines[i]
-          if (line ~ /SPDX-License-Identifier:/) {
-            print current_file ":" i ":(a) SPDX-License-Identifier:"
-            found = 1
-          } else if (line ~ /Permission is hereby granted, free of charge/) {
-            print current_file ":" i ":(b) MIT boilerplate first line"
-            found = 1
-          } else if (line ~ /Licensed under the Apache License, Version 2\.0/) {
-            print current_file ":" i ":(c) Apache appendix boilerplate line"
-            found = 1
-          } else if (line ~ /Apache License/) {
-            for (j = i + 1; j <= i + 3 && j <= line_count; j++) {
-              if (lines[j] ~ /Version 2\.0, January 2004/) {
-                print current_file ":" i ":(d) Apache full-text title form"
-                found = 1
-                break
-              }
-            }
-          } else if (line ~ /MIT License/) {
-            for (j = i + 1; j <= i + 2 && j <= line_count; j++) {
-              if (lines[j] ~ /Copyright \(c\)/) {
-                print current_file ":" i ":(e) MIT title form"
-                found = 1
-                break
-              }
-            }
-          }
-        }
-      }
-      FILENAME != current_file {
-        if (current_file != "") {
-          check_file()
-          for (i = 1; i <= line_count; i++) delete lines[i]
-        }
-        current_file = FILENAME
-        line_count = 0
-      }
       FNR <= 40 {
-        lines[FNR] = $0
-        line_count = FNR
+        signature = ""
+        if ($0 ~ /SPDX-License-Identifier:/) {
+          signature = "SPDX-License-Identifier:"
+        } else if ($0 ~ /SPDX-FileCopyrightText:/) {
+          signature = "SPDX-FileCopyrightText:"
+        } else if ($0 ~ /Licensed under the MIT license/) {
+          signature = "MIT license header"
+        } else if ($0 ~ /Permission is hereby granted, free of charge, to any person obtaining a copy/) {
+          signature = "MIT permission header"
+        } else if ($0 ~ /THE SOFTWARE IS PROVIDED "AS IS"/) {
+          signature = "MIT warranty header"
+        } else if ($0 ~ /Licensed under the Apache License, Version 2\.0/) {
+          signature = "Apache-2.0 license header"
+        } else if ($0 ~ /you may not use this file except in compliance with the License/) {
+          signature = "Apache-2.0 compliance header"
+        } else if ($0 ~ /Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS/) {
+          signature = "Apache-2.0 warranty header"
+        }
+        if (signature != "") {
+          print FILENAME ":" FNR ":" signature
+          found = 1
+        }
       }
-      END {
-        if (current_file != "") check_file()
-        exit found ? 1 : 0
-      }
+      END { exit found ? 1 : 0 }
     '; then
-    echo 'unexpected prohibited per-file license form or header-check failure' >&2
+    echo 'unexpected per-file license header or header-check failure' >&2
     return 1
   fi
   return 0
@@ -500,22 +476,23 @@ cargo package --workspace --allow-dirty --no-verify
 
 Executed control-flow checks on the local Darwin host on 2026-09-05: extract
 `r46_check_headers` verbatim from this report and execute it with `/bin/bash`,
-the host `xargs`, and `/usr/bin/awk`. The six required fixture tests used one
-clean fixture and one fixture for each prohibited form. The form (d) fixture
-was fetched verbatim from Apache with curl and stored temporarily under this
-run's `raw/` directory; it was deleted after the test. Expected/observed exit
-codes and diagnostics are recorded below.
+the host `xargs`, and `/usr/bin/awk`. The clean, SPDX, and marker controls used
+in-memory input paths. The MIT and Apache inverse controls used transient
+fixture files under this run's `raw/` directory; those files were deleted after
+the test. Expected/observed exit codes and diagnostics are recorded below.
 These controls test the actual checker pipeline and conditional, not a rewrite
 of the AWK predicate. They do not test `find` traversal or a Cargo workspace.
 
 | Input control | Expected checker exit | Observed checker exit |
 |---|---|---|
-| Clean fixture, leading `//!` docs | `0`, no failure diagnostic | `0`, no failure diagnostic |
-| Form (a), line containing `SPDX-License-Identifier:` | `1`, failure diagnostic | `1`, failure diagnostic |
-| Form (b), MIT boilerplate first line | `1`, failure diagnostic | `1`, failure diagnostic |
-| Form (c), Apache appendix boilerplate line | `1`, failure diagnostic | `1`, failure diagnostic |
-| Form (d), Apache title form fetched from the canonical text | `1`, failure diagnostic | `1`, failure diagnostic |
-| Form (e), MIT title line followed by `Copyright (c)` | `1`, failure diagnostic | `1`, failure diagnostic |
+| Header-free Rust with leading `//!` docs | `0`, no failure diagnostic | `0`, no failure diagnostic |
+| SPDX license identifier at the top | `1`, failure diagnostic | `1`, failure diagnostic |
+| Legacy MIT-only header | `1`, failure diagnostic | `1`, failure diagnostic |
+| Full-text MIT permission line | `1`, failure diagnostic | `1`, failure diagnostic |
+| Full-text Apache-2.0 header | `1`, failure diagnostic | `1`, failure diagnostic |
+| Copyright SPDX marker | `1`, failure diagnostic | `1`, failure diagnostic |
+| Empty path list | `0`, no failure diagnostic | `0`, no failure diagnostic |
+| Unreadable input path, `/dev/fd/99` | `1`, failure diagnostic | `1`, failure diagnostic |
 
 The entire Bash block passed `/bin/bash -n`. Running the discovery/check portion
 in this run directory, which has none of the listed source roots, returned `0`.
@@ -541,61 +518,35 @@ and MSRV toolchains, before marking the OS gate verified. Windows remains
 unverified and is not required. Compilation and rustdoc checks of `//!` placement
 are also still planned. ([Cargo package command](https://doc.rust-lang.org/cargo/commands/cargo-package.html), retrieved 2026-09-05; [Rust comments reference](https://doc.rust-lang.org/reference/comments.html), retrieved 2026-09-05.)
 
-The six required fixture tests used one clean fixture and one fixture for each
-prohibited form. The form (d) fixture was fetched verbatim from Apache with
-`curl`; its first 40 lines are therefore the source text returned by the
-canonical URL, not a reconstructed comment sample. After defining the exact
-checker function above, the following commands were run from this run
+The MIT and Apache inverse controls were fixture-file tests. After defining the
+exact checker function above, the following commands were run from this run
 directory with NUL-delimited paths:
 
 ```bash
 cd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4
-curl -sS -L -A 'rs-launch-blueprint-R46-fixture/1.0' \
-  https://www.apache.org/licenses/LICENSE-2.0.txt \
-  -o raw/r46-fixture-d-apache-title.rs
-for fixture in raw/r46-fixture-clean.rs raw/r46-fixture-a.rs \
-  raw/r46-fixture-b.rs raw/r46-fixture-c.rs \
-  raw/r46-fixture-d-apache-title.rs raw/r46-fixture-e.rs; do
-  printf "COMMAND: printf '%%s\\0' '%s' | r46_check_headers\n" "$fixture"
-  set +e
-  output=$(printf '%s\0' "$fixture" | r46_check_headers 2>&1)
-  status=$?
-  set -e
-  if [[ -n "$output" ]]; then printf '%s\n' "$output"; fi
-  printf 'EXIT: %d\n' "$status"
-done
+printf 'raw/r46-fixture-mit.rs\\0' | r46_check_headers
+printf 'raw/r46-fixture-apache.rs\\0' | r46_check_headers
 ```
 
 Observed output:
 
 ```text
-COMMAND: printf '%s\0' 'raw/r46-fixture-clean.rs' | r46_check_headers
-EXIT: 0
-COMMAND: printf '%s\0' 'raw/r46-fixture-a.rs' | r46_check_headers
-raw/r46-fixture-a.rs:1:(a) SPDX-License-Identifier:
-unexpected prohibited per-file license form or header-check failure
+COMMAND: printf '%s\\0' 'raw/r46-fixture-mit.rs' | r46_check_headers
 EXIT: 1
-COMMAND: printf '%s\0' 'raw/r46-fixture-b.rs' | r46_check_headers
-raw/r46-fixture-b.rs:1:(b) MIT boilerplate first line
-unexpected prohibited per-file license form or header-check failure
+raw/r46-fixture-mit.rs:3:MIT permission header
+unexpected per-file license header or header-check failure
+COMMAND: printf '%s\\0' 'raw/r46-fixture-apache.rs' | r46_check_headers
 EXIT: 1
-COMMAND: printf '%s\0' 'raw/r46-fixture-c.rs' | r46_check_headers
-raw/r46-fixture-c.rs:1:(c) Apache appendix boilerplate line
-unexpected prohibited per-file license form or header-check failure
-EXIT: 1
-COMMAND: printf '%s\0' 'raw/r46-fixture-d-apache-title.rs' | r46_check_headers
-raw/r46-fixture-d-apache-title.rs:2:(d) Apache full-text title form
-unexpected prohibited per-file license form or header-check failure
-EXIT: 1
-COMMAND: printf '%s\0' 'raw/r46-fixture-e.rs' | r46_check_headers
-raw/r46-fixture-e.rs:1:(e) MIT title form
-unexpected prohibited per-file license form or header-check failure
-EXIT: 1
+raw/r46-fixture-apache.rs:3:Apache-2.0 license header
+raw/r46-fixture-apache.rs:4:Apache-2.0 compliance header
+unexpected per-file license header or header-check failure
 ```
 
-The clean fixture returned `0`; each of forms (a) through (e) returned `1`.
-The executed controls prove only the checker's exit-code behavior, not legal
-validity of a copyright ownership claim. If the later implementation adopts REUSE instead,
+The first command returned `1`; the second command returned `1`. The clean
+input and SPDX, MIT, full-text MIT, copyright-marker, empty-input, and
+unreadable-input controls in the same table were also run with the stated
+results on 2026-09-05. The executed controls prove only the checker's exit-code behavior, not legal validity of a
+copyright ownership claim. If the later implementation adopts REUSE instead,
 replace the negative header probe with `reuse lint`, and verify both
 `SPDX-FileCopyrightText` and `SPDX-License-Identifier` on every covered file.
 ([REUSE tutorial](https://reuse.software/tutorial/), retrieved 2026-09-05.)

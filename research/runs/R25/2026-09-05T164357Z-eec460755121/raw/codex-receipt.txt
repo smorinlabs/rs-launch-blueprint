@@ -1,0 +1,7 @@
+Written: [raw/codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R25/2026-09-05T164357Z-eec460755121/raw/codex.md)
+
+SHA-256: `0b0371758b9ce467fe6e702bfb2ffe220734515a05fa7477350bdd5df9b4201b`
+
+H3 fields: 15. `CONFLICT:` none; `BASELINE-REVIEW:` none.
+
+Unverified: project-specific release-please dry-run remains planned; GitHub REST implementation probe returned HTTP 403.

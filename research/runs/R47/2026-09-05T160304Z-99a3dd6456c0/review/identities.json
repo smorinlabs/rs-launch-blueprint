@@ -1,0 +1,47 @@
+{
+  "engine_reports": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T160304Z-99a3dd6456c0",
+      "model": "gpt-5.6-luna",
+      "family": "openai",
+      "file": "raw/codex.md"
+    }
+  },
+  "evidence_checks": {
+    "terra": {
+      "actor": "evidence-terra-2026-09-05T160304Z-99a3dd6456c0",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "raw/evidence-terra.md"
+    }
+  },
+  "synthesis": {
+    "actor": "synth-fable-2026-09-05T160304Z-99a3dd6456c0",
+    "model": "claude-fable-5-1",
+    "family": "anthropic"
+  },
+  "audits": {
+    "empirical": {
+      "actor": "audit-codex-2026-09-05T160304Z-99a3dd6456c0",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "review/audit-codex.md"
+    },
+    "judgment": {
+      "actor": "audit-fable-2026-09-05T160304Z-99a3dd6456c0",
+      "model": "claude-fable-5-1",
+      "family": "anthropic",
+      "file": "review/audit-fable.md"
+    }
+  },
+  "empirical": {
+    "argv": [
+      "bash",
+      "run-checks.sh"
+    ],
+    "cwd": "/private/tmp/R47-empirical-audit.sj6svc (fresh copy of review/empirical)",
+    "toolchain": "rustc 1.98.0; cargo 1.98.0; Node v26.5.0; npx 12.0.1; just 1.57.0; Git 2.50.1; Bun 1.4.0; macOS 26.4 arm64; NPM_CONFIG_CACHE set to an isolated writable cache",
+    "output_log": "review/evidence/audit-terra.log",
+    "exit_code": 0
+  }
+}

@@ -1,0 +1,6 @@
+[raw/codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/raw/codex.md) — all 15 fields revised.
+SHA256: `95c47b083c819b286f86197d6f891379a34afbb8b61925501abbd4e804669e4d`
+1. Retained realistic fixture; measured cold/warm Cargo and actual commit latency.
+2. Rust 1.96.0 floor passed on macOS; Linux explicitly inferred.
+3. Maintained full-guard reference gap stated; tested prototype retained.
+4. rustls claims removed; pinned TypeScript evidence captured locally.
