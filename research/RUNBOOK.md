@@ -118,8 +118,15 @@ the returned operation ID immediately. Another worker can later poll or
 collect that exact operation. If submission might have succeeded but no ID
 was received, record `unknown` and reconcile provider inventory. Do not submit
 again merely because the caller timed out. Doxa's inspected OpenAI and Gemini
-clients have internal create retries without proven idempotency; live execution
-must isolate or verify that behavior before it can meet this rule.
+clients have internal create retries without proven idempotency, and the OpenAI
+SDK adds two retries of its own. Every paid Doxa invocation therefore runs
+through `scripts/doxa_no_retry.py` under the Doxa virtual environment with
+`--config docs/planning/p02/doxa-pilot.config.toml`; the wrapper rebinds every
+provider submit to a single attempt (`--verify` prints the effective settings).
+A failed create is recorded and reconciled by the controller: Perplexity exposes
+a list endpoint for its async requests; OpenAI and Gemini expose none, so their
+inventories are reconciled from the provider dashboards and the Doxa checkpoint
+list (`doxa list --all --json`) against the recorded baseline.
 
 Preserve every original response and failure under its run directory. Accepted
 raw reports use unique names under the topic's `raw/` directory, with their

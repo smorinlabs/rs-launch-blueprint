@@ -56,6 +56,8 @@ research leads. Execution routes still need research-capable validation; Doxa
 credentials, a concrete spend envelope and its ambiguous-create retry behavior
 remain unresolved. The three-engine R38 pilot must pass before bulk research.
 The [readiness record](tool-readiness.md) distinguishes tested routes from gaps.
+Its dated re-inspection section records which of these gaps were closed later
+the same day.
 
 Capacity limits, waiting age, acceptance backlog and paid budgets remain
 controller policy. The local runner does not enforce a provider's spending

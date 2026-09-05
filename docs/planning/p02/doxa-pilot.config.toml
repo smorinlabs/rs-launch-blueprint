@@ -1,0 +1,25 @@
+# Doxa configuration for the P02 R38 pilot. Pass it with `--config`; it
+# replaces the user configuration layer so the pilot does not depend on
+# ~/.config/doxa. Provider keys resolve from the environment variables
+# OPENAI_API_KEY, PERPLEXITY_API_KEY and GEMINI_API_KEY (names only; values
+# are never recorded). Always launch through scripts/doxa_no_retry.py.
+version = "2.0"
+
+[execution]
+poll_interval = 30
+# Minutes. Gemini Deep Research may run up to 60 minutes; `resume` polls
+# within this window and checkpoints on timeout instead of resubmitting.
+max_wait = 90
+parallel_providers = true
+cancel_upstream_on_interrupt = false
+
+[output]
+include_metadata = true
+
+# Overrides for the builtin all_deep_research mode. Provider models stay the
+# builtin defaults (o3-deep-research, sonar-deep-research,
+# deep-research-preview-04-2026). max_tool_calls is a cost lever for the
+# OpenAI job only; it is not a spending ceiling.
+[modes.all_deep_research.openai]
+max_tool_calls = 80
+code_interpreter = false

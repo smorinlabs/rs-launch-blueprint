@@ -55,5 +55,21 @@
     "date": "2026-09-04",
     "source": "owner direction recorded in docs/planning/p02/APPROVAL.md addendum; tag push, merge and paid research remain gated"
   },
-  "note": "counts are as of the verification run; the preparation commit followed under the 2026-09-04 owner direction"
+  "note": "counts are as of the verification run; the preparation commit followed under the 2026-09-04 owner direction",
+  "reinspection_2026_09_04": {
+    "resolved": [
+      "Claude auth persistent (API key)",
+      "Codex model routes gpt-6-astra/gpt-5.6-terra/gpt-5.6-luna by CLI header",
+      "Codex worker network and web-search tool (stdin closed)",
+      "Doxa provider keys present; o3-deep-research and deep-research-preview-04-2026 visible",
+      "create retries isolated by scripts/doxa_no_retry.py",
+      "paid envelope prepared"
+    ],
+    "remaining_gates": [
+      "P01 release tag approval and verification",
+      "full REUSE/ADOPT baseline adjudication (in progress)",
+      "owner spend approval and provider caps for batch B0-R38",
+      "binding R38 research pilot"
+    ]
+  }
 }

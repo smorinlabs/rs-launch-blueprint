@@ -1,0 +1,46 @@
+{
+  "probe": "scripts/doxa_no_retry.py --verify --json (patched) and --no-patch",
+  "date": "2026-09-04",
+  "patched": {
+    "google_genai_sdk_attempts": 1,
+    "openai_sdk_max_retries": 0,
+    "patched": true,
+    "perplexity_async_idempotency_key": "uuid4 generated once per submission; documented purpose only, dedup semantics unspecified",
+    "python": "3.11.14",
+    "tenacity_submit_attempts": {
+      "GeminiProvider._deep_research_submit_with_retry": 1,
+      "GeminiProvider._submit_with_retry": 1,
+      "OpenAIProvider._submit_with_retry": 1,
+      "PerplexityProvider._submit_async_with_retry": 1,
+      "PerplexityProvider._submit_with_retry": 1
+    },
+    "versions": {
+      "doxa-research": "3.1.2",
+      "google-genai": "1.74.0",
+      "httpx": "0.28.1",
+      "openai": "2.37.0",
+      "tenacity": "9.1.4"
+    }
+  },
+  "unpatched": {
+    "google_genai_sdk_attempts": 1,
+    "openai_sdk_max_retries": 2,
+    "patched": false,
+    "perplexity_async_idempotency_key": "uuid4 generated once per submission; documented purpose only, dedup semantics unspecified",
+    "python": "3.11.14",
+    "tenacity_submit_attempts": {
+      "GeminiProvider._deep_research_submit_with_retry": 3,
+      "GeminiProvider._submit_with_retry": 3,
+      "OpenAIProvider._submit_with_retry": 3,
+      "PerplexityProvider._submit_async_with_retry": 3,
+      "PerplexityProvider._submit_with_retry": 3
+    },
+    "versions": {
+      "doxa-research": "3.1.2",
+      "google-genai": "1.74.0",
+      "httpx": "0.28.1",
+      "openai": "2.37.0",
+      "tenacity": "9.1.4"
+    }
+  }
+}

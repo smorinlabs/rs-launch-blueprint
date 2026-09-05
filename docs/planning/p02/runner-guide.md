@@ -78,8 +78,11 @@ by `## Supersedes` containing the previous `DECISION.md` bytes verbatim. Reopen
 affected consumers in the staged index when their accepted input hashes become
 stale. The publisher rejects a candidate that leaves those consumers resolved.
 
-External execution remains disabled until paid authorization and
-provider capabilities are separately verified. A publication manifest names the
+External execution remains disabled until paid authorization is recorded.
+Paid Doxa calls go through `scripts/doxa_no_retry.py` with the pilot config
+(`docs/planning/p02/doxa-pilot.config.toml`); see
+[paid-envelope.md](paid-envelope.md) for the exact invocation and the approval
+it needs. A publication manifest names the
 prepared `run_id`; the runner refuses it if the copied prompt, that item's
 execution-policy record, fixed or consumed parameter values, or accepted
 prerequisite snapshots are no longer current. It retains full policy, index,

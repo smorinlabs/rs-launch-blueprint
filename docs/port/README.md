@@ -96,6 +96,8 @@ under [the acceptance schema](../planning/p02/acceptance-schema.md).
 `scripts/test-research-validation.py` exercises answer and acceptance failures;
 `scripts/test-research-answer-parser.py` checks Markdown boundaries and current
 decision history;
-`scripts/test-research-runner.py` exercises offline run recovery and publication.
+`scripts/test-research-runner.py` exercises offline run recovery and publication;
+`scripts/test-doxa-no-retry.py` proves the paid-run wrapper allows one create
+attempt per provider.
 These checks establish record integrity. Source quality, execution truth, and
 architectural fitness remain review responsibilities.

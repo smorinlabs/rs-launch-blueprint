@@ -17,7 +17,9 @@ run or been resolved.
 | [publication-plan.md](publication-plan.md) | Executed preparation commit and the prepared tag action awaiting its approval |
 | [runner-guide.md](runner-guide.md) | Local state and publication commands; no provider adapter |
 | [dependency-reconciliation.md](dependency-reconciliation.md) | Compatibility review accompanying the prompt migration |
-| [tool-readiness.md](tool-readiness.md) | Observed tool routes and unresolved paid-execution readiness |
+| [tool-readiness.md](tool-readiness.md) | Observed tool routes; the dated re-inspection records what became verified |
+| [paid-envelope.md](paid-envelope.md) | Prepared R38 pilot spend envelope, price references and the exact approval needed |
+| [doxa-pilot.config.toml](doxa-pilot.config.toml) | Doxa configuration for the pilot, always launched through `scripts/doxa_no_retry.py` |
 | [baseline-samples.md](baseline-samples.md) | Source-backed leads; full baseline adjudication is still open |
 | [current-plan.md](current-plan.md), [contract-review.md](contract-review.md) | Captured old plan and findings against it |
 | [item-schedule.md](item-schedule.md), [dependencies.json](dependencies.json), [dependency-review.md](dependency-review.md) | Historical comparison of the old graph with the approved R58 proposal |
