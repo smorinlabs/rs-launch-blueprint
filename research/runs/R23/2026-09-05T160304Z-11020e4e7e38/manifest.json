@@ -61,6 +61,15 @@
       },
       "provider": "codex",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-05T16:52:52Z",
+      "publication": {
+        "acceptance_sha256": "25a51abead5dd332d78d8e32c0edc7098c26ecffb78f78b29492e775893422cc",
+        "decision_sha256": "ea269dd6ac3342672f48e69e6c2cb2645c7f73d1e476e5306a20803d1a6598ed",
+        "transaction": "3aa69cac804348a480cf48c48e80a008"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -94,13 +103,18 @@
     }
   },
   "prompt_source": "research/topics/23-lockfile-version-sync/prompts/lockfile-version-sync.prompt.md",
+  "publication": {
+    "acceptance_sha256": "25a51abead5dd332d78d8e32c0edc7098c26ecffb78f78b29492e775893422cc",
+    "decision_sha256": "ea269dd6ac3342672f48e69e6c2cb2645c7f73d1e476e5306a20803d1a6598ed",
+    "transaction": "3aa69cac804348a480cf48c48e80a008"
+  },
   "remaining_budget": "no paid engine (Light tier)",
   "required_engines": [
     "codex"
   ],
   "run_id": "2026-09-05T160304Z-11020e4e7e38",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "light",
-  "updated_at": "2026-09-05T16:13:29Z"
+  "updated_at": "2026-09-05T16:52:52Z"
 }

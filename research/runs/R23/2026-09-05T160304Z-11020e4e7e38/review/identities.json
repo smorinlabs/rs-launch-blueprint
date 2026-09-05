@@ -1,0 +1,47 @@
+{
+  "engine_reports": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T160304Z-11020e4e7e38",
+      "model": "gpt-5.6-luna",
+      "family": "openai",
+      "file": "raw/codex.md"
+    }
+  },
+  "evidence_checks": {
+    "terra": {
+      "actor": "evidence-terra-2026-09-05T160304Z-11020e4e7e38",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "raw/evidence-terra.md"
+    }
+  },
+  "synthesis": {
+    "actor": "synth-fable-2026-09-05T160304Z-11020e4e7e38",
+    "model": "claude-fable-5-1",
+    "family": "anthropic"
+  },
+  "audits": {
+    "empirical": {
+      "actor": "audit-codex-2026-09-05T160304Z-11020e4e7e38",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "review/audit-codex.md"
+    },
+    "judgment": {
+      "actor": "audit-fable-2026-09-05T160304Z-11020e4e7e38",
+      "model": "claude-fable-5-1",
+      "family": "anthropic",
+      "file": "review/audit-fable.md"
+    }
+  },
+  "empirical": {
+    "argv": [
+      "bash",
+      "run-checks.sh"
+    ],
+    "cwd": "/private/tmp/r23-empirical-audit.5TsSYV/empirical-audit (fresh copy of review/empirical)",
+    "toolchain": "rustc 1.98.0; cargo 1.98.0; rustup toolchains 1.96.0 and 1.91.1; Node v26.5.0; release-please 17.11.2; macOS 26.4 (Darwin 25.4.0) arm64",
+    "output_log": "review/evidence/audit-lockfile-version-sync.log",
+    "exit_code": 0
+  }
+}
