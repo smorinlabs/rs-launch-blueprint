@@ -77,6 +77,41 @@ class NoRetryLauncherTests(unittest.TestCase):
         )
         self.assertIn("Doxa Research", result.stdout)
 
+    def test_replacement_model_is_treated_as_deep_research_when_patched(self):
+        self.assertFalse(_verify("--no-patch")["background_model_gpt_5_6_sol"])
+        report = _verify()
+        self.assertTrue(report["background_model_gpt_5_6_sol"])
+        self.assertEqual(report["deep_research_replacements"], ["gpt-5.6-sol"])
+        self.assertTrue(report["responses_create_shim"])
+
+    def test_responses_create_shim_rewrites_gpt5_requests_only(self):
+        code = (
+            "import asyncio, json, sys\n"
+            "sys.path.insert(0, 'scripts')\n"
+            "import doxa_no_retry\n"
+            "captured = []\n"
+            "async def fake_create(self, **kw):\n"
+            "    captured.append(kw); return 'ok'\n"
+            "shim = doxa_no_retry.shim_responses_create(fake_create)\n"
+            "asyncio.run(shim(None, model='gpt-5.6-sol', temperature=0.7, tools=[{'type': 'web_search_preview'}, {'type': 'code_interpreter'}], background=True))\n"
+            "asyncio.run(shim(None, model='o3', temperature=0.7, tools=[{'type': 'web_search_preview'}]))\n"
+            "print(json.dumps(captured))\n"
+        )
+        result = subprocess.run(
+            [str(DOXA_PYTHON), "-c", code],
+            capture_output=True,
+            text=True,
+            timeout=120,
+            check=True,
+            cwd=ROOT,
+        )
+        first, second = json.loads(result.stdout)
+        self.assertNotIn("temperature", first)
+        self.assertEqual(first["tools"], [{"type": "web_search"}, {"type": "code_interpreter"}])
+        self.assertTrue(first["background"])
+        self.assertEqual(second["temperature"], 0.7)
+        self.assertEqual(second["tools"], [{"type": "web_search_preview"}])
+
 
 if __name__ == "__main__":
     unittest.main()

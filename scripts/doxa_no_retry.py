@@ -12,6 +12,18 @@ therefore rebinds every provider submit wrapper to a single attempt before
 handing control to the normal Doxa CLI; a failed create is reported, recorded
 and reconciled by the controller instead of being retried blindly.
 
+The launcher also carries a replacement-model shim. OpenAI shut down
+`o3-deep-research` and `o4-mini-deep-research` on 2026-07-23 and names
+`gpt-5.6-sol` as their replacement, but Doxa still recognises a deep-research
+model only by the `deep-research` substring in its name
+(`doxa_research.config.is_background_model`). Unpatched, Doxa sends
+`gpt-5.6-sol` with `tools: []` and `temperature: 0.7`, which the model rejects;
+patched, it sends `tools: [{"type": "web_search"}]` and no `temperature`.
+`apply_patches()` therefore also teaches `is_background_model` about
+DEEP_RESEARCH_REPLACEMENTS and wraps the OpenAI SDK's `AsyncResponses.create`
+so any `gpt-5*` request drops `temperature` and uses the `web_search` tool in
+place of the retired `web_search_preview`.
+
 Usage (always through the Doxa virtual environment):
 
     <doxa-venv>/bin/python scripts/doxa_no_retry.py --verify [--json] [--no-patch]
@@ -34,14 +46,54 @@ PATCH_TARGETS = (
     ("doxa_research.providers.perplexity", "PerplexityProvider", "_submit_async_with_retry"),
 )
 
+# OpenAI model IDs that replace the shut-down deep-research models and must be
+# treated as background/deep-research models even though their names carry no
+# "deep-research" substring.
+DEEP_RESEARCH_REPLACEMENTS = {"gpt-5.6-sol"}
+
+# Modules that bind `is_background_model` as a module-level name and must be
+# rebound for the replacement models to be recognised everywhere.
+BACKGROUND_MODEL_BINDINGS = (
+    "doxa_research.config",
+    "doxa_research.providers.openai",
+    "doxa_research.progress",
+)
+
 
 def _import(path: str):
     module = __import__(path, fromlist=["_"])
     return module
 
 
+def shim_responses_create(original):
+    """Wrap `AsyncResponses.create` for the replacement deep-research models.
+
+    `gpt-5.6-sol` rejects `temperature` and does not offer the retired
+    `web_search_preview` tool, which Doxa's OpenAI provider sends for every
+    non-`o*` background model. Requests whose model starts with `gpt-5` are
+    rewritten; every other request is forwarded unchanged.
+    """
+
+    async def create(self, **kwargs):
+        if str(kwargs.get("model", "")).startswith("gpt-5"):
+            kwargs.pop("temperature", None)
+            tools = kwargs.get("tools")
+            if isinstance(tools, list):
+                kwargs["tools"] = [
+                    {**tool, "type": "web_search"}
+                    if isinstance(tool, dict) and tool.get("type") == "web_search_preview"
+                    else tool
+                    for tool in tools
+                ]
+        return await original(self, **kwargs)
+
+    create.__doxa_shim__ = True  # type: ignore[attr-defined]
+    return create
+
+
 def apply_patches() -> None:
     import openai
+    from openai.resources.responses import AsyncResponses
     from tenacity import stop_after_attempt
 
     original_init = openai.AsyncOpenAI.__init__
@@ -58,6 +110,22 @@ def apply_patches() -> None:
         wrapped = getattr(cls, attr)
         setattr(cls, attr, wrapped.retry_with(stop=stop_after_attempt(1)))
 
+    original_is_background_model = _import("doxa_research.config").is_background_model
+
+    def is_background_model(model: str | None) -> bool:
+        if model in DEEP_RESEARCH_REPLACEMENTS:
+            return True
+        return original_is_background_model(model)
+
+    for module_name in BACKGROUND_MODEL_BINDINGS:
+        module = _import(module_name)
+        if hasattr(module, "is_background_model"):
+            module.is_background_model = is_background_model
+
+    if not getattr(AsyncResponses.create, "__doxa_shim__", False):
+        shimmed = shim_responses_create(AsyncResponses.create)
+        AsyncResponses.create = shimmed  # type: ignore[method-assign]
+
 
 def effective_settings() -> dict:
     import importlib.metadata as metadata
@@ -65,6 +133,7 @@ def effective_settings() -> dict:
     import openai
     from google import genai
     from google.genai import types as genai_types
+    from openai.resources.responses import AsyncResponses
 
     report: dict = {
         "versions": {
@@ -91,6 +160,11 @@ def effective_settings() -> dict:
         client._api_client._async_retry.stop, "max_attempt_number", None
     )
     report["patched"] = getattr(openai.AsyncOpenAI.__init__, "__doxa_no_retry__", False)
+    report["deep_research_replacements"] = sorted(DEEP_RESEARCH_REPLACEMENTS)
+    report["responses_create_shim"] = getattr(AsyncResponses.create, "__doxa_shim__", False)
+    report["background_model_gpt_5_6_sol"] = _import(
+        "doxa_research.providers.openai"
+    ).is_background_model("gpt-5.6-sol")
     return report
 
 

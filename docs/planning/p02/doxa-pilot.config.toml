@@ -16,10 +16,23 @@ cancel_upstream_on_interrupt = false
 [output]
 include_metadata = true
 
-# Overrides for the builtin all_deep_research mode. Provider models stay the
-# builtin defaults (o3-deep-research, sonar-deep-research,
-# deep-research-preview-04-2026). max_tool_calls is a cost lever for the
-# OpenAI job only; it is not a spending ceiling.
+# Overrides for the builtin all_deep_research mode. Perplexity and Gemini keep
+# the builtin models (sonar-deep-research, deep-research-preview-04-2026). The
+# OpenAI model is pinned here because the builtin default o3-deep-research was
+# shut down by OpenAI on 2026-07-23 (announced 2026-04-22) together with
+# o4-mini-deep-research; the vendor names gpt-5.6-sol as their replacement
+# (https://developers.openai.com/api/docs/deprecations, retrieved 2026-09-05).
+# gpt-5.6-sol carries no "deep-research" substring, so Doxa alone would send it
+# with `tools: []` and an unsupported `temperature`; the launcher
+# scripts/doxa_no_retry.py supplies the shim that fixes both. This override also
+# replaces the builtin openai namespace wholesale, so dropping `model` here
+# would leave the OpenAI job with no model at all. A `background` key is
+# deliberately absent: Doxa rejects it inside the openai namespace with
+# "Unsupported provider parameter: mode_config.openai.background", and the
+# mode's declared kind = "background" already forces background submission.
+# max_tool_calls is a cost lever for the OpenAI job only; it is not a spending
+# ceiling.
 [modes.all_deep_research.openai]
+model = "gpt-5.6-sol"
 max_tool_calls = 80
 code_interpreter = false

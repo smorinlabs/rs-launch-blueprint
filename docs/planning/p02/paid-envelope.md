@@ -23,9 +23,9 @@ exactly one create attempt:
   --combined --async --json
 ```
 
-| Provider | Model (builtin mode) | Jobs | Cost lever inside Doxa | Enforceable ceiling |
+| Provider | Model | Jobs | Cost lever inside Doxa | Enforceable ceiling |
 |---|---|---|---|---|
-| OpenAI | `o3-deep-research` | 1 | `max_tool_calls = 80`, `code_interpreter = false` (pilot config) | Project hard spend limit set by the owner in the OpenAI dashboard |
+| OpenAI | `gpt-5.6-sol` (pilot-config override; the builtin `o3-deep-research` was shut down 2026-07-23) | 1 | `max_tool_calls = 80`, `code_interpreter = false` (pilot config) | Project hard spend limit set by the owner in the OpenAI dashboard |
 | Perplexity | `sonar-deep-research` | 1 | none | Prepaid credit balance with auto top-up disabled |
 | Gemini | `deep-research-preview-04-2026` | 1 | none (60-minute agent maximum) | AI Studio project spend cap set by the owner |
 
@@ -41,7 +41,7 @@ provider job IDs and create nothing.
 
 | Provider | Published price | Source |
 |---|---|---|
-| OpenAI `o3-deep-research` | $10 / 1M input tokens, $2.50 / 1M cached input, $40 / 1M output; 200k context, 100k max output | https://developers.openai.com/api/docs/models/o3-deep-research |
+| OpenAI `gpt-5.6-sol` (retrieved 2026-09-05) | $4 / 1M input tokens, $0.40 / 1M cached input, $20 / 1M output; 1,050,000 context, 128,000 max output. Supports the Responses endpoint and the `web_search`, `code_interpreter`, `file_search` and `mcp` tools, not the retired `web_search_preview` | https://developers.openai.com/api/docs/models/gpt-5.6-sol |
 | OpenAI built-in tools | Web search $10.00 / 1k calls plus search content tokens at model rates; hosted code interpreter $0.03–$1.92 per 20-minute container session (disabled for the pilot) | https://developers.openai.com/api/docs/pricing |
 | Perplexity `sonar-deep-research` | $2 / 1M input, $8 / 1M output, $2 / 1M citation tokens, $3 / 1M reasoning tokens, $5 / 1k searches; no per-request fee | https://docs.perplexity.ai/getting-started/pricing |
 | Gemini Deep Research (`deep-research-preview-04-2026`) | Billed at the underlying model's standard rates plus tool fees; Google's own estimate "~$1.00 – $3.00 per task" (preview rates, subject to change) | https://ai.google.dev/gemini-api/docs/deep-research and https://ai.google.dev/gemini-api/docs/pricing |
@@ -50,10 +50,16 @@ provider job IDs and create nothing.
 
 | Provider | Assumed usage | Estimated cost |
 |---|---|---|
-| OpenAI | 100k–400k input tokens across the agent loop (the prompt is ~6k tokens and requires crates.io and GitHub API figures), 15k–40k output tokens, 40–80 web-search calls | $2.6 – $6.4 |
+| OpenAI | 100k–400k input tokens across the agent loop (the prompt is ~6k tokens and requires crates.io and GitHub API figures), 15k–40k output tokens, 40–80 web-search calls | $1.1 – $3.2 |
 | Perplexity | 20k input, 10k output, 30k citation, 60k reasoning tokens, 30–60 searches | $0.5 – $1.5 (Doxa's mode description quotes an approximate $1.32 per query) |
 | Gemini | one task within the 60-minute agent maximum | $1 – $3 (Google's estimate) |
-| **Total** | | **$4 – $11 per operation** |
+| **Total** | | **$3 – $8 per operation** |
+
+The OpenAI line recomputes the same assumptions at the `gpt-5.6-sol` prices:
+input 100k–400k tokens at $4 / 1M is $0.4 – $1.6, output 15k–40k tokens at
+$20 / 1M is $0.3 – $0.8, and 40–80 web-search calls at $10 / 1k is $0.4 – $0.8.
+The earlier $2.6 – $6.4 figure used the `o3-deep-research` prices ($10 input,
+$40 output), which no longer apply.
 
 Uncertainty: OpenAI's agent loop length is the dominant variable; the
 `max_tool_calls = 80` cap bounds search calls but not per-call content tokens.
@@ -93,7 +99,9 @@ not an invoiced spend assertion.
 | C. Defer Doxa; run R38 on Codex and Opus only | Pilot proceeds with two engines | Violates the approved three-engine pilot (amendment A6) and needs an owner downgrade decision |
 
 Recommendation: A, with a pilot figure of USD 40 across the three providers
-(about four times the upper estimate), OpenAI project hard limit and Gemini
+(about five times the upper estimate at the 2026-09-05 `gpt-5.6-sol` prices;
+it was about four times at the retired `o3-deep-research` prices, and the
+owner's approved figure is unchanged), OpenAI project hard limit and Gemini
 project cap each at or below that figure, and Perplexity auto top-up off.
 
 ## Exact approval needed
