@@ -9,6 +9,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Recorded baseline and owner-fixed parameters (apply the research mandate above): `rust-edition` = `2024`, `msrv-policy` = "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI", `license` = `MIT OR Apache-2.0`, `target-os-matrix` = `ubuntu-latest, macos-latest` (`docs/port/PARAMETERS.md`, fixed, owner-decided 2026-09-02). This item was deliberately kept standalone rather than folded into R59 (`file-log-sink`) at the Task 10 reconciliation, because the directory set this item resolves is consumed by both R59 (a file-sink default path) and R67 (a crash-log path) — folding it into R59 would hide the R67 dependency inside another item.
 - Prior decisions of the TypeScript port that explain the current shape: none — ts never built data/state/cache directory accessors (only config), so `TS_PORT_DECISIONS.md`'s D-017(3) (which covers only the config-dir XDG override mechanism) has no data/state/cache entry to carry forward.
 
+### Baseline review (2026-09-04)
+- F247's acceptance criteria were attached to R54, which selects the config directory crate; this item's "already inherited" note refers to the principle only (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - The config directory itself and its override mechanism (`$XDG_CONFIG_HOME`, absoluteness check); F231 is covered by R54 (`config-discovery-tiers`, system-wide config dir) and F247 is `COMMON → REUSE`, already inherited — this item decides only whether *additional* data/state/cache directories exist, not the config directory's own resolution.
 - Whether a file log sink actually uses a state-directory default path, and its rotation/precedence rules; R59 (`file-log-sink`) owns F256-F261 — this item only decides whether the directory-accessor functions exist and where they point, not who consumes them.

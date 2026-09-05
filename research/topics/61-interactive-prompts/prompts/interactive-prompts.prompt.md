@@ -10,6 +10,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Prior decisions of the TypeScript port that explain the current shape: D-016(6) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — `@inquirer/prompts` checkbox with context `{ output: process.stderr }`, questionary-parity `Choice{name,value}` objects, empty-selection exit 0, plus a documented non-TTY/`--no-input` path behind one injectable seam; chosen over `@clack/prompts` for its documented stderr output-stream context and first-party testing package.
 - Behavioral fork under the shared `--no-input` flag (F360, split from F275 at the Phase 4 review): py refuses to proceed with a `ConfigError` unless `--yes` was passed (`src/py_launch_blueprint/cli/options.py:273`); ts skips the prompt and selects every fetched result (`src/commands/projects.ts:146`, D-016(6)). Ledger row F360 (`docs/port/COMMONALITY.md`), verdict `DIVERGENT`.
 
+### Baseline review (2026-09-04)
+- F278 (`-y`/`--yes`, `ADOPT`) stays independent of the prompt crate (the bypass returns before any prompt); its composition with `--no-input` and the confirm prompt is this item's already-scoped question (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - Which CLI-parsing framework hosts the commands these prompts attach to; R60 (`cli-parsing-framework`) owns that bundle — this item's crate choice only needs to compose with whatever R60 selects.
 - The exit-code contract for a prompt cancelled mid-interaction (^C during a multi-select); R67 (`error-and-exit-code-contract`) owns F299 — this item decides only whether/which interactive-prompt crate is adopted and how each prompt type is shaped, not the cancellation exit code.

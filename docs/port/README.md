@@ -52,6 +52,11 @@ realistic acceptance example. P02 reviews inherited mechanisms under the
 10. `ts-research-method-review.md` — how the TypeScript port's research was
     actually run, what to copy, and what it got wrong; the source of the
     couplings rule, the owner review phase, and the audit files.
+11. `BASELINE-REVIEW.md` — P02-T01: every `COMMON → REUSE` and `ADOPT` row
+    adjudicated under A5 (principle, agreement level, pinned source evidence,
+    current Rust fitness, classification), the `BASELINE-REVIEW:` findings, an
+    adversarial sample by a second model family, the reconciliation applied to
+    the ledger and prompts, and the owner questions it raised.
 
 ## Verdict vocabulary (closed set — enforced by `scripts/check-research-tree.sh`)
 

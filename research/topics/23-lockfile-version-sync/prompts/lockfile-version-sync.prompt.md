@@ -9,6 +9,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Recorded baseline and owner-fixed parameters (apply the research mandate above): `rust-edition` = `2024`, `msrv-policy` = "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI", `license` = `MIT OR Apache-2.0`, `target-os-matrix` = `ubuntu-latest, macos-latest` (`docs/port/PARAMETERS.md`, fixed, owner-decided 2026-09-02).
 - Prior decisions of the TypeScript port that explain the current shape: none — ts's decision here is a negative one ("no sync needed") that does not transfer, since `Cargo.lock`, unlike `pnpm-lock.yaml`, does encode a workspace member's version.
 
+### Baseline review (2026-09-04)
+- F133 (`COMMON → REUSE`) guards Cargo.toml ↔ Cargo.lock only if this item requires that sync (F065); py compares the lock version at `tests/meta/test_version_consistency.py:71` (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - The publish workflow's separate tag/version consistency guard (verifying the pushed tag matches the manifest version before publishing); that is ledger row F074 (`COMMON → REUSE`, inherited, no research item), distinct from this item's release-commit lockfile sync.
 - Whether release-please's `extra-files` mechanism itself (versus some other bump mechanism) is used at all for any file; that tool choice is settled — release-please is inherited under spec §2 (ledger rows F063, F066 and F073, `COMMON → REUSE`, no research item) — this item only asks whether `Cargo.lock` is one of the files it targets.

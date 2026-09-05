@@ -10,6 +10,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Prior decisions of the TypeScript port that explain the current shape: D-018(1) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — ts deliberately chose "no logging library; hand-rolled leveled stderr logger... with injected stdout/stderr writers via the CLI deps interface," reusing the org's existing precedent rather than adopting a structured-logging crate; D-018(3) — ts's verbosity mapping adapts cli-standards' repeatable `-v` ladder (`-q` errors+warns only; default info; repeatable `-v`; `--debug` overrides `--quiet`; `--quiet` beats `--verbose`) but has no flag/env/config-file override tier ahead of it, unlike py's F274.
 - Owner direction (2026-09-04, recorded in `docs/port/OWNER-REVIEW.md`): Look at the best practices and principles from the Python logging and see what applies to best architectural practices for both TypeScript and Rust. There should be a specific research item here.
 
+### Baseline review (2026-09-04)
+- F304 (tracing dependencies as a separate optional extra) was reclassified `DIVERGENT` under this item, because `logging-pipeline-contract` includes the optional OTel feature boundary: set that boundary inside the `web` surface R69 defines, with R78 defining the integration, and keep the working OTel web example an owner requirement, never an optional outcome (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - Whether a rotating file log sink exists, its rotation policy, and its own independent level; R59 (`file-log-sink`) owns F255-F261 — this item designs the console/structured pipeline itself, not the file sink attached to it.
 - The separate XDG data/state/cache directory set a file sink's default path might need; R57 (`xdg-directory-set`) owns F249.

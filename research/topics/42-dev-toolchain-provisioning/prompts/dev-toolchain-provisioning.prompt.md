@@ -11,6 +11,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Prior decisions of the TypeScript port that explain the current shape: D-014(6) and D-014(7) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — ts omits a taplo installer because Oxfmt already formats TOML, and omits a yamlfmt installer because Oxfmt already formats YAML; both eliminate the dedicated per-tool installer recipe and script py needed, rather than replacing it with an equivalent.
 - Owner direction (2026-09-04, recorded in `docs/port/OWNER-REVIEW.md`): Against the existing solutions and follow a similar pattern
 
+### Baseline review (2026-09-04)
+- F181 (`just check-deps`, `COMMON → REUSE`) is held pending this item: if rustup components plus `cargo install`/`cargo-binstall` remove the per-tool installer layer, F181 collapses into F180, and `package-manager-invocation` decides whether a `command -v` loop is the right presence test. F179 keeps the bootstrap-versus-task layering; Make as the entry mechanism is a choice this item justifies, not an ecosystem necessity. F190/F103's toolchain-file channel is decided by R27 in coordination with this item (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - Which specific non-cargo dev tools this template needs beyond rustfmt/clippy (a secret scanner, a YAML linter, a spell checker, actionlint); R27–R29 (lint/format tool choices), R39 (`secret-scanning-hooks`), and R40 (`auxiliary-hygiene-hooks`) each own their own tool pick — this item decides how a chosen tool gets provisioned and invoked, not which tool is chosen.
 - The hook manager's own distribution/install mechanism; R37 (`hook-manager-distribution`) owns F143/F144/F174 — lefthook's own install path is a separate provisioning question from the rest of the dev toolchain.

@@ -9,6 +9,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Recorded baseline and owner-fixed parameters (apply the research mandate above): `rust-edition` = `2024`, `msrv-policy` = "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI", `license` = `MIT OR Apache-2.0`, `target-os-matrix` = `ubuntu-latest, macos-latest` (`docs/port/PARAMETERS.md`, fixed, owner-decided 2026-09-02). Which crate parses/writes the raw TOML bytes is R52's decision, not this item's — design this item's schema types to sit downstream of whatever R52 returns (a parsed value or a directly-deserialized struct).
 - Prior decisions of the TypeScript port that explain the current shape: D-017(4) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — ts chose zod v4 (4.4.3), `safeParse` on the merged config with fail-fast field-level errors, deliberately upgrading from the org's earlier Zod v3 precedent because "Zod 4 is the current stable major (57% smaller, much faster) and erases valibot's size argument, which has no org precedent."
 
+### Baseline review (2026-09-04)
+- F229 (typed config schema with per-key validation, `COMMON → REUSE`) carries an acceptance criterion this item's mechanism must satisfy: validation before use with constrained types or explicit checks, with representative rejected values, because typed deserialization alone accepts values the sources reject (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - Which crate parses/writes the raw TOML bytes; R52 (`toml-crate`) owns F225/F226 — this item defines the typed schema and validation layer applied to the parsed value, not the parser.
 - Whether an invalid individual config value degrades to a dropped-with-warning key or fails the whole file; R55 (`config-error-tolerance`) owns F238 — this item picks the validation library/mechanism, not its failure-tolerance policy.

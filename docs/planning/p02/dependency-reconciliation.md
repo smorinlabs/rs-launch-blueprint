@@ -103,6 +103,23 @@ The table has one row per canonical prompt. It classifies the exact declared cou
 - **R59, R75, and R78 → R58:** their integration fixtures must use R58's published logging-pipeline contract, including the selected extension point, redaction fields, profile boundary, and optional OTel boundary.
 - **R83 and R84 → R71:** each schema-driven fixture must consume the committed R71 snapshot before resolution; R84 additionally proves one generated request against that snapshot.
 
+## Baseline review reconciliation (2026-09-04)
+
+`docs/port/BASELINE-REVIEW.md` reclassified F304 to R58 and F331 to R69, and
+attached derived-value or acceptance-criteria notes to R10, R11, R13, R22, R23,
+R27, R37, R38, R42, R46, R53, R54, R57, R61, R67, R68, R69, R78 and R81 under a
+`### Baseline review (2026-09-04)` subsection of each prompt's `## Context`.
+None of these adds a `consumes` edge or a related-to-owner edge, so the
+research graph keeps its 69 edges and the acceptance graph is unchanged. The
+new context relations are: F247 binds R54's directory-crate choice (XDG on
+macOS); F278's suppression semantics consume R61's F276/F360 outcome; F301's
+capture mechanism and JSON-mode rule belong to R67; F158, F160 and F220 are
+values derived from R38's and R68's decisions; F186's audited list follows R37,
+R39/R40 and R42; F229's validation criterion binds R53; F304's optional OTel
+boundary is R58's, inside the `web` surface R69 sets, with R78 defining the
+integration. Each is a completion check for
+the eventual decision, not a dispatch barrier.
+
 ## Exact cited relation text
 
 The following 94 excerpts are copied from the canonical prompt files with their source locations. They are evidence for the per-prompt classifications above, not additional edges.

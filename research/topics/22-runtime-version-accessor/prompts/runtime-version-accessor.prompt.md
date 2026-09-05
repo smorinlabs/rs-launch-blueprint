@@ -10,6 +10,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Prior decisions of the TypeScript port that explain the current shape: D-021(2) (`ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md`) — "Hand-written `src/version.ts` importing `package.json` with `with { type: "json" }`, inlined by the bundler; no generated file tracked; test asserts `VERSION == package.json` version", chosen because "contributors-please's shipped single-source pattern has zero drift surface and fixes both the source's tracked-despite-header `_version.py` inconsistency and agent2linear's documented hardcoded-version drift bug."
 - Owner direction (2026-09-04, recorded in `docs/port/OWNER-REVIEW.md`): We want to use the same principle. The principle is that all versions have a single source of truth.
 
+### Baseline review (2026-09-04)
+- F133 (`COMMON → REUSE`) retains its accessor-equality assertion: an accessor wired to a literal or to the wrong package is catchable even though `CARGO_PKG_VERSION` is compile-time. This item's accessor choice determines how that test reads the accessor (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - Whether the CLI's `--version` output also prints extended build metadata (target triple, `rustc` version); R60 (`cli-parsing-framework`) owns F267, the CLI's extended-version-output surface — this item decides only where the base version number itself comes from, which F267's answer would then print.
 - The build tool's output-artifact naming and layout (what the binary/library targets are called, where `cargo build` places them); R49 (`build-target-declaration`) owns `build-tool-output-shape` — assume its answer as a consumed parameter, do not re-decide it here.

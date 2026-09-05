@@ -31,7 +31,7 @@
 | F030 | Contributors-bot workflow permission declaration style | ci-workflows | DIVERGENT | R08 |
 | F031 | Runner OS selection overridable via repo vars with self-hosted fallback | ci-workflows | DIVERGENT | R09 |
 | F032 | Multi-OS test matrix (ubuntu, macOS, windows) | ci-workflows | ADOPT | — |
-| F033 | Runtime-version matrix is a two-entry floor-plus-next set | ci-workflows | COMMON → REUSE | — |
+| F033 | Runtime-version matrix is a two-entry floor-plus-current-stable set | ci-workflows | COMMON → REUSE | — |
 | F034 | Matrix job uses fail-fast: false to surface every leg's failure | ci-workflows | COMMON → REUSE | — |
 | F035 | Dependency caching integrated into the language-setup step (pattern) | ci-workflows | COMMON → REUSE | — |
 | F036 | Dependency caching built into the language-setup action (tool) | ci-workflows | COMMON → SUBSTITUTE | R10 |
@@ -265,7 +265,7 @@
 | F301 | Unexpected-error stack trace shown to the user only under verbose/debug | cli-framework-ux | COMMON → REUSE | — |
 | F302 | Unexpected errors persisted to a crash log file | cli-framework-ux | DIVERGENT | R67 |
 | F303 | web service exists at all | web-service | DIVERGENT | R69 |
-| F304 | tracing dependencies are a further, separate optional extra | web-service | ADOPT | — |
+| F304 | tracing dependencies are a further, separate optional extra | web-service | DIVERGENT | R58 |
 | F305 | single RFC 9457 error envelope for every non-2xx response | web-service | DIVERGENT | R70 |
 | F306 | domain-error-to-HTTP-status mapping table | web-service | DIVERGENT | R70 |
 | F307 | OpenAPI schema is post-processed to match the runtime error shape | web-service | DIVERGENT | R71 |
@@ -292,7 +292,7 @@
 | F328 | liveness endpoint reports version + runtime info | web-service | DIVERGENT | R80 |
 | F329 | readiness endpoint runs the same diagnostics as the CLI doctor command | web-service | DIVERGENT | R80 |
 | F330 | config loads once at startup, with a lazy-load fallback dependency | web-service | DIVERGENT | R69 |
-| F331 | adding an API resource is one router import plus one registry entry | web-service | ADOPT | — |
+| F331 | adding an API resource is one router import plus one registry entry | web-service | DIVERGENT | R69 |
 | F332 | committed OpenAPI snapshot is the reviewable API contract, staleness-tested | web-service | DIVERGENT | R71 |
 | F333 | breaking-change detection against the base branch in CI | web-service | DIVERGENT | R71 |
 | F334 | contract fuzzing generates cases for every documented operation | web-service | DIVERGENT | R83 |

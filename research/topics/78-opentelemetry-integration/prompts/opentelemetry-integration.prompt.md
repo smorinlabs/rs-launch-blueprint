@@ -10,6 +10,9 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - Prior decisions of the TypeScript port that explain the current shape: none — ts never built a web service, so `TS_PORT_DECISIONS.md` has no entry addressing OpenTelemetry integration.
 - Owner direction (2026-09-04, recorded in `docs/port/OWNER-REVIEW.md`): Take the principles of using Otel and find the best Otel libraries and equivalents for TypeScript and Rust. Implement them there.
 
+### Baseline review (2026-09-04)
+- F304 was reclassified `DIVERGENT` under R58, whose `logging-pipeline-contract` includes the optional OTel feature boundary; this item defines the OpenTelemetry integration inside that boundary, and the required web example must not become optional (evidence in `docs/port/BASELINE-REVIEW.md`).
+
 ## Out of scope
 - Whether the template adopts a web framework at all, and which one; R69 (`web-framework-stack`) owns `web-extra-surface` — this item does not pick a framework, it decides the OTel crate(s) that live behind the `otel` feature.
 - Whether Prometheus/RED metrics are adopted and how; R79 (`prometheus-metrics`) owns F326 — this item is tracing-only, not metrics.

@@ -16,7 +16,7 @@
 | F028 | Top-level deny-all permissions baseline with per-job least-privilege grants | ci-workflows | COMMON → REUSE | — |
 | F029 | Checkout credential-persistence hardening (persist-credentials: false) | ci-workflows | DIVERGENT | R08 |
 | F030 | Contributors-bot workflow permission declaration style | ci-workflows | DIVERGENT | R08 |
-| F033 | Runtime-version matrix is a two-entry floor-plus-next set | ci-workflows | COMMON → REUSE | — |
+| F033 | Runtime-version matrix is a two-entry floor-plus-current-stable set | ci-workflows | COMMON → REUSE | — |
 | F034 | Matrix job uses fail-fast: false to surface every leg's failure | ci-workflows | COMMON → REUSE | — |
 | F035 | Dependency caching integrated into the language-setup step (pattern) | ci-workflows | COMMON → REUSE | — |
 | F036 | Dependency caching built into the language-setup action (tool) | ci-workflows | COMMON → SUBSTITUTE | R10 |
