@@ -1,0 +1,3 @@
+fix(web): reject malformed pagination cursors
+
+Reviewed-by: Alice Example, Bob Example, Carol Example, Dan Example, Erin Example, Frank Example

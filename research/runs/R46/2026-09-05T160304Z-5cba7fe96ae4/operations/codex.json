@@ -1,8 +1,16 @@
 {
   "actor": "research-codex-2026-09-05T160304Z-5cba7fe96ae4",
+  "actual_model": "gpt-5.6-luna",
+  "actual_provider": "codex-cli-0.153.2",
   "at": "2026-09-05T16:03:04Z",
+  "collected_at": "2026-09-05T16:13:10Z",
   "model": "gpt-5.6-luna",
+  "operation_id": "01a0724f-933e-7e93-9d87-1f6bd96ae5f9",
   "provider": "codex",
+  "raw": "research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/raw/codex-321933ee23f707259840f0b425d9554ece75d7faf8c6fc00453e7b0b6660a696.md",
+  "raw_sha256": "321933ee23f707259840f0b425d9554ece75d7faf8c6fc00453e7b0b6660a696",
+  "reason": "",
   "request_id": "af9fd5b5a33e4805a2d160cc58edd68a",
-  "state": "submitting"
+  "returned_at": "2026-09-05T16:13:10Z",
+  "state": "succeeded"
 }

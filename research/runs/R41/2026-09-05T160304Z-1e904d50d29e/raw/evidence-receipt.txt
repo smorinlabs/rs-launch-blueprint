@@ -1,0 +1,4 @@
+Output: `raw/evidence-terra.md`  
+SHA-256: `6bc80a55ab4f527894ae719e55f88f101bbe337d9aade4f18a2fc0853096f3e3`  
+Verdict: defective  
+Counts: ok 10; wrong 2; unverifiable 5

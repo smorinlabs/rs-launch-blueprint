@@ -1,0 +1,4 @@
+`raw/evidence-terra.md`  
+SHA-256: `9ff54558250b49d10cc7c7fe01bcc7d848608b26475e016027a30823ffadacdb`  
+Verdict: sound  
+Figures — ok: 0, wrong: 0, unverifiable: 0

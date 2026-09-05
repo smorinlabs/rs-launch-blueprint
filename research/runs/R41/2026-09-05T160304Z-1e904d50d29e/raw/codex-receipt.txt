@@ -1,0 +1,8 @@
+Report written to `raw/codex.md`.
+
+SHA-256: `72363247cf87e9e81017f4b26b3ac4d62f6c835641d676e3ef01800bd7d172e8`
+
+H3 fields: 15  
+`CONFLICT:` / `BASELINE-REVIEW:` lines: none  
+Unverified: stale-lock inverse and staged-index parity fixture.
+

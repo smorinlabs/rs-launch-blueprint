@@ -1,0 +1,2 @@
+feat(cli): add --json output flag
+Emit machine-readable output.

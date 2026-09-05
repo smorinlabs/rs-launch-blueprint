@@ -1,0 +1,85 @@
+commitlint comparison run, date (UTC): 2026-09-05T16:15:05Z
+commitlint: /Users/stevemorin/.local/share/mise/installs/npm-commitlint-cli/21.0.2/bin/commitlint (@commitlint/cli@21.0.2); node: v26.5.0; os: Darwin 25.4.0 arm64
+URL exemption source: @commitlint/ensure/lib/max-line-length.js in that install (URL_REGEX = /\bhttps?:\/\/\S+/ skips the line)
+01   expected=0      observed=0    PASS   conforming message
+02   expected=1      observed=1    PASS   type not in the enum
+       | ⧗   --- input ---
+       | wibble(cli): add --json output flag
+       | ✖   type must be one of [build, chore, ci, docs, feat, fix, perf, refactor, revert, style, test] [type-enum]
+       | 
+       | ✖   found 1 problems, 0 warnings
+       | ⓘ   Get help: https://github.com/conventional-changelog/commitlint/#what-is-commitlint
+03   expected=1      observed=1    PASS   71-col subject
+       | ⧗   --- input ---
+       | feat(cli): add a subject line that is clearly longer than fifty columns
+       | ✖   header must not be longer than 50 characters, current length is 71 [header-max-length]
+       | 
+       | ✖   found 1 problems, 0 warnings
+       | ⓘ   Get help: https://github.com/conventional-changelog/commitlint/#what-is-commitlint
+04   expected=1      observed=1    PASS   83-col body line with spaces
+       | ⧗   --- input ---
+       | feat(cli): add --json output flag
+       | 
+       | This body line is deliberately written to run well past the seventy-two column cap.
+       | ✖   body's lines must not be longer than 72 characters [body-max-line-length]
+       | 
+       | ✖   found 1 problems, 0 warnings
+       | ⓘ   Get help: https://github.com/conventional-changelog/commitlint/#what-is-commitlint
+05   expected=0      observed=0    PASS   bare 116-col URL body line: commitlint's URL exemption also accepts it (agreement with committed)
+06   expected=1      observed=1    PASS   subject ends with a period
+       | ⧗   --- input ---
+       | feat(cli): add --json output flag.
+       | ✖   subject may not end with full stop [subject-full-stop]
+       | 
+       | ✖   found 1 problems, 0 warnings
+       | ⓘ   Get help: https://github.com/conventional-changelog/commitlint/#what-is-commitlint
+07   expected=0      observed=0    PASS   107-col Claude-Session trailer containing a URL: accepted (agreement)
+08   expected=1      observed=1    PASS   96-col footer line with spaces: rejected at footer-max-line-length 72 (agreement)
+       | ⧗   --- input ---
+       | fix(web): reject malformed pagination cursors
+       | 
+       | Reviewed-by: Alice Example, Bob Example, Carol Example, Dan Example, Erin Example, Frank Example
+       | ✖   body's lines must not be longer than 72 characters [body-max-line-length]
+       | 
+       | ✖   found 1 problems, 0 warnings
+       | ⓘ   Get help: https://github.com/conventional-changelog/commitlint/#what-is-commitlint
+09   expected=record observed=1    RECORD capitalised subject: commitlint subject-case rejects it; committed has no such rule (DIVERGENCE)
+       | ⧗   --- input ---
+       | feat(cli): Add a capitalised subject
+       | ✖   subject must not be sentence-case, start-case, pascal-case, upper-case [subject-case]
+       | 
+       | ✖   found 1 problems, 0 warnings
+       | ⓘ   Get help: https://github.com/conventional-changelog/commitlint/#what-is-commitlint
+10   expected=record observed=1    RECORD identifier-leading subject (this repo's real 'docs: P01 port research tree'): commitlint subject-case rejects it as sentence-case; committed accepts (DIVERGENCE)
+       | ⧗   --- input ---
+       | docs: P01 port research tree (phases 1-5)
+       | ✖   subject must not be sentence-case, start-case, pascal-case, upper-case [subject-case]
+       | 
+       | ✖   found 1 problems, 0 warnings
+       | ⓘ   Get help: https://github.com/conventional-changelog/commitlint/#what-is-commitlint
+11   expected=record observed=0    RECORD 'fixup! ...': commitlint ignores fixup messages by default; committed needs --fixup (mechanism differs)
+17   expected=record observed=1    RECORD 100-col space-free NON-URL line: commitlint counts whole lines and rejects; committed's soft-line accepts (DIVERGENCE)
+       | ⧗   --- input ---
+       | feat(cli): add --json output flag
+       | 
+       | aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+       | ✖   body's lines must not be longer than 72 characters [body-max-line-length]
+       | 
+       | ✖   found 1 problems, 0 warnings
+       | ⓘ   Get help: https://github.com/conventional-changelog/commitlint/#what-is-commitlint
+19   expected=1      observed=1    PASS   dependabot-style message: rejected by both on the hook path (agreement)
+       | ⧗   --- input ---
+       | build(deps): bump serde_json from 1.0.140 to 1.0.145 in the cargo group
+       | 
+       | Bumps the cargo group with 1 update in the / directory: [serde_json](https://github.com/serde-rs/json).
+       | 
+       | Updates `serde_json` from 1.0.140 to 1.0.145
+       | - [Release notes](https://github.com/serde-rs/json/releases)
+       | - [Commits](https://github.com/serde-rs/json/compare/v1.0.140...v1.0.145)
+       | ✖   header must not be longer than 50 characters, current length is 71 [header-max-length]
+       | 
+       | ✖   found 1 problems, 0 warnings
+       | ⓘ   Get help: https://github.com/conventional-changelog/commitlint/#what-is-commitlint
+20   expected=record observed=0    RECORD default merge message: commitlint ignores 'Merge branch' by default; committed rejects (DIVERGENCE)
+summary: PASS=9 FAIL=0 RECORD=5
+RESULT: PASS

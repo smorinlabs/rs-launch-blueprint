@@ -1,0 +1,3 @@
+docs: link the permalink for the hook analysis
+
+https://github.com/smorinlabs/py-launch-blueprint/blob/b08bccfb55d05f15e46a83b52c5660b1881d19f5/lefthook.yml#L18-L58

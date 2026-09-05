@@ -1,0 +1,11 @@
+[package]
+name = "repo-hygiene"
+version = "0.0.0"
+edition = "2024"
+publish = false
+description = "F160 adapter fixture: asserts committed.toml and .gitmessage express one convention"
+
+[dependencies]
+
+[dev-dependencies]
+toml = "0.9"

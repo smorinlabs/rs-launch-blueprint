@@ -1,0 +1,16 @@
+# rs-launch-blueprint commit-message convention (R38 `commit-message-convention`).
+# `committed` reads this file from the repository root with no --config flag.
+# Every value below is asserted against .gitmessage by the repo-hygiene
+# meta-test (F160): repo-hygiene/tests/commit_convention.rs.
+style = "conventional"
+allowed_types = ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+subject_length = 50
+line_length = 72
+# hard_line_length stays at its default (0, disabled): committed 1.1.11
+# dispatches it with the soft limit (crates/committed/src/checks.rs:98-100),
+# and enabling it voids the un-wrappable-final-token exemption.
+subject_capitalized = false
+subject_not_punctuated = true
+imperative_subject = false
+merge_commit = true
+ignore_author_re = "(dependabot|renovate)"

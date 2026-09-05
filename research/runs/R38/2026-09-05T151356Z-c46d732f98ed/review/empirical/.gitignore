@@ -1,0 +1,4 @@
+# provisioned by run-checks.sh; never committed
+tools/
+.work/
+repo-hygiene/target/
