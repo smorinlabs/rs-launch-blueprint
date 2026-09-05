@@ -1,0 +1,107 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-05T16:54:40Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-05T16:54:40Z",
+      "state": "ready"
+    },
+    {
+      "actor": "research-codex-2026-09-05T165440Z-58f1cbb2e6c5",
+      "at": "2026-09-05T16:54:40Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T165440Z-58f1cbb2e6c5",
+        "at": "2026-09-05T16:54:40Z",
+        "model": "gpt-5.6-terra",
+        "provider": "codex",
+        "request_id": "5226f9a117b845e6ad9438d1fdd47e76",
+        "state": "submitting"
+      },
+      "provider": "codex",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-codex-2026-09-05T165440Z-58f1cbb2e6c5",
+      "at": "2026-09-05T17:00:12Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T165440Z-58f1cbb2e6c5",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T16:54:40Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a0727e-f140-71e0-b86f-090562e464a5",
+        "provider": "codex",
+        "request_id": "5226f9a117b845e6ad9438d1fdd47e76",
+        "returned_at": "2026-09-05T17:00:12Z",
+        "state": "submitted"
+      },
+      "provider": "codex",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-codex-2026-09-05T165440Z-58f1cbb2e6c5",
+      "at": "2026-09-05T17:00:12Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T165440Z-58f1cbb2e6c5",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T16:54:40Z",
+        "collected_at": "2026-09-05T17:00:12Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a0727e-f140-71e0-b86f-090562e464a5",
+        "provider": "codex",
+        "raw": "research/runs/R45/2026-09-05T165440Z-58f1cbb2e6c5/raw/codex-2ba03f11963052802359bd8775e75ea73432d9fe847b2383577bc106e462897b.md",
+        "raw_sha256": "2ba03f11963052802359bd8775e75ea73432d9fe847b2383577bc106e462897b",
+        "reason": "",
+        "request_id": "5226f9a117b845e6ad9438d1fdd47e76",
+        "returned_at": "2026-09-05T17:00:12Z",
+        "state": "succeeded"
+      },
+      "provider": "codex",
+      "state": "succeeded"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "1c35293a773f7e60b0c47232966c661433b845b9b21685a08792143ed8650d1a",
+    "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+    "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+    "policy": "0023242a0337eade8fcd4f025fe7543b84338bf82916850a3659b8d949efb4e2",
+    "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+    "prerequisites": "ca3d163bab055381827226140568f3bef7eaac187cebd76878e0b63e9e442356",
+    "prompt": "abe9cf1c6ff268b68fcce41ceb9dc33b6ca0f4189165ac931696b35a57336436",
+    "registry": "a3a86d7c27c2bd15285a0a87f2d91a871e38710b78a2fb623ad449618eb39ff0"
+  },
+  "item": "R45",
+  "model": "claude-fable-5-1",
+  "operations": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T165440Z-58f1cbb2e6c5",
+      "actual_model": "gpt-5.6-terra",
+      "actual_provider": "codex-cli-0.153.2",
+      "at": "2026-09-05T16:54:40Z",
+      "collected_at": "2026-09-05T17:00:12Z",
+      "model": "gpt-5.6-terra",
+      "operation_id": "01a0727e-f140-71e0-b86f-090562e464a5",
+      "provider": "codex",
+      "raw": "research/runs/R45/2026-09-05T165440Z-58f1cbb2e6c5/raw/codex-2ba03f11963052802359bd8775e75ea73432d9fe847b2383577bc106e462897b.md",
+      "raw_sha256": "2ba03f11963052802359bd8775e75ea73432d9fe847b2383577bc106e462897b",
+      "reason": "",
+      "request_id": "5226f9a117b845e6ad9438d1fdd47e76",
+      "returned_at": "2026-09-05T17:00:12Z",
+      "state": "succeeded"
+    }
+  },
+  "prompt_source": "research/topics/45-pr-comment-bot-trigger-block/prompts/pr-comment-bot-trigger-block.prompt.md",
+  "remaining_budget": "no paid engine (Focused tier)",
+  "required_engines": [
+    "codex",
+    "opus"
+  ],
+  "run_id": "2026-09-05T165440Z-58f1cbb2e6c5",
+  "schema_version": 1,
+  "state": "partial",
+  "tier": "focused",
+  "updated_at": "2026-09-05T17:00:12Z"
+}

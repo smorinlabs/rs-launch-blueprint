@@ -1,0 +1,9 @@
+{
+  "name": "r23-lockfile-version-sync-fixture",
+  "version": "0.0.0",
+  "private": true,
+  "description": "R23 empirical fixture: executes release-please's CargoLock updater (the version release-please-action v5.0.0 resolves from ^17.6.0) against a real Cargo.lock",
+  "dependencies": {
+    "release-please": "^17.6.0"
+  }
+}

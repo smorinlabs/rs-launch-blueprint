@@ -5,7 +5,10 @@ research/runs/.locks/
 research/runs/*/*/raw/*-transcript.txt
 research/runs/*/*/review/*-transcript.txt
 research/runs/*/*/raw/fixture-*/
-research/runs/*/*/review/empirical/
-research/runs/*/*/review/empirical-audit/
-research/runs/*/*/review/tools/
-research/runs/*/*/review/*/tools/
+research/runs/**/tools/
+research/runs/**/node_modules/
+research/runs/**/.work/
+research/runs/**/vendor/
+research/runs/**/*.crate
+research/runs/**/*.tar.gz
+research/runs/**/*.tgz

@@ -1,0 +1,13 @@
+# Bot-authored pull requests (F156): selected in CI by
+# github.event.pull_request.user.login (never github.actor). The grammar and the
+# eleven-type enum stay enforced; only the width rules are disabled (0 = off),
+# because dependabot's generated subjects and bodies cannot be wrapped.
+# allowed_types and style are asserted equal to committed.toml by the F160 test.
+style = "conventional"
+allowed_types = ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+subject_length = 0
+line_length = 0
+subject_capitalized = false
+subject_not_punctuated = true
+imperative_subject = false
+merge_commit = false

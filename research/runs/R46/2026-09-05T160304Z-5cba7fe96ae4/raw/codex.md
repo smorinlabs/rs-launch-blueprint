@@ -541,12 +541,12 @@ and MSRV toolchains, before marking the OS gate verified. Windows remains
 unverified and is not required. Compilation and rustdoc checks of `//!` placement
 are also still planned. ([Cargo package command](https://doc.rust-lang.org/cargo/commands/cargo-package.html), retrieved 2026-09-05; [Rust comments reference](https://doc.rust-lang.org/reference/comments.html), retrieved 2026-09-05.)
 
-The six required fixture tests used one clean fixture and one fixture for each
-prohibited form. The form (d) fixture was fetched verbatim from Apache with
+For auditability, the six required fixture commands and their outputs are
+reproduced below. The form (d) fixture was fetched verbatim from Apache with
 `curl`; its first 40 lines are therefore the source text returned by the
-canonical URL, not a reconstructed comment sample. After defining the exact
-checker function above, the following commands were run from this run
-directory with NUL-delimited paths:
+canonical URL, not a reconstructed comment sample. The checker function above
+was defined before these commands were run from this run directory with
+NUL-delimited paths:
 
 ```bash
 cd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4
@@ -627,8 +627,8 @@ Method notes: I surveyed the category before selecting candidates, then read
 first-party Rust/Cargo guidance, SPDX and REUSE standards, current source files
 and manifests from Serde, Tokio, Axum, clap, Rust, and OpenZeppelin's Rust
 template, and tool documentation for `reuse`, `file_header`, `addlicense`,
-`licet`, and `cargo-about`. During this correction I read `raw/evidence-terra.md`
-and re-queried every repository endpoint listed in Landscape, using
+`licet`, and `cargo-about`. During this correction I read
+`raw/evidence-terra-r3.md` and re-queried every repository endpoint listed in Landscape, using
 `curl -sS --max-time 30 -A 'rs-launch-blueprint-R46-evidence-recheck/1.0'`.
 Each returned HTTP 403 with `API rate limit exceeded` on 2026-09-05. Release
 pages were not consulted; maintenance is explicitly **unverified** for those
@@ -644,10 +644,12 @@ of the form `https://rustsec.org/packages/<name>.html`, were not queried because
 R46 is a pattern item and no crate is recommended or added; their figures are
 inapplicable to the selected metadata pattern. Optional tool installation is
 not approved by these metric omissions and would need a complete tool audit.
-During this correction I executed the report's actual checker function with
-in-memory clean/prohibited-header controls and reproduced the original
-inversion as a broken control. The local host was Darwin; this is not evidence
-of execution on `macos-latest` or `ubuntu-latest`. Full repository traversal,
+During this correction I executed the report's actual checker function on one
+clean fixture and one temporary fixture for each exact prohibited form; form
+(d) was fetched with `curl` from the Apache URL shown in Validation strategy.
+I also reproduced the original inversion as a broken control. The local host
+was Darwin; this is not evidence of execution on `macos-latest` or
+`ubuntu-latest`. Full repository traversal,
 Cargo compilation/tests/package checks, and REUSE execution on both required
 CI operating systems remain **unverified**. Standards citations establish
 syntax and conformance, not OS execution. The control results are local
@@ -657,6 +659,7 @@ observations recorded in Validation strategy, not external endpoint figures.
 - [Cargo manifest reference](https://doc.rust-lang.org/cargo/reference/manifest.html) — retrieved 2026-09-05.
 - [Cargo package command](https://doc.rust-lang.org/cargo/commands/cargo-package.html) — retrieved 2026-09-05.
 - [Rust Reference — comments](https://doc.rust-lang.org/reference/comments.html) — retrieved 2026-09-05.
+- [Apache License 2.0 text](https://www.apache.org/licenses/LICENSE-2.0.txt) — fetched with `curl` for form (d) on 2026-09-05.
 - [SPDX — Handling License Info](https://spdx.dev/learn/handling-license-info/) — retrieved 2026-09-05.
 - [SPDX 2.3 — License Expressions](https://spdx.github.io/spdx-spec/v2.3/SPDX-license-expressions/) — retrieved 2026-09-05.
 - [REUSE Specification 3.3](https://reuse.software/spec-3.3/) — retrieved 2026-09-05.

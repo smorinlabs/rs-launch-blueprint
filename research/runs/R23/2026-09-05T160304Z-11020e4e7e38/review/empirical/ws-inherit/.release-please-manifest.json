@@ -1,0 +1,4 @@
+{
+  "crates/demo-lib": "0.1.0",
+  "crates/demo-app": "0.1.0"
+}
