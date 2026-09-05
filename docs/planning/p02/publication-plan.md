@@ -21,7 +21,14 @@ Scope: the approved planning packet, amended spec/runbook/project tracking,
 strict validation, offline durable runner, and their local regression checks.
 Preserve the old worktree's three handoffs and all source repositories.
 
-## Missing P01 tag
+## P01 tag (executed 2026-09-05)
+
+The owner authorized the controller to run the prepared commands on
+2026-09-05 (`docs/planning/p02/APPROVAL.md` addendum). Result: annotated tag
+`fd5e83943aad8a329de5092bd2794d33fb3cca4a` pushed as `refs/tags/v0.1.0`,
+peeled object `2f3569051af2c2089f60f6cad129bc6e55482c30`, verified with
+`ls-remote` against origin. The prepared text below is retained as the record
+of what was run.
 
 The historical Task 18 annotation is retained. Pin the tag explicitly to the
 P01 merge commit so a later P02 commit cannot move the intended release point.

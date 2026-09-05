@@ -1,6 +1,6 @@
 # PROJECTS.md — rs-launch-blueprint
 
-## [ ] Project P01: Port research program (v0.1.0)
+## [x] Project P01: Port research program (v0.1.0)
 **Goal/Requirement**: Prepare evidence-based research that captures the shared engineering principles and agreement levels, then evaluates the Rust architectures and libraries that best preserve them — ending with a research index and one deep-research prompt per open item.
 - Principles and agreement levels explicit (spec §2/A5); departures from recorded patterns labeled `OVERRIDE (OV-nn)` with argument and options
 - Target shape: CLI + library + web service
@@ -27,7 +27,7 @@
 - [x] [P01-T07a] Phase 3.5 input — `docs/port/DIVERGENCE-ANALYSIS.md`: one row per research item giving the py state, the ts state, why they differ (cause class A–G), the Rust question, and the original cross-repo comparison scope (`harmonize`); feeds `OWNER-REVIEW.md`. Amendment A5 replaces the original one-value question with explicit agreement levels and evidence-backed native designs
 - [x] [P01-T07] Phase 3.5 — owner technology-selection review: `docs/port/OWNER-REVIEW.md`, one row per item (not waivable); `scripts/check-research-tree.sh --require-owner-review` green
 - [x] [P01-TS03] Phase 4 — independent reviewer agent spot-checks ≥15 `COMMON → REUSE` rows and sampled `path:line` citations against both repos, confirms `COVERAGE.md` complete, reads every non-REUSE row adversarially; findings fixed
-- [ ] [P01-T05] Phase 5 — PR reviewed and merged; `v0.1.0` tag still absent (verified 2026-09-04). Retain `rs-launch-blueprint-research` and its untracked handoffs as the approved cleanup exception. Tag creation/push awaits explicit approval.
+- [x] [P01-T05] Phase 5 — PR reviewed and merged; `v0.1.0` created and pushed 2026-09-05 under the owner's explicit authorization (annotated tag `fd5e839`, peeled to merge commit `2f3569051af2c2089f60f6cad129bc6e55482c30`, verified on origin). `rs-launch-blueprint-research` and its untracked handoffs retained as the approved cleanup exception.
 - [ ] Regression Test Status
 
 ### Deliverable
@@ -47,7 +47,7 @@ $ scripts/test-check-research-tree.sh | tail -1
 
 ## [ ] Project P02: Execute research program (v0.2.0)
 **Goal/Requirement**: Run every research item the owner accepted in Phase 3.5 under `research/RUNBOOK.md`, producing one audited `DECISION.md` per item and a filled `docs/port/PARAMETERS.md`. Each decision demonstrates the intended principle at its declared agreement level with an appropriate native design and a realistic acceptance example.
-- Gate: binding research waits for P01 merged and tagged `v0.1.0`; local preparation is approved before that tag. Only items with disposition `accept`, `narrow` or `force` in `docs/port/OWNER-REVIEW.md` are run.
+- Gate: P01 merged and tagged `v0.1.0` (satisfied 2026-09-05); paid batches authorized in `docs/planning/p02/APPROVAL.md` (pilot USD 40; bulk Deep ceiling USD 300). Only items with disposition `accept`, `narrow` or `force` in `docs/port/OWNER-REVIEW.md` are run.
 - Engines and invocation: `research/EXECUTION.json` and `research/RUNBOOK.md` §2 define the approved 6 Light / 53 Focused / 25 Deep allocation and three-engine R38 pilot. Durable wrappers save results to files; fresh contexts synthesize and audit. Doxa batches require separate spend approval.
 - Approved execution method: `docs/planning/p02/PROPOSAL.md`, approval recorded in `docs/planning/p02/APPROVAL.md`; active contract is design amendment A6 and `research/RUNBOOK.md`. This supersedes the earlier instruction to defer all P02 planning until the tag.
 

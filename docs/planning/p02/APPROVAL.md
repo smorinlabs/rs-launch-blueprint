@@ -31,3 +31,29 @@ Effect: the statement above that the method approval does not authorize a
 commit is historical. Commits of completed, validated changes on the working
 branch no longer need per-commit approval. Paid Doxa submissions, the `v0.1.0`
 tag push, and merges keep their separate approvals.
+
+## Addendum — tag, pilot spend and bulk spend (2026-09-05)
+
+Owner answers recorded through the session's decision dialog
+(authorization reference `OWNER-2026-09-05-P02-EXEC`, session
+https://claude.ai/code/session_013Dvsi7FhLemRfUyFSQi87A):
+
+- **Tag gate:** the owner authorized the controller to run the prepared
+  `v0.1.0` tag commands (annotated tag pinned to
+  `2f3569051af2c2089f60f6cad129bc6e55482c30`, push of that ref only).
+- **Pilot batch `B0-R38`:** maximum authorized spend USD 40 for one
+  `all_deep_research` operation (o3-deep-research, sonar-deep-research,
+  deep-research-preview-04-2026), launched through `scripts/doxa_no_retry.py`
+  with a single create attempt per provider and no automatic resubmission.
+- **Provider caps:** not set. The owner chose the job-count boundary (envelope
+  option B): exactly one operation, three provider jobs, single attempt each;
+  exposure is bounded by the estimate, not by a provider cap.
+- **Bulk Deep work:** a blanket ceiling of USD 300 in total for the remaining
+  25 Deep-tier Doxa operations, run continuously as prerequisites clear; the
+  controller stops new paid submissions and reports when recorded usage
+  reaches the ceiling. Per-batch item IDs, models and retry policy are
+  recorded in each run manifest instead of a separate approval.
+
+Retry policy for all paid work: none automatic; a failed or ambiguous
+provider job is recorded and re-approved individually. Merging remains a
+separate approval.

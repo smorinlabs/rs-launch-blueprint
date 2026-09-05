@@ -1,6 +1,8 @@
 # Paid execution envelope — R38 pilot (prepared 2026-09-04)
 
-Status: prepared for owner approval. No paid Doxa request has been submitted.
+Status: approved 2026-09-05 as envelope option B with a USD 40 pilot ceiling
+and a USD 300 blanket ceiling for the remaining Deep operations
+(`APPROVAL.md` addendum). No paid Doxa request has been submitted yet.
 This document proposes the boundary for the first paid batch; it does not set
 one. Operation counts, tool-call caps and timeouts bound work, not dollars.
 Only provider-side limits or the owner's approved figure bound spend.
