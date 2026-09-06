@@ -21,6 +21,46 @@
       },
       "provider": "codex",
       "state": "submitting"
+    },
+    {
+      "actor": "research-codex-2026-09-05T165440Z-d2e35904dc88",
+      "at": "2026-09-05T18:34:44Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T165440Z-d2e35904dc88",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T16:54:40Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a0727e-c9d7-7883-9f9f-24776f4986a1",
+        "provider": "codex",
+        "request_id": "fa6f626a036f4a6aa36975a290604627",
+        "returned_at": "2026-09-05T18:34:44Z",
+        "state": "submitted"
+      },
+      "provider": "codex",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-codex-2026-09-05T165440Z-d2e35904dc88",
+      "at": "2026-09-05T18:34:44Z",
+      "operation": {
+        "actor": "research-codex-2026-09-05T165440Z-d2e35904dc88",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-05T16:54:40Z",
+        "collected_at": "2026-09-05T18:34:44Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a0727e-c9d7-7883-9f9f-24776f4986a1",
+        "provider": "codex",
+        "raw": "research/runs/R34/2026-09-05T165440Z-d2e35904dc88/raw/codex-c1a5048bf89b5e78eb852736516f690c55fd95421660b30e71fd4bde4be6da36.md",
+        "raw_sha256": "c1a5048bf89b5e78eb852736516f690c55fd95421660b30e71fd4bde4be6da36",
+        "reason": "",
+        "request_id": "fa6f626a036f4a6aa36975a290604627",
+        "returned_at": "2026-09-05T18:34:44Z",
+        "state": "succeeded"
+      },
+      "provider": "codex",
+      "state": "succeeded"
     }
   ],
   "input_hashes": {
@@ -38,11 +78,19 @@
   "operations": {
     "codex": {
       "actor": "research-codex-2026-09-05T165440Z-d2e35904dc88",
+      "actual_model": "gpt-5.6-terra",
+      "actual_provider": "codex-cli-0.153.2",
       "at": "2026-09-05T16:54:40Z",
+      "collected_at": "2026-09-05T18:34:44Z",
       "model": "gpt-5.6-terra",
+      "operation_id": "01a0727e-c9d7-7883-9f9f-24776f4986a1",
       "provider": "codex",
+      "raw": "research/runs/R34/2026-09-05T165440Z-d2e35904dc88/raw/codex-c1a5048bf89b5e78eb852736516f690c55fd95421660b30e71fd4bde4be6da36.md",
+      "raw_sha256": "c1a5048bf89b5e78eb852736516f690c55fd95421660b30e71fd4bde4be6da36",
+      "reason": "",
       "request_id": "fa6f626a036f4a6aa36975a290604627",
-      "state": "submitting"
+      "returned_at": "2026-09-05T18:34:44Z",
+      "state": "succeeded"
     }
   },
   "prompt_source": "research/topics/34-scheduled-freshness-lanes/prompts/scheduled-freshness-lanes.prompt.md",
@@ -53,7 +101,7 @@
   ],
   "run_id": "2026-09-05T165440Z-d2e35904dc88",
   "schema_version": 1,
-  "state": "submitting",
+  "state": "partial",
   "tier": "focused",
-  "updated_at": "2026-09-05T16:54:40Z"
+  "updated_at": "2026-09-05T18:34:44Z"
 }

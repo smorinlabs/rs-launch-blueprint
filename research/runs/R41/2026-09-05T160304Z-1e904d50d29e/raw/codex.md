@@ -108,7 +108,7 @@ For the **library**, the shared root lockfile supports the repository's tests. I
 
 For the **web service**, axum routing, Tokio execution, structured tracing and a tower route-test target supply a realistic HTTP dependency graph. Metadata performs no server startup; the floor check compiles all workspace targets, including the test target. No live server or HTTP test was run for this lockfile study. [Web manifest](fixture-r41/crates/web/Cargo.toml), [web source](fixture-r41/crates/web/src/main.rs), [compilation][COMPILE] (2026-09-05).
 
-The following figures all come from the retained [summary endpoint][S] and its [raw command records][E], recorded 2026-09-05 on **macOS 26.4, arm64**. Hardware model/RAM and peak memory were unavailable because sandboxed `sysctl` access was denied. No Linux latency measurement is implied.
+The following macOS figures come from the retained [summary endpoint][S] and its [raw command records][E], recorded 2026-09-05 on **macOS 26.4, arm64**. Hardware model/RAM and peak memory were unavailable because sandboxed `sysctl` access was denied. The Linux acceptance outcomes and its short guard timings are reported separately below.
 
 | Operation | Cargo 1.96.0 floor: wall seconds | Cargo 1.98.0: wall seconds | Samples per toolchain |
 |---|---:|---:|---:|
@@ -118,6 +118,9 @@ The following figures all come from the retained [summary endpoint][S] and its [
 | Actual staged-manifest `git commit` with guard, warmed Cargo home | median 0.277; range 0.257–0.297 | median 0.210; range 0.197–0.218 | 5 warm commits |
 | Commit of repaired dependency edge and lockfile | 0.206 | 0.153 | 1 warm commit |
 | Unrelated commit, Cargo deliberately unavailable | 0.054 | 0.150 | 1 skip-control commit |
+| Linux Lima acceptance: clean staged-manifest commit / stale direct guard / stale guarded commit | 0.05 / 0.03 / 0.03; exits 0 / 101 / 1 | 0.05 / 0.03 / 0.03; exits 0 / 101 / 1 | 1 case each; `aarch64` |
+
+The Linux acceptance leg used the same retained fixture contents in temporary Git repositories. Its `uname -a` was `Linux lima-ubuntu 6.17.0-40-generic #40-Ubuntu SMP PREEMPT_DYNAMIC Fri Jun 19 16:24:16 UTC 2026 aarch64 GNU/Linux`. The clean staged-manifest commit returned `0` for both `rustc 1.96.0` and `rustc 1.98.1`; the stale direct guard returned `101`, the corresponding guarded `git commit` returned `1`, and the lockfile hash remained `6205ba2b2fd07b45bec580c8ac91ddea63cf74182b93840bfe1c1bf614c972d0` before and after for each. Timed observations were floor: clean commit **0.05 seconds**, stale direct guard **0.03 seconds**, stale guarded commit **0.03 seconds**; stable: **0.05**, **0.03**, and **0.03 seconds**, respectively. The floor clean case populated the VM Cargo cache; stable then used that cache, so these are acceptance evidence rather than a controlled Linux performance comparison. [Linux leg][LINUX] (2026-09-05).
 
 Cold means a newly created empty `CARGO_HOME`, including no registry index, crate archives or unpacked sources. It does not mean cold OS/DNS/CDN caches. Each command and commit series uses a separate Cargo home; the full workload and downloaded sources remain retained. Staged-manifest timing commits append a harmless member-manifest comment, which triggers full graph resolution. The separate repaired-dependency case adds `serde_json` to the library and stages its new lockfile. Git staging happens outside the measured interval. Signing is disabled. No other hooks are installed in these isolated fixture repositories. [Harness][HARNESS], [fixture notes][FREADME], [records][E] (2026-09-05).
 
@@ -150,7 +153,7 @@ Second runner-up: locked `cargo check --workspace --all-targets` if compilation 
 
 Metadata costs source downloads and produces JSON that a pure freshness hook discards. Conservative workspace update offers a stronger external dedicated-lock-job precedent and potentially lower cold source-fetch cost. Metadata is selected because its complete resolution path is documented, independently exercised here, and inexpensive when warm for this workload. It does not replace a compile check, dependency security scan, latest-dependency canary or downstream-library compatibility check. [Measured evidence][E], [Cargo team guidance][GUIDE], [Cargo update][UPD] (2026-09-05).
 
-Rejecting partial staging simplifies the implementation at a usability cost. An isolated staged snapshot could preserve partial-staging workflows, but needs broader path and configuration handling. A later-tier-only gate avoids local latency and sacrifices immediate commit feedback. The prototype is a reviewable proposal with documented scope; the full manager integration and Linux acceptance suite remain outstanding. [Prototype documentation][FREADME], [source precedent][PY] (2026-09-05).
+Rejecting partial staging simplifies the implementation at a usability cost. An isolated staged snapshot could preserve partial-staging workflows, but needs broader path and configuration handling. A later-tier-only gate avoids local latency and sacrifices immediate commit feedback. The prototype is a reviewable proposal with documented scope; the full manager integration and exact `ubuntu-latest` `x86_64` reproduction remain outstanding. [Prototype documentation][FREADME], [source precedent][PY] (2026-09-05).
 
 ### Parameters
 
@@ -218,8 +221,19 @@ The floor graph build used the same explicit Cargo/compiler pair and `cargo chec
 | `check`, `build`, workspace update and regeneration with `--locked` against stale graph | Cargo exit 101, lock bytes unchanged |
 | Broad update with `--locked --dry-run` against stale graph | Cargo exit 0, lock bytes unchanged: false-pass control |
 | All fixture targets checked at MSRV floor on macOS | Cargo exit 0 |
+| Linux Lima acceptance leg: clean staged-manifest guard at floor and stable; stale-lock direct guard and guarded commit | Clean Git commits exit 0; stale direct guards exit 101; stale guarded commits exit 1; lockfile bytes unchanged |
 
-Evidence endpoints: [main results][E] and [supplemental results][O], executed 2026-09-05. The mandatory stale-manifest inverse and staged-commit timing checks are now executed and retained. Remaining integration work is the actual R37 manager, Linux runs, and boundary cases outside the prototype's stated repository-contained scope.
+Evidence endpoints: [main results][E], [supplemental results][O], and [Linux leg][LINUX], executed 2026-09-05. The mandatory stale-manifest inverse and staged-commit timing checks are now executed and retained on macOS; the Linux leg adds the clean staged trigger and stale-lock rejection at both toolchains. Remaining integration work is the actual R37 manager, the exact GitHub `ubuntu-latest` `x86_64` environment, and boundary cases outside the prototype's stated repository-contained scope.
+
+The Linux command was run through the mounted fixture directory with the requested VM entry point:
+
+```sh
+limactl shell ubuntu -- bash -lc 'source $HOME/.cargo/env; cd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/raw/fixture-r41 && <the recorded guard loop>'
+```
+
+For each `1.96.0` and `stable` toolchain, the recorded loop copied the fixture into a temporary Git repository, installed `hook.sh` as `.git/hooks/pre-commit`, staged a harmless member-manifest trigger, and ran `/usr/bin/time -p git commit -qm linux-positive`. It then staged `serde_json.workspace = true` in the library without changing `Cargo.lock`, ran `/usr/bin/time -p env R41_CARGO="$cargo_bin" bash "$fixture/hook.sh"`, and ran `/usr/bin/time -p git commit -qm linux-stale`. The resulting output and statuses are retained in [Linux leg log][LINUX].
+
+The retained [Linux leg log][LINUX] records `uname -a` as `Linux lima-ubuntu 6.17.0-40-generic #40-Ubuntu SMP PREEMPT_DYNAMIC Fri Jun 19 16:24:16 UTC 2026 aarch64 GNU/Linux`, `rustc 1.96.0 (ac68faa20 2026-05-25)` and `rustc 1.98.1 (48a229cea 2026-09-01)`, the clean commit exit `0` for each, stale direct-guard exit `101` for each, stale guarded-commit exit `1` for each, and unchanged lockfile hashes. The temporary Git repositories copied the retained three-member, 88-package fixture; the floor populated the VM Cargo cache, so those Linux times are not a cross-toolchain benchmark.
 
 The pinned TypeScript evidence was retrieved without relying on its inaccessible web URL:
 
@@ -236,7 +250,7 @@ The exact stdout is retained as [TypeScript hooks][TS] and [TypeScript decisions
 
 High confidence in the tested Cargo consistency behavior, the MSRV-floor macOS command, and the reproduced staged-repair hazard. Moderate confidence in the pre-commit tier for the eventual template: this is a realistic but bounded dependency graph, with single cold samples, one host, and no full hook suite. The measured version difference should not be interpreted as a Cargo release speed comparison because the host workload and cache history were not controlled for that purpose. [Measured summary][S], [records][E] (2026-09-05).
 
-Linux applicability is inferred from the retained Warp workflow's Linux runner and metadata step, plus Cargo/clap's Ubuntu lockfile jobs. No Linux command was executed by this worker. The local host is macOS, not a claim of an executed `macos-latest` GitHub Actions job. Warp is only a command/message reference, and no maintained external full-guard reference was established. [Warp source][WARP], [retained workflow][WARPSNAP], [Cargo workflow][CARGO], [clap workflow][CLAP] (retrieved 2026-09-05).
+Linux applicability is now directly evidenced by the retained Lima Ubuntu leg: the clean staged trigger and stale-lock negative control passed their expected statuses at `rustc 1.96.0` and `rustc 1.98.1`. The VM is `aarch64`, so the exact `ubuntu-latest` `x86_64` runner and its GitHub-hosted environment remain unverified; the local host is macOS, not a claim of an executed `macos-latest` GitHub Actions job. Warp is only a command/message reference, and no maintained external full-guard reference was established. [Linux leg][LINUX], [Warp source][WARP], [retained workflow][WARPSNAP], [Cargo workflow][CARGO], [clap workflow][CLAP] (retrieved 2026-09-05).
 
 Re-verify at a policy-authorized MSRV bump, Cargo resolver/lockfile change, new workspace or external path layout, private registry/configuration change, manager integration, or observed unacceptable commit latency. The acceptance target remains actual commit contents and an unchanged lockfile, not merely a zero status from some Cargo command.
 
@@ -276,9 +290,10 @@ Reference keys identify exact external endpoints or retained local evidence. All
 [WARP]: https://github.com/warpdotdev/warp/blob/master/.github/workflows/ci.yml#L561-L606
 [CLAP]: https://github.com/clap-rs/clap/blob/master/.github/workflows/ci.yml#L195-L206
 [CARGO]: https://github.com/rust-lang/cargo/blob/master/.github/workflows/main.yml#L100-L106
+[LINUX]: fixture-r41/linux-leg.log
 
 Crate download totals, release figures, reverse dependencies, crate advisory counts and crate issue-response medians are `inapplicable` to this pattern selection because no separately installed crate is recommended. Fixture libraries are a retained workload, not researched winners for other items. No GitHub stars, issue counts or API maintenance figures are asserted. Default features and graph requirements for the workload are recoverable from its manifests and full metadata captures.
 
 The fixture is retained locally under `raw/fixture-r41/`. The repository's existing `research/runs/*/*/raw/fixture-*/` ignore rule excludes it from ordinary Git staging; this worker has not committed or published the fixture. The local evidence endpoints above remain available for the fresh checker (verified 2026-09-05).
 
-**Method notes:** `measure.rb` records each `curl -f -sS -L` request, User-Agent, source URL, timestamp, status and retained stdout for the Cargo metadata/update/resolver/build/check/generate/workspaces manuals, Git diff/hooks manuals, Cargo-team lockfile article, and Cargo/clap/Warp workflows and repository files. Source precedent uses `git show` from Python commit `b08bccfb55d05f15e46a83b52c5660b1881d19f5` and TypeScript commit `cb1cbcb2e88b898e8c081b0abbfabc1630079c00`, with retained stdout and provenance in [E]. The original unretained warm numbers are withdrawn. Two setup attempts remain labelled in [fixture notes][FREADME]: blocked hardware `sysctl`, then blocked `/usr/bin/time -l` resource collection. Their timings are excluded; the accepted run uses `time -p`. Linux execution, peak memory, full manager integration and an external maintained exact guard remain unverified, explicitly rather than being reported as passed.
+**Method notes:** `measure.rb` records each `curl -f -sS -L` request, User-Agent, source URL, timestamp, status and retained stdout for the Cargo metadata/update/resolver/build/check/generate/workspaces manuals, Git diff/hooks manuals, Cargo-team lockfile article, and Cargo/clap/Warp workflows and repository files. Source precedent uses `git show` from Python commit `b08bccfb55d05f15e46a83b52c5660b1881d19f5` and TypeScript commit `cb1cbcb2e88b898e8c081b0abbfabc1630079c00`, with retained stdout and provenance in [E]. The original unretained warm numbers are withdrawn. Two setup attempts remain labelled in [fixture notes][FREADME]: blocked hardware `sysctl`, then blocked `/usr/bin/time -l` resource collection. Their timings are excluded; the accepted run uses `time -p`. The Linux guard leg is retained in [LINUX]; exact `ubuntu-latest` `x86_64` runner behavior, peak memory, full manager integration and an external maintained exact guard remain unverified, explicitly rather than being reported as passed.
