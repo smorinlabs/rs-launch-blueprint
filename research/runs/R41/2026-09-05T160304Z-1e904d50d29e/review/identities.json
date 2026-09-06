@@ -1,0 +1,47 @@
+{
+  "engine_reports": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T160304Z-1e904d50d29e",
+      "model": "gpt-5.6-luna (r1, r3) with one revision pass under gpt-6-astra (r2); Codex CLI 0.153.2",
+      "family": "openai",
+      "file": "raw/codex.md"
+    }
+  },
+  "evidence_checks": {
+    "terra": {
+      "actor": "evidence-terra-2026-09-05T160304Z-1e904d50d29e-r3",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "raw/evidence-terra-r3.md"
+    }
+  },
+  "synthesis": {
+    "actor": "synth-fable-2026-09-05T160304Z-1e904d50d29e",
+    "model": "claude-fable-5-1",
+    "family": "anthropic"
+  },
+  "audits": {
+    "empirical": {
+      "actor": "audit-codex-2026-09-05T160304Z-1e904d50d29e",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "review/audit-codex.md"
+    },
+    "judgment": {
+      "actor": "audit-fable-2026-09-05T160304Z-1e904d50d29e",
+      "model": "claude-fable-5-1",
+      "family": "anthropic",
+      "file": "review/audit-fable.md"
+    }
+  },
+  "empirical": {
+    "argv": [
+      "bash",
+      "review/empirical/run-linux-leg.sh"
+    ],
+    "cwd": "research/runs/R41/2026-09-05T160304Z-1e904d50d29e (driver copies review/empirical to a fresh temporary directory inside the Lima ubuntu VM)",
+    "toolchain": "Lima ubuntu VM: Ubuntu 25.10 aarch64, rustc 1.98.1 and 1.96.0 floor; host rustc 1.98.0 macOS 26.4 for the macOS log",
+    "output_log": "review/evidence/audit-lockfile-freshness-check.log",
+    "exit_code": 0
+  }
+}

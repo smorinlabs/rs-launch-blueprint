@@ -1,0 +1,410 @@
+linux leg: fixture and runner copied from /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical to /tmp/r41-synth-Xp6Sor (the Lima mount is read-only); stdout captured on the host
+host provenance: rustup stable alias = rustc 1.98.1 (48a229cea 2026-09-01); PATH cargo = /home/stevemorin.guest/.cargo/bin/cargo
+R41 lockfile-freshness-check acceptance run — started 2026-09-06T05:05:45Z
+runner: /tmp/r41-synth-Xp6Sor/run-checks.sh
+fixture: /tmp/r41-synth-Xp6Sor/fixture
+WORK_DIR: /tmp/r41-synth-Xp6Sor/.work
+uname -a: Linux lima-ubuntu 6.17.0-40-generic #40-Ubuntu SMP PREEMPT_DYNAMIC Fri Jun 19 16:24:16 UTC 2026 aarch64 GNU/Linux
+os-release: Ubuntu 25.10
+git: git version 2.51.0; bash: 5.2.37(1)-release; time: /usr/bin/time
+fixture files (sha256  path):
+  b53ee26e6ff1da219b0563333a76d2c9ec19eec713d6ee54e11a1edacb0e9f3d  ./.gitignore
+  3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e  ./Cargo.lock
+  b18ff1a2338b4e216f03f9f56f19e734be5e3943199d9ce8368841d5be39a8d5  ./Cargo.toml
+  ee5aa22e4aef7285183df4dc5abacc1f238d65afedcd8c5f37d2f5a25b472119  ./README.md
+  18fa3893c6735e8bc7ca45981cdfc41f1ed5ec1140257e517cf657af1e1d6ff3  ./crates/cli/Cargo.toml
+  40eebd180d2376ac9ccfe7e0809360dde44a1d4302a038d7e2d8c8734a373786  ./crates/cli/src/main.rs
+  93848b26efabe425f8cea277d9369490f7d3cb47f3644f42acbfb11ea3567863  ./crates/core/Cargo.toml
+  04e44da29a3c8156cb611d0e316850503b49f56f58421c79239c597df5f3ff4a  ./crates/core/src/lib.rs
+  76c53f51c01d57eb8aa9817c19203322112e340ef35d69cf9ad285b6e3696018  ./crates/web/Cargo.toml
+  6d028420964a0e4e78ee798c35d5317190f9932e1ccd5f0656cc6e250c6d8c36  ./crates/web/src/main.rs
+  3a57e338e53f95021fbd0a408ee099b51162942d4e65112d4e53c5e01693ebc1  ./scripts/check-cargo-lock.sh
+
+=== toolchain floor-1.96.0 (PATH prefix: /home/stevemorin.guest/.rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin) started 2026-09-06T05:05:45Z ===
+cargo: /home/stevemorin.guest/.rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin/cargo -> cargo 1.96.0 (30a34c682 2026-05-25)
+rustc: /home/stevemorin.guest/.rustup/toolchains/1.96.0-aarch64-unknown-linux-gnu/bin/rustc -> rustc 1.96.0 (ac68faa20 2026-05-25)
+CARGO_HOME: <unset: default ~/.cargo>
+--- repo A: /tmp/r41-synth-Xp6Sor/.work/floor-1.96.0/repo-a
+RECORD [floor-1.96.0/A0] core.hooksPath in repo A = '' (empty: .git/hooks/pre-commit is used)
+  $ bash -c /usr/bin/time -p cargo metadata --locked --format-version=1 >/dev/null
+PASS [floor-1.96.0/A1] clean committed tree: cargo metadata --locked --format-version=1 -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |  Downloading crates ...
+    |   Downloaded anyhow v1.0.104
+    | real 0.23
+    | user 0.03
+    | sys 0.01
+RECORD [floor-1.96.0/A1] warm direct metadata wall seconds real=0.23
+  $ /usr/bin/time -p git commit -qm chore: member manifest comment 1
+PASS [floor-1.96.0/A2.1] staged member-manifest comment: git commit through pre-commit hook -> exit 0 (expected 0)
+    | real 0.03
+    | user 0.01
+    | sys 0.01
+PASS [floor-1.96.0/A2.1] hook ran the recommended command: output contains 'cargo metadata --locked --format-version=1'
+RECORD [floor-1.96.0/A2.1] warm guarded commit wall seconds real=0.03
+  $ /usr/bin/time -p git commit -qm chore: member manifest comment 2
+PASS [floor-1.96.0/A2.2] staged member-manifest comment: git commit through pre-commit hook -> exit 0 (expected 0)
+    | real 0.03
+    | user 0.01
+    | sys 0.02
+PASS [floor-1.96.0/A2.2] hook ran the recommended command: output contains 'cargo metadata --locked --format-version=1'
+RECORD [floor-1.96.0/A2.2] warm guarded commit wall seconds real=0.03
+  $ /usr/bin/time -p git commit -qm chore: member manifest comment 3
+PASS [floor-1.96.0/A2.3] staged member-manifest comment: git commit through pre-commit hook -> exit 0 (expected 0)
+    | real 0.03
+    | user 0.01
+    | sys 0.01
+PASS [floor-1.96.0/A2.3] hook ran the recommended command: output contains 'cargo metadata --locked --format-version=1'
+RECORD [floor-1.96.0/A2.3] warm guarded commit wall seconds real=0.03
+  $ git commit -qm chore: root manifest comment
+PASS [floor-1.96.0/A3] staged root-manifest comment: git commit -> exit 0 (expected 0)
+PASS [floor-1.96.0/A3] root manifest triggers Cargo: output contains 'cargo metadata --locked --format-version=1'
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [floor-1.96.0/A4] --all on a clean committed tree with nothing staged -> exit 0 (expected 0)
+PASS [floor-1.96.0/A4] --all invoked Cargo unconditionally: output contains 'cargo metadata --locked --format-version=1'
+  $ bash -c CARGO_HOME="$1" /usr/bin/time -p cargo metadata --locked --format-version=1 >/dev/null _ /tmp/r41-synth-Xp6Sor/.work/floor-1.96.0/cold-home
+PASS [floor-1.96.0/A5] cold empty CARGO_HOME (registry index + crate fetch): cargo metadata --locked -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |  Downloading crates ...
+    |   Downloaded anyhow v1.0.104
+    | real 0.17
+    | user 0.02
+    | sys 0.01
+RECORD [floor-1.96.0/A5] cold direct metadata wall seconds real=0.17
+  $ bash -c /usr/bin/time -p cargo check --workspace --all-targets --locked
+PASS [floor-1.96.0/A6] cargo check --workspace --all-targets --locked at this toolchain (rust-version = "1.96") -> exit 0 (expected 0)
+    |     Checking r41-web v0.1.0 (/tmp/r41-synth-Xp6Sor/.work/floor-1.96.0/repo-a/crates/web)
+    |     Checking r41-cli v0.1.0 (/tmp/r41-synth-Xp6Sor/.work/floor-1.96.0/repo-a/crates/cli)
+    |     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.26s
+    | real 0.26
+    | user 0.22
+    | sys 0.14
+RECORD [floor-1.96.0/A6] locked check wall seconds real=0.26
+--- repo B: /tmp/r41-synth-Xp6Sor/.work/floor-1.96.0/repo-b
+RECORD [floor-1.96.0/B0] committed Cargo.lock sha256=3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/B1] stale: staged manifest adds serde_json, Cargo.lock untouched: direct check -> exit 101 (expected 101)
+    |     Updating crates.io index
+    | error: cannot update the lock file /tmp/r41-synth-Xp6Sor/.work/floor-1.96.0/repo-b/Cargo.lock because --locked was passed to prevent this
+    | help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+    | FAIL: Cargo lockfile validation could not complete; see Cargo diagnostics above.
+    | If Cargo requires a lockfile update, run cargo metadata --format-version=1, review Cargo.lock, and stage it with the intended manifests. For cache/network errors, fetch dependencies and retry.
+PASS [floor-1.96.0/B1] Cargo diagnostic preserved: output contains 'cannot update the lock file'
+PASS [floor-1.96.0/B1] remediation message present: output contains 'run cargo metadata --format-version=1'
+PASS [floor-1.96.0/B1] Cargo.lock bytes unchanged after refusal: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ /usr/bin/time -p git commit -qm feat(core): add serde_json (stale lock)
+PASS [floor-1.96.0/B2] stale: git commit blocked by pre-commit hook -> exit 1 (expected 1)
+    |     Updating crates.io index
+    | error: cannot update the lock file /tmp/r41-synth-Xp6Sor/.work/floor-1.96.0/repo-b/Cargo.lock because --locked was passed to prevent this
+    | help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+    | FAIL: Cargo lockfile validation could not complete; see Cargo diagnostics above.
+    | If Cargo requires a lockfile update, run cargo metadata --format-version=1, review Cargo.lock, and stage it with the intended manifests. For cache/network errors, fetch dependencies and retry.
+    | real 0.11
+    | user 0.02
+    | sys 0.02
+PASS [floor-1.96.0/B2] Cargo.lock bytes unchanged after blocked commit: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+PASS [floor-1.96.0/B2] no commit was created (rev-list count): 1 == 1
+RECORD [floor-1.96.0/B2] blocked commit wall seconds real=0.11
+  $ bash -c cargo metadata --locked --no-deps --format-version=1 >/dev/null
+PASS [floor-1.96.0/B3a] false-pass control: --no-deps on the stale tree returns success -> exit 0 (expected 0)
+  $ cargo update --locked --dry-run
+PASS [floor-1.96.0/B3b] false-pass control: cargo update --locked --dry-run on the stale tree returns success -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+    | warning: not updating lockfile due to dry run
+  $ cargo check --workspace --locked
+PASS [floor-1.96.0/B3c] runner-up: cargo check --workspace --locked on the stale tree -> exit 101 (expected 101)
+    |     Updating crates.io index
+    | error: cannot update the lock file /tmp/r41-synth-Xp6Sor/.work/floor-1.96.0/repo-b/Cargo.lock because --locked was passed to prevent this
+    | help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+  $ cargo update --workspace --locked
+PASS [floor-1.96.0/B3d] runner-up: cargo update --workspace --locked on the stale tree -> exit 101 (expected 101)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+    | error: cannot update the lock file /tmp/r41-synth-Xp6Sor/.work/floor-1.96.0/repo-b/Cargo.lock because --locked was passed to prevent this
+    | help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+PASS [floor-1.96.0/B3] Cargo.lock bytes unchanged after all controls and probes: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash -c cargo metadata --format-version=1 >/dev/null
+PASS [floor-1.96.0/B4] repair per remediation: cargo metadata --format-version=1 rewrites Cargo.lock -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+PASS [floor-1.96.0/B4] Cargo.lock changed by the repair: changed == changed
+RECORD [floor-1.96.0/B4] repaired Cargo.lock sha256=1c006eedb946698f166e8f298d9997885dd04992724895d13927581f89119125; 1 file changed, 98 insertions(+)
+  $ bash -c cargo metadata --locked --format-version=1 >/dev/null
+PASS [floor-1.96.0/B5a] hazard: bare cargo metadata --locked passes while the repaired lock is unstaged -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/B5b] parity guard: repaired lock unstaged -> check refuses before Cargo -> exit 1 (expected 1)
+    | FAIL: Cargo resolution inputs differ from the index. Stage the intended manifests, config and lockfile together, or restore the unstaged edits.
+PASS [floor-1.96.0/B5b] parity message: output contains 'differ from the index'
+PASS [floor-1.96.0/B5b] Cargo not invoked (spy log bytes): 0 == 0
+  $ git commit -qm feat(core): add serde_json (lock unstaged)
+PASS [floor-1.96.0/B5c] parity guard: git commit blocked -> exit 1 (expected 1)
+    | FAIL: Cargo resolution inputs differ from the index. Stage the intended manifests, config and lockfile together, or restore the unstaged edits.
+  $ /usr/bin/time -p git commit -qm feat(core): add serde_json
+PASS [floor-1.96.0/B6] repaired manifest and lockfile both staged: git commit -> exit 0 (expected 0)
+    | real 0.03
+    | user 0.01
+    | sys 0.01
+PASS [floor-1.96.0/B6] hook ran Cargo on the repaired commit: output contains 'cargo metadata --locked --format-version=1'
+RECORD [floor-1.96.0/B6] repaired commit wall seconds real=0.03; serde_json entries in Cargo.lock: 1
+  $ bash -c cargo metadata --format-version=1 >/dev/null
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/B7a] reverse parity: staged lockfile with unstaged member manifest -> refused -> exit 1 (expected 1)
+    | FAIL: Cargo resolution inputs differ from the index. Stage the intended manifests, config and lockfile together, or restore the unstaged edits.
+  $ git commit -qm chore: lockfile only
+PASS [floor-1.96.0/B7b] reverse parity: git commit blocked -> exit 1 (expected 1)
+    | FAIL: Cargo resolution inputs differ from the index. Stage the intended manifests, config and lockfile together, or restore the unstaged edits.
+--- repo C: /tmp/r41-synth-Xp6Sor/.work/floor-1.96.0/repo-c
+  $ env CARGO_BIN=/nonexistent/r41-cargo /usr/bin/time -p git commit -qm docs: unrelated
+PASS [floor-1.96.0/C1] unrelated staged file, CARGO_BIN=/nonexistent: commit succeeds without Cargo -> exit 0 (expected 0)
+    | SKIP: no staged Cargo resolution inputs
+    | real 0.00
+    | user 0.00
+    | sys 0.00
+PASS [floor-1.96.0/C1] skip diagnostic: output contains 'SKIP: no staged Cargo resolution inputs'
+RECORD [floor-1.96.0/C1] skip commit wall seconds real=0.00
+  $ git commit -q --no-verify -m feat(core): add serde_json bypassing the hook
+PASS [floor-1.96.0/C2a] git commit --no-verify commits a stale lock -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/C2b] clean index, stale committed lock: default mode skips (nothing staged) -> exit 0 (expected 0)
+    | SKIP: no staged Cargo resolution inputs
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [floor-1.96.0/C2c] clean index, stale committed lock: --all catches it -> exit 101 (expected 101)
+    |     Updating crates.io index
+    | error: cannot update the lock file /tmp/r41-synth-Xp6Sor/.work/floor-1.96.0/repo-c/Cargo.lock because --locked was passed to prevent this
+    | help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+    | FAIL: Cargo lockfile validation could not complete; see Cargo diagnostics above.
+    | If Cargo requires a lockfile update, run cargo metadata --format-version=1, review Cargo.lock, and stage it with the intended manifests. For cache/network errors, fetch dependencies and retry.
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/C3] untracked Cargo.toml elsewhere in the repo -> refused before Cargo -> exit 1 (expected 1)
+    | FAIL: untracked Cargo resolution inputs exist. Stage the intended inputs or move unrelated inputs outside this workspace.
+PASS [floor-1.96.0/C3] untracked message: output contains 'untracked Cargo resolution inputs'
+=== toolchain floor-1.96.0 finished 2026-09-06T05:05:47Z ===
+
+=== toolchain stable-1.98.1 (PATH prefix: /home/stevemorin.guest/.rustup/toolchains/stable-aarch64-unknown-linux-gnu/bin) started 2026-09-06T05:05:47Z ===
+cargo: /home/stevemorin.guest/.rustup/toolchains/stable-aarch64-unknown-linux-gnu/bin/cargo -> cargo 1.98.1 (797e8a9bc 2026-08-05)
+rustc: /home/stevemorin.guest/.rustup/toolchains/stable-aarch64-unknown-linux-gnu/bin/rustc -> rustc 1.98.1 (48a229cea 2026-09-01)
+CARGO_HOME: <unset: default ~/.cargo>
+--- repo A: /tmp/r41-synth-Xp6Sor/.work/stable-1.98.1/repo-a
+RECORD [stable-1.98.1/A0] core.hooksPath in repo A = '' (empty: .git/hooks/pre-commit is used)
+  $ bash -c /usr/bin/time -p cargo metadata --locked --format-version=1 >/dev/null
+PASS [stable-1.98.1/A1] clean committed tree: cargo metadata --locked --format-version=1 -> exit 0 (expected 0)
+    | real 0.02
+    | user 0.01
+    | sys 0.00
+RECORD [stable-1.98.1/A1] warm direct metadata wall seconds real=0.02
+  $ /usr/bin/time -p git commit -qm chore: member manifest comment 1
+PASS [stable-1.98.1/A2.1] staged member-manifest comment: git commit through pre-commit hook -> exit 0 (expected 0)
+    | real 0.02
+    | user 0.01
+    | sys 0.01
+PASS [stable-1.98.1/A2.1] hook ran the recommended command: output contains 'cargo metadata --locked --format-version=1'
+RECORD [stable-1.98.1/A2.1] warm guarded commit wall seconds real=0.02
+  $ /usr/bin/time -p git commit -qm chore: member manifest comment 2
+PASS [stable-1.98.1/A2.2] staged member-manifest comment: git commit through pre-commit hook -> exit 0 (expected 0)
+    | real 0.02
+    | user 0.01
+    | sys 0.01
+PASS [stable-1.98.1/A2.2] hook ran the recommended command: output contains 'cargo metadata --locked --format-version=1'
+RECORD [stable-1.98.1/A2.2] warm guarded commit wall seconds real=0.02
+  $ /usr/bin/time -p git commit -qm chore: member manifest comment 3
+PASS [stable-1.98.1/A2.3] staged member-manifest comment: git commit through pre-commit hook -> exit 0 (expected 0)
+    | real 0.03
+    | user 0.01
+    | sys 0.01
+PASS [stable-1.98.1/A2.3] hook ran the recommended command: output contains 'cargo metadata --locked --format-version=1'
+RECORD [stable-1.98.1/A2.3] warm guarded commit wall seconds real=0.03
+  $ git commit -qm chore: root manifest comment
+PASS [stable-1.98.1/A3] staged root-manifest comment: git commit -> exit 0 (expected 0)
+PASS [stable-1.98.1/A3] root manifest triggers Cargo: output contains 'cargo metadata --locked --format-version=1'
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [stable-1.98.1/A4] --all on a clean committed tree with nothing staged -> exit 0 (expected 0)
+PASS [stable-1.98.1/A4] --all invoked Cargo unconditionally: output contains 'cargo metadata --locked --format-version=1'
+  $ bash -c CARGO_HOME="$1" /usr/bin/time -p cargo metadata --locked --format-version=1 >/dev/null _ /tmp/r41-synth-Xp6Sor/.work/stable-1.98.1/cold-home
+PASS [stable-1.98.1/A5] cold empty CARGO_HOME (registry index + crate fetch): cargo metadata --locked -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |  Downloading crates ...
+    |   Downloaded anyhow v1.0.104
+    | real 0.17
+    | user 0.02
+    | sys 0.00
+RECORD [stable-1.98.1/A5] cold direct metadata wall seconds real=0.17
+  $ bash -c /usr/bin/time -p cargo check --workspace --all-targets --locked
+PASS [stable-1.98.1/A6] cargo check --workspace --all-targets --locked at this toolchain (rust-version = "1.96") -> exit 0 (expected 0)
+    |     Checking r41-web v0.1.0 (/tmp/r41-synth-Xp6Sor/.work/stable-1.98.1/repo-a/crates/web)
+    |     Checking r41-cli v0.1.0 (/tmp/r41-synth-Xp6Sor/.work/stable-1.98.1/repo-a/crates/cli)
+    |     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.25s
+    | real 0.25
+    | user 0.21
+    | sys 0.11
+RECORD [stable-1.98.1/A6] locked check wall seconds real=0.25
+--- repo B: /tmp/r41-synth-Xp6Sor/.work/stable-1.98.1/repo-b
+RECORD [stable-1.98.1/B0] committed Cargo.lock sha256=3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.1/B1] stale: staged manifest adds serde_json, Cargo.lock untouched: direct check -> exit 101 (expected 101)
+    |     Updating crates.io index
+    | error: cannot update the lock file /tmp/r41-synth-Xp6Sor/.work/stable-1.98.1/repo-b/Cargo.lock because --locked was passed to prevent this
+    | help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+    | FAIL: Cargo lockfile validation could not complete; see Cargo diagnostics above.
+    | If Cargo requires a lockfile update, run cargo metadata --format-version=1, review Cargo.lock, and stage it with the intended manifests. For cache/network errors, fetch dependencies and retry.
+PASS [stable-1.98.1/B1] Cargo diagnostic preserved: output contains 'cannot update the lock file'
+PASS [stable-1.98.1/B1] remediation message present: output contains 'run cargo metadata --format-version=1'
+PASS [stable-1.98.1/B1] Cargo.lock bytes unchanged after refusal: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ /usr/bin/time -p git commit -qm feat(core): add serde_json (stale lock)
+PASS [stable-1.98.1/B2] stale: git commit blocked by pre-commit hook -> exit 1 (expected 1)
+    |     Updating crates.io index
+    | error: cannot update the lock file /tmp/r41-synth-Xp6Sor/.work/stable-1.98.1/repo-b/Cargo.lock because --locked was passed to prevent this
+    | help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+    | FAIL: Cargo lockfile validation could not complete; see Cargo diagnostics above.
+    | If Cargo requires a lockfile update, run cargo metadata --format-version=1, review Cargo.lock, and stage it with the intended manifests. For cache/network errors, fetch dependencies and retry.
+    | real 0.12
+    | user 0.02
+    | sys 0.01
+PASS [stable-1.98.1/B2] Cargo.lock bytes unchanged after blocked commit: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+PASS [stable-1.98.1/B2] no commit was created (rev-list count): 1 == 1
+RECORD [stable-1.98.1/B2] blocked commit wall seconds real=0.12
+  $ bash -c cargo metadata --locked --no-deps --format-version=1 >/dev/null
+PASS [stable-1.98.1/B3a] false-pass control: --no-deps on the stale tree returns success -> exit 0 (expected 0)
+  $ cargo update --locked --dry-run
+PASS [stable-1.98.1/B3b] false-pass control: cargo update --locked --dry-run on the stale tree returns success -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+    | warning: not updating lockfile due to dry run
+  $ cargo check --workspace --locked
+PASS [stable-1.98.1/B3c] runner-up: cargo check --workspace --locked on the stale tree -> exit 101 (expected 101)
+    |     Updating crates.io index
+    | error: cannot update the lock file /tmp/r41-synth-Xp6Sor/.work/stable-1.98.1/repo-b/Cargo.lock because --locked was passed to prevent this
+    | help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+  $ cargo update --workspace --locked
+PASS [stable-1.98.1/B3d] runner-up: cargo update --workspace --locked on the stale tree -> exit 101 (expected 101)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+    | error: cannot update the lock file /tmp/r41-synth-Xp6Sor/.work/stable-1.98.1/repo-b/Cargo.lock because --locked was passed to prevent this
+    | help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+PASS [stable-1.98.1/B3] Cargo.lock bytes unchanged after all controls and probes: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash -c cargo metadata --format-version=1 >/dev/null
+PASS [stable-1.98.1/B4] repair per remediation: cargo metadata --format-version=1 rewrites Cargo.lock -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+PASS [stable-1.98.1/B4] Cargo.lock changed by the repair: changed == changed
+RECORD [stable-1.98.1/B4] repaired Cargo.lock sha256=1c006eedb946698f166e8f298d9997885dd04992724895d13927581f89119125; 1 file changed, 98 insertions(+)
+  $ bash -c cargo metadata --locked --format-version=1 >/dev/null
+PASS [stable-1.98.1/B5a] hazard: bare cargo metadata --locked passes while the repaired lock is unstaged -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.1/B5b] parity guard: repaired lock unstaged -> check refuses before Cargo -> exit 1 (expected 1)
+    | FAIL: Cargo resolution inputs differ from the index. Stage the intended manifests, config and lockfile together, or restore the unstaged edits.
+PASS [stable-1.98.1/B5b] parity message: output contains 'differ from the index'
+PASS [stable-1.98.1/B5b] Cargo not invoked (spy log bytes): 0 == 0
+  $ git commit -qm feat(core): add serde_json (lock unstaged)
+PASS [stable-1.98.1/B5c] parity guard: git commit blocked -> exit 1 (expected 1)
+    | FAIL: Cargo resolution inputs differ from the index. Stage the intended manifests, config and lockfile together, or restore the unstaged edits.
+  $ /usr/bin/time -p git commit -qm feat(core): add serde_json
+PASS [stable-1.98.1/B6] repaired manifest and lockfile both staged: git commit -> exit 0 (expected 0)
+    | real 0.03
+    | user 0.02
+    | sys 0.01
+PASS [stable-1.98.1/B6] hook ran Cargo on the repaired commit: output contains 'cargo metadata --locked --format-version=1'
+RECORD [stable-1.98.1/B6] repaired commit wall seconds real=0.03; serde_json entries in Cargo.lock: 1
+  $ bash -c cargo metadata --format-version=1 >/dev/null
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.1/B7a] reverse parity: staged lockfile with unstaged member manifest -> refused -> exit 1 (expected 1)
+    | FAIL: Cargo resolution inputs differ from the index. Stage the intended manifests, config and lockfile together, or restore the unstaged edits.
+  $ git commit -qm chore: lockfile only
+PASS [stable-1.98.1/B7b] reverse parity: git commit blocked -> exit 1 (expected 1)
+    | FAIL: Cargo resolution inputs differ from the index. Stage the intended manifests, config and lockfile together, or restore the unstaged edits.
+--- repo C: /tmp/r41-synth-Xp6Sor/.work/stable-1.98.1/repo-c
+  $ env CARGO_BIN=/nonexistent/r41-cargo /usr/bin/time -p git commit -qm docs: unrelated
+PASS [stable-1.98.1/C1] unrelated staged file, CARGO_BIN=/nonexistent: commit succeeds without Cargo -> exit 0 (expected 0)
+    | SKIP: no staged Cargo resolution inputs
+    | real 0.00
+    | user 0.00
+    | sys 0.00
+PASS [stable-1.98.1/C1] skip diagnostic: output contains 'SKIP: no staged Cargo resolution inputs'
+RECORD [stable-1.98.1/C1] skip commit wall seconds real=0.00
+  $ git commit -q --no-verify -m feat(core): add serde_json bypassing the hook
+PASS [stable-1.98.1/C2a] git commit --no-verify commits a stale lock -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.1/C2b] clean index, stale committed lock: default mode skips (nothing staged) -> exit 0 (expected 0)
+    | SKIP: no staged Cargo resolution inputs
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [stable-1.98.1/C2c] clean index, stale committed lock: --all catches it -> exit 101 (expected 101)
+    |     Updating crates.io index
+    | error: cannot update the lock file /tmp/r41-synth-Xp6Sor/.work/stable-1.98.1/repo-c/Cargo.lock because --locked was passed to prevent this
+    | help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+    | FAIL: Cargo lockfile validation could not complete; see Cargo diagnostics above.
+    | If Cargo requires a lockfile update, run cargo metadata --format-version=1, review Cargo.lock, and stage it with the intended manifests. For cache/network errors, fetch dependencies and retry.
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.1/C3] untracked Cargo.toml elsewhere in the repo -> refused before Cargo -> exit 1 (expected 1)
+    | FAIL: untracked Cargo resolution inputs exist. Stage the intended inputs or move unrelated inputs outside this workspace.
+PASS [stable-1.98.1/C3] untracked message: output contains 'untracked Cargo resolution inputs'
+=== toolchain stable-1.98.1 finished 2026-09-06T05:05:49Z ===
+
+summary: PASS=86 FAIL=0 RECORD=24
+RESULT: PASS
+runner exit: 0

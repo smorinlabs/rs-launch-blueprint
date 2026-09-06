@@ -1,0 +1,313 @@
+
+=== S0 toolchain and host ===
+2026-09-06T05:39:22Z
+Darwin Steves-MacBook-Pro.local 25.4.0 Darwin Kernel Version 25.4.0: Thu Mar 19 19:33:25 PDT 2026; root:xnu-12377.101.15~1/RELEASE_ARM64_T6041 arm64
+ProductName:		macOS
+ProductVersion:		26.4
+BuildVersion:		25E246
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+rustfmt 1.9.0
+awk version 20200816
+awk resolves to: /usr/bin/awk
+xargs: BSD xargs (no --version flag)
+jq-1.8.2
+GNU bash, version 3.2.57(1)-release (arm64-apple-darwin25)
+runner:  /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical
+work:    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work
+checker-v2.sh sha256:    7cad28603782ad08a2cbf77e2bb4443e4dcefe1e84f8417f7ca5de0e3e4451b6
+acceptance-v2.sh sha256: 54765e20d067969cb25b7a549c09144fa5b25bf665ab3ebd3f9f713e156f87ac
+LICENSE-APACHE sha256:   cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30
+LICENSE-MIT sha256:      2c0355d3d12067adf3b1a5e91e67dd3709cd8fb0df3adbfb0ae60508d47de952
+controls/clap-header.rs sha256: 620d760489b6daabc2cc24aee42de6359c2fe275107898b7a31515e6836c3dfe
+PASS  S0 layer 1 check_file is byte-identical to raw/codex.md lines 430-460
+
+=== S1 recommended acceptance sequence (acceptance-v2.sh) from the fixture root ===
+    license = "MIT OR Apache-2.0"
+       Compiling r46-fixture v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/fixture)
+       Compiling r46-web v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/fixture/crates/r46-web)
+        Finished `test` profile [unoptimized + debuginfo] target(s) in 0.75s
+         Running unittests src/lib.rs (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/target/debug/deps/r46_fixture-9d2558678f7a062c)
+    
+    running 1 test
+    test tests::package_license_is_the_fixed_dual_expression ... ok
+    
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    
+         Running unittests src/main.rs (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/target/debug/deps/r46_fixture-53f09c0bb94b1a64)
+    
+    running 0 tests
+    
+    test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    
+         Running tests/license_metadata.rs (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/target/debug/deps/license_metadata-b023560a068426aa)
+    
+    running 1 test
+    test integration_target_sees_the_dual_license ... ok
+    
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    
+         Running unittests examples/print_license.rs (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/target/debug/examples/print_license-59c59bf3ed17f5b8)
+    
+    running 0 tests
+    
+    test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    
+         Running unittests src/lib.rs (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/target/debug/deps/r46_web-5084f71cf781b6e7)
+    
+    running 2 tests
+    test tests::health_route_answers_200 ... ok
+    test tests::member_inherits_the_workspace_license ... ok
+    
+    test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    
+    warning: manifest has no description, documentation, homepage or repository
+      |
+      = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+       Packaging r46-fixture v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/fixture)
+        Packaged 9 files, 14.6KiB (5.6KiB compressed)
+    warning: manifest has no description, documentation, homepage or repository
+      |
+      = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+       Packaging r46-web v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/fixture/crates/r46-web)
+        Packaged 4 files, 1.6KiB (1.0KiB compressed)
+PASS  S1 acceptance-v2.sh on the header-free fixture -> exit 0
+
+=== S2 checker controls (checker-v2.sh; one NUL-delimited path each) ===
+--- revision-1 controls (layer 1 forms, boundaries, texts) ---
+PASS  S2 clean: leading //! docs -> exit 0
+PASS  S2 empty (0-byte) file -> exit 0
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/form-a.rs:1:(a) SPDX-License-Identifier:
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/form-a.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 form (a) SPDX-License-Identifier line -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/form-b.rs:1:(b) MIT boilerplate first line
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 form (b) MIT boilerplate first line (layer 1 only) -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/form-c.rs:1:(c) Apache appendix boilerplate line
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/form-c.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 form (c) Apache appendix boilerplate line -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/form-d.rs:1:(d) Apache full-text title form
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/form-d.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 form (d) Apache title then Version line -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/form-e.rs:1:(e) MIT title form
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/form-e.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/form-e.rs:2:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 form (e) MIT title then Copyright (c) -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/reuse-two-line.rs:3:(a) SPDX-License-Identifier:
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/reuse-two-line.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/reuse-two-line.rs:3:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 runner-up REUSE two-line header -> exit 1
+PASS  S2 boundary: SPDX marker on line 41 (both layers cap at 40) -> exit 0
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/not-d.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 r1 boundary not-d: now caught by layer 2 (f) at line 1 -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/not-e.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/not-e.rs:4:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 r1 boundary not-e: now caught by layer 2 (f) at line 1 -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/fixture/LICENSE-APACHE:2:(d) Apache full-text title form
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 root LICENSE-APACHE text as a source path (layer 1 only) -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/fixture/LICENSE-MIT:1:(e) MIT title form
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/fixture/LICENSE-MIT:5:(b) MIT boilerplate first line
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 root LICENSE-MIT text as a source path (layer 1 only) -> exit 1
+    awk: can't open file /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/does-not-exist.rs
+     source line number 59
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 missing path -> exit 1
+--- layer-1 title-window boundaries re-exercised after a //! line (layer 2 does not apply) ---
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/l1-d-after-docs.rs:2:(d) Apache full-text title form
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 l1: //! then Apache title + adjacent Version line -> exit 1
+PASS  S2 l1: //! then Apache title, Version 4 lines later -> exit 0
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/l1-e-after-docs.rs:2:(e) MIT title form
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 l1: //! then MIT title + adjacent Copyright (c) -> exit 1
+PASS  S2 l1: //! then MIT title, Copyright (c) 3 lines later -> exit 0
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/doc-spdx.rs:1:(a) SPDX-License-Identifier:
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 l1: //! SPDX-License-Identifier in a doc comment -> exit 1
+--- layer-2 negative controls (expect 1) ---
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/ff-licensed.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 audit-fable counterexample: // Licensed under the MIT license (see LICENSE) -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/ff-copyright-licensed.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/ff-copyright-licensed.rs:2:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 audit-codex counterexample: // Copyright … / // Licensed under MIT -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/clap-header.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/clap-header.rs:2:(f) license, copyright or SPDX term in the leading comment block
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/clap-header.rs:3:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 clap_builder/src/lib.rs lines 1-6 verbatim (MIT-only header) -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/pointer.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 pointer: // See LICENSE-MIT and LICENSE-APACHE -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/copyright-sign.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 copyright sign: // © 2026 -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/circled-c.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 circled c: // ⓒ 2026 -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/paren-c.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 paren c: // (c) 2026 -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/block-header.rs:2:(f) license, copyright or SPDX term in the leading comment block
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/block-header.rs:3:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 block comment header /* … Copyright … Licensed … */ -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/block-oneline.rs:1:(a) SPDX-License-Identifier:
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/block-oneline.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 one-line block comment with SPDX tag (layers 1 and 2) -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/shebang-header.rs:2:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 shebang line then // Licensed under MIT -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/blank-header.rs:3:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 blank lines then // Licensed under MIT -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/four-slash-header.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 //// (four-slash plain comment) Licensed under MIT -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/fp-word.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 false-positive cost: // Parses driver license plates. -> exit 1
+--- layer-2 license-name terms (bounded) ---
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/name-released-mit.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 name: // Released under MIT -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/name-bare-expression.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 name: // MIT OR Apache-2.0 (bare expression) -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/name-apache-terms.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 name: // Distributed under the Apache-2.0 terms -> exit 1
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/fp-bsd.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 false-positive cost: // BSD sockets wrapper -> exit 1
+PASS  S2 bound: // Commit hook helpers (mit inside commit) -> exit 0
+PASS  S2 bound: // Template for new modules (mpl inside template) -> exit 0
+PASS  S2 bound: // Misc helpers (isc inside misc) -> exit 0
+PASS  S2 bound: // Simple parser (mpl inside simple) -> exit 0
+--- passes by design (expect 0; each is a stated non-claim) ---
+PASS  S2 license sentence inside //! crate docs -> exit 0
+PASS  S2 header after an inner attribute line -> exit 0
+PASS  S2 header after a code line -> exit 0
+PASS  S2 legitimate leading comment: // Generated by build.rs -> exit 0
+
+=== S3 several files through one xargs/awk invocation ===
+PASS  S3 all five fixture .rs files plus clean and empty in one batch -> exit 0
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/clap-header.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/clap-header.rs:2:(f) license, copyright or SPDX term in the leading comment block
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/controls/clap-header.rs:3:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S3 clean, clap header, clean in one batch -> exit 1
+PASS  S3 diagnostic names the offending file, line 1
+PASS  S3 diagnostic also names line 2
+PASS  S3 no clean file reported
+
+=== S4 whole-tree inverse controls: one header file under src/ must fail acceptance-v2.sh ===
+    license = "MIT OR Apache-2.0"
+    src/header.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    src/header.rs:2:(f) license, copyright or SPDX term in the leading comment block
+    src/header.rs:3:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S4 acceptance-v2.sh with src/header.rs = clap-header.rs -> exit 1
+PASS  S4 diagnostic for clap-header.rs -> found 'src/header.rs:1:(f)'
+PASS  S4 failure message for clap-header.rs -> found 'unexpected prohibited per-file license form or header-check failure'
+PASS  S4 clap-header.rs: no cargo fmt/test/package step ran after the failed check
+    license = "MIT OR Apache-2.0"
+    src/header.rs:1:(a) SPDX-License-Identifier:
+    src/header.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S4 acceptance-v2.sh with src/header.rs = form-a.rs -> exit 1
+PASS  S4 diagnostic for form-a.rs -> found 'src/header.rs:1:(a)'
+PASS  S4 failure message for form-a.rs -> found 'unexpected prohibited per-file license form or header-check failure'
+PASS  S4 form-a.rs: no cargo fmt/test/package step ran after the failed check
+
+=== S5 cargo metadata: every workspace package resolves the fixed expression ===
+    r46-web 0.1.0 license=MIT OR Apache-2.0 edition=2024 rust-version=1.96
+    r46-fixture 0.1.0 license=MIT OR Apache-2.0 edition=2024 rust-version=1.96
+PASS  S5 both packages report license = MIT OR Apache-2.0 -> exit 0
+
+=== S6 package-content review: which archives carry the license texts ===
+--- cargo package -p r46-fixture --allow-dirty --no-verify --list ---
+    Cargo.lock
+    Cargo.toml
+    Cargo.toml.orig
+    LICENSE-APACHE
+    LICENSE-MIT
+    examples/print_license.rs
+    src/lib.rs
+    src/main.rs
+    tests/license_metadata.rs
+    stderr: warning: manifest has no description, documentation, homepage or repository
+    stderr:   |
+    stderr:   = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+PASS  S6 cargo package -p r46-fixture --list -> exit 0
+--- cargo package -p r46-web --allow-dirty --no-verify --list ---
+    Cargo.lock
+    Cargo.toml
+    Cargo.toml.orig
+    src/lib.rs
+    stderr: warning: manifest has no description, documentation, homepage or repository
+    stderr:   |
+    stderr:   = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+PASS  S6 cargo package -p r46-web --list -> exit 0
+PASS  S6 root package archive lists LICENSE-APACHE -> found 'LICENSE-APACHE'
+PASS  S6 root package archive lists LICENSE-MIT -> found 'LICENSE-MIT'
+OBSERVED: the crates/r46-web archive does NOT include the root LICENSE-APACHE / LICENSE-MIT (root-only files do not reach a crates/ member's .crate)
+PASS  S6 member archive content recorded (observation, not a gate)
+--- archives written by S1 ($CARGO_TARGET_DIR/package) ---
+    target/package/r46-fixture-0.1.0.crate:
+        r46-fixture-0.1.0/Cargo.lock
+        r46-fixture-0.1.0/Cargo.toml
+        r46-fixture-0.1.0/Cargo.toml.orig
+        r46-fixture-0.1.0/LICENSE-APACHE
+        r46-fixture-0.1.0/LICENSE-MIT
+        r46-fixture-0.1.0/examples/print_license.rs
+        r46-fixture-0.1.0/src/lib.rs
+        r46-fixture-0.1.0/src/main.rs
+        r46-fixture-0.1.0/tests/license_metadata.rs
+    target/package/r46-web-0.1.0.crate:
+        r46-web-0.1.0/Cargo.lock
+        r46-web-0.1.0/Cargo.toml
+        r46-web-0.1.0/Cargo.toml.orig
+        r46-web-0.1.0/src/lib.rs
+
+=== S7 the CLI binary prints the expression it was compiled with ===
+    stdout: MIT OR Apache-2.0
+PASS  S7 cargo run --bin r46-fixture -> exit 0
+PASS  S7 binary output is MIT OR Apache-2.0
+
+=== S8 //! placement probe (prompt LOW question) ===
+--- header-first: first lines of src/lib.rs ---
+    // SPDX-License-Identifier: MIT OR Apache-2.0
+    //! Placement probe: a plain comment precedes the crate docs. R46_LOWQ_HEADER_FIRST
+PASS  S8 header-first cargo build -> exit 0
+PASS  S8 header-first cargo fmt --all -- --check -> exit 0
+PASS  S8 header-first cargo doc --no-deps -> exit 0
+PASS  S8 header-first crate docs rendered (target/doc/header_first/index.html) -> found 'R46_LOWQ_HEADER_FIRST'
+--- docs-only: first lines of src/lib.rs ---
+    //! Placement probe: the crate docs are the first element. R46_LOWQ_DOCS_ONLY
+    
+PASS  S8 docs-only cargo build -> exit 0
+PASS  S8 docs-only cargo fmt --all -- --check -> exit 0
+PASS  S8 docs-only cargo doc --no-deps -> exit 0
+PASS  S8 docs-only crate docs rendered (target/doc/docs_only/index.html) -> found 'R46_LOWQ_DOCS_ONLY'
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/lowq/header-first/src/lib.rs:1:(a) SPDX-License-Identifier:
+    /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical/.work/lowq/header-first/src/lib.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S8 header-first src/lib.rs is rejected by the checker (forms a and f) -> exit 1
+PASS  S8 docs-only src/lib.rs passes the checker -> exit 0
+
+=== summary ===
+summary: PASS=77 FAIL=0
+RESULT: PASS
+RUNNER EXIT: 0

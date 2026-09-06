@@ -61,6 +61,12 @@
       },
       "provider": "codex",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-06T05:28:38Z",
+      "state": "succeeded",
+      "provider": "codex",
+      "correction": "raw/codex.md revised after defective evidence checks: r1 gpt-5.6-luna (collected hash-named copy), r2 under gpt-6-astra (resume without -m), r3 and r4 gpt-5.6-luna; the current raw/codex.md is r4; current sha256 c108365826aaa34286a328b870aafba727f99eb474db1348fcb0278b00658bed; recorded by the controller"
     }
   ],
   "input_hashes": {

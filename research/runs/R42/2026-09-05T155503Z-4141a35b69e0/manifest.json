@@ -75,6 +75,46 @@
       },
       "provider": "opus",
       "state": "submitting"
+    },
+    {
+      "actor": "research-opus-2026-09-05T155503Z-4141a35b69e0",
+      "at": "2026-09-06T04:55:15Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T155503Z-4141a35b69e0",
+        "actual_model": "claude-opus-5[1m]",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-05T18:32:31Z",
+        "model": "claude-opus-5[1m]",
+        "operation_id": "agent:research-opus-2026-09-05T155503Z-4141a35b69e0:526782a3888c3da6",
+        "provider": "opus",
+        "request_id": "7573832638144d80ad99d7878ee7fe21",
+        "returned_at": "2026-09-06T04:55:15Z",
+        "state": "submitted"
+      },
+      "provider": "opus",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-opus-2026-09-05T155503Z-4141a35b69e0",
+      "at": "2026-09-06T04:55:15Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T155503Z-4141a35b69e0",
+        "actual_model": "claude-opus-5[1m]",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-05T18:32:31Z",
+        "collected_at": "2026-09-06T04:55:15Z",
+        "model": "claude-opus-5[1m]",
+        "operation_id": "agent:research-opus-2026-09-05T155503Z-4141a35b69e0:526782a3888c3da6",
+        "provider": "opus",
+        "raw": "research/runs/R42/2026-09-05T155503Z-4141a35b69e0/raw/opus-526782a3888c3da67d2c27697aeb6030b4c211c0b60bb32fa62f37965889a487.md",
+        "raw_sha256": "526782a3888c3da67d2c27697aeb6030b4c211c0b60bb32fa62f37965889a487",
+        "reason": "",
+        "request_id": "7573832638144d80ad99d7878ee7fe21",
+        "returned_at": "2026-09-06T04:55:15Z",
+        "state": "succeeded"
+      },
+      "provider": "opus",
+      "state": "succeeded"
     }
   ],
   "input_hashes": {
@@ -108,11 +148,19 @@
     },
     "opus": {
       "actor": "research-opus-2026-09-05T155503Z-4141a35b69e0",
+      "actual_model": "claude-opus-5[1m]",
+      "actual_provider": "claude-agent-tool",
       "at": "2026-09-05T18:32:31Z",
+      "collected_at": "2026-09-06T04:55:15Z",
       "model": "claude-opus-5[1m]",
+      "operation_id": "agent:research-opus-2026-09-05T155503Z-4141a35b69e0:526782a3888c3da6",
       "provider": "opus",
+      "raw": "research/runs/R42/2026-09-05T155503Z-4141a35b69e0/raw/opus-526782a3888c3da67d2c27697aeb6030b4c211c0b60bb32fa62f37965889a487.md",
+      "raw_sha256": "526782a3888c3da67d2c27697aeb6030b4c211c0b60bb32fa62f37965889a487",
+      "reason": "",
       "request_id": "7573832638144d80ad99d7878ee7fe21",
-      "state": "submitting"
+      "returned_at": "2026-09-06T04:55:15Z",
+      "state": "succeeded"
     }
   },
   "prompt_source": "research/topics/42-dev-toolchain-provisioning/prompts/dev-toolchain-provisioning.prompt.md",
@@ -126,5 +174,5 @@
   "schema_version": 1,
   "state": "partial",
   "tier": "deep",
-  "updated_at": "2026-09-05T18:32:31Z"
+  "updated_at": "2026-09-06T04:55:15Z"
 }

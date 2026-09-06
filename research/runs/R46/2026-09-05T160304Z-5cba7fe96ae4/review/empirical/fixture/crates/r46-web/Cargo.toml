@@ -1,0 +1,6 @@
+[package]
+name = "r46-web"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
