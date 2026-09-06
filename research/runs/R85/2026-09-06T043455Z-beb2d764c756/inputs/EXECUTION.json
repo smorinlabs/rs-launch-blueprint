@@ -1,0 +1,799 @@
+{
+  "schema_version": 1,
+  "approved_on": "2026-09-04",
+  "pilot": "R38",
+  "items": {
+    "R01": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R02": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R03": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R04": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R05": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R06": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R07": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R08": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R09": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R10": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R11": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R12": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R13": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R14": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R15": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R16": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R17": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R18": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R19": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R20": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R21": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R22": {
+      "tier": "light",
+      "engines": [
+        "codex"
+      ],
+      "evidence_checks": [
+        "terra"
+      ],
+      "acceptance_after": []
+    },
+    "R23": {
+      "tier": "light",
+      "engines": [
+        "codex"
+      ],
+      "evidence_checks": [
+        "terra"
+      ],
+      "acceptance_after": []
+    },
+    "R24": {
+      "tier": "light",
+      "engines": [
+        "codex"
+      ],
+      "evidence_checks": [
+        "terra"
+      ],
+      "acceptance_after": []
+    },
+    "R25": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R26": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R27": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R28": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R29": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R30": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R31": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R32": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R33": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R34": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R35": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R37": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R38": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R39": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R40": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R41": {
+      "tier": "light",
+      "engines": [
+        "codex"
+      ],
+      "evidence_checks": [
+        "terra"
+      ],
+      "acceptance_after": []
+    },
+    "R42": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R43": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R44": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R45": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R46": {
+      "tier": "light",
+      "engines": [
+        "codex"
+      ],
+      "evidence_checks": [
+        "terra"
+      ],
+      "acceptance_after": []
+    },
+    "R47": {
+      "tier": "light",
+      "engines": [
+        "codex"
+      ],
+      "evidence_checks": [
+        "terra"
+      ],
+      "acceptance_after": []
+    },
+    "R48": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R49": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R50": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R51": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R52": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R53": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R54": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R55": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R56": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R57": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R58": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R59": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R60": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R61": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R62": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R63": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R64": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R65": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R66": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R67": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R68": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R69": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R70": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R71": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R72": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R73": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R74": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R75": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R76": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R77": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R78": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R79": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R80": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R81": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R82": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    },
+    "R83": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": [
+        "R71"
+      ]
+    },
+    "R84": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": [
+        "R71"
+      ]
+    },
+    "R85": {
+      "tier": "focused",
+      "engines": [
+        "codex",
+        "opus"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
+    }
+  }
+}

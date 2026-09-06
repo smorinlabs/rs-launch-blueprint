@@ -1,0 +1,5 @@
+Output: `raw/codex.md`  
+SHA-256: `5df6c0a31e49b8cfa8401fb94d64a97e9858516d0ec6962993df20d984362b94`  
+H3 fields written: 10  
+Emitted: `BASELINE-REVIEW: F287`  
+Unverified: no Rust implementation, acceptance run, benchmark, or final lockfile MSRV check.

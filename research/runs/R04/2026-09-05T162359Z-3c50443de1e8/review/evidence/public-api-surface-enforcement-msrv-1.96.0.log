@@ -1,0 +1,77 @@
+== R04 empirical check: public API surface enforcement ==
+date: 2026-09-06T04:35:03Z
+os: Darwin Steves-MacBook-Pro.local 25.4.0 Darwin Kernel Version 25.4.0: Thu Mar 19 19:33:25 PDT 2026; root:xnu-12377.101.15~1/RELEASE_ARM64_T6041 arm64
+toolchain argument: 1.96.0
+rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+error: no such command: `+1.96.0`
+
+help: invoke `cargo` through `rustup` to handle `+toolchain` directives
+cargo: 
+rustup toolchains:
+    stable-aarch64-apple-darwin (active, default)
+    1.91.1-aarch64-apple-darwin
+    1.93.0-aarch64-apple-darwin
+    1.96.0-aarch64-apple-darwin
+    1.97.1-aarch64-apple-darwin
+fixture: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical
+work dir: /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/d7e9f0f2-a61d-44be-b7ca-32a329017a52/scratchpad/r04-msrv-work
+cargo-semver-checks: skipped (RUN_TOOLS=0)
+
+--- case 01-doctests: (cd surface_demo && cargo_ test)
+    expect: exit 0; output contains "test result: ok"; output lacks "FAILED"
+    | error: no such command: `+1.96.0`
+    | 
+    | help: invoke `cargo` through `rustup` to handle `+toolchain` directives
+RESULT 01-doctests: FAIL (exit 101)
+
+--- case 02-consumer-ok: (cd consumer_ok && cargo_ run --quiet)
+    expect: exit 0; output contains "consumer_ok: root-path import works, id=7"
+    | error: no such command: `+1.96.0`
+    | 
+    | help: invoke `cargo` through `rustup` to handle `+toolchain` directives
+RESULT 02-consumer-ok: FAIL (exit 101)
+
+--- case 03-deep-import-refused: (cd deep_import && cargo_ check --quiet)
+    expect: exit nonzero; output contains "error[E0603]"
+    | error: no such command: `+1.96.0`
+    | 
+    | help: invoke `cargo` through `rustup` to handle `+toolchain` directives
+RESULT 03-deep-import-refused: FAIL (exit 101)
+
+--- case 04-unreachable-pub-denied: (cd /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/d7e9f0f2-a61d-44be-b7ca-32a329017a52/scratchpad/r04-msrv-work/leaked && cargo_ check --quiet)
+    expect: exit nonzero; output contains "unreachable `pub` item"
+    | error: no such command: `+1.96.0`
+    | 
+    | help: invoke `cargo` through `rustup` to handle `+toolchain` directives
+RESULT 04-unreachable-pub-denied: FAIL (exit 101)
+
+--- case 05-unreachable-pub-default-level: (cd /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/d7e9f0f2-a61d-44be-b7ca-32a329017a52/scratchpad/r04-msrv-work/no_lint && cargo_ check)
+    expect: exit 0; output lacks "unreachable"
+    | error: no such command: `+1.96.0`
+    | 
+    | help: invoke `cargo` through `rustup` to handle `+toolchain` directives
+RESULT 05-unreachable-pub-default-level: FAIL (exit 101)
+
+--- case 06-private-interface-denied: (cd /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/d7e9f0f2-a61d-44be-b7ca-32a329017a52/scratchpad/r04-msrv-work/private_in_public && cargo_ check --quiet)
+    expect: exit nonzero; output contains "more private than"
+    | error: no such command: `+1.96.0`
+    | 
+    | help: invoke `cargo` through `rustup` to handle `+toolchain` directives
+RESULT 06-private-interface-denied: FAIL (exit 101)
+
+--- case 07-pub-crate-cannot-widen: (cd /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/d7e9f0f2-a61d-44be-b7ca-32a329017a52/scratchpad/r04-msrv-work/widen && cargo_ check --quiet)
+    expect: exit nonzero; output contains "cannot be re-exported"
+    | error: no such command: `+1.96.0`
+    | 
+    | help: invoke `cargo` through `rustup` to handle `+toolchain` directives
+RESULT 07-pub-crate-cannot-widen: FAIL (exit 101)
+
+--- case 08-escape-hatches-reachable: (cd /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/d7e9f0f2-a61d-44be-b7ca-32a329017a52/scratchpad/r04-msrv-work/escape_consumer && cargo_ run --quiet)
+    expect: exit 0; output contains "escaped 42"
+    | error: no such command: `+1.96.0`
+    | 
+    | help: invoke `cargo` through `rustup` to handle `+toolchain` directives
+RESULT 08-escape-hatches-reachable: FAIL (exit 101)
+
+summary: PASS=0 FAIL=8
+RESULT: FAIL
