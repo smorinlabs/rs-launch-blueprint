@@ -1,0 +1,623 @@
+== R04 independent empirical audit ==
+fixture: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit
+--- macOS stable ---
+== R04 empirical check: public API surface enforcement ==
+date: 2026-09-06T05:06:59Z
+os: Darwin Steves-MacBook-Pro.local 25.4.0 Darwin Kernel Version 25.4.0: Thu Mar 19 19:33:25 PDT 2026; root:xnu-12377.101.15~1/RELEASE_ARM64_T6041 arm64
+toolchain argument: <default>
+rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+rustup toolchains:
+    stable-aarch64-apple-darwin (active, default)
+    1.91.1-aarch64-apple-darwin
+    1.93.0-aarch64-apple-darwin
+    1.96.0-aarch64-apple-darwin
+    1.97.1-aarch64-apple-darwin
+fixture: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit
+work dir: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/.work
+cargo-semver-checks: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/.tools/macos/cargo-semver-checks -> cargo-semver-checks 0.50.0
+
+--- case 01-doctests: (cd surface_demo && cargo_ test)
+    expect: exit 0; output contains "test result: ok"; output lacks "FAILED"
+    |    Compiling surface_demo v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/surface_demo)
+    |     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.48s
+    |      Running unittests src/lib.rs (target/debug/deps/surface_demo-3768ec1bb765c504)
+    | 
+    | running 0 tests
+    | 
+    | test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    | 
+    |    Doc-tests surface_demo
+    | 
+    | running 1 test
+    | test src/lib.rs - (line 14) ... ok
+    | 
+    | test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    | 
+    | 
+    | running 2 tests
+    | test src/lib.rs - (line 4) - compile fail ... ok
+    | test src/lib.rs - (line 9) - compile fail ... ok
+    | 
+    | test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.06s
+    | 
+    | all doctests ran in 0.58s; merged doctests compilation took 0.26s
+RESULT 01-doctests: PASS (exit 0)
+
+--- case 02-consumer-ok: (cd consumer_ok && cargo_ run --quiet)
+    expect: exit 0; output contains "consumer_ok: root-path import works, id=7"
+    | consumer_ok: root-path import works, id=7
+RESULT 02-consumer-ok: PASS (exit 0)
+
+--- case 03-deep-import-refused: (cd deep_import && cargo_ check --quiet)
+    expect: exit nonzero; output contains "error[E0603]"
+    | error[E0603]: module `internal` is private
+    |   --> src/main.rs:4:27
+    |    |
+    |  4 |     let w = surface_demo::internal::Widget::new(1);
+    |    |                           ^^^^^^^^  ------ struct `Widget` is not publicly re-exported
+    |    |                           |
+    |    |                           private module
+    |    |
+    | note: the module `internal` is defined here
+    |   --> /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/surface_demo/src/lib.rs:22:1
+    |    |
+    | 22 | mod internal;
+    |    | ^^^^^^^^^^^^
+    | 
+    | For more information about this error, try `rustc --explain E0603`.
+    | error: could not compile `deep_import` (bin "deep_import") due to 1 previous error
+RESULT 03-deep-import-refused: PASS (exit 101)
+
+--- case 04-unreachable-pub-denied: (cd .work/leaked && cargo_ check --quiet)
+    expect: exit nonzero; output contains "unreachable `pub` item"
+    | warning: struct `Leaked` is never constructed
+    |   --> src/internal.rs:30:12
+    |    |
+    | 30 | pub struct Leaked;
+    |    |            ^^^^^^
+    |    |
+    |    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+    | 
+    | error: unreachable `pub` item
+    |   --> src/internal.rs:30:1
+    |    |
+    | 30 | pub struct Leaked;
+    |    | ---^^^^^^^^^^^^^^
+    |    | |
+    |    | help: consider restricting its visibility: `pub(crate)`
+    |    |
+    |    = help: or consider exporting it for use by other crates
+    | note: the lint level is defined here
+    |   --> src/lib.rs:18:9
+    |    |
+    | 18 | #![deny(unreachable_pub)]
+    |    |         ^^^^^^^^^^^^^^^
+    | 
+    | error: could not compile `surface_demo` (lib) due to 1 previous error; 1 warning emitted
+RESULT 04-unreachable-pub-denied: PASS (exit 101)
+
+--- case 05-unreachable-pub-default-level: (cd .work/no_lint && cargo_ check)
+    expect: exit 0; output lacks "unreachable"
+    |     Checking surface_demo v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/.work/no_lint)
+    | warning: struct `Leaked` is never constructed
+    |   --> src/internal.rs:30:12
+    |    |
+    | 30 | pub struct Leaked;
+    |    |            ^^^^^^
+    |    |
+    |    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+    | 
+    | warning: `surface_demo` (lib) generated 1 warning
+    |     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.09s
+RESULT 05-unreachable-pub-default-level: PASS (exit 0)
+
+--- case 06-private-interface-denied: (cd .work/private_in_public && cargo_ check --quiet)
+    expect: exit nonzero; output contains "more private than"
+    | error: type `Engine` is more private than the item `Widget::engine`
+    |   --> src/internal.rs:31:5
+    |    |
+    | 31 |     pub fn engine(&self) -> Engine {
+    |    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ method `Widget::engine` is reachable at visibility `pub`
+    |    |
+    | note: but type `Engine` is only usable at visibility `pub(crate)`
+    |   --> src/internal.rs:7:1
+    |    |
+    |  7 | pub(crate) struct Engine;
+    |    | ^^^^^^^^^^^^^^^^^^^^^^^^
+    | note: the lint level is defined here
+    |   --> src/lib.rs:19:9
+    |    |
+    | 19 | #![deny(private_interfaces, private_bounds)]
+    |    |         ^^^^^^^^^^^^^^^^^^
+    | 
+    | error: could not compile `surface_demo` (lib) due to 1 previous error
+RESULT 06-private-interface-denied: PASS (exit 101)
+
+--- case 07-pub-crate-cannot-widen: (cd .work/widen && cargo_ check --quiet)
+    expect: exit nonzero; output contains "cannot be re-exported"
+    | error[E0364]: `Engine` is only public within the crate, and cannot be re-exported outside
+    |   --> src/lib.rs:27:9
+    |    |
+    | 27 | pub use internal::Engine;
+    |    |         ^^^^^^^^^^^^^^^^
+    |    |
+    | note: consider marking `Engine` as `pub` in the imported module
+    |   --> src/lib.rs:27:9
+    |    |
+    | 27 | pub use internal::Engine;
+    |    |         ^^^^^^^^^^^^^^^^
+    | 
+    | warning: unused import: `internal::Engine`
+    |   --> src/lib.rs:27:9
+    |    |
+    | 27 | pub use internal::Engine;
+    |    |         ^^^^^^^^^^^^^^^^
+    |    |
+    |    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+    | 
+    | For more information about this error, try `rustc --explain E0364`.
+    | error: could not compile `surface_demo` (lib) due to 1 previous error; 1 warning emitted
+RESULT 07-pub-crate-cannot-widen: PASS (exit 101)
+
+--- case 08-escape-hatches-reachable: (cd .work/escape_consumer && cargo_ run --quiet)
+    expect: exit 0; output contains "escaped 42"
+    | escaped 42
+RESULT 08-escape-hatches-reachable: PASS (exit 0)
+
+--- case 09-semver-removal-fails: (cd .work && /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/.tools/macos/cargo-semver-checks semver-checks --manifest-path /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/.work/semver_removed/Cargo.toml --baseline-root /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/.work/semver_baseline)
+    expect: exit nonzero; output contains "inherent_method_missing"
+    |     Building surface_demo v0.1.0 (current)
+    |        Built [   0.417s] (current)
+    |      Parsing surface_demo v0.1.0 (current)
+    |       Parsed [   0.001s] (current)
+    |     Building surface_demo v0.1.0 (baseline)
+    |        Built [   0.281s] (baseline)
+    |      Parsing surface_demo v0.1.0 (baseline)
+    |       Parsed [   0.001s] (baseline)
+    |     Checking surface_demo v0.1.0 -> v0.1.0 (no change; assume minor)
+    |      Checked [   0.008s] 196 checks: 195 pass, 1 fail, 0 warn, 58 skip
+    | 
+    | --- failure inherent_method_missing: pub method removed or renamed ---
+    | 
+    | Description:
+    | A publicly-visible method or associated fn is no longer available under its prior name. It may have been renamed or removed entirely.
+    |         ref: https://doc.rust-lang.org/cargo/reference/semver.html#item-remove
+    |        impl: https://github.com/obi1kenobi/cargo-semver-checks/tree/v0.50.0/src/lints/inherent_method_missing.ron
+    | 
+    | Failed in:
+    |   Widget::id, previously in file /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/.work/semver_baseline/src/internal.rs:24
+    | 
+    |      Summary semver requires new major version: 1 major and 0 minor checks failed
+    |     Finished [   0.943s] surface_demo
+RESULT 09-semver-removal-fails: PASS (exit 100)
+
+--- case 10-semver-addition-passes: (cd .work && /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/.tools/macos/cargo-semver-checks semver-checks --manifest-path /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/.work/semver_added/Cargo.toml --baseline-root /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/.work/semver_baseline)
+    expect: exit 0; output contains "no semver update required"
+    |     Building surface_demo v0.1.0 (current)
+    |        Built [   0.283s] (current)
+    |      Parsing surface_demo v0.1.0 (current)
+    |       Parsed [   0.001s] (current)
+    |     Building surface_demo v0.1.0 (baseline)
+    |        Built [   0.235s] (baseline)
+    |      Parsing surface_demo v0.1.0 (baseline)
+    |       Parsed [   0.001s] (baseline)
+    |     Checking surface_demo v0.1.0 -> v0.1.0 (no change; assume minor)
+    |      Checked [   0.008s] 196 checks: 196 pass, 58 skip
+    |      Summary no semver update required
+    |     Finished [   0.719s] surface_demo
+RESULT 10-semver-addition-passes: PASS (exit 0)
+
+--- case 11-publish-false-under-published: (cd .work/publish_demo && cargo_ publish --dry-run -p rs_publish_demo_public --allow-dirty)
+    expect: exit nonzero; output contains "no matching package"
+    |     Updating crates.io index
+    | warning: manifest has no documentation, homepage or repository
+    |   |
+    |   = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+    |    Packaging rs_publish_demo_public v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/.work/publish_demo/public)
+    |     Updating crates.io index
+    | error: failed to prepare local package for uploading
+    | 
+    | Caused by:
+    |   no matching package named `rs_publish_demo_internal` found
+    |   location searched: crates.io index
+    |   required by package `rs_publish_demo_public v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/.work/publish_demo/public)`
+RESULT 11-publish-false-under-published: PASS (exit 101)
+
+summary: PASS=11 FAIL=0
+RESULT: PASS
+AUDIT LEG macos-stable EXIT=0
+--- macOS MSRV floor ---
+== R04 empirical check: public API surface enforcement ==
+date: 2026-09-06T05:07:04Z
+os: Darwin Steves-MacBook-Pro.local 25.4.0 Darwin Kernel Version 25.4.0: Thu Mar 19 19:33:25 PDT 2026; root:xnu-12377.101.15~1/RELEASE_ARM64_T6041 arm64
+toolchain argument: 1.96.0
+rustc: rustc 1.96.0 (ac68faa20 2026-05-25)
+cargo: cargo 1.96.0 (30a34c682 2026-05-25)
+rustup toolchains:
+    stable-aarch64-apple-darwin (active, default)
+    1.91.1-aarch64-apple-darwin
+    1.93.0-aarch64-apple-darwin
+    1.96.0-aarch64-apple-darwin
+    1.97.1-aarch64-apple-darwin
+fixture: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit
+work dir: /private/tmp/r04-audit-msrv-work
+cargo-semver-checks: skipped (RUN_TOOLS=0)
+
+--- case 01-doctests: (cd surface_demo && cargo_ test)
+    expect: exit 0; output contains "test result: ok"; output lacks "FAILED"
+    |    Compiling surface_demo v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/surface_demo)
+    |     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.19s
+    |      Running unittests src/lib.rs (/private/tmp/r04-audit-msrv-target/debug/deps/surface_demo-3768ec1bb765c504)
+    | 
+    | running 0 tests
+    | 
+    | test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    | 
+    |    Doc-tests surface_demo
+    | 
+    | running 1 test
+    | test src/lib.rs - (line 14) ... ok
+    | 
+    | test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    | 
+    | 
+    | running 2 tests
+    | test src/lib.rs - (line 4) - compile fail ... ok
+    | test src/lib.rs - (line 9) - compile fail ... ok
+    | 
+    | test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+    | 
+    | all doctests ran in 0.46s; merged doctests compilation took 0.18s
+RESULT 01-doctests: PASS (exit 0)
+
+--- case 02-consumer-ok: (cd consumer_ok && cargo_ run --quiet)
+    expect: exit 0; output contains "consumer_ok: root-path import works, id=7"
+    | consumer_ok: root-path import works, id=7
+RESULT 02-consumer-ok: PASS (exit 0)
+
+--- case 03-deep-import-refused: (cd deep_import && cargo_ check --quiet)
+    expect: exit nonzero; output contains "error[E0603]"
+    | error[E0603]: module `internal` is private
+    |   --> src/main.rs:4:27
+    |    |
+    |  4 |     let w = surface_demo::internal::Widget::new(1);
+    |    |                           ^^^^^^^^  ------ struct `Widget` is not publicly re-exported
+    |    |                           |
+    |    |                           private module
+    |    |
+    | note: the module `internal` is defined here
+    |   --> /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/surface_demo/src/lib.rs:22:1
+    |    |
+    | 22 | mod internal;
+    |    | ^^^^^^^^^^^^
+    | 
+    | For more information about this error, try `rustc --explain E0603`.
+    | error: could not compile `deep_import` (bin "deep_import") due to 1 previous error
+RESULT 03-deep-import-refused: PASS (exit 101)
+
+--- case 04-unreachable-pub-denied: (cd /private/tmp/r04-audit-msrv-work/leaked && cargo_ check --quiet)
+    expect: exit nonzero; output contains "unreachable `pub` item"
+    | warning: struct `Leaked` is never constructed
+    |   --> src/internal.rs:30:12
+    |    |
+    | 30 | pub struct Leaked;
+    |    |            ^^^^^^
+    |    |
+    |    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+    | 
+    | error: unreachable `pub` item
+    |   --> src/internal.rs:30:1
+    |    |
+    | 30 | pub struct Leaked;
+    |    | ---^^^^^^^^^^^^^^
+    |    | |
+    |    | help: consider restricting its visibility: `pub(crate)`
+    |    |
+    |    = help: or consider exporting it for use by other crates
+    | note: the lint level is defined here
+    |   --> src/lib.rs:18:9
+    |    |
+    | 18 | #![deny(unreachable_pub)]
+    |    |         ^^^^^^^^^^^^^^^
+    | 
+    | error: could not compile `surface_demo` (lib) due to 1 previous error; 1 warning emitted
+RESULT 04-unreachable-pub-denied: PASS (exit 101)
+
+--- case 05-unreachable-pub-default-level: (cd /private/tmp/r04-audit-msrv-work/no_lint && cargo_ check)
+    expect: exit 0; output lacks "unreachable"
+    |     Checking surface_demo v0.1.0 (/private/tmp/r04-audit-msrv-work/no_lint)
+    | warning: struct `Leaked` is never constructed
+    |   --> src/internal.rs:30:12
+    |    |
+    | 30 | pub struct Leaked;
+    |    |            ^^^^^^
+    |    |
+    |    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+    | 
+    | warning: `surface_demo` (lib) generated 1 warning
+    |     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.04s
+RESULT 05-unreachable-pub-default-level: PASS (exit 0)
+
+--- case 06-private-interface-denied: (cd /private/tmp/r04-audit-msrv-work/private_in_public && cargo_ check --quiet)
+    expect: exit nonzero; output contains "more private than"
+    | error: type `Engine` is more private than the item `Widget::engine`
+    |   --> src/internal.rs:31:5
+    |    |
+    | 31 |     pub fn engine(&self) -> Engine {
+    |    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ method `Widget::engine` is reachable at visibility `pub`
+    |    |
+    | note: but type `Engine` is only usable at visibility `pub(crate)`
+    |   --> src/internal.rs:7:1
+    |    |
+    |  7 | pub(crate) struct Engine;
+    |    | ^^^^^^^^^^^^^^^^^^^^^^^^
+    | note: the lint level is defined here
+    |   --> src/lib.rs:19:9
+    |    |
+    | 19 | #![deny(private_interfaces, private_bounds)]
+    |    |         ^^^^^^^^^^^^^^^^^^
+    | 
+    | error: could not compile `surface_demo` (lib) due to 1 previous error
+RESULT 06-private-interface-denied: PASS (exit 101)
+
+--- case 07-pub-crate-cannot-widen: (cd /private/tmp/r04-audit-msrv-work/widen && cargo_ check --quiet)
+    expect: exit nonzero; output contains "cannot be re-exported"
+    | error[E0364]: `Engine` is only public within the crate, and cannot be re-exported outside
+    |   --> src/lib.rs:27:9
+    |    |
+    | 27 | pub use internal::Engine;
+    |    |         ^^^^^^^^^^^^^^^^
+    |    |
+    | note: consider marking `Engine` as `pub` in the imported module
+    |   --> src/lib.rs:27:9
+    |    |
+    | 27 | pub use internal::Engine;
+    |    |         ^^^^^^^^^^^^^^^^
+    | 
+    | warning: unused import: `internal::Engine`
+    |   --> src/lib.rs:27:9
+    |    |
+    | 27 | pub use internal::Engine;
+    |    |         ^^^^^^^^^^^^^^^^
+    |    |
+    |    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+    | 
+    | For more information about this error, try `rustc --explain E0364`.
+    | error: could not compile `surface_demo` (lib) due to 1 previous error; 1 warning emitted
+RESULT 07-pub-crate-cannot-widen: PASS (exit 101)
+
+--- case 08-escape-hatches-reachable: (cd /private/tmp/r04-audit-msrv-work/escape_consumer && cargo_ run --quiet)
+    expect: exit 0; output contains "escaped 42"
+    | escaped 42
+RESULT 08-escape-hatches-reachable: PASS (exit 0)
+
+summary: PASS=8 FAIL=0
+RESULT: PASS
+AUDIT LEG macos-msrv-1.96.0 EXIT=0
+--- Linux stable ---
+time="2026-09-05T22:07:07-07:00" level=warning msg="failed to detect whether running under rosetta, assuming false" error="failed to read sysctl \"sysctl.proc_translated\": operation not permitted"
+== R04 empirical check: public API surface enforcement ==
+date: 2026-09-06T05:07:07Z
+os: Linux lima-ubuntu 6.17.0-40-generic #40-Ubuntu SMP PREEMPT_DYNAMIC Fri Jun 19 16:24:16 UTC 2026 aarch64 GNU/Linux
+toolchain argument: <default>
+rustc: rustc 1.98.1 (48a229cea 2026-09-01)
+cargo: cargo 1.98.1 (797e8a9bc 2026-08-05)
+rustup toolchains:
+    stable-aarch64-unknown-linux-gnu (active, default)
+    1.96.0-aarch64-unknown-linux-gnu
+fixture: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit
+work dir: /tmp/r04-audit-work
+cargo-semver-checks: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/.tools/linux/cargo-semver-checks -> cargo-semver-checks 0.50.0
+
+--- case 01-doctests: (cd surface_demo && cargo_ test)
+    expect: exit 0; output contains "test result: ok"; output lacks "FAILED"
+    |    Compiling surface_demo v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/surface_demo)
+    |     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.16s
+    |      Running unittests src/lib.rs (/tmp/r04-audit-target/debug/deps/surface_demo-e81ba841783fd5b1)
+    | 
+    | running 0 tests
+    | 
+    | test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    | 
+    |    Doc-tests surface_demo
+    | 
+    | running 1 test
+    | test src/lib.rs - (line 14) ... ok
+    | 
+    | test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+    | 
+    | 
+    | running 2 tests
+    | test src/lib.rs - (line 4) - compile fail ... ok
+    | test src/lib.rs - (line 9) - compile fail ... ok
+    | 
+    | test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+    | 
+    | all doctests ran in 0.19s; merged doctests compilation took 0.17s
+RESULT 01-doctests: PASS (exit 0)
+
+--- case 02-consumer-ok: (cd consumer_ok && cargo_ run --quiet)
+    expect: exit 0; output contains "consumer_ok: root-path import works, id=7"
+    | consumer_ok: root-path import works, id=7
+RESULT 02-consumer-ok: PASS (exit 0)
+
+--- case 03-deep-import-refused: (cd deep_import && cargo_ check --quiet)
+    expect: exit nonzero; output contains "error[E0603]"
+    | error[E0603]: module `internal` is private
+    |   --> src/main.rs:4:27
+    |    |
+    |  4 |     let w = surface_demo::internal::Widget::new(1);
+    |    |                           ^^^^^^^^  ------ struct `Widget` is not publicly re-exported
+    |    |                           |
+    |    |                           private module
+    |    |
+    | note: the module `internal` is defined here
+    |   --> /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/surface_demo/src/lib.rs:22:1
+    |    |
+    | 22 | mod internal;
+    |    | ^^^^^^^^^^^^
+    | 
+    | For more information about this error, try `rustc --explain E0603`.
+    | error: could not compile `deep_import` (bin "deep_import") due to 1 previous error
+RESULT 03-deep-import-refused: PASS (exit 101)
+
+--- case 04-unreachable-pub-denied: (cd /tmp/r04-audit-work/leaked && cargo_ check --quiet)
+    expect: exit nonzero; output contains "unreachable `pub` item"
+    | warning: struct `Leaked` is never constructed
+    |   --> src/internal.rs:30:12
+    |    |
+    | 30 | pub struct Leaked;
+    |    |            ^^^^^^
+    |    |
+    |    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+    | 
+    | error: unreachable `pub` item
+    |   --> src/internal.rs:30:1
+    |    |
+    | 30 | pub struct Leaked;
+    |    | ---^^^^^^^^^^^^^^
+    |    | |
+    |    | help: consider restricting its visibility: `pub(crate)`
+    |    |
+    |    = help: or consider exporting it for use by other crates
+    | note: the lint level is defined here
+    |   --> src/lib.rs:18:9
+    |    |
+    | 18 | #![deny(unreachable_pub)]
+    |    |         ^^^^^^^^^^^^^^^
+    | 
+    | error: could not compile `surface_demo` (lib) due to 1 previous error; 1 warning emitted
+RESULT 04-unreachable-pub-denied: PASS (exit 101)
+
+--- case 05-unreachable-pub-default-level: (cd /tmp/r04-audit-work/no_lint && cargo_ check)
+    expect: exit 0; output lacks "unreachable"
+    |     Checking surface_demo v0.1.0 (/tmp/r04-audit-work/no_lint)
+    | warning: struct `Leaked` is never constructed
+    |   --> src/internal.rs:30:12
+    |    |
+    | 30 | pub struct Leaked;
+    |    |            ^^^^^^
+    |    |
+    |    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+    | 
+    | warning: `surface_demo` (lib) generated 1 warning
+    |     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.02s
+RESULT 05-unreachable-pub-default-level: PASS (exit 0)
+
+--- case 06-private-interface-denied: (cd /tmp/r04-audit-work/private_in_public && cargo_ check --quiet)
+    expect: exit nonzero; output contains "more private than"
+    | error: type `Engine` is more private than the item `Widget::engine`
+    |   --> src/internal.rs:31:5
+    |    |
+    | 31 |     pub fn engine(&self) -> Engine {
+    |    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ method `Widget::engine` is reachable at visibility `pub`
+    |    |
+    | note: but type `Engine` is only usable at visibility `pub(crate)`
+    |   --> src/internal.rs:7:1
+    |    |
+    |  7 | pub(crate) struct Engine;
+    |    | ^^^^^^^^^^^^^^^^^^^^^^^^
+    | note: the lint level is defined here
+    |   --> src/lib.rs:19:9
+    |    |
+    | 19 | #![deny(private_interfaces, private_bounds)]
+    |    |         ^^^^^^^^^^^^^^^^^^
+    | 
+    | error: could not compile `surface_demo` (lib) due to 1 previous error
+RESULT 06-private-interface-denied: PASS (exit 101)
+
+--- case 07-pub-crate-cannot-widen: (cd /tmp/r04-audit-work/widen && cargo_ check --quiet)
+    expect: exit nonzero; output contains "cannot be re-exported"
+    | error[E0364]: `Engine` is only public within the crate, and cannot be re-exported outside
+    |   --> src/lib.rs:27:9
+    |    |
+    | 27 | pub use internal::Engine;
+    |    |         ^^^^^^^^^^^^^^^^
+    |    |
+    | note: consider marking `Engine` as `pub` in the imported module
+    |   --> src/lib.rs:27:9
+    |    |
+    | 27 | pub use internal::Engine;
+    |    |         ^^^^^^^^^^^^^^^^
+    | 
+    | warning: unused import: `internal::Engine`
+    |   --> src/lib.rs:27:9
+    |    |
+    | 27 | pub use internal::Engine;
+    |    |         ^^^^^^^^^^^^^^^^
+    |    |
+    |    = note: `#[warn(unused_imports)]` (part of `#[warn(unused)]`) on by default
+    | 
+    | For more information about this error, try `rustc --explain E0364`.
+    | error: could not compile `surface_demo` (lib) due to 1 previous error; 1 warning emitted
+RESULT 07-pub-crate-cannot-widen: PASS (exit 101)
+
+--- case 08-escape-hatches-reachable: (cd /tmp/r04-audit-work/escape_consumer && cargo_ run --quiet)
+    expect: exit 0; output contains "escaped 42"
+    | escaped 42
+RESULT 08-escape-hatches-reachable: PASS (exit 0)
+
+--- case 09-semver-removal-fails: (cd /tmp/r04-audit-work && /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/.tools/linux/cargo-semver-checks semver-checks --manifest-path /tmp/r04-audit-work/semver_removed/Cargo.toml --baseline-root /tmp/r04-audit-work/semver_baseline)
+    expect: exit nonzero; output contains "inherent_method_missing"
+    |     Building surface_demo v0.1.0 (current)
+    |        Built [   0.218s] (current)
+    |      Parsing surface_demo v0.1.0 (current)
+    |       Parsed [   0.004s] (current)
+    |     Building surface_demo v0.1.0 (baseline)
+    |        Built [   0.205s] (baseline)
+    |      Parsing surface_demo v0.1.0 (baseline)
+    |       Parsed [   0.001s] (baseline)
+    |     Checking surface_demo v0.1.0 -> v0.1.0 (no change; assume minor)
+    |      Checked [   0.008s] 196 checks: 195 pass, 1 fail, 0 warn, 58 skip
+    | 
+    | --- failure inherent_method_missing: pub method removed or renamed ---
+    | 
+    | Description:
+    | A publicly-visible method or associated fn is no longer available under its prior name. It may have been renamed or removed entirely.
+    |         ref: https://doc.rust-lang.org/cargo/reference/semver.html#item-remove
+    |        impl: https://github.com/obi1kenobi/cargo-semver-checks/tree/v0.50.0/src/lints/inherent_method_missing.ron
+    | 
+    | Failed in:
+    |   Widget::id, previously in file /tmp/r04-audit-work/semver_baseline/src/internal.rs:24
+    | 
+    |      Summary semver requires new major version: 1 major and 0 minor checks failed
+    |     Finished [   0.532s] surface_demo
+RESULT 09-semver-removal-fails: PASS (exit 100)
+
+--- case 10-semver-addition-passes: (cd /tmp/r04-audit-work && /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R04/2026-09-05T162359Z-3c50443de1e8/review/empirical-audit/.tools/linux/cargo-semver-checks semver-checks --manifest-path /tmp/r04-audit-work/semver_added/Cargo.toml --baseline-root /tmp/r04-audit-work/semver_baseline)
+    expect: exit 0; output contains "no semver update required"
+    |     Building surface_demo v0.1.0 (current)
+    |        Built [   0.211s] (current)
+    |      Parsing surface_demo v0.1.0 (current)
+    |       Parsed [   0.001s] (current)
+    |     Building surface_demo v0.1.0 (baseline)
+    |        Built [   0.229s] (baseline)
+    |      Parsing surface_demo v0.1.0 (baseline)
+    |       Parsed [   0.001s] (baseline)
+    |     Checking surface_demo v0.1.0 -> v0.1.0 (no change; assume minor)
+    |      Checked [   0.004s] 196 checks: 196 pass, 58 skip
+    |      Summary no semver update required
+    |     Finished [   0.527s] surface_demo
+RESULT 10-semver-addition-passes: PASS (exit 0)
+
+--- case 11-publish-false-under-published: (cd /tmp/r04-audit-work/publish_demo && cargo_ publish --dry-run -p rs_publish_demo_public --allow-dirty)
+    expect: exit nonzero; output contains "no matching package"
+    |     Updating crates.io index
+    | warning: manifest has no documentation, homepage or repository
+    |   |
+    |   = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+    |    Packaging rs_publish_demo_public v0.1.0 (/tmp/r04-audit-work/publish_demo/public)
+    |     Updating crates.io index
+    | error: failed to prepare local package for uploading
+    | 
+    | Caused by:
+    |   no matching package named `rs_publish_demo_internal` found
+    |   location searched: crates.io index
+    |   required by package `rs_publish_demo_public v0.1.0 (/tmp/r04-audit-work/publish_demo/public)`
+RESULT 11-publish-false-under-published: PASS (exit 101)
+
+summary: PASS=11 FAIL=0
+RESULT: PASS
+AUDIT LEG linux-stable EXIT=0
+AUDIT SUMMARY macos=0 msrv=0 linux=0

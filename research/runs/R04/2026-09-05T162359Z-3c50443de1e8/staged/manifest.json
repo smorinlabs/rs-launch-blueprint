@@ -1,0 +1,62 @@
+{
+  "changes": [
+    {
+      "expected_sha256": "21392fda7ad160d3318bd64124c1a8a1846725c204dd7a7aed82b1b0d6f22b78",
+      "staged": "research/CLAUDE.md",
+      "target": "research/CLAUDE.md"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/04-public-api-surface-enforcement/DECISION.md",
+      "target": "research/topics/04-public-api-surface-enforcement/DECISION.md"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/04-public-api-surface-enforcement/acceptance.json",
+      "target": "research/topics/04-public-api-surface-enforcement/acceptance.json"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/04-public-api-surface-enforcement/audit-codex.md",
+      "target": "research/topics/04-public-api-surface-enforcement/audit-codex.md"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/04-public-api-surface-enforcement/audit-fable.md",
+      "target": "research/topics/04-public-api-surface-enforcement/audit-fable.md"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/04-public-api-surface-enforcement/evidence/2026-09-05T162359Z-3c50443de1e8-audit-public-api-surface-enforcement.log",
+      "target": "research/topics/04-public-api-surface-enforcement/evidence/2026-09-05T162359Z-3c50443de1e8-audit-public-api-surface-enforcement.log"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/04-public-api-surface-enforcement/evidence/2026-09-05T162359Z-3c50443de1e8-public-api-surface-enforcement-linux.log",
+      "target": "research/topics/04-public-api-surface-enforcement/evidence/2026-09-05T162359Z-3c50443de1e8-public-api-surface-enforcement-linux.log"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/04-public-api-surface-enforcement/evidence/2026-09-05T162359Z-3c50443de1e8-public-api-surface-enforcement-msrv-1.96.0.log",
+      "target": "research/topics/04-public-api-surface-enforcement/evidence/2026-09-05T162359Z-3c50443de1e8-public-api-surface-enforcement-msrv-1.96.0.log"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/04-public-api-surface-enforcement/evidence/2026-09-05T162359Z-3c50443de1e8-public-api-surface-enforcement.log",
+      "target": "research/topics/04-public-api-surface-enforcement/evidence/2026-09-05T162359Z-3c50443de1e8-public-api-surface-enforcement.log"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/04-public-api-surface-enforcement/raw/codex-2026-09-05T162359Z-3c50443de1e8.md",
+      "target": "research/topics/04-public-api-surface-enforcement/raw/codex-2026-09-05T162359Z-3c50443de1e8.md"
+    },
+    {
+      "expected_sha256": "missing",
+      "staged": "research/topics/04-public-api-surface-enforcement/raw/opus-2026-09-05T162359Z-3c50443de1e8.md",
+      "target": "research/topics/04-public-api-surface-enforcement/raw/opus-2026-09-05T162359Z-3c50443de1e8.md"
+    }
+  ],
+  "dependency_hashes": {},
+  "item": "R04",
+  "run_id": "2026-09-05T162359Z-3c50443de1e8"
+}

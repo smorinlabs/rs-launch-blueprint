@@ -115,6 +115,15 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-06T05:16:11Z",
+      "publication": {
+        "acceptance_sha256": "73c2d87ed709562e41cfb367b9b2f2c37bf91ad31bb8ab1bebdf8ac1294f0e51",
+        "decision_sha256": "0d4f2e60e994439d9261f5169c3fd28e5e76077dacd089d999a51fb67a5f6c5d",
+        "transaction": "72c7dee9d9004399a45e07b164c6bb55"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -164,6 +173,11 @@
     }
   },
   "prompt_source": "research/topics/04-public-api-surface-enforcement/prompts/public-api-surface-enforcement.prompt.md",
+  "publication": {
+    "acceptance_sha256": "73c2d87ed709562e41cfb367b9b2f2c37bf91ad31bb8ab1bebdf8ac1294f0e51",
+    "decision_sha256": "0d4f2e60e994439d9261f5169c3fd28e5e76077dacd089d999a51fb67a5f6c5d",
+    "transaction": "72c7dee9d9004399a45e07b164c6bb55"
+  },
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
     "codex",
@@ -171,7 +185,7 @@
   ],
   "run_id": "2026-09-05T162359Z-3c50443de1e8",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "focused",
-  "updated_at": "2026-09-05T16:59:00Z"
+  "updated_at": "2026-09-06T05:16:11Z"
 }

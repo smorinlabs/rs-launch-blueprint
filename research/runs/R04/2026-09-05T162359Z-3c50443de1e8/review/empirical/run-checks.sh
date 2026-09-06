@@ -2,8 +2,9 @@
 # R04 public-api-surface-enforcement — empirical check.
 #
 # Usage: bash run-checks.sh
-#   TOOLCHAIN=1.96.0   run every cargo command as `cargo +1.96.0` (MSRV leg)
+#   TOOLCHAIN=1.96.0   run every cargo command as `rustup run 1.96.0 cargo` (MSRV leg)
 #   RUN_TOOLS=0        skip the cargo-semver-checks and `cargo publish --dry-run` cases
+#   RUN_PUBLISH=0      skip only the `cargo publish --dry-run` case (it needs the crates.io index)
 #   SEMVER_BIN=<path>  cargo-semver-checks binary
 #                      (default: .tools/<macos|linux>/cargo-semver-checks, else PATH)
 #   WORK_DIR=<path>    scratch directory for generated variants (default: ./.work)
@@ -25,8 +26,10 @@ LOG_DIR="$WORK_DIR/logs"
 PASS=0
 FAIL=0
 
-cargo_() { if [ -n "$TOOLCHAIN" ]; then cargo "+$TOOLCHAIN" "$@"; else cargo "$@"; fi; }
-rustc_() { if [ -n "$TOOLCHAIN" ]; then rustc "+$TOOLCHAIN" "$@"; else rustc "$@"; fi; }
+# `rustup run` rather than `cargo +<toolchain>`: the latter is only understood by
+# rustup's proxy, and on this machine Homebrew's cargo precedes it on PATH.
+cargo_() { if [ -n "$TOOLCHAIN" ]; then rustup run "$TOOLCHAIN" cargo "$@"; else cargo "$@"; fi; }
+rustc_() { if [ -n "$TOOLCHAIN" ]; then rustup run "$TOOLCHAIN" rustc "$@"; else rustc "$@"; fi; }
 
 # run_case <id> <expect: 0|nonzero> <must-contain> <must-not-contain> <dir> <cmd...>
 # Fixed-string matches; an empty pattern means "no constraint".
@@ -211,8 +214,21 @@ EOF
     "$SEMVER_BIN" semver-checks --manifest-path "$WORK_DIR/semver_added/Cargo.toml" --baseline-root "$WORK_DIR/semver_baseline"
 
   # 11 — a published crate cannot depend on a `publish = false` workspace member.
-  run_case 11-publish-false-under-published nonzero "no matching package" "" "$HERE/publish_demo" \
-    cargo_ publish --dry-run -p rs_publish_demo_public --allow-dirty
+  #      Runs from a copy under $WORK_DIR: `cargo publish` lists package files
+  #      through the enclosing git repository, which stalls on a network mount.
+  if [ "${RUN_PUBLISH:-1}" = 1 ]; then
+    rm -rf "$WORK_DIR/publish_demo"
+    mkdir -p "$WORK_DIR/publish_demo/public/src" "$WORK_DIR/publish_demo/internal/src"
+    cp "$HERE/publish_demo/Cargo.toml" "$WORK_DIR/publish_demo/Cargo.toml"
+    cp "$HERE/publish_demo/public/Cargo.toml" "$WORK_DIR/publish_demo/public/Cargo.toml"
+    cp "$HERE/publish_demo/public/src/lib.rs" "$WORK_DIR/publish_demo/public/src/lib.rs"
+    cp "$HERE/publish_demo/internal/Cargo.toml" "$WORK_DIR/publish_demo/internal/Cargo.toml"
+    cp "$HERE/publish_demo/internal/src/lib.rs" "$WORK_DIR/publish_demo/internal/src/lib.rs"
+    run_case 11-publish-false-under-published nonzero "no matching package" "" "$WORK_DIR/publish_demo" \
+      cargo_ publish --dry-run -p rs_publish_demo_public --allow-dirty
+  else
+    echo; echo "--- case 11-publish-false-under-published: skipped (RUN_PUBLISH=0)"
+  fi
 fi
 
 echo
