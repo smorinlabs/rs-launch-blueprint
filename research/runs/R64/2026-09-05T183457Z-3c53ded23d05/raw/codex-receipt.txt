@@ -1,0 +1,5 @@
+Output: `raw/codex.md`  
+SHA-256: `0e3536a58a5718d98015052e96f5ddff83f0fdf2f953008f64761a3551254066`  
+H3 fields written: 10  
+Emitted: `BASELINE-REVIEW: F284/F285 …`  
+Unverified: GitHub repository metrics and issue responsiveness were rate-limited.

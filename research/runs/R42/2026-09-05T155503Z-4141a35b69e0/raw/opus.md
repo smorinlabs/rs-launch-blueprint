@@ -217,3 +217,188 @@ scripts.** Tools are invoked as `cargo <sub>` when the executable is
 anywhere.
 
 ### Members
+
+#### Rust toolchain and components — rustup with a committed rust-toolchain.toml
+
+##### Landscape
+This member decides how the compiler-adjacent tools (`rustfmt`, `clippy`, and
+optionally `rust-src`, `rust-analyzer`, extra targets) reach a machine. Bin
+placement: **built-in / first-party** — `rustup` plus the `rust-toolchain.toml`
+file it reads; **established industry standard** — none competing, because
+`rustup` is the Rust project's own installer; **up-and-comer** — `mise` and Nix
+flakes both offer to install the Rust toolchain instead of `rustup`, and are
+evaluated here rather than in member 4 because that is the slot they would
+occupy. Practice evidence: 9 of the 17 surveyed repositories commit
+`rust-toolchain.toml`, more than any other file in this category, and 5 of
+those 9 declare `components` explicitly (`zed` `["rustfmt", "clippy",
+"rust-analyzer", "rust-src"]`, `helix` `["rustfmt", "rust-src", "clippy"]`,
+`deno` `["rustfmt", "clippy", "rust-src", "rust-analyzer"]`, `cargo-binstall`
+`["rustfmt", "clippy"]`; `biome` and `nushell` instead set `profile = "default"`,
+which the rustup book documents as including `rustfmt` and `clippy`). All read
+from `https://raw.githubusercontent.com/<repo>/HEAD/rust-toolchain.toml`,
+2026-09-05.
+
+##### Principles and implementation
+Principle: the tools that ship *with* the compiler must not appear in any
+installer recipe, because a second acquisition path for them is a second thing
+that can drift from the compiler. Mechanism: rustup resolves the active
+toolchain in a documented precedence order — a `+toolchain` shorthand, then
+`RUSTUP_TOOLCHAIN`, then a `rustup override` directory setting, then
+`rust-toolchain.toml`, then the default — with the toolchain file and directory
+overrides additionally preferred by proximity, discovered by walking up toward
+the filesystem root (https://rust-lang.github.io/rustup/overrides.html,
+2026-09-05). Committing the file therefore makes every in-directory `cargo` and
+`rustc` invocation use the declared toolchain and its declared components,
+without any recipe doing anything. Observable criterion: in a fresh clone,
+`cargo fmt --version` and `cargo clippy --version` both succeed with no
+installer run, and `rustup show active-toolchain` names the file as the override
+source. Both were executed on this host (output in `Validation strategy`).
+This is also the layer that answers the prompt's HIGH F183 question for two of
+the four py tool classes: py needed `install-taplo` and friends precisely
+because Python's package manager could not reach them; rustup reaches
+`rustfmt` and `clippy` by definition.
+
+##### Dominant choice
+`rustup` with a committed `rust-toolchain.toml`. Figures — crates.io is the
+wrong distribution channel for this tool and its numbers say so, which is
+itself the finding: `GET https://crates.io/api/v1/crates/rustup` (2026-09-05)
+returns `crate.recent_downloads` **3** and `crate.downloads` **1488**, and
+`GET https://crates.io/api/v1/crates/rustup/versions` (2026-09-05) returns
+**zero** unyanked versions, so *Last release* is **inapplicable via crates.io**
+— rustup is distributed through `rustup-init` / `https://rustup.rs`
+(https://rust-lang.github.io/rustup/installation/index.html, HTTP 200,
+2026-09-05), and GitHub figures are the meaningful ones.
+`GET https://api.github.com/repos/rust-lang/rustup` (2026-09-05):
+`stargazers_count` **7032**, `archived` **false**, `pushed_at`
+**2026-09-05T07:03:41Z**. Open issues,
+`GET https://api.github.com/search/issues?q=repo:rust-lang/rustup+is:issue+is:open`
+(2026-09-05): `total_count` **392**. Issue responsiveness: of the 30 most
+recently created items on
+`GET /repos/rust-lang/rustup/issues?state=all&sort=created&direction=desc`,
+five were issues rather than pull requests (created 2026-08-23 to 2026-09-02);
+median days to first maintainer response **0.06**, unanswered **0**.
+Advisories: `https://rustsec.org/packages/rustup.html` returns HTTP **404**
+(2026-09-05) — no advisory page exists; the control probes
+`https://rustsec.org/packages/time.html` and `.../atty.html` both return HTTP
+200 on the same date, so 404 here means "no RustSec page for this package",
+verified by contrast rather than assumed. Maintenance state: **active** — the
+Rust project's own tool, pushed the day of retrieval, sub-hour median issue
+response.
+
+##### Qualified shortlist
+`rustup` + `rust-toolchain.toml` (recommended). `rustup` + `rustup component
+add` invoked from a Justfile recipe (same tool, imperative instead of
+declarative). `mise` managing the Rust toolchain (`GET /repos/jdx/mise`,
+2026-09-05: `stargazers_count` 33517, `archived` false, `pushed_at`
+2026-09-06T04:34:49Z, licence MIT). A Nix flake providing the toolchain
+(`flake.nix` present in `denoland/deno`, `zed-industries/zed`,
+`helix-editor/helix`, `casey/just`, `rust-lang/rustup`).
+
+##### Excluded by gate
+*Gate framing first, because it recurs in every member:* the prompt's six gates
+are written for crates that enter this template's **dependency tree**. Every
+candidate in this bundle is a **developer tool executed as a separate process**
+and linked into nothing, so gates 1, 2, 5 and 6 are answered in that light and
+the reasoning is stated rather than assumed.
+
+- **`mise` as the Rust toolchain provider — excluded by fit, not by gate.** It passes gate 1 (MIT, `GET https://crates.io/api/v1/crates/mise`, 2026-09-05, newest unyanked version 2026.9.1 published 2026-09-02, `license` `MIT`). It is excluded because it would replace the Rust project's own toolchain manager with a third-party one for a template whose contributors already need `rustup` for `cargo`, and because measured adoption for that role in the surveyed field is zero of seventeen.
+- **Nix flake as the toolchain provider — excluded by fit.** Highest reproducibility of any candidate and genuinely used (5/17), but it makes a Nix installation a precondition for contributing to a *template*, and it forces an environment prefix into every recipe and hook line, breaking essential behavior (3).
+- No candidate in this member fails gate 1 (licence), gate 3 (advisory) or gate 4 (OS support).
+
+##### Up-and-comers
+`mise` (2026.9.1, released 2026-09-02) and the Nix-frontend family (`flox`,
+`devenv`, `devbox`) are the live entrants that would displace `rustup` here.
+Note for the record that `devenv` and `devbox` on crates.io are unrelated
+projects by different authors (`GET https://crates.io/api/v1/crates/devenv`
+returns `repository: https://github.com/lyssieth/devenv`, `recent_downloads` 76;
+`.../devbox` returns `https://github.com/peterkozelj/devbox`,
+`recent_downloads` 15; both 2026-09-05), so crates.io figures must not be used
+as adoption evidence for `cachix/devenv` or `jetify-com/devbox`.
+
+##### Fit for this template
+The template is CLI + library + web service with a `ubuntu-latest,
+macos-latest` matrix. `rustup` is a precondition on both runners and on every
+contributor machine regardless of this decision, so choosing it adds zero new
+dependencies — the strongest possible fit argument. `profile = "minimal"` plus
+an explicit `components` list keeps a fresh install small while guaranteeing
+the two tools every recipe and hook needs. Relative to py, this layer alone
+deletes the need for any `rustfmt`/`clippy` analogue of `install-taplo`;
+relative to ts, it achieves ts's "fold the tools into something already
+present" outcome without deleting any capability.
+
+##### Recommendation
+Commit `rust-toolchain.toml` with `profile = "minimal"` and
+`components = ["rustfmt", "clippy"]`. The `channel` value is **R27's decision
+through F103** and is not set here; supply R27 with the measured evidence in
+`Principles and implementation` (8 of 9 surveyed repositories pin an exact
+version; 1 uses `"stable"`). Add no `rustup component add` recipe: the file is
+declarative and rustup applies it automatically.
+
+##### Ranked runner-up
+`rustup` with an imperative `just install-components` recipe running
+`rustup component add rustfmt clippy`. Same tool, same result, but it
+reintroduces a second acquisition path for the two tools rustup already owns
+and it only runs when a contributor remembers to run it. Rank 2 of 4; ranks 3
+and 4 are the Nix flake and `mise`, both excluded above by fit.
+
+##### Tradeoffs
+Committing a toolchain file makes every in-directory invocation use that
+toolchain, so a contributor cannot silently build with a newer compiler; that
+is the point, and `cargo +nightly` and `RUSTUP_TOOLCHAIN` remain available as
+higher-precedence escapes (https://rust-lang.github.io/rustup/overrides.html,
+2026-09-05). `profile = "minimal"` omits `rust-docs` and `rust-analyzer`;
+editors that expect `rust-analyzer` from rustup will need it added to
+`components` — a one-line change, and `zed` and `deno` both do exactly that.
+Binary-size cost: none, no linked code. Compile-time cost: none; components are
+downloaded prebuilt.
+
+##### Parameters
+Contributes to `package-manager-invocation` (owned by R42): because `rustfmt`
+and `clippy` arrive as rustup components whose executables are `cargo-fmt` and
+`cargo-clippy`, they are invoked as `cargo fmt` and `cargo clippy`, which is
+the cargo-subcommand half of the parameter's rule. Assumes the fixed
+parameters `rust-edition = 2024`, `msrv-policy = stable minus 2 minor versions,
+raised only in a minor release, declared as rust-version in Cargo.toml and
+tested in CI`, `target-os-matrix = ubuntu-latest, macos-latest`,
+`license = MIT OR Apache-2.0`. No `CONFLICT:` line. Coordinates with R27 on
+F103/F190 for the `channel` value without claiming it.
+
+##### Migration implications
+New file `rust-toolchain.toml` at the repository root. No `install-rustfmt` or
+`install-clippy` recipe is ever written. `Makefile` Level-1 `check` target
+tests for `rustup`/`cargo` instead of `uv`. Nothing in `Justfile` references
+component installation.
+
+##### Validation strategy
+Executed on this host, 2026-09-05, in a scratch directory containing only the
+recommended `rust-toolchain.toml`: `rustup show active-toolchain` printed
+`stable-aarch64-apple-darwin (overridden by '<scratch>/rust-toolchain.toml')`,
+proving the file is the override source; `cargo fmt --version` printed
+`rustfmt 1.9.0` and `cargo clippy --version` printed `clippy 0.1.98`, both
+through the rustup proxy at `~/.cargo/bin/cargo`, with no installer step.
+Proposed for CI: the same three commands as the first step of the build job on
+both `ubuntu-latest` and `macos-latest`.
+
+##### Confidence & re-verify trigger
+Confidence **high** — first-party mechanism, documented precedence, executed
+locally, 9/17 measured adoption. Re-verify if rustup changes toolchain-file
+precedence or the `profile`/`components` schema, if R27 settles F103 with a
+`channel` value that conflicts with `profile = "minimal"`, or by 2027-03-05,
+whichever is first.
+
+##### Sources
+https://rust-lang.github.io/rustup/overrides.html (2026-09-05, HTTP 200) ·
+https://rust-lang.github.io/rustup/concepts/components.html (2026-09-05, HTTP
+200) · https://rust-lang.github.io/rustup/installation/index.html (2026-09-05,
+HTTP 200) · https://raw.githubusercontent.com/rust-lang/rustup/HEAD/README.md
+(2026-09-05; "Licensed under either of Apache License, Version 2.0 ... MIT
+license ... at your option") · GET https://crates.io/api/v1/crates/rustup and
+/versions (2026-09-05) · GET https://api.github.com/repos/rust-lang/rustup
+(2026-09-05) ·
+GET https://api.github.com/search/issues?q=repo:rust-lang/rustup+is:issue+is:open
+(2026-09-05) · https://rustsec.org/packages/rustup.html (2026-09-05, HTTP 404;
+controls https://rustsec.org/packages/time.html and .../atty.html both HTTP
+200) · https://raw.githubusercontent.com/<repo>/HEAD/rust-toolchain.toml for
+`oxc-project/oxc`, `biomejs/biome`, `astral-sh/uv`, `astral-sh/ruff`,
+`zed-industries/zed`, `helix-editor/helix`, `nushell/nushell`, `denoland/deno`,
+`cargo-bins/cargo-binstall` (all 2026-09-05).
