@@ -1,7 +1,8 @@
 # P02 local implementation review
 
 The approved tiered method is implemented and locally validated on
-`docs/p02-execution-plan-review`, based on
+`research/p02-execution` (named `docs/p02-execution-plan-review` when this
+review was written), based on
 `2f3569051af2c2089f60f6cad129bc6e55482c30`. The changes are committed under the
 owner's 2026-09-04 commit direction (no per-commit approval; see
 [APPROVAL.md](APPROVAL.md)). No binding research item has run or been resolved.

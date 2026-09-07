@@ -1,7 +1,7 @@
 {
   "date": "2026-09-04",
   "base_commit": "2f3569051af2c2089f60f6cad129bc6e55482c30",
-  "branch": "docs/p02-execution-plan-review",
+  "branch": "research/p02-execution",
   "status": "local implementation validated; committed under the owner's 2026-09-04 commit direction",
   "suites": {
     "structural_regressions": 53,
@@ -71,5 +71,10 @@
       "owner spend approval and provider caps for batch B0-R38",
       "binding R38 research pilot"
     ]
+  },
+  "branch_renamed_from": {
+    "name": "docs/p02-execution-plan-review",
+    "date": "2026-09-07",
+    "why": "the branch carries the P02 research execution, not the plan review it began as"
   }
 }

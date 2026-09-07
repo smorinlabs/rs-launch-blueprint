@@ -10,7 +10,8 @@ separate approvals. The historical requirement is retained in
 ## P02 preparation commit
 
 Worktree: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan`.
-Branch: `docs/p02-execution-plan-review`.
+Branch: `research/p02-execution` (renamed 2026-09-07 from
+`docs/p02-execution-plan-review`; the commits below were made under the old name).
 Base: `2f3569051af2c2089f60f6cad129bc6e55482c30`.
 
 Commit subject: `feat(research): add tiered execution and durable acceptance`
