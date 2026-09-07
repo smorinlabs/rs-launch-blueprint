@@ -1,18 +1,18 @@
 
 === S0 toolchain and host ===
-2026-09-06T05:41:38Z
+2026-09-06T05:41:46Z
 Linux lima-ubuntu 6.17.0-40-generic #40-Ubuntu SMP PREEMPT_DYNAMIC Fri Jun 19 16:24:16 UTC 2026 aarch64 GNU/Linux
 Ubuntu 25.10
 rustc 1.98.1 (48a229cea 2026-09-01)
 cargo 1.98.1 (797e8a9bc 2026-08-05)
 rustfmt 1.9.0-stable (48a229ceae 2026-09-01)
-GNU Awk 5.3.2, API 4.0, PMA Avon 8-g1, (GNU MPFR 4.2.2, GNU MP 6.3.0)
-awk resolves to: /usr/bin/awk
+mawk 1.3.4 20250131
+awk resolves to: /tmp/r46-mawk-bin/awk
 xargs (GNU findutils) 4.10.0
 jq-1.8.1
 GNU bash, version 5.2.37(1)-release (aarch64-unknown-linux-gnu)
 runner:  /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical
-work:    /tmp/r46-r2b-stable
+work:    /tmp/r46-r2b-mawk
 checker-v2.sh sha256:    7cad28603782ad08a2cbf77e2bb4443e4dcefe1e84f8417f7ca5de0e3e4451b6
 acceptance-v2.sh sha256: 54765e20d067969cb25b7a549c09144fa5b25bf665ab3ebd3f9f713e156f87ac
 LICENSE-APACHE sha256:   cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30
@@ -22,52 +22,52 @@ PASS  S0 layer 1 check_file is byte-identical to raw/codex.md lines 430-460
 
 === S1 recommended acceptance sequence (acceptance-v2.sh) from the fixture root ===
     license = "MIT OR Apache-2.0"
-       Compiling r46-fixture v0.1.0 (/tmp/r46-r2b-stable/fixture)
-       Compiling r46-web v0.1.0 (/tmp/r46-r2b-stable/fixture/crates/r46-web)
-        Finished `test` profile [unoptimized + debuginfo] target(s) in 0.33s
-         Running unittests src/lib.rs (/tmp/r46-r2b-stable/target/debug/deps/r46_fixture-7ea8d01bb02ec417)
+       Compiling r46-fixture v0.1.0 (/tmp/r46-r2b-mawk/fixture)
+       Compiling r46-web v0.1.0 (/tmp/r46-r2b-mawk/fixture/crates/r46-web)
+        Finished `test` profile [unoptimized + debuginfo] target(s) in 0.20s
+         Running unittests src/lib.rs (/tmp/r46-r2b-mawk/target/debug/deps/r46_fixture-7ea8d01bb02ec417)
     
     running 1 test
     test tests::package_license_is_the_fixed_dual_expression ... ok
     
     test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
     
-         Running unittests src/main.rs (/tmp/r46-r2b-stable/target/debug/deps/r46_fixture-97b242d951a1bc32)
+         Running unittests src/main.rs (/tmp/r46-r2b-mawk/target/debug/deps/r46_fixture-97b242d951a1bc32)
     
     running 0 tests
     
     test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
     
-         Running tests/license_metadata.rs (/tmp/r46-r2b-stable/target/debug/deps/license_metadata-b3e79858f7e9bb61)
+         Running tests/license_metadata.rs (/tmp/r46-r2b-mawk/target/debug/deps/license_metadata-b3e79858f7e9bb61)
     
     running 1 test
     test integration_target_sees_the_dual_license ... ok
     
     test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
     
-         Running unittests examples/print_license.rs (/tmp/r46-r2b-stable/target/debug/examples/print_license-3f425668e206de83)
+         Running unittests examples/print_license.rs (/tmp/r46-r2b-mawk/target/debug/examples/print_license-3f425668e206de83)
     
     running 0 tests
     
     test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
     
-         Running unittests src/lib.rs (/tmp/r46-r2b-stable/target/debug/deps/r46_web-ea21825fade97fa9)
+         Running unittests src/lib.rs (/tmp/r46-r2b-mawk/target/debug/deps/r46_web-ea21825fade97fa9)
     
     running 2 tests
-    test tests::health_route_answers_200 ... ok
     test tests::member_inherits_the_workspace_license ... ok
+    test tests::health_route_answers_200 ... ok
     
     test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
     
     warning: manifest has no description, documentation, homepage or repository
       |
       = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
-       Packaging r46-fixture v0.1.0 (/tmp/r46-r2b-stable/fixture)
+       Packaging r46-fixture v0.1.0 (/tmp/r46-r2b-mawk/fixture)
         Packaged 9 files, 14.6KiB (5.6KiB compressed)
     warning: manifest has no description, documentation, homepage or repository
       |
       = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
-       Packaging r46-web v0.1.0 (/tmp/r46-r2b-stable/fixture/crates/r46-web)
+       Packaging r46-web v0.1.0 (/tmp/r46-r2b-mawk/fixture/crates/r46-web)
         Packaged 4 files, 1.6KiB (1.0KiB compressed)
 PASS  S1 acceptance-v2.sh on the header-free fixture -> exit 0
 
@@ -75,117 +75,117 @@ PASS  S1 acceptance-v2.sh on the header-free fixture -> exit 0
 --- revision-1 controls (layer 1 forms, boundaries, texts) ---
 PASS  S2 clean: leading //! docs -> exit 0
 PASS  S2 empty (0-byte) file -> exit 0
-    /tmp/r46-r2b-stable/controls/form-a.rs:1:(a) SPDX-License-Identifier:
-    /tmp/r46-r2b-stable/controls/form-a.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/form-a.rs:1:(a) SPDX-License-Identifier:
+    /tmp/r46-r2b-mawk/controls/form-a.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 form (a) SPDX-License-Identifier line -> exit 1
-    /tmp/r46-r2b-stable/controls/form-b.rs:1:(b) MIT boilerplate first line
+    /tmp/r46-r2b-mawk/controls/form-b.rs:1:(b) MIT boilerplate first line
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 form (b) MIT boilerplate first line (layer 1 only) -> exit 1
-    /tmp/r46-r2b-stable/controls/form-c.rs:1:(c) Apache appendix boilerplate line
-    /tmp/r46-r2b-stable/controls/form-c.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/form-c.rs:1:(c) Apache appendix boilerplate line
+    /tmp/r46-r2b-mawk/controls/form-c.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 form (c) Apache appendix boilerplate line -> exit 1
-    /tmp/r46-r2b-stable/controls/form-d.rs:1:(d) Apache full-text title form
-    /tmp/r46-r2b-stable/controls/form-d.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/form-d.rs:1:(d) Apache full-text title form
+    /tmp/r46-r2b-mawk/controls/form-d.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 form (d) Apache title then Version line -> exit 1
-    /tmp/r46-r2b-stable/controls/form-e.rs:1:(e) MIT title form
-    /tmp/r46-r2b-stable/controls/form-e.rs:1:(f) license, copyright or SPDX term in the leading comment block
-    /tmp/r46-r2b-stable/controls/form-e.rs:2:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/form-e.rs:1:(e) MIT title form
+    /tmp/r46-r2b-mawk/controls/form-e.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/form-e.rs:2:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 form (e) MIT title then Copyright (c) -> exit 1
-    /tmp/r46-r2b-stable/controls/reuse-two-line.rs:3:(a) SPDX-License-Identifier:
-    /tmp/r46-r2b-stable/controls/reuse-two-line.rs:1:(f) license, copyright or SPDX term in the leading comment block
-    /tmp/r46-r2b-stable/controls/reuse-two-line.rs:3:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/reuse-two-line.rs:3:(a) SPDX-License-Identifier:
+    /tmp/r46-r2b-mawk/controls/reuse-two-line.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/reuse-two-line.rs:3:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 runner-up REUSE two-line header -> exit 1
 PASS  S2 boundary: SPDX marker on line 41 (both layers cap at 40) -> exit 0
-    /tmp/r46-r2b-stable/controls/not-d.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/not-d.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 r1 boundary not-d: now caught by layer 2 (f) at line 1 -> exit 1
-    /tmp/r46-r2b-stable/controls/not-e.rs:1:(f) license, copyright or SPDX term in the leading comment block
-    /tmp/r46-r2b-stable/controls/not-e.rs:4:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/not-e.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/not-e.rs:4:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 r1 boundary not-e: now caught by layer 2 (f) at line 1 -> exit 1
-    /tmp/r46-r2b-stable/fixture/LICENSE-APACHE:2:(d) Apache full-text title form
+    /tmp/r46-r2b-mawk/fixture/LICENSE-APACHE:2:(d) Apache full-text title form
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 root LICENSE-APACHE text as a source path (layer 1 only) -> exit 1
-    /tmp/r46-r2b-stable/fixture/LICENSE-MIT:1:(e) MIT title form
-    /tmp/r46-r2b-stable/fixture/LICENSE-MIT:5:(b) MIT boilerplate first line
+    /tmp/r46-r2b-mawk/fixture/LICENSE-MIT:1:(e) MIT title form
+    /tmp/r46-r2b-mawk/fixture/LICENSE-MIT:5:(b) MIT boilerplate first line
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 root LICENSE-MIT text as a source path (layer 1 only) -> exit 1
-    awk: fatal: cannot open file `/tmp/r46-r2b-stable/controls/does-not-exist.rs' for reading: No such file or directory
+    awk: cannot open "/tmp/r46-r2b-mawk/controls/does-not-exist.rs" (No such file or directory)
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 missing path -> exit 1
 --- layer-1 title-window boundaries re-exercised after a //! line (layer 2 does not apply) ---
-    /tmp/r46-r2b-stable/controls/l1-d-after-docs.rs:2:(d) Apache full-text title form
+    /tmp/r46-r2b-mawk/controls/l1-d-after-docs.rs:2:(d) Apache full-text title form
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 l1: //! then Apache title + adjacent Version line -> exit 1
 PASS  S2 l1: //! then Apache title, Version 4 lines later -> exit 0
-    /tmp/r46-r2b-stable/controls/l1-e-after-docs.rs:2:(e) MIT title form
+    /tmp/r46-r2b-mawk/controls/l1-e-after-docs.rs:2:(e) MIT title form
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 l1: //! then MIT title + adjacent Copyright (c) -> exit 1
 PASS  S2 l1: //! then MIT title, Copyright (c) 3 lines later -> exit 0
-    /tmp/r46-r2b-stable/controls/doc-spdx.rs:1:(a) SPDX-License-Identifier:
+    /tmp/r46-r2b-mawk/controls/doc-spdx.rs:1:(a) SPDX-License-Identifier:
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 l1: //! SPDX-License-Identifier in a doc comment -> exit 1
 --- layer-2 negative controls (expect 1) ---
-    /tmp/r46-r2b-stable/controls/ff-licensed.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/ff-licensed.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 audit-fable counterexample: // Licensed under the MIT license (see LICENSE) -> exit 1
-    /tmp/r46-r2b-stable/controls/ff-copyright-licensed.rs:1:(f) license, copyright or SPDX term in the leading comment block
-    /tmp/r46-r2b-stable/controls/ff-copyright-licensed.rs:2:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/ff-copyright-licensed.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/ff-copyright-licensed.rs:2:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 audit-codex counterexample: // Copyright … / // Licensed under MIT -> exit 1
-    /tmp/r46-r2b-stable/controls/clap-header.rs:1:(f) license, copyright or SPDX term in the leading comment block
-    /tmp/r46-r2b-stable/controls/clap-header.rs:2:(f) license, copyright or SPDX term in the leading comment block
-    /tmp/r46-r2b-stable/controls/clap-header.rs:3:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/clap-header.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/clap-header.rs:2:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/clap-header.rs:3:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 clap_builder/src/lib.rs lines 1-6 verbatim (MIT-only header) -> exit 1
-    /tmp/r46-r2b-stable/controls/pointer.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/pointer.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 pointer: // See LICENSE-MIT and LICENSE-APACHE -> exit 1
-    /tmp/r46-r2b-stable/controls/copyright-sign.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/copyright-sign.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 copyright sign: // © 2026 -> exit 1
-    /tmp/r46-r2b-stable/controls/circled-c.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/circled-c.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 circled c: // ⓒ 2026 -> exit 1
-    /tmp/r46-r2b-stable/controls/paren-c.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/paren-c.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 paren c: // (c) 2026 -> exit 1
-    /tmp/r46-r2b-stable/controls/block-header.rs:2:(f) license, copyright or SPDX term in the leading comment block
-    /tmp/r46-r2b-stable/controls/block-header.rs:3:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/block-header.rs:2:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/block-header.rs:3:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 block comment header /* … Copyright … Licensed … */ -> exit 1
-    /tmp/r46-r2b-stable/controls/block-oneline.rs:1:(a) SPDX-License-Identifier:
-    /tmp/r46-r2b-stable/controls/block-oneline.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/block-oneline.rs:1:(a) SPDX-License-Identifier:
+    /tmp/r46-r2b-mawk/controls/block-oneline.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 one-line block comment with SPDX tag (layers 1 and 2) -> exit 1
-    /tmp/r46-r2b-stable/controls/shebang-header.rs:2:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/shebang-header.rs:2:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 shebang line then // Licensed under MIT -> exit 1
-    /tmp/r46-r2b-stable/controls/blank-header.rs:3:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/blank-header.rs:3:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 blank lines then // Licensed under MIT -> exit 1
-    /tmp/r46-r2b-stable/controls/four-slash-header.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/four-slash-header.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 //// (four-slash plain comment) Licensed under MIT -> exit 1
-    /tmp/r46-r2b-stable/controls/fp-word.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/fp-word.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 false-positive cost: // Parses driver license plates. -> exit 1
 --- layer-2 license-name terms (bounded) ---
-    /tmp/r46-r2b-stable/controls/name-released-mit.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/name-released-mit.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 name: // Released under MIT -> exit 1
-    /tmp/r46-r2b-stable/controls/name-bare-expression.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/name-bare-expression.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 name: // MIT OR Apache-2.0 (bare expression) -> exit 1
-    /tmp/r46-r2b-stable/controls/name-apache-terms.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/name-apache-terms.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 name: // Distributed under the Apache-2.0 terms -> exit 1
-    /tmp/r46-r2b-stable/controls/fp-bsd.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/fp-bsd.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 false-positive cost: // BSD sockets wrapper -> exit 1
 PASS  S2 bound: // Commit hook helpers (mit inside commit) -> exit 0
@@ -200,9 +200,9 @@ PASS  S2 legitimate leading comment: // Generated by build.rs -> exit 0
 
 === S3 several files through one xargs/awk invocation ===
 PASS  S3 all five fixture .rs files plus clean and empty in one batch -> exit 0
-    /tmp/r46-r2b-stable/controls/clap-header.rs:1:(f) license, copyright or SPDX term in the leading comment block
-    /tmp/r46-r2b-stable/controls/clap-header.rs:2:(f) license, copyright or SPDX term in the leading comment block
-    /tmp/r46-r2b-stable/controls/clap-header.rs:3:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/clap-header.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/clap-header.rs:2:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/controls/clap-header.rs:3:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S3 clean, clap header, clean in one batch -> exit 1
 PASS  S3 diagnostic names the offending file, line 1
@@ -298,8 +298,8 @@ PASS  S8 docs-only cargo build -> exit 0
 PASS  S8 docs-only cargo fmt --all -- --check -> exit 0
 PASS  S8 docs-only cargo doc --no-deps -> exit 0
 PASS  S8 docs-only crate docs rendered (target/doc/docs_only/index.html) -> found 'R46_LOWQ_DOCS_ONLY'
-    /tmp/r46-r2b-stable/lowq/header-first/src/lib.rs:1:(a) SPDX-License-Identifier:
-    /tmp/r46-r2b-stable/lowq/header-first/src/lib.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    /tmp/r46-r2b-mawk/lowq/header-first/src/lib.rs:1:(a) SPDX-License-Identifier:
+    /tmp/r46-r2b-mawk/lowq/header-first/src/lib.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S8 header-first src/lib.rs is rejected by the checker (forms a and f) -> exit 1
 PASS  S8 docs-only src/lib.rs passes the checker -> exit 0

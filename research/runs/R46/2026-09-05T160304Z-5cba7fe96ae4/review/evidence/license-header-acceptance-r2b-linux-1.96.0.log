@@ -1,6 +1,6 @@
 
 === S0 toolchain and host ===
-2026-09-06T05:39:31Z
+2026-09-06T05:41:41Z
 Linux lima-ubuntu 6.17.0-40-generic #40-Ubuntu SMP PREEMPT_DYNAMIC Fri Jun 19 16:24:16 UTC 2026 aarch64 GNU/Linux
 Ubuntu 25.10
 rustc 1.96.0 (ac68faa20 2026-05-25)
@@ -13,7 +13,7 @@ jq-1.8.1
 GNU bash, version 5.2.37(1)-release (aarch64-unknown-linux-gnu)
 runner:  /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R46/2026-09-05T160304Z-5cba7fe96ae4/review/empirical
 work:    /tmp/r46-r2b-1.96.0
-checker-v2.sh sha256:    075c08b10f9a8f4f4349f56faa61a3d83776fdd145590b6062c26293f84aedf6
+checker-v2.sh sha256:    7cad28603782ad08a2cbf77e2bb4443e4dcefe1e84f8417f7ca5de0e3e4451b6
 acceptance-v2.sh sha256: 54765e20d067969cb25b7a549c09144fa5b25bf665ab3ebd3f9f713e156f87ac
 LICENSE-APACHE sha256:   cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30
 LICENSE-MIT sha256:      2c0355d3d12067adf3b1a5e91e67dd3709cd8fb0df3adbfb0ae60508d47de952
@@ -24,7 +24,7 @@ PASS  S0 layer 1 check_file is byte-identical to raw/codex.md lines 430-460
     license = "MIT OR Apache-2.0"
        Compiling r46-fixture v0.1.0 (/tmp/r46-r2b-1.96.0/fixture)
        Compiling r46-web v0.1.0 (/tmp/r46-r2b-1.96.0/fixture/crates/r46-web)
-        Finished `test` profile [unoptimized + debuginfo] target(s) in 0.22s
+        Finished `test` profile [unoptimized + debuginfo] target(s) in 0.30s
          Running unittests src/lib.rs (/tmp/r46-r2b-1.96.0/target/debug/deps/r46_fixture-471a51b228793bd1)
     
     running 1 test
@@ -175,6 +175,23 @@ PASS  S2 //// (four-slash plain comment) Licensed under MIT -> exit 1
     /tmp/r46-r2b-1.96.0/controls/fp-word.rs:1:(f) license, copyright or SPDX term in the leading comment block
     unexpected prohibited per-file license form or header-check failure
 PASS  S2 false-positive cost: // Parses driver license plates. -> exit 1
+--- layer-2 license-name terms (bounded) ---
+    /tmp/r46-r2b-1.96.0/controls/name-released-mit.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 name: // Released under MIT -> exit 1
+    /tmp/r46-r2b-1.96.0/controls/name-bare-expression.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 name: // MIT OR Apache-2.0 (bare expression) -> exit 1
+    /tmp/r46-r2b-1.96.0/controls/name-apache-terms.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 name: // Distributed under the Apache-2.0 terms -> exit 1
+    /tmp/r46-r2b-1.96.0/controls/fp-bsd.rs:1:(f) license, copyright or SPDX term in the leading comment block
+    unexpected prohibited per-file license form or header-check failure
+PASS  S2 false-positive cost: // BSD sockets wrapper -> exit 1
+PASS  S2 bound: // Commit hook helpers (mit inside commit) -> exit 0
+PASS  S2 bound: // Template for new modules (mpl inside template) -> exit 0
+PASS  S2 bound: // Misc helpers (isc inside misc) -> exit 0
+PASS  S2 bound: // Simple parser (mpl inside simple) -> exit 0
 --- passes by design (expect 0; each is a stated non-claim) ---
 PASS  S2 license sentence inside //! crate docs -> exit 0
 PASS  S2 header after an inner attribute line -> exit 0
@@ -288,6 +305,6 @@ PASS  S8 header-first src/lib.rs is rejected by the checker (forms a and f) -> e
 PASS  S8 docs-only src/lib.rs passes the checker -> exit 0
 
 === summary ===
-summary: PASS=69 FAIL=0
+summary: PASS=77 FAIL=0
 RESULT: PASS
 RUNNER EXIT: 0
