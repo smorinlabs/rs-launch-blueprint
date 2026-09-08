@@ -163,3 +163,38 @@ not authoritative for Sonar, and `sonar-deep-research`'s absence from it is not
 evidence. Perplexity offers no free probe for it, because any POST to
 `/async/chat/completions` creates a billable job. Its access is first proven by
 the R38 pilot itself, which remains the correct place to spend that money.
+
+### Deep-research models exercised 2026-09-08
+
+The free probes above prove a model resolves; these are the paid runs that prove
+it answers. One trivial question ("What color is the sky?") per model through
+`scripts/doxa_no_retry.py`, each in its own single-provider mode so cost could be
+attributed. Command record and cost breakdowns:
+[`probes/provider-verification-2026-09-08.txt`](probes/provider-verification-2026-09-08.txt).
+
+| Model | Result | Cost | Note |
+|---|---|---|---|
+| `gpt-5.6-sol` | answered in 17 s | USD ~0.028 | the API confirms `background: true` and `tools: ['web_search']`, so the launcher shim works on a real deep-research job |
+| `sonar-deep-research` | answered in 61 s | USD 0.329 (self-reported) | access proven; previously the one unverified model |
+| `deep-research-preview-04-2026` | **blocked at submission** | USD 0.00 | stale SDK, not credentials |
+
+**Gemini is blocked by a dependency, not a key.** The Interactions API returns
+HTTP 400: the legacy schema is retired and `google-genai >= 2.0.0` is required,
+while the Doxa environment pins 1.74.0. The same key authenticates, reaches the
+model, and answers an immediate call. Doxa's guarded import of the private
+`google.genai._interactions` module degrades rather than crashing, but the
+deep-research call shape may still need changes. That work belongs to the
+doxa-research repository.
+
+**Perplexity cost is dominated by searches, not answer length.** At
+`reasoning_effort = "low"` the run still issued 40 search queries (USD 0.20) and
+39,751 reasoning tokens (USD 0.119); `max_tokens = 256` capped only the visible
+completion. The builtin default is `high`, which Doxa documents at about
+USD 1.32 per query, so the lever is worth roughly 4x but does not stop the loop.
+
+**Two consequences for the R38 pilot.** Its three-engine fan-out cannot succeed
+until the Gemini SDK issue is resolved, and `doxa-pilot.config.toml` currently
+overrides only the OpenAI namespace, so the Perplexity leg would run at `high`.
+Registered native keys such as `reasoning_effort` must be written flat in
+`[modes.<mode>.<provider>]`; a nested table of the same name is rejected as an
+unsupported provider parameter.

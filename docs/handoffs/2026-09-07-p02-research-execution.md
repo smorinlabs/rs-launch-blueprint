@@ -61,12 +61,20 @@ with sources, Gemini `4`. `doxa providers check` reports `complete: true`.
 Claude credits are evidenced by this session running, though subagent dispatch
 has not been separately retested since the outage.
 
-Two model-access facts follow from free probes. `gpt-5.6-sol` and
-`deep-research-preview-04-2026` are both accessible, and `o3-deep-research`
-still returns `model_not_found`, so the shim remains required. Perplexity's
-`sonar-deep-research` is **not proven**: Perplexity exposes no free probe, and
-its `/v1/models` catalog lists only third-party gateway models, so it says
-nothing about Sonar. The R38 pilot is the first thing that will exercise it.
+The deep-research models were then exercised with a trivial question.
+`gpt-5.6-sol` answered in 17 seconds for about USD 0.03, with the API
+confirming the launcher shim set `background: true` and `tools: ['web_search']`.
+`sonar-deep-research` answered in 61 seconds for a self-reported USD 0.329,
+settling the one model whose access had never been proven.
+
+**Gemini deep research is blocked, and it is not a credentials problem.** The
+Interactions API returns HTTP 400 because the legacy schema is retired and
+`google-genai >= 2.0.0` is required, while the Doxa environment pins 1.74.0.
+Nothing was billed; both attempts aborted before submission. The same key
+authenticates and answers an immediate call. Fixing it is work in the
+doxa-research repository, and until it lands **the R38 pilot's three-engine
+fan-out cannot succeed**. `o3-deep-research` still returns `model_not_found`,
+so the shim remains required regardless.
 
 Approved ceilings are unchanged: USD 40 for pilot batch `B0-R38`, USD 300 total
 for the remaining Deep operations, authorization reference

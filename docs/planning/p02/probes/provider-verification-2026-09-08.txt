@@ -49,3 +49,68 @@ sonar-deep-research from it is not evidence of anything. Perplexity exposes no
 free probe for it: any POST to /async/chat/completions creates a billable job
 (Doxa's mode description quotes roughly USD 1.32 per query). Its access is
 first proven by the R38 pilot itself.
+
+================================================================================
+PART 2 — deep-research models exercised with a trivial question
+================================================================================
+Question: "What color is the sky?"  System prompt: "Answer in one short sentence
+from general knowledge. Do not perform extensive research."
+Every call went through scripts/doxa_no_retry.py with a cost-capped config
+(one single-provider mode each, so cost could be measured in isolation).
+
+--- OpenAI: gpt-5.6-sol — WORKS, USD ~0.028 ---
+operation research-20260907-223133-2f63d32f9227492b
+job resp_009a8b2dadb6d4c5006a9f9db63c3c87d09f262c54bae57029, 17 seconds
+answer: "The sky usually appears blue during the day."
+Retrieved from the API: model gpt-5.6-sol, background true, tools ['web_search'],
+max_tool_calls 1 — confirming the launcher shim rewrote the tool type and
+forced background mode for a model whose name carries no "deep-research".
+usage: 4467 input + 13 output tokens = USD 0.0181 in tokens, plus at most one
+web_search call at USD 10/1k = USD 0.01.
+
+--- Perplexity: sonar-deep-research — WORKS, USD 0.32914 (self-reported) ---
+operation research-20260907-223334-2b49c64bedb24d99
+request 68c8aa9c-8b88-4689-a573-6d09387cafad, 61 seconds
+Cost breakdown returned by the API:
+  reasoning       39,751 tok  0.11925
+  search queries      40 qry  0.20000
+  citations        4,811 tok  0.00962
+  output              28 tok  0.00022
+  input               22 tok  0.00004
+  total                       0.32914
+Set at reasoning_effort=low against the builtin default of high, which Doxa
+documents at ~USD 1.32/query: the lever is real and roughly 4x. It does NOT
+stop the search loop — 40 searches ran anyway, and max_tokens=256 capped only
+the visible completion, not reasoning or citation tokens. Budget searches, not
+answer length.
+
+--- Gemini: deep-research-preview-04-2026 — BLOCKED, USD 0.00 ---
+Two attempts, both aborted before submission (checkpoint providers: {}).
+  HTTP 400 invalid_request: "The legacy Interactions API schema is no longer
+  supported. Please upgrade your google-genai Python SDK to version >= 2.0.0"
+  https://ai.google.dev/gemini-api/docs/interactions-breaking-changes-may-2026
+This is NOT a credential problem: the same key authenticates (GET /v1beta/models
+-> 200), reaches deep-research-preview-04-2026 (GET .../models/<id> -> 200), and
+answered the gemini_quick immediate call in Part 1.
+Diagnosis: the Doxa environment has google-genai 1.74.0 (its uv.lock pin);
+pyproject already allows >=1.74.0 and PyPI's latest is 2.22.0. Doxa also
+imports the PRIVATE module google.genai._interactions, but that import is
+guarded by try/except ImportError and degrades to coarser error classification,
+so an upgrade will not hard-crash on import. The DR call shape itself
+(client.aio.interactions.create(agent=, input=, background=, store=)) may still
+need changes, since Google describes this as a breaking schema change.
+Fixing it is work in the doxa-research repository, not this one.
+
+--- configuration lesson, applies to the pilot config ---
+Registered native keys (reasoning_effort, max_tokens, max_tool_calls, ...) go
+FLAT in [modes.<mode>.<provider>]. The framework validates them into a
+provider_request bucket and to_legacy_config nests them under the provider
+namespace itself. Writing a nested [modes.<mode>.perplexity.perplexity] table
+is rejected with "Unsupported provider parameter", the same guard that rejects
+`background` in the openai namespace.
+
+--- consequence for the R38 pilot ---
+docs/planning/p02/doxa-pilot.config.toml overrides only the OpenAI namespace.
+As it stands the pilot's three-engine fan-out cannot succeed: Gemini fails at
+submission until the SDK issue is resolved, and Perplexity runs at the builtin
+reasoning_effort=high, roughly USD 1.32 for that leg alone.
