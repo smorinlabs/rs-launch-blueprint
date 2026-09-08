@@ -176,9 +176,12 @@ attributed. Command record and cost breakdowns:
 |---|---|---|---|
 | `gpt-5.6-sol` | answered in 17 s | USD ~0.028 | the API confirms `background: true` and `tools: ['web_search']`, so the launcher shim works on a real deep-research job |
 | `sonar-deep-research` | answered in 61 s | USD 0.329 (self-reported) | access proven; previously the one unverified model |
-| `deep-research-preview-04-2026` | **blocked at submission** | USD 0.00 | stale SDK, not credentials |
+| `deep-research-preview-04-2026` | **blocked, then fixed**; answered in 6m42s once the SDK was upgraded | USD 0.00 blocked / one full run after | stale SDK, not credentials; fixed upstream in doxa-research PR #146 |
 
-**Gemini is blocked by a dependency, not a key.** The Interactions API returns
+**Gemini was blocked by a dependency, not a key — now resolved (2026-09-08).**
+doxa-research PR #146 raised the floor to `google-genai>=2.0.0` (lock 2.22.0) and
+the local environment was reinstalled from merged main, after which a full
+deep-research run returned a 59 KB report with 41 sources. Original diagnosis: The Interactions API returns
 HTTP 400: the legacy schema is retired and `google-genai >= 2.0.0` is required,
 while the Doxa environment pins 1.74.0. The same key authenticates, reaches the
 model, and answers an immediate call. Doxa's guarded import of the private

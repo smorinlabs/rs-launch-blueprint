@@ -67,14 +67,13 @@ confirming the launcher shim set `background: true` and `tools: ['web_search']`.
 `sonar-deep-research` answered in 61 seconds for a self-reported USD 0.329,
 settling the one model whose access had never been proven.
 
-**Gemini deep research is blocked, and it is not a credentials problem.** The
-Interactions API returns HTTP 400 because the legacy schema is retired and
-`google-genai >= 2.0.0` is required, while the Doxa environment pins 1.74.0.
-Nothing was billed; both attempts aborted before submission. The same key
-authenticates and answers an immediate call. Fixing it is work in the
-doxa-research repository, and until it lands **the R38 pilot's three-engine
-fan-out cannot succeed**. `o3-deep-research` still returns `model_not_found`,
-so the shim remains required regardless.
+Gemini deep research was blocked by a stale SDK, **fixed and merged on
+2026-09-08**: doxa-research PR #146 raised the floor to `google-genai>=2.0.0`
+(lock 2.22.0), and the local environment was reinstalled from merged main. A
+full run then returned a 59 KB report with 41 sources in 6m42s. **All three
+deep-research engines are now proven working**, so the R38 pilot's fan-out is
+unblocked. `o3-deep-research` still returns `model_not_found`, so the shim
+remains required regardless.
 
 Approved ceilings are unchanged: USD 40 for pilot batch `B0-R38`, USD 300 total
 for the remaining Deep operations, authorization reference

@@ -114,3 +114,36 @@ docs/planning/p02/doxa-pilot.config.toml overrides only the OpenAI namespace.
 As it stands the pilot's three-engine fan-out cannot succeed: Gemini fails at
 submission until the SDK issue is resolved, and Perplexity runs at the builtin
 reasoning_effort=high, roughly USD 1.32 for that leg alone.
+
+================================================================================
+PART 3 — Gemini unblocked; fix landed upstream in doxa-research
+================================================================================
+The Part 2 Gemini failure was a stale SDK, and it is now fixed upstream.
+
+doxa-research PR #146 "fix(gemini): require google-genai>=2.0.0 for the new
+Interactions schema", merged 2026-09-08 as merge commit 2a0fa8f.
+  - floor raised to google-genai>=2.0.0; lock moved 1.74.0 -> 2.22.0
+  - ./doxa (the PEP 723 launcher that doxa_test runs as DOXA_EXECUTABLE)
+    carried its own inline pin and was raised too; Codex caught that gap
+  - the private error module moved from google.genai._interactions to
+    google.genai._gaos.lib.compat_errors; gemini.py resolves it newest-first
+  - the submit call itself needed no change: CreateAgentInteraction in 2.x
+    still accepts agent, input, background and store
+  - upstream gates: 1595 pytest passed, ruff + ty clean, 75-case integration
+    suite green, two review threads (Copilot, Codex) fixed and resolved
+
+Local environment reinstalled from merged main:
+  /Users/stevemorin/c/doxa-research at 2a0fa8f; uv sync
+  google-genai 1.74.0 -> 2.22.0, doxa-research 3.1.2 -> 3.2.0
+  (this also clears the stale installed-metadata mismatch recorded on
+  2026-09-04, where the venv reported 3.1.2 against source 3.2.0)
+
+Final acceptance through the reinstalled shared venv, 2026-09-08:
+  smoke_gemini / deep-research-preview-04-2026 -> completed in 6m42s,
+  operation research-20260907-232019-3d0ca2a72eb84939,
+  59,107-byte report with 41 sources.
+
+All three deep-research engines are now proven working end to end:
+  gpt-5.6-sol  17s   USD ~0.03
+  sonar-deep-research  61s   USD 0.329 (self-reported)
+  deep-research-preview-04-2026  ~7min  no per-call cost report available
