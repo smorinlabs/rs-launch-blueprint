@@ -1,0 +1,51 @@
+Provider credential and model-access verification
+Date: 2026-09-08 (UTC) / 2026-09-07 22:23 local
+Worktree: /Users/stevemorin/c/rs-launch-blueprint-p02-plan-fork-researchp02-execution-0907
+Branch: fork/researchp02-execution-0907 at cac064a
+Purpose: confirm the three provider blockers recorded on 2026-09-05 are cleared.
+No API key value was printed, logged or copied at any point.
+
+--- key resolution (names and lengths only) ---
+OPENAI_API_KEY set; PERPLEXITY_API_KEY set; GEMINI_API_KEY set; ANTHROPIC_API_KEY set
+$ doxa providers check --json
+{"status": "ok", "data": {"missing": [], "complete": true}}
+
+--- free authentication probes (no tokens billed) ---
+GET https://api.openai.com/v1/models                          -> 200
+GET https://generativelanguage.googleapis.com/v1beta/models   -> 200
+GET https://api.perplexity.ai/async/chat/completions          -> 200
+  (this endpoint returned 401 insufficient_quota on 2026-09-05)
+
+--- wrapper self-verify, offline ---
+$ <doxa-venv>/bin/python scripts/doxa_no_retry.py --verify --json
+patched: True | openai_sdk_max_retries: 0 | tenacity attempts: all 1 | responses_create_shim: True
+
+--- trivial paid calls, one per provider, through the wrapper ---
+$ <doxa-venv>/bin/python scripts/doxa_no_retry.py ask -m <mode> -q "What is 2+2? Reply with only the number." -Q -T 90 --out <file>
+
+mode              model                    exit  returned        operation id (first call)
+openai_quick      gpt-4.1-mini             0     "4"             research-20260907-222313-47c596d076234da7
+perplexity_quick  sonar                    0     "4" + sources   research-20260907-222323-53cef2bdc18e4edb
+gemini_quick      gemini-2.5-flash-lite    0     "4"             research-20260907-222326-fe90c651d34b4c6c
+
+Each provider reported status completed with last_error null and retry_count 0.
+Two calls were made per provider (one "ok" probe, one "2+2" probe); estimated
+total cost well under USD 0.05, dominated by Perplexity's two searches.
+
+--- pilot deep-research model access (free; no job created) ---
+POST /v1/responses with "input": [] returns missing_required_parameter when the
+model resolves and model_not_found when it does not.
+
+gpt-5.6-sol                          -> missing_required_parameter  (ACCESSIBLE)
+o3-deep-research                     -> model_not_found             (shut down 2026-07-23, as recorded)
+GET /v1beta/models/deep-research-preview-04-2026 -> 200             (ACCESSIBLE)
+sonar-deep-research                  -> NOT PROVEN
+
+Perplexity's GET /v1/models lists 49 third-party gateway models (anthropic/*,
+google/*, perplexity/deepseek-*) and contains no sonar* entry at all, yet the
+first-party `sonar` model answered successfully in the call above. That catalog
+is therefore not authoritative for Sonar, and the absence of
+sonar-deep-research from it is not evidence of anything. Perplexity exposes no
+free probe for it: any POST to /async/chat/completions creates a billable job
+(Doxa's mode description quotes roughly USD 1.32 per query). Its access is
+first proven by the R38 pilot itself.

@@ -129,3 +129,37 @@ Remaining gaps after this re-inspection: the owner's spend approval with the
 provider-side caps set; Perplexity access (first proven by the pilot itself);
 the Codex companion background lifecycle (unused by the pilot); and the P01
 `v0.1.0` tag gate, which precedes any binding research.
+
+## Provider verification 2026-09-08 (fork session; controller Claude Opus 5)
+
+The three billing failures recorded on 2026-09-05 are cleared. This is the
+first evidence in this program that a Doxa provider call both authenticates and
+bills: every previous check proved key presence or endpoint reachability only.
+Full command record: [`probes/provider-verification-2026-09-08.txt`](probes/provider-verification-2026-09-08.txt).
+
+| Provider | Trivial paid call | Result | What it proves |
+|---|---|---|---|
+| OpenAI | `openai_quick` / `gpt-4.1-mini` | returned `4`, operation `research-20260907-222313-47c596d076234da7` | auth and credits; the 2026-09-05 `credit_balance_exhausted` is cleared |
+| Perplexity | `perplexity_quick` / `sonar` | returned `4` with sources, operation `research-20260907-222323-53cef2bdc18e4edb` | auth and quota; the 2026-09-05 `insufficient_quota` is cleared |
+| Gemini | `gemini_quick` / `gemini-2.5-flash-lite` | returned `4`, operation `research-20260907-222326-fe90c651d34b4c6c` | auth and billing; Gemini had never been reached before |
+
+`doxa providers check --json` now returns `{"missing": [], "complete": true}`,
+and every call ran through `scripts/doxa_no_retry.py`, whose self-verify
+reported one create attempt per provider and the `gpt-5.6-sol` shim active.
+
+Pilot model access, probed without creating any job:
+
+| Model | Probe | Result |
+|---|---|---|
+| `gpt-5.6-sol` | `POST /v1/responses` with an empty `input` | `missing_required_parameter`, so the model resolves: accessible |
+| `o3-deep-research` | same | `model_not_found`, confirming the 2026-07-23 shutdown and the need for the shim |
+| `deep-research-preview-04-2026` | `GET /v1beta/models/...` | HTTP 200: accessible |
+| `sonar-deep-research` | none available | **not proven** |
+
+Perplexity's `GET /v1/models` returns 49 third-party gateway models
+(`anthropic/*`, `google/*`, `perplexity/deepseek-*`) and no `sonar*` entry at
+all, while first-party `sonar` answered successfully. That catalog is therefore
+not authoritative for Sonar, and `sonar-deep-research`'s absence from it is not
+evidence. Perplexity offers no free probe for it, because any POST to
+`/async/chat/completions` creates a billable job. Its access is first proven by
+the R38 pilot itself, which remains the correct place to spend that money.

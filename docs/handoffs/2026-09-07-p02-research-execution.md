@@ -44,17 +44,33 @@ for t in test-research-validation test-research-runner test-research-answer-pars
 done                                                      # expect: OK from each
 ```
 
-## 🛑 Three blockers, all owner actions
+## 🛑 Three blockers — all cleared 2026-09-08
 
-Nothing below can finish until these clear. All three stopped work on 2026-09-05.
+All three stopped work on 2026-09-05 and have since been verified working; the
+original symptoms are kept below so the record reads honestly. Evidence:
+`docs/planning/p02/probes/provider-verification-2026-09-08.txt` and the dated
+section at the end of `docs/planning/p02/tool-readiness.md`.
 
 1. **Claude usage credits exhausted.** Terminated three subagents mid-task (HTTP 429, "You're out of usage credits"). This gates every synthesis and judgment audit.
 2. **OpenAI credits exhausted.** The R38 pilot's OpenAI job was created and failed immediately with `credit_balance_exhausted`; zero tokens were billed. Job id `resp_004c14d621f391d2006a9c3ad2f14887d0b228550d2c17554f`.
 3. **Perplexity quota exhausted.** `GET https://api.perplexity.ai/async/chat/completions` returns HTTP 401 `insufficient_quota`.
 
-Gemini was never reached, so its access remains unproven. Approved ceilings are
-unchanged: USD 40 for pilot batch `B0-R38`, USD 300 total for the remaining Deep
-operations, authorization reference `OWNER-2026-09-05-P02-EXEC`.
+**Cleared 2026-09-08.** One trivial paid call per provider through
+`scripts/doxa_no_retry.py` returned real content: OpenAI `4`, Perplexity `4`
+with sources, Gemini `4`. `doxa providers check` reports `complete: true`.
+Claude credits are evidenced by this session running, though subagent dispatch
+has not been separately retested since the outage.
+
+Two model-access facts follow from free probes. `gpt-5.6-sol` and
+`deep-research-preview-04-2026` are both accessible, and `o3-deep-research`
+still returns `model_not_found`, so the shim remains required. Perplexity's
+`sonar-deep-research` is **not proven**: Perplexity exposes no free probe, and
+its `/v1/models` catalog lists only third-party gateway models, so it says
+nothing about Sonar. The R38 pilot is the first thing that will exercise it.
+
+Approved ceilings are unchanged: USD 40 for pilot batch `B0-R38`, USD 300 total
+for the remaining Deep operations, authorization reference
+`OWNER-2026-09-05-P02-EXEC`.
 
 ## 📎 Artifacts and sources of truth
 
@@ -262,7 +278,7 @@ them by name and the readiness records only ever list resolution state.
 
 ## 👉 First action
 
-1. Clear the three blockers above; nothing else unblocks the pipeline.
+1. The three blockers are cleared as of 2026-09-08; confirm nothing has lapsed since.
 2. Run the verification block under "Where you are" and confirm it is green.
 3. Dispatch R06's synthesis (it is the only item whose reports are complete and
    whose decision is unwritten), and in parallel start Opus research for the
