@@ -18,6 +18,7 @@ run or been resolved.
 | [runner-guide.md](runner-guide.md) | Local state and publication commands; no provider adapter |
 | [dependency-reconciliation.md](dependency-reconciliation.md) | Compatibility review accompanying the prompt migration |
 | [tool-readiness.md](tool-readiness.md) | Observed tool routes; the dated re-inspection records what became verified |
+| [doxa-usage-guide.md](doxa-usage-guide.md) | How to run paid Doxa calls: the launcher, config key placement, per-engine cost and latency, recovery by operation ID |
 | [paid-envelope.md](paid-envelope.md) | Prepared R38 pilot spend envelope, price references and the exact approval needed |
 | [doxa-pilot.config.toml](doxa-pilot.config.toml) | Doxa configuration for the pilot, always launched through `scripts/doxa_no_retry.py` |
 | [baseline-samples.md](baseline-samples.md) | Source-backed leads; full baseline adjudication is still open |
