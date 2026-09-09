@@ -1,0 +1,18 @@
+# uv venv + template-press install (linux leg: Linux 6.17.0-41-generic aarch64, Ubuntu 25.10), 2026-09-09T07:05:52Z
+# NOTE: VM is aarch64; GitHub ubuntu-latest runners are x86_64.
+uv 0.12.11 (aarch64-unknown-linux-gnu)
+Using CPython 3.13.7 interpreter at: /usr/bin/python3.13
+Creating virtual environment at: venv-linux
+Activate with: source venv-linux/bin/activate
+Using Python 3.13.7 environment at: venv-linux
+Resolved 1 package in 512ms
+Prepared 1 package in 173ms
+Installed 1 package in 5ms
+ + template-press==4.0.1
+press 4.0.1
+exit=0
+Using Python 3.13.7 environment at: venv-linux
+Name: template-press
+Version: 4.0.1
+Requires:
+Required-by:

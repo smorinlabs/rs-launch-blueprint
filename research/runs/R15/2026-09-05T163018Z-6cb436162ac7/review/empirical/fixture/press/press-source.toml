@@ -1,0 +1,8 @@
+[identity]
+package_name = "rs_launch_blueprint"
+repo_name    = "rs-launch-blueprint"
+app_name     = "rslbp"
+author       = "Fixture Author"
+email        = "fixture@example.com"
+owner        = "smorinlabs"
+display_name = "Rs Launch Blueprint"

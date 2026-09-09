@@ -1,0 +1,96 @@
+# uv venv + template-press install (host: macOS 26.4 arm64), 2026-09-09T06:56:22Z
+uv 0.11.29 (901092ee1 2026-07-15 aarch64-apple-darwin)
+Using CPython 3.13.14
+Creating virtual environment at: venv
+Activate with: source venv/bin/activate
+Using Python 3.13.14 environment at: venv
+Resolved 1 package in 201ms
+Installed 1 package in 4ms
+ + template-press==4.0.1
+--- press --version
+press 4.0.1
+exit=0
+--- press --help
+usage: press <command> [options]
+
+commands:
+  rebrand      press an identity onto a target repo (press rebrand --help)
+  verify       check that a template presses cleanly (press verify --help)
+  check-tools  report whether declared commands resolve (press check-tools --help)
+  provision    configure a target's features (coming in M6)
+  status       report a target's provisioned state (coming in M6)
+
+--- press verify --help
+usage: press verify [-h] [--target TARGET] [--json]
+
+``press verify`` — the hermetic sandbox self-press leak check (Task 12). The
+architectural KEYSTONE of `press verify`: it ties every prior module together
+and, crucially, presses via the HERMETIC ``engine.apply`` — NOT the rebrand
+``_press`` path. There is no doctor, no receipt, no lockfile regeneration:
+verify must be a pure, repeatable observation, never a mutation. Flow
+(Decisions 2-6): 1. Load the target's committed FROM identity (``press/press-
+source.toml``). A missing config, a malformed one, or a control-path symlink
+-> **2** with NO writes to the real target. 2. Preflight against the REAL
+target (never the sandbox, never ``_resolve_source``): ``mismatches(source,
+discover(target))`` plus a PRESENCE check — for every field discovery could
+not confirm, the declared value must occur at least once in the target's
+``scan_paths`` corpus. A wholly-undiscoverable-and-absent identity is
+``unverifiable``. Any problem -> **2**. 3. Load the ``[verify]`` config
+(shared file with ``[rules]``). Any two SOURCE fields equal -> WARN; with
+``equal_fields == "error"`` the equality is remembered to force **1**. 4-8.
+Inside ``safety.owned_sandbox`` (so the sandbox is torn down): build a
+faithful copy (``make_sandbox``), press it toward a synthetic equality-
+preserving TO-identity (``synthesize_dest`` + hermetic ``apply``), re-stage
+the sandbox index so ``scan`` sees the pressed worktree (not stale renamed
+paths), ``verifier.scan`` for surviving SOURCE identity, then apply the
+source-anchored ignores. Exit: **2** for config/env/unverifiable; else **1**
+if any surviving finding, stale ignore, ``equal_fields == "error"`` collision,
+or unavailable submodule; else **0**. An env/tool error raised by the press is
+**2** (not **1**): the press could not complete, so verify cannot claim clean.
+
+options:
+  -h, --help       show this help message and exit
+  --target TARGET
+  --json
+--- press rebrand --help
+usage: press rebrand [-h] --target TARGET [--config CONFIG]
+                     [--source-config SOURCE_CONFIG] [--accept-discovery]
+                     [--dry-run] [--force] [--allow-dirty] [--verbose]
+
+press rebrand — point the press at a target repo (ARCH-01). Pipeline:
+preconditions → source identity (config-first, discovery validates) → answers
+→ plan → [--dry-run stops here] → apply → regenerate lockfiles → VERIFY (no-
+leak doctor) → receipt. Exit codes: 0 ok, 1 leaks found after apply (no
+receipt), 2 precondition/config error (no writes).
+
+options:
+  -h, --help            show this help message and exit
+  --target TARGET
+  --config CONFIG       answers TOML (TO identity)
+  --source-config SOURCE_CONFIG
+  --accept-discovery
+  --dry-run
+  --force               override safety guards, including an existing receipt
+                        or unavailable atomic rename support
+  --allow-dirty
+  --verbose             show the bounded reset content excerpts in the plan
+--- press check-tools --help
+usage: press check-tools [-h] --target TARGET
+
+press check-tools — declared-tool availability report (P04 D4). Resolves
+``argv[0]`` of every declared ``[[regenerate]]`` command plus ``git`` — the
+only tool press itself contributes after D1 — exactly as execution would (D2):
+path-qualified names against the TARGET root, bare names on the deny-by-
+default effective PATH. Reads config, writes nothing, executes nothing. Exit 0
+all found, 1 any missing, 2 config/usage error.
+
+options:
+  -h, --help       show this help message and exit
+  --target TARGET
+--- uv pip show
+Using Python 3.13.14 environment at: venv
+Name: template-press
+Version: 4.0.1
+Location: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R15/2026-09-05T163018Z-6cb436162ac7/review/empirical/venv/lib/python3.13/site-packages
+Requires:
+Required-by:

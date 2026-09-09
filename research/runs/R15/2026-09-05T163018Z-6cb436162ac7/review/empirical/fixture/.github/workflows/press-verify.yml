@@ -1,0 +1,33 @@
+# Press drift guard: `press verify` hermetically self-presses a sandbox copy
+# and scans for surviving identity (exit 1); config errors exit 2. This
+# workflow deliberately SHIPS to pressed forks and carries NO identity
+# literals; the template-only receipt guard lives in
+# template-receipt-guard.yml, which the press removes in forks.
+name: press-verify
+
+on:
+  pull_request:
+  merge_group:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  press-verify:
+    # ubuntu-latest, not a matrix: this workflow ships to generated
+    # repositories, and the check is a platform-independent text scan.
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v7
+        with:
+          python-version: "3.13"
+      - name: press verify
+        # The tool runs from the hash-pinned press/requirements.txt, never a
+        # floating uvx; Dependabot's pip ecosystem owns the pin.
+        run: |
+          uv venv --python 3.13
+          uv pip sync press/requirements.txt
+          uv run press verify
