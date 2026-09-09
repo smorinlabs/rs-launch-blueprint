@@ -14,7 +14,7 @@
 #
 # Usage: bash run-linux-leg.sh > ../evidence/<new-log-name>.log 2>&1
 # Always write a new log name; never overwrite an existing evidence log
-# (r1: lockfile-freshness-acceptance-linux.log; r2: …-linux.r2.log).
+# (r1: lockfile-freshness-acceptance-linux.log; r2: …-linux.r2.log; r3: …-linux.r3.log).
 set -u
 HERE=$(cd "$(dirname "$0")" && pwd)
 TMP=$(limactl shell ubuntu -- bash -lc 'mktemp -d /tmp/r41-synth-XXXXXX' 2>/dev/null | tr -d '\r' | tail -1)
@@ -30,6 +30,6 @@ echo "transferred files (sha256 computed in the VM):"
 (cd "$TMP" && sha256sum run-checks.sh fixture/scripts/check-cargo-lock.sh | sed "s/^/  /")
 echo "host provenance: rustup stable alias = $(rustup run stable rustc --version 2>&1); PATH cargo = $(command -v cargo)"
 export WORK_DIR="$TMP/.work"
-bash "$TMP/run-checks.sh" "floor-1.96.0=$(dirname "$(rustup which --toolchain 1.96.0 cargo)")" "stable-1.98.1=$(dirname "$(rustup which --toolchain stable cargo)")"
+bash "$TMP/run-checks.sh" "floor-1.96.0=$(dirname "$(rustup which --toolchain 1.96.0 cargo)")" "stable-$(rustup run stable cargo --version | cut -d " " -f2)=$(dirname "$(rustup which --toolchain stable cargo)")"
 echo "runner exit: $?"
 ' _ "$TMP"

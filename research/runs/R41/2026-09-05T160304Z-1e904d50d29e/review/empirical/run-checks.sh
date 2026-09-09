@@ -13,11 +13,25 @@
 # Revised 2026-09-05 after judgment audit r1 (finding F1): adds repository D
 # (Cargo's own `cargo package` output must not refuse) and case A7 (a staged
 # .cargo/config.toml triggers the check).
+# Revised 2026-09-09 after judgment audit r2 (finding F1): the script now runs a
+# conservative unlocked resolve (`cargo update --workspace`) and compares every
+# Cargo.lock with the index, restoring it afterwards. Every earlier case is kept;
+# the expectations that the design changed are: the spy asserts the new command
+# (A2, A3, A4, A7, B6, D2, D3b), a stale lock is refused by the script with exit 1
+# and the "out of date" message instead of Cargo's 101 (B1, C2c, D4), and the
+# repair uses the new remediation (B4). New: A1b/A5b (warm and cold cost of the
+# recommended command), B3e (unlocked `cargo metadata` as the alternative,
+# compared by diff stat), B5a2 (the unstaged-repair hazard is command-independent),
+# repository E (leaf workspace-member removal in both forms, the `--no-verify`
+# bypass with `--all` and the lock-only repair commit, lockfile normalization,
+# a `version = 3` lockfile, a repository with no lockfile) and repository F
+# (requirement change, member version bump, registry-edge removal, malformed manifest).
 #
 # Every case runs the fixture's scripts/check-cargo-lock.sh either directly or as a
 # real .git/hooks/pre-commit driven by `git commit`. CARGO_BIN points at a spy
 # wrapper that logs Cargo invocations and execs the real cargo on PATH, so the log
-# proves which command the hook ran (or that it ran none).
+# proves which command the hook ran (or that it ran none). No `sed -i` is used
+# (BSD and GNU sed differ); files are rewritten through a temporary copy.
 set -u
 HERE=$(cd "$(dirname "$0")" && pwd)
 FIXTURE="$HERE/fixture"
@@ -25,6 +39,7 @@ WORK_DIR="${WORK_DIR:-$HERE/.work}"
 ORIG_PATH="$PATH"
 PASS=0; FAIL=0; RECORD=0
 OUT=""; STATUS=0; WORK=""
+CMD='cargo update --workspace'   # what the spy log must show for the recommended design
 
 sha256_of() { if command -v sha256sum >/dev/null 2>&1; then sha256sum "$1" | cut -d' ' -f1; else shasum -a 256 "$1" | cut -d' ' -f1; fi; }
 now() { date -u +%Y-%m-%dT%H:%M:%SZ; }
@@ -38,6 +53,10 @@ expect_str() { # CASE DESC NEEDLE HAYSTACK
   if printf '%s' "$4" | grep -qF -- "$3"; then PASS=$((PASS+1)); echo "PASS [$1] $2: output contains '$3'"
   else FAIL=$((FAIL+1)); echo "FAIL [$1] $2: output lacks '$3'"; fi
 }
+expect_not_str() { # CASE DESC NEEDLE HAYSTACK
+  if printf '%s' "$4" | grep -qF -- "$3"; then FAIL=$((FAIL+1)); echo "FAIL [$1] $2: output contains '$3'"
+  else PASS=$((PASS+1)); echo "PASS [$1] $2: output lacks '$3'"; fi
+}
 expect_eq() { # CASE DESC A B
   if [ "$3" = "$4" ]; then PASS=$((PASS+1)); echo "PASS [$1] $2: $3 == $4"
   else FAIL=$((FAIL+1)); echo "FAIL [$1] $2: $3 != $4"; fi
@@ -45,6 +64,11 @@ expect_eq() { # CASE DESC A B
 record() { RECORD=$((RECORD+1)); echo "RECORD [$1] $2"; }
 real_seconds() { printf '%s\n' "$1" | awk '/^real /{print $2}' | tail -1; }
 spy_log() { cat "$CARGO_SPY_LOG"; }
+lock_stat() { git diff --stat --no-ext-diff -- Cargo.lock | tail -1 | sed 's/^ *//'; }
+rewrite() { # FILE SED_EXPR — portable in-place edit
+  sed "$2" "$1" > "$1.r41tmp" && mv "$1.r41tmp" "$1"
+}
+drop_web_member() { rewrite Cargo.toml 's/, "crates\/web"//'; }
 
 mk_repo() { # NAME -> prints absolute path of a fresh Git repo containing the fixture, hook installed
   local dir="$WORK/$1"
@@ -71,8 +95,24 @@ EOS
   chmod +x "$WORK/bin/cargo-spy"
 }
 
+# alt_vs_pick CASE — on the current (stale) worktree, run the unlocked `cargo metadata`
+# alternative and the recommended `cargo update --workspace`, each followed by a
+# restore of Cargo.lock, and compare their diff stats. Leaves the lock restored.
+alt_vs_pick() {
+  local case="$1" stat_alt stat_pick
+  capture bash -c 'cargo metadata --format-version=1 >/dev/null'
+  expect "$case.alt" "alternative: unlocked cargo metadata --format-version=1 rewrites the lock" 0 "$STATUS"; show "$OUT"
+  stat_alt=$(lock_stat); record "$case.alt" "unlocked metadata diff stat: ${stat_alt:-<no change>}"
+  git checkout --quiet -- Cargo.lock
+  capture cargo update --workspace
+  expect "$case.pick" "recommended: cargo update --workspace rewrites the lock" 0 "$STATUS"; show "$OUT"
+  stat_pick=$(lock_stat); record "$case.pick" "cargo update --workspace diff stat: ${stat_pick:-<no change>}"
+  git checkout --quiet -- Cargo.lock
+  expect_eq "$case" "both unlocked commands produce the same lock change" "${stat_alt:-<no change>}" "${stat_pick:-<no change>}"
+}
+
 run_toolchain() {
-  local label="$1" dir="$2" i A B C lock0 lock1
+  local label="$1" dir="$2" i A B C D E E2 E3 F lock0 lock1 lock2 stat0
   if [ -n "$dir" ]; then export PATH="$dir:$ORIG_PATH"; else export PATH="$ORIG_PATH"; fi
   WORK="$WORK_DIR/$label"; rm -rf "$WORK"; mkdir -p "$WORK"
   mk_spy
@@ -87,29 +127,40 @@ run_toolchain() {
   A=$(mk_repo repo-a); cd "$A"
   echo "--- repo A: $A"
   record "$label/A0" "core.hooksPath in repo A = '$(git config --get core.hooksPath || true)' (empty: .git/hooks/pre-commit is used)"
+  lock0=$(sha256_of Cargo.lock)
   capture bash -c '/usr/bin/time -p cargo metadata --locked --format-version=1 >/dev/null'
-  expect "$label/A1" "clean committed tree: cargo metadata --locked --format-version=1" 0 "$STATUS"; show "$OUT"
-  record "$label/A1" "warm direct metadata wall seconds real=$(real_seconds "$OUT")"
+  expect "$label/A1" "clean committed tree: cargo metadata --locked --format-version=1 (revision-2 command, control)" 0 "$STATUS"; show "$OUT"
+  record "$label/A1" "warm direct locked metadata wall seconds real=$(real_seconds "$OUT")"
+  capture bash -c '/usr/bin/time -p cargo update --workspace'
+  expect "$label/A1b" "clean committed tree: cargo update --workspace (recommended resolve)" 0 "$STATUS"; show "$OUT"
+  record "$label/A1b" "warm direct recommended resolve wall seconds real=$(real_seconds "$OUT")"
+  capture git diff --quiet --no-ext-diff -- Cargo.lock
+  expect "$label/A1b" "fresh lock not rewritten by the unlocked resolve (git diff --quiet -- Cargo.lock)" 0 "$STATUS"
+  expect_eq "$label/A1b" "Cargo.lock bytes unchanged" "$lock0" "$(sha256_of Cargo.lock)"
   for i in 1 2 3; do
     : > "$CARGO_SPY_LOG"
     printf '# r41 trigger %s\n' "$i" >> crates/core/Cargo.toml
     git add crates/core/Cargo.toml
     capture /usr/bin/time -p git commit -qm "chore: member manifest comment $i"
     expect "$label/A2.$i" "staged member-manifest comment: git commit through pre-commit hook" 0 "$STATUS"; show "$OUT"
-    expect_str "$label/A2.$i" "hook ran the recommended command" "cargo metadata --locked --format-version=1" "$(spy_log)"
+    expect_str "$label/A2.$i" "hook ran the recommended command" "$CMD" "$(spy_log)"
     record "$label/A2.$i" "warm guarded commit wall seconds real=$(real_seconds "$OUT")"
   done
   : > "$CARGO_SPY_LOG"; printf '# r41 root trigger\n' >> Cargo.toml; git add Cargo.toml
   capture git commit -qm "chore: root manifest comment"
   expect "$label/A3" "staged root-manifest comment: git commit" 0 "$STATUS"; show "$OUT"
-  expect_str "$label/A3" "root manifest triggers Cargo" "cargo metadata --locked --format-version=1" "$(spy_log)"
+  expect_str "$label/A3" "root manifest triggers Cargo" "$CMD" "$(spy_log)"
   : > "$CARGO_SPY_LOG"
   capture bash scripts/check-cargo-lock.sh --all
   expect "$label/A4" "--all on a clean committed tree with nothing staged" 0 "$STATUS"; show "$OUT"
-  expect_str "$label/A4" "--all invoked Cargo unconditionally" "cargo metadata --locked --format-version=1" "$(spy_log)"
+  expect_str "$label/A4" "--all invoked Cargo unconditionally" "$CMD" "$(spy_log)"
   capture bash -c 'CARGO_HOME="$1" /usr/bin/time -p cargo metadata --locked --format-version=1 >/dev/null' _ "$WORK/cold-home"
-  expect "$label/A5" "cold empty CARGO_HOME (registry index + crate fetch): cargo metadata --locked" 0 "$STATUS"; show "$OUT"
-  record "$label/A5" "cold direct metadata wall seconds real=$(real_seconds "$OUT")"
+  expect "$label/A5" "cold empty CARGO_HOME (registry index + crate fetch): cargo metadata --locked (control)" 0 "$STATUS"; show "$OUT"
+  record "$label/A5" "cold direct locked metadata wall seconds real=$(real_seconds "$OUT")"
+  capture bash -c 'CARGO_HOME="$1" /usr/bin/time -p cargo update --workspace' _ "$WORK/cold-home-update"
+  expect "$label/A5b" "cold empty CARGO_HOME: cargo update --workspace (recommended resolve; index only)" 0 "$STATUS"; show "$OUT"
+  record "$label/A5b" "cold direct recommended resolve wall seconds real=$(real_seconds "$OUT"); crate archives fetched into the cold home: $(find "$WORK/cold-home-update" -name '*.crate' 2>/dev/null | wc -l | tr -d ' ') (locked metadata control fetched: $(find "$WORK/cold-home" -name '*.crate' 2>/dev/null | wc -l | tr -d ' '))"
+  expect_eq "$label/A5b" "Cargo.lock bytes unchanged after the cold resolve" "$lock0" "$(sha256_of Cargo.lock)"
   capture bash -c '/usr/bin/time -p cargo check --workspace --all-targets --locked'
   expect "$label/A6" "cargo check --workspace --all-targets --locked at this toolchain (rust-version = \"1.96\")" 0 "$STATUS"; show "$(printf '%s\n' "$OUT" | tail -6)"
   record "$label/A6" "locked check wall seconds real=$(real_seconds "$OUT")"
@@ -117,7 +168,7 @@ run_toolchain() {
   : > "$CARGO_SPY_LOG"; git add .cargo/config.toml
   capture git commit -qm "chore: add resolution-neutral .cargo/config.toml"
   expect "$label/A7" "staged .cargo/config.toml (resolution-neutral key): git commit" 0 "$STATUS"; show "$OUT"
-  expect_str "$label/A7" ".cargo/config.toml triggers Cargo" "cargo metadata --locked --format-version=1" "$(spy_log)"
+  expect_str "$label/A7" ".cargo/config.toml triggers Cargo" "$CMD" "$(spy_log)"
 
   ## Repo B: stale manifest, controls, repair, index/worktree parity
   B=$(mk_repo repo-b); cd "$B"
@@ -128,10 +179,12 @@ run_toolchain() {
   git add crates/core/Cargo.toml
   : > "$CARGO_SPY_LOG"
   capture bash scripts/check-cargo-lock.sh
-  expect "$label/B1" "stale: staged manifest adds serde_json, Cargo.lock untouched: direct check" 101 "$STATUS"; show "$OUT"
-  expect_str "$label/B1" "Cargo diagnostic preserved" "cannot update the lock file" "$OUT"
-  expect_str "$label/B1" "remediation message present" "run cargo metadata --format-version=1" "$OUT"
-  expect_eq "$label/B1" "Cargo.lock bytes unchanged after refusal" "$lock0" "$(sha256_of Cargo.lock)"
+  expect "$label/B1" "stale: staged manifest adds serde_json, Cargo.lock untouched: direct check" 1 "$STATUS"; show "$OUT"
+  expect_str "$label/B1" "Cargo's own resolve summary shown" "Adding serde_json" "$OUT"
+  expect_str "$label/B1" "lock diff stat shown" "Cargo.lock |" "$OUT"
+  expect_str "$label/B1" "remediation message present" "out of date" "$OUT"
+  expect_str "$label/B1" "hook ran the recommended command" "$CMD" "$(spy_log)"
+  expect_eq "$label/B1" "Cargo.lock bytes unchanged after refusal (restored)" "$lock0" "$(sha256_of Cargo.lock)"
   capture /usr/bin/time -p git commit -qm "feat(core): add serde_json (stale lock)"
   expect "$label/B2" "stale: git commit blocked by pre-commit hook" 1 "$STATUS"; show "$OUT"
   expect_eq "$label/B2" "Cargo.lock bytes unchanged after blocked commit" "$lock0" "$(sha256_of Cargo.lock)"
@@ -142,17 +195,26 @@ run_toolchain() {
   capture cargo update --locked --dry-run
   expect "$label/B3b" "false-pass control: cargo update --locked --dry-run on the stale tree returns success" 0 "$STATUS"; show "$OUT"
   capture cargo check --workspace --locked
-  expect "$label/B3c" "runner-up: cargo check --workspace --locked on the stale tree" 101 "$STATUS"; show "$OUT"
+  expect "$label/B3c" "runner-up (locked compile): cargo check --workspace --locked on the stale tree" 101 "$STATUS"; show "$OUT"
   capture cargo update --workspace --locked
-  expect "$label/B3d" "runner-up: cargo update --workspace --locked on the stale tree" 101 "$STATUS"; show "$OUT"
+  expect "$label/B3d" "locked form of the recommended command: cargo update --workspace --locked on the stale tree" 101 "$STATUS"; show "$OUT"
   expect_eq "$label/B3" "Cargo.lock bytes unchanged after all controls and probes" "$lock0" "$(sha256_of Cargo.lock)"
   capture bash -c 'cargo metadata --format-version=1 >/dev/null'
-  expect "$label/B4" "repair per remediation: cargo metadata --format-version=1 rewrites Cargo.lock" 0 "$STATUS"; show "$OUT"
+  expect "$label/B3e" "alternative: unlocked cargo metadata --format-version=1 rewrites the lock" 0 "$STATUS"; show "$OUT"
+  stat0=$(lock_stat); record "$label/B3e" "unlocked metadata diff stat: $stat0; sha256=$(sha256_of Cargo.lock)"
+  git checkout --quiet -- Cargo.lock
+  expect_eq "$label/B3e" "lock restored from the index" "$lock0" "$(sha256_of Cargo.lock)"
+  capture cargo update --workspace
+  expect "$label/B4" "repair per remediation: cargo update --workspace rewrites Cargo.lock" 0 "$STATUS"; show "$OUT"
   lock1=$(sha256_of Cargo.lock)
   expect_eq "$label/B4" "Cargo.lock changed by the repair" "$([ "$lock0" != "$lock1" ] && echo changed || echo unchanged)" "changed"
-  record "$label/B4" "repaired Cargo.lock sha256=$lock1; $(git diff --stat -- Cargo.lock | tail -1 | sed 's/^ *//')"
+  record "$label/B4" "repaired Cargo.lock sha256=$lock1; $(lock_stat)"
+  expect_eq "$label/B4" "repair diff stat equals the unlocked-metadata alternative's" "$stat0" "$(lock_stat)"
   capture bash -c 'cargo metadata --locked --format-version=1 >/dev/null'
   expect "$label/B5a" "hazard: bare cargo metadata --locked passes while the repaired lock is unstaged" 0 "$STATUS"; show "$OUT"
+  capture cargo update --workspace
+  expect "$label/B5a2" "hazard is command-independent: bare cargo update --workspace also passes with the repaired lock unstaged" 0 "$STATUS"; show "$OUT"
+  expect_eq "$label/B5a2" "repaired lock untouched by the bare resolve" "$lock1" "$(sha256_of Cargo.lock)"
   : > "$CARGO_SPY_LOG"
   capture bash scripts/check-cargo-lock.sh
   expect "$label/B5b" "parity guard: repaired lock unstaged -> check refuses before Cargo" 1 "$STATUS"; show "$OUT"
@@ -164,10 +226,10 @@ run_toolchain() {
   : > "$CARGO_SPY_LOG"
   capture /usr/bin/time -p git commit -qm "feat(core): add serde_json"
   expect "$label/B6" "repaired manifest and lockfile both staged: git commit" 0 "$STATUS"; show "$OUT"
-  expect_str "$label/B6" "hook ran Cargo on the repaired commit" "cargo metadata --locked --format-version=1" "$(spy_log)"
+  expect_str "$label/B6" "hook ran Cargo on the repaired commit" "$CMD" "$(spy_log)"
   record "$label/B6" "repaired commit wall seconds real=$(real_seconds "$OUT"); serde_json entries in Cargo.lock: $(grep -c 'name = "serde_json"' Cargo.lock)"
   printf 'serde_json.workspace = true\n' >> crates/cli/Cargo.toml
-  capture bash -c 'cargo metadata --format-version=1 >/dev/null'
+  capture cargo update --workspace
   git add Cargo.lock
   capture bash scripts/check-cargo-lock.sh
   expect "$label/B7a" "reverse parity: staged lockfile with unstaged member manifest -> refused" 1 "$STATUS"; show "$OUT"
@@ -185,10 +247,13 @@ run_toolchain() {
   printf 'serde_json.workspace = true\n' >> crates/core/Cargo.toml; git add crates/core/Cargo.toml
   capture git commit -q --no-verify -m "feat(core): add serde_json bypassing the hook"
   expect "$label/C2a" "git commit --no-verify commits a stale lock" 0 "$STATUS"; show "$OUT"
+  lock0=$(sha256_of Cargo.lock)
   capture bash scripts/check-cargo-lock.sh
   expect "$label/C2b" "clean index, stale committed lock: default mode skips (nothing staged)" 0 "$STATUS"; show "$OUT"
   capture bash scripts/check-cargo-lock.sh --all
-  expect "$label/C2c" "clean index, stale committed lock: --all catches it" 101 "$STATUS"; show "$OUT"
+  expect "$label/C2c" "clean index, stale committed lock: --all catches it" 1 "$STATUS"; show "$OUT"
+  expect_str "$label/C2c" "out-of-date message" "out of date" "$OUT"
+  expect_eq "$label/C2c" "committed lock left unchanged on disk (restored)" "$lock0" "$(sha256_of Cargo.lock)"
   mkdir -p stray; printf '[package]\nname = "stray"\nversion = "0.1.0"\nedition = "2024"\n' > stray/Cargo.toml
   printf '# trigger\n' >> Cargo.toml; git add Cargo.toml
   capture bash scripts/check-cargo-lock.sh
@@ -206,18 +271,178 @@ run_toolchain() {
   : > "$CARGO_SPY_LOG"
   capture bash scripts/check-cargo-lock.sh --all
   expect "$label/D2" "--all on a clean index with target/package present" 0 "$STATUS"; show "$OUT"
-  expect_str "$label/D2" "--all reached Cargo" "cargo metadata --locked --format-version=1" "$(spy_log)"
+  expect_str "$label/D2" "--all reached Cargo" "$CMD" "$(spy_log)"
   printf '# r41 trigger after cargo package\n' >> crates/core/Cargo.toml; git add crates/core/Cargo.toml
   : > "$CARGO_SPY_LOG"
   capture bash scripts/check-cargo-lock.sh
   expect "$label/D3a" "staged manifest comment with target/package present: direct check" 0 "$STATUS"; show "$OUT"
   capture git commit -qm "chore: manifest comment after cargo package"
   expect "$label/D3b" "staged manifest comment with target/package present: git commit" 0 "$STATUS"; show "$OUT"
-  expect_str "$label/D3b" "hook reached Cargo" "cargo metadata --locked --format-version=1" "$(spy_log)"
+  expect_str "$label/D3b" "hook reached Cargo" "$CMD" "$(spy_log)"
   printf 'serde_json.workspace = true\n' >> crates/core/Cargo.toml; git add crates/core/Cargo.toml
   capture bash scripts/check-cargo-lock.sh
-  expect "$label/D4" "stale manifest with target/package present: still refused by Cargo" 101 "$STATUS"; show "$OUT"
-  expect_str "$label/D4" "refusal came from Cargo, not from the untracked scan" "cannot update the lock file" "$OUT"
+  expect "$label/D4" "stale manifest with target/package present: still refused" 1 "$STATUS"; show "$OUT"
+  expect_str "$label/D4" "refusal came from the lock comparison, not from the untracked scan" "out of date" "$OUT"
+  expect_not_str "$label/D4" "no untracked-input refusal" "untracked Cargo resolution inputs" "$OUT"
+
+  ## Repo E: leaf workspace-member removal, form 1 (members list edited; directory left on disk)
+  E=$(mk_repo repo-e); cd "$E"
+  echo "--- repo E: $E"
+  lock0=$(sha256_of Cargo.lock)
+  expect_eq "$label/E0" "committed lock carries the r41-web entry" "$(grep -c 'name = "r41-web"' Cargo.lock)" "1"
+  drop_web_member; git add Cargo.toml
+  record "$label/E0" "staged: $(git diff --cached --stat | tail -1 | sed 's/^ *//'); members now: $(grep '^members' Cargo.toml)"
+  capture bash -c 'cargo metadata --locked --format-version=1 >/dev/null'
+  expect "$label/E1a" "revision-2 command: cargo metadata --locked passes the orphan lock entry (false pass)" 0 "$STATUS"; show "$OUT"
+  capture cargo update --workspace --locked
+  expect "$label/E1b" "cargo update --workspace --locked passes the orphan (false pass)" 0 "$STATUS"; show "$OUT"
+  capture cargo generate-lockfile --locked
+  record "$label/E1c" "cargo generate-lockfile --locked on the orphan tree -> exit $STATUS (0 = false pass; 101 would mean only that a newer registry version exists, since this command re-resolves to latest)"; show "$OUT"
+  capture cargo check --workspace --locked
+  expect "$label/E1d" "cargo check --workspace --locked passes the orphan (false pass)" 0 "$STATUS"; show "$(printf '%s\n' "$OUT" | tail -2)"
+  expect_eq "$label/E1" "Cargo.lock bytes unchanged after the four --locked probes" "$lock0" "$(sha256_of Cargo.lock)"
+  : > "$CARGO_SPY_LOG"
+  capture bash scripts/check-cargo-lock.sh
+  expect "$label/E1e" "leaf member removed (members list only): direct check refuses" 1 "$STATUS"; show "$OUT"
+  expect_str "$label/E1e" "out-of-date message" "out of date" "$OUT"
+  expect_str "$label/E1e" "lock diff stat shown" "Cargo.lock |" "$OUT"
+  expect_str "$label/E1e" "hook ran the recommended command" "$CMD" "$(spy_log)"
+  expect_eq "$label/E1e" "Cargo.lock bytes unchanged after refusal (restored)" "$lock0" "$(sha256_of Cargo.lock)"
+  capture /usr/bin/time -p git commit -qm "refactor: drop the web member"
+  expect "$label/E1f" "leaf member removed: git commit blocked by pre-commit hook" 1 "$STATUS"; show "$OUT"
+  expect_eq "$label/E1f" "no commit was created (rev-list count)" "$(git rev-list --count HEAD)" "1"
+  expect_eq "$label/E1f" "Cargo.lock bytes unchanged after blocked commit" "$lock0" "$(sha256_of Cargo.lock)"
+  record "$label/E1f" "blocked commit wall seconds real=$(real_seconds "$OUT")"
+  alt_vs_pick "$label/E1g"
+  capture cargo update --workspace
+  expect "$label/E1h" "repair per remediation: cargo update --workspace prunes the orphan" 0 "$STATUS"; show "$OUT"
+  lock1=$(sha256_of Cargo.lock)
+  record "$label/E1h" "repaired Cargo.lock sha256=$lock1; $(lock_stat)"
+  expect_eq "$label/E1h" "orphan r41-web entry gone from the repaired lock" "$(grep -c 'name = "r41-web"' Cargo.lock)" "0"
+  git add Cargo.lock
+  : > "$CARGO_SPY_LOG"
+  capture /usr/bin/time -p git commit -qm "refactor: drop the web member"
+  expect "$label/E1i" "manifest and pruned lock both staged: git commit" 0 "$STATUS"; show "$OUT"
+  expect_str "$label/E1i" "hook ran Cargo on the repaired commit" "$CMD" "$(spy_log)"
+  record "$label/E1i" "repaired commit wall seconds real=$(real_seconds "$OUT")"
+
+  ## Repo E2: leaf workspace-member removal, form 2 (git rm -r crates/web, deletions staged)
+  E2=$(mk_repo repo-e2); cd "$E2"
+  echo "--- repo E2: $E2"
+  lock0=$(sha256_of Cargo.lock)
+  drop_web_member; git rm -rq crates/web; git add Cargo.toml
+  record "$label/E2.0" "staged (name-status): $(git diff --cached --name-status | tr '\t' ' ' | tr '\n' ';')"
+  capture bash -c 'cargo metadata --locked --format-version=1 >/dev/null'
+  expect "$label/E2a" "revision-2 command: cargo metadata --locked passes with the member deleted (false pass)" 0 "$STATUS"; show "$OUT"
+  : > "$CARGO_SPY_LOG"
+  capture bash scripts/check-cargo-lock.sh
+  expect "$label/E2b" "member deleted with git rm: direct check refuses (trigger sees the staged deletion)" 1 "$STATUS"; show "$OUT"
+  expect_str "$label/E2b" "out-of-date message" "out of date" "$OUT"
+  expect_not_str "$label/E2b" "trigger did not skip" "SKIP" "$OUT"
+  expect_eq "$label/E2b" "Cargo.lock bytes unchanged after refusal (restored)" "$lock0" "$(sha256_of Cargo.lock)"
+  capture git commit -qm "refactor: delete the web member"
+  expect "$label/E2c" "member deleted with git rm: git commit blocked" 1 "$STATUS"; show "$OUT"
+  expect_eq "$label/E2c" "no commit was created (rev-list count)" "$(git rev-list --count HEAD)" "1"
+  capture cargo update --workspace
+  expect "$label/E2d" "repair: cargo update --workspace" 0 "$STATUS"; show "$OUT"
+  git add Cargo.lock
+  : > "$CARGO_SPY_LOG"
+  capture git commit -qm "refactor: delete the web member"
+  expect "$label/E2e" "manifest, deletions and pruned lock all staged: git commit" 0 "$STATUS"; show "$OUT"
+  expect_str "$label/E2e" "hook ran Cargo on the repaired commit" "$CMD" "$(spy_log)"
+  expect_eq "$label/E2e" "crates/web no longer in the tree" "$([ -e crates/web ] && echo present || echo absent)" "absent"
+  expect_eq "$label/E2e" "orphan r41-web entry gone from the committed lock" "$(git show HEAD:Cargo.lock | grep -c 'name = "r41-web"')" "0"
+
+  ## Repo E3: --no-verify bypass of the removal, --all, the lock-only repair commit, normalization, version = 3
+  E3=$(mk_repo repo-e3); cd "$E3"
+  echo "--- repo E3: $E3"
+  drop_web_member; git add Cargo.toml
+  capture git commit -q --no-verify -m "refactor: drop the web member bypassing the hook"
+  expect "$label/E3a" "git commit --no-verify commits the orphan lock entry" 0 "$STATUS"; show "$OUT"
+  lock0=$(sha256_of Cargo.lock)
+  capture bash scripts/check-cargo-lock.sh
+  expect "$label/E3b" "clean index, committed orphan: default mode skips (nothing staged)" 0 "$STATUS"; show "$OUT"
+  capture bash -c 'cargo metadata --locked --format-version=1 >/dev/null'
+  expect "$label/E3c" "revision-2 CI command: cargo metadata --locked passes the committed orphan (false pass)" 0 "$STATUS"; show "$OUT"
+  capture bash scripts/check-cargo-lock.sh --all
+  expect "$label/E3c2" "clean index, committed orphan: --all catches it" 1 "$STATUS"; show "$OUT"
+  expect_str "$label/E3c2" "out-of-date message" "out of date" "$OUT"
+  expect_eq "$label/E3c2" "committed lock left unchanged on disk (restored)" "$lock0" "$(sha256_of Cargo.lock)"
+  capture cargo update --workspace
+  expect "$label/E3d" "lock-only repair: cargo update --workspace prunes the committed orphan" 0 "$STATUS"; show "$OUT"
+  record "$label/E3d" "$(lock_stat)"
+  git add Cargo.lock
+  : > "$CARGO_SPY_LOG"
+  capture git commit -qm "chore: prune Cargo.lock"
+  expect "$label/E3d" "lock-only repair commit is accepted (it is the repair, not churn past the hook)" 0 "$STATUS"; show "$OUT"
+  expect_str "$label/E3d" "hook ran Cargo on the lock-only commit" "$CMD" "$(spy_log)"
+  capture bash scripts/check-cargo-lock.sh --all
+  expect "$label/E3e" "--all after the repair commit" 0 "$STATUS"; show "$OUT"
+  printf '\n' >> Cargo.lock; git add Cargo.lock
+  lock2=$(sha256_of Cargo.lock)
+  capture bash -c 'cargo metadata --locked --format-version=1 >/dev/null'
+  expect "$label/E4a" "normalization: lock with an extra trailing blank line passes --locked (parsed resolves equal)" 0 "$STATUS"; show "$OUT"
+  capture bash scripts/check-cargo-lock.sh
+  expect "$label/E4b" "normalization: the script refuses it (Cargo would rewrite the file)" 1 "$STATUS"; show "$OUT"
+  expect_str "$label/E4b" "one-line stat" "1 deletion(-)" "$OUT"
+  expect_eq "$label/E4b" "staged lock bytes unchanged after refusal (restored from the index)" "$lock2" "$(sha256_of Cargo.lock)"
+  git reset -q --hard HEAD
+  rewrite Cargo.lock 's/^version = 4$/version = 3/'; git add Cargo.lock
+  expect_eq "$label/E5" "lockfile rewritten to version = 3 and staged" "$(grep -c '^version = 3$' Cargo.lock)" "1"
+  : > "$CARGO_SPY_LOG"
+  capture git commit -qm "chore: lockfile version 3"
+  expect "$label/E5" "version = 3 lockfile on a fresh graph: git commit (no false refusal from format migration)" 0 "$STATUS"; show "$OUT"
+  expect_str "$label/E5" "hook ran Cargo" "$CMD" "$(spy_log)"
+  expect_eq "$label/E5" "version line preserved after the guarded commit" "$(grep -c '^version = 3$' Cargo.lock)" "1"
+  git rm -q Cargo.lock
+  capture git commit -q --no-verify -m "chore: drop Cargo.lock bypassing the hook"
+  expect "$label/E6" "no Cargo.lock in the repository (removed with --no-verify)" 0 "$STATUS"; show "$OUT"
+  printf '# r41 trigger without a lockfile\n' >> Cargo.toml; git add Cargo.toml
+  capture bash scripts/check-cargo-lock.sh
+  expect "$label/E6a" "staged manifest with no lockfile: the resolve would create Cargo.lock -> refused" 1 "$STATUS"; show "$OUT"
+  expect_str "$label/E6a" "created-lock message" "would create: Cargo.lock" "$OUT"
+  expect_eq "$label/E6a" "created Cargo.lock removed again" "$([ -e Cargo.lock ] && echo present || echo absent)" "absent"
+  expect_eq "$label/E6a" "worktree otherwise untouched (git status --short)" "$(git status --short | tr '\n' ';')" "M  Cargo.toml;"
+  git reset -q --hard HEAD
+  capture bash scripts/check-cargo-lock.sh --all
+  expect "$label/E6b" "--all with no lockfile in the repository -> refused" 1 "$STATUS"; show "$OUT"
+  expect_eq "$label/E6b" "created Cargo.lock removed again" "$([ -e Cargo.lock ] && echo present || echo absent)" "absent"
+
+  ## Repo F: other change classes a build resolve would catch (each refused; alternatives compared)
+  F=$(mk_repo repo-f); cd "$F"
+  echo "--- repo F: $F"
+  lock0=$(sha256_of Cargo.lock)
+  rewrite Cargo.toml 's/^anyhow = "1"$/anyhow = "=1.0.100"/'; git add Cargo.toml
+  capture bash scripts/check-cargo-lock.sh
+  expect "$label/F1" "requirement change anyhow = \"=1.0.100\" (locked 1.0.104): refused" 1 "$STATUS"; show "$OUT"
+  expect_str "$label/F1" "Cargo names the change" "Downgrading anyhow" "$OUT"
+  expect_eq "$label/F1" "Cargo.lock bytes unchanged after refusal" "$lock0" "$(sha256_of Cargo.lock)"
+  alt_vs_pick "$label/F1"
+  git reset -q --hard HEAD
+  rewrite Cargo.toml 's/^version = "0.1.0"$/version = "0.2.0"/'; git add Cargo.toml
+  capture bash scripts/check-cargo-lock.sh
+  expect "$label/F2" "workspace.package version bump 0.1.0 -> 0.2.0 (R23 case): refused" 1 "$STATUS"; show "$OUT"
+  expect_str "$label/F2" "Cargo names the change" "Updating r41-core" "$OUT"
+  expect_eq "$label/F2" "Cargo.lock bytes unchanged after refusal" "$lock0" "$(sha256_of Cargo.lock)"
+  alt_vs_pick "$label/F2"
+  git reset -q --hard HEAD
+  rewrite crates/cli/Cargo.toml '/^anyhow.workspace = true$/d'; git add crates/cli/Cargo.toml
+  capture bash scripts/check-cargo-lock.sh
+  expect "$label/F3" "registry edge anyhow removed from crates/cli: refused" 1 "$STATUS"; show "$OUT"
+  expect_str "$label/F3" "Cargo names the change" "Removing anyhow" "$OUT"
+  expect_eq "$label/F3" "Cargo.lock bytes unchanged after refusal" "$lock0" "$(sha256_of Cargo.lock)"
+  alt_vs_pick "$label/F3"
+  git reset -q --hard HEAD
+  printf 'this is not toml [\n' >> crates/cli/Cargo.toml; git add crates/cli/Cargo.toml
+  capture bash scripts/check-cargo-lock.sh
+  expect "$label/F4" "malformed member manifest: Cargo fails, its status propagates (validation could not complete)" 101 "$STATUS"; show "$OUT"
+  expect_str "$label/F4" "Cargo diagnostic preserved" "failed to load manifest" "$OUT"
+  expect_str "$label/F4" "could-not-complete message, not out-of-date" "could not complete" "$OUT"
+  expect_not_str "$label/F4" "no out-of-date verdict on a Cargo failure" "out of date" "$OUT"
+  expect_eq "$label/F4" "Cargo.lock bytes unchanged" "$lock0" "$(sha256_of Cargo.lock)"
+  capture git commit -qm "chore: malformed manifest"
+  expect "$label/F4" "malformed member manifest: git commit blocked" 1 "$STATUS"; show "$(printf '%s\n' "$OUT" | tail -2)"
+  git reset -q --hard HEAD
   cd "$HERE"
   echo "=== toolchain $label finished $(now) ==="
 }
