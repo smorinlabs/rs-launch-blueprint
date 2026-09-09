@@ -115,6 +115,15 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-09T06:29:03Z",
+      "publication": {
+        "acceptance_sha256": "44bcc661a71bcb8a223503f8367e5d9663bf2d159a41e8c51d339ad27752e75a",
+        "decision_sha256": "343a7fc555da5ad9d689f27ead710c007fdc9a4228eb4e8d8f49b0c69d55688d",
+        "transaction": "d12eab2f9f6647c0ae4c9e1b0c48e014"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -164,6 +173,11 @@
     }
   },
   "prompt_source": "research/topics/06-unsafe-code-policy/prompts/unsafe-code-policy.prompt.md",
+  "publication": {
+    "acceptance_sha256": "44bcc661a71bcb8a223503f8367e5d9663bf2d159a41e8c51d339ad27752e75a",
+    "decision_sha256": "343a7fc555da5ad9d689f27ead710c007fdc9a4228eb4e8d8f49b0c69d55688d",
+    "transaction": "d12eab2f9f6647c0ae4c9e1b0c48e014"
+  },
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
     "codex",
@@ -171,7 +185,7 @@
   ],
   "run_id": "2026-09-05T162400Z-31f07a2b91b6",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "focused",
-  "updated_at": "2026-09-06T05:39:13Z"
+  "updated_at": "2026-09-09T06:29:03Z"
 }

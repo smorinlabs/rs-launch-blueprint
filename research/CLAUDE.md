@@ -9,7 +9,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R03 | port-absence-vs-failure-contract | pattern | different | DIVERGENT | — | [prompt](topics/03-port-absence-vs-failure-contract/prompts/port-absence-vs-failure-contract.prompt.md) | open |
 | R04 | public-api-surface-enforcement | pattern | different | DIVERGENT | — | [prompt](topics/04-public-api-surface-enforcement/prompts/public-api-surface-enforcement.prompt.md) | resolved |
 | R05 | sync-async-execution-model | bundle | different | DIVERGENT | — | [prompt](topics/05-sync-async-execution-model/prompts/sync-async-execution-model.prompt.md) | open |
-| R06 | unsafe-code-policy | pattern | none | RUST-ONLY | — | [prompt](topics/06-unsafe-code-policy/prompts/unsafe-code-policy.prompt.md) | open |
+| R06 | unsafe-code-policy | pattern | none | RUST-ONLY | — | [prompt](topics/06-unsafe-code-policy/prompts/unsafe-code-policy.prompt.md) | resolved |
 | R07 | contributors-bot-trigger-cadence | pattern | different | DIVERGENT | — | [prompt](topics/07-contributors-bot-trigger-cadence/prompts/contributors-bot-trigger-cadence.prompt.md) | open |
 | R08 | workflow-permission-hardening | bundle | different | DIVERGENT | — | [prompt](topics/08-workflow-permission-hardening/prompts/workflow-permission-hardening.prompt.md) | open |
 | R09 | self-hosted-runner-indirection | bundle | py-only | DIVERGENT | — | [prompt](topics/09-self-hosted-runner-indirection/prompts/self-hosted-runner-indirection.prompt.md) | open |
