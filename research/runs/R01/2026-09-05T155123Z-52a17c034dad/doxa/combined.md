@@ -9,7 +9,7 @@ note: built by the P02 controller in the format of doxa_research.output.OutputMa
 
 # Combined Research Report: # Deep-research prompt — Ports-and-adapters seam (R01, bundle)
 
-Generated: 2026-09-09T07:28:49.524843+00:00
+Generated: 2026-09-09T07:30:37.894364+00:00
 
 
 ## Openai Results
