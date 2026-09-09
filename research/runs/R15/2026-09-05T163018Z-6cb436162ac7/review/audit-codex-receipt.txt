@@ -1,0 +1,7 @@
+[Audit](review/audit-codex.md) — SHA-256 `a68140229e8a0534b219b6e66f638d0b967f4ecaeb41649c8c5c71b215023c25`
+
+Verdict: approve; unresolved findings: none.
+
+Host and Lima reruns both exited `0`; all 16 expected cases matched on each leg.
+
+[Complete evidence log](review/evidence/audit-template-drift-receipt-guard.log) — SHA-256 `dc30b6a13fdc2f6158bd79f9c580b84e896c36240e77860cc113d2c3087bd233`.
