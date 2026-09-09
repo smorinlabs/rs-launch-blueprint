@@ -1,0 +1,165 @@
+== toolchain ==
+date: 2026-09-09T06:54:24Z
+os: macOS 26.4 arm64
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+actionlint: 1.7.12
+Python 3.14.7
+pyyaml 6.0.3
+act: not installed -> form (b)
+gh: gh version 2.98.0 (2026-08-20)
+cwd: /private/tmp/r07-empirical-audit.EFglwU/empirical
+
+== 1. actionlint on the recommended workflow (expect exit 0) ==
+exit: 0
+
+== 2. actionlint on the ts-shape alternative, schedule + dispatch (expect exit 0: syntax does not decide the item) ==
+exit: 0
+
+== 3. actionlint on the negative fixture, paths-ignore under schedule (expect non-zero) ==
+alternatives/schedule-with-paths-ignore.yml:8:7: unexpected key "paths-ignore" for element of "schedule" section. expected one of "cron", "timezone" [syntax-check]
+  |
+8 |       paths-ignore:
+  |       ^~~~~~~~~~~~~
+exit: 1
+
+== 4. paths-ignore filter evaluated against real first-parent commits ==
+-- py-launch-blueprint @ b08bccfb55d05f15e46a83b52c5660b1881d19f5, full history --
+workflow: /private/tmp/r07-empirical-audit.EFglwU/empirical/.github/workflows/update-contributors.yml
+repo: /Users/stevemorin/c/py-launch-blueprint @ b08bccfb55d05f15e46a83b52c5660b1881d19f5
+on.push.branches: ['main']
+on.push.paths-ignore: ['CONTRIBUTORS.md', '.contributors.jsonl']
+first-parent commits evaluated: 381
+verdict counts: {"EMPTY-DIFF": 4, "RUN": 353, "SKIP": 24}
+SKIP and EMPTY-DIFF commits (would NOT trigger the workflow):
+  SKIP       8d6ae873c6 2026-07-22 files=2 ignored=2 Merge pull request #498 from smorinlabs/contributors-please/update
+  SKIP       2a44d9b08e 2026-07-22 files=2 ignored=2 Merge pull request #497 from smorinlabs/contributors-please/update
+  SKIP       2c90c166bf 2026-07-21 files=2 ignored=2 Merge pull request #494 from smorinlabs/contributors-please/update
+  SKIP       0413145650 2026-07-21 files=2 ignored=2 Merge pull request #469 from smorinlabs/contributors-please/update
+  SKIP       411d316f7b 2026-07-16 files=2 ignored=2 docs: update contributors (#457)
+  SKIP       8023a6355c 2026-06-17 files=2 ignored=2 docs: update contributors (#453)
+  SKIP       4a5451ea89 2026-06-17 files=1 ignored=1 docs: update contributors (#452)
+  SKIP       e63d54101b 2026-06-17 files=2 ignored=2 docs: update contributors (#447)
+  SKIP       a01a6ad6bd 2026-06-16 files=2 ignored=2 docs: update contributors (#439)
+  EMPTY-DIFF cf0d081c2e 2026-06-15 files=0 ignored=0 ci: probe RELEASE_PLEASE_CLIENT_ID auth path
+  SKIP       37a63c6b6c 2026-06-14 files=2 ignored=2 docs: update contributors (#426)
+  SKIP       985165f88b 2026-06-12 files=1 ignored=1 docs: update contributors (#425)
+  SKIP       c1ee4c7836 2026-06-12 files=2 ignored=2 docs: update contributors (#394)
+  SKIP       e6e3c5667e 2026-06-11 files=2 ignored=2 docs: update contributors (#382)
+  SKIP       27a57a4bb5 2026-06-08 files=2 ignored=2 docs: update contributors (#363)
+  SKIP       82b4a177d7 2026-06-07 files=1 ignored=1 fix(contributors): restore well-formed CONTRIBUTORS.md (#361)
+  SKIP       80e8fbcdee 2026-06-07 files=1 ignored=1 docs: update contributors (#359)
+  SKIP       b10c585929 2026-06-07 files=2 ignored=2 docs: update contributors (#358)
+  SKIP       3402c5158a 2026-06-04 files=1 ignored=1 fix(contributors): restore CONTRIBUTORS.md markers (#356)
+  SKIP       be936f92e9 2026-06-04 files=1 ignored=1 docs: update contributors (#354)
+  SKIP       8b36143c78 2026-06-04 files=2 ignored=2 docs: update contributors (#352)
+  SKIP       32ac133617 2026-06-04 files=2 ignored=2 docs: update contributors (#349)
+  SKIP       e780c9956c 2026-06-04 files=2 ignored=2 docs: update contributors (#343)
+  SKIP       6e8d7e541f 2026-05-26 files=1 ignored=1 chore: update contributors list (#331)
+  SKIP       5c3ad4f8b7 2026-05-26 files=1 ignored=1 chore: update contributors list (#325)
+  EMPTY-DIFF c2f221fd42 2025-06-08 files=0 ignored=0 Add yamllint and formmater yaml files, update pre-commit config (#297)
+  EMPTY-DIFF 84e8b3f874 2025-05-29 files=0 ignored=0 fix eof pre-commit-config.yaml file (#282)
+  EMPTY-DIFF 8f1517fcb4 2025-05-29 files=0 ignored=0 fix one time eof whitespace and eof files (#273)
+sample RUN commits (would trigger the workflow):
+  RUN        b08bccfb55 2026-09-01 files=1 ignored=0 Merge pull request #527 from smorinlabs/ci/difftree-sync
+  RUN        1f1d57c86a 2026-09-01 files=3 ignored=0 Merge pull request #524 from smorinlabs/ci/difftree-pr-comment
+  RUN        d347fd961d 2026-08-17 files=3 ignored=0 Merge pull request #522 from smorinlabs/docs/p06-close
+  RUN        986eafa76d 2026-08-17 files=54 ignored=0 Merge pull request #521 from smorinlabs/feat/full-conform
+  RUN        e36ecb9d71 2026-08-17 files=3 ignored=0 Merge pull request #520 from smorinlabs/docs/p05-close
+json: /private/tmp/r07-empirical-audit.EFglwU/empirical/../evidence/py-paths-verdicts.json
+exit: 0
+
+-- ts-launch-blueprint @ cb1cbcb2e88b898e8c081b0abbfabc1630079c00, full history --
+workflow: /private/tmp/r07-empirical-audit.EFglwU/empirical/.github/workflows/update-contributors.yml
+repo: /Users/stevemorin/c/ts-launch-blueprint @ cb1cbcb2e88b898e8c081b0abbfabc1630079c00
+on.push.branches: ['main']
+on.push.paths-ignore: ['CONTRIBUTORS.md', '.contributors.jsonl']
+first-parent commits evaluated: 61
+verdict counts: {"RUN": 61}
+SKIP and EMPTY-DIFF commits (would NOT trigger the workflow):
+sample RUN commits (would trigger the workflow):
+  RUN        cb1cbcb2e8 2026-09-01 files=1 ignored=0 Merge pull request #30 from smorinlabs/ci/difftree-sync
+  RUN        2e03e10c5d 2026-09-01 files=1 ignored=0 Merge pull request #29 from smorinlabs/chore/difftree-foldable-canary
+  RUN        1afaed3354 2026-09-01 files=1 ignored=0 Merge pull request #28 from smorinlabs/chore/difftree-action-canary
+  RUN        f4cbdcad91 2026-08-30 files=1 ignored=0 Merge pull request #27 from smorinlabs/ci/difftree-pr-diff-tree
+  RUN        808f11a27b 2026-07-22 files=2 ignored=0 Merge pull request #16 from smorinlabs/fix/portable-repository-visibility
+json: /private/tmp/r07-empirical-audit.EFglwU/empirical/../evidence/ts-paths-verdicts.json
+exit: 0
+
+== 5. cross-check against real GitHub Actions run history (REST, pages 20 s apart) ==
+== py-launch-blueprint: push-triggered history (REST) ==
+  smorinlabs/py-launch-blueprint page 1: 100 runs (total_count=203)
+  smorinlabs/py-launch-blueprint page 2: 100 runs (total_count=203)
+  smorinlabs/py-launch-blueprint page 3: 3 runs (total_count=203)
+retained runs: 203 by event: {"pull_request": 46, "push": 154, "workflow_dispatch": 3}
+retained window: 2025-11-16T16:52:48Z .. 2026-09-07T06:58:02Z
+A2: SKIP commits in git history: 24; with a push run in production: 5
+  LEAK 2a44d9b08e Merge pull request #497 from smorinlabs/contributors-please/update
+  LEAK 8b36143c78 docs: update contributors (#352)
+  LEAK e780c9956c docs: update contributors (#343)
+  LEAK 6e8d7e541f chore: update contributors list (#331)
+  LEAK 5c3ad4f8b7 chore: update contributors list (#325)
+A1: first-parent commits inside the retained window: 266; RUN verdicts: 241; with a matching push run: 147; without: 94; SKIP verdicts in window: 24
+  NO-RUN 6b2680966d 2026-07-22 Merge pull request #495 from smorinlabs/fix/commitlint-via-mise
+  NO-RUN d6809200a6 2026-07-21 Merge pull request #488 from smorinlabs/dependabot/uv/responses-0.26.2
+  NO-RUN 4a89c404b6 2026-07-21 Merge pull request #487 from smorinlabs/dependabot/uv/hypothesis-6.156.6
+  NO-RUN a659d06ede 2026-07-21 Merge pull request #484 from smorinlabs/dependabot/github_actions/github-actions-3585340f93
+  NO-RUN cb983c0b45 2026-06-12 fix: add PyPI fallback for just installation and fix CI skip paths (#424)
+  ... 89 more; per-commit matching is the naive model, see analyze_runs.py for the push-range model
+
+== ts-launch-blueprint: schedule-triggered history (REST) ==
+  smorinlabs/ts-launch-blueprint page 1: 9 runs (total_count=9)
+retained runs: 9 by event: {"schedule": 9}
+cron '17 6 * * 1' = Monday 06:17 UTC; delay of each schedule run from its slot:
+  2026-07-13T09:49:11Z failure  delay=3:32:11 (weekday=Mon)
+  2026-07-20T09:35:52Z failure  delay=3:18:52 (weekday=Mon)
+  2026-07-27T10:11:02Z failure  delay=3:54:02 (weekday=Mon)
+  2026-08-03T10:07:32Z success  delay=3:50:32 (weekday=Mon)
+  2026-08-10T08:06:34Z success  delay=1:49:34 (weekday=Mon)
+  2026-08-17T07:18:04Z success  delay=1:01:04 (weekday=Mon)
+  2026-08-24T07:30:31Z success  delay=1:13:31 (weekday=Mon)
+  2026-08-31T13:58:35Z success  delay=7:41:35 (weekday=Mon)
+  2026-09-07T12:40:41Z success  delay=6:23:41 (weekday=Mon)
+exit: 0
+
+== 5b. push-range model of the same run history (merge-queue batching) ==
+push runs with head on the pinned first-parent line: 153 of 154
+before the guard (40aa691910, 2026-05-27T23:45:38Z): bot-only commits that fired a push run: 2
+  5c3ad4f8b7 2026-05-26T19:47:10Z chore: update contributors list (#325)
+  6e8d7e541f 2026-05-26T20:40:49Z chore: update contributors list (#331)
+after the guard: first-parent commits 162, push runs 134, commits after the last run 0
+runs whose push range holds more than one commit (batched merges): 23
+A2': runs whose whole push range is ignored files only: 0 (expected 0)
+bot-only commits after the guard: 22; as a run head: 3 (each shares its push with a non-ignored commit, listed):
+  e780c9956c docs: update contributors (#343) <- pushed with 954de95ce6 chore(main): release 1.1.4 (#345)
+  8b36143c78 docs: update contributors (#352) <- pushed with a3008ebd88 chore(main): release 1.1.5 (#353)
+  2a44d9b08e Merge pull request #497 from smorinlabs/contributors-please/update <- pushed with 6b2680966d Merge pull request #495 from smorinlabs/fix/commitlint-via-mise
+A1': qualifying commits not inside any run's range: 0 (expected 0; the tail after the newest retained run is the only place one could hide)
+exit: 0
+
+== 5c. why pushes are batched: rules on py main (REST, 1 call) ==
+["code_scanning","copilot_code_review","deletion","merge_queue","non_fast_forward","pull_request"]
+
+== 6. pinned source on: blocks, quoted from the pinned trees ==
+-- py @ b08bccfb55d05f15e46a83b52c5660b1881d19f5 lines 3-9 --
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - CONTRIBUTORS.md
+      - .contributors.jsonl
+  workflow_dispatch:
+-- ts @ cb1cbcb2e88b898e8c081b0abbfabc1630079c00 lines 33-39 and 49-52 --
+# Trigger set is schedule + workflow_dispatch (per plan), which intentionally
+# diverges from the source workflow's literal push/pull_request/workflow_dispatch
+# triggers: neither the source file nor contributors-please-action's own
+# documented usage example runs on a schedule, but a weekly cadence avoids the
+# run-on-every-push noise a push trigger would add on top of the already-heavy
+# CI/CodeQL/dependency-review triggers, while workflow_dispatch keeps the
+# on-demand escape hatch the source relied on.
+on:
+  schedule:
+    - cron: '17 6 * * 1' # weekly, Monday 06:17 UTC
+  workflow_dispatch:
+
+overall status: 0

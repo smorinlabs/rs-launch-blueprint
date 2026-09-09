@@ -1,0 +1,102 @@
+{
+  "audits": [
+    {
+      "decision_sha256": "0b3dde8f9a15f22e60a01542065c53c122881e8c48bf3ee6c172ba5b70499346",
+      "identity": {
+        "actor": "audit-codex-2026-09-05T162400Z-58ba22bff8ca",
+        "family": "openai",
+        "model": "gpt-5.6-terra"
+      },
+      "kind": "empirical",
+      "path": "research/topics/07-contributors-bot-trigger-cadence/audit-codex.md",
+      "sha256": "268b1201d81a0f7da9231e6ae57da40e372750f17620f0d8a1ef1c6992039c26",
+      "unresolved_findings": [],
+      "verdict": "approve"
+    },
+    {
+      "decision_sha256": "0b3dde8f9a15f22e60a01542065c53c122881e8c48bf3ee6c172ba5b70499346",
+      "identity": {
+        "actor": "audit-fable-2026-09-05T162400Z-58ba22bff8ca",
+        "family": "anthropic",
+        "model": "claude-fable-5-1"
+      },
+      "kind": "judgment",
+      "path": "research/topics/07-contributors-bot-trigger-cadence/audit-fable.md",
+      "sha256": "804a0060dc127704f821b4706b2b0575944009036d779f3ddea62d0c7c52e304",
+      "unresolved_findings": [],
+      "verdict": "approve"
+    }
+  ],
+  "decision_sha256": "0b3dde8f9a15f22e60a01542065c53c122881e8c48bf3ee6c172ba5b70499346",
+  "empirical": {
+    "argv": [
+      "./run-check.sh"
+    ],
+    "cwd": "/private/tmp/r07-empirical-audit.*/empirical (fresh copy of review/empirical); form (b): actionlint on the fixture workflows, paths-ignore filter over 381 py and 61 ts real first-parent commits of the pinned clones, cross-checked against 203 py and 9 ts real workflow runs via the GitHub REST API; act absent; Linux VM lacked actionlint and gh so the check ran on macOS only",
+    "executed_by": {
+      "actor": "audit-codex-2026-09-05T162400Z-58ba22bff8ca",
+      "family": "openai",
+      "model": "gpt-5.6-terra"
+    },
+    "exit_code": 0,
+    "output_log": "research/topics/07-contributors-bot-trigger-cadence/evidence/2026-09-05T162400Z-58ba22bff8ca-audit-contributors-bot-trigger-cadence.log",
+    "output_sha256": "327ff85a7fedfa38a775962ffe9dd80034537817f9b712e466c59454614d2afb",
+    "toolchain": "actionlint 1.7.12; Python 3.14.7 with PyYAML 6.0.3; rustc 1.98.0 / cargo 1.98.0; gh 2.98.0; macOS 26.4 arm64"
+  },
+  "engine_reports": [
+    {
+      "engine": "codex",
+      "identity": {
+        "actor": "research-codex-2026-09-05T162400Z-58ba22bff8ca",
+        "family": "openai",
+        "model": "gpt-5.6-terra"
+      },
+      "path": "research/topics/07-contributors-bot-trigger-cadence/raw/codex-2026-09-05T162400Z-58ba22bff8ca.md",
+      "sha256": "fec48e36bb5a3183da6f2a133cdccc223fcaf722a49a3410e30fe1c45501af04"
+    },
+    {
+      "engine": "opus",
+      "identity": {
+        "actor": "research-opus-2026-09-05T162400Z-58ba22bff8ca",
+        "family": "anthropic",
+        "model": "claude-opus-5[1m]"
+      },
+      "path": "research/topics/07-contributors-bot-trigger-cadence/raw/opus-2026-09-05T162400Z-58ba22bff8ca.md",
+      "sha256": "a2f5e9a652105d01d0256b1aa06390692282bedf6bce4823a7bf24224cc7dbfc"
+    }
+  ],
+  "engines": "- codex `raw/codex.md` (gpt-5.6-terra, 2026-09-05, sha256\n  `fec48e36bb5a3183da6f2a133cdccc223fcaf722a49a3410e30fe1c45501af04`) \u2014\n  recommends weekly `schedule` (`17 9 * * 1`) plus `workflow_dispatch`, no\n  push; runner-up py's push shape.\n- opus `raw/opus.md` (claude-opus-5[1m], 2026-09-09, sha256\n  `a2f5e9a652105d01d0256b1aa06390692282bedf6bce4823a7bf24224cc7dbfc`) \u2014\n  recommends `push` + `paths-ignore` + `workflow_dispatch`; runner-up the same\n  plus a monthly backstop.\n\n**Disagreement 1 \u2014 primary trigger (the decision).** Settled for Opus by\nevidence Codex did not engage: (a) GitHub's documented auto-disable of\nscheduled workflows in public repositories after 60 days without activity and\nin forks, re-read by the synthesizer, applicable because `rs-launch-blueprint`\nis public; (b) the inherited action's README documents push + `paths-ignore`\nand ships no scheduled example (Codex did not read the README); (c) ts's own\nheader conceding the departure (Codex could not fetch the ts file, HTTP 404,\nand relied on the area note); (d) the production run history: the guard held\non all 22 post-guard generated-files-only commits (20 bot merges, 2 hand\nedits), and ts's cron ran 1 to 7.7 hours late every\nweek. Codex's stated strengths, GitHub event semantics and the `serde-rs/serde`\ndaily-cron CI, are accurate but do not bear on a contributors task; Codex\nitself says so.\n\n**Disagreement 2 \u2014 the noise argument.** Codex: push stacks a run on every\nmerge. Opus: below one qualifying merge a week push is cheaper than weekly\ncron. The synthesizer measured it: py ran 87 push runs in 2026-06 and 7 in\n2026-08 against about 4.3 a month for a weekly cron. Codex is right for a\nbusy repository; Opus is right for the template's stated pace; the decision\nweighs the schedule's silent-off state above either count.\n\n**Disagreement 3 \u2014 path filter under a schedule.** Codex: moot. Opus: invalid.\n`actionlint` rejects it (step 3), settling for Opus.\n\n**Disagreement 4 \u2014 cron minute.** Both raws independently choose minute 17 to\navoid the top of the hour; carried into the runner-up's backstop cron. ts's\nobserved delays show the offset does not remove queue delay.\n\n**Agreements.** Both raws: keep `workflow_dispatch` unconditionally; crate\nfigures inapplicable to a pattern item; no `CONFLICT:`; no `BASELINE-REVIEW:`;\nno fixed parameter affected.\n\n**Uncertainty.** No Rust project surveyed runs any contributors bot, so there\nis no Rust convention to defer to. The template's future merge rate is a\njudgment; if it exceeds about one qualifying merge a week the volume argument\nfor C strengthens (re-verify trigger). Whether template instantiation disables\nschedules like a fork is unconfirmed (Opus gap 5). Issue-responsiveness\nmedians for the surveyed actions were not computed by either raw; none is a\ndependency of this template. Codex's retrieval dates are 2026-09-05, Opus's\n2026-09-09 (UTC), the synthesizer's 2026-09-09 UTC.",
+  "evidence_checks": [],
+  "item": "R07",
+  "parameters": {
+    "consumed": {},
+    "fixed": {
+      "license": "MIT OR Apache-2.0",
+      "msrv-policy": "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI",
+      "rust-edition": "2024",
+      "target-os-matrix": "ubuntu-latest, macos-latest"
+    }
+  },
+  "policy_snapshot": {
+    "acceptance_after": [],
+    "engines": [
+      "codex",
+      "opus"
+    ],
+    "evidence_checks": [],
+    "tier": "focused"
+  },
+  "prerequisites": {
+    "acceptance_after": {},
+    "research": {}
+  },
+  "principles": "**Shared requirement, source, agreement level.** F060's principle\n(`docs/port/BASELINE-REVIEW.md:52`, classified *retained*): the contributors\nlist is regenerated automatically by a bot that opens a pull request rather\nthan committing to `main`. Agreement level recorded there: policy/mechanism\n(the tool is fixed). F026 records the one part that did not agree, the trigger.\nThe owner asked (harmonize = yes) whether one trigger value should serve all\nthree repos; the evidence supports the same tradeoff in all three ecosystems,\nso a shared value is recommended rather than a per-repo difference.\n\n**Essential behaviors (must agree in py, ts, rs).**\n\n1. Regeneration is automatic; no human has to remember to run it.\n2. The result reaches `main` only through a reviewable PR (F060).\n3. The workflow is loop-free: merging the bot's own PR must not start another\n   bot run that opens another PR.\n4. A maintainer can force a regeneration at any time without a code change.\n5. The mechanism has no silent-off state in the repository shape this template\n   ships as (public, forkable, often quiet).\n\n**What may vary.** Nothing in the `on:` block is language-bound; the action\nreads git history on `ubuntu-latest`. The only repository-specific inputs are\nmerge rate and visibility, and both cut the same way for py, ts and rs (see\nthe run-volume figures below). Adjacent lines of the same file that vary by\nother decisions: credential inputs (R21), permission style (R08), action pin\nstyle (R20), `runs-on` indirection (R09).\n\n**Observable acceptance criteria.**\n\n- A1 \u2014 merging a qualifying PR to `main` creates exactly one workflow run\n  within seconds, with `event: push`, and one bot PR if the list changed.\n- A2 \u2014 merging the bot PR (which touches only `CONTRIBUTORS.md` and\n  `.contributors.jsonl`) creates zero runs.\n- A3 \u2014 `gh workflow run update-contributors.yml` creates a run with\n  `event: workflow_dispatch`.\n- A4 \u2014 recognition latency is bounded by the merge, not by a clock.\n- A5 \u2014 `actionlint` accepts the file; the `paths-ignore` list equals the\n  action's `output-file` and `state-file` inputs.\n\nA1, A2 and A5 were verified in `## Empirical check` (A1 and A2 against the\nreal run history of py's production workflow; A5 with `actionlint`). A3 and\nA4 are proposed checks for the first integration on a live repository; they\nneed R21's credential decision to be executable.\n\n**Architectural alternatives compared before any tool question.**\n\n| Architecture | Authoritative signal | Latency | Loop guard | Silent-off state | Run volume |\n|---|---|---|---|---|---|\n| A. Event-driven: `push` to `main` + `paths-ignore` + dispatch (py, action README) | the merge | seconds | `paths-ignore` on the generated files | none documented | one short job per qualifying push |\n| B. `push` without a path filter (`akhilmhdh/contributors-readme-action` README) | the merge | seconds | none: the bot merge re-fires the bot | none | A plus one per bot merge |\n| C. Time-driven: weekly `schedule` + dispatch (ts) | the clock | up to 7 days plus queue delay | not needed | yes: auto-disabled after 60 days without activity in a public repo, disabled by default in forks | 52 per year regardless of activity |\n| D. Daily `schedule` (`BobAnkh/add-contributors` README; action at-risk) | the clock | up to 1 day | not needed | yes, as C | 365 per year |\n| E. Hybrid: A plus a monthly `schedule` backstop (`wow-actions/contributors-list` README shape) | merge, clock as retry | seconds | as A | backstop only | A plus 12 per year |\n| F. Comment-driven (All Contributors bot) | a maintainer's comment | human | none | yes, silently unrecognized | on demand |\n| G. `workflow_run` chained after CI | CI completion | after CI | as A | inherits CI's | as A plus a second failure surface |\n\nDocumented facts that separate them (GitHub, normative):\n\n- Path filters exist only for `push`, `pull_request` and `pull_request_target`\n  (workflow-syntax reference, section\n  `on.<push|pull_request|pull_request_target>.<paths|paths-ignore>`,\n  https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax,\n  retrieved 2026-09-05 by Codex, 2026-09-09 by Opus). `actionlint` 1.7.12\n  rejects `paths-ignore` under `schedule` (`## Empirical check`, step 3). The\n  MEDIUM question is therefore settled: under a schedule a path filter is not\n  moot, it is invalid; under a push trigger it is the loop guard the action's\n  README requires in place of `[skip ci]`.\n- `paths-ignore` semantics: \"When all the path names match patterns in\n  `paths-ignore`, the workflow will not run. If any path names do not match\n  patterns in `paths-ignore`, even if some path names match the patterns, the\n  workflow will run.\" (same page). GitHub evaluates this over the whole push\n  (`before..after`), which the run history confirms: with a merge queue, PRs\n  landing seconds apart share one push and one run.\n- Scheduled workflows: \"In a public repository, scheduled workflows are\n  automatically disabled when no repository activity has occurred in 60 days\"\n  and \"When a public repository is forked, scheduled workflows are disabled by\n  default\"\n  (https://docs.github.com/en/actions/how-tos/manage-workflow-runs/disable-and-enable-workflows,\n  retrieved 2026-09-09 by Opus, re-read 2026-09-09 UTC by the synthesizer; the\n  page names no warning before disabling, and none is asserted here). Also:\n  \"The `schedule` event can be delayed during periods of high loads of GitHub\n  Actions workflow runs. High load times include the start of every hour. If\n  the load is sufficiently high enough, some queued jobs may be dropped.\"\n  (https://docs.github.com/en/actions/reference/workflows-and-actions/events-that-trigger-workflows,\n  retrieved 2026-09-05 by Codex, 2026-09-09 by Opus and by the synthesizer).\n  Observed on ts: every one of 9 weekly runs started 1 h 01 min to 7 h 41 min\n  after its 06:17 UTC slot (`## Empirical check`, step 5).\n- `rs-launch-blueprint` is `visibility: public`\n  (`GET https://api.github.com/repos/smorinlabs/rs-launch-blueprint`,\n  retrieved 2026-09-09 UTC), so the 60-day rule applies to the target. ts is\n  `private`, so its clean weekly history is evidence that the private-repo\n  exemption works, not that a schedule is safe for a public template.\n\n**Why the selected design preserves each principle.** (1) automatic: the merge\nitself is the trigger. (2) PR-mediated: unchanged, F060. (3) loop-free: the\nbot PR touches only the two generated files, so its merge matches every\n`paths-ignore` pattern; verified on the 22 post-guard commits in py's production\nhistory that touched only the generated files (20 bot merges, 2 hand edits),\nwith zero loop runs (step 5b). (4) on demand: `workflow_dispatch`,\nkept unconditionally (LOW question). (5) no silent-off: `push` has no\ndocumented auto-disable rule; `schedule` has two, and a public template that\ngoes quiet for 60 days or is forked is the artifact most exposed to them.\n\n**Run volume, with the real figures (HIGH question).** py's push-triggered\nworkflow, retained history 2025-11-16 to 2026-09-07: `push` runs per month\n2026-06: 87, 2026-07: 31, 2026-08: 7, 2026-09 (to the 7th): 3\n(`review/evidence/py-update-contributors-runs.json`). A weekly cron is about\n4.3 runs per month regardless of activity. At py's June pace the push trigger\ncosts roughly 20 times a weekly cron; at its August and September pace it costs\nabout the same or less. The prompt describes the template as lower-frequency\nthan either source, so for the template the push trigger is the cheaper of the\ntwo in absolute runs, and each run is one shallow checkout plus one Node\naction step, free on public repositories under GitHub's Actions billing rules\n(https://docs.github.com/en/billing/managing-billing-for-your-products/managing-billing-for-github-actions/about-billing-for-github-actions,\nretrieved 2026-09-09 by Opus). Codex's noise concern is real on a busy repo\nand is answered, not dismissed: the runs are idempotent no-ops when nothing\nchanged, and the alternative's failure mode is not noise but absence.\n\n**Fit per shape.** The `on:` block is a repository property, so the decision is\nshape-invariant. CLI: no interaction; one short job beside the per-push CI. \nLibrary: release-please commits to `main` touch files other than the two\nignored ones, so a release commit also refreshes the list at no extra\nconfiguration. Web service (optional feature per `web-extra-surface`): no\ninteraction; the workflow never builds or starts the service.\n\n**Practice evidence and its limit.** Opus listed `.github/workflows` for\ntwelve widely adopted Rust projects (`rust-lang/cargo`, `tokio-rs/tokio`,\n`clap-rs/clap`, `BurntSushi/ripgrep`, `sharkdp/bat`, `astral-sh/ruff`,\n`astral-sh/uv`, `starship/starship`, `helix-editor/helix`, `nushell/nushell`,\n`tauri-apps/tauri`, `meilisearch/meilisearch`;\n`GET https://api.github.com/repos/<o>/<r>/contents/.github/workflows`,\nretrieved 2026-09-09): none runs a contributors-list bot in either cadence.\nRust practice therefore cannot decide this item; the decision rests on\nGitHub's documented semantics, the tool author's documentation, and the\nsource repositories' production behavior. Fitness gates 1 to 6 are\n`inapplicable` to a workflow trigger (no crate, no Rust code, no license,\nMSRV, RustSec, features or binary); gate 4 is satisfied identically by every\noption because the job runs on one `ubuntu-latest` runner in both sources.\n\n**Reference implementations.** The action's README usage block; py's pinned\nworkflow (`b08bccf`, `.github/workflows/update-contributors.yml`); the fixture\n`review/empirical/.github/workflows/update-contributors.yml` in this run,\nwhich is the recommended `on:` block over the inherited F060 job body with the\nlines owned by R21, R08, R20 and R09 marked.\n\n**Migration implications (file-level).** One file,\n`.github/workflows/update-contributors.yml`: the `on:` block above; no\n`schedule:` key. The `paths-ignore` list must equal the action's `output-file`\nand `state-file` inputs (`CONTRIBUTORS.md`, `.contributors.jsonl`, also in\n`.contributors.yml` per F209); a rename in R47 or later must update both in\none change, and A5 exists to catch drift. The `commit-message` input must not\ncarry `[skip ci]` (py `:39-44`; README loop-protection note). No Justfile,\nCargo, ruleset or required-check change: this workflow reports no required\nstatus check, so it does not consume R11's `ci-job-structure`.\n\n**Ranked runner-up.** E, the recommendation plus a monthly backstop\n`schedule: - cron: '17 6 1 * *'` (minute 17, not on the hour, per GitHub's\nload advice; monthly bounds a missed push run at 31 days for 12 runs a year).\nIt wins if R21 settles F061 on a credential that can expire or be revoked\n(App key or PAT rather than `secrets.GITHUB_TOKEN`), because then a push run\ncan fail on a merge nobody watches and stay stale until the next qualifying\nmerge; ts's history shows a cron retrying through three consecutive failures\n(2026-07-13, 07-20, 07-27) before succeeding. Second runner-up: C, ts's weekly\nschedule alone; it wins only under a hard per-run budget on a private,\nmetered instantiation, which no evidence here supports.\n\n**Tradeoffs accepted.** Versus E: no automatic retry of a failed push run;\naccepted because the failure is visible (a red run on a merge commit),\n`workflow_dispatch` is the recovery path, and the backstop is a two-line\naddition if R21 creates the expiry risk. Versus C: more runs on a busy repo;\naccepted because at the template's expected pace it is fewer, and the thing C\nrisks is the mechanism ceasing to exist. Versus F: no contribution-type\nattribution; not this item's to choose (F060 fixes the tool).\n\n**BASELINE-REVIEW findings:** none. F060 is retained unchanged; no\n`COMMON \u2192 REUSE` or `ADOPT` row is challenged.\n\nre-verify: 2027-09-08, or earlier when GitHub changes the scheduled-workflow auto-disable rules or extends path filters to `schedule`; when `smorinlabs/contributors-please-action` releases past v1.3.9 with a changed trigger example or loop-protection guidance; when R21 settles F061 on an expiring credential (revisit the monthly backstop); when R47 or a later decision renames either generated file; or when the template's merge rate to `main` exceeds roughly one qualifying merge per week.",
+  "prompt_sha256": "ba4132ae8ece2127adbf6eb9645035272f8e68e6d22632a915279db523659725",
+  "reverify": "2027-09-08, or earlier when GitHub changes the scheduled-workflow auto-disable rules or extends path filters to `schedule`; when `smorinlabs/contributors-please-action` releases past v1.3.9 with a changed trigger example or loop-protection guidance; when R21 settles F061 on an expiring credential (revisit the monthly backstop); when R47 or a later decision renames either generated file; or when the template's merge rate to `main` exceeds roughly one qualifying merge per week.",
+  "schema_version": 1,
+  "synthesis": {
+    "actor": "synth-fable-2026-09-05T162400Z-58ba22bff8ca",
+    "family": "anthropic",
+    "model": "claude-fable-5-1"
+  }
+}

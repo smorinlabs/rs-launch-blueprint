@@ -10,7 +10,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R04 | public-api-surface-enforcement | pattern | different | DIVERGENT | — | [prompt](topics/04-public-api-surface-enforcement/prompts/public-api-surface-enforcement.prompt.md) | resolved |
 | R05 | sync-async-execution-model | bundle | different | DIVERGENT | — | [prompt](topics/05-sync-async-execution-model/prompts/sync-async-execution-model.prompt.md) | open |
 | R06 | unsafe-code-policy | pattern | none | RUST-ONLY | — | [prompt](topics/06-unsafe-code-policy/prompts/unsafe-code-policy.prompt.md) | resolved |
-| R07 | contributors-bot-trigger-cadence | pattern | different | DIVERGENT | — | [prompt](topics/07-contributors-bot-trigger-cadence/prompts/contributors-bot-trigger-cadence.prompt.md) | open |
+| R07 | contributors-bot-trigger-cadence | pattern | different | DIVERGENT | — | [prompt](topics/07-contributors-bot-trigger-cadence/prompts/contributors-bot-trigger-cadence.prompt.md) | resolved |
 | R08 | workflow-permission-hardening | bundle | different | DIVERGENT | — | [prompt](topics/08-workflow-permission-hardening/prompts/workflow-permission-hardening.prompt.md) | open |
 | R09 | self-hosted-runner-indirection | bundle | py-only | DIVERGENT | — | [prompt](topics/09-self-hosted-runner-indirection/prompts/self-hosted-runner-indirection.prompt.md) | open |
 | R10 | dependency-cache-action | crate | same | COMMON → SUBSTITUTE | — | [prompt](topics/10-dependency-cache-action/prompts/dependency-cache-action.prompt.md) | open |

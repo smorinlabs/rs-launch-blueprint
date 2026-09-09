@@ -115,6 +115,15 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-09T07:19:24Z",
+      "publication": {
+        "acceptance_sha256": "118547a5984a1b654518ffcb37dd72a42f9adb70de67b6f0af5e40e23a57abb5",
+        "decision_sha256": "0b3dde8f9a15f22e60a01542065c53c122881e8c48bf3ee6c172ba5b70499346",
+        "transaction": "80ebba10e31349beb178d8a5c01068fe"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -164,6 +173,11 @@
     }
   },
   "prompt_source": "research/topics/07-contributors-bot-trigger-cadence/prompts/contributors-bot-trigger-cadence.prompt.md",
+  "publication": {
+    "acceptance_sha256": "118547a5984a1b654518ffcb37dd72a42f9adb70de67b6f0af5e40e23a57abb5",
+    "decision_sha256": "0b3dde8f9a15f22e60a01542065c53c122881e8c48bf3ee6c172ba5b70499346",
+    "transaction": "80ebba10e31349beb178d8a5c01068fe"
+  },
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
     "codex",
@@ -171,7 +185,7 @@
   ],
   "run_id": "2026-09-05T162400Z-58ba22bff8ca",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "focused",
-  "updated_at": "2026-09-09T05:54:41Z"
+  "updated_at": "2026-09-09T07:19:24Z"
 }
