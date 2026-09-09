@@ -1,0 +1,19 @@
+{
+  "engine_reports": {
+    "codex": {"actor": "research-codex-2026-09-05T163018Z-6cb436162ac7", "model": "gpt-5.6-terra", "family": "openai", "file": "raw/codex.md"},
+    "opus": {"actor": "research-opus-2026-09-05T163018Z-6cb436162ac7", "model": "claude-opus-5[1m]", "family": "anthropic", "file": "raw/opus.md"}
+  },
+  "evidence_checks": {},
+  "synthesis": {"actor": "synth-fable-2026-09-05T163018Z-6cb436162ac7", "model": "claude-fable-5-1", "family": "anthropic"},
+  "audits": {
+    "empirical": {"actor": "audit-codex-2026-09-05T163018Z-6cb436162ac7", "model": "gpt-5.6-terra", "family": "openai", "file": "review/audit-codex.md"},
+    "judgment": {"actor": "audit-fable-2026-09-05T163018Z-6cb436162ac7", "model": "claude-fable-5-1", "family": "anthropic", "file": "review/audit-fable.md"}
+  },
+  "empirical": {
+    "argv": ["bash", "run-checks.sh", "host"],
+    "cwd": "isolated temporary copy of review/empirical/fixture (host lane with the 1.96.0 floor toolchain on PATH via the rustup sysroot; UV_CACHE_DIR and EVID isolated); Linux lane via the copied run-linux-leg.sh into VM-local ~/r15-empirical (read-only Lima mount)",
+    "toolchain": "macOS 26.4 arm64 rustc 1.96.0 (floor, via rustup sysroot) with template-press 4.0.1 in a uv venv; Lima Ubuntu 25.10 aarch64 rustc 1.98.1 with press 4.0.1 (GitHub ubuntu-latest is x86_64)",
+    "output_log": "review/evidence/audit-template-drift-receipt-guard.log",
+    "exit_code": 0
+  }
+}

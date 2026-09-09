@@ -18,7 +18,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R12 | aggregate-required-status-check | pattern | py-only | DIVERGENT | — | [prompt](topics/12-aggregate-required-status-check/prompts/aggregate-required-status-check.prompt.md) | open |
 | R13 | dependency-vulnerability-scanning | bundle | py-only | DIVERGENT | — | [prompt](topics/13-dependency-vulnerability-scanning/prompts/dependency-vulnerability-scanning.prompt.md) | open |
 | R14 | large-file-guard-strategy | bundle | py-only | DIVERGENT | — | [prompt](topics/14-large-file-guard-strategy/prompts/large-file-guard-strategy.prompt.md) | open |
-| R15 | template-drift-receipt-guard | pattern | py-only | DIVERGENT | — | [prompt](topics/15-template-drift-receipt-guard/prompts/template-drift-receipt-guard.prompt.md) | open |
+| R15 | template-drift-receipt-guard | pattern | py-only | DIVERGENT | — | [prompt](topics/15-template-drift-receipt-guard/prompts/template-drift-receipt-guard.prompt.md) | resolved |
 | R16 | codeql-config-customization | pattern | py-only | DIVERGENT | — | [prompt](topics/16-codeql-config-customization/prompts/codeql-config-customization.prompt.md) | open |
 | R17 | secret-scanning-ci-workflow | crate | py-only | DIVERGENT | — | [prompt](topics/17-secret-scanning-ci-workflow/prompts/secret-scanning-ci-workflow.prompt.md) | open |
 | R18 | ai-assisted-review-workflows | bundle | py-only | DIVERGENT | — | [prompt](topics/18-ai-assisted-review-workflows/prompts/ai-assisted-review-workflows.prompt.md) | open |
