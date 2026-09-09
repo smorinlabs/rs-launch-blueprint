@@ -78,7 +78,13 @@ class NoRetryLauncherTests(unittest.TestCase):
         self.assertIn("Doxa Research", result.stdout)
 
     def test_replacement_model_is_treated_as_deep_research_when_patched(self):
-        self.assertFalse(_verify("--no-patch")["background_model_gpt_5_6_sol"])
+        # Doxa recognised gpt-5.6-sol natively from 3.3.0 (smorinlabs/doxa-research
+        # PR 147, "migrate to gpt-5.6-sol after the deep-research shutdown"), so
+        # the unpatched result is a fact about the installed Doxa, not the shim:
+        # False below 3.3.0 (the shim was load-bearing), True from 3.3.0 on.
+        unpatched = _verify("--no-patch")
+        doxa_version = tuple(int(x) for x in unpatched["versions"]["doxa-research"].split(".")[:3])
+        self.assertEqual(unpatched["background_model_gpt_5_6_sol"], doxa_version >= (3, 3, 0))
         report = _verify()
         self.assertTrue(report["background_model_gpt_5_6_sol"])
         self.assertEqual(report["deep_research_replacements"], ["gpt-5.6-sol"])
