@@ -1,0 +1,207 @@
+
+### environment
+2026-09-09T05:53:56Z
+Darwin Steves-MacBook-Pro.local 25.4.0 Darwin Kernel Version 25.4.0: Thu Mar 19 19:33:25 PDT 2026; root:xnu-12377.101.15~1/RELEASE_ARM64_T6041 arm64
+R06_CARGO=/Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo
+R06_RUSTC=/Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/rustc
+R06_CLIPPY=no
+RUSTC (Cargo env var)=/Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/rustc
+RUSTDOC (Cargo env var)=/Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/rustdoc
+PATH head=/Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin:/Users/stevemorin/.local/share/mise/installs/npm/12.0.1/package/bin
+CARGO_TARGET_DIR=/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r06-target-1.96.0
+fixture=/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R06/2026-09-05T162400Z-31f07a2b91b6/review/empirical
+-- rustdoc on PATH: /Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/rustdoc -> rustdoc 1.96.0 (ac68faa20 2026-05-25)
+$ /Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/rustc -vV
+rustc 1.96.0 (ac68faa20 2026-05-25)
+binary: rustc
+commit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96
+commit-date: 2026-05-25
+host: aarch64-apple-darwin
+release: 1.96.0
+LLVM version: 22.1.2
+exit=0
+$ /Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo --version
+cargo 1.96.0 (30a34c682 2026-05-25)
+exit=0
+-- compiler cargo actually invokes (cargo rustc -- -vV, separate probe target dir):
+$ /Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo rustc -p demo --lib -- -vV
+   Compiling memchr v2.8.3
+   Compiling demo v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R06/2026-09-05T162400Z-31f07a2b91b6/review/empirical/crates/demo)
+rustc 1.96.0 (ac68faa20 2026-05-25)
+binary: rustc
+commit-hash: ac68faa20c58cbccd01ee7208bf3b6e93a7d7f96
+commit-date: 2026-05-25
+host: aarch64-apple-darwin
+release: 1.96.0
+LLVM version: 22.1.2
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.15s
+exit=0
+
+### fixture: root Cargo.toml (recommended configuration)
+# R06 empirical fixture: the recommended `unsafe` policy, exactly as a template
+# workspace root would carry it. Resting state = safe code, so `cargo check`,
+# `cargo test` and `cargo clippy -- -D warnings` all pass; the negative variants
+# are applied and restored by `run-checks.sh`.
+[workspace]
+members = ["crates/*"]
+resolver = "3"
+
+[workspace.package]
+edition = "2024"
+# Illustrative floor only: the concrete value is set by the fixed `msrv-policy`
+# parameter (stable minus 2 minor versions), not by R06. 1.96 = 1.98 - 2 on the
+# day this fixture was run.
+rust-version = "1.96"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+# Shipped armed so that a fork's downgrade of `unsafe_code` to `deny` is a
+# one-token edit rather than a design exercise. While `forbid` holds, the first
+# two cannot fire (there are no `unsafe` blocks to lint); the third is live and
+# rejects a `// SAFETY:` comment on safe code, which under `forbid` is all code.
+[workspace.lints.clippy]
+undocumented_unsafe_blocks    = "deny"
+multiple_unsafe_ops_per_block = "deny"
+unnecessary_safety_comment    = "deny"
+
+### fixture: member Cargo.toml
+[package]
+name = "demo"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+
+[dependencies]
+# A real registry crate whose own source uses `unsafe` heavily; it must build
+# cleanly under the workspace `forbid`, proving the policy is crate-local.
+memchr = "2"
+
+[lints]
+workspace = true
+
+### P1 safe resting state: cargo check --workspace (expect exit 0; memchr builds under forbid)
+[lib.rs <- variants/safe.rs]
+$ /Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo check --workspace
+    Checking memchr v2.8.3
+    Checking demo v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R06/2026-09-05T162400Z-31f07a2b91b6/review/empirical/crates/demo)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.38s
+exit=0
+resolved memchr: name = "memchr" version = "2.8.3" 
+
+### P2 safe resting state: cargo test --workspace (expect exit 0)
+$ /Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo test --workspace
+   Compiling memchr v2.8.3
+   Compiling demo v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R06/2026-09-05T162400Z-31f07a2b91b6/review/empirical/crates/demo)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.88s
+     Running unittests src/lib.rs (/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r06-target-1.96.0/debug/deps/demo-7737a30b133d8c29)
+
+running 1 test
+test tests::finds_comma ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests demo
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+exit=0
+
+### P3/P4 skipped: clippy not run on this leg (CLIPPY=no)
+
+### N1 unsafe block: cargo check (expect failure: usage of an unsafe block, note -F unsafe-code)
+[lib.rs <- variants/unsafe-block.rs]
+$ /Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo check --workspace
+    Checking demo v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R06/2026-09-05T162400Z-31f07a2b91b6/review/empirical/crates/demo)
+error: usage of an `unsafe` block
+ --> crates/demo/src/lib.rs:3:5
+  |
+3 |     unsafe { *x.get_unchecked(0) }
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: requested on the command line with `-F unsafe-code`
+
+error: could not compile `demo` (lib) due to 1 previous error
+exit=101
+
+### N2 #[allow(unsafe_code)] override: cargo check (expect failure: E0453 incompatible with previous forbid)
+[lib.rs <- variants/allow-override.rs]
+$ /Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo check --workspace
+    Checking demo v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R06/2026-09-05T162400Z-31f07a2b91b6/review/empirical/crates/demo)
+error[E0453]: allow(unsafe_code) incompatible with previous forbid
+ --> crates/demo/src/lib.rs:2:9
+  |
+2 | #[allow(unsafe_code)]
+  |         ^^^^^^^^^^^ overruled by previous forbid
+  |
+  = note: `forbid` lint level was set on command line (`-F unsafe_code`)
+
+error: usage of an `unsafe` block
+ --> crates/demo/src/lib.rs:6:5
+  |
+6 |     unsafe { *x.get_unchecked(0) }
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: requested on the command line with `-F unsafe-code`
+
+For more information about this error, try `rustc --explain E0453`.
+error: could not compile `demo` (lib) due to 2 previous errors
+exit=101
+
+### N3 #[expect(unsafe_code, reason)] override: cargo check (expect failure: E0453 as well)
+[lib.rs <- variants/expect-override.rs]
+$ /Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo check --workspace
+    Checking demo v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R06/2026-09-05T162400Z-31f07a2b91b6/review/empirical/crates/demo)
+error[E0453]: expect(unsafe_code) incompatible with previous forbid
+ --> crates/demo/src/lib.rs:3:10
+  |
+3 | #[expect(unsafe_code, reason = "fixture: demonstrates that forbid also rejects expect")]
+  |          ^^^^^^^^^^^ overruled by previous forbid
+  |
+  = note: `forbid` lint level was set on command line (`-F unsafe_code`)
+
+error: usage of an `unsafe` block
+ --> crates/demo/src/lib.rs:7:5
+  |
+7 |     unsafe { *x.get_unchecked(0) }
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: requested on the command line with `-F unsafe-code`
+
+For more information about this error, try `rustc --explain E0453`.
+error: could not compile `demo` (lib) due to 2 previous errors
+exit=101
+
+### N4 #[unsafe(no_mangle)] attribute: cargo check (expect failure: usage of the unsafe no_mangle attribute)
+[lib.rs <- variants/no-mangle.rs]
+$ /Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo check --workspace
+    Checking demo v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R06/2026-09-05T162400Z-31f07a2b91b6/review/empirical/crates/demo)
+error: declaration of a `no_mangle` function
+ --> crates/demo/src/lib.rs:3:1
+  |
+3 | #[unsafe(no_mangle)]
+  | ^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: the linker's behavior with multiple libraries exporting duplicate symbol names is undefined and Rust cannot provide guarantees when you manually override them
+  = note: requested on the command line with `-F unsafe-code`
+
+error: could not compile `demo` (lib) due to 1 previous error
+exit=101
+
+### R1 runner-up contrast: root switched forbid -> deny (one-token edit)
+17:unsafe_code = "deny"
+[lib.rs <- variants/deny-with-safety-comment.rs]
+-- R1a cargo check under deny with #[expect] + SAFETY comment (expect exit 0)
+$ /Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo check --workspace
+    Checking demo v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R06/2026-09-05T162400Z-31f07a2b91b6/review/empirical/crates/demo)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s
+exit=0
+-- R1b/R1c skipped: clippy not run on this leg
+
+### restore: resting state re-established by trap (verified below)
+lib.rs == variants/safe.rs: yes
+17:unsafe_code = "forbid"
+
+### done

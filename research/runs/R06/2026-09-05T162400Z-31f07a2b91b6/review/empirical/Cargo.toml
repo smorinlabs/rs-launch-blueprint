@@ -1,0 +1,26 @@
+# R06 empirical fixture: the recommended `unsafe` policy, exactly as a template
+# workspace root would carry it. Resting state = safe code, so `cargo check`,
+# `cargo test` and `cargo clippy -- -D warnings` all pass; the negative variants
+# are applied and restored by `run-checks.sh`.
+[workspace]
+members = ["crates/*"]
+resolver = "3"
+
+[workspace.package]
+edition = "2024"
+# Illustrative floor only: the concrete value is set by the fixed `msrv-policy`
+# parameter (stable minus 2 minor versions), not by R06. 1.96 = 1.98 - 2 on the
+# day this fixture was run.
+rust-version = "1.96"
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+# Shipped armed so that a fork's downgrade of `unsafe_code` to `deny` is a
+# one-token edit rather than a design exercise. While `forbid` holds, the first
+# two cannot fire (there are no `unsafe` blocks to lint); the third is live and
+# rejects a `// SAFETY:` comment on safe code, which under `forbid` is all code.
+[workspace.lints.clippy]
+undocumented_unsafe_blocks    = "deny"
+multiple_unsafe_ops_per_block = "deny"
+unnecessary_safety_comment    = "deny"
