@@ -1,0 +1,5 @@
+Rejected: [audit](review/audit-codex.md)  
+Audit SHA-256: `869861375db8c5fd112e5117903ea8c902a704846158c9f3703e76cb35a30a9e`  
+All five v3 reruns exited 0; [evidence log](review/evidence/audit-per-file-license-header-r3.log).  
+F1: the sequence admits a nonempty but noncanonical `LICENSE-MIT`, despite requiring complete canonical root texts.
+
