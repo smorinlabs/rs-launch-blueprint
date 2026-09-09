@@ -3,10 +3,14 @@
   "actual_model": "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026",
   "actual_provider": "doxa-research 3.3.0 via scripts/doxa_no_retry.py; openai job resp_04f84c3220c8b74a006aa10baed11c87d090ce6aec9292d02a running; perplexity job ba91dcd1-6a86-4d5e-a4fa-7ceafb159c93 running; gemini job v1_ChZzQXVoYXNnd2lwRDd4Z19RcDVLZ0F3EhZzQXVoYXNnd2lwRDd4Z19RcDVLZ0F3 running",
   "at": "2026-09-09T07:33:01Z",
+  "collected_at": "2026-09-09T07:47:09Z",
   "model": "all_deep_research (openai gpt-5.6-sol reasoning_effort max, perplexity sonar-deep-research, gemini deep-research-preview-04-2026)",
   "operation_id": "research-20260909-003302-e378b7e82207409d",
   "provider": "doxa",
+  "raw": "research/runs/R60/2026-09-05T183002Z-09f93cfc507c/raw/doxa-6b6dea3cfc5736f71035f0c1688686f66a1ffda773697409330d1f8197042842.md",
+  "raw_sha256": "6b6dea3cfc5736f71035f0c1688686f66a1ffda773697409330d1f8197042842",
+  "reason": "op research-20260909-003302-e378b7e82207409d completed 2026-09-09; three provider reports under doxa/research-outputs/ (resume run from the doxa/ cwd); raw = doxa/combined.md (controller-built Doxa combined format); regrouped bundle-shaped raw/doxa.normalized.md: REGROUPED=OK; per-provider bodies: openai: shape OK, 0 lossless heading repairs; perplexity: shape OK, 9 lossless heading repairs; gemini: shape OK, 0 lossless heading repairs \u2014 details in doxa/normalization.json; saved-file sha256: openai 30a38a52d825698b295c39eaa31b2dea58b272aef385b452f4a25ed04265b633; perplexity 149ef119c429a8bb178f1f39e17411c70cce0ec59bd98bf90def85f42da3b147; gemini 988630ac8701d05f3db5cba50d38b9711ac122a8f38ba723c7dc9befd860e054;  usage in operations/doxa-usage.json",
   "request_id": "a116af1c2bcf4653ae88ad4ad1bb2160",
   "returned_at": "2026-09-09T07:33:05Z",
-  "state": "submitted"
+  "state": "succeeded"
 }

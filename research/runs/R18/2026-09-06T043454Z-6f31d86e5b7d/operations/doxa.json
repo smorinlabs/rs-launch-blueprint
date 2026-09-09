@@ -3,10 +3,14 @@
   "actual_model": "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026",
   "actual_provider": "doxa-research 3.3.0 via scripts/doxa_no_retry.py; openai job resp_0f86eeac942486cc006aa10ba20d3487d0ac3b4409e5031a03 running; perplexity job 11c34dfe-55da-4456-bb91-c30287d57bd8 running; gemini job v1_Chdvd3VoYXBlMERzalZqTWNQcFlta2lRTRIXb3d1aGFwZTBEc2pWak1jUHBZbWtpUU0 running",
   "at": "2026-09-09T07:32:48Z",
+  "collected_at": "2026-09-09T07:46:41Z",
   "model": "all_deep_research (openai gpt-5.6-sol reasoning_effort max, perplexity sonar-deep-research, gemini deep-research-preview-04-2026)",
   "operation_id": "research-20260909-003249-bf15cd42494140b6",
   "provider": "doxa",
+  "raw": "research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/raw/doxa-0a3653871ed3eba4dbcc1dea3c9bb0fc9b77cc650e3d567cc1714fe83a303c10.md",
+  "raw_sha256": "0a3653871ed3eba4dbcc1dea3c9bb0fc9b77cc650e3d567cc1714fe83a303c10",
+  "reason": "op research-20260909-003249-bf15cd42494140b6 completed 2026-09-09; three provider reports under doxa/research-outputs/ (resume run from the doxa/ cwd); raw = doxa/combined.md (controller-built Doxa combined format); regrouped bundle-shaped raw/doxa.normalized.md: REGROUPED=OK; per-provider bodies: openai: shape OK, 0 lossless heading repairs; perplexity: shape FAIL (missing fields: ['Compatibility', 'Parameters', 'Migration implications', 'Validation strategy', 'Confidence & re-verify trigger']) (1 incomplete member(s)), 1 lossless heading repairs; gemini: shape OK, 0 lossless heading repairs \u2014 details in doxa/normalization.json; saved-file sha256: openai bf52526e56d543a227015fc31d4b45159e079723c5551af085a5057a7df7ffec; perplexity f85f8197cbc4efded3c04053fce41b998e8294689a194dbc43a63217204a9358; gemini 57744b6863a2f8bb575cfac1d2dc2d87d597aad94ca34995595a2a9ed1471adf;  usage in operations/doxa-usage.json",
   "request_id": "1aa224e41962413fae9fe03d8ad19c67",
   "returned_at": "2026-09-09T07:32:52Z",
-  "state": "submitted"
+  "state": "succeeded"
 }
