@@ -86,6 +86,7 @@ run_case 17 1 "DEFECT REPRO: hard_line_length = 200 variant, 100-col space-free 
 run_case 18 0 "recommended config (hard_line_length 0): same 100-col space-free line accepted" "$REPO" committed --commit-file "$M/17-spacefree-100.txt"
 run_case 19 1 "dependabot-style message on the hook path (71-col subject, 103-col body line): the hook always uses the main config" "$REPO" committed --commit-file "$M/19-dependabot-body.txt"
 run_case 20 record "git's default merge message via --commit-file (git runs commit-msg for git merge)" "$REPO" committed --fixup --wip --commit-file "$M/20-merge-message.txt"
+run_case 21 1 "subject_length measures the WHOLE first line: 66-col 'type(scope): description' (soft 59 > 50) whose description alone is 41 cols is rejected (checks.rs:118-141)" "$REPO" committed --commit-file "$M/21-header-over-50-description-under-50.txt"
 
 hr; echo "2. range path: committed <rev|range>  (the CI contract; author known)"
 commit_as "$REPO" "$HUMAN_N" "$HUMAN_E" "$M/01-valid.txt"; BASE="$(git -C "$REPO" rev-parse HEAD)"

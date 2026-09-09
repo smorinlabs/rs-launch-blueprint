@@ -1,0 +1,25 @@
+# Comparison config for cargo-commitlint 2.1.0 (Doxa-introduced candidate):
+# the rs-launch-blueprint contract expressed in its commitlint-shaped TOML.
+# Unlisted rules take the crate's built-in "conventional" defaults
+# (rules.rs `#[serde(default)]` -> Rules::conventional()).
+defaultIgnores = true
+
+[rules.type-enum]
+level = 2
+applicable = "always"
+value = ["build", "chore", "ci", "docs", "feat", "fix", "perf", "refactor", "revert", "style", "test"]
+
+[rules.header-max-length]
+level = 2
+applicable = "always"
+value = 50
+
+[rules.body-max-line-length]
+level = 2
+applicable = "always"
+value = 72
+
+[rules.footer-max-line-length]
+level = 2
+applicable = "always"
+value = 72
