@@ -1,0 +1,3057 @@
+{
+ "counts": {
+  "RUN": 353,
+  "SKIP": 24,
+  "EMPTY-DIFF": 4
+ },
+ "commits": [
+  {
+   "sha": "b08bccfb55d05f15e46a83b52c5660b1881d19f5",
+   "date": "2026-09-01T23:07:15Z",
+   "subject": "Merge pull request #527 from smorinlabs/ci/difftree-sync",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "1f1d57c86a643d3d09ed61d949bc9b3fd49a989e",
+   "date": "2026-09-01T16:49:27Z",
+   "subject": "Merge pull request #524 from smorinlabs/ci/difftree-pr-comment",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "d347fd961d1609ef2578640b4a27e1219a20ca79",
+   "date": "2026-08-17T19:43:03Z",
+   "subject": "Merge pull request #522 from smorinlabs/docs/p06-close",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "986eafa76d0ba2882d83d81a2edf59432b2954fe",
+   "date": "2026-08-17T19:33:13Z",
+   "subject": "Merge pull request #521 from smorinlabs/feat/full-conform",
+   "files": 54,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "e36ecb9d7107867f4dc8fde5ebdcccfad883c355",
+   "date": "2026-08-17T07:32:09Z",
+   "subject": "Merge pull request #520 from smorinlabs/docs/p05-close",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "8ed30c3c64d389659b481714fe218b6e8ffec4a4",
+   "date": "2026-08-17T06:30:44Z",
+   "subject": "Merge pull request #519 from smorinlabs/docs/run4-battery",
+   "files": 5,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "6f99b7666116bbff861b0cd7501ab38d7c875f28",
+   "date": "2026-08-17T05:14:10Z",
+   "subject": "Merge pull request #518 from smorinlabs/feat/press-conform",
+   "files": 10,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "b135492a1def0fafa41cbe35e301ac0698e57256",
+   "date": "2026-08-17T05:04:01Z",
+   "subject": "Merge pull request #505 from smorinlabs/fix/guard-press-receipt",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "734abfddd2b9b4500390ded4f08e745742ee92c4",
+   "date": "2026-08-09T14:44:53-07:00",
+   "subject": "Merge pull request #516 from smorinlabs/dependabot/uv/gitpython-3.1.58",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "761e5829fa512a638e03d74437220ca33b6dcf67",
+   "date": "2026-07-23T18:24:21Z",
+   "subject": "Merge pull request #504 from smorinlabs/docs/dogfood-gap-findings",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "164933467ebac05c03fb7edc9e17a65f05770a8f",
+   "date": "2026-07-22T14:34:41-04:00",
+   "subject": "Merge pull request #503 from smorinlabs/agent/gate-public-security-workflows",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "46c744f6c2fb1c424ee0bcf0306d2d2c874d3a30",
+   "date": "2026-07-22T01:21:18-04:00",
+   "subject": "Merge pull request #500 from smorinlabs/agent/atomic-release-lock-version",
+   "files": 5,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "8d6ae873c6a7b0ebafec290abfc290f43d30cce6",
+   "date": "2026-07-22T04:13:37Z",
+   "subject": "Merge pull request #498 from smorinlabs/contributors-please/update",
+   "files": 2,
+   "ignored_files": 2,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "2a44d9b08e68f7998e4d0b564d03cc4612184584",
+   "date": "2026-07-22T03:46:31Z",
+   "subject": "Merge pull request #497 from smorinlabs/contributors-please/update",
+   "files": 2,
+   "ignored_files": 2,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "6b2680966d8947169644af4cbd437f59678dd7ba",
+   "date": "2026-07-22T03:46:17Z",
+   "subject": "Merge pull request #495 from smorinlabs/fix/commitlint-via-mise",
+   "files": 8,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "d2108ffadeebc6a6b0d57791f5a9e025089daf4d",
+   "date": "2026-07-21T09:32:08-04:00",
+   "subject": "Merge pull request #496 from smorinlabs/fix/coverage-xdist-flake",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "2c90c166bfda390e4661e3fb8d2fb7fca927f7a9",
+   "date": "2026-07-21T06:43:01Z",
+   "subject": "Merge pull request #494 from smorinlabs/contributors-please/update",
+   "files": 2,
+   "ignored_files": 2,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "9ae29fdc21f569c88b2168f5b3496b9375ac2765",
+   "date": "2026-07-21T06:21:58Z",
+   "subject": "Merge pull request #489 from smorinlabs/dependabot/uv/slowapi-0.1.10",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "d6809200a6be4a1d1922f6947e29ade0984ec0fb",
+   "date": "2026-07-21T06:21:47Z",
+   "subject": "Merge pull request #488 from smorinlabs/dependabot/uv/responses-0.26.2",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "4a89c404b6ba6a4c2f53e847c7ce29119aec0b30",
+   "date": "2026-07-21T06:21:36Z",
+   "subject": "Merge pull request #487 from smorinlabs/dependabot/uv/hypothesis-6.156.6",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "c59853fc6e592f89e928ed933c7dfe2a4cc51ba1",
+   "date": "2026-07-21T06:21:09Z",
+   "subject": "Merge pull request #485 from smorinlabs/dependabot/uv/opentelemetry-exporter-otlp-1.43.0",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "a659d06ede0379f8631cbad33e20996cfed1b625",
+   "date": "2026-07-21T06:20:56Z",
+   "subject": "Merge pull request #484 from smorinlabs/dependabot/github_actions/github-actions-3585340f93",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "0413145650a028dd58f390c50f3c8fb0f7e1a1e7",
+   "date": "2026-07-21T06:20:37Z",
+   "subject": "Merge pull request #469 from smorinlabs/contributors-please/update",
+   "files": 2,
+   "ignored_files": 2,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "2dc10a3236defc95fa516264c04a53000e1e2db9",
+   "date": "2026-07-21T06:20:03Z",
+   "subject": "Merge pull request #490 from smorinlabs/release-please--branches--main--components--py_launch_blueprint",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "073758fb49976a490304bb46ebe4eb86578294f1",
+   "date": "2026-07-21T06:19:19Z",
+   "subject": "Merge pull request #492 from smorinlabs/docs/p04-complete",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "a4b013a438b0aac4f3df5032e4c70438b9eb4498",
+   "date": "2026-07-21T06:12:03Z",
+   "subject": "Merge pull request #493 from smorinlabs/fix/coderabbit-rate-limit-status",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "8571dfbd833661c5a19b8be29e49e0b80da69208",
+   "date": "2026-07-20T23:54:10-04:00",
+   "subject": "Merge pull request #491 from smorinlabs/docs/merge-commit-default",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "b44457bea91e4ca8ed5f3e5378df030ed030a8b4",
+   "date": "2026-07-20T23:48:03Z",
+   "subject": "fix(adapters): validate py-api responses at the boundary (#483)",
+   "files": 6,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "ce1981804832708c241dc36e295d33c0c1c16400",
+   "date": "2026-07-20T23:21:01Z",
+   "subject": "refactor(types): name idempotency tuples, make OutputMode dispatch exhaustive (#482)",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "cf0b42ceeed22c48c053cc63aaefdcc1c96146f5",
+   "date": "2026-07-19T14:55:21-07:00",
+   "subject": "chore(deps-dev): bump the lint-and-format group across 1 directory with 2 updates (#480)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "00d4a15ee5c9ccd889fea9b404d7d90e8930e203",
+   "date": "2026-07-19T14:54:13-07:00",
+   "subject": "chore(deps): bump prometheus-fastapi-instrumentator from 8.0.0 to 8.0.2 (#477)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "aecd40d00626abbe13efb7f2f8c5ea3ea7d35b5f",
+   "date": "2026-07-19T14:53:04-07:00",
+   "subject": "chore(deps): bump fastapi-pagination from 0.15.14 to 0.15.15 (#476)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "3a9b694801159166ba0d06612c8fa78e4075315a",
+   "date": "2026-07-19T14:52:41-07:00",
+   "subject": "chore(deps-dev): bump the test group across 1 directory with 2 updates (#475)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "ac20f9c86070b4cf24157505cfe238e58735deef",
+   "date": "2026-07-19T14:51:42-07:00",
+   "subject": "chore(deps): bump click from 8.4.1 to 8.4.2 in the runtime group across 1 directory (#473)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "24d4e1fe614ebc38357baeaeeaf774eccbde5b50",
+   "date": "2026-07-19T14:49:51-07:00",
+   "subject": "chore(deps): bump the github-actions group with 3 updates (#478)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "cf041cd3a63e911b7fc2304f68a8384d62dd188d",
+   "date": "2026-07-19T14:34:38-07:00",
+   "subject": "ci: skip claude-code-review on bot-authored PRs (#481)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "81f484e3adb7c18f663f18f9715a3831046593fe",
+   "date": "2026-07-18T21:29:40-07:00",
+   "subject": "chore(release): publish v2.4.1 \u2014 review and merge to ship to PyPI (#470)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "f006d0f4d284b41e548d6e9f3ca031c9da4c64d8",
+   "date": "2026-07-18T21:01:22-07:00",
+   "subject": "docs(agents): make the PR review-comment merge guard explicit (#471)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "243358280b466b856aa1ebf0af328e88772b4aa1",
+   "date": "2026-07-18T20:34:34-07:00",
+   "subject": "refactor(types): type-precision uplevel + ty 0.0.61 enforcement (#479)",
+   "files": 26,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "74377035abd70c26b5b48b844ce6f14c160af096",
+   "date": "2026-07-17T22:54:37-07:00",
+   "subject": "ci: switch dependabot python ecosystem from pip to uv (#472)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "d8dd5e69c614451870429c666884a6344de61f12",
+   "date": "2026-07-16T17:04:56-07:00",
+   "subject": "refactor: remove dead cocogitto recipes and references (#468)",
+   "files": 6,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "411d316f7b8f7b15712c54a509ada5f01b2e614f",
+   "date": "2026-07-16T16:05:27Z",
+   "subject": "docs: update contributors (#457)",
+   "files": 2,
+   "ignored_files": 2,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "da4a7eceb3156473bdc4b91eb7d56de8c075073a",
+   "date": "2026-07-16T08:09:25-07:00",
+   "subject": "chore: ignore riptide task artifacts (#466)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "6789d8f10fd4400fd0f3be1d6f17fc0da90ca8b6",
+   "date": "2026-07-16T08:09:21-07:00",
+   "subject": "chore(deps): bump the uv group across 1 directory with 2 updates (#458)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "26d1cd1dfbdb752d2980bc5703347798d3c6d2f5",
+   "date": "2026-07-16T08:04:04-07:00",
+   "subject": "chore(contributors): ignore blacksmith-sh[bot] (#467)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "d547acc67c891163751bc0a54260a5ed9c62fdd6",
+   "date": "2026-07-15T23:31:07-07:00",
+   "subject": "chore(deps): bump the github-actions group across 1 directory with 8 updates (#465)",
+   "files": 19,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "c297fce5fb64382700e0bf6673b05eca6476a56d",
+   "date": "2026-07-09T19:48:09-07:00",
+   "subject": "docs: add TypeScript port process prompt",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "e8f225b173cb5946bc56d5184f382cdf95e7a134",
+   "date": "2026-07-06T15:40:23-07:00",
+   "subject": "ci: add PR diff-tree comment workflow (difftree-action) (#464)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "9590d89eb3c84d6944f4a5152924234b3a3d273a",
+   "date": "2026-06-29T07:41:08Z",
+   "subject": "ci: grant Claude Code action write access (contents, pull-requests, issues) (#463)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "4ee2153b22b2116cf8cec31a3c87162dc97d1ce9",
+   "date": "2026-06-26T22:07:22Z",
+   "subject": "ci: migrate workflows to blacksmith runners (#460)",
+   "files": 21,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "ff2250cbac98e909d039ecbef50220a1b8a5bb2e",
+   "date": "2026-06-22T03:18:49Z",
+   "subject": "ci: add greptile and cubic pr review bots alongside coderabbit (#455)",
+   "files": 5,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "a48111ee2b01438e921ef4daadc8e83ce559284b",
+   "date": "2026-06-22T03:17:42Z",
+   "subject": "ci: add claude code github action workflows (#456)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "8023a6355cf52e7394e21f0d88b63a51dc1fce3a",
+   "date": "2026-06-17T23:43:42Z",
+   "subject": "docs: update contributors (#453)",
+   "files": 2,
+   "ignored_files": 2,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "0ea1543dad4d76e2b6644b51c65d3dc75f7df9e4",
+   "date": "2026-06-17T16:45:20-07:00",
+   "subject": "docs: require conventional commit syntax for all commits and pr titles (#454)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "93beff14b5721d884af31fff5dff84d6ae7a58eb",
+   "date": "2026-06-17T16:26:40-07:00",
+   "subject": "docs: require validating and resolving all PR comments before merge (#451)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "4a5451ea89c1f83a5859a2488832607986a4812f",
+   "date": "2026-06-17T22:33:03Z",
+   "subject": "docs: update contributors (#452)",
+   "files": 1,
+   "ignored_files": 1,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "6a1339768d9f856cd1f8268ed0cca2a450c275ca",
+   "date": "2026-06-17T15:31:32-07:00",
+   "subject": "chore(release): publish v2.4.0 \u2014 review and merge to ship to PyPI (#449)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "e63d54101b7c020556f78dd0182e87b3d0bb3969",
+   "date": "2026-06-17T15:27:20-07:00",
+   "subject": "docs: update contributors (#447)",
+   "files": 2,
+   "ignored_files": 2,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "b21589be264bb84cde5e3addc07c8b77e82d75f2",
+   "date": "2026-06-17T15:26:57-07:00",
+   "subject": "docs: dogfood build #1 of template-press + design v3 convergence (#430)",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "58443a8ef1d96bc8525992b109d8756c19b48fa8",
+   "date": "2026-06-16T15:26:05-07:00",
+   "subject": "ci(release-please): set descriptive PR title pattern (#450)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "2339650c8abebf405760c9ffe9ca2ab8ecc38a21",
+   "date": "2026-06-16T12:54:43-07:00",
+   "subject": "feat(codex): add astral plugin adapter (#448)",
+   "files": 13,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "e723e363ef876e8f2f07c10cef283b1cd1054935",
+   "date": "2026-06-16T12:22:54-07:00",
+   "subject": "chore(ci): harden workflows from CI audit (permissions + action versions) (#446)",
+   "files": 12,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "a01a6ad6bdbd42a3e78cc564310fcc8b86bb764e",
+   "date": "2026-06-16T12:15:11-07:00",
+   "subject": "docs: update contributors (#439)",
+   "files": 2,
+   "ignored_files": 2,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "bdc49acf47ea5db16e1d733815f2662745aae7e6",
+   "date": "2026-06-16T12:14:37-07:00",
+   "subject": "docs: add comprehensive design decisions reference (#443)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "540467fec7d1df5b0a8823217424506aaa757a3d",
+   "date": "2026-06-16T11:42:36-07:00",
+   "subject": "chore(main): release 2.3.0 (#434)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "09e03ad773fc0244552d6da583a3f15689eac7e9",
+   "date": "2026-06-16T11:34:14-07:00",
+   "subject": "fix(deps): bump starlette 1.1.0 \u2192 1.3.1 (CVE-2026-54283, CVE-2026-54282) (#445)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "33dc9db31d32a160d1753e168af65a20e4a6b148",
+   "date": "2026-06-16T11:34:11-07:00",
+   "subject": "feat(lsp): enable official Astral ty language server for Claude Code (#444)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "bab97696d7848701a296eb6e8598059179c49ec5",
+   "date": "2026-06-15T23:44:01-07:00",
+   "subject": "docs: update stale *_APP_ID references to *_CLIENT_ID (#442)",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "e0da701a7a89d88bd46712968a2aa71c8c2be00a",
+   "date": "2026-06-15T20:30:36-07:00",
+   "subject": "ci: migrate release-please + update-contributors to client-id (#440)",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "cf0d081c2eba9ad466ccfa092399a1b31eac523a",
+   "date": "2026-06-15T19:13:22-07:00",
+   "subject": "ci: probe RELEASE_PLEASE_CLIENT_ID auth path",
+   "files": 0,
+   "ignored_files": 0,
+   "verdict": "EMPTY-DIFF"
+  },
+  {
+   "sha": "cf23a093e2b6b2abb61f9209e58997d544f87426",
+   "date": "2026-06-15T06:37:16Z",
+   "subject": "test: second-round testing improvements (parallel/timeout/random, property + port-contract, canary) + ADR-0019 (#436)",
+   "files": 11,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "6a2f71088692a824bcc0e1d99354f689c63b560f",
+   "date": "2026-06-14T23:26:18-07:00",
+   "subject": "ci: hook/ci parity \u2014 boundary gate, slow-check mirroring, and new hook checks (#437)",
+   "files": 15,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "e63dc6beae8b373b7375b54ea9308b4a46f35e19",
+   "date": "2026-06-14T23:10:48-07:00",
+   "subject": "Merge pull request #438: fix(web) SEC-4 \u2014 don't relay upstream error text in problem detail",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "f1cd7f1e0f67972822670d69a305ad05274ef5e1",
+   "date": "2026-06-14T12:37:52-07:00",
+   "subject": "Merge pull request #435: ADR 0017 \u2014 hexagonal core + boundary enforcement",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "76cc26bd5f754c899538c6ee8deed63552212417",
+   "date": "2026-06-14T09:39:04-07:00",
+   "subject": "Merge pull request #433: hexagonal architecture + boundary enforcement",
+   "files": 24,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "18f2b778d6497b7aa2a2f8dab0e1bfd4e62e939c",
+   "date": "2026-06-14T02:08:01Z",
+   "subject": "test: assert runtime openapi version matches __version__ before normalizing (#432)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "37a63c6b6cfe763584f9fd981168e4454eacced4",
+   "date": "2026-06-14T02:05:25Z",
+   "subject": "docs: update contributors (#426)",
+   "files": 2,
+   "ignored_files": 2,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "22b2e017a2b16874c6ac9eb3656c3239c32a5224",
+   "date": "2026-06-14T02:01:54Z",
+   "subject": "ci: make openapi snapshot version-independent, drop release-please json updater (#431)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "05cbfcc9c6d874eddf679eff342244923589288f",
+   "date": "2026-06-14T01:55:50Z",
+   "subject": "chore(main): release 2.2.0 (#429)",
+   "files": 5,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "744645d5dfb3e64f5924cae7d5de46a4f443924f",
+   "date": "2026-06-13T17:18:09-07:00",
+   "subject": "dogfood: template-press bootstrap \u2014 Run 1 findings + blueprint fixes (#428)",
+   "files": 15,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "a0bc491c74e1fad27f2aa6dc07230a66142b46d8",
+   "date": "2026-06-13T22:05:56Z",
+   "subject": "ci: keep openapi snapshot version in sync via release-please (#427)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "578607fc0bf70ef4d0e040692f54ecd360ed3c71",
+   "date": "2026-06-12T23:42:21Z",
+   "subject": "chore(main): release 2.1.1 (#422)",
+   "files": 5,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "985165f88b6aeff5ccd80f24710a9bc2d9b085b7",
+   "date": "2026-06-12T23:36:04Z",
+   "subject": "docs: update contributors (#425)",
+   "files": 1,
+   "ignored_files": 1,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "d7d069c2bac22ab9aac6f2ee6f81976642f99551",
+   "date": "2026-06-12T23:17:30Z",
+   "subject": "chore(deps): bump the github-actions group across 1 directory with 2 updates (#414)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "c1ee4c7836ca11d3e6753a2fdb0e8970d09d5024",
+   "date": "2026-06-12T23:16:22Z",
+   "subject": "docs: update contributors (#394)",
+   "files": 2,
+   "ignored_files": 2,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "cb983c0b453841c6f25fbea5fb39079dbdd1ccbd",
+   "date": "2026-06-12T23:09:50Z",
+   "subject": "fix: add PyPI fallback for just installation and fix CI skip paths (#424)",
+   "files": 7,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "22531a38fc30252745a774905949cf9588294a86",
+   "date": "2026-06-12T15:27:28-07:00",
+   "subject": "docs: init/post-init analysis (research 0003) + accepted template-press plan (design 0004) (#408)",
+   "files": 5,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "d8f483c994c081c90e13ef10d1514e3cca4bc891",
+   "date": "2026-06-12T15:16:45-07:00",
+   "subject": "docs(adr): accept placeholder app short name acmeapp as adr 0016 (supersedes adr 0001) (#421)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "3cc8b9dc2a460780c0234f2af1af1988c613c42b",
+   "date": "2026-06-12T15:07:31-07:00",
+   "subject": "WEB-12: Structured logging profile with access events and redaction (#420)",
+   "files": 15,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "204bac711561b7083a748ca98197a8de5fb27864",
+   "date": "2026-06-12T14:38:52-07:00",
+   "subject": "docs(post-init): document the ci-ok-anchored branch-protection baseline (#419)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "168fe9defb53d11144c39ddcfb212c1d40827b6d",
+   "date": "2026-06-12T14:35:24-07:00",
+   "subject": "chore(main): release 2.1.0 (#397)",
+   "files": 5,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "774b1aef5da7d263970713d7a4a1f084806e510e",
+   "date": "2026-06-12T21:25:12Z",
+   "subject": "Consolidate Pyright config from JSON to pyproject.toml (#418)",
+   "files": 9,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "0d199f3a98e64044bfc5e577ad43db504154ef51",
+   "date": "2026-06-12T14:20:12-07:00",
+   "subject": "docs(projects): mark p02 repo-simplification complete (#417)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "d543f06ec68b03d1ab85fac57696901f6ee03aaf",
+   "date": "2026-06-12T13:58:31-07:00",
+   "subject": "ci: consolidate five single-purpose lint workflows into lint.yml (#413)",
+   "files": 8,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "7b520d3f7dc5478406440fc833f97f2cb5192610",
+   "date": "2026-06-12T13:53:35-07:00",
+   "subject": "ci: implement dev-tooling wishlist shortlist (locked tools, ci gates, contracts) (#406)",
+   "files": 32,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "a8433a79fa008a43babde8605e293af1244b10b0",
+   "date": "2026-06-12T13:43:29-07:00",
+   "subject": "docs: move post_init.md and release.md under docs/ (#412)",
+   "files": 7,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "fc8d944b7e439bb4e3f19aaf1b2bdf8da4292a57",
+   "date": "2026-06-12T13:39:57-07:00",
+   "subject": "docs(agents): make agents.md canonical; claude.md imports it; drop vendor rule files (#410)",
+   "files": 9,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "29ef63b4ec786788626a583efdda0753c8181f57",
+   "date": "2026-06-12T13:36:03-07:00",
+   "subject": "refactor(skill): relocate to .claude/skills with codex symlink; de-just the runbook (#409)",
+   "files": 13,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "3d0888cfb389aa9c1b6017b20150915810c16383",
+   "date": "2026-06-12T13:35:45-07:00",
+   "subject": "test: group repo meta-tests under tests/meta/; move test_output to tests/cli/ (#411)",
+   "files": 8,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "1106bc4977ce6334694bdfb87355d971c03d49be",
+   "date": "2026-06-12T13:35:28-07:00",
+   "subject": "docs(projects): capture p02 simp series; single-source coc (simp-10); adr 0014 (#407)",
+   "files": 5,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "90d1a8bb027838f2e98f00fe25c5adcbb51cecf4",
+   "date": "2026-06-11T23:15:19-07:00",
+   "subject": "feat(web): bake in rest api best practices (contract, config, observability) (#399)",
+   "files": 39,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "6e268f6d549ae13e085346e8d608a163c67d1704",
+   "date": "2026-06-11T23:07:32-07:00",
+   "subject": "feat(setup): two-level setup \u2014 make bootstrap (level 1) + just setup (level 2) (#405)",
+   "files": 12,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "9ef427117353dac3d7499bd1c9e4b88463d1b92f",
+   "date": "2026-06-12T06:02:50Z",
+   "subject": "feat(cli): universal CLI polish \u2014 error codes, did-you-mean, pager, config init, doctor --bundle, windows paths, llms.txt (#400)",
+   "files": 32,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "d63834df91e8e17a972b0a912ad4a057f780ad49",
+   "date": "2026-06-11T22:53:41-07:00",
+   "subject": "fix(docs): build docs via uv run --group docs; drop broken docs/Makefile (#402)",
+   "files": 5,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "6ab697a6ba95f0d2b4e8372e09347219a35c1a66",
+   "date": "2026-06-11T22:53:28-07:00",
+   "subject": "refactor(justfile): remove legacy pip recipes and go toolchain dependency (#401)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "93ccadbced12432b327ed9aa123c0915a6f1968d",
+   "date": "2026-06-12T05:20:43Z",
+   "subject": "docs(env): address copilot review on #403 \u2014 ignore flox lock, broaden native-install wording (#404)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "55a1bf69b4cb88de6e6a02f2d61f46d108e96ed0",
+   "date": "2026-06-11T22:05:36-07:00",
+   "subject": "feat(env): add mise and flox as first-class dev environments (#403)",
+   "files": 13,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "cdd6e2685280d0977d7e812557cf08a141e5e758",
+   "date": "2026-06-11T16:09:29-07:00",
+   "subject": "feat(web): add fastapi service skeleton behind the web extra (#395)",
+   "files": 18,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "cfaefd795f3e129a39e0162145217b809eb84ff0",
+   "date": "2026-06-11T22:42:13Z",
+   "subject": "fix(deps): drop unused questionary dep and finish ty cutover (#396)",
+   "files": 21,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "0685c90066b4fe5d182091c8dd4642668ee9baaa",
+   "date": "2026-06-11T14:58:39-07:00",
+   "subject": "chore(main): release 2.0.1 (#393)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "e6e3c5667e8285c58b2cecfedc5c373315c52fe3",
+   "date": "2026-06-11T14:56:59-07:00",
+   "subject": "docs: update contributors (#382)",
+   "files": 2,
+   "ignored_files": 2,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "6831eb32fb4588816602a4d6aac359fd3c889e6c",
+   "date": "2026-06-11T14:56:52-07:00",
+   "subject": "chore(deps): bump the github-actions group across 1 directory with 3 updates (#387)",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "078a01f60231672db11de35987df7553f51c1328",
+   "date": "2026-06-11T14:35:50-07:00",
+   "subject": "fix(test): guard conftest _git() against running outside the temp sandbox (#392)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "5cf45e94a4e38ae02eb4e6ff7a068e97332e6f9e",
+   "date": "2026-06-11T14:35:39-07:00",
+   "subject": "chore(main): release 2.0.0 (#364)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "3dc70571ae011c8d27b0f7c185f2bc72dea2cda4",
+   "date": "2026-06-11T13:46:19-07:00",
+   "subject": "feat(init): reset CHANGELOG.md to a stub on init (fix the release-blocking leak) (#391)",
+   "files": 7,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "793d19caf44b98fa44219b0b0d76620b06f1d7f8",
+   "date": "2026-06-11T20:26:47Z",
+   "subject": "docs(projects): mark P01 complete (#390)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "b85c0af937a9b810b1e85933aea1cd25d42f0c46",
+   "date": "2026-06-09T21:05:11-10:00",
+   "subject": "feat(init): per-field drift coverage + derive non-contract internals (P01) (#389)",
+   "files": 7,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "f587e48b41bcf6535ba1b62f348147294911c48d",
+   "date": "2026-06-09T20:33:54-10:00",
+   "subject": "refactor: remove legacy py-projects CLI and collapse command_name identity (#388)",
+   "files": 41,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "d8216b0858e8a2d8f568005bdd8c44b09edf55eb",
+   "date": "2026-06-09T18:39:58-10:00",
+   "subject": "chore(ci): remove the flox/mise/traditional tooling-benchmark experiments (#386)",
+   "files": 20,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "90b62ed1a189439cd5a35358b9782feeb2797def",
+   "date": "2026-06-09T18:13:40-10:00",
+   "subject": "docs(projects): capture P01 \u2014 init app-name rebrand robustness (B+C) (#385)",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "970b42d66b9cfe88333ab64423eb1e2f3cdf290a",
+   "date": "2026-06-09T15:03:18-10:00",
+   "subject": "refactor(cli): single-source vocabularies, honest config-get source, one-parse config set (#384)",
+   "files": 5,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "d4997c6925e71858e66767e54d8ac13e5a37ce8d",
+   "date": "2026-06-09T15:03:08-10:00",
+   "subject": "docs: backfill ADRs, flip spec to implemented, link POST_INIT from README (#383)",
+   "files": 8,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "e09dc2b20cefde1c0dac51f0f100618897e2804d",
+   "date": "2026-06-09T14:38:19-10:00",
+   "subject": "docs: add adr/design/research dirs and the plbp CLI conventions spec (#377)",
+   "files": 7,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "397cdab52c14437c2071191c2c287625bc1166c0",
+   "date": "2026-06-09T14:35:49-10:00",
+   "subject": "feat(init): rebrand the app short name via new app_name identity (#381)",
+   "files": 10,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "7a6eab9083a86eb6ada69fb1a802e98f900ca678",
+   "date": "2026-06-09T14:35:14-10:00",
+   "subject": "feat(cli): dual-sink logging with rotating file sink (phase 3) (#380)",
+   "files": 8,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "8cc36d7f4fb5fa87d9d86edba2b49bb6b0c3deaf",
+   "date": "2026-06-09T14:34:41-10:00",
+   "subject": "feat(cli): output-file, color precedence, format-from-config (phase 2) (#379)",
+   "files": 6,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "03db3f505febe5db21d50680dd57da581142b721",
+   "date": "2026-06-09T14:33:45-10:00",
+   "subject": "feat(cli)!: rename to plbp, layered TOML config, dotted config set (phase 1) (#378)",
+   "files": 19,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "6628444109f606740a1ce2b27c4bc12213b3a963",
+   "date": "2026-06-09T21:57:43Z",
+   "subject": "docs: add post-init configuration decisions & checklist (#376)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "40f1cf6e6186d537739df2bcce2b16bcf75ae139",
+   "date": "2026-06-09T18:36:47Z",
+   "subject": "ci(codeql): enable security-extended, scope paths, document advanced setup (#375)",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "6922305299b6a184666b8fce703247b360038bdc",
+   "date": "2026-06-09T18:34:46Z",
+   "subject": "feat(cli): gh-style pylb CLI with core library layer + structured logging (#374)",
+   "files": 45,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "27a57a4bb5ae3625b4f2ab835f6f78d137e0c39a",
+   "date": "2026-06-08T18:44:16Z",
+   "subject": "docs: update contributors (#363)",
+   "files": 2,
+   "ignored_files": 2,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "16caf014c070450e44e9f4052c3539f59e82ff70",
+   "date": "2026-06-07T20:06:14-10:00",
+   "subject": "fix(dev): repair broken local lefthook hooks (commitlint, editorconfig-checker, init-tests) (#372)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "68d54da3fa0e727b577867a9eb0ac1c46ccb713d",
+   "date": "2026-06-07T12:42:25-10:00",
+   "subject": "feat(ci): codecov tokenless OIDC upload (#369)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "991004598e80d6a9d3e584ee87350a160a8c3910",
+   "date": "2026-06-07T12:21:30-10:00",
+   "subject": "chore(ci): bump contributors-please-action @v1.0.2 \u2192 @v1.0.6 (#367)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "feb0938b75709b3c3ffff15fe16be1360ed5c3a6",
+   "date": "2026-06-07T12:16:55-10:00",
+   "subject": "revert: PR #365 \u2014 restore 152 files wiped by phantom 'initial commit (fixture)' (#366)",
+   "files": 152,
+   "ignored_files": 2,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "2e2b2d8c2c4e8ae0367df24400cb03c0d1caa070",
+   "date": "2026-06-07T11:49:46-10:00",
+   "subject": "feat(ci): codecov tokenless OIDC upload (#365)",
+   "files": 152,
+   "ignored_files": 2,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "4f1d8485be1132b02bf1feeaadfe31469d513cc3",
+   "date": "2026-06-07T11:46:33-10:00",
+   "subject": "fix(init): manifest-drift hook honors .gitignore (#360)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "ca9ab13298bd057e284787402e725c478f6750e3",
+   "date": "2026-06-07T21:32:41Z",
+   "subject": "chore(main): release 1.1.7 (#362)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "82b4a177d7c13c81d10d6c02440aade86424ac08",
+   "date": "2026-06-07T21:29:46Z",
+   "subject": "fix(contributors): restore well-formed CONTRIBUTORS.md (#361)",
+   "files": 1,
+   "ignored_files": 1,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "80e8fbcdee15fbd4662b227ea4ef62cb32a2d1c1",
+   "date": "2026-06-07T19:05:53Z",
+   "subject": "docs: update contributors (#359)",
+   "files": 1,
+   "ignored_files": 1,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "1aa0ae7c1a5b1941a8e2c3ef8be31f692a01898d",
+   "date": "2026-06-07T05:33:39Z",
+   "subject": "chore(main): release 1.1.6 (#357)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "b10c585929fd5546dad5393fd343bce2d98d43ed",
+   "date": "2026-06-07T05:33:27Z",
+   "subject": "docs: update contributors (#358)",
+   "files": 2,
+   "ignored_files": 2,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "2385234e3f8dae75753108813c417fb63e7d80ba",
+   "date": "2026-06-04T14:17:50Z",
+   "subject": "ci: add dispatch-only flox-baked workflows (#355)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "3402c5158a3f9385f017550eaecbc1bfb7554254",
+   "date": "2026-06-04T14:11:30Z",
+   "subject": "fix(contributors): restore CONTRIBUTORS.md markers (#356)",
+   "files": 1,
+   "ignored_files": 1,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "be936f92e9ff77d9a06d969bfc66e15cc0b1e691",
+   "date": "2026-06-04T13:40:50Z",
+   "subject": "docs: update contributors (#354)",
+   "files": 1,
+   "ignored_files": 1,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "8b36143c7856669fa047278b3c0ce484e6edabd5",
+   "date": "2026-06-04T07:26:26Z",
+   "subject": "docs: update contributors (#352)",
+   "files": 2,
+   "ignored_files": 2,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "a3008ebd889861b4deb9327f8db521b8edbad014",
+   "date": "2026-06-04T07:26:15Z",
+   "subject": "chore(main): release 1.1.5 (#353)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "f1bf58bc1357206dd48d2fbec0ea623d4f847709",
+   "date": "2026-06-04T04:06:40Z",
+   "subject": "ci: add dispatch-only flox-noaction workflows (#350)",
+   "files": 6,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "086bd2f4fa07751db38b52b21207434f69699109",
+   "date": "2026-06-04T03:55:49Z",
+   "subject": "fix(contributors): ignore release-please bot in render (#351)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "32ac1336173e6019ab1190ba7b0ec30dddc571f4",
+   "date": "2026-06-04T02:13:43Z",
+   "subject": "docs: update contributors (#349)",
+   "files": 2,
+   "ignored_files": 2,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "013dfa6ce5e751d4ae8a4871a391437664b05e34",
+   "date": "2026-06-04T02:13:25Z",
+   "subject": "chore(deps): bump the github-actions group with 4 updates (#347)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "e780c9956c61feb8e75bd90ee1d4ca7186c4d166",
+   "date": "2026-06-04T02:10:02Z",
+   "subject": "docs: update contributors (#343)",
+   "files": 2,
+   "ignored_files": 2,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "954de95ce602881cbaba987b4cf63628fbcdcffb",
+   "date": "2026-06-04T02:09:50Z",
+   "subject": "chore(main): release 1.1.4 (#345)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "ab864eada955eb08d3ff8488bcfa739bf953977b",
+   "date": "2026-06-04T02:03:34Z",
+   "subject": "ci: enable dispatch-only flox-nocache (use-cache=false) experiment workflows (#348)",
+   "files": 6,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "9355b1517cba09bc1932c685199c91a57fde71c2",
+   "date": "2026-06-01T16:53:26Z",
+   "subject": "ci: enable dispatch-only mise CI timing experiment workflows (#346)",
+   "files": 6,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "69e8a2e74eed4bc5294b8c11bd01f1966f631eb0",
+   "date": "2026-05-31T15:33:23Z",
+   "subject": "ci: enable dispatch-only Flox-vs-traditional CI timing experiment (#344)",
+   "files": 8,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "509dd95ae4cc48b983fca557749d4d7d0cc1b666",
+   "date": "2026-05-31T14:03:04Z",
+   "subject": "chore: bootstrap project-harness tracking (PROJECTS.md trunk + doc pointers) (#342)",
+   "files": 6,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "86d5c35decb422e46a1526dfdcc0a1d9f5fa6f2e",
+   "date": "2026-05-29T05:41:27Z",
+   "subject": "chore(main): release 1.1.3 (#339)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "fa8f938f7a5f66c316897cd5f9e3e8cea4df59d2",
+   "date": "2026-05-29T05:37:05Z",
+   "subject": "ci: mint github app token in release-please for downstream triggers (#340)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "13bad78eff5404273f6e07984200b6a00b6270b5",
+   "date": "2026-05-29T04:57:17Z",
+   "subject": "chore: unify project version on pyproject as single source of truth (#337)",
+   "files": 6,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "38412ea41f76b8b302968afff31addeb70915133",
+   "date": "2026-05-29T04:41:00Z",
+   "subject": "ci: temporarily disable TestPyPI publish job (#336)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "c44d71273b74ab911f0abc0cc4a2df5f948385e1",
+   "date": "2026-05-29T04:26:06Z",
+   "subject": "ci: emit plain vX.Y.Z release tags (drop component prefix) (#335)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "40aa691910238b8ad1cfcc3e3c29b25746415680",
+   "date": "2026-05-27T23:45:38Z",
+   "subject": "Cut over contributors workflow to contributors-please (#334)",
+   "files": 14,
+   "ignored_files": 2,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "29e226139ea0974c384c2e8e524b6e013553573f",
+   "date": "2026-05-26T22:17:35Z",
+   "subject": "chore(main): release py_launch_blueprint 1.1.2 (#333)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "c31c4b0fba0bc5d317d81ad673adab52b0266c9f",
+   "date": "2026-05-26T21:56:58Z",
+   "subject": "fix(contributors): filter bot identities from CONTRIBUTORS.md (#332)",
+   "files": 2,
+   "ignored_files": 1,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "6e8d7e541f5ddfedb29cb53f0e72f3f5bd934567",
+   "date": "2026-05-26T20:40:49Z",
+   "subject": "chore: update contributors list (#331)",
+   "files": 1,
+   "ignored_files": 1,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "df1dcbfdd01cde65243be0d1ddee8fccaa26dc2a",
+   "date": "2026-05-26T20:38:05Z",
+   "subject": "chore(main): release py_launch_blueprint 1.1.1 (#330)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "06c0590e8076139c8b4311d834e801f8b7633882",
+   "date": "2026-05-26T20:34:43Z",
+   "subject": "perf(ci): swap taplo install from cargo build to pre-built binary (~40x faster) (#327)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "efbd8efdf9f7e9aeb83c1cd282b54650bd917e84",
+   "date": "2026-05-26T20:07:29Z",
+   "subject": "chore(deps): bump codecov/codecov-action from 5 to 6 and fix commitlint for dependabot commits (#318)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "76dbf44727133b435dc175906da87a657c116ede",
+   "date": "2026-05-26T20:03:55Z",
+   "subject": "ci(dependabot): make all ecosystems produce conventional-commits-compliant messages (#324)",
+   "files": 5,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "5c3ad4f8b7ab1cb171a39c7a3488579774bca7d3",
+   "date": "2026-05-26T19:47:10Z",
+   "subject": "chore: update contributors list (#325)",
+   "files": 1,
+   "ignored_files": 1,
+   "verdict": "SKIP"
+  },
+  {
+   "sha": "1a4c347461c8e7bacf7b1cf14db69e590e5a9d8b",
+   "date": "2026-05-26T09:26:56-10:00",
+   "subject": "chore(main): release py_launch_blueprint 1.1.0 (#321)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "9b5e4221b8013784a1aa0cfc6df4a0e37adf097b",
+   "date": "2026-05-26T09:19:54-10:00",
+   "subject": "ci(hooks): add ruff + init CI checks to lefthook for local pre-commit/pre-push",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "2f74de7fe0ae7120164ebbd077cb7813d02882e0",
+   "date": "2026-05-26T09:19:54-10:00",
+   "subject": "fix(init): address valid Copilot PR review comments",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "58c996ecf871acf097cc3b892c6d29a90ccb944e",
+   "date": "2026-05-26T09:19:54-10:00",
+   "subject": "ci(update-contributors): fix step order so checkout happens before file generation",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "911dcabfcc5d7ff22e4e9f96ad91c71d840ec1a3",
+   "date": "2026-05-26T09:19:54-10:00",
+   "subject": "fix(ci): apply ruff format + fix self-referencing codespell comment",
+   "files": 16,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "dea9b3da476e05fb5f0e4df66405f1f8a0755606",
+   "date": "2026-05-26T09:19:54-10:00",
+   "subject": "fix(init): address CI failures \u2014 skill/ exclusion, lint config, codespell, manifest",
+   "files": 16,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "9fcb1173768ad8482e0d868cc63b3d99c6124433",
+   "date": "2026-05-26T09:19:54-10:00",
+   "subject": "feat(skill): adopt filter-after-trigger pattern \u2014 broad Python intent + Step 0 confirmation",
+   "files": 5,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "a0f15e09af1d40a465b7847074ad5fecd86f5522",
+   "date": "2026-05-26T09:19:54-10:00",
+   "subject": "docs(skill): apply V3 description + document undertriggering workaround",
+   "files": 7,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "48205edecfd6ec16920776a00362c4d44bb64e38",
+   "date": "2026-05-26T09:19:54-10:00",
+   "subject": "refactor(skill): move skill from init/skill/ \u2192 skill/",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "71f11e26f21b06b42332af83b569e1c19d76ff25",
+   "date": "2026-05-26T09:19:54-10:00",
+   "subject": "feat(init): add new-python-project skill \u2014 agent-guided bootstrap runbook",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "a6f4a7a71068849c000585de395d30cbf88c0d3a",
+   "date": "2026-05-26T09:19:54-10:00",
+   "subject": "test(init): post_init.py unit tests + doctor post_init check class",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "5f5396e8f7c2b337b69cfcb5daa3654794b56d3d",
+   "date": "2026-05-26T09:19:54-10:00",
+   "subject": "feat(init): add post_init.py \u2014 publishing/Codecov/RTD walkthrough",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "c2fcf8d97d33e2ff84a24b5fa3446f1ac914b10d",
+   "date": "2026-05-26T09:19:54-10:00",
+   "subject": "ci: bump action versions in blueprint-guard + init-integration to match repo",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "67d0254f06a83880e29149826f3751c2786ae86f",
+   "date": "2026-05-26T09:19:54-10:00",
+   "subject": "test(init): tighten DRY \u2014 cross-lang drift test, MODES SSOT, path-filter check, strict integration",
+   "files": 6,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "6499837d55f46b5a27dcf47bf88846efb148678f",
+   "date": "2026-05-26T09:19:54-10:00",
+   "subject": "test(init): add L1+L2 integration runner + matrix workflow for \u00a74.7 modes",
+   "files": 5,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "f34512b3c0e1db903ac3c6a02bca2e919de07bf1",
+   "date": "2026-05-26T09:19:54-10:00",
+   "subject": "ci(blueprint-guard): add parallel unit-tests job for init/tests/",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "344e8ebb033435a7aa230e63f4d8636829d9fe76",
+   "date": "2026-05-26T09:19:54-10:00",
+   "subject": "feat(init): add blueprint self-setup system (Phases 0-5)",
+   "files": 20,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "49cb0e2001f9f235aed6b53404474234457ec61c",
+   "date": "2026-05-26T09:19:54-10:00",
+   "subject": "chore(refs): retarget smorin \u2192 smorinlabs URL references",
+   "files": 12,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "b95227f15fa98d1a65c532b0864f64749b8b9fd2",
+   "date": "2026-05-24T15:54:29-10:00",
+   "subject": "feat: integrate codecov for coverage reporting",
+   "files": 7,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "c6b14eecdd51be59abb3a9e3322514c67e167f9b",
+   "date": "2026-05-24T15:20:31-10:00",
+   "subject": "chore(deps): bump the github-actions group with 14 updates",
+   "files": 15,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "673939a1e9785fdede7a5109352a6f53f96f6251",
+   "date": "2026-05-24T15:20:26-10:00",
+   "subject": "chore(deps-dev): bump the commitlint group with 2 updates",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "a54e9012851ebf45d2756b5dd7e56faa2e233e6a",
+   "date": "2026-05-24T14:45:11-10:00",
+   "subject": "fix: update setup-pypi-publishing.sh to reference publish.yml",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "450e261b43582e2328175c64a80d70a15c1575b1",
+   "date": "2026-05-24T14:45:11-10:00",
+   "subject": "feat: add helper to print PyPI/TestPyPI trusted-publisher form values",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "00a00218f30b1e7ffb3f443d392ed24d61cfca85",
+   "date": "2026-05-24T14:45:11-10:00",
+   "subject": "feat: add script to bootstrap GitHub release environments",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "25b571b8b56cfed4c85bd79a1d4c07863bb548d5",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "fix: yamllint step-list indentation in must-do workflows",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "67517517082f8c52f539eeaa29b478e3cd4ff671",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "test: drop test_project_infrastructure.py (superseded by synthesis)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "8d8349907f9fdf681b622bc47d4c2fab5242454e",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "fix: bump .windsurfrules + remaining doc reference to python 3.12+",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "b07ed2836fd5e944d3ca4523845bc5814f8918c6",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "fix: bump readthedocs + docs/source python refs to 3.12+ (consistency)",
+   "files": 8,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "a5b8a658fddcf3f514f6133ac02daa8a1bb0b19b",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "fix: address all 9 copilot pr-review comments",
+   "files": 9,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "d10a5373d343f134d1407f35aca92adba0ac55d8",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "fix: add ty to [dependency-groups].dev so 'uv run ty' works in ci",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "376797219ea1a1eb37889babf908d06e920bf00d",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "fix: tests/test_cli.py _version import after adr-06 cutover",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "115e65cf0837d3091e66e18bca7b25ecd34fbff9",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "fix: ci typecheck + projects.py _version import after adr-06 cutover",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "60b3933d1a3131ffd62dee6b88701fc2f2812e23",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "fix: restore update-contributors.yml after broken reindent (cleanup)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "0120d02556a453d839e6ab3fa16994213b945230",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "ci: bump update-contributors action pins + yamllint ignore",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "b8f981f9822e1ec864eb9f313d21b1ba92b9c1bb",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: commitlint ci workflow (itm-037 + itm-038)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "ab4a9edfc9af6f3a84a318fce42f2fa0d5b72995",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: justfile typecheck->ty + retire cog verify/bump/commit recipes",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "896375d8c1850b8668da3902e711ae14e0d84da2",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: justfile typecheck->ty + retire cog recipes + delete stale _version.py",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "9252d48657cc370fd47d2dd635f23c7d10e53937",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add 'alternatives considered' field to feature-request (itm-076)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "eabbc3792c4f48b2f064d49bf4a29122804ca544",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add pre-filing verification to bug-report (itm-075)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "541bbdf43b122380c5eb3a37fb615cd847df3f10",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "chore: yamllint ignore github issue templates + .readthedocs.yaml",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "7ccdb8e2d7df5afde4a78e0d465ff3305da01812",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: readme badges + install/dev metadata (itm-081 + itm-082)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "9c54ecfd4c34476e5c7eec6ee2239c79f8142e36",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: pr template + release cutover doc (itm-077 + itm-060)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "bd3057dcd6b402a85cf5e0bf5f3b0e06cab9545e",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: portable devcontainer (itm-067)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "557a6152f80fd476f2081222f46722dc60cf4ae1",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: dependabot trio + retire cog/gitlint + changelog.yml workflow",
+   "files": 5,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "1ec390cd8c4162de0f54b3ad1f06fd97c780c27f",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: publish workflow + pypirc template (itm-048/049/050/051 + 059)",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "1bd03440ff956cf073c9a0db59bd6f82cfdc1d44",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: release-please cluster (itm-052 + 053 + 054 + 055 + 056 + 057)",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "a59668b2d512ff153398fc75296ea3e84933099f",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: wire bandit into lefthook pre-push (itm-032)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "2bad8ed3eacb684cbb668dcdafe510cbcd3e6b42",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: bandit pre-push + codeql trio (itm-032 + itm-034/035/036)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "8c98c2ae42457891f1da14ccfd269a24594de4be",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: split ci.yml into per-job structure (itm-025 + itm-026 + itm-030)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "e4619c612517d88f2f5d9866079254b9b73a734b",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "fix: indent issue-template contact_links list (itm-014 follow-up)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "88ba93fdf12f62f833cea404206b64fdfe234ffa",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add editorconfig-checker + yamllint + codespell ci jobs",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "77cffa8840066616ec0dda2a637d16f7596eaa11",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add bandit + trufflehog ci workflows (itm-027 + itm-031)",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "7ac7716ef69d6f7f1a048642b1232a84201f045b",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add large-file ci guard (itm-028)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "3611beebce2d85dc6bd1c8d1fbc69ad77810487f",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add actionlint workflow (itm-029)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "7eed040731deb807956e420095e20cb8f875332b",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: harden ci workflow (itm-024)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "6ecf9a686852254f7155462450afbfd7937a4e76",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add make hook-check (itm-022)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "fe96899774e90bf4a5d0fc922856ccf7dab6f809",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: retire pre-commit framework (itm-020 partial)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "09989d3da170e871a418816b6506c14bda15edcb",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "docs: add agents.md vendor-neutral entrypoint (itm-068)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "7bd90b0c88c447bd602e2e22b6bf0357e9132371",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "docs: update claude.md for new toolchain (itm-069)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "d16dbe400e34eab2138d4bca77a9d2b611641f30",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "docs: contributing rewrite for new toolchain (itm-019)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "faba264e7a99c2c75413820bd2718d001a9def42",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: switch to pep 735 [dependency-groups] (itm-063)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "6accdce85d98394dcbf469b82965c26f874f74f3",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "fix: uv_build module-root for flat layout (itm-074 follow-up)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "5456b57fa63cb0e294545886882c5a20d4ba29bf",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: switch to uv_build + static version (adr-06 cutover; itm-073/074/070)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "3d95bc8ad3224b619c6afe9b9a4575ababa003d1",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: pep 639 license expression + py3.12/3.13 classifiers (ITM-070 partial)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "7076a55200d030c9a81fb5abedc4bf3fcbe2af11",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: bump Python floor 3.10 -> 3.12 (ITM-033 core)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "48e3c081aa77e7164d789fe97b61156fc442e24c",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: reconcile ruff config (ITM-018)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "0de9787ae73ae8960fc5220ca0e9b08c1da57e58",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: wire editorconfig-checker + yamllint + codespell into lefthook pre-commit",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "c89b1ed956adba5705a0d08e4611a64898fedaf6",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: wire gitleaks pre-push range scan (ITM-002)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "13672fa312883efcddd2426f44c20af551987d37",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: wire gitleaks into lefthook pre-commit (ITM-001)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "8ef98e2da2c523ad9215c80b75dd38bd75963535",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: wire commitlint into lefthook commit-msg (ITM-040)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "dab7449cf442a3e60f8d96eefb99e7991c5e9919",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "fix: lefthook.yml \u2014 strip skip_output (v2 schema rejected both forms)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "a1ff7d1a5fa3f6c060596bf5595a691ceb89dcf8",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add lefthook.yml scaffolding (ITM-003)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "323f8510270159ba0463f2e4ef7fc0c990ceef31",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add commitlint.config.mjs (ITM-039)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "5643c9ed46f1d8dfef441e463bc21780569d27ae",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add package.json + bun.lock (commitlint deps) (ITM-041)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "358a023d59177c4a6f6e589d846c6c2059305338",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: track uv.lock (ITM-064)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "d1e2156070ce0b36641a67a7b928564ad5dbb5e1",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: reconcile .gitignore (ITM-080 + ITM-064 cascade)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "f270169cf66e864aacfdfb5db5f45329933e4d27",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add scripts/install-bun.sh installer (ITM-042)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "2a33ec35a861289dee7fde6ba2f21e7399ba4673",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "fix: install lefthook via Bun (ITM-021)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "0bad271d1ffa5768c7689d265193d0831d4d0778",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add scripts/install-lefthook.sh installer (ITM-021)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "3e841ed270f2b21171748685e3fd878c4d50c260",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add scripts/install-gitleaks.sh installer (ITM-007)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "f2256217063cbad329d8f8a0cf9634c531f8d6af",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add scripts/check-gitleaks.sh wrapper (ITM-006)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "39a6fa13d0b4568c14135abb0a77608a20e0d442",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add .gitleaks.toml secret-scan config (ITM-004)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "df94ceafa305621754dbc31f8f27f48e11e3325c",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add .gitleaksignore (ITM-005)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "2cb3c71eba0920f7b75edd77920d76f819d6cb4a",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add [tool.codespell] config (ITM-015)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "3f411d47f78f8207d2caab0ba12b8a1d43fdfdbc",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add .yamllint config (ITM-012)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "ba8da03d7e485a2148ee7c1d6dc554cb821f7fe4",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add .editorconfig-checker.json (ITM-009)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "6ddcf12e43700407ea3429d723cb2a2aefbc709e",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add LICENSE file (MIT, Steve Morin 2026) (ITM-078)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "976dce820351412642947dca68319ec2aa85a2bc",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: seed CHANGELOG.md for release-please (ITM-058)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "2d03d22a912c8c68c5c9ed9f0d00ecb21abc93dc",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add [project.urls] table (ITM-072)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "b16ae40e900b9a305e33c0f418a5f2400260e04b",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add pytest marker taxonomy + default exclusion (ITM-046)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "45f9eba5b8727bb254f5c8ad7f3b037f3f65f8e6",
+   "date": "2026-05-24T14:32:15-10:00",
+   "subject": "feat: add .editorconfig (cross-editor baseline)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "b99cff3ca5622e8bd62aff65db4b3103412c69f7",
+   "date": "2026-05-24T13:33:37-10:00",
+   "subject": "test: tighten pypirc allowlist regression test",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "270b47b0c72eae884c7c8e93ace1a8db9436b8bd",
+   "date": "2026-05-24T13:33:37-10:00",
+   "subject": "fix: tighten pypirc gitleaks allowlist",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "4ac53f27edc2c8ee7a492d2bcec04fe97bd5be28",
+   "date": "2026-05-23T22:14:51-07:00",
+   "subject": "fix: repair changelog workflow cog config",
+   "files": 7,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "15eef99df5ea8eae07eac5e5c8ac505b5d72e7a3",
+   "date": "2026-05-23T22:14:51-07:00",
+   "subject": "feat: implement must-do project infrastructure",
+   "files": 32,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "4828f8596b2332d74fbcff932ebab6f0030febd5",
+   "date": "2025-11-16T08:52:39-08:00",
+   "subject": "Update scripts/update_contributors.py",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "1c84afa61f2abc7201f79fe590fe7ecb8a54b284",
+   "date": "2025-06-08T13:42:45-07:00",
+   "subject": "Add license headers to source and config files (#268)",
+   "files": 26,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "c2f221fd423dea874df79503b4edc88304bd69df",
+   "date": "2025-06-08T10:03:24-07:00",
+   "subject": "Add yamllint and formmater yaml files, update pre-commit config (#297)",
+   "files": 0,
+   "ignored_files": 0,
+   "verdict": "EMPTY-DIFF"
+  },
+  {
+   "sha": "b0af6ff94c32a2c20f99bb2d2be47168504d47a5",
+   "date": "2025-06-07T15:42:32-07:00",
+   "subject": "Update the YAML reference to ensure clarity (#227)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "d1c0624cd3e05033758dab651c422b7dd4bcb44a",
+   "date": "2025-06-07T15:25:35-07:00",
+   "subject": "Fix and update add all the yaml file changes by yamlfmt (#298)",
+   "files": 15,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "424bda2677b4b65ec849d964f548e74db8dd3346",
+   "date": "2025-06-07T15:13:12-07:00",
+   "subject": "Update the cursor rules to follow the standardized documentation pattren (#292)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "7275a751794a698dc2f695894b81bee3d3f45d05",
+   "date": "2025-06-07T14:52:33-07:00",
+   "subject": "chore: add GitHub, CodeRabbit and Claude VSCode extensions to recommended extensions (#299)",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "340916d9c9f3df35fa595ff6aa511daabb95888a",
+   "date": "2025-05-30T15:30:25-07:00",
+   "subject": "Disabling ci.yaml security check pyupio/safety-action@v1 because it fails too often.",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "e9750e4a12e223f35b18e5633f807db85483982b",
+   "date": "2025-05-30T04:24:17+05:00",
+   "subject": "Update the update_contributors.py located in root directory instead of scripts directory (#220)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "ebc8ff9e0ff4cd1ab10debde3fa4f671c9ed2e05",
+   "date": "2025-05-29T17:06:08-06:00",
+   "subject": "Merge pull request #281 from smorin/fix/update-contributors-branch-check",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "42debd4bf9fd313c32c06bb362708e607e681cdf",
+   "date": "2025-05-29T03:11:47+05:00",
+   "subject": "Check to ignore bot users for CLA signing and add the documentation (#277)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "84e8b3f874200d1ff0299d863598fb912aeb1db5",
+   "date": "2025-05-29T03:09:39+05:00",
+   "subject": "fix eof pre-commit-config.yaml file (#282)",
+   "files": 0,
+   "ignored_files": 0,
+   "verdict": "EMPTY-DIFF"
+  },
+  {
+   "sha": "9facf420a8e8b65a853a61c8ef8724c35e415f0c",
+   "date": "2025-05-28T15:59:46-06:00",
+   "subject": "update the pre-commit-hook version to latest (#284)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "8f1517fcb4da2d058b903ba49671d9a5166ab55c",
+   "date": "2025-05-29T01:58:56+05:00",
+   "subject": "fix one time eof whitespace and eof files (#273)",
+   "files": 0,
+   "ignored_files": 0,
+   "verdict": "EMPTY-DIFF"
+  },
+  {
+   "sha": "b1f4c51d138c768d5594090f4c45d5c5df07a1b0",
+   "date": "2025-05-27T22:56:32-07:00",
+   "subject": "feat: Add force install targets to Makefile and refine setup guide & fix pre-commit fail on _version.py which is autogenerated  (#256)",
+   "files": 7,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "9364b76fd14e5bdea7af563350203b4de6108993",
+   "date": "2025-05-28T02:55:01+05:00",
+   "subject": "Organize Special GitHub Files to Reduce Root Directory Clutter  (#261)",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "dcaac71fc378c877607d71f0e61bac55d6af2100",
+   "date": "2025-05-28T02:45:26+05:00",
+   "subject": "Restructure template_images to content-based asset organization (#259)",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "62cf97a03046306fc60fc67f3b7353f179577037",
+   "date": "2025-05-28T00:48:50+05:00",
+   "subject": "Update documentation details how Configure up CLA in project (#241)",
+   "files": 6,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "dc5c9e9658ae182911de34d87a02912b4dd621c4",
+   "date": "2025-05-22T20:20:09-07:00",
+   "subject": "Fix typo in type checking documentation (#255)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "02c415af47882d978dfca3c458fc995394b7f305",
+   "date": "2025-05-22T18:56:03-07:00",
+   "subject": "Ruff-format is failing in CI/CD (247) (#249)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "c1c9d3ba790cfa01f9f43a45b63d2f47fa1f39a1",
+   "date": "2025-05-22T18:49:57-07:00",
+   "subject": "Add VS Code Debug Configuration for Py-Launch-Blueprint (#209)",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "9308064634215e0d62c9f8427796538661ee10a1",
+   "date": "2025-05-19T16:32:51-06:00",
+   "subject": "Merge pull request #221 from smorin/fix-ci-pytest-cleaned",
+   "files": 7,
+   "ignored_files": 1,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "347ef81f19e74b02470464b2e9f6e0edac30de55",
+   "date": "2025-05-17T00:46:26+05:00",
+   "subject": "fix toml files formatting issue (#243)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "6159a481dcb11ca3124d4267b6b0757e5d0595c8",
+   "date": "2025-05-16T22:26:33+05:00",
+   "subject": "update the taplo-just command to check only toml files (#244)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "396020775566e9f97eb6319c0e5d58087c7848f5",
+   "date": "2025-05-14T21:22:34Z",
+   "subject": "Updated-Taplo toml formatting and verification (#151)",
+   "files": 7,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "3a0b62bf2b7fb28b7d2c184b7c1ba46fde1d5ace",
+   "date": "2025-05-14T14:19:58-07:00",
+   "subject": " fix ruff-format ignore the auto-generated version.py file(228) (#231)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "0eb445e95ff961b2131d0c44e5f89cc392991bd0",
+   "date": "2025-05-14T14:14:19-07:00",
+   "subject": "Add Taplo Toml Formatting detailed documentation(158) (#166)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "c48e13f05ec45bae7bc77b1422f5a027546ec61f",
+   "date": "2025-05-12T20:38:22+05:00",
+   "subject": "Enable pytest in Github Actions to avoid continous-integrations (3.10) failing (#205)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "c8d5ffcac8eba6173552706fcc640f531bd1e065",
+   "date": "2025-05-08T21:26:31-07:00",
+   "subject": "Fix update contributors workflow to prevent non-fast-forward error (#212)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "c05d969b1d2fee456d8b729d1660ba86f1757761",
+   "date": "2025-05-08T21:19:57-07:00",
+   "subject": "Update deprecated top-level linter settings in pyproject.toml (#213)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "fa4206945a4d19bf3843ffeb3459b9ac6b2b5f19",
+   "date": "2025-05-07T14:06:29-07:00",
+   "subject": "Update pull request template to streamline pre-commit and testing instructions (#219)",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "4a68f8b787abe7347dfd4aaba1f1948d8327061c",
+   "date": "2025-05-07T14:01:26-07:00",
+   "subject": "Bug/one time update eof whitespace (#217)",
+   "files": 39,
+   "ignored_files": 1,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "6df9f45ab8f91cb73bde8b05b5ef36d296c8423c",
+   "date": "2025-05-04T14:53:30-07:00",
+   "subject": "Feature/justfile cmd groups (#198)",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "9b3cc032051a9ac8e7e9592e8dcb922d0f989f74",
+   "date": "2025-05-02T14:48:08-07:00",
+   "subject": "Merge pull request #167 from smorin/feature-157/debug-info-command",
+   "files": 6,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "52b7132442da158df3270dd51e6b3ab4de6abae5",
+   "date": "2025-05-02T14:45:00-07:00",
+   "subject": "Merge pull request #154 from smorin/149-feature-github-action-test-command---pr-download-and-local-setup",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "5d0eb847f3f8417c52e6433053bdb02cf41516de",
+   "date": "2025-05-02T14:38:11-07:00",
+   "subject": "Merge pull request #173 from smorin/bug/justfile-duplicate-changelog",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "6e63223e14a05c2da7b8ef203a0d3c723d0037f5",
+   "date": "2025-05-02T09:34:56-06:00",
+   "subject": "Merge pull request #130 from smorin/clean/contributors-automation",
+   "files": 6,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "16dcb06e08dc912a7bdefa520a86831924033caf",
+   "date": "2025-05-01T23:03:28-06:00",
+   "subject": "Merge pull request #147 from smorin/feature/integrate-ruff-cleaned",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "65a640970c80c52fd057195032360083574d7315",
+   "date": "2025-04-28T16:14:18-07:00",
+   "subject": "Merge pull request #138 from smorin/update-pytest",
+   "files": 6,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "207323ac413c99d0495b2abacbcd5fdf8f2ca6b0",
+   "date": "2025-04-28T14:55:12-07:00",
+   "subject": "Merge pull request #140 from smorin/docs/clarify-features",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "8792a10dcb0b7d17f6eab62946c57085499f331b",
+   "date": "2025-04-24T13:32:45-07:00",
+   "subject": "Merge pull request #143 from smorin/docs/discord",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "e1a788037ba643984f4ded113e149a672bcc1c3d",
+   "date": "2025-04-09T10:49:07-07:00",
+   "subject": "Remove temporary contributors file and outdated bug fix pull request template",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "d39288d1009c0dcaf18e89177f76def18b0e89de",
+   "date": "2025-04-08T22:03:33-07:00",
+   "subject": "Merge branch 'feature-refactor-docs-1' of https://github.com/habeshaethiopia/py-launch-blueprint into pr/58",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "60290499c9e609b3e63e21518478aef33dece9c6",
+   "date": "2025-04-08T22:03:03-07:00",
+   "subject": "Enhance documentation with license badge and ReadTheDocs link",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "c3f3bfe6736073670052c29eb08c17f3ffa1bd74",
+   "date": "2025-04-08T22:03:03-07:00",
+   "subject": "Add common issues and solutions for Python types",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "5474c81c122371c696b70e30751b432838f11f42",
+   "date": "2025-04-08T22:03:03-07:00",
+   "subject": "Add setup and dependency check instructions",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "051a6be82201222ac20347e71bf318a3d0ce7a01",
+   "date": "2025-04-08T22:03:03-07:00",
+   "subject": "Update project structure documentation",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "5ff3ac4f375eacc875ce04c4e7d7ae40f5c368a0",
+   "date": "2025-04-08T22:03:03-07:00",
+   "subject": "Add contributing and contributors sections to documentation",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "29c1882ec48c5963c9b9ca7fcf79f54e90223431",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "Delete uv.lock",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "df9d2dad6b367f583439b3a4f7c11deb7ba6ba2a",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "docs: remove outdated pull request template",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "78f28145df121a650f10406461c2766e587c2562",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "docs: enhance installation script for Sphinx and extensions",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "a587d093799824f4ed988e91205a0ecce5d38f7f",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "Update docs/source/reference/versioning.md",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "69b1beafdefb662bf2b6d26a2a1d23df0e5aef55",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "docs: correct capitalization in configuration files documentation",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "eb1af9be492291afa422b830c8c2820e933f8938",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "docs: update project structure documentation to include issue and pull request templates",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "1ed895dd77c8e39cef485954ce9373de8dbe6376",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "gitignore: remove .qodo from ignored files",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "1866641099f913c873580068fba55cd85696510c",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "docs: refine documentation by removing outdated sections and adding new command examples",
+   "files": 11,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "0cf3d22408d31a7cf3a3ad05032373524a0b8eeb",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "docs: enhance documentation with new sections on pre-commit hooks and CI/CD workflows",
+   "files": 9,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "5d5a04a0fd8270f5bd4736e66ffea546c0cc386d",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "doc: finished refining the docs/task",
+   "files": 19,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "e008d36a697efeafa6682dc64f55ca9598f83e51",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "doc: finish refining the reference documentation",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "97d2607e5e637a0d3806b4ca4e400a269a0eb955",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "docs: update reference section to remove table of contents and add cog.toml and CONTRIBUTORS.md details",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "f7e55f671bf4b572dd9577beef3f96e94160179f",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "docs: update reference section to remove table of contents and add cog.toml and CONTRIBUTORS.md details",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "debe92871c094d3a8d11ad6af5c58283927cdabc",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "justfile: add installation instructions for Sphinx and extensions;  and remove from the makefile",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "c1f6e10e5201477fb556d6075a8945f6e8946c52",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "finish contribution and index docs",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "656ee90b072c4f6d8dd88443fc33d7121436fb52",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "docs: streamline documentation structure and improve clarity in various sections, About section refined done",
+   "files": 17,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "1b1352a2049b4b2069ff1bd8b4140881e1c04eb6",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "docs: remove unnecessary docs entry from index.md",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "73cca7cc260464c7c8c3d3773fd75276a6a8fe7a",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "docs: improve contributing and versioning documentation for clarity",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "adb937e473614d052961312df8b850c3c81075a0",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "feat: update documentation to include Justfiles and versioning details",
+   "files": 11,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "e9035ffabcdf5e5aaad49864d5978b4e7b8a25e9",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "Update PULL_REQUEST_TEMPLATE.md to correct CLA document paths for improved clarity",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "77da171041e5b07587dc722d3ca55e1b1fe79ddf",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "Remove outdated command-line usage references from index.md for improved documentation accuracy",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "cf5b949ff83771e6cb858db378c04b0e255e7f97",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "Add command-line usage references to index.md for improved documentation clarity",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "fcf88800f879b295c998bcf4a46cb2bce7f378c6",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "Add toctree structures to various documentation sections for improved navigation",
+   "files": 7,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "b32ede4633c1203517267ff32349512af09113f0",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "Remove outdated command-line usage references from index.md",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "847df0e5c019588203f19185ea857207e20c68e6",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "Add install-docs target to Makefile and remove obsolete CLA FAQ document",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "bf9c4a6def6daecd2ac2cdcdba8cfbc0d004091e",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "Update CLA links and add FAQ section; remove obsolete corporate CLA document",
+   "files": 8,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "8a63e6b01d80a095604bb2dc9dd10b94eebaae0b",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "Bump version to 0.1.dev102 and update documentation to remove Table of Contents headers",
+   "files": 7,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "23e798a428543cc4a8b2c258e979eaeb5d318511",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "Update toctree structure in Sphinx documentation configuration",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "c1e2aa83eb787ff34792534b8990bd1b41637a0d",
+   "date": "2025-04-08T22:03:02-07:00",
+   "subject": "Refactor documentation to modular Sphinx structure",
+   "files": 37,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "70dc65f6fe1be510bee136524848bfa073fbdbbc",
+   "date": "2025-04-08T21:45:04-07:00",
+   "subject": "Merge pull request #125 from smorin/smorin-patch-2",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "e2f7fe18ba5195d96e3ebf8b4eba62583e115ebd",
+   "date": "2025-04-08T21:19:32-07:00",
+   "subject": "Merge pull request #116 from smorin/smorin-patch-1",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "15769a00f266b83fe57be3f7758e8bd7e25213f7",
+   "date": "2025-04-07T22:13:41-07:00",
+   "subject": "Merge pull request #122 from smorin/feature/fix-pr-template",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "8f86754404e397c05931ad7e63dee759a5905064",
+   "date": "2025-04-07T15:17:44-07:00",
+   "subject": "Merge pull request #120 from smorin/bug/readthedocs-config-broken",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "1fd1b629184ff15b175c48be2116323364269baa",
+   "date": "2025-04-07T10:31:18-07:00",
+   "subject": "Merge pull request #118 from smorin/feature/cleanup-issue-templates-reorder",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "715c2e471832cb4a742f3085b6353645f799cdea",
+   "date": "2025-04-07T10:09:32-07:00",
+   "subject": "Merge pull request #115 from smorin/fix/issue-templates-not-suggested",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "84e4669288a56c58e667bb8c33ef2e2e91bda09a",
+   "date": "2025-04-03T12:20:40-06:00",
+   "subject": "Merge pull request #96 from smorin/Tatianah3-patch-3",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "2e703d7d51d35487ebb0a65b13415b887adda92e",
+   "date": "2025-04-03T12:14:23-06:00",
+   "subject": "Merge pull request #98 from smorin/Tatianah3-patch-5",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "d03f9550606c15e5e586920afdc43757fa768c3c",
+   "date": "2025-04-03T12:04:29-06:00",
+   "subject": "Merge pull request #97 from smorin/Tatianah3-patch-4",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "2d2619221e0a67978190307d9361f8ca41313265",
+   "date": "2025-03-28T12:20:02-07:00",
+   "subject": "Merge pull request #65 from smorin/feature/issue_template",
+   "files": 13,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "9853fbf105254cb938ce32380b0d2bbf6d5e342d",
+   "date": "2025-03-25T23:50:08-06:00",
+   "subject": "Merge pull request #84 from smorin/fix-contributors-workflow",
+   "files": 5,
+   "ignored_files": 1,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "db3ea33c21cb96db30ed18d149578021eb16560b",
+   "date": "2025-03-23T17:03:28-07:00",
+   "subject": "Merge pull request #69 from smorin/smorin-funding-1",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "ea4940f687e2d60638a0b77e90c7d8db3cb97aed",
+   "date": "2025-03-23T16:30:04-07:00",
+   "subject": "Merge pull request #66 from smorin/feature/readthedocs",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "06e37831a6bd8beb26842f54af1276bbb9dd0ef4",
+   "date": "2025-03-20T19:16:50-06:00",
+   "subject": "Merge pull request #61 from smorin/feat/add-contributors-tracking",
+   "files": 7,
+   "ignored_files": 1,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "753b3a381bad4feeb39d7f3480c2132d017ca766",
+   "date": "2025-02-26T12:54:39-08:00",
+   "subject": "Merge pull request #48 from smorin/feature/readthedocsinit",
+   "files": 13,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "f44efeeeeb5867997adc3ca7e7afa5ddef3acc8a",
+   "date": "2025-02-23T21:45:50-08:00",
+   "subject": "Merge pull request #47 from habeshaethiopia/add-cla-integration",
+   "files": 7,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "f4766291cef7d6015801799bf8438fa27c0637b5",
+   "date": "2025-02-09T20:50:47-08:00",
+   "subject": "Merge pull request #39 from smorin/feature/mit_license_badget",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "87d2181dd4e572fc2541a712ba28f778d6035256",
+   "date": "2025-02-09T20:43:55-08:00",
+   "subject": "Merge pull request #38 from smorin/feature/logo_badges",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "be7022fb5bdc5f8a04e29f888b2486e7058f2fb2",
+   "date": "2025-02-09T14:43:23-08:00",
+   "subject": "Merge pull request #37 from smorin/fix/fix_version_number",
+   "files": 8,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "5acc9c54e19698dd6465bb0ee11de22b1bf49271",
+   "date": "2025-02-09T10:55:10-08:00",
+   "subject": "Merge pull request #29 from habeshaethiopia/feature/setuptools-scm-uv-hatch",
+   "files": 5,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "8cf2bd45e22e1df61c7cc49bb4e21ea92f15e393",
+   "date": "2025-02-02T10:05:11-08:00",
+   "subject": "Merge pull request #30 from smorin/feature/Justfile",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "ba52f39d6ee27ba36b4c04ce93d84c6ce6ae10b4",
+   "date": "2025-01-28T08:36:46-08:00",
+   "subject": "Merge pull request #20 from vardanaloyan/feature/remove-isort-black",
+   "files": 6,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "f60c0fff1ec1868f2840afa767aaf7e8240a321d",
+   "date": "2025-01-26T18:25:37-08:00",
+   "subject": "Merge pull request #10 from habeshaethiopia/improve/pre-commit-hooks",
+   "files": 8,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "2a2190379da41d04dcc1aa8e1daab830c0417c8c",
+   "date": "2025-01-23T15:31:47-08:00",
+   "subject": "Merge pull request #13 from smorin/feature/project-benefits",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "fad19b39a7b180a34cda28d1db9fb4d504e110f3",
+   "date": "2025-01-23T15:18:31-08:00",
+   "subject": "Merge pull request #7 from gdev19/feature/fix-linting",
+   "files": 8,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "f968899b002aa27896a1b598a23df1bb67fe8c03",
+   "date": "2025-01-23T15:15:49-08:00",
+   "subject": "Merge pull request #12 from smorin/feature/readme-reorganization",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "80412a01a88d318700c6f693e64d9d76e97cfea0",
+   "date": "2025-01-23T14:31:59-08:00",
+   "subject": "Merge pull request #6 from smorin/feature/vscode-recommentations",
+   "files": 2,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "07efa6d9d75b13f3820caecc564664c0ae8f0eb3",
+   "date": "2025-01-23T14:15:53-08:00",
+   "subject": "Merge pull request #5 from gdev19/feature/update-readme-about-precommit-hooks",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "3f61e6f93d6244636573a5aab08373f2f4866654",
+   "date": "2025-01-23T14:08:23-08:00",
+   "subject": "Merge pull request #3 from smorin/feature/ci-github-action",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "f7cac15453b4d094f2c6b56f47e51d944f4c68d6",
+   "date": "2025-01-23T12:29:25-08:00",
+   "subject": "Merge pull request #2 from smorin/smorin-patch-1",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "b446467d453bd626e081b5c7b10485a9fba09e00",
+   "date": "2025-01-23T11:52:19-08:00",
+   "subject": "Create dependency-review.yml",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "105d07e359df15e011314392ec82526a6814ea02",
+   "date": "2025-01-23T11:48:33-08:00",
+   "subject": "Create codeql.yml",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "373e4a9b249cc80607a27565dc7d8353f50c1843",
+   "date": "2025-01-23T10:45:52-08:00",
+   "subject": "Merge pull request #1 from gdev19/feature/add-precommit-hooks-fix-package-name",
+   "files": 4,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "0ec3e7f38312128146c45674f735595624b90aa2",
+   "date": "2025-01-22T11:07:59-08:00",
+   "subject": "Updated project name and description",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "debd37f078a395c830e252a373a2cdf500814ce3",
+   "date": "2025-01-21T22:48:15-08:00",
+   "subject": "Made reference corrections in README",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "36154db0a98faf97668e6fb52a5c7b75f1c5e851",
+   "date": "2025-01-21T22:44:35-08:00",
+   "subject": "Added template options",
+   "files": 1,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "a15c6f99d380895df2760079153070c786f849b2",
+   "date": "2025-01-21T22:35:07-08:00",
+   "subject": "adding in first corrections",
+   "files": 3,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  },
+  {
+   "sha": "1012228fb7626260e92326c269fdbd0dd0b91752",
+   "date": "2025-01-21T22:32:38-08:00",
+   "subject": "First commit",
+   "files": 14,
+   "ignored_files": 0,
+   "verdict": "RUN"
+  }
+ ]
+}

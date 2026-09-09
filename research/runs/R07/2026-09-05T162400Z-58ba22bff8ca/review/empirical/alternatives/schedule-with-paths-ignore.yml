@@ -1,0 +1,15 @@
+# R07 negative fixture — a path filter placed under `schedule`. GitHub's
+# workflow-syntax reference documents paths/paths-ignore only for push,
+# pull_request and pull_request_target. Expected: actionlint rejects it.
+name: Update Contributors
+on:
+  schedule:
+    - cron: '17 6 * * 1'
+      paths-ignore:
+        - CONTRIBUTORS.md
+  workflow_dispatch:
+jobs:
+  contributors-please:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
