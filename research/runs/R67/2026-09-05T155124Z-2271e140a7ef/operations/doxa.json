@@ -1,0 +1,12 @@
+{
+  "actor": "research-doxa-2026-09-05T155124Z-2271e140a7ef",
+  "actual_model": "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026",
+  "actual_provider": "doxa-research 3.3.0 via scripts/doxa_no_retry.py; openai job resp_01a37fb1905691f0006aa107018f7087d0a43c69d7dbcf787f running; perplexity job 80c1b106-39dd-4a62-b8b6-c9f9244d2131 running; gemini job v1_ChdBd2VoYW9EOUJyNmkxTWtQcjlxazBBcxIXQXdlaGFvRDlCcjZpMU1rUHI5cWswQXM running",
+  "at": "2026-09-09T07:13:03Z",
+  "model": "all_deep_research (openai gpt-5.6-sol reasoning_effort max, perplexity sonar-deep-research, gemini deep-research-preview-04-2026)",
+  "operation_id": "research-20260909-001305-a713221f121c4348",
+  "provider": "doxa",
+  "request_id": "5db34bec3d674c73855c21867897cc1e",
+  "returned_at": "2026-09-09T07:13:09Z",
+  "state": "submitted"
+}
