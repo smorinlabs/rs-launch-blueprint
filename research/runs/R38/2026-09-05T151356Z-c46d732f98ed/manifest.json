@@ -273,6 +273,15 @@
       },
       "provider": "doxa",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-09T07:06:08Z",
+      "publication": {
+        "acceptance_sha256": "a7234f56a62ebbcc61494ae5b4ee393d8304d7150620ec67e380e2c4a0c1ba9e",
+        "decision_sha256": "97da7f169f26fce8f9b43c3d6c2eb0971b991f45b0d00ae2a91c5ddc3cbe4437",
+        "transaction": "cb571ccb51064eaaa7c992a57a378a5a"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -338,6 +347,11 @@
     }
   },
   "prompt_source": "research/topics/38-commit-message-linter/prompts/commit-message-linter.prompt.md",
+  "publication": {
+    "acceptance_sha256": "a7234f56a62ebbcc61494ae5b4ee393d8304d7150620ec67e380e2c4a0c1ba9e",
+    "decision_sha256": "97da7f169f26fce8f9b43c3d6c2eb0971b991f45b0d00ae2a91c5ddc3cbe4437",
+    "transaction": "cb571ccb51064eaaa7c992a57a378a5a"
+  },
   "remaining_budget": "USD 40.00 remaining of USD 40.00 for batch B0-R38 (job-count boundary; no automatic retry)",
   "required_engines": [
     "codex",
@@ -346,7 +360,7 @@
   ],
   "run_id": "2026-09-05T151356Z-c46d732f98ed",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "focused",
-  "updated_at": "2026-09-09T05:53:57Z"
+  "updated_at": "2026-09-09T07:06:08Z"
 }

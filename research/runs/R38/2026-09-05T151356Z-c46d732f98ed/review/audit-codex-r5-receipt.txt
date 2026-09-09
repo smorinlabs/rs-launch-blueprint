@@ -1,0 +1,6 @@
+Approved. [Audit](review/audit-codex.md) SHA-256: `78a762be…1036f9`.
+
+Reruns passed on macOS and Linux; isolated dependency audit exited 0. [Evidence log](review/evidence/audit-commit-message-linter-r5.log).
+
+Finding: none.
+

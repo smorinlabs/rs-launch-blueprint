@@ -40,7 +40,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R34 | scheduled-freshness-lanes | bundle | py-only | DIVERGENT | — | [prompt](topics/34-scheduled-freshness-lanes/prompts/scheduled-freshness-lanes.prompt.md) | open |
 | R35 | coverage-tooling | bundle | different | DIVERGENT | — | [prompt](topics/35-coverage-tooling/prompts/coverage-tooling.prompt.md) | open |
 | R37 | hook-manager-distribution | bundle | different | DIVERGENT | — | [prompt](topics/37-hook-manager-distribution/prompts/hook-manager-distribution.prompt.md) | open |
-| R38 | commit-message-linter | crate | same | COMMON → SUBSTITUTE | commit-message-convention | [prompt](topics/38-commit-message-linter/prompts/commit-message-linter.prompt.md) | open |
+| R38 | commit-message-linter | crate | same | COMMON → SUBSTITUTE | commit-message-convention | [prompt](topics/38-commit-message-linter/prompts/commit-message-linter.prompt.md) | resolved |
 | R39 | secret-scanning-hooks | bundle | py-only | DIVERGENT | — | [prompt](topics/39-secret-scanning-hooks/prompts/secret-scanning-hooks.prompt.md) | open |
 | R40 | auxiliary-hygiene-hooks | bundle | py-only | DIVERGENT | — | [prompt](topics/40-auxiliary-hygiene-hooks/prompts/auxiliary-hygiene-hooks.prompt.md) | open |
 | R41 | lockfile-freshness-check | pattern | py-only | DIVERGENT | — | [prompt](topics/41-lockfile-freshness-check/prompts/lockfile-freshness-check.prompt.md) | open |
