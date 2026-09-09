@@ -61,6 +61,60 @@
       },
       "provider": "codex",
       "state": "succeeded"
+    },
+    {
+      "actor": "research-opus-2026-09-05T163018Z-6cb436162ac7",
+      "at": "2026-09-09T05:42:04Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T163018Z-6cb436162ac7",
+        "at": "2026-09-09T05:42:04Z",
+        "model": "claude-opus-5[1m]",
+        "provider": "opus",
+        "request_id": "bae93fad88ca4ce7b4c36a00145d9706",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-opus-2026-09-05T163018Z-6cb436162ac7",
+      "at": "2026-09-09T06:06:10Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T163018Z-6cb436162ac7",
+        "actual_model": "claude-opus-5[1m]",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-09T05:42:04Z",
+        "model": "claude-opus-5[1m]",
+        "operation_id": "agent:research-opus-2026-09-05T163018Z-6cb436162ac7:06e1a7e7dc4e9835",
+        "provider": "opus",
+        "request_id": "bae93fad88ca4ce7b4c36a00145d9706",
+        "returned_at": "2026-09-09T06:06:10Z",
+        "state": "submitted"
+      },
+      "provider": "opus",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-opus-2026-09-05T163018Z-6cb436162ac7",
+      "at": "2026-09-09T06:06:10Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T163018Z-6cb436162ac7",
+        "actual_model": "claude-opus-5[1m]",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-09T05:42:04Z",
+        "collected_at": "2026-09-09T06:06:10Z",
+        "model": "claude-opus-5[1m]",
+        "operation_id": "agent:research-opus-2026-09-05T163018Z-6cb436162ac7:06e1a7e7dc4e9835",
+        "provider": "opus",
+        "raw": "research/runs/R15/2026-09-05T163018Z-6cb436162ac7/raw/opus-06e1a7e7dc4e98352691f47024e467f8ce9cc6babfcff627c88427726a9e024c.md",
+        "raw_sha256": "06e1a7e7dc4e98352691f47024e467f8ce9cc6babfcff627c88427726a9e024c",
+        "reason": "",
+        "request_id": "bae93fad88ca4ce7b4c36a00145d9706",
+        "returned_at": "2026-09-09T06:06:10Z",
+        "state": "succeeded"
+      },
+      "provider": "opus",
+      "state": "succeeded"
     }
   ],
   "input_hashes": {
@@ -91,6 +145,22 @@
       "request_id": "11629771724542e985613940b7647ef9",
       "returned_at": "2026-09-05T16:36:31Z",
       "state": "succeeded"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T163018Z-6cb436162ac7",
+      "actual_model": "claude-opus-5[1m]",
+      "actual_provider": "claude-agent-tool",
+      "at": "2026-09-09T05:42:04Z",
+      "collected_at": "2026-09-09T06:06:10Z",
+      "model": "claude-opus-5[1m]",
+      "operation_id": "agent:research-opus-2026-09-05T163018Z-6cb436162ac7:06e1a7e7dc4e9835",
+      "provider": "opus",
+      "raw": "research/runs/R15/2026-09-05T163018Z-6cb436162ac7/raw/opus-06e1a7e7dc4e98352691f47024e467f8ce9cc6babfcff627c88427726a9e024c.md",
+      "raw_sha256": "06e1a7e7dc4e98352691f47024e467f8ce9cc6babfcff627c88427726a9e024c",
+      "reason": "",
+      "request_id": "bae93fad88ca4ce7b4c36a00145d9706",
+      "returned_at": "2026-09-09T06:06:10Z",
+      "state": "succeeded"
     }
   },
   "prompt_source": "research/topics/15-template-drift-receipt-guard/prompts/template-drift-receipt-guard.prompt.md",
@@ -101,7 +171,7 @@
   ],
   "run_id": "2026-09-05T163018Z-6cb436162ac7",
   "schema_version": 1,
-  "state": "partial",
+  "state": "collected",
   "tier": "focused",
-  "updated_at": "2026-09-05T16:36:31Z"
+  "updated_at": "2026-09-09T06:06:10Z"
 }
