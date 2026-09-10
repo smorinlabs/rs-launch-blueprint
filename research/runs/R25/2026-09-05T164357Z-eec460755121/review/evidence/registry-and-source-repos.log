@@ -1,0 +1,60 @@
+# R25 — registry/API figures and the two source repositories, read at their pinned commits (retrieved 2026-09-09)
+
+## GitHub REST (endpoints exactly as required by the prompt's figure table)
+$ GET https://api.github.com/repos/googleapis/release-please/releases/latest
+  {"tag_name": "v17.11.2", "published_at": "2026-08-24T21:20:30Z"}
+$ GET https://api.github.com/repos/googleapis/release-please
+  {"stargazers_count": 7473, "archived": false, "pushed_at": "2026-09-03T18:49:38Z", "license": "Apache-2.0"}
+$ GET https://api.github.com/repos/googleapis/release-please-action/releases/latest
+  {"tag_name": "v5.0.0", "published_at": "2026-04-22T18:03:34Z"}
+$ GET https://api.github.com/search/issues?q=repo:googleapis/release-please+is:issue+is:open
+  total_count = 297
+  NOT MEASURED: median days to first maintainer response over the 10 most recently opened issues (recorded as an unmet evidence requirement, not estimated).
+
+## crates.io — GET https://crates.io/api/v1/crates/<name>  (crate.max_stable_version, crate.recent_downloads, crate.downloads)
+  axum     max_stable_version=0.8.9     recent_downloads=112813910    downloads=461946996
+  tracing  max_stable_version=0.1.44    recent_downloads=184984766    downloads=834126366
+  tower    max_stable_version=0.5.3     recent_downloads=166590898    downloads=649418467
+  config   max_stable_version=0.15.25   recent_downloads=17700610     downloads=112009454
+  serde    max_stable_version=1.0.229   recent_downloads=297704333    downloads=1373386943
+  tokio    max_stable_version=1.53.1    recent_downloads=218334421    downloads=952090463
+  Reading: four of these six widely-adopted crates are still pre-1.0. This is illustrative of the ecosystem's tolerance for 0.x, not a census of crates.io.
+
+## ts-launch-blueprint @ cb1cbcb2e88b898e8c081b0abbfabc1630079c00 (private repo; read from the local pinned clone, not over the network)
+$ git -C ~/c/ts-launch-blueprint show cb1cbcb:release-please-config.json | head -8
+    {
+      "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+      "release-type": "node",
+      "include-v-in-tag": true,
+      "include-component-in-tag": false,
+      "bump-minor-pre-major": true,
+      "bump-patch-for-minor-pre-major": true,
+      "pull-request-title-pattern": "chore(release): publish v${version}",
+$ git -C ~/c/ts-launch-blueprint show cb1cbcb:.release-please-manifest.json
+    {
+      ".": "0.1.3"
+    }
+$ git -C ~/c/ts-launch-blueprint log --oneline --all -- .release-please-manifest.json  (oldest last)
+    bdffd16 chore(release): publish v0.1.4
+    0e6a3d7 chore(release): publish v0.1.3
+    1ec682f chore(release): publish v0.1.2
+    bdc7567 chore(release): publish v0.1.1
+    19ff9b5 feat: add release-please + npm publish pipeline
+$ git -C ~/c/ts-launch-blueprint show 19ff9b5:.release-please-manifest.json   # the seeding commit
+    {
+      ".": "0.1.0"
+    }
+  Reading: ts seeded the manifest at 0.1.0 and its FIRST release-please release was v0.1.1 — 0.1.0 was never published.
+
+## py-launch-blueprint @ b08bccfb55d05f15e46a83b52c5660b1881d19f5 (local pinned clone)
+$ git -C ~/c/py-launch-blueprint show b08bccf:release-please-config.json | grep -c pre-major
+    0
+$ git -C ~/c/py-launch-blueprint show b08bccf:.release-please-manifest.json
+    {
+      ".": "2.4.2"
+    }
+$ git -C ~/c/py-launch-blueprint show 1bd0344:.release-please-manifest.json   # the commit that adopted release-please
+    {
+      ".": "1.0.0"
+    }
+  Reading: py adopted release-please already at 1.0.0, so both pre-major flags would have been unreachable code there.

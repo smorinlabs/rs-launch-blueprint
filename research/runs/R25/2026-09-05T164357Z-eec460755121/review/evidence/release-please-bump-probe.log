@@ -1,0 +1,76 @@
+# R25 — bump arithmetic driven directly against release-please@17.11.2 (executed 2026-09-09)
+# working directory: /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/rp-probe  (session scratchpad; the repository worktree is untouched)
+# CAVEAT: the probe imports release-please/build/src/... — package-internal build paths, not a public API.
+
+$ npm --prefix /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/rp-probe install release-please@17.11.2
+installed version: 17.11.2
+
+## probe source
+    // R25 synthesizer probe: drive release-please@17.11.2 DefaultVersioningStrategy
+    // NOTE: requires package-internal build paths (not a public API) - durability caveat.
+    const {DefaultVersioningStrategy} = require('release-please/build/src/versioning-strategies/default');
+    const {Version} = require('release-please/build/src/version');
+    
+    const commits = {
+      'fix:':   [{sha:'a', message:'fix: correct exit code', type:'fix', bareMessage:'x', notes:[], references:[], breaking:false}],
+      'feat:':  [{sha:'b', message:'feat: add --json output', type:'feat', bareMessage:'x', notes:[], references:[], breaking:false}],
+      'feat!:': [{sha:'c', message:'feat!: rename ProjectsPort', type:'feat', bareMessage:'x', notes:[], references:[], breaking:true}],
+    };
+    const configs = {
+      'A both true'      : {bumpMinorPreMajor:true,  bumpPatchForMinorPreMajor:true},
+      'C neither (defaults)': {},
+      'D minor-pre-major only': {bumpMinorPreMajor:true},
+      'E patch-for-minor only': {bumpPatchForMinorPreMajor:true},
+    };
+    const starts = ['0.1.0','0.1.3','1.0.0'];
+    console.log('release-please version:', require('release-please/package.json').version);
+    console.log('config | start | commit | next');
+    for (const [cname, opts] of Object.entries(configs)) {
+      const s = new DefaultVersioningStrategy(opts);
+      for (const start of starts) {
+        for (const [kind, cs] of Object.entries(commits)) {
+          console.log([cname, start, kind, s.bump(Version.parse(start), cs).toString()].join(' | '));
+        }
+      }
+    }
+
+$ node /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/rp-probe/probe.cjs
+release-please version: 17.11.2
+config | start | commit | next
+A both true | 0.1.0 | fix: | 0.1.1
+A both true | 0.1.0 | feat: | 0.1.1
+A both true | 0.1.0 | feat!: | 0.2.0
+A both true | 0.1.3 | fix: | 0.1.4
+A both true | 0.1.3 | feat: | 0.1.4
+A both true | 0.1.3 | feat!: | 0.2.0
+A both true | 1.0.0 | fix: | 1.0.1
+A both true | 1.0.0 | feat: | 1.1.0
+A both true | 1.0.0 | feat!: | 2.0.0
+C neither (defaults) | 0.1.0 | fix: | 0.1.1
+C neither (defaults) | 0.1.0 | feat: | 0.2.0
+C neither (defaults) | 0.1.0 | feat!: | 1.0.0
+C neither (defaults) | 0.1.3 | fix: | 0.1.4
+C neither (defaults) | 0.1.3 | feat: | 0.2.0
+C neither (defaults) | 0.1.3 | feat!: | 1.0.0
+C neither (defaults) | 1.0.0 | fix: | 1.0.1
+C neither (defaults) | 1.0.0 | feat: | 1.1.0
+C neither (defaults) | 1.0.0 | feat!: | 2.0.0
+D minor-pre-major only | 0.1.0 | fix: | 0.1.1
+D minor-pre-major only | 0.1.0 | feat: | 0.2.0
+D minor-pre-major only | 0.1.0 | feat!: | 0.2.0
+D minor-pre-major only | 0.1.3 | fix: | 0.1.4
+D minor-pre-major only | 0.1.3 | feat: | 0.2.0
+D minor-pre-major only | 0.1.3 | feat!: | 0.2.0
+D minor-pre-major only | 1.0.0 | fix: | 1.0.1
+D minor-pre-major only | 1.0.0 | feat: | 1.1.0
+D minor-pre-major only | 1.0.0 | feat!: | 2.0.0
+E patch-for-minor only | 0.1.0 | fix: | 0.1.1
+E patch-for-minor only | 0.1.0 | feat: | 0.1.1
+E patch-for-minor only | 0.1.0 | feat!: | 1.0.0
+E patch-for-minor only | 0.1.3 | fix: | 0.1.4
+E patch-for-minor only | 0.1.3 | feat: | 0.1.4
+E patch-for-minor only | 0.1.3 | feat!: | 1.0.0
+E patch-for-minor only | 1.0.0 | fix: | 1.0.1
+E patch-for-minor only | 1.0.0 | feat: | 1.1.0
+E patch-for-minor only | 1.0.0 | feat!: | 2.0.0
+exit=0

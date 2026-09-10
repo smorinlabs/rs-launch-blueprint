@@ -1,0 +1,257 @@
+# R25 — release-please source and schema read at pinned tag v17.11.2 (retrieved 2026-09-09)
+# working directory: /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/rp-src  (session scratchpad; nothing written inside the repository)
+# fetch: curl -sS -A 'rs-launch-blueprint-p02-R25-synthesizer' https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/<path>
+
+## HTTP status per file
+200  schemas/config.json
+200  src/versioning-strategies/default.ts
+200  src/version.ts
+200  src/strategies/rust.ts
+200  src/strategies/base.ts
+200  src/strategies/node.ts
+200  src/strategies/python.ts
+200  src/manifest.ts
+200  docs/manifest-releaser.md
+200  README.md
+exit=0
+
+## schemas/config.json — definitions.ReleaserConfigOptions.properties (verbatim descriptions)
+bump-minor-pre-major => {"description": "Breaking changes only bump semver minor if version < 1.0.0", "type": "boolean"}
+bump-patch-for-minor-pre-major => {"description": "Feature changes only bump semver patch if version < 1.0.0", "type": "boolean"}
+initial-version => {"description": "Releases the initial library with a specified version", "type": "string"}
+release-as => {"description": "[DEPRECATED] Override the next version of this package. Consider using a `Release-As` commit instead.", "type": "string"}
+versioning => {"description": "Versioning strategy. Defaults to `default`", "type": "string"}
+exit=0
+
+## src/versioning-strategies/default.ts — DefaultVersioningStrategy.determineReleaseType (verbatim)
+  determineReleaseType(
+    version: Version,
+    commits: ConventionalCommit[]
+  ): VersionUpdater {
+    // iterate through list of commits and find biggest commit type
+    let breaking = 0;
+    let features = 0;
+    for (const commit of commits) {
+      const releaseAs = commit.notes.find(note => note.title === 'RELEASE AS');
+      if (releaseAs) {
+        // commits are handled newest to oldest, so take the first one (newest) found
+        this.logger.debug(
+          `found Release-As: ${releaseAs.text}, forcing version`
+        );
+        return new CustomVersionUpdate(
+          Version.parse(releaseAs.text).toString()
+        );
+      }
+      if (commit.breaking) {
+        breaking++;
+      } else if (commit.type === 'feat' || commit.type === 'feature') {
+        features++;
+      }
+    }
+
+    if (breaking > 0) {
+      if (version.isPreMajor && this.bumpMinorPreMajor) {
+        return new MinorVersionUpdate();
+      } else {
+        return new MajorVersionUpdate();
+      }
+    } else if (features > 0) {
+      if (version.isPreMajor && this.bumpPatchForMinorPreMajor) {
+        return new PatchVersionUpdate();
+      } else {
+        return new MinorVersionUpdate();
+      }
+    }
+    return new PatchVersionUpdate();
+  }
+    return this.determineReleaseType(version, commits).bump(version);
+  }
+
+## src/versioning-strategies/default.ts — constructor defaults (absent flag == false)
+51:    this.bumpMinorPreMajor = options.bumpMinorPreMajor === true;
+52:    this.bumpPatchForMinorPreMajor = options.bumpPatchForMinorPreMajor === true;
+
+## src/version.ts — isPreMajor
+86:  get isPreMajor(): boolean {
+87-    return this.major < 1;
+88-  }
+89-}
+
+## src/strategies/rust.ts — initialReleaseVersion
+133:  protected initialReleaseVersion(): Version {
+134-    return Version.parse('0.1.0');
+135-  }
+136-
+
+## src/strategies/base.ts — initialReleaseVersion default and buildNewVersion branch
+754:   * Override this to handle the initial version of a new library.
+755-   */
+756-  protected initialReleaseVersion(): Version {
+757-    if (this.initialVersion) {
+758-      return Version.parse(this.initialVersion);
+759-    }
+760-
+761-    return Version.parse('1.0.0');
+762-  }
+  protected async buildNewVersion(
+    conventionalCommits: ConventionalCommit[],
+    latestRelease?: Release
+  ): Promise<Version> {
+    if (this.releaseAs) {
+      this.logger.warn(
+        `Setting version for ${this.path} from release-as configuration`
+      );
+      return Version.parse(this.releaseAs);
+    }
+
+    const releaseAsCommit = conventionalCommits.find(conventionalCommit =>
+      conventionalCommit.notes.find(note => note.title === 'RELEASE AS')
+    );
+    if (releaseAsCommit) {
+      const note = releaseAsCommit.notes.find(
+        note => note.title === 'RELEASE AS'
+      );
+      if (note) {
+        return Version.parse(note.text);
+      }
+    }
+
+    if (latestRelease) {
+      return await this.versioningStrategy.bump(
+        latestRelease.tag.version,
+        conventionalCommits
+      );
+    }
+
+    return this.initialReleaseVersion();
+  }
+
+## src/strategies/node.ts — no initialReleaseVersion override
+0
+## src/strategies/python.ts — initialReleaseVersion
+200:  protected initialReleaseVersion(): Version {
+201-    return Version.parse('0.1.0');
+202-  }
+203-}
+
+## src/manifest.ts — config key -> strategy option mapping, and per-package fallback
+101:  bumpMinorPreMajor?: boolean;
+102:  bumpPatchForMinorPreMajor?: boolean;
+164:  'bump-minor-pre-major'?: boolean;
+165:  'bump-patch-for-minor-pre-major'?: boolean;
+1395:    bumpMinorPreMajor: config['bump-minor-pre-major'],
+1396:    bumpPatchForMinorPreMajor: config['bump-patch-for-minor-pre-major'],
+1748:    bumpMinorPreMajor:
+1749:      pathConfig.bumpMinorPreMajor ?? defaultConfig.bumpMinorPreMajor,
+1750:    bumpPatchForMinorPreMajor:
+1751:      pathConfig.bumpPatchForMinorPreMajor ??
+1752:      defaultConfig.bumpPatchForMinorPreMajor,
+
+## src/manifest.ts — 'backfill latest release tags from manifest' (why a seeded manifest entry is the LAST released version)
+    // backfill latest release tags from manifest
+    for (const path in this.repositoryConfig) {
+      const latestRelease = releasesByPath[path];
+      if (
+        !latestRelease &&
+        this.releasedVersions[path] &&
+        this.releasedVersions[path].toString() !== '0.0.0'
+      ) {
+        const version = this.releasedVersions[path];
+        const strategy = strategiesByPath[path];
+        const component = await strategy.getComponent();
+        this.logger.info(
+          `No latest release found for path: ${path}, component: ${component}, but a previous version (${version.toString()}) was specified in the manifest.`
+        );
+        releasesByPath[path] = {
+          tag: new TagName(
+            version,
+            component,
+            this.repositoryConfig[path].tagSeparator,
+            this.repositoryConfig[path].includeVInTag
+          ),
+          sha: '',
+          notes: '',
+        };
+
+## docs/manifest-releaser.md — default first-release version, and the Initial Version bootstrap
+
+The resulting PR will assume a default starting version for your package
+(currently 0.1.0 for "node") and will collect all the commits (in the history
+of the default/configured branch) to parse out conventional commits for
+changelog generation.
+
+If that is not the desired behavior for your first release PR, read on!
+##### Initial Version
+
+The simplest way to tell release-please the current version for a package
+it has never released before is to manually add an entry into
+`.release-please-manifest.json`. This change should be made directly on the
+default/configured branch or on a separate, user-created branch/PR which is then
+merged into the default/configured branch.
+
+```js
+{
+  "path/to/pkg": "1.1.1"
+}
+
+```
+release-please will now use "1.1.1" as the last-released/current version for
+"path/to/pkg" and suggest the next version according to conventional commits it
+has found since the last merged release PR (or "bootstrap-sha" if this is the
+first run).
+
+
+## docs/manifest-releaser.md — flag prose and the release-as caveat
+
+  // manually set next version to be "1.2.3" ignoring conventional commits.
+  // absence defaults to conventional commits derived next version.
+  // Note: once the release PR is merged you should either remove this or
+  // update it to a higher version. Otherwise subsequent `manifest-pr` runs
+  // will continue to use this version even though it was already set in the
+  // last release.
+  "release-as": "1.2.3",
+
+  // BREAKING CHANGE only bumps semver minor if version < 1.0.0
+  // absence defaults to false
+  "bump-minor-pre-major": true,
+
+  // feat commits bump semver patch instead of minor if version < 1.0.0
+  // absence defaults to false
+  "bump-patch-for-minor-pre-major": true,
+
+
+## README.md — rust release type row, and Release-As commit footer
+## How do I change the version number?
+
+When a commit to the main branch has `Release-As: x.x.x` (case insensitive) in the **commit body**, Release Please will open a new pull request for the specified version.
+
+**Empty commit example:**
+
+`git commit --allow-empty -m "chore: release 2.0.0" -m "Release-As: 2.0.0"` results in the following commit message:
+
+```txt
+chore: release 2.0.0
+
+Release-As: 2.0.0
+```
+| `rust`              | A Rust repository, with a Cargo.toml (either as a crate or workspace, although note that workspaces require a [manifest driven release](https://github.com/googleapis/release-please/blob/main/docs/manifest-releaser.md) and the "cargo-workspace" plugin) and a CHANGELOG.md |
+
+## Version actually reached by googleapis/release-please-action v5.0.0, and the floor's rust.ts
+dependencies[release-please] = ^17.6.0
+  protected initialReleaseVersion(): Version {
+    return Version.parse('0.1.0');
+  }
+exit=0
+
+## src/strategies/rust.ts — does the Rust strategy override versioningStrategy? (grep, empty == no override)
+$ grep -n 'versioningStrategy' src/strategies/rust.ts
+grep exit=1 (1 == no match)
+$ grep -n 'class Rust extends' src/strategies/rust.ts
+27:export class Rust extends BaseStrategy {
+$ grep -n 'this.versioningStrategy =' src/strategies/base.ts
+138:    this.versioningStrategy =
+139-      options.versioningStrategy ||
+140-      new DefaultVersioningStrategy({logger: this.logger});
+$ grep -n 'DefaultVersioningStrategy' src/factories/versioning-strategy-factory.ts
+16:import {DefaultVersioningStrategy} from '../versioning-strategies/default';
+41:  default: options => new DefaultVersioningStrategy(options),
