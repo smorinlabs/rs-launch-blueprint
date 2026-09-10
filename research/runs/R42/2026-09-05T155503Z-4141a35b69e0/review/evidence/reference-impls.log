@@ -1,0 +1,68 @@
+# Reference-implementation reads (maintained projects' committed files)
+# Source: https://raw.githubusercontent.com/<repo>/HEAD/<file>
+# Retrieved: 2026-09-10T05:17:21Z
+
+=== oxc-project/oxc : rust-toolchain.toml
+    [toolchain]
+    channel = "1.98.1"
+    profile = "default"
+=== biomejs/biome : rust-toolchain.toml
+    [toolchain]
+    # The default profile includes rustc, rust-std, cargo, rust-docs, rustfmt and clippy.
+    # https://rust-lang.github.io/rustup/concepts/profiles.html
+    profile = "default"
+    channel = "1.98.1"
+    targets = ["wasm32-unknown-unknown"]
+=== cargo-bins/cargo-binstall : rust-toolchain.toml
+    [toolchain]
+    channel = "stable"
+    profile = "minimal"
+    components = ["rustfmt", "clippy"]
+=== zed-industries/zed : rust-toolchain.toml
+    [toolchain]
+    channel = "1.97.1"
+    profile = "minimal"
+    components = [ "rustfmt", "clippy", "rust-analyzer", "rust-src" ]
+    targets = [
+        "wasm32-wasip2", # extensions
+        "wasm32-unknown-unknown", # gpui on the web
+        "x86_64-unknown-linux-musl", # remote server
+    ]
+
+=== oxc-project/oxc : justfile — tool-acquisition and tool-invocation lines
+    17:init:
+    19:  cargo binstall watchexec-cli cargo-insta typos-cli cargo-shear@1.13.1 -y
+    36:ready:
+    39:  typos
+    40:  cargo lintgen
+    51:  cargo ck {{args}}
+    60:  CARGO_BUILD_WARNINGS=deny cargo lint {{args}}
+    64:  $Env:CARGO_BUILD_WARNINGS='deny'; cargo lint {{args}}
+    84:  typos -w
+    252:new-promise-rule name: (new-rule name "promise")
+    307:  cargo lint-timings
+    366:  cargo binstall cargo-autoinherit
+
+=== biomejs/biome : justfile — tool-acquisition and tool-invocation lines
+    13:install-tools:
+    14:	cargo install cargo-binstall
+    15:	cargo binstall cargo-insta wasm-opt cargo-deny
+    16:	cargo binstall wasm-bindgen-cli --version 0.2.117
+    20:upgrade-tools:
+    21:	cargo install cargo-binstall --force
+    22:	cargo binstall cargo-insta wasm-opt cargo-deny --force
+    23:	cargo binstall wasm-bindgen-cli --version 0.2.117 --force
+
+=== casey/just : justfile — invocation lines
+    19:  cargo lclippy --all --all-targets --all-features -- --deny warnings
+    20:  cargo fmt --all -- --check
+    37:  cargo fmt --all
+    40:shellcheck:
+    41:  shellcheck www/install.sh
+    124:clippy: (watch 'lclippy --all --all-targets --all-features -- --deny warnings')
+
+# Wrapper-prefix probe across the four surveyed justfiles (expect: no matches)
+    oxc-project/oxc              wrapper-prefix lines: 0
+    biomejs/biome                wrapper-prefix lines: 0
+    casey/just                   wrapper-prefix lines: 0
+    cargo-bins/cargo-binstall    wrapper-prefix lines: 0

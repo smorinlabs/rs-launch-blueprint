@@ -1,0 +1,23 @@
+# Root-file survey of 17 widely adopted Rust repositories
+# Endpoint: GET https://api.github.com/repos/<o>/<r>/contents/ (root listing) via gh api
+# Stars:    GET https://api.github.com/repos/<o>/<r> -> .stargazers_count
+# Retrieved: 2026-09-10T05:15:10Z
+
+repo                                stars rusttc   just  Makef   mise  .mise .toolv  .flox  flake
+denoland/deno                      108397    yes                                              yes
+zed-industries/zed                  90028    yes                                              yes
+astral-sh/uv                        89670    yes                                                 
+BurntSushi/ripgrep                  68134                                                        
+starship/starship                   59840                                                        
+typst/typst                         55932                                                        
+astral-sh/ruff                      49569    yes                                                 
+helix-editor/helix                  46156    yes                                              yes
+nushell/nushell                     40467    yes                                                 
+casey/just                          35716           yes                                       yes
+tokio-rs/tokio                      33101                                                        
+tokio-rs/axum                       27070                                                        
+biomejs/biome                       25753    yes    yes                                          
+oxc-project/oxc                     22694    yes    yes                                          
+rust-lang/cargo                     15462                                                        
+rust-lang/rustup                     7034                                                     yes
+cargo-bins/cargo-binstall            2864    yes    yes                                          
