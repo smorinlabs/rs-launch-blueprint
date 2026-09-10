@@ -10,6 +10,13 @@ empirical check.
 Write `review/DECISION.md` in the run directory with exactly these H2 sections,
 in this order, outside code fences:
 
+Every decision is a **proposal validated in the implementation phase** (owner
+ruling, 2026-09-10). It records what the research found and what it recommends;
+P03 builds the template and its CI proves the recommendation. Say so in
+`## Decision`, and list under `## Engines` what P03 must validate. A decision
+that does not survive implementation is revised against this recorded research,
+not researched again from scratch.
+
 - `## Decision` — the recommendation (crate or tool with version where
   applicable), the ledger rows (`F###`) it settles, a `### Principles and
   implementation` H3 (shared requirement, its source and agreement level,
