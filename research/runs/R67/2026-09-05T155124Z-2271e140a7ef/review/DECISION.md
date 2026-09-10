@@ -6,6 +6,16 @@ decision for P03 to implement; no template code exists and none was written here
 
 ## Decision
 
+**Status.** This is a **proposal**, to be validated in the implementation phase
+(P03) against the real template. Everything below rests on registry queries,
+source reads at pinned versions, standards reads, and a dependency resolution and
+audit — not on a working implementation, which does not exist yet. Where a
+recommendation here does not survive contact with the built template, the
+correction is made **against this recorded research** — its principles, its
+compared alternatives, its verified mechanisms and its `## Engines` disagreement
+resolutions — rather than by researching the item again from scratch. The owner
+has not yet reviewed R67; no acceptance is claimed or implied.
+
 Adopt a **two-layer error contract**: a project-owned, append-only `ErrorCode`
 catalog and `Exit` taxonomy in the library crate, and an opaque context carrier at
 the binary boundary. The named stack, with the exact version requirements that
@@ -626,7 +636,10 @@ first-party sources, and they are the strongest runtime evidence in this run —
 but they were produced by a fixture this synthesizer is directed not to
 reproduce, and are recorded as **opus-measured, not independently re-executed**.
 
-**Unproven, with what would prove it, left for P03:**
+**Unproven, with what would prove it, left for P03.** The eight items below are
+this decision's validation set: they are exactly what the implementation phase
+must validate against the real template before this proposal can be treated as
+settled.
 
 1. *Every runtime acceptance criterion (AC1–AC8).* Proof: the table-driven
    integration test named in the migration plan, run on **both**
