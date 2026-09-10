@@ -1,0 +1,146 @@
+# The external cli-standards spec behind ts D-016(2) / R6.1 — read 2026-09-09
+Source file: /Users/stevemorin/c/cli-standards/cli-design-standard.md (org CLI Design Standard; the same document the cli-standards skill applies)
+$ sed -n '349,400p' /Users/stevemorin/c/cli-standards/cli-design-standard.md
+### §6 Exit codes
+
+**R6.1 — Exit-code scheme. (MUST)**
+A CLI **MUST** use the following scheme. Unlisted failures collapse to `1`. This is "structured-but-small": enough signal for automation without the BSD `sysexits.h` (64–78) baggage, which we **reject** as over-specified and unavailable on Windows.
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success |
+| `1` | Generic runtime error |
+| `2` | Usage / parse error (bad flags, missing args) |
+| `3` | Not found (the requested resource does not exist) |
+| `4` | Authentication or authorization required |
+| `5` | Conflict / precondition failed |
+| `130` | Interrupted by `SIGINT` (Ctrl-C) |
+| `143` | Terminated by `SIGTERM` |
+
+Note: code `2` means *usage error* here (matching shell/argparse convention), a deliberate divergence from gh, which uses `2` for "cancelled." Cancellation surfaces as `130` for `SIGINT` or `143` for `SIGTERM`.
+
+**R6.2 — Query & empty-result exit codes. (MUST / MAY)**
+By default, a `view`/`describe` of a resource that does not exist **MUST** exit `3` (not found), and an empty `list` **MUST** exit `0` (an empty set is a successful result, not an error). Beyond those defaults, read/query commands **MAY** use exit `1` to mean "ran successfully, found nothing / found differences" (git `diff`/`grep` style), but only for explicit predicate/search commands and only when **documented per command**, so it never collides with `1` = error or with the `3`/`0` defaults above. Expected-negative exit `1` **MUST NOT** emit an error record on stderr; runtime failures still **MUST** emit stderr diagnostics (R7.6/R7.8).
+✅ `acme widget view gone` → `3`; `acme widget list` (no results) → `0`; `acme widget exists foo` → documented `0`/`1` with no error on stderr for `1`
+❌ an empty `list` exiting `1`; an undocumented `1` scripts can't distinguish from failure; printing an error object for an expected predicate miss
+
+**R6.3 — Partial failure. (SHOULD)**
+A command operating on many items **SHOULD** continue on error by default, report a per-item result, and exit `1` if any item failed (no new code); `--fail-fast` **MAY** stop at the first error. The summary **MUST** make clear which items succeeded and which did not.
+✅ `acme widget delete a b c` deletes `b`/`c`, reports `a` failed, exits `1` ❌ aborting the whole batch on the first error with no per-item detail
+
+---
+
+### §7 Output, streams & UX
+
+**R7.1 — stdout vs stderr. (MUST)**
+Streams follow the POSIX file-descriptor contract — fd 1 (stdout) carries the command's *requested result*; fd 2 (stderr) carries everything else: diagnostics, progress, prompts, warnings, and errors (clig.dev, 12-Factor, gcloud). This split is what makes a tool pipeable and lets shells redirect diagnostics (`2>`) independently of data. Requested output goes to stdout **even when it is informational**: explicit help (`--help`/`acme help`), `--version`, and query results are the user's requested data and **MUST** go to stdout with exit `0` (R7.5). Usage text printed because of an error follows the error path instead: stderr with a nonzero exit (R7.9). A warning emitted during a normal data command **MUST** go to stderr so it never contaminates stdout.
+✅ `acme widget list -o json | jq .` works because logs went to stderr; `acme --version` → stdout
+❌ printing a "Fetching…" spinner — or `--version` — to stdout, corrupting/contaminating the data stream
+
+**R7.2 — Human vs machine output. (MUST / SHOULD)**
+The default (`-o table`) is for humans and **MAY** change between releases. Machine formats (`-o json`/`-o jsonl`/`-o yaml`/`-o name`) **MUST** be stable within a major version (R9.3) so scripts can depend on them. Machine-readable object/map schemas are open by default: within a major version, a machine format **MUST NOT** remove fields, rename fields, change field types, change field semantics, add newly required fields, or change documented collection ordering semantics. Adding optional object/map fields is allowed in a minor release unless the command documents a closed schema. Consumers **SHOULD** ignore unknown object/map fields. Positional tuple-like arrays and closed schemas **MUST NOT** be expanded without a major version unless explicitly documented as open.
+✅ stable JSON keys across `1.x`; adding optional `created_at` in `1.5` ❌ renaming a JSON field in a minor release; changing `created_at` from ISO-8601 string to Unix seconds
+
+**R7.3 — TTY-aware behavior. (SHOULD / MUST)**
+A tool **SHOULD** detect whether stdout is a TTY and adjust *presentation* accordingly: interactive niceties when attached (spinners, pager, prompts), and none of those when piped. TTY state **MUST NOT** change the selected output *format*: `-o` (default `table`) determines the format regardless of whether output is a terminal or a pipe — a pipe only suppresses the niceties (and, per the separate color standard, color). Scripts wanting machine output **MUST** pass an explicit machine format such as `-o json`/`--json` (or `-o jsonl` for documented streams) on commands that emit formatted result data rather than relying on the pipe to switch formats. (Color/styling is governed separately and out of scope here.)
+✅ `acme widget list | cat` is still `table`; `acme widget list --json | jq .` for machine output
+❌ silently emitting JSON instead of the table just because stdout is piped; prompting for confirmation inside a pipe with no TTY
+
+**R7.4 — Pager & progress. (SHOULD)**
+Long human output **MAY** invoke a pager when attached to a TTY, and **MUST** provide `--no-pager` (or honor a standard pager variable) to disable it. Progress indicators **MUST** go to stderr (R7.1) and **MUST** be suppressed when not a TTY or under `--quiet`.
+
+**R7.5 — Help text format. (MUST)**
+Every command **MUST** print structured help containing, in order: a one-line summary, `Usage:`, then `Commands`/`Arguments`/`Flags`/`Examples` sections as applicable. Explicitly requested help (`--help` or `acme help ...`) **MUST** go to stdout and exit `0`; usage/help text printed as part of a usage error **MUST** go to stderr and exit nonzero (R7.9). At least one realistic **example MUST** be shown for non-trivial commands.
+
+```
+
+$ grep -n -A20 'R7.12' /Users/stevemorin/c/cli-standards/cli-design-standard.md | head -40
+447:**R7.12 — Error code catalog. (SHOULD)**
+448-A CLI that emits stable machine-readable error codes (R7.8) **SHOULD** document common codes in reference docs or a help topic, and **MAY** expose them as machine-readable metadata. Upstream or domain-specific errors **MAY** be grouped under stable high-level codes with details carrying provider-specific information.
+449-✅ `acme help errors` lists `not_found`, `auth_required`, `rate_limited` ❌ stable error codes with no documentation
+450-
+451----
+452-
+453-### §8 Interaction & safety
+454-
+455-**R8.1 — Confirm destructive actions. (MUST)**
+456-Irreversible or destructive operations **MUST** confirm before proceeding when stdin is a TTY, and **MUST** offer a non-interactive bypass. Prompt text **SHOULD** be written to stderr so stdout remains data-clean (R7.1). Tools **SHOULD NOT** open `/dev/tty` or another controlling terminal for surprise prompts when stdin is not a TTY; if a tool supports that behavior, it **MUST** document it and **MUST** disable it under `--no-input` and non-interactive/CI modes. The two bypass flags are distinct: **`--yes`/`-y`** answers the confirmation prompt (consent), while **`--force`/`-f`** overrides a guard condition — for example, the resource is protected, is in use, or has drifted from its expected state. `--force` **MUST NOT** imply routine consent; a non-interactive guarded destructive action may require both `--force` and `--yes`. Under `--no-input` with no required bypass flag, the command **MUST** fail rather than guess.
+457-✅ `acme project delete demo --yes` skips the y/n prompt; `acme deploy delete web --force --yes` deletes even though it is still receiving traffic
+458-❌ deleting without confirmation and without a bypass flag; requiring `--force` merely to skip a routine prompt
+459-
+460-**R8.2 — Non-interactive / CI behavior. (MUST)**
+461-A tool **MUST** be fully usable without a TTY. It **MUST NOT** block on a prompt when input is unavailable; instead it uses provided flags/env or fails with a clear message. Use exit `2` when required non-auth input or consent is missing because prompting is disabled/unavailable, use exit `4` when authentication or authorization input is missing, and use exit `1` for runtime input failures such as unreadable files. `--no-input` forces this mode explicitly.
+462-
+463-**R8.3 — Idempotency & declarative flows. (SHOULD)**
+464-Where it makes sense, mutating commands **SHOULD** be idempotent (re-running converges, not errors), and declarative inputs **SHOULD** use `apply` (R2.1). Distinguish imperative (`create`, `delete`) from declarative (`apply`) clearly.
+465-✅ `acme widget apply --file manifest.toml` converges on re-run ❌ `apply` that fails because the resource already exists
+466-
+467-**R8.4 — Stronger confirmation for catastrophic actions. (MAY)**
+--
+647:- [ ] R6.1 exit-code scheme · R6.2 predicate/search exit `1` has no stderr error for expected-negative results · R6.3 partial-failure → exit 1 · R7.1 stdout=data/stderr=diagnostics · R7.2 stable open-by-default machine output (`json`/`jsonl`/`yaml`/`name`) with optional additive fields only in non-major releases · R7.5 structured help with example · R7.6 errors to stderr · R7.7 flush before exit · R7.8 single-object JSON error schema under any machine format and JSONL only for documented streams · R7.9 bare→help/0, group→usage/2 · R7.12 error code catalog
+648-
+649-**Safety & lifecycle**
+650-- [ ] R8.1 destructive confirm uses stdin TTY, prompts on stderr, and documents any `/dev/tty` behavior · R8.2 non-interactive exit `2`/`4`/`1` mapping · R8.5 interactive flows have non-interactive path · R8.6 dry-run plans are clear · R9.2 deprecation policy · R9.3 SemVer interface contract · R9.4 UTF-8 + locale-independent machine output · R9.6 clean SIGINT/SIGPIPE/SIGTERM · R9.7 telemetry disclosure, opt-out controls, data minimization, and CI/non-interactive disablement · R9.9 release integrity if self-updating · R9.10 diagnostics/doctor for non-trivial CLIs · R9.11 plugin contract if plugins exist · R9.12 experimental features marked · R9.13 command metadata if provided · R9.14 conformance fixtures for mature CLIs · R3.10 no prefix abbreviation · R5.6 secrets redacted in output
+651-
+652-**Networked tools (if applicable)**
+653-- [ ] R10.1 auth group + token precedence (no token in argv) · R10.2 scope/targeting flags · R10.3 bounded pagination (`--paginate`) · R10.4 wait-by-default + `--no-wait` · R10.6 TLS verified, `--insecure` warns · R10.7 rate-limit retry visibility
+654-
+655----
+656-
+657-## Appendix D — Worked example
+658-
+659-A reference tool, `acme`, that obeys the standard end-to-end.
+660-
+661-**Command tree (noun-verb, depth ≤ 3):**
+662-
+663-```
+664-acme
+665-├── project
+666-│   ├── list           # ls
+667-│   ├── create <name>
+
+$ sed -n '68,72p' /Users/stevemorin/c/cli-standards/cli-design-standard.md   (the org decision row: reject sysexits.h)
+| 6 | Boolean negation | `--no-<foo>` canonical; `--flag=false` accepted silently | Readable, GNU-aligned | org-locked |
+| 7 | Env var prefix | `TOOL_*` uppercase, deterministic mapping, curated subset | Predictable; majority convention | org-locked |
+| 8 | Exit codes | `0/1/2/130/143` + semantic `3`/`4`/`5`; reject sysexits.h | Useful signal without BSD baggage; `4` from gh | org-locked |
+| 9 | Config format | TOML canonical; YAML permitted for cloud-native tools | Safe to edit, Rust-native; YAML where expected | org-locked |
+| 10 | Filesystem paths | XDG Base Directory Specification | Modern standard; predictable | org-locked |
+
+## R7.6 / R7.7 / R7.8 — error stream, flush-before-exit, JSON error schema
+421:**R7.6 — Error messages. (MUST / SHOULD)**
+422-Errors **MUST** be written to stderr (R7.1) and **SHOULD** be lowercase-first, free of a trailing period, name the offending input in quotes, and state a next step where possible. When a machine output format is active, errors follow the machine-readable error contract in R7.8.
+423-✅ `error: project 'demo' not found — run 'acme project list' to see available projects`
+424-❌ `ERROR!! Something went wrong.`
+425-
+426:**R7.7 — Buffering & flush. (SHOULD / MUST)**
+427-Because stdout is fully buffered when it is not a terminal (ISO C), diagnostics on stderr **SHOULD** be line- or unbuffered so they appear promptly, and a tool **MUST** flush all streams before exiting on every path — success, error, and signal (R9.6) — so no output is lost. Tools **SHOULD NOT** rely on the interleaved ordering of stdout and stderr, since buffering makes that ordering non-deterministic between a TTY and a pipe.
+428-✅ flushing stdout before `exit(0)`; the final JSON line is never dropped on a panic
+429-❌ losing the last line of output because the buffer wasn't flushed before exit
+430-
+431:**R7.8 — Machine-readable error schema. (MUST)**
+432-Under any machine output format (`-o json`/`--json`, `-o jsonl`, `-o yaml`, or `-o name`), an ordinary command error **MUST** be emitted to stderr as a single JSON object: `{"error":{"code":"<stable-string>","message":"<human-readable>"}}` — a JSONL stream **MUST NOT** suppress or replace it (see below). `code` **MUST** be a stable, documented string, and the object **MAY** carry `details`, `request_id`, or other documented fields. JSONL/NDJSON **MAY** be used for documented streaming or multi-record machine output, where each line is one complete JSON object, but it **MUST NOT** replace the single-object error schema for ordinary command failures, including a failure that occurs mid-stream. If a parser can determine that a machine format was requested before reporting a usage error, it **SHOULD** use the same machine-readable error contract; otherwise it **MAY** fall back to the standard human usage error format.
+433-✅ `{"error":{"code":"not_found","message":"project 'demo' not found"}}` ❌ a bare unparseable string under `-o json`; emitting JSONL for a one-error command failure
+434-
+435-**R7.9 — Bare & unknown invocation. (MUST / SHOULD)**
+436-The bare top-level command with no arguments **MUST** print help to stdout and exit `0`. A command *group* invoked with no action (`acme project`) is a usage error: print help to stderr and exit `2`. On an unknown command or flag, the tool **SHOULD** suggest the nearest match.
+437-✅ `acme` → help/stdout/0; `acme projcet list` → "did you mean 'project'?" ❌ `acme project` silently doing nothing and exiting `0`
+438-
+439-**R7.10 — Watch / follow streams. (SHOULD)**
+
+## R9.6 — signals
+502:**R9.6 — Signals. (MUST)**
+503-A tool **MUST** exit cleanly on `SIGINT` with code `130`, releasing resources, and **MUST** handle `SIGPIPE`/`EPIPE` gracefully — when a reader like `head` or `less` closes the pipe, exit quietly without a broken-pipe stack trace. It **MUST** also treat `SIGTERM` like `SIGINT` — clean up, flush (R7.7), and exit `143` (128+15) — so it behaves correctly under containers, orchestrators, and CI runners.
+504-✅ `acme widget list | head -5` ends silently; `kill <pid>` shuts down cleanly with code `143` ❌ a Python traceback on `BrokenPipeError`; ignoring SIGTERM until killed with `SIGKILL`
+505-
+506-**R9.7 — Telemetry & update checks. (MUST / SHOULD)**
+507-Telemetry **MAY** be on by default only when it is prominently documented and disclosed, minimizes collected data, and is easy to disable. A CLI with telemetry **MUST** document what is collected, why it is collected, whether it is anonymous/pseudonymous/identified, and all disable mechanisms. It **MUST** support `TOOL_TELEMETRY=0`/`false`, **SHOULD** honor `DO_NOT_TRACK=true`, and **SHOULD** provide a persistent config control such as `acme config set telemetry disabled`. Telemetry **MUST NOT** transmit secrets, full argv, argument values, environment values, file contents, request/response bodies, or resource payloads unless a separate explicit opt-in covers that data. Telemetry and update-availability checks **MUST NOT** run in non-interactive/CI contexts by default. Update checks, if present, **SHOULD** be non-blocking, cached, and disableable. A tool **MAY** offer self-update via `acme upgrade`.
+508-
+509-**R9.8 — Empty-state & first-run. (SHOULD)**
+510-On first run or empty results, a tool **SHOULD** guide the next step rather than printing nothing or a bare error.
+511-✅ `no projects yet — create one with 'acme project create <name>'`
+512-❌ an empty line, or a stack trace, when there is simply nothing to show
+
+## R8.2 — non-interactive exit mapping (quoted above in full at line 461)
+**R8.2 — Non-interactive / CI behavior. (MUST)**
+A tool **MUST** be fully usable without a TTY. It **MUST NOT** block on a prompt when input is unavailable; instead it uses provided flags/env or fails with a clear message. Use exit `2` when required non-auth input or consent is missing because prompting is disabled/unavailable, use exit `4` when authentication or authorization input is missing, and use exit `1` for runtime input failures such as unreadable files. `--no-input` forces this mode explicitly.
+

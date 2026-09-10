@@ -1,0 +1,185 @@
+# Maintained reference implementations, read at their default branch — retrieved 2026-09-09
+
+## ripgrep — the canonical Rust EPIPE / exit-code reference
+$ curl https://raw.githubusercontent.com/BurntSushi/ripgrep/master/crates/core/main.rs
+50-            // existing Unix convention. We need to handle this explicitly
+51-            // since the Rust runtime doesn't ask for PIPE signals, and thus
+52-            // we get an I/O error instead. Traditional C Unix applications
+53-            // quit by getting a PIPE signal that they don't handle, and thus
+54-            // the unhandled signal causes the process to unceremoniously
+55-            // terminate.
+56-            for cause in err.chain() {
+57-                if let Some(ioerr) = cause.downcast_ref::<std::io::Error>() {
+58:                    if ioerr.kind() == std::io::ErrorKind::BrokenPipe {
+59-                        return ExitCode::from(0);
+60-                    }
+61-                }
+62-            }
+63-            eprintln_locked!("{:#}", err);
+64-            ExitCode::from(2)
+65-        }
+66-    }
+67-}
+68-
+69-/// The main entry point for ripgrep.
+70-///
+71-/// The given parse result determines ripgrep's behavior. The parse
+72-/// result should be the result of parsing CLI arguments in a low level
+73-/// representation, and then followed by an attempt to convert them into a
+74-/// higher level representation. The higher level representation has some nicer
+75-/// abstractions, for example, instead of representing the `-g/--glob` flag
+76-/// as a `Vec<String>` (as in the low level representation), the globs are
+77-/// converted into a single matcher.
+78-fn run(result: crate::flags::ParseResult<HiArgs>) -> anyhow::Result<ExitCode> {
+79-    use crate::flags::{Mode, ParseResult};
+80-
+--
+127-        args.searcher()?,
+128-        args.printer(mode, args.stdout()),
+129-    )?;
+130-    for haystack in haystacks {
+131-        searched = true;
+132-        let search_result = match searcher.search(&haystack) {
+133-            Ok(search_result) => search_result,
+134-            // A broken pipe means graceful termination.
+135:            Err(err) if err.kind() == std::io::ErrorKind::BrokenPipe => break,
+136-            Err(err) => {
+137-                err_message!("{}: {}", haystack.path().display(), err);
+138-                continue;
+139-            }
+140-        };
+141-        matched = matched || search_result.has_match();
+142-        if let Some(ref mut stats) = stats {
+143-            *stats += search_result.stats().unwrap();
+144-        }
+145-        if matched && args.quit_after_match() {
+146-            break;
+147-        }
+148-    }
+149-    if args.has_implicit_path() && !searched {
+150-        eprint_nothing_searched();
+151-    }
+152-    if let Some(ref stats) = stats {
+153-        let wtr = searcher.printer().get_mut();
+154-        let _ = print_stats(mode, stats, started_at, wtr);
+155-    }
+156-    Ok(matched)
+157-}
+--
+204-                matched.store(true, Ordering::SeqCst);
+205-            }
+206-            if let Some(ref locked_stats) = *stats {
+207-                let mut stats = locked_stats.lock().unwrap();
+208-                *stats += search_result.stats().unwrap();
+209-            }
+210-            if let Err(err) = bufwtr.print(searcher.printer().get_mut()) {
+211-                // A broken pipe means graceful termination.
+212:                if err.kind() == std::io::ErrorKind::BrokenPipe {
+213-                    return WalkState::Quit;
+214-                }
+215-                // Otherwise, we continue on our merry way.
+216-                err_message!("{}: {}", haystack.path().display(), err);
+217-            }
+218-            if matched.load(Ordering::SeqCst) && args.quit_after_match() {
+219-                WalkState::Quit
+220-            } else {
+221-                WalkState::Continue
+222-            }
+223-        })
+224-    });
+225-    if args.has_implicit_path() && !searched.load(Ordering::SeqCst) {
+226-        eprint_nothing_searched();
+227-    }
+228-    if let Some(ref locked_stats) = stats {
+229-        let stats = locked_stats.lock().unwrap();
+230-        let mut wtr = searcher.printer().get_mut();
+231-        let _ = print_stats(mode, &stats, started_at, &mut wtr);
+232-        let _ = bufwtr.print(&mut wtr);
+233-    }
+234-    Ok(matched.load(Ordering::SeqCst))
+--
+250-    let mut path_printer = args.path_printer_builder().build(args.stdout());
+251-    for haystack in haystacks {
+252-        matched = true;
+253-        if args.quit_after_match() {
+254-            break;
+255-        }
+256-        if let Err(err) = path_printer.write(haystack.path()) {
+257-            // A broken pipe means graceful termination.
+258:            if err.kind() == std::io::ErrorKind::BrokenPipe {
+259-                break;
+260-            }
+261-            // Otherwise, we have some other error that's preventing us from
+262-            // writing to stdout, so we should bubble it up.
+263-            return Err(err.into());
+264-        }
+265-    }
+266-    Ok(matched)
+267-}
+268-
+269-/// The top-level entry point for multi-threaded file listing without
+270-/// searching.
+271-///
+272-/// This recursively steps through the file list (current directory by default)
+273-/// and prints each path sequentially using multiple threads.
+274-///
+275-/// Requesting a sorted output from ripgrep (such as with `--sort path`) will
+276-/// automatically disable parallelism and hence sorting is not handled here.
+277-fn files_parallel(args: &HiArgs) -> anyhow::Result<bool> {
+278-    use std::{
+279-        sync::{
+280-            atomic::{AtomicBool, Ordering},
+--
+319-            }
+320-        })
+321-    });
+322-    drop(tx);
+323-    if let Err(err) = print_thread.join().unwrap() {
+324-        // A broken pipe means graceful termination, so fall through.
+325-        // Otherwise, something bad happened while writing to stdout, so bubble
+326-        // it up.
+327:        if err.kind() != std::io::ErrorKind::BrokenPipe {
+328-            return Err(err.into());
+329-        }
+330-    }
+331-    Ok(matched.load(Ordering::SeqCst))
+332-}
+333-
+334-/// The top-level entry point for `--type-list`.
+335-fn types(args: &HiArgs) -> anyhow::Result<ExitCode> {
+336-    let mut count = 0;
+337-    let mut stdout = args.stdout();
+338-    for def in args.types().definitions() {
+339-        count += 1;
+340-        stdout.write_all(def.name().as_bytes())?;
+341-        stdout.write_all(b": ")?;
+342-
+343-        let mut first = true;
+344-        for glob in def.globs() {
+345-            if !first {
+346-                stdout.write_all(b", ")?;
+347-            }
+348-            stdout.write_all(glob.as_bytes())?;
+349-            first = false;
+--- ripgrep's ExitCode / main signature ---
+40-#[global_allocator]
+41-static ALLOC: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
+42-
+43-/// Then, as it was, then again it will be.
+44:fn main() -> ExitCode {
+45-    match run(flags::parse()) {
+46-        Ok(code) => code,
+47-        Err(err) => {
+48-            // Look for a broken pipe error. In this case, we generally want
+49-            // to exit "gracefully" with a success exit code. This matches
+50-            // existing Unix convention. We need to handle this explicitly
+51-            // since the Rust runtime doesn't ask for PIPE signals, and thus
+52-            // we get an I/O error instead. Traditional C Unix applications
+53-            // quit by getting a PIPE signal that they don't handle, and thus
+54-            // the unhandled signal causes the process to unceremoniously
+55-            // terminate.
+56-            for cause in err.chain() {
+57-                if let Some(ioerr) = cause.downcast_ref::<std::io::Error>() {
+58-                    if ioerr.kind() == std::io::ErrorKind::BrokenPipe {
+59-                        return ExitCode::from(0);
+60-                    }

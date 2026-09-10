@@ -1,0 +1,371 @@
+# Rust std source read at tag 1.96.0 (= the MSRV-policy floor) — retrieved 2026-09-09
+Base: https://github.com/rust-lang/rust/blob/1.96.0/library/std/src/...
+
+## 1. std::process::ExitCode / Termination / From<u8> — stability at the floor
+$ curl $B/process.rs | grep -n -B2 -A6 'pub struct ExitCode\|pub trait Termination\|impl From<u8> for ExitCode'
+2100-/// ```
+2101-#[derive(Clone, Copy, Debug, PartialEq)]
+2102-#[stable(feature = "process_exitcode", since = "1.61.0")]
+2103:pub struct ExitCode(imp::ExitCode);
+2104-
+2105-/// Allows extension traits within `std`.
+2106-#[unstable(feature = "sealed", issue = "none")]
+2107-impl crate::sealed::Sealed for ExitCode {}
+2108-
+2109-#[stable(feature = "process_exitcode", since = "1.61.0")]
+2110-impl ExitCode {
+2111-    /// The canonical `ExitCode` for successful termination on this platform.
+---
+2571-    message = "`main` has invalid return type `{Self}`",
+2572-    label = "`main` can only return types that implement `{This}`"
+2573-))]
+2574:pub trait Termination {
+2575-    /// Is called to get the representation of the value as status code.
+2576-    /// This status code is returned to the operating system.
+2577-    #[stable(feature = "termination_trait_lib", since = "1.61.0")]
+2578-    fn report(self) -> ExitCode;
+2579-}
+2580-
+2581-#[stable(feature = "termination_trait_lib", since = "1.61.0")]
+2582-impl Termination for () {
+2583-    #[inline]
+2584-    fn report(self) -> ExitCode {
+---
+2196-    }
+2197-}
+2198-
+2199-#[stable(feature = "process_exitcode", since = "1.61.0")]
+2200:impl From<u8> for ExitCode {
+2201-    /// Constructs an `ExitCode` from an arbitrary u8 value.
+2202-    fn from(code: u8) -> Self {
+2203-        ExitCode(imp::ExitCode::from(code))
+2204-    }
+2205-}
+2206-
+2207-impl AsInner<imp::ExitCode> for ExitCode {
+2208-    #[inline]
+--- ExitCode::SUCCESS / FAILURE and the 'exit code range' docs ---
+2111-    /// The canonical `ExitCode` for successful termination on this platform.
+2112-    ///
+2113-    /// Note that a `()`-returning `main` implicitly results in a successful
+2114-    /// termination, so there's no need to return this from `main` unless
+2115-    /// you're also returning other possible codes.
+2116-    #[stable(feature = "process_exitcode", since = "1.61.0")]
+2117:    pub const SUCCESS: ExitCode = ExitCode(imp::ExitCode::SUCCESS);
+2118-
+2119-    /// The canonical `ExitCode` for unsuccessful termination on this platform.
+2120-    ///
+2121-    /// If you're only returning this and `SUCCESS` from `main`, consider
+2122-    /// instead returning `Err(_)` and `Ok(())` respectively, which will
+2123-    /// return the same codes (but will also `eprintln!` the error).
+2124-    #[stable(feature = "process_exitcode", since = "1.61.0")]
+2125:    pub const FAILURE: ExitCode = ExitCode(imp::ExitCode::FAILURE);
+2126-
+2127-    /// Exit the current process with the given `ExitCode`.
+2128-    ///
+2129-    /// Note that this has the same caveats as [`process::exit()`][exit], namely that this function
+--- pub fn exit(code: i32) -> ! : destructors ---
+2446-///
+2447-/// Therefore, it is undefined behavior to have two concurrent threads perform the following
+2448-/// without synchronization:
+2449-/// - One thread calls Rust's `exit` function or returns from Rust's `main` function
+2450-/// - Another thread calls the C function `exit` or `quick_exit`, or returns from C's `main` function
+2451-///
+2452-/// Note that if a binary contains multiple copies of the Rust runtime (e.g., when combining
+2453-/// multiple `cdylib` or `staticlib`), they each have their own separate lock, so from the
+2454-/// perspective of code running in one of the Rust runtimes, the "outside" Rust code is basically C
+2455-/// code, and concurrent `exit` again causes undefined behavior.
+2456-///
+2457-/// Individual C implementations might provide more guarantees than the standard and permit concurrent
+2458-/// calls to `exit`; consult the documentation of your C implementation for details.
+2459-///
+2460-/// For some of the on-going discussion to make `exit` thread-safe in C, see:
+2461-/// - [Rust issue #126600](https://github.com/rust-lang/rust/issues/126600)
+2462-/// - [Austin Group Bugzilla (for POSIX)](https://austingroupbugs.net/view.php?id=1845)
+2463-/// - [GNU C library Bugzilla](https://sourceware.org/bugzilla/show_bug.cgi?id=31997)
+2464-///
+2465-/// [C-exit]: https://en.cppreference.com/w/c/program/exit
+2466-#[stable(feature = "rust1", since = "1.0.0")]
+2467-#[cfg_attr(not(test), rustc_diagnostic_item = "process_exit")]
+2468:pub fn exit(code: i32) -> ! {
+2469-    crate::rt::cleanup();
+2470-    crate::sys::exit::exit(code)
+2471-}
+2472-
+
+## 1b. process::exit — destructors NOT run (doc comment at 1.96.0)
+1:/// Note that because this function never returns, and that it terminates the
+2:/// process, no destructors on the current stack or any other thread's stack
+3:/// will be run. If a clean shutdown is needed it is recommended to only call
+4:/// this function at a known point where there are no more destructors left
+20:/// particular, if an exit handler cleans up some state that might be concurrently accessed by other
+22:/// threads. (The alternative to this requirement would be to not run exit handlers at all, which is
+23:/// considered undesirable. Note that returning from `main` also calls `exit`, so making `exit` an
+46:/// Note that returning from `main` is equivalent to calling `exit`.
+///
+/// This function will never return and will immediately terminate the current
+/// process. The exit code is passed through to the underlying OS and will be
+/// available for consumption by another process.
+///
+/// Note that because this function never returns, and that it terminates the
+/// process, no destructors on the current stack or any other thread's stack
+/// will be run. If a clean shutdown is needed it is recommended to only call
+/// this function at a known point where there are no more destructors left
+/// to run; or, preferably, simply return a type implementing [`Termination`]
+/// (such as [`ExitCode`] or `Result`) from the `main` function and avoid this
+/// function altogether:
+///
+/// ```
+/// # use std::io::Error as MyError;
+/// fn main() -> Result<(), MyError> {
+///     // ...
+///     Ok(())
+/// }
+/// ```
+///
+/// In its current implementation, this function will execute exit handlers registered with `atexit`
+/// as well as other platform-specific exit handlers (e.g. `fini` sections of ELF shared objects).
+/// This means that Rust requires that all exit handlers are safe to execute at any time. In
+/// particular, if an exit handler cleans up some state that might be concurrently accessed by other
+/// threads, it is required that the exit handler performs suitable synchronization with those
+/// threads. (The alternative to this requirement would be to not run exit handlers at all, which is
+/// considered undesirable. Note that returning from `main` also calls `exit`, so making `exit` an
+/// unsafe operation is not an option.)
+///
+/// ## Platform-specific behavior
+///
+/// **Unix**: On Unix-like platforms, it is unlikely that all 32 bits of `exit`
+/// will be visible to a parent process inspecting the exit code. On most
+/// Unix-like platforms, only the eight least-significant bits are considered.
+///
+/// For example, the exit code for this example will be `0` on Linux, but `256`
+/// on Windows:
+///
+/// ```no_run
+/// use std::process;
+
+## 1c. ExitCode doc — the portable u8 range
+/// The standard library provides the canonical `SUCCESS` and `FAILURE`
+/// exit codes as well as `From<u8> for ExitCode` for constructing other
+/// arbitrary exit codes.
+///
+/// # Portability
+///
+/// Numeric values used in this type don't have portable meanings, and
+/// different platforms may mask different amounts of them.
+///
+/// For the platform's canonical successful and unsuccessful codes, see
+/// the [`SUCCESS`] and [`FAILURE`] associated items.
+///
+/// [`SUCCESS`]: ExitCode::SUCCESS
+/// [`FAILURE`]: ExitCode::FAILURE
+///
+/// # Differences from `ExitStatus`
+///
+/// `ExitCode` is intended for terminating the currently running process, via
+/// the `Termination` trait, in contrast to [`ExitStatus`], which represents the
+/// termination of a child process. These APIs are separate due to platform
+/// compatibility differences and their expected usage; it is not generally
+/// possible to exactly reproduce an `ExitStatus` from a child for the current
+/// process after the fact.
+///
+/// # Examples
+///
+/// `ExitCode` can be returned from the `main` function of a crate, as it implements
+/// [`Termination`]:
+///
+/// ```
+/// use std::process::ExitCode;
+/// # fn check_foo() -> bool { true }
+///
+/// fn main() -> ExitCode {
+///     if !check_foo() {
+///         return ExitCode::from(42);
+///     }
+///
+///     ExitCode::SUCCESS
+/// }
+/// ```
+#[derive(Clone, Copy, Debug, PartialEq)]
+#[stable(feature = "process_exitcode", since = "1.61.0")]
+pub struct ExitCode(imp::ExitCode);
+
+## 2. println!/print! panic on a failed stdout write (io/stdio.rs at 1.96.0)
+$ curl $B/io/stdio.rs | grep -n -B6 -A14 'fn print_to'
+1149-/// the global stream.
+1150-///
+1151-/// However, if the actual I/O causes an error, this function does panic.
+1152-///
+1153-/// Writing to non-blocking stdout/stderr can cause an error, which will lead
+1154-/// this function to panic.
+1155:fn print_to<T>(args: fmt::Arguments<'_>, global_s: fn() -> T, label: &str)
+1156-where
+1157-    T: Write,
+1158-{
+1159-    if print_to_buffer_if_capture_used(args) {
+1160-        // Successfully wrote to capture buffer.
+1161-        return;
+1162-    }
+1163-
+1164-    if let Err(e) = global_s().write_fmt(args) {
+1165-        panic!("failed printing to {label}: {e}");
+1166-    }
+1167-}
+1168-
+1169-fn print_to_buffer_if_capture_used(args: fmt::Arguments<'_>) -> bool {
+1170-    OUTPUT_CAPTURE_USED.load(Ordering::Relaxed)
+1171-        && OUTPUT_CAPTURE.try_with(|s| {
+1172-            // Note that we completely remove a local sink to write to in case
+1173-            // our printing recursively panics/prints, so the recursive
+1174-            // panic/print goes to the global sink instead of our local sink.
+1175-            s.take().map(|w| {
+
+## 3. Rust runtime sets SIGPIPE to SIG_IGN before main (sys/pal/unix/mod.rs at 1.96.0)
+$ curl -w '%{http_code}' $B/sys/pal/unix/mod.rs -> HTTP 200
+$ grep -n -B10 -A22 'SIGPIPE' $B/sys/pal/unix/mod.rs
+22-// SAFETY: must be called only once during runtime initialization.
+23-// NOTE: this is not guaranteed to run, for example when Rust code is called externally.
+24-// See `fn init()` in `library/std/src/rt.rs` for docs on `sigpipe`.
+25-pub unsafe fn init(argc: isize, argv: *const *const u8, sigpipe: u8) {
+26-    // The standard streams might be closed on application startup. To prevent
+27-    // std::io::{stdin, stdout,stderr} objects from using other unrelated file
+28-    // resources opened later, we reopen standards streams when they are closed.
+29-    sanitize_standard_fds();
+30-
+31-    // By default, some platforms will send a *signal* when an EPIPE error
+32:    // would otherwise be delivered. This runtime doesn't install a SIGPIPE
+33-    // handler, causing it to kill the program, which isn't exactly what we
+34-    // want!
+35-    //
+36:    // Hence, we set SIGPIPE to ignore when the program starts up in order
+37-    // to prevent this problem. Use `-Zon-broken-pipe=...` to alter this
+38-    // behavior.
+39-    reset_sigpipe(sigpipe);
+40-
+41-    stack_overflow::init();
+42-    #[cfg(not(target_os = "vita"))]
+43-    crate::sys::args::init(argc, argv);
+44-
+45-    // Normally, `thread::spawn` will call `Thread::set_name` but since this thread
+46-    // already exists, we have to call it ourselves. We only do this on Apple targets
+47-    // because some unix-like operating systems such as Linux share process-id and
+48-    // thread-id for the main thread and so renaming the main thread will rename the
+49-    // process and we only want to enable this on platforms we've tested.
+50-    if cfg!(target_vendor = "apple") {
+51-        crate::sys::thread::set_name(c"main");
+52-    }
+53-
+54-    unsafe fn sanitize_standard_fds() {
+55-        #[allow(dead_code, unused_variables, unused_mut)]
+56-        let mut opened_devnull = -1;
+57-        #[allow(dead_code, unused_variables, unused_mut)]
+58-        let mut open_devnull = || {
+59-            #[cfg(not(all(target_os = "linux", target_env = "gnu")))]
+60-            use libc::open;
+--
+173-                sigpipe::DEFAULT => (false, Some(libc::SIG_IGN)),
+174-                sigpipe::INHERIT => (true, None),
+175-                sigpipe::SIG_IGN => (true, Some(libc::SIG_IGN)),
+176-                sigpipe::SIG_DFL => (true, Some(libc::SIG_DFL)),
+177-                _ => unreachable!(),
+178-            };
+179-            if on_broken_pipe_used {
+180-                ON_BROKEN_PIPE_USED.store(true, crate::sync::atomic::Ordering::Relaxed);
+181-            }
+182-            if let Some(handler) = handler {
+183:                rtassert!(signal(libc::SIGPIPE, handler) != libc::SIG_ERR);
+184-                #[cfg(target_os = "hurd")]
+185-                {
+186-                    rtassert!(signal(libc::SIGLOST, handler) != libc::SIG_ERR);
+187-                }
+188-            }
+189-        }
+190-    }
+191-}
+192-
+193-// This is set (up to once) in reset_sigpipe.
+194-#[cfg(not(any(
+195-    target_os = "espidf",
+196-    target_os = "emscripten",
+197-    target_os = "fuchsia",
+198-    target_os = "horizon",
+199-    target_os = "vxworks",
+200-    target_os = "vita",
+201-)))]
+202-static ON_BROKEN_PIPE_USED: crate::sync::atomic::Atomic<bool> =
+203-    crate::sync::atomic::AtomicBool::new(false);
+204-
+205-#[cfg(not(any(
+206-    target_os = "espidf",
+207-    target_os = "emscripten",
+
+## 4. Backtrace::capture is environment-gated; force_capture is not (backtrace.rs at 1.96.0)
+$ grep -n -B18 -A10 'pub fn capture()' $B/backtrace.rs
+272-    }
+273-
+274-    /// Captures a stack backtrace of the current thread.
+275-    ///
+276-    /// This function will capture a stack backtrace of the current OS thread of
+277-    /// execution, returning a `Backtrace` type which can be later used to print
+278-    /// the entire stack trace or render it to a string.
+279-    ///
+280-    /// This function will be a noop if the `RUST_BACKTRACE` or
+281-    /// `RUST_LIB_BACKTRACE` backtrace variables are both not set. If either
+282-    /// environment variable is set and enabled then this function will actually
+283-    /// capture a backtrace. Capturing a backtrace can be both memory intensive
+284-    /// and slow, so these environment variables allow liberally using
+285-    /// `Backtrace::capture` and only incurring a slowdown when the environment
+286-    /// variables are set.
+287-    ///
+288-    /// To forcibly capture a backtrace regardless of environment variables, use
+289-    /// the `Backtrace::force_capture` function.
+290-    #[stable(feature = "backtrace", since = "1.65.0")]
+291-    #[inline(never)] // want to make sure there's a frame here to remove
+292:    pub fn capture() -> Backtrace {
+293-        if !Backtrace::enabled() {
+294-            return Backtrace { inner: Inner::Disabled };
+295-        }
+296-        Backtrace::create(Backtrace::capture as fn() -> Backtrace as usize)
+297-    }
+298-
+299-    /// Forcibly captures a full backtrace, regardless of environment variable
+300-    /// configuration.
+301-    ///
+302-    /// This function behaves the same as `capture` except that it ignores the
+303-    /// values of the `RUST_BACKTRACE` and `RUST_LIB_BACKTRACE` environment
+304-    /// variables, always capturing a backtrace.
+---
+$ grep -n -B12 -A8 'pub fn force_capture()' $B/backtrace.rs
+299-    /// Forcibly captures a full backtrace, regardless of environment variable
+300-    /// configuration.
+301-    ///
+302-    /// This function behaves the same as `capture` except that it ignores the
+303-    /// values of the `RUST_BACKTRACE` and `RUST_LIB_BACKTRACE` environment
+304-    /// variables, always capturing a backtrace.
+305-    ///
+306-    /// Note that capturing a backtrace can be an expensive operation on some
+307-    /// platforms, so this should be used with caution in performance-sensitive
+308-    /// parts of code.
+309-    #[stable(feature = "backtrace", since = "1.65.0")]
+310-    #[inline(never)] // want to make sure there's a frame here to remove
+311:    pub fn force_capture() -> Backtrace {
+312-        Backtrace::create(Backtrace::force_capture as fn() -> Backtrace as usize)
+313-    }
+314-
+315-    /// Forcibly captures a disabled backtrace, regardless of environment
+316-    /// variable configuration.
+317-    #[stable(feature = "backtrace", since = "1.65.0")]
+318-    #[rustc_const_stable(feature = "backtrace", since = "1.65.0")]
+319-    pub const fn disabled() -> Backtrace {
+---
+$ grep -n 'RUST_BACKTRACE\|RUST_LIB_BACKTRACE' $B/backtrace.rs
+41://! * `RUST_LIB_BACKTRACE` - if this is set to `0` then `Backtrace::capture`
+45://! * `RUST_BACKTRACE` - if `RUST_LIB_BACKTRACE` is not set, then this variable
+46://!   is consulted with the same rules of `RUST_LIB_BACKTRACE`.
+58://! `RUST_LIB_BACKTRACE` or `RUST_BACKTRACE` at runtime might not actually change
+123:    /// `RUST_LIB_BACKTRACE` or `RUST_BACKTRACE` environment variables.
+263:        let enabled = match env::var("RUST_LIB_BACKTRACE") {
+265:            Err(_) => match env::var("RUST_BACKTRACE") {
+280:    /// This function will be a noop if the `RUST_BACKTRACE` or
+281:    /// `RUST_LIB_BACKTRACE` backtrace variables are both not set. If either
+303:    /// values of the `RUST_BACKTRACE` and `RUST_LIB_BACKTRACE` environment

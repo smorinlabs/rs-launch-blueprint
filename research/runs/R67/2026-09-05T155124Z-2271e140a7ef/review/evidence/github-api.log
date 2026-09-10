@@ -1,0 +1,23 @@
+# GitHub REST API — retrieved 2026-09-09 via gh api
+=== $ gh api repos/dtolnay/thiserror
+{"archived":false,"full_name":"dtolnay/thiserror","open_issues_count":31,"pushed_at":"2026-09-05T05:32:25Z","stargazers_count":5539}
+=== $ gh api repos/dtolnay/anyhow
+{"archived":false,"full_name":"dtolnay/anyhow","open_issues_count":44,"pushed_at":"2026-08-22T02:43:42Z","stargazers_count":6649}
+=== $ gh api repos/vorner/signal-hook
+{"archived":false,"full_name":"vorner/signal-hook","open_issues_count":26,"pushed_at":"2026-04-04T08:10:09Z","stargazers_count":866}
+=== $ gh api repos/Detegr/rust-ctrlc
+{"archived":false,"full_name":"Detegr/rust-ctrlc","open_issues_count":15,"pushed_at":"2026-07-22T09:47:21Z","stargazers_count":667}
+=== $ gh api repos/Peternator7/strum
+{"archived":false,"full_name":"Peternator7/strum","open_issues_count":74,"pushed_at":"2026-03-07T01:28:08Z","stargazers_count":2440}
+=== $ gh api repos/mikaelmello/inquire
+{"archived":false,"full_name":"mikaelmello/inquire","open_issues_count":90,"pushed_at":"2026-03-02T14:42:29Z","stargazers_count":2623}
+=== $ gh api repos/zkat/miette
+{"archived":false,"full_name":"zkat/miette","open_issues_count":115,"pushed_at":"2026-06-25T18:33:54Z","stargazers_count":2602}
+=== $ gh api repos/rust-cli/human-panic
+{"archived":false,"full_name":"rust-cli/human-panic","open_issues_count":14,"pushed_at":"2026-09-02T23:45:33Z","stargazers_count":1852}
+=== $ gh api repos/benwilber/exitcode
+{"archived":false,"full_name":"benwilber/exitcode","open_issues_count":1,"pushed_at":"2022-09-06T08:58:59Z","stargazers_count":79}
+=== $ gh api repos/sorairolake/sysexits-rs
+{"archived":false,"full_name":"sorairolake/sysexits-rs","open_issues_count":0,"pushed_at":"2026-09-08T22:50:11Z","stargazers_count":33}
+=== $ gh api repos/lunacookies/etcetera
+{"archived":false,"full_name":"lunacookies/etcetera","open_issues_count":2,"pushed_at":"2026-08-04T20:53:17Z","stargazers_count":150}

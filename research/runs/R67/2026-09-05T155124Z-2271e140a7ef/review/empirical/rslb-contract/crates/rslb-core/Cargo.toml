@@ -1,0 +1,11 @@
+[package]
+name = "rslb-core"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+# The library crate carries the typed domain error and the stable catalog.
+# It must never depend on the application-boundary carrier (anyhow).
+[dependencies]
+thiserror = "2.0.20"

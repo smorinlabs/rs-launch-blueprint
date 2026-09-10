@@ -1,0 +1,22 @@
+[package]
+name = "rslb-cli"
+version = "0.1.0"
+edition.workspace = true
+rust-version.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "rslb"
+path = "src/main.rs"
+
+[dependencies]
+rslb-core = { path = "../rslb-core" }
+# >= 1.0.103 is the RUSTSEC-2026-0190 patch floor (Error::downcast_mut unsoundness);
+# this fixture only ever calls downcast_ref.
+anyhow = "1.0.104"
+# F294 stderr envelope (settled); serde_json is the carrier for `{"error":{...}}`.
+serde_json = "1.0.151"
+
+[target.'cfg(unix)'.dependencies]
+# flag::register only; the `channel`/`iterator` default features are not needed.
+signal-hook = { version = "0.4.4", default-features = false }
