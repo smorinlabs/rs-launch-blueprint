@@ -1,0 +1,245 @@
+
+=== 0. Toolchain and environment ===
+run started 2026-09-10T16:02:29Z
+cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+Darwin Steves-MacBook-Pro.local 25.4.0 Darwin Kernel Version 25.4.0: Thu Mar 19 19:33:25 PDT 2026; root:xnu-12377.101.15~1/RELEASE_ARM64_T6041 arm64
+ProductName:		macOS ProductVersion:		26.4 BuildVersion:		25E246 
+curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+jq-1.8.2
+git version 2.50.1 (Apple Git-155)
+gh version 2.98.0 (2026-08-20)
+NOTE: no Rust code, crate or dependency is involved in R43; the toolchain
+      lines are recorded because the role requires them, not because any
+      check below compiles anything.
+
+=== 1. Vendor documentation — does the text say what the raws quote? ===
+This tier proves only what the vendors DOCUMENT. It does not prove that any
+installed build behaves that way; no vendor product is run by this script.
+GET https://cursor.com/docs/rules -> HTTP 200 (551961 bytes)
+PASS  cursor: mentions AGENTS.md                                     expected=1 actual=1
+PASS  cursor: 'alternative to' + .cursor/rules                       expected=1 actual=1
+PASS  cursor: documents project rules dir                            expected=1 actual=1
+PASS  cursor: documents alwaysApply frontmatter                      expected=1 actual=1
+PASS  cursor: documents globs frontmatter                            expected=1 actual=1
+PASS  cursor: AGENTS.md is one of its rule types                     expected=1 actual=1
+PASS  cursor: steers plain-markdown users to it                      expected=1 actual=1
+PASS  cursor: states it supports AGENTS.md in root                   expected=1 actual=1
+PASS  cursor: documents nested AGENTS.md                             expected=1 actual=1
+-- verbatim prose, the four rule types:
+Cursor supports four types of rules: Project Rules Stored in .cursor/rules , version-controlled and scoped to your codebase. User Rules Global to your Cursor environment. Used by Agent (Chat). Team Rules Team-wide rules managed from the dashboard. Available on Team and Enterprise plan
+-- verbatim prose, AGENTS.md section:
+AGENTS.md is a simple markdown file for defining agent instructions. Place it in your project root as an alternative to .cursor/rules for straightforward use cases. Unlike Project Rules, AGENTS.md is a plain markdown file without metadata or complex configurations. It's perfect for pr
+-- verbatim prose, plain-markdown steer:
+A plain .md file in .cursor/rules is ignored by the rules system because it has no frontmatter to specify description , globs , and alwaysApply . If you prefer plain markdown, use AGENTS.md instead. .cursor/rules/ react-patterns.mdc # Recognized as a project rule 
+-- verbatim prose, nested AGENTS.md:
+Nested AGENTS.md support in subdirectories is now available. You can place AGENTS.md files in any subdirectory of your project, and they will be automatically applied when working with files in that directory or its children. This allows for more granular control of agent instructions based 
+-- verbatim prose, globs syntax:
+Use globs to scope a rule to specific files or directories. Separate multiple patterns with commas. Pattern Matches * Any single file name segment ** Any number of d
+GET https://docs.devin.ai/desktop/cascade/memories.md -> HTTP 200 (13674 bytes)
+GET https://docs.devin.ai/desktop/cascade/agents-md.md -> HTTP 200 (5823 bytes)
+GET https://docs.devin.ai/cli/extensibility/rules.md -> HTTP 200 (9798 bytes)
+PASS  devin memories: .devin/rules preferred                         expected=1 actual=1
+PASS  devin memories: .windsurf fallback named                       expected=1 actual=1
+PASS  devin memories: Cascade named the legacy agent                 expected=1 actual=1
+PASS  devin memories: .windsurf/rules is the fallback                expected=1 actual=1
+PASS  devin agents-md: root = always-on rule                         expected=1 actual=1
+PASS  devin cli: AGENTS.md Recommended                               expected=1 actual=1
+PASS  devin cli: .windsurfrules labelled Legacy                      expected=1 actual=1
+PASS  devin cli: read_config_from block present                      expected=1 actual=1
+-- verbatim: .devin precedence
+/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.9ultvXNQZt/devin-memories.md:Rules can be stored in any of these locations (`.devin/` is preferred and takes precedence over `.windsurf/`):
+/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.9ultvXNQZt/devin-rules.md:`.devin/` is the preferred location and takes precedence over `.windsurf/`. If both `.devin/global_rules.md` and `.windsurf/global_rules.md` 
+-- verbatim: Cascade marked legacy, and the rule-location table row
+14:  **Memories apply to the legacy Cascade agent only.** The [Devin Local agent](/desktop/devin-local) — the default agent for new tabs — does not persist memories. Migrate the ones you rely on to [skills](/desktop/cascade/skills) with the **Devin: Open Cascade Migration Wizard** command.
+62:| Workspace                                             | `.devin/rules/*.md` (preferred) or `.windsurf/rules/*.md` (fallback)  | One file per rule, each with its own [activation mode](#activation-modes). Limited to 12,000 characters per file. The legacy single-file `.windsurfrules` at the workspace root is also still read. |
+-- verbatim: root AGENTS.md handling
+* **Root directory**: Treated as an **always-on** rule — the full content is included in Cascade's system prompt on every message.
+| Workspace root          | Applies to all files (always on)                             |
+| Scoping  | Automatic based on file location | Manual (glob, always on, model decision, manual)         |
+-- verbatim: agents_standard / cursor / windsurf / claude toggles
+204:  "read_config_from": {
+205-    "agents_standard": true,
+206-    "cursor": true,
+207-    "windsurf": true,
+208-    "claude": true
+209-  }
+210-}
+211-```
+212-
+213-Standard project rules from `AGENTS.md`, `AGENTS.local.md`, `AGENT.md`, and `.windsurfrules` are read by default. Set `"agents_standard": false` to disable importing them.
+214-
+215-***
+216-
+217-## Rule Activation Types
+218-
+-- verbatim: AGENTS.md row of the supported-file table
+5:# Rules & AGENTS.md
+19:## AGENTS.md
+21:The simplest way to add rules is with an `AGENTS.md` file at your project root:
+36:  `AGENTS.md` is the recommended approach for project rules. It's easy to read, version-controlled, and works across multiple AI tools.
+43:You can also create rules that apply to **every project** by placing an `AGENTS.md` file in your user config directory:
+48:    ~/.config/devin/AGENTS.md
+-- verbatim: Skills-over-Rules guidance
+**To improve coding ability, speed of completion, and lower cost**, we highly recommend **using Skills instead whenever possible**. Skills are only injected into the context when relevant. **Rules and AGENTS should be kept as smal
+  For most common types of rules, consider using skills instead. Skills give you more control over when and how they're applied.
+GET https://code.claude.com/docs/en/settings.md -> HTTP 200 (58564 bytes)
+GET https://code.claude.com/docs/en/settings-reference.md -> HTTP 200 (434670 bytes)
+GET https://code.claude.com/docs/en/hooks.md -> HTTP 200 (319955 bytes)
+GET https://code.claude.com/docs/en/memory.md -> HTTP 200 (37525 bytes)
+GET https://code.claude.com/docs/en/settings-example.md -> HTTP 200 (15669 bytes)
+PASS  claude: companyAnnouncements in reference                      expected=1 actual=1
+PASS  claude: reference grants scope 'Any file'                      expected=1 actual=1
+PASS  claude: random pick across entries                             expected=1 actual=1
+PASS  claude: lists merge instead of overriding                      expected=1 actual=1
+PASS  claude: hooks say use CLAUDE.md instead                        expected=1 actual=1
+PASS  claude: successful hook stdout never shown                     expected=1 actual=1
+PASS  claude: additionalContext documented                           expected=1 actual=1
+PASS  claude: memory 'reads CLAUDE.md, not AGENTS.md'                expected=1 actual=1
+-- verbatim: companyAnnouncements row
+632:| [`companyAnnouncements`](#companyannouncements)                                                       | Show your organization's announcements at startup                                                                                                                                                                           | Interface and terminal             | Any file                |
+2938:### `companyAnnouncements`
+2948:  "companyAnnouncements": [
+-- verbatim: list-merge rule and its exempt keys
+642:### Lists merge instead of overriding
+643-
+644-When you set the same list key, such as `permissions.allow`, in more than one file, Claude Code combines the lists instead of picking one, so each file can add entries without removing another file's. Four keys that hold model lists or per-model entries follow their own rules:
+645-
+646-* [`fallbackModel`](/docs/en/settings-reference#fallbackmodel) is an ordered chain where position carries meaning, so Claude Code takes the whole value from the highest-precedence file that defines it.
+647-* [`modelPicker`](/docs/en/settings-reference#modelpicker) holds one ordered list of rows plus a replace flag, so Claude Code never merges rows from two sources. It takes the whole value from the highest of managed settings, `--settings`, and user settings that defines it, and ignores the key in project and local settings. Requires Claude Code v2.1.242 or later.
+648-* [`availableModels`](/docs/en/settings-reference#availablemodels): when the managed settings Claude Code applies define it, Claude Code applies that list as-is and ignores entries you add in user, project, or local settings, unless an app that embeds Claude Code supplies its own model list; see [Exceptions to managed settings precedence](#exceptions-to-managed-settings-precedence). Across managed sources the list never merges either; [how Claude Code combines managed sources](/docs/en/managed-settings#how-claude-code-combines-managed-sources) says which source's list applies. Across non-managed scopes Claude Code merges the arrays as usual.
+-- verbatim: hook stdout / additionalContext audience
+1097:Runs when Claude Code starts a new session or resumes an existing session. Useful for loading development context like existing issues or recent changes to your codebase, or setting up environment variables. For static context that doesn't require a script, use [CLAUDE.md](/docs/en/memory) instead.
+929:| `suppressOutput`   | `false` | Has no effect: Claude Code accepts the field but doesn't act on it. A successful hook's stdout is never shown in the transcript and is recorded in the debug log                                                                                                                                                                     |
+  * Each field the event supports is honored, including `permissionDecision`, `additionalContext`, `updatedInput`, and `systemMessage`, and the hook isn't reported as an error.
+Hook output strings, including `additionalContext`, `systemMessage`, and plain stdout, are capped at 10,000 characters. Output that exceeds this limit is saved to a file and replaced with a preview and file path, the same way a large valid Bash resu
+The `additionalContext` field passes a string from your hook into Claude's context window. Claude Code wraps the string in a system reminder and inserts it into the conversation at the point where the hook fired. Claude re
+-- verbatim: CLAUDE.md vs AGENTS.md
+Claude Code reads `CLAUDE.md`, not `AGENTS.md`. If your repository already uses `AGENTS.md` for other coding agents, create a `CLAUDE.md` that imports it so both tools read the same instructions without duplicating them. You can also add Claude-specific instructions below the import. 
+-- companyAnnouncements framing in the managed-settings example:
+* `companyAnnouncements` shows a message at startup
+      "companyAnnouncements": [
+
+=== 2. The Windsurf -> Devin rename: redirects prove the rename, not its date ===
+https://windsurf.com/ -> https://devin.ai/desktop HTTP 429
+https://docs.windsurf.com/windsurf/cascade/memories -> https://docs.devin.ai/desktop/cascade/memories HTTP 200
+https://docs.cursor.com/context/rules -> https://cursor.com/docs HTTP 200
+GET https://docs.devin.ai/release-notes/2026.md -> HTTP 200 (126005 bytes)
+PASS  release notes: occurrences of 'Windsurf'                       expected=0 actual=0
+earliest 'Devin Desktop' mention in the 2026 release notes:
+792:  This release also includes improved bulk secret import with name validation, expanded keyboard shortcuts, better mobile layouts, a simplified Devin Desktop login button in settings, cleaner Slack send options in the composer, more reliable MCP tool listing for HTTP servers, and many performance improvements to session streaming and PR review loading.
+834:  **Fullscreen Devin Desktop**
+836:  The Devin Desktop VNC viewer now supports native fullscreen.
+NOTE: a zero count corroborates Opus's report that no first-party page dates
+      the rename. The rename itself is proven by the redirects above.
+
+=== 3. First-party bin is empty: Cargo defines no AI-assistant path ===
+GET https://doc.rust-lang.org/cargo/reference/manifest.html -> HTTP 200 (59807 bytes)
+PASS  cargo manifest ref: agent/editor config paths                  expected=0 actual=0
+
+=== 4. Pinned source repositories — read through their pins only ===
+-- ts@cb1cbcb2 vendor rule files present in the pinned tree:
+.cursor/rules/doc-template.mdc
+.cursor/rules/projectenv.mdc
+.windsurf/rules/justfile-rules.md
+PASS  ts pin: vendor rule files (negative control)                   expected=3 actual=3
+PASS  py pin: vendor rule files                                      expected=0 actual=0
+-- ts@ .cursor/rules/projectenv.mdc (verbatim):
+cat: illegal option -- A
+usage: cat [-belnstuv] [file ...]
+-- ts@ .cursor/rules/doc-template.mdc frontmatter (verbatim, first 8 lines):
+---
+description: "Standard rule for documentation consistency"
+globs:
+  - "docs/**/*.md"
+alwaysApply: false
+---
+
+name: doc-template
+PASS  ts pin: doc-template globs is a YAML sequence                  expected=1 actual=1
+PASS  ts pin: projectenv uses ./path include form                    expected=1 actual=1
+NOTE: both are format drift measured against the CURRENT Cursor documentation
+      fetched in section 1. Neither was verified by executing Cursor, and this
+      script does not execute Cursor.
+-- ts@ .windsurf/rules/justfile-rules.md (verbatim, first 10 lines):
+---
+trigger: glob
+globs: Justfile
+---
+
+Ensure that there's proper spacing between recipes, a new line.
+
+Every recipe is part of a group that already exists in the Just file, and that there is documentation which should be a comment right before the recipe.
+
+```Justfile
+PASS  ts pin: windsurf rule uses trigger: glob                       expected=1 actual=1
+-- py@b08bccfb .claude/settings.json keys:
+enabledPlugins
+extraKnownMarketplaces
+PASS  py pin: has companyAnnouncements                               expected=false actual=false
+-- py: the consolidation commit that dropped the vendor rule files:
+fc8d944b7e439bb4e3f19aaf1b2bdf8da4292a57
+docs(agents): make agents.md canonical; claude.md imports it; drop vendor rule files (#410)
+
+ .cursor/rules/doc-template.mdc    | 78 ---------------------------------
+ .cursor/rules/projectenv.mdc      | 11 -----
+ .windsurf/rules/justfile-rules.md | 34 ---------------
+ .windsurfrules                    | 91 ---------------------------------------
+ AGENTS.md                         | 62 +++++++++++++++++++++-----
+ CLAUDE.md                         | 74 +++----------------------------
+ README.md                         |  2 +-
+ docs/source/tools/justfiles.md    | 22 ++++++++++
+ init/manifest.toml                | 12 ++----
+
+=== 5. The announcement shape checks, run against the ts pin via stdin ===
+These prove the assertions are well formed. They do NOT prove Claude Code
+displays a project-scope announcement; no client is launched here.
+PASS  A3 ts pin: companyAnnouncements length == 1                    expected=true actual=true
+PASS  A4a ts pin: names the repo and a just recipe                   expected=true actual=true
+-- recipe tokens the ts welcome names (the input A4b would cross-check):
+all
+check-deps
+debug-info
+docs-check
+pack-check
+pre-commit-run
+setup-hooks
+NOTE: check A4b (cross-checking those tokens against 'just --summary') is NOT
+      executed. It needs a working tree with a Justfile and the just binary;
+      the rs template does not exist, and running it against the ts working
+      tree instead of the pin would break the pinned-read rule. A4b is carried
+      as an unproven check for P03.
+
+=== 6. Practice evidence — re-checking a subset of Opus's 50-repo census ===
+Opus reports (2026-09-10): AGENTS.md 24/50, .cursor/ 1/50, .windsurf/ 0/50,
+.devin/ 0/50. Re-checked below for 12 of those repositories.
+  rust-lang/rust               AGENTS.md=1 .cursor=0 .windsurf=0 .devin=0 .claude=0
+  rust-lang/cargo              AGENTS.md=0 .cursor=0 .windsurf=0 .devin=0 .claude=0
+  BurntSushi/ripgrep           AGENTS.md=0 .cursor=0 .windsurf=0 .devin=0 .claude=0
+  astral-sh/ruff               AGENTS.md=1 .cursor=0 .windsurf=0 .devin=0 .claude=1
+  astral-sh/uv                 AGENTS.md=1 .cursor=0 .windsurf=0 .devin=0 .claude=1
+  tokio-rs/tokio               AGENTS.md=0 .cursor=0 .windsurf=0 .devin=0 .claude=0
+  tokio-rs/axum                AGENTS.md=0 .cursor=0 .windsurf=0 .devin=0 .claude=0
+  clap-rs/clap                 AGENTS.md=0 .cursor=0 .windsurf=0 .devin=0 .claude=0
+  nushell/nushell              AGENTS.md=1 .cursor=0 .windsurf=0 .devin=0 .claude=0
+  surrealdb/surrealdb          AGENTS.md=0 .cursor=1 .windsurf=0 .devin=0 .claude=0
+  meilisearch/meilisearch      AGENTS.md=1 .cursor=0 .windsurf=0 .devin=0 .claude=0
+  casey/just                   AGENTS.md=0 .cursor=0 .windsurf=0 .devin=0 .claude=0
+subset totals (n=12): AGENTS.md=5 .cursor=1 .windsurf=0 .devin=0 .claude=2
+PASS  subset: repositories committing .windsurf/                     expected=0 actual=0
+PASS  subset: repositories committing .devin/                        expected=0 actual=0
+-- companyAnnouncements in the Rust .claude/settings.json adopters Opus read:
+  astral-sh/ruff       keys=[enabledPlugins,extraKnownMarketplaces,hooks] companyAnnouncements=false
+  astral-sh/uv         keys=[hooks] companyAnnouncements=false
+  biomejs/biome        keys=[permissions] companyAnnouncements=false
+  swc-project/swc      keys=[permissions] companyAnnouncements=false
+
+=== 7. The three GitHub issues the raws cite ===
+anthropics/claude-code#39998: [BUG] companyAnnoucements override | state=closed reason=not_planned created=2026-03-27T20:11:48Z closed=2026-04-30T10:44:16Z
+anthropics/claude-code#22425: Feature request: Project-specific startup menu/message for onboarding new users | state=closed reason=completed created=2026-02-01T18:58:49Z closed=2026-02-01T19:03:37Z
+anthropics/claude-code#32221: Allow SessionStart hook output to display in terminal UI during launch | state=closed reason=not_planned created=2026-03-08T19:06:47Z closed=2026-04-25T10:20:51Z
+
+=== Result ===
+failed checks: 0
+run finished 2026-09-10T16:02:46Z
