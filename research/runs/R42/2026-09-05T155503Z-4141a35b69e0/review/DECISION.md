@@ -1,4 +1,4 @@
-# R42 — dev-toolchain-provisioning (bundle, Deep) — DECISION
+# R42 — dev-toolchain-provisioning (bundle, Deep) — DECISION (revision 2, 2026-09-10)
 
 ## Decision
 
@@ -19,7 +19,7 @@ No owner acceptance is claimed or implied — the owner has reviewed R01 only.
 | 2 | crates.io-published dev tools | One **generic** `install-tool <spec>` recipe over a single declared tool table in the `Justfile`, whose body is `cargo install --locked <name>@<version>`. Not one recipe per tool, and no per-tool shell script. `cargo-binstall` 1.23.0 is the faster prebuilt backend and is **not** the default recommendation — see the licence finding below. | **F183** |
 | 3 | Declarative provisioner manifest | **None.** No `mise.toml`, no `.mise.toml`, no `.tool-versions`, no `.flox/env/manifest.toml`, and no `flake.nix`. The declared tool set has exactly one authoritative location, so the manual-sync obligation py records in `mise.toml:1` never exists. | **F187, F188, F189** |
 | 4 | Non-crates.io tools (the residue) | Name **`ubi` 0.12.0** (`MIT OR Apache-2.0`) as the single sanctioned backend, reached through a second spec form on the *same* generic recipe, and ship **zero** such tools in the default tool table. Standing rule for consuming items: prefer a crates.io-published tool; a release-only tool must justify itself. | — (reserves the slot for R37/R39/R40) |
-| 5 | Invocation surface | The split rule in `## Parameters`: `cargo <sub>` when the executable is `cargo-<sub>`; a bare `<tool>` on `PATH` otherwise; **no wrapper prefix anywhere**. | the owned parameter |
+| 5 | Invocation and presence surface | The rules in `## Parameters`, on two independent axes. *Invocation*, keyed on the executable's **name**: `cargo <sub>` when the executable is `cargo-<sub>`; a bare `<tool>` on `PATH` otherwise; Cargo's own built-in subcommands written as they are; **no wrapper prefix anywhere** and **no Cargo alias in the template**. *Presence*, keyed on how the tool was **acquired**: rustup components are tested against the toolchain's component state, everything installed from crates.io or a release with `command -v`. | the owned parameter |
 
 **The licence finding on `cargo-binstall`, stated as a finding and not as a
 ruling.** `cargo-binstall`'s newest unyanked version is `1.23.0`, published
@@ -54,17 +54,38 @@ comes into existence.
 
 BASELINE-REVIEW: F181 — capability: one command reports the full dev-tool
 inventory with a per-tool remediation string — **retain `just check-deps` as a
-distinct Level-2 check; do not collapse it into F180, and keep `command -v` as
-the presence test** — evidence: the two checks have disjoint scopes even after
-the installer layer shrinks (F180 tests a machine that may have no Rust
-toolchain at all; F181 tests crates.io tools and may assume `cargo` exists), and
-`command -v` is provably the correct test for both tool classes because Cargo
-dispatches `cargo <sub>` to a `cargo-<sub>` executable found on `PATH` — a stub
-`cargo-demo` on `PATH` invoked as `cargo demo --flag 1` printed
-`cargo-demo invoked argv: demo --flag 1` and exited 0 on this host, and
-`command -v cargo-demo` resolved it (log `evidence/invocation-mechanism.log`).
+distinct Level-2 check; do not collapse it into F180; and test presence by how
+the tool was acquired — `command -v <executable>` for anything installed from
+crates.io or a release, the toolchain's own component state for anything rustup
+installs** — evidence: the two checks have disjoint scopes even after the
+installer layer shrinks (F180 tests a machine that may have no Rust toolchain at
+all; F181 tests crates.io tools and may assume `cargo` exists); `command -v` is
+the correct test **for the crates.io-installed class**, where the `PATH` entry is
+the tool itself and Cargo dispatches `cargo <sub>` to a `cargo-<sub>` executable
+found on `PATH` — a stub `cargo-demo` on `PATH` invoked as `cargo demo --flag 1`
+printed `cargo-demo invoked argv: demo --flag 1` and exited 0 on this host,
+`command -v cargo-demo` resolved it, and the real crates.io plugin
+`cargo-machete` behaves identically (`cargo machete --version` → `0.9.2`, exit 0)
+(logs `evidence/invocation-mechanism.log`, `evidence/invocation-sweep.log`); and
+`command -v` **cannot fail for a rustup component**, because rustup installs an
+unconditional proxy in `$CARGO_HOME/bin` — `~/.cargo/bin/cargo-fmt` is a symlink
+to `rustup` — for a fixed name list whether or not the component is installed in
+the selected toolchain. Demonstrated with a genuinely absent component: in a
+directory pinning `channel = "1.97.1-aarch64-apple-darwin"`, whose toolchain
+carries neither `rustfmt` nor `clippy`, `command -v cargo-fmt` exited **0** while
+`cargo fmt --version` exited **1** (`error: 'cargo-fmt' is not installed for the
+toolchain '1.97.1-aarch64-apple-darwin'`), so the prescribed test reported
+present for a tool that does not run; the component-state test refused it
+correctly in the same directory
+(`rustup component list --installed | grep -q '^rustfmt-'` → exit 1) and passed
+in the `channel = "stable"` control → exit 0
+(log `evidence/presence-test.log`, 2026-09-10). This is the correction revision 2
+makes to revision 1, which asserted `command -v` "provably the correct test for
+both tool classes" on a stub experiment covering only the first.
 What changes is F181's *implementation*, not its existence: py's per-tool
-`if`-blocks become one loop over the declared tool table. Affected: F181, F180.
+`if`-blocks become one loop over the declared tool table, with the rustup
+components read from `rustup component list --installed` in a single call.
+Affected: F181, F180.
 
 BASELINE-REVIEW: F179 — a base-toolchain bootstrap layer precedes project
 dev tasks and uses only what a bare machine already has — **retain the two-layer
@@ -120,15 +141,22 @@ hand-synchronised are a defect, not a feature.
 **Observable acceptance criteria** (proposed for P03; none of these was run
 here, because running them means building the template):
 (A) `just check-deps` exits non-zero and prints one `MISSING <tool> -> RUN <command>`
-line per absent tool, and exits zero when all are present.
+line per absent tool, and exits zero when all are present — including the case
+that revision 1's presence test could not detect: on a toolchain lacking the
+`rustfmt` component the run reports it missing with
+`RUN rustup component add rustfmt`, which requires the component-state test of
+`## Parameters` rather than `command -v cargo-fmt`.
 (B) In a fresh clone, `cargo fmt --version` and `cargo clippy --version` succeed
 after `rustup` alone, with no installer recipe run.
 (C) `rustup show active-toolchain` names the committed `rust-toolchain.toml` as
 the override source, on both `ubuntu-latest` and `macos-latest`.
 (D) Adding a tool to the template edits exactly one list.
 (E) No recipe or hook line contains a provisioner prefix (`mise exec`,
-`cargo bin`, `nix develop -c`, `flox activate`, or any `uv run` analogue), and
-`mise.toml`, `.mise.toml`, `.tool-versions` and `.flox/` are absent.
+`cargo bin`, `nix develop -c`, `flox activate`, or any `uv run` analogue);
+`mise.toml`, `.mise.toml`, `.tool-versions` and `.flox/` are absent; and no
+committed `.cargo/config.toml` carries an `[alias]` table, so every `cargo <sub>`
+line in the template names a built-in subcommand, a rustup component or an
+installed `cargo-<sub>` executable.
 
 **Architecture alternatives compared, before any tool was chosen.**
 
@@ -158,11 +186,14 @@ Rust largely does not have.
   step**, and the toolchain that file selects does carry both components —
   `rustup component list --installed` lists `rustfmt-aarch64-apple-darwin` and
   `clippy-aarch64-apple-darwin`, and `rustup which cargo-fmt` resolves inside
-  `~/.rustup/toolchains/stable-aarch64-apple-darwin/bin/`. What this host does
-  **not** prove is that the `cargo fmt` invocation *routed through* that rustup
-  proxy, because a Homebrew Rust installation shadows it on `PATH` — see the
-  hazard note in `## Empirical check` and unproven item 2 (log
-  `evidence/invocation-mechanism.log`). What remains is one generic
+  `~/.rustup/toolchains/stable-aarch64-apple-darwin/bin/`. Under the default
+  `PATH` that check did **not** prove the `cargo fmt` invocation *routed through*
+  the rustup proxy, because a Homebrew Rust installation shadows it — indeed the
+  `rustfmt 1.9.0` above is Homebrew's build. Revision 2's check 10 supplies the
+  missing half on this host by excluding that installation from `PATH`, and the
+  hazard note in `## Empirical check` says what remains open (logs
+  `evidence/invocation-mechanism.log`, `evidence/invocation-sweep.log`;
+  unproven item 2). What remains is one generic
   install-if-missing recipe over a declared tool table.
 - **HIGH — is a declarative provisioner common practice (F187/F188)?** No.
   **0 of 17** surveyed repositories carry `mise.toml`, `.mise.toml`,
@@ -176,9 +207,23 @@ Rust largely does not have.
 - **MEDIUM — the idiomatic `package-manager-invocation` answer?** Both forms,
   split by a mechanical rule stated in `## Parameters`. This is not a compromise:
   it is what Cargo's custom-subcommand dispatch makes true, verified directly
-  here, and it is what all four surveyed `justfile`s do — zero wrapper-prefix
-  lines across `oxc`, `biome`, `just` and `cargo-binstall`
-  (log `evidence/reference-impls.log`).
+  here. What all four surveyed `justfile`s support is the narrower claim the log
+  carries — **zero** wrapper-prefix lines across `oxc`, `biome`, `just` and
+  `cargo-binstall` (log `evidence/reference-impls.log`). They do **not** all
+  exemplify the two-form split, and revision 1's sentence saying so was too wide:
+  re-read line by line, those four files use *four* forms after `cargo` — Cargo's
+  built-in subcommands (`cargo test`, `cargo build`, `cargo doc`, `cargo run`),
+  rustup components (`cargo fmt` at `oxc:69`, `just:20`, `cargo-binstall:266`;
+  `cargo clippy` at `oxc:82`), crates.io-installed plugins (`cargo binstall`,
+  `cargo nextest`, `cargo shear`, `cargo outdated`, `cargo watch`, and `just`'s
+  `cargo lclippy`/`lrun`/`lbuild`/`ltest`, which are `cargo-limit`'s binaries, not
+  aliases — its own `justfile:117` installs `cargo-limit`, and that crate's
+  `src/bin/` holds `cargo-lclippy.rs`, `cargo-lrun.rs`, `cargo-lbuild.rs`,
+  `cargo-ltest.rs`), and **Cargo aliases** in two of the four (`oxc` at 14
+  justfile lines including `cargo ck`, `cargo lint`, `cargo lintgen`,
+  `cargo lint-timings`; `biome` at `:160`, `:234`, `:334`). The alias form is
+  answered in `## Parameters` and checked in `## Empirical check`
+  (log `evidence/reference-aliases.log`, retrieved 2026-09-10).
 - **LOW — one script per tool, or one generic recipe?** One generic recipe. The
   two maintained reference implementations that provision tools at all both write
   a single bootstrap recipe listing every tool and **no** per-tool recipe:
@@ -190,12 +235,19 @@ Rust largely does not have.
 **Reference implementations.** `cargo-bins/cargo-binstall` commits literally the
 `rust-toolchain.toml` layer 1 recommends — `channel = "stable"`,
 `profile = "minimal"`, `components = ["rustfmt", "clippy"]` — and invokes
-everything by the split rule. `zed-industries/zed` uses the same
+everything by the invocation rule of `## Parameters`, with no `[alias]` table (`GET .cargo/config.toml`
+→ HTTP 404, 2026-09-10). `zed-industries/zed` uses the same
 minimal-plus-explicit-components shape at `channel = "1.97.1"`.
 `oxc-project/oxc` (22694 stars) and `biomejs/biome` (25753 stars) each combine a
 committed toolchain file, one generic tool-acquisition recipe, no provisioner
-manifest, and split-rule invocation — four of this decision's five layers, twice
-over, independently. All read 2026-09-10; `evidence/reference-impls.log`.
+manifest, and prefix-free invocation — four of this decision's five layers, twice
+over, independently. Both, however, name many of their tasks through Cargo
+aliases as well as through their `justfile`, which is the second naming layer
+this decision's parameter declines (`biome`'s own `justfile:332` comment reads
+"Alias for `cargo lint`, it runs clippy on the whole codebase" above a recipe at
+`:334` whose body is `cargo lint`); their alias use is evidence about the field, not a
+pattern adopted here. All read 2026-09-10; `evidence/reference-impls.log`,
+`evidence/reference-aliases.log`.
 The gap: **no maintained project was found that composes all five layers
 including the residue backend**, because layer 4 has zero occupants by default.
 
@@ -223,7 +275,7 @@ re-verify: 2027-03-10, or any earlier event listed immediately above
 
 ## Parameters
 
-- owns package-manager-invocation = `cargo <sub>` for any tool whose executable is named `cargo-<sub>` — including the rustup components rustfmt and clippy, invoked as `cargo fmt` and `cargo clippy`; a bare `<tool>` binary resolved on `PATH` for every other tool; **no provisioner, runner or package-manager prefix** (`mise exec`, `cargo bin`, `nix develop -c`, `flox activate`, or any `uv run` analogue) in any Justfile recipe or lefthook job; presence tested with `command -v <executable>`, where the executable is `cargo-<sub>` for the first class and `<tool>` for the second.
+- owns package-manager-invocation = **two independent axes; a consuming item answers both.** **(i) How a tool is invoked, keyed on the executable's name.** `cargo <sub>` for any tool whose executable is named `cargo-<sub>` — including the rustup components rustfmt and clippy, invoked as `cargo fmt` and `cargo clippy`; a bare `<tool>` binary resolved on `PATH` for every other tool; Cargo's own built-in subcommands (`cargo test`, `cargo build`, `cargo doc`, `cargo run`, …) written as they are, since they ship inside Cargo and have no `cargo-<sub>` executable at all; and **no provisioner, runner or package-manager prefix** (`mise exec`, `cargo bin`, `nix develop -c`, `flox activate`, or any `uv run` analogue) in any Justfile recipe or lefthook job. **Cargo aliases are a further form — the fourth, after built-ins — and the template defines none**: no committed `.cargo/config.toml` carries an `[alias]` table, and a recipe spells the underlying subcommand in full — R28's clippy invocation, whatever flags R28 selects, is written `cargo clippy …` inside the Justfile recipe that owns it, not `cargo lint` behind an alias. Reasons, each verified below: an alias is a second place where the same task is named, so the Justfile recipe and `.cargo/config.toml` must then be hand-synchronised, which essential behavior (4) calls a defect; an alias is invisible to any presence test, because no `cargo-<alias>` executable exists; and an alias silently shadows a same-named external subcommand, which Cargo warns is "previously accepted but will become a hard error in the future" (`https://github.com/rust-lang/cargo/issues/10049`). An alias in a **consuming repository** is not prohibited — two of the four surveyed reference repositories use them — and where one exists it is a permitted spelling of the `cargo <sub>` form; its presence test targets the underlying tool (for `lint = "clippy …"`, clippy's component state), never `cargo-<alias>`. **(ii) How presence is tested, keyed on how the tool was acquired**, because the two acquisition channels fail differently: a tool installed from crates.io or from a release — a `cargo-<sub>` plugin or a bare binary alike — is tested with `command -v <executable>`, where the `PATH` entry *is* the tool, remediated by the `just install-tool <name>@<version>` line; a tool rustup installs — a component, whether invoked as `cargo fmt`, `cargo clippy` or bare (`rustfmt`, `rust-analyzer`, `clippy-driver`) — is tested against the active toolchain's own component state with `rustup component list --installed` (one call covers every component; per tool, `rustup which <executable>` is equivalent — verified for `cargo-fmt` and `cargo-clippy` — and both honour a `rust-toolchain.toml` override), remediated by `rustup component add <component>`. **`command -v` is never the test for a rustup component**: rustup installs an unconditional proxy in `$CARGO_HOME/bin` for a fixed name list regardless of what the selected toolchain contains, so the test cannot fail and reports present for a tool that does not run.
 - assumes msrv-policy = `stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI` (fixed, `docs/port/PARAMETERS.md`). Used here only to establish what it does **not** govern: dev tools are not built by the MSRV floor job, so a candidate's `rust_version` is measured against the development channel instead.
 - assumes rust-edition = `2024` (fixed, `docs/port/PARAMETERS.md`).
 - assumes target-os-matrix = `ubuntu-latest, macos-latest` (fixed, `docs/port/PARAMETERS.md`). Every recommended component runs on both; Windows support is noted where it exists and is not required.
@@ -239,12 +291,36 @@ log `review/evidence/toolchain.log`. **All retrieval timestamps in this decision
 and in every evidence log are UTC**; the local date of the run is 2026-09-09
 (America/Los_Angeles), so a UTC stamp of `2026-09-10T05:xxZ` is not a future date.
 
+**A second toolchain, for the revision-2 checks 9–12.** Those checks run with
+`PATH` restricted to `$HOME/.cargo/bin:/usr/bin:/bin`, which removes the Homebrew
+Rust that shadowed rustup's proxies in revision 1. Under that `PATH`,
+`command -v cargo` is `/Users/stevemorin/.cargo/bin/cargo` — rustup's proxy, a
+symlink to `rustup`, which `rustup which cargo` resolves to
+`~/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo` — and the tools report
+`cargo 1.94.0 (85eff7c80 2026-01-15)` and `rustc 1.94.0 (4a4ef493e 2026-03-02)`
+in `pos/` — rustup's `stable`, not Homebrew's 1.98.0; in `neg/`, `c196/` and
+`c191/` the same proxy dispatches to that directory's own pinned toolchain. Recorded 2026-09-10T06:08:52Z; log
+`review/evidence/presence-test.log`. This is why revision 1's check 4 reported
+`rustfmt 1.9.0` (Homebrew's build) where the same command under the restricted
+`PATH` reports `rustfmt 1.8.0-stable (4a4ef493e3 2026-03-02)`, the build inside
+`~/.rustup/toolchains/stable-aarch64-apple-darwin`.
+
 **Working directory.** Read-only network queries ran from the run directory
-`research/runs/R42/2026-09-05T155503Z-4141a35b69e0`. The two commands that need
-files on disk ran in the session scratchpad
-(`…/scratchpad/r42`), **outside the repository**: one four-line
-`rust-toolchain.toml` and one three-line stub executable named `cargo-demo`.
-Nothing was installed, and nothing outside `review/` was modified.
+`research/runs/R42/2026-09-05T155503Z-4141a35b69e0`. Every command that needs
+files on disk ran in the session scratchpad, **outside the repository**. Checks 3
+and 4 used `…/scratchpad/r42`: one four-line `rust-toolchain.toml` and one
+three-line stub executable named `cargo-demo`. Checks 9–12 used
+`…/scratchpad/r42r2`, which holds exactly: four two-line `rust-toolchain.toml`
+files in `pos/` (`channel = "stable"`), `neg/` (`1.97.1-aarch64-apple-darwin`),
+`c196/` (`1.96.0-aarch64-apple-darwin`) and `c191/` (`1.91.1-aarch64-apple-darwin`);
+`alias/.cargo/config.toml`, a three-line `[alias]` table defining `myver` and
+`demo` as `version`; and `bin/`, holding the same three-line `cargo-demo` stub
+plus a `cargo-version` stub of the same shape. Check 13 ran from the run
+directory and wrote nothing but the four fetched `justfile`s it greps, which it
+left in the same scratch directory. All four toolchains were already
+installed on this host before this run. **Nothing was installed**: no
+`rustup component add`, no `rustup toolchain install`, no `cargo install`, and
+nothing outside `review/` was modified.
 
 **Nothing recommended was implemented.** No template, workspace, `Justfile`,
 `check-deps` recipe, `install-tool` recipe, `lefthook.yml` or acceptance script
@@ -257,11 +333,16 @@ mechanism against a stub input.
 | 1 | Toolchain and OS | `rustc --version`; `cargo --version`; `rustup --version`; `uname -a`; `sw_vers` | 0 | recorded above | `evidence/toolchain.log` |
 | 2 | Provisioner-manifest practice, re-measured | `gh api repos/<o>/<r>/contents/` over 17 repositories | 0 | **0/17** `mise.toml`, `.mise.toml`, `.tool-versions`, `.flox`; **5/17** `flake.nix`; **9/17** `rust-toolchain.toml`; **4/17** `justfile`; **0/17** root `Makefile` | `evidence/repo-survey.log` |
 | 3 | Cargo custom-subcommand dispatch | stub `cargo-demo` on `PATH`, then `cargo demo --flag 1`; `command -v cargo-demo`; negative control off `PATH` | 0 / 0 / 1 | printed `cargo-demo invoked argv: demo --flag 1`; `command -v` resolved it; resolved nothing off `PATH` | `evidence/invocation-mechanism.log` |
-| 4 | Toolchain-file override + component availability | `rustup show active-toolchain`; `cargo fmt --version`; `cargo clippy --version`; `rustup which cargo-fmt`; `rustup component list --installed` | 0 | `stable-aarch64-apple-darwin (overridden by '<scratch>/rust-toolchain.toml')`; `rustfmt 1.9.0`; `clippy 0.1.98`, no installer step; the selected toolchain carries both components. **Caveat:** whether the `cargo fmt` call routed through the rustup proxy is **unproven on this host** — see the hazard note below and unproven item 2 | `evidence/invocation-mechanism.log` |
+| 4 | Toolchain-file override + component availability | `rustup show active-toolchain`; `cargo fmt --version`; `cargo clippy --version`; `rustup which cargo-fmt`; `rustup component list --installed` | 0 | `stable-aarch64-apple-darwin (overridden by '<scratch>/rust-toolchain.toml')`; `rustfmt 1.9.0`; `clippy 0.1.98`, no installer step; the selected toolchain carries both components. **Caveat, now settled by check 10:** under the default `PATH` this call did **not** route through the rustup proxy. Its `rustfmt 1.9.0` is not the build rustup's `stable` contains — that is `rustfmt 1.8.0-stable (4a4ef493e3 2026-03-02)` (check 10) — so it resolved the Homebrew `cargo-fmt` at `/opt/homebrew/bin/cargo-fmt` recorded in the same log | `evidence/invocation-mechanism.log` |
 | 5 | crates.io figures and licences | `GET https://crates.io/api/v1/crates/<name>` and `/versions` for 7 crates | 0 | table below | `evidence/crates-io.log` |
 | 6 | GitHub figures and open issues | `gh api repos/<o>/<r>`; `gh api "search/issues?q=repo:<o>/<r>+is:issue+is:open"` for 8 repositories | 0 | table below | `evidence/github-rustsec.log` |
 | 7 | RustSec advisories, with HTTP-200 controls | `curl -s -o /dev/null -w '%{http_code}' https://rustsec.org/packages/<name>.html` | 0 | 404 for `cargo-binstall`, `ubi`, `mise`, `just`, `cargo-run-bin`; 200 for the `time` and `atty` controls, so 404 means "no advisory page", not a transport failure | `evidence/github-rustsec.log` |
 | 8 | Reference implementations | `curl https://raw.githubusercontent.com/<repo>/HEAD/{rust-toolchain.toml,justfile}` for 4 repositories | 0 | `cargo-binstall` commits `channel="stable"`, `profile="minimal"`, `components=["rustfmt","clippy"]`; `oxc` and `biome` each use one generic tool-acquisition recipe; **0** wrapper-prefix lines across all four `justfile`s | `evidence/reference-impls.log` |
+| 9 | **The presence test for a rustup component, with genuinely absent components** (revision 2; the correction the judgment audit asked for) | the same nine commands in each of three directories — `neg/` (pins `1.97.1`, whose toolchain carries neither component and whose `bin/` holds only `cargo`, `rustc`, `rustdoc`, `rust-gdb`, `rust-gdbgui`, `rust-lldb`), `pos/` (pins `stable`, which carries both) and `c196/` (pins `1.96.0`, which carries `rustfmt` but **not** `clippy`): `rustup show active-toolchain`; `command -v cargo-fmt`; `cargo fmt --version`; `command -v cargo-clippy`; `cargo clippy --version`; `rustup component list --installed \| grep -q '^rustfmt-'`; `… \| grep -q '^clippy-'`; `rustup which cargo-fmt`; `rustup which cargo-clippy` | see Result | **`command -v` cannot fail**: exit **0** for `cargo-fmt` and for `cargo-clippy` in all three directories, every one resolving `~/.cargo/bin/…`, which `ls -l` shows to be symlinks to `rustup`. **The absent tools do not run**: `cargo fmt --version` exit **1** in `neg/` (`error: 'cargo-fmt' is not installed for the toolchain '1.97.1-aarch64-apple-darwin'`); `cargo clippy --version` exit **1** in `neg/` and in `c196/`; where the component is present the same commands exit 0 (`rustfmt 1.8.0-stable` in `pos/`, `rustfmt 1.9.0-stable` in `c196/`, `clippy 0.1.94` in `pos/`). **The component-state test matches the truth in all six cells**: `grep -q '^rustfmt-'` → exit 1, 0, 0 and `grep -q '^clippy-'` → exit 1, 0, 1 across `neg/`, `pos/`, `c196/`; `rustup which cargo-fmt` → 1, 0, 0 and `rustup which cargo-clippy` → 1, 0, 1, the exit-0 cases resolving inside that directory's own toolchain. Both rustup tests honour the directory's `rust-toolchain.toml` override | `evidence/presence-test.log` |
+| 10 | **`cargo fmt` routes through the rustup proxy and follows the committed channel** (revision 2; resolves the host half of unproven item 2) | with `PATH` restricted to `$HOME/.cargo/bin:/usr/bin:/bin`: `rustup show active-toolchain; cargo fmt --version` in `pos/`, `c196/` and `c191/` | 0 / 0 / 0 | one command, three committed channels, three different builds: `stable` → `rustfmt 1.8.0-stable (4a4ef493e3 2026-03-02)`; `1.96.0` → `rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)`; `1.91.1` → `rustfmt 1.8.0-stable (ed61e7d7e2 2025-11-07)`. With `1.97.1` (check 9) the same command fails rather than falling back to another build | `evidence/invocation-sweep.log` |
+| 11 | **Cargo aliases as a further invocation form, and subcommand precedence** (revision 2) | in `alias/` (`.cargo/config.toml` defines `myver = "version"`, `demo = "version"`): `cargo myver`; `command -v cargo-myver`; `cargo myver` from a directory without that file; `cargo demo --flag 1` with the `cargo-demo` stub on `PATH`; `cargo version` with a `cargo-version` stub on `PATH`; `cargo demo --flag 1` with the stub on `PATH` but outside `alias/` | see Result | an alias **runs with no `cargo-<sub>` executable anywhere**: `cargo myver` → `cargo 1.94.0 (85eff7c80 2026-01-15)`, exit 0, while `command -v cargo-myver` exits **1** — so the parameter's presence test finds nothing for a name that works. Aliases are **directory-scoped**: the same `cargo myver` outside `alias/` exits **101**, `error: no such command: 'myver'`. Precedence is **built-in > alias > external**: `cargo version` with the stub on `PATH` printed Cargo's own version (the stub never ran); `cargo demo` inside `alias/` ran the alias and emitted `warning: user-defined alias 'demo' is shadowing an external subcommand found at …/bin/cargo-demo … this was previously accepted but will become a hard error in the future; see https://github.com/rust-lang/cargo/issues/10049`; outside `alias/` the same `cargo demo --flag 1` dispatched to the stub, exit 0. Cargo's built-ins have no executable either: `command -v cargo-test cargo-build cargo-doc cargo-run` exits **1** while `cargo test --help` exits 0 | `evidence/alias-mechanism.log`, `evidence/invocation-sweep.log` |
+| 12 | **The presence test for the two acquisition channels, on real tools rather than stubs** (revision 2) | `ls -l ~/.cargo/bin` for the proxy set; `command -v cargo-machete`; `cargo machete --version`; `cargo audit --version`; `command -v cargo-nosuchplugin`; `cargo nosuchplugin`; `command -v taplo typos`; `taplo --version`; `typos --version`; `command -v gitleaks`; and, for a rustup-proxied **bare** name, `command -v rustfmt rust-analyzer` plus `rustfmt --version` and `rust-analyzer --version` in `neg/` and `pos/` | see Result | **crates.io class, `command -v` is meaningful**: `cargo-machete` and `cargo-audit` are ordinary executables (5977856 and 18907184 bytes, not symlinks); `command -v cargo-machete` exit 0 and `cargo machete --version` → `0.9.2`; `cargo audit --version` → `cargo-audit-audit 0.22.1`; the negative control `command -v cargo-nosuchplugin` exits 1 and `cargo nosuchplugin` exits 101. **Bare class**: `taplo --version` → `taplo 0.10.0`, `typos --version` → `typos-cli 1.32.0`, both resolved in `~/.cargo/bin`; `command -v gitleaks` exits 1, an uninstalled control. **The defect is not confined to `cargo-<sub>` names**: 13 entries in `~/.cargo/bin` are symlinks to `rustup` — `cargo`, `cargo-clippy`, `cargo-fmt`, `cargo-miri`, `clippy-driver`, `rls`, `rust-analyzer`, `rust-gdb`, `rust-gdbgui`, `rust-lldb`, `rustc`, `rustdoc`, `rustfmt` — so in `neg/` `command -v rustfmt rust-analyzer` exits 0 while `rustfmt --version` and `rust-analyzer --version` both exit 1, and in `pos/` both exit 0. This is why the parameter keys presence on acquisition rather than on the name's shape | `evidence/invocation-sweep.log`, `evidence/presence-test.log` |
+| 13 | **Cargo aliases in the four surveyed reference repositories** (revision 2) | `GET https://raw.githubusercontent.com/<repo>/HEAD/.cargo/config.toml` for the four; alias-name greps over each fetched `justfile`; `gh api repos/cargo-limit/cargo-limit/contents/src/bin` | 0 | `oxc` HTTP 200 with `[alias]` `ck`, `lint`, `codecov`, `coverage`, `benchmark`, `minsize`, `allocs`, `lint-timings`, `rule`, `lintgen`, invoked on 14 justfile lines (`:40`, `:51`, `:60`, `:64`, `:104`, `:108`, `:114`, `:119`, `:130`, `:298`, `:303`, `:307`, `:312`, `:314`); `biome` HTTP 200 with `[alias]` including `lint = "clippy --workspace …"`, `format = "fmt --all --verbose"` and `documentation`, invoked at `justfile:160`, `:234`, `:334`; `casey/just` and `cargo-bins/cargo-binstall` HTTP **404** — neither defines aliases, and `just`'s `cargo lclippy`/`lrun`/`lbuild`/`ltest` are `cargo-limit`'s binaries (`src/bin/cargo-lclippy.rs`, `cargo-lrun.rs`, `cargo-lbuild.rs`, `cargo-ltest.rs`), installed by its own `justfile:117` `cargo install cargo-limit`. Re-confirmed in the same fetch: **0** wrapper-prefix lines in all four `justfile`s | `evidence/reference-aliases.log` |
 
 **Figures, all retrieved 2026-09-10** (endpoints per the prompt's evidence table;
 open issues from `search/issues` `total_count`, never `open_issues_count`):
@@ -312,19 +393,26 @@ time): **zero on both for the template's artifact**, since no dependency is
 added; for the contributor, `cargo install --locked` costs one source compile per
 tool, which is the price paid for the licence-clean backend.
 
-**An observed hazard, recorded because it is evidence for the split rule.** On
-this host `command -v cargo` resolves to `/opt/homebrew/bin/cargo`, and
+**An observed hazard, recorded because it is evidence for the invocation rule,
+and what revision 2's checks make of it.** Under the default `PATH` on this host
+`command -v cargo` resolves to `/opt/homebrew/bin/cargo`, and
 `cargo-fmt`/`cargo-clippy` likewise resolve to Homebrew builds rather than to
 rustup's proxies, while `rustup which rustc` points into
-`~/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc`. The dispatch and
-component checks therefore prove that `cargo fmt`/`cargo clippy` resolve with no
-installer step, and that `rustup show active-toolchain` honours the committed
-file — but they do **not** prove, on this host, that `cargo fmt` reaches the
-toolchain-file-selected rustfmt *through the rustup proxy*, because a second
-Rust installation shadows it on `PATH`. That is exactly the drift a bare-binary
-`PATH` lookup can hide, and it is the strongest single argument for the
-`cargo <sub>` half of the owned parameter. Proving proxy resolution needs a clean
-runner; it is listed below as P03's.
+`~/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc`. Revision 1 could
+therefore prove only that `cargo fmt`/`cargo clippy` resolve with no installer
+step and that `rustup show active-toolchain` honours the committed file. Check 10
+settles the rest **on this host**: with `PATH` restricted to
+`$HOME/.cargo/bin:/usr/bin:/bin`, `command -v cargo` resolves the rustup proxy
+`~/.cargo/bin/cargo` rather than Homebrew's build, and one unchanged `cargo fmt --version`
+returns three different rustfmt builds under three different committed channels,
+and fails outright under the one whose toolchain lacks the component. So the
+`cargo <sub>` form does reach the toolchain-file-selected component through the
+proxy, and the two figures also expose the drift itself: the same command
+returned Homebrew's `rustfmt 1.9.0` under the default `PATH`. That drift is
+exactly what a bare-binary `PATH` lookup hides, and it remains the strongest
+single argument for the `cargo <sub>` half of the owned parameter. What is still
+unproven is a machine carrying **no** second Rust installation, and Linux; both
+stay in the unproven list below.
 
 ## Engines
 
@@ -333,6 +421,77 @@ runner; it is listed below as P03's.
 - **doxa/openai** `raw/doxa-openai.normalized.md` (gpt-5.6-sol, retrieved 2026-09-09) — adopt `mise` 2026.9.3 plus a committed `mise.lock`; external tools invoked as `mise --locked exec -- <tool>`; lefthook delegates to `just`.
 - **doxa/gemini** `raw/doxa-gemini.normalized.md` (deep-research-preview-04-2026, retrieved 2026-09-09) — adopt `mise` + `cargo-run-bin` + `just`; invocation `mise exec <tool>` and `cargo bin <tool>`.
 - **doxa/perplexity** `raw/doxa-perplexity.normalized.md` (sonar-deep-research, retrieved 2026-09-09) — adopt rustup/Cargo **and** `cargo-binstall` **and** a single `mise.toml`, but invoke first-party tools as cargo subcommands and everything else as bare binaries on `PATH`.
+
+**Decision revision history.**
+
+**Revision 1** (sha256 `5935af16e9b1ba082099b20fa8ca84ee7aea49965feab702eb97477f484d6239`,
+2026-09-10) was **approved** by the empirical audit `review/audit-codex.r1.md`
+(actor `audit-codex-2026-09-05T155503Z-4141a35b69e0`, model `gpt-5.6-terra`,
+family openai) **with no findings**: that audit reran the 17-repository survey,
+the dispatch mechanism check, the crates.io and GitHub queries, the RustSec
+probes and the four reference reads in a Lima Ubuntu arm64 VM at `rustc`/`cargo`
+1.98.1, reproduced every displayed figure and the off-`PATH` negative control,
+and recorded that on Linux `cargo` *is* the rustup proxy
+(`evidence/audit-dev-toolchain-provisioning.log`). It was **rejected** by the
+judgment audit `review/audit-fable.r1.md` (actor
+`audit-fable-2026-09-05T155503Z-4141a35b69e0`, model `claude-opus-5`, family
+anthropic) on three findings, all in the text of the owned parameter and its
+`BASELINE-REVIEW: F181` line rather than in the research behind them:
+**F1**, the presence test `command -v cargo-<sub>` cannot fail for the
+rustup-component class the parameter explicitly names, because
+`~/.cargo/bin/cargo-fmt` is a symlink to `rustup` present regardless of component
+installation, and the F181 line's "provably the correct test for both tool
+classes" exceeds a stub experiment covering crates.io-installed plugins only —
+vacuous rather than dangerous inside the recommended design, since layer 1's
+`components = ["rustfmt", "clippy"]` makes rustup install them, but a defect in a
+parameter six items consume; **F2**, `## Engines` records five disagreements and
+omits the presence-test one, although `raw/doxa-openai.normalized.md:201` and
+`raw/doxa-gemini.normalized.md:48` both opposed the `command -v` loop, and
+rejecting `mise` does not dispose of openai's mise-independent half; **F3**, the
+parameter is silent on Cargo aliases, a third invocation form in two of the four
+reference `justfile`s the decision cites, so `cargo lint` matches neither
+permitted form and R28 must guess. The same audit recorded, so they are not re-litigated, that the
+17-repository survey carries what it is used for, that the licence exclusion is
+correctly posed as an owner ruling, that both `BASELINE-REVIEW` lines are in the
+runbook's four-field form, are responsive to what `docs/port/BASELINE-REVIEW.md`
+asked of R42 and leave verdict strings to the controller, that the F190/F103
+coordination matches the reconciliation record, and that the ten unproven items
+are "honest and, with one exception, complete" — the exception being F1's
+presence-test question, which revision 2 answers.
+
+**Revision 2** (this text; synthesized 2026-09-10 by a fresh context, model
+`claude-opus-5`, family anthropic, which produced none of the raw reports or
+audits) corrects all three findings, verifies the correction by running it, and
+sweeps every other claim the parameter makes about invocation or detection. It
+changes **no** design choice: the recommendation, its five layers, the
+seventeen-repository survey, the licence question posed as an owner ruling, the
+five earlier adjudications, the figure table, the fitness gates and the
+architecture comparison are untouched. Twenty-two hunks (`git diff -U0` against
+revision 1), by section:
+*title* — revision and date. *`## Decision`* — layer 5's table row now states
+invocation and presence as two independent axes; the `BASELINE-REVIEW: F181` line
+replaces "keep `command -v` as the presence test … provably the correct test for
+both tool classes" with the class-specific rule and cites the negative case that
+establishes it (F1); acceptance criterion (A) names the absent-component case,
+criterion (E) adds the `[alias]` prohibition; the MEDIUM answer drops the claim
+that all four surveyed `justfile`s exemplify the split rule and replaces it with
+the four forms those files actually use (F3); the reference-implementation
+paragraph records that `oxc` and `biome` also name tasks through aliases, and
+that `cargo-binstall` defines none, and the HIGH answer on F183 stops saying the
+proxy route is unproven on this host, since check 10 proves it. *`## Parameters`* — the owned parameter is
+rewritten on both axes: built-in subcommands named, Cargo aliases answered, and
+presence keyed on acquisition channel with `command -v` excluded for rustup
+components (F1, F3). *`## Empirical check`* — a second toolchain paragraph for
+the restricted-`PATH` checks; the working-directory paragraph enumerates the
+revision-2 scratch files exactly; check 4's caveat is settled by the new check
+10; five checks (9–13) are added; the hazard note records what check 10 proves
+and what it does not. *`## Engines`* — this history; disagreement 6 (F2);
+unproven item 1 now credits the r1 auditor's Linux rerun and records that checks
+9–12 have no Linux leg, while items 2, 3 and 9 are narrowed to what the new
+checks leave open.
+Nothing in `review/` outside `DECISION.md` was edited; four evidence logs were
+added (`presence-test.log`, `alias-mechanism.log`, `invocation-sweep.log`,
+`reference-aliases.log`) and no existing log was modified.
 
 **Disagreements, and the evidence that settled each.**
 
@@ -383,6 +542,35 @@ runner; it is listed below as P03's.
    a single bootstrap recipe listing every tool, with no per-tool recipe
    (`evidence/reference-impls.log`, 2026-09-10). codex's provenance concern is
    preserved inside the generic recipe as the pinned `name@version` spec.
+6. **How is presence tested — an ambient `PATH` search, or declared state?**
+   Recorded in revision 2; revision 1 omitted it although it emitted a
+   `BASELINE-REVIEW:` line settling it. Two of the five engines opposed the
+   `command -v` loop. openai, verbatim
+   (`raw/doxa-openai.normalized.md:201`): `BASELINE-REVIEW: F181 — verify
+   declarative state rather than search ambient PATH — keep check-deps distinct
+   from F180/bootstrap, implementing it with mise ls --missing and rustup
+   component state rather than a command -v loop — this item therefore does not
+   collapse F181 into F180.` gemini (`raw/doxa-gemini.normalized.md:48`):
+   "Eliminate the `command -v` loop presence tests in `check-deps`."
+   **The two proposals do not survive disagreement 1 equally, and separating them
+   is the point.** gemini's rationale is *entirely* provisioner-dependent —
+   "because `mise` and `cargo-run-bin` deterministically ensure tool presence
+   before execution, manual presence testing becomes redundant boilerplate" — so
+   rejecting `mise` and `cargo-run-bin` disposes of all of it, and this decision
+   keeps a presence check that no engine's provisioner would guarantee. openai's
+   proposal has two halves: `mise ls --missing`, which falls with disagreement 1,
+   and **"rustup component state"**, which depends on no provisioner at all.
+   That half is **adopted in revision 2** and is the fix for the defect
+   revision 1's parameter carried: on the evidence of check 9, `command -v`
+   cannot fail for a rustup component, while
+   `rustup component list --installed` refuses an absent component and passes a
+   present one. openai's stated rationale — "search ambient `PATH`" — is
+   the correct diagnosis for that class and the wrong one for the other: for a
+   crates.io-installed plugin or bare binary there is no declarative state to
+   read, the `PATH` entry *is* the tool (check 12), and `command -v` is the
+   sound test. Settled, therefore, by splitting the question the engines had
+   asked as one: **declared state for the rustup class, ambient `PATH` for the
+   acquired class**, with no provisioner in either.
 
 **Perplexity's incomplete body, and what is genuinely unsupported.** As the
 normalization log records (`doxa/normalization.json`), the perplexity body lacks
@@ -408,19 +596,39 @@ opus with a cited endpoint and retrieval date.
 **Unproven — what P03 must validate against the real template.** Each item names
 what would prove it.
 
-1. **Linux.** Every command in `## Empirical check` ran on macOS 26.4 / arm64
-   only. Proof: run checks 3, 4 and 8's equivalents on `ubuntu-latest`.
-2. **Component resolution through the rustup proxy.** This host's `cargo`,
-   `cargo-fmt` and `cargo-clippy` are Homebrew builds shadowing rustup's proxies,
-   so `cargo fmt` reaching the *toolchain-file-selected* rustfmt is unproven here.
-   Proof: on a clean runner with no second Rust installation, assert
-   `command -v cargo` equals `rustup which cargo` and that `cargo clippy --version`
+1. **Linux.** Every command in `## Empirical check`, in both revisions, ran on
+   macOS 26.4 / arm64 only. Proof: run checks 3, 4 and 8's equivalents, and
+   revision 2's checks 9–12, on `ubuntu-latest`. Partially discharged already for
+   the revision-1 checks, though not by this synthesizer: the archived empirical
+   audit `review/audit-codex.r1.md` reran checks 2, 3, 4, 5, 6, 7 and 8 on
+   Lima Ubuntu arm64 at `rustc`/`cargo` 1.98.1, reproduced every figure, and
+   reported that there `cargo` *is* the rustup proxy
+   (`evidence/audit-dev-toolchain-provisioning.log`). Checks 9–12 postdate that
+   audit and have no Linux leg.
+2. **Component resolution through the rustup proxy, on a machine with only one
+   Rust installation.** Narrowed by revision 2's check 10 and no longer open in
+   the form revision 1 stated it: with `PATH` restricted to
+   `$HOME/.cargo/bin:/usr/bin:/bin`, `command -v cargo` resolves the rustup proxy
+   `~/.cargo/bin/cargo`, and one `cargo fmt --version` returns
+   `rustfmt 1.8.0-stable (4a4ef493e3)`, `1.9.0-stable (ac68faa20c)` and
+   `1.8.0-stable (ed61e7d7e2)` under committed channels `stable`, `1.96.0` and
+   `1.91.1`, and exits 1 under `1.97.1`. What remains unproven is the same
+   behaviour on a machine where no second Rust installation exists to be excluded
+   — a restricted `PATH` simulates that, it does not establish it — and on Linux.
+   Proof: on a clean runner, with the runner's own `PATH` untouched, assert that
+   `command -v cargo` is `$CARGO_HOME/bin/cargo` — the rustup proxy, whose
+   toolchain target `rustup which cargo` names — and that `cargo clippy --version`
    changes when the committed `channel` changes.
 3. **The whole loop.** `just check-deps` printing one
    `MISSING <tool> -> RUN <command>` line per absent tool and exiting non-zero,
    then zero after `just install-tool` — acceptance criteria (A) and (D). Not run
    here, because running it means writing the `Justfile` this decision only
-   recommends. Proof: build the template and run it in CI on both runners.
+   recommends. Revision 2 proves the two presence tests the loop must use, in
+   both polarities and in isolation (checks 9 and 12); what remains unproven is a
+   recipe that runs them over the declared tool table and prints the remediation
+   line, in particular the `rustup component add <component>` branch that
+   criterion (A) now names. Proof: build the template and run it in CI on both
+   runners.
 4. **The acquisition backend end to end.** `cargo install --locked <name>@<version>`
    installing a real tool and `command -v <tool>` finding it. Not run: it writes
    binaries into the owner's `~/.cargo/bin`. Proof: run it on a CI runner.
@@ -444,9 +652,10 @@ what would prove it.
    `profile` and `components` are recommended here. Proof: R27's decision, then a
    CI run confirming the two components are present on that channel.
 9. **The prohibition is unenforced.** Acceptance criterion (E) — no wrapper
-   prefix, no provisioner manifest — is a proposed standing guard, a natural fit
-   for the drift check R15 owns. No such guard was written. Proof: P03 implements
-   and runs it.
+   prefix, no provisioner manifest, and (added in revision 2) no `[alias]` table
+   in a committed `.cargo/config.toml` — is a proposed standing guard, a natural
+   fit for the drift check R15 owns. No such guard was written. Proof: P03
+   implements and runs it.
 10. **Issue-responsiveness medians** for every candidate were not measured in this
     decision; `raw/opus.md` additionally records `jdx/mise` and `flox/flox` as
     unmeasurable by the prescribed method. Proof: sample the 10 most recently

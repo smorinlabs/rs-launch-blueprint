@@ -1,0 +1,54 @@
+# R42 revision 2 — Cargo alias as a third invocation form. Run 2026-09-10T06:02:38Z
+# Scratch dir /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/alias holds only .cargo/config.toml:
+[alias]
+myver = "version"
+demo = "version"
+
+=== an alias runs with no cargo-<sub> executable anywhere ===
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin cargo myver
+cargo 1.94.0 (85eff7c80 2026-01-15)
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin command -v cargo-myver
+exit=1
+
+=== the same command outside the alias dir: the alias does not exist ===
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin cargo myver
+error: no such command: `myver`
+
+help: a command with a similar name exists: `owner`
+
+help: view all installed commands with `cargo --list`
+help: find a package to install `myver` with `cargo search cargo-myver`
+exit=101
+
+=== precedence: alias 'demo' vs an external cargo-demo executable on PATH ===
+$ PATH=/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/bin:/Users/stevemorin/.cargo/bin:/usr/bin:/bin cargo demo --flag 1
+warning: user-defined alias `demo` is shadowing an external subcommand found at `/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/bin/cargo-demo`
+  |
+  = note: this was previously accepted but will become a hard error in the future; see <https://github.com/rust-lang/cargo/issues/10049>
+error: unexpected argument '--flag' found
+
+Usage: version [OPTIONS]
+
+For more information, try '--help'.
+exit=1
+
+$ PATH=/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/bin:/Users/stevemorin/.cargo/bin:/usr/bin:/bin command -v cargo-demo
+/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/bin/cargo-demo
+exit=0
+
+=== precedence: built-in 'version' vs an external cargo-version executable on PATH ===
+$ PATH=/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/bin:/Users/stevemorin/.cargo/bin:/usr/bin:/bin cargo version
+cargo 1.94.0 (85eff7c80 2026-01-15)
+exit=0
+
+$ PATH=/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/bin:/Users/stevemorin/.cargo/bin:/usr/bin:/bin command -v cargo-version
+/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/bin/cargo-version
+exit=0
+
+=== control: external dispatch still works for a name that is neither built-in nor aliased ===
+$ PATH=/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/bin:/Users/stevemorin/.cargo/bin:/usr/bin:/bin cargo demo --flag 1
+cargo-demo invoked argv: demo --flag 1
+exit=0
+

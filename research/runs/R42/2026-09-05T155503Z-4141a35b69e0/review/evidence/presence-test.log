@@ -1,0 +1,213 @@
+# R42 revision 2 — toolchain seen by the restricted-PATH checks. Run 2026-09-10T06:08:52Z
+# Default PATH (what revision 1's checks saw):
+$ command -v cargo rustc; cargo --version; rustc --version
+/opt/homebrew/bin/cargo
+/opt/homebrew/bin/rustc
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+
+# Restricted PATH $HOME/.cargo/bin:/usr/bin:/bin (what every revision-2 check saw), from the stable-pinned dir:
+$ PATH=$RUSTUP_PATH command -v cargo rustc; cargo --version; rustc --version; rustup which cargo
+/Users/stevemorin/.cargo/bin/cargo
+/Users/stevemorin/.cargo/bin/rustc
+cargo 1.94.0 (85eff7c80 2026-01-15)
+rustc 1.94.0 (4a4ef493e 2026-03-02)
+/Users/stevemorin/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo
+exit=0
+$ PATH=$RUSTUP_PATH rustup show
+Default host: aarch64-apple-darwin
+rustup home:  /Users/stevemorin/.rustup
+
+installed toolchains
+--------------------
+stable-aarch64-apple-darwin (active, default)
+1.91.1-aarch64-apple-darwin
+1.93.0-aarch64-apple-darwin
+1.96.0-aarch64-apple-darwin
+1.97.1-aarch64-apple-darwin
+
+active toolchain
+----------------
+name: stable-aarch64-apple-darwin
+active because: overridden by '/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/pos/rust-toolchain.toml'
+installed targets:
+  aarch64-apple-darwin
+exit=0
+# R42 revision 2 — presence-test soundness. Run 2026-09-10T06:01:59Z
+# PATH for every command below: $HOME/.cargo/bin:/usr/bin:/bin  (rustup proxies only; the Homebrew Rust that shadows them in revision 1 is excluded)
+# Nothing is installed: no 'rustup component add', no 'rustup toolchain install', no 'cargo install'.
+
+=== the PATH entry for a rustup component is an unconditional proxy ===
+$ ls -la ~/.cargo/bin/cargo-fmt ~/.cargo/bin/cargo-clippy
+lrwxr-xr-x@ 1 stevemorin  staff  6 Apr 24 02:00 /Users/stevemorin/.cargo/bin/cargo-clippy -> rustup
+lrwxr-xr-x@ 1 stevemorin  staff  6 Apr 24 02:00 /Users/stevemorin/.cargo/bin/cargo-fmt -> rustup
+exit=0
+
+=== POSITIVE case: dir pinning channel=stable, whose toolchain HAS rustfmt+clippy ===
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin rustup show active-toolchain
+stable-aarch64-apple-darwin (overridden by '/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/pos/rust-toolchain.toml')
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin command -v cargo-fmt
+/Users/stevemorin/.cargo/bin/cargo-fmt
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin cargo fmt --version
+rustfmt 1.8.0-stable (4a4ef493e3 2026-03-02)
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin rustup component list --installed
+cargo-aarch64-apple-darwin
+clippy-aarch64-apple-darwin
+rust-analyzer-aarch64-apple-darwin
+rust-docs-aarch64-apple-darwin
+rust-std-aarch64-apple-darwin
+rustc-aarch64-apple-darwin
+rustfmt-aarch64-apple-darwin
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin rustup component list --installed | grep -q '^rustfmt-'
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin rustup which cargo-fmt
+/Users/stevemorin/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo-fmt
+exit=0
+
+=== NEGATIVE case: dir pinning channel=1.97.1, whose toolchain LACKS rustfmt+clippy ===
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin rustup show active-toolchain
+1.97.1-aarch64-apple-darwin (overridden by '/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/neg/rust-toolchain.toml')
+exit=0
+
+$ ls ~/.rustup/toolchains/1.97.1-aarch64-apple-darwin/bin
+cargo
+rust-gdb
+rust-gdbgui
+rust-lldb
+rustc
+rustdoc
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin command -v cargo-fmt
+/Users/stevemorin/.cargo/bin/cargo-fmt
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin cargo fmt --version
+error: 'cargo-fmt' is not installed for the toolchain '1.97.1-aarch64-apple-darwin'.
+help: run `rustup component add --toolchain 1.97.1-aarch64-apple-darwin rustfmt` to install it
+exit=1
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin command -v cargo-clippy
+/Users/stevemorin/.cargo/bin/cargo-clippy
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin cargo clippy --version
+error: 'cargo-clippy' is not installed for the toolchain '1.97.1-aarch64-apple-darwin'.
+help: run `rustup component add --toolchain 1.97.1-aarch64-apple-darwin clippy` to install it
+exit=1
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin rustup component list --installed
+cargo-aarch64-apple-darwin
+rust-std-aarch64-apple-darwin
+rustc-aarch64-apple-darwin
+exit=0
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin rustup component list --installed | grep -q '^rustfmt-'
+exit=1
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin rustup component list --installed | grep -q '^clippy-'
+exit=1
+
+$ PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin rustup which cargo-fmt
+error: 'cargo-fmt' is not installed for the toolchain '1.97.1-aarch64-apple-darwin'.
+help: run `rustup component add rustfmt` to install it
+exit=1
+
+
+=== S9. the full presence matrix, run identically in all three directories. 2026-09-10T06:18:55Z ===
+--- directory neg/
+$ (neg) rustup show active-toolchain
+1.97.1-aarch64-apple-darwin (overridden by '/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/neg/rust-toolchain.toml')
+exit=0
+$ (neg) command -v cargo-fmt
+/Users/stevemorin/.cargo/bin/cargo-fmt
+exit=0
+$ (neg) cargo fmt --version
+error: 'cargo-fmt' is not installed for the toolchain '1.97.1-aarch64-apple-darwin'.
+help: run `rustup component add --toolchain 1.97.1-aarch64-apple-darwin rustfmt` to install it
+exit=1
+$ (neg) command -v cargo-clippy
+/Users/stevemorin/.cargo/bin/cargo-clippy
+exit=0
+$ (neg) cargo clippy --version
+error: 'cargo-clippy' is not installed for the toolchain '1.97.1-aarch64-apple-darwin'.
+help: run `rustup component add --toolchain 1.97.1-aarch64-apple-darwin clippy` to install it
+exit=1
+$ (neg) rustup component list --installed | grep -q '^rustfmt-'
+exit=1
+$ (neg) rustup component list --installed | grep -q '^clippy-'
+exit=1
+$ (neg) rustup which cargo-fmt
+error: 'cargo-fmt' is not installed for the toolchain '1.97.1-aarch64-apple-darwin'.
+help: run `rustup component add rustfmt` to install it
+exit=1
+$ (neg) rustup which cargo-clippy
+error: 'cargo-clippy' is not installed for the toolchain '1.97.1-aarch64-apple-darwin'.
+help: run `rustup component add clippy` to install it
+exit=1
+
+--- directory pos/
+$ (pos) rustup show active-toolchain
+stable-aarch64-apple-darwin (overridden by '/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/pos/rust-toolchain.toml')
+exit=0
+$ (pos) command -v cargo-fmt
+/Users/stevemorin/.cargo/bin/cargo-fmt
+exit=0
+$ (pos) cargo fmt --version
+rustfmt 1.8.0-stable (4a4ef493e3 2026-03-02)
+exit=0
+$ (pos) command -v cargo-clippy
+/Users/stevemorin/.cargo/bin/cargo-clippy
+exit=0
+$ (pos) cargo clippy --version
+clippy 0.1.94 (4a4ef493e3 2026-03-02)
+exit=0
+$ (pos) rustup component list --installed | grep -q '^rustfmt-'
+exit=0
+$ (pos) rustup component list --installed | grep -q '^clippy-'
+exit=0
+$ (pos) rustup which cargo-fmt
+/Users/stevemorin/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo-fmt
+exit=0
+$ (pos) rustup which cargo-clippy
+/Users/stevemorin/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo-clippy
+exit=0
+
+--- directory c196/
+$ (c196) rustup show active-toolchain
+1.96.0-aarch64-apple-darwin (overridden by '/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r2/c196/rust-toolchain.toml')
+exit=0
+$ (c196) command -v cargo-fmt
+/Users/stevemorin/.cargo/bin/cargo-fmt
+exit=0
+$ (c196) cargo fmt --version
+rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)
+exit=0
+$ (c196) command -v cargo-clippy
+/Users/stevemorin/.cargo/bin/cargo-clippy
+exit=0
+$ (c196) cargo clippy --version
+error: 'cargo-clippy' is not installed for the toolchain '1.96.0-aarch64-apple-darwin'.
+help: run `rustup component add --toolchain 1.96.0-aarch64-apple-darwin clippy` to install it
+exit=1
+$ (c196) rustup component list --installed | grep -q '^rustfmt-'
+exit=0
+$ (c196) rustup component list --installed | grep -q '^clippy-'
+exit=1
+$ (c196) rustup which cargo-fmt
+/Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo-fmt
+exit=0
+$ (c196) rustup which cargo-clippy
+error: 'cargo-clippy' is not installed for the toolchain '1.96.0-aarch64-apple-darwin'.
+help: run `rustup component add clippy` to install it
+exit=1
+
