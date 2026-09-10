@@ -123,3 +123,21 @@ exit: 0
 
 $ git -C ~/c/ts-launch-blueprint ls-tree -r --name-only cb1cbcb -- .github/ | grep -ci claude   (expect 0)
 0
+
+# ---- revision-2 addendum ----
+# added 2026-09-10 by synth (revision 2) in response to audit-codex.r1 EC-01.
+# The original final entry above recorded the printed count `0` but no exit.
+# The original line is left exactly as written; the exit is recorded here by
+# re-running that one read-only command. Nothing else in this log changed.
+appended at: 2026-09-10T05:47:55Z (UTC), taken from this file's mtime when the block was written; the commands themselves ran a few minutes earlier in the same session. (This line was corrected at 2026-09-10T05:56Z to replace an estimated timestamp with the recorded one, which is why the file mtime is now later.) git via macOS Darwin 25.4.0 arm64
+
+$ git -C ~/c/ts-launch-blueprint ls-tree -r --name-only cb1cbcb -- .github/ | grep -ci claude   (expect 0)
+0
+exit: 1
+# Exit 1 is the EXPECTED AND CORRECT result of this check: `grep` exits 1 when
+# it matches nothing, so exit 1 IS the zero-match finding, not a failure of the
+# check. The count printed on stdout is 0 because -c counts matches.
+
+$ git -C ~/c/ts-launch-blueprint ls-tree -r --name-only cb1cbcb -- .github/ > /dev/null
+exit: 0
+# The producing half of that pipeline exits 0; only the terminal `grep` exits 1.

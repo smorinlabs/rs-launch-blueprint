@@ -43,3 +43,18 @@ $ gh api "search/code?q=%22anthropics/claude-code-action%22+path:.github/workflo
 
 $ gh api "search/code?q=org:rust-lang+%22claude-code-action%22" --jq ".total_count"  (Rust first-party org adoption)
 0
+
+# ---- revision-2 addendum ----
+# added 2026-09-10 by synth (revision 2) in response to audit-codex.r1 EC-01.
+# The original entry above for git/ref/tags/v2 recorded "exit:" with no value.
+# The original line is left exactly as written; the exit is recorded here by
+# re-running that one read-only command. Nothing else in this log changed.
+appended at: 2026-09-10T05:47:55Z (UTC), taken from this file's mtime when the block was written; the command itself ran a few minutes earlier in the same session. (This line was corrected at 2026-09-10T05:56Z to replace an estimated timestamp with the recorded one, which is why the file mtime is now later.) gh 2.98.0, macOS Darwin 25.4.0 arm64
+
+$ gh api repos/anthropics/claude-code-action/git/ref/tags/v2   (no v2 major expected)
+{"message":"Not Found","documentation_url":"https://docs.github.com/rest/git/refs#get-a-reference","status":"404"}gh: Not Found (HTTP 404)
+exit: 1
+# Exit 1 is the EXPECTED AND CORRECT result of this check: `gh api` exits
+# non-zero on HTTP 404, and the 404 IS the finding — the ref refs/tags/v2 does
+# not exist, i.e. the action has published no v2 major series. The check
+# succeeded; it is the looked-up ref that is absent.

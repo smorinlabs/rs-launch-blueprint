@@ -154,3 +154,26 @@ jobs:
           claude_args: |
             --allowedTools "Bash(bun install),Bash(bun test:*),Bash(bun run format),Bash(bun typecheck)"
             --model "claude-opus-4-7"
+
+# ---- revision-2 addendum ----
+# added 2026-09-10 by synth (revision 2) during the revision-2 sweep for claims
+# asserted without a log. Revision 1's fitness-gate paragraph said the action
+# "guards several steps with runner.os != 'Windows'" but no line of this log
+# carried that. Recorded here by re-fetching the same pinned path, read-only.
+# Nothing written at revision 1 was altered.
+appended at: 2026-09-10T05:51:18Z (UTC), taken from this file's mtime when the block was written; the commands themselves ran a few minutes earlier in the same session. (This line was corrected at 2026-09-10T05:56Z to replace an estimated timestamp with the recorded one, which is why the file mtime is now later.) curl on macOS Darwin 25.4.0 arm64
+
+$ curl -sS -o /tmp/r18-action-v1.0.220.yml -w '%{http_code}\n' \
+    https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/action.yml
+200
+exit: 0
+
+$ grep -n "runner.os" /tmp/r18-action-v1.0.220.yml
+228:      if: ${{ inputs.allowed_non_write_users != '' && runner.os == 'Linux' }}
+269:      if: ${{ inputs.allowed_non_write_users != '' && runner.os != 'Windows' }}
+395:      if: ${{ always() && inputs.allowed_non_write_users != '' && runner.os != 'Windows' }}
+exit: 0
+# Exactly three steps carry a runner.os guard: two with != 'Windows', one with
+# == 'Linux'. All three are additionally gated on allowed_non_write_users != '',
+# which this decision leaves at its default "", so none of the three is reached
+# by the recommended configuration.
