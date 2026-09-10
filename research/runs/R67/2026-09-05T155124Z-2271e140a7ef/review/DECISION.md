@@ -1,4 +1,4 @@
-# R67 — Error and exit-code contract (bundle, Deep, keystone) — revision 3, 2026-09-10
+# R67 — Error and exit-code contract (bundle, Deep, keystone) — revision 4, 2026-09-10
 
 Synthesized 2026-09-09 from three engines' raw reports (five provider bodies) plus
 the verification runs recorded under `## Empirical check`. This is a research
@@ -252,17 +252,28 @@ passed twice over — but the requirement is written `"1.0.104"` rather than
 while the recommended set audited clean. That control is the evidence that
 `cargo audit` in CI (R13's `deny.toml`) is non-optional for this stack.
 
-**The exit code for a configuration failure — where the engines split, and what
-the standard actually says.** codex maps all configuration faults to `1`; opus,
-OpenAI and Perplexity map them all to `2`. Neither is right, and R6.1 plus R8.2
-resolve it by splitting the case: R8.2 `(MUST)` assigns exit `2` when "required
-non-auth input or consent is missing" and exit `1` for "runtime input failures
-such as unreadable files". So a config document the user authored incorrectly
-(unparsable, or a value violating the schema) is exit **2**, and a config file
-that cannot be read (permissions, I/O) is exit **1**. Both get their own catalog
-entries so R54–R56 can route to either without inventing a code. R55 and R56 own
-whether a given condition is tolerated, warned about, or fatal; this item only
-guarantees the entry and the code exist.
+**The exit code for a configuration failure — where the engines split, what the
+standard settles, and what this template chooses.** codex maps all configuration
+faults to `1`; opus, OpenAI and Perplexity map them all to `2`. Neither wholesale
+answer is right, because the standard reaches some of these cases and not others,
+and the two must not be conflated. The standard settles two of them. A config
+file that cannot be read (permissions, I/O) is exit **1** — `RSLB104` — because
+R8.2 `(MUST)` assigns exit `1` to "runtime input failures such as unreadable
+files". A config document that will not parse is exit **2** — `RSLB202` — on
+R6.1's *parse error* limb. A value that parses but violates the schema is covered
+by neither rule: R8.2's exit-`2` clause is about required non-auth input or
+consent that is **missing** because prompting is disabled or unavailable, which
+is the case `RSLB205` covers, not an invalid value; and R6.1's own stated default
+for an unlisted failure is `1`. `RSLB203` at exit **2** is therefore **this
+template's choice, not a standard-derived requirement**. It is kept at `2`
+because it is the same user-facing failure as `RSLB202` with the same remedy —
+edit your configuration — and the cost if that choice is wrong is one catalog row
+and one arm of the `exit()` match. The row-by-row basis for all five
+configuration and input rows, including `RSLB204`'s parallel choice, is in
+`## Engines`, Disagreement 4. Each case gets its own catalog entry so R54–R56 can
+route to any of them without inventing a code. R55 and R56 own whether a given
+condition is tolerated, warned about, or fatal; this item only guarantees the
+entry and the code exist.
 
 **Crash-log persistence (F302) — the capability is adopted, the location is
 not.** codex recommends shipping no crash log at all, on two grounds: secret
@@ -750,6 +761,47 @@ accounting points the auditor checked and confirmed are also unchanged because
 they were already right: this decision has **seven** formal consumers (R03,
 R52–R56, R70) alongside five coupled items, and the rejected signal crate was
 proposed by **one** report (Perplexity), as Disagreement 2 records.
+
+**Audit of revision 3, and what revision 4 changed.** Revision 3 (sha256
+`37d610925710e4f667c8fbca1f590de6d46ffdc11b8872c2cd1b508b942e2284`) was
+**rejected** by `audit-codex-2026-09-05T155124Z-2271e140a7ef-r3` (gpt-5.6-terra,
+`review/audit-codex.r3.md`) on one finding: `## Decision`'s
+configuration-failure paragraph still argued that "R6.1 plus R8.2 resolve" the
+case and concluded that both an unparsable document and a value violating the
+schema exit `2`, although revision 3 had already classified `RSLB203` correctly
+as this template's choice in Disagreement 4's basis table and in the owned
+parameter. The document thus offered a reader two incompatible bases for one
+consumed contract value. The auditor confirmed every classification itself:
+`RSLB104` is R8.2's unreadable-file case; `RSLB202` is R6.1's parse-error case;
+`RSLB205` is R8.2's missing-required-input case; `RSLB203` is rightly this
+template's choice because neither R6.1 nor R8.2 reaches an invalid value;
+`RSLB204` is rightly this template's choice because R5.5 and R5.6 assign no exit
+code; and R6.1 covers the named `0/1/2/3/4/5/130/143` categories and its
+unlisted-to-`1` default. The auditor also reran E13 on a Linux VM and E14 on
+macOS — the VM has no `cargo audit` — against a byte-identical copy of the
+fixture and reproduced this decision's figures, raising nothing.
+
+Revision 4 changes exactly one passage, the title line's revision number, and
+this record. The
+configuration-failure paragraph in `## Decision` is rewritten to separate what
+the standard settles (`RSLB104`→1 on R8.2's unreadable-file clause; `RSLB202`→2
+on R6.1's parse limb) from what this template chooses (`RSLB203`→2, with its
+reasoning and its cost if wrong stated there), to say that R8.2's exit-`2` clause
+reaches only *missing* input — the case `RSLB205` covers — and not an invalid
+value, and to point at Disagreement 4's table for the row-by-row basis. A sweep
+of every other place the configuration and input exit codes are characterised
+found nothing further to repair, and each is left byte-identical: AC3 states only
+R6.1's own categories and claims no derivation; the owned parameter already
+labels `RSLB203` and `RSLB204` as this template's choices; E10 records the
+standard's 2/4/1 split as read from it; and Disagreement 4's basis table, its
+reasoning-and-cost paragraph and the `RSLB903`→`RSLB205` sweep already carry the
+classification the auditor accepted. Nothing else changed: the recommendation,
+the stack, the exit integers, the owned parameter, the fourteen verification
+rows, the eight disagreement resolutions, the BASELINE-REVIEW F301 handling, the
+recorded-not-escalated Perplexity `CONFLICT:`, the status paragraph, the
+`re-verify:` line and the unproven list are byte-identical to revision 3. **No
+runtime behaviour was executed for this revision and nothing was rerun**; the
+repair is textual, as the auditor's assessment states it needs to be.
 
 **Where the evidence is incomplete, stated as uncertainty rather than averaged
 away.** Everything under `## Empirical check` is a registry query, a source read
