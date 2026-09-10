@@ -1,0 +1,33 @@
+# R41 revision-6 evidence audit
+
+actor: audit-codex-2026-09-05T160304Z-1e904d50d29e-r6
+model: gpt-5.6-terra
+family: openai
+scope: documentary audit only; no fixture, harness, Cargo command, or Linux VM command was run.
+
+## Recorded checks
+
+`sha256sum review/DECISION.md raw/codex.md raw/evidence-terra-r3.md review/evidence/lockfile-freshness-acceptance.r5.log review/evidence/lockfile-freshness-acceptance-linux.r5.log review/evidence/audit-lockfile-freshness-check-r5.log` returned exit 0.  The relevant digests are:
+
+```text
+cba3a5625bf36d32b76a305f9348cd06d6826c1efbb71139aa21582e66d00401  review/DECISION.md
+edcb7e58848a4c074114ac7f7ba03cc4b9b4114ed51031129b311cde7c00504f  raw/codex.md
+5b10b6715711f93b8ec98f80abbc0dc4d5288d63ccf6bf5dbe439fab97cccb53  raw/evidence-terra-r3.md
+49b8b5da51559d661efb0af653a9d6fc14a994327ad0f0ae2f766ff530e5385c  review/evidence/lockfile-freshness-acceptance.r5.log
+dba05d8cb3b83e2e49bd52a277d83a4b424fda3e46bfe8a250b6ab6747052c45  review/evidence/lockfile-freshness-acceptance-linux.r5.log
+3734526b625f07b2f2718ad417153fa9666fe076cb7632f533547224a9257ac1  review/evidence/audit-lockfile-freshness-check-r5.log
+```
+
+The macOS and Linux r5 logs each end with `summary: PASS=436 FAIL=0 RECORD=76` and `RESULT: PASS`; the Linux log also records `runner exit: 0`.  The r5 audit log contains the same terminal result for its macOS and Linux reruns.
+
+The decision's corrected configuration claim is supported exactly as narrowed.  F5 records a manifest-level `[patch.crates-io]` refusal followed by repair and accepted commit.  H1b/H1c record a nested root `.cargo/config.toml` `[patch.crates-io]` stale state being refused and its commit blocked; H2b/H2c record the repaired patched state being accepted and committed.  Those cases occur on the two toolchains in both r5 OS-leg logs and in the independent r5 audit log.  H4a/H4b separately record the below-root configuration limit.  Therefore the decision correctly leaves source replacement, rather than `[patch]`, unproven.
+
+The three lead findings are supported by the r5 records: E1a--E1d and E1h establish the orphan-entry false pass and pruning resolve; G1a/G1b versus G1c--G1f establish the nested-workspace finding; and H1a/H2d versus H1b/H1c/H2b/H2c establish the working-directory configuration finding.  `raw/evidence-terra-r3.md` supports the older raw report's retained figures and its limited `cargo metadata --locked --format-version=1` recommendation; revision 6 does not misattribute that earlier recommendation to its selected unlocked command.
+
+## Finding F1
+
+`review/DECISION.md:135` says that “Everything cited here” was executed by the revision-5 synthesizer on 2026-09-10.  That scope includes the two r3 88-package timing logs cited by the same section at `review/DECISION.md:147`.  Those logs instead identify themselves as revision-3 timing probes and start at `2026-09-09T06:40:24Z` (warm) and `2026-09-09T06:40:49Z` (cold).  They are valid evidence for the limited direct-command measurements stated at line 147, but not for the preceding blanket r5/2026-09-10 provenance claim.  Narrow the sentence to the r5 harness records, or expressly exclude the r3 timing records.
+
+## Rerun
+
+No runtime rerun was performed.  The owner-directed revision-6 scope requires existing-log verification only; no Cargo, fixture, harness, or VM command was invoked.  Rerun exit code: not applicable.  The existing r5 evidence output therefore was not compared to a new run.
