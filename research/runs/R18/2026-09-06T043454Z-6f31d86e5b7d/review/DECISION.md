@@ -1,4 +1,4 @@
-# R18 — ai-assisted-review-workflows (bundle, Deep) — decision (revision 4, 2026-09-10)
+# R18 — ai-assisted-review-workflows (bundle, Deep) — decision (revision 5, 2026-09-10)
 
 ## Decision
 
@@ -176,11 +176,18 @@ re-verify: 2026-12-10, or earlier on any of — **the owner recording acceptance
 ## Parameters
 
 - owns — **none**. R18's `## Couplings` block has an empty `owns:` line and `research/CLAUDE.md` records R18's `owns` column as `—`, so this item contributes no row to `docs/port/PARAMETERS.md`.
-- assumes `msrv-policy` = `stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI` — **not engaged**: neither member adds a crate to the dependency tree, so no MSRV is constrained.
-- assumes `rust-edition` = `2024` — **not engaged**: neither workflow file references a Rust edition or invokes `cargo`.
-- assumes `target-os-matrix` = `ubuntu-latest, macos-latest` — **engaged only in the negative**: both members are deliberately single non-matrix jobs on one Linux runner and do not join the OS matrix, because the reviewed artifact is a diff rather than a build.
-- assumes `license` = `MIT OR Apache-2.0` — **engaged and satisfied**: the single recommended component is MIT (`license.spdx_id`, `action-release.log`), and invoking a GitHub Action propagates no license term into the template's distributed artifacts.
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+- assumes license = MIT OR Apache-2.0
 - No `CONFLICT:` line is emitted. R18's `## Couplings` block lists an empty `consumes:`, so there is no consumed parameter whose value this recommendation could need changed, and none of the four owner-fixed values above is challenged.
+
+**How each assumed parameter bears on this decision.** The four lines above carry the registry value and nothing else, because the packaging validator reads everything after `= ` as the value and compares it byte-for-byte with `docs/port/PARAMETERS.md`; the engagement notes that revision 4 wrote on those lines are therefore stated here instead, unchanged in substance.
+
+- `msrv-policy` is **not engaged**: neither member of the bundle adds a crate to the dependency tree, so no minimum supported Rust version is constrained by anything R18 recommends.
+- `rust-edition` is **not engaged**: neither workflow file references a Rust edition or invokes `cargo`.
+- `target-os-matrix` is **engaged only in the negative**: both members are deliberately single non-matrix jobs on one Linux runner and do not join the OS matrix, because the reviewed artifact is a diff rather than a build.
+- `license` is **engaged and satisfied**: the single recommended component is MIT (`license.spdx_id`, `action-release.log`), and invoking a GitHub Action propagates no license term into the template's distributed artifacts.
 
 ## Empirical check
 
@@ -283,6 +290,8 @@ Evidence logs, all under `research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/revi
 **What revision 4 changed, and whether the recommendation moved. It moved.** Revisions 1 to 3 recommended "Ship **both** workflows … inert by default in a downstream fork", which read as an unconditional recommendation and treated origin-repository enablement as settled. Revision 4 recommends shipping both **as inert artifacts** and **withholds enablement on any public repository, the origin included, until owner acceptance of a named residual is on record**, with the runner-up promoted from ranked alternative to the default outcome if acceptance is withheld. The reasoning is set out in "What enabling costs the owner": shipping the files and enabling the capability are separate acts with separate risk owners; the residual is a property of the capability, not of the files, so the runner-up relocates the decision rather than removing the risk; but the residual is unremovable by configuration, binds **both** lanes (because S2 escalates through the App installation token, whose default request is `contents`/`pull_requests`/`issues` `write`, not through the job's grants), and sits behind a pre-token window in which the workflow's job-level `if:` is the only control — and no owner acceptance exists. On that reading a conditional recommendation is the honest one, and an unconditional "ship both" would assert an owner judgement this research does not hold. Revision 4 also does **not** claim the runner-up wins outright, because the evidence does not show it is safer — it shows it moves the decision to adoption time. The configuration changes are exactly three, all on the review lane: `plugin_marketplaces` removed, `plugins` removed, and the `prompt:` value changed from `'/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }} --comment'` to `'/review-pr REPO: ${{ github.repository }} PR_NUMBER: ${{ github.event.pull_request.number }}'`. The assistant lane's YAML is unchanged (`diff` exit 0, check 16). Everything else in revision 4 is correction, scoping, or argument.
 
 **Also corrected in the same sweep, by inspection rather than by finding.** (i) The reference-implementation paragraph now says explicitly that **none of the five maintainer/example references carries an author-trust gate**, so concordance is not silently read as endorsing its absence. (ii) `## Dates` carries revision 3's capture times, read from mtimes and from each log's own `date -u` header. (iii) The assistant lane's `contents: write` / `issues: write` grant is recorded as **wider than the vendor's own default template** as the disclosure reproduces it (`contents: read` / `pull-requests: read` / `issues: read`), matching `py`; it is **not** re-decided here, because R08 owns permission hardening, and the analysis notes that the S2 chain's Phase 2 escalates through the Claude GitHub App installation token rather than through the job's own grants, so narrowing the job grant would not have blocked it. (iv) The `ts` agreement-level bullet keeps both exits named. (v) Check 6's observed column now records that `py`'s assistant lane has **no fork or same-repo clause**, which is the fact JA-05's fourth objection turns on.
+
+*Revision 4* (sha256 `83bf78bae1813ad43a0fb23b150db8d9200281c1f41ed9a5235071fadf25d9f9`) carried **no outstanding audit findings**: it answered every finding of the preceding audit round — F1, F2 and F3 of `review/audit-codex.r3.md`, together with the unpinned marketplace fetch that audit raised outside its findings — and it moved the recommendation, as the two tables and the paragraphs above record. **Revision 5 changes one thing only**: the format of the four `- assumes` lines in `## Parameters`, which publication validates byte-for-byte against `docs/port/PARAMETERS.md` and which revision 4 wrote with the value in backticks followed by commentary, so the declaration regex matched neither the parameter name nor the registry value. The values are now written bare and the commentary moved to prose immediately below the list, losing nothing. Nothing else moved: the recommendation, the security adjudications, the guard-layer table, the removal of the unpinned marketplace fetch, and the eighteen unproven items all stand as revision 4 left them.
 
 **Engines.**
 
