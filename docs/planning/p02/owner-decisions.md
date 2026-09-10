@@ -19,7 +19,7 @@ Status as of 2026-09-10. Fourteen items are published. The programme is
 | 2. R69 early admission | 19 items directly, 33 transitively | the largest dependency cluster stays idle |
 | 3. R66 paid providers | one item's evidence base | R66 decides on one engine instead of three |
 | 4. R18 residual acceptance | nothing in P02 | P03 ships two files that nothing may enable |
-| 5. R42 licence gate | nothing in P02 | P03 uses the slower install backend |
+| 5. Licence gate reach | two items now depend on it | P03 uses the slower install backend, and R33 stays conditional |
 | 6. R25 prompt correction | nothing | a defective prompt stays on the record |
 | 7. Baseline-review questions | nothing yet; several are inputs to unadmitted items | later items research around them |
 | 8. Model substitution acknowledgment | nothing | an approval record stays incomplete |
@@ -154,7 +154,7 @@ not.
 **Response that settles it.** "Accept the R18 residual", "withhold it", or
 "withhold for the template, accept for this repository".
 
-## 5. R42's licence gate
+## 5. The licence gate's reach
 
 **What is being asked.** Whether the fixed `license` fitness gate reaches a
 developer tool that runs as a separate process and is never linked into the
@@ -183,6 +183,15 @@ one line of the recipe body and no invocation anywhere.
   contributors pay in compile time.
 - **(c) Leave it, and use the licence-clean prebuilt alternative if compile time
   proves unacceptable.** The decision names one.
+
+**This is no longer about one item.** R33, property-and-snapshot-testing, reached
+the same gate independently: two of the members it recommends carry a single
+permissive licence rather than the dual expression, and it passes them on the
+same reasoning, that they are development-only and never shipped in the
+artifact. Its decision is being written to remain valid under both branches of
+your ruling, with a named drop-in if the ruling goes the strict way. Expect more
+items to reach this gate, because development tooling routinely carries licences
+the shipped artifact would not.
 
 **Recommendation: (b), with (c) as the escape hatch.** A programme-wide licence
 ruling made to speed up one install step is a large lever for a small gain, and
