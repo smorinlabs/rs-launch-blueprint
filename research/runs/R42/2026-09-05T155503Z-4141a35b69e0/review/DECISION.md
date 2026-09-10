@@ -1,4 +1,4 @@
-# R42 — dev-toolchain-provisioning (bundle, Deep) — DECISION (revision 3, 2026-09-10)
+# R42 — dev-toolchain-provisioning (bundle, Deep) — DECISION (revision 4, 2026-09-10)
 
 ## Decision
 
@@ -67,13 +67,19 @@ printed `cargo-demo invoked argv: demo --flag 1` and exited 0 on this host,
 `command -v cargo-demo` resolved it, and the real crates.io plugin
 `cargo-machete` resolves and dispatches the same way (`cargo machete --version` → `0.9.2`, exit 0)
 (logs `evidence/invocation-mechanism.log`, `evidence/invocation-sweep.log`); and
-`command -v` **cannot fail for a rustup component on any machine where rustup
-itself is installed and `$CARGO_HOME/bin` is on `PATH`** — the machine every
-other part of this stack assumes — because rustup installs a proxy in
-`$CARGO_HOME/bin` (`~/.cargo/bin/cargo-fmt` is a symlink to `rustup`) for a set
-of names it does not vary with the selected toolchain's component set: 13 such
-symlinks on this host, present in every cell of check 9 including the cells
-where the component is absent. Demonstrated with a genuinely absent component: in a
+`command -v` **passed for a rustup component in every cell that was tested,
+including the cells where the component is absent**, so on the tested
+configurations it does not distinguish an installed component from a missing one.
+What the logs record is this host: `~/.cargo/bin` holds 13 names that are
+symlinks to `rustup`, `cargo-fmt` and `cargo-clippy` among them, and both
+resolved with exit 0 in all three directories of check 9 — macOS 26.4/arm64,
+rustup 1.29.1, four already-installed toolchains
+(`evidence/presence-test.log`, `evidence/invocation-sweep.log`); the archived
+audits `review/audit-codex.r2.md` and `review/audit-codex.r3.md` add the same
+three-cell result on one Linux VM. **No other machine or rustup version was
+tested here**, so the parameter's rule below is prescribed for this template on
+the strength of that recorded failure, not asserted as a property every rustup
+installation has. Demonstrated with a genuinely absent component: in a
 directory pinning `channel = "1.97.1-aarch64-apple-darwin"`, whose toolchain
 carries neither `rustfmt` nor `clippy`, `command -v cargo-fmt` exited **0** while
 `cargo fmt --version` exited **1** (`error: 'cargo-fmt' is not installed for the
@@ -278,7 +284,7 @@ re-verify: 2027-03-10, or any earlier event listed immediately above
 
 ## Parameters
 
-- owns package-manager-invocation = **two independent axes; a consuming item answers both.** **(i) How a tool is invoked, keyed on the executable's name.** `cargo <sub>` for any tool whose executable is named `cargo-<sub>` — including the rustup components rustfmt and clippy, invoked as `cargo fmt` and `cargo clippy`; a bare `<tool>` binary resolved on `PATH` for every other tool; Cargo's own built-in subcommands (`cargo test`, `cargo build`, `cargo doc`, `cargo run`, …) written as they are, since they ship inside Cargo and have no `cargo-<sub>` executable at all; and **no provisioner, runner or package-manager prefix** (`mise exec`, `cargo bin`, `nix develop -c`, `flox activate`, or any `uv run` analogue) in any Justfile recipe or lefthook job. **Cargo aliases are a further form — the fourth, after built-ins — and the template defines none**: no committed `.cargo/config.toml` carries an `[alias]` table, and a recipe spells the underlying subcommand in full — R28's clippy invocation, whatever flags R28 selects, is written `cargo clippy …` inside the Justfile recipe that owns it, not `cargo lint` behind an alias. Reasons, each verified below and each stated at the strength its evidence supports: an alias is a second place where the same task is named, so the Justfile recipe and `.cargo/config.toml` must then be hand-synchronised, which essential behavior (4) calls a defect; an alias is invisible to the `command -v <executable>` test **this parameter prescribes**, because no `cargo-<alias>` executable exists (check 11: `command -v cargo-myver` exit 1 while `cargo myver` ran, exit 0) — a test that read `.cargo/config.toml`, or parsed `cargo --list`, might see it instead, and neither was exercised here; and an alias **takes precedence over and shadows** a same-named external subcommand, which Cargo reports rather than passing over in silence: check 11 recorded `warning: user-defined alias 'demo' is shadowing an external subcommand found at …/bin/cargo-demo`, noting that this "was previously accepted but will become a hard error in the future", with the URL `https://github.com/rust-lang/cargo/issues/10049`. A warned shadowing is a materially weaker hazard than a silent one, and the argument is restated to match: the collision is reported when it occurs and is slated to become fatal, so the risk an alias carries here is **a name that can start warning and later stop working** when a tool of the same name is installed — not a collision that passes unobserved. The two load-bearing reasons for the template defining no alias are therefore the duplicated naming location and the invisibility to the prescribed presence test; the shadowing is a third, lesser reason, kept because it is a real cost of the form and not because it is silent. An alias in a **consuming repository** is not prohibited — two of the four surveyed reference repositories use them — and where one exists it is a permitted spelling of the `cargo <sub>` form; its presence test targets the underlying tool (for `lint = "clippy …"`, clippy's component state), never `cargo-<alias>`. **(ii) How presence is tested, keyed on how the tool was acquired**, because the two acquisition channels fail differently: a tool installed from crates.io or from a release — a `cargo-<sub>` plugin or a bare binary alike — is tested with `command -v <executable>`, where the `PATH` entry *is* the tool, remediated by the `just install-tool <name>@<version>` line; a tool rustup installs — a component, whether invoked as `cargo fmt`, `cargo clippy` or bare (`rustfmt`, `rust-analyzer`, `clippy-driver`) — is tested against the active toolchain's own component state with `rustup component list --installed` (one call covers every component; per tool, `rustup which <executable>` is equivalent — verified for `cargo-fmt` and `cargo-clippy` — and both honour a `rust-toolchain.toml` override), remediated by `rustup component add <component>`. **`command -v` is never the test for a rustup component**: wherever rustup is installed and `$CARGO_HOME/bin` is on `PATH`, rustup keeps a proxy there for a set of names it does not vary with the selected toolchain's component set, so the test passes whether or not the component is installed and reports present for a tool that does not run (check 9, six cells).
+- owns package-manager-invocation = **two independent axes; a consuming item answers both.** **(i) How a tool is invoked, keyed on the executable's name.** `cargo <sub>` for any tool whose executable is named `cargo-<sub>` — including the rustup components rustfmt and clippy, invoked as `cargo fmt` and `cargo clippy`; a bare `<tool>` binary resolved on `PATH` for every other tool; Cargo's own built-in subcommands (`cargo test`, `cargo build`, `cargo doc`, `cargo run`, …) written as they are, since they ship inside Cargo and have no `cargo-<sub>` executable at all; and **no provisioner, runner or package-manager prefix** (`mise exec`, `cargo bin`, `nix develop -c`, `flox activate`, or any `uv run` analogue) in any Justfile recipe or lefthook job. **Cargo aliases are a further form — the fourth, after built-ins — and the template defines none**: no committed `.cargo/config.toml` carries an `[alias]` table, and a recipe spells the underlying subcommand in full — R28's clippy invocation, whatever flags R28 selects, is written `cargo clippy …` inside the Justfile recipe that owns it, not `cargo lint` behind an alias. Reasons, each verified below and each stated at the strength its evidence supports: an alias is a second place where the same task is named, so the Justfile recipe and `.cargo/config.toml` must then be hand-synchronised, which essential behavior (4) calls a defect; an alias is invisible to the `command -v <executable>` test **this parameter prescribes**, because no `cargo-<alias>` executable exists (check 11: `command -v cargo-myver` exit 1 while `cargo myver` ran, exit 0) — a test that read `.cargo/config.toml`, or parsed `cargo --list`, might see it instead, and neither was exercised here; and an alias **takes precedence over and shadows** a same-named external subcommand, which Cargo reports rather than passing over in silence: check 11 recorded `warning: user-defined alias 'demo' is shadowing an external subcommand found at …/bin/cargo-demo`, noting that this "was previously accepted but will become a hard error in the future", with the URL `https://github.com/rust-lang/cargo/issues/10049`. A warned shadowing is a materially weaker hazard than a silent one, and the argument is restated to match: the collision is reported when it occurs and is slated to become fatal, so the risk an alias carries here is **a name that can start warning and later stop working** when a tool of the same name is installed — not a collision that passes unobserved. The two load-bearing reasons for the template defining no alias are therefore the duplicated naming location and the invisibility to the prescribed presence test; the shadowing is a third, lesser reason, kept because it is a real cost of the form and not because it is silent. An alias in a **consuming repository** is not prohibited — two of the four surveyed reference repositories use them — and where one exists it is a permitted spelling of the `cargo <sub>` form; its presence test targets the underlying tool (for `lint = "clippy …"`, clippy's component state), never `cargo-<alias>`. **(ii) How presence is tested, keyed on how the tool was acquired**, because the two acquisition channels fail differently: a tool installed from crates.io or from a release — a `cargo-<sub>` plugin or a bare binary alike — is tested with `command -v <executable>`, where the `PATH` entry *is* the tool, remediated by the `just install-tool <name>@<version>` line; a tool rustup installs — a component, whether invoked as `cargo fmt`, `cargo clippy` or bare (`rustfmt`, `rust-analyzer`, `clippy-driver`) — is tested against the active toolchain's own component state with `rustup component list --installed` (one call covers every component; per tool, `rustup which <executable>` is equivalent — verified for `cargo-fmt` and `cargo-clippy` — and both honour a `rust-toolchain.toml` override), remediated by `rustup component add <component>`. **`command -v` is never the test for a rustup component**: on the host these checks ran on, `$CARGO_HOME/bin` holds 13 names that are symlinks to `rustup`, and `command -v cargo-fmt` and `command -v cargo-clippy` passed in all six cells of check 9 — including the two whose selected toolchain carries no such component — so the test reported present for a tool that did not run. No other machine or rustup version was tested; the rule is prescribed for this template on that recorded failure rather than asserted of every rustup installation, and `## Empirical check` states the scope.
 - assumes msrv-policy = `stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI` (fixed, `docs/port/PARAMETERS.md`). Used here only to establish what it does **not** govern: dev tools are not built by the MSRV floor job, so a candidate's `rust_version` is measured against the development channel instead.
 - assumes rust-edition = `2024` (fixed, `docs/port/PARAMETERS.md`).
 - assumes target-os-matrix = `ubuntu-latest, macos-latest` (fixed, `docs/port/PARAMETERS.md`). Every recommended component runs on both; Windows support is noted where it exists and is not required.
@@ -529,15 +535,19 @@ check was rerun, no evidence log was modified or added, and the recommendation,
 the survey, the licence question, the presence-test matrix and its class rule,
 the alias answer, the fifteen-claim sweep, the five adjudications, disagreement 6
 and the unproven list all stand. **Ten phrases were corrected and eight were
-checked and left**, as follows.
+checked and left**, as follows. Two conventions for reading the table: bold
+inside a quoted phrase marks the absolute word under review and is not emphasis
+in the source sentence; and the verdict column quotes the text **as it now
+stands in this file**, re-read from it after editing, because revision 3 was
+rejected for a table that described intended edits rather than landed ones.
 
 | # | Phrase, where it stood | Verdict against the recorded output |
 |---|---|---|
 | 1 | "an alias **silently** shadows a same-named external subcommand" (`## Parameters`) | **Wrong** — audit F1. Cargo warns. Replaced with "takes precedence over and shadows", the warning quoted, and the argument restated: a warned, future-fatal collision is a weaker hazard than a silent one, so the shadowing is now the third and lesser reason for defining no alias, behind the duplicated naming location and the invisibility to the prescribed presence test |
 | 2 | "an alias is invisible to **any** presence test" (`## Parameters`) | **Too wide** — check 11 exercised only `command -v cargo-myver` (exit 1). Narrowed to the test this parameter prescribes, with the note that a test reading `.cargo/config.toml` or parsing `cargo --list` might see it instead and that neither was exercised |
-| 3 | "`command -v` **cannot fail** for a rustup component" (`BASELINE-REVIEW: F181`) | **Unscoped** — true only where rustup is installed and `$CARGO_HOME/bin` is on `PATH`. Scoped to that machine, which is what every other layer assumes |
-| 4 | "rustup installs an **unconditional** proxy … for a **fixed name list**" (`## Parameters`, F181 line) | **Beyond the record** — the record is 13 symlinks to `rustup` on this host, present in every cell of check 9. Restated as a name set rustup does not vary with the selected toolchain's component set, with the count and the cells named |
-| 5 | "so the test **cannot fail** and reports present" (`## Parameters`) | **Unscoped**, as (3). Restated as "passes whether or not the component is installed (check 9, six cells)" |
+| 3 | "`command -v` **cannot fail** for a rustup component" (`BASELINE-REVIEW: F181`) | **Unscoped, and revision 3's fix did not land** — it replaced one universal with another ("on any machine where rustup itself is installed"), which the r3 audit rejected. The line now reads: "`command -v` **passed for a rustup component in every cell that was tested, including the cells where the component is absent**, so on the tested configurations it does not distinguish an installed component from a missing one", and then names the scope — this host, macOS 26.4/arm64, rustup 1.29.1, four already-installed toolchains, plus the one Linux VM the r2 and r3 audits add — and states "**No other machine or rustup version was tested here**" |
+| 4 | "rustup installs an **unconditional** proxy … for a **fixed name list**" (`## Parameters`, F181 line) | **Beyond the record, and revision 3's fix did not land** — "a set of names it does not vary with the selected toolchain's component set" was still a claim about rustup rather than about the log. Both sentences now assert only what was observed: "`~/.cargo/bin` holds 13 names that are symlinks to `rustup`, `cargo-fmt` and `cargo-clippy` among them, and both resolved with exit 0 in all three directories of check 9" |
+| 5 | "so the test **cannot fail** and reports present" (`## Parameters`) | **Unscoped, and revision 3's fix did not land** — it still opened "wherever rustup is installed". The owned parameter now reads: "on the host these checks ran on, `$CARGO_HOME/bin` holds 13 names that are symlinks to `rustup`, and `command -v cargo-fmt` and `command -v cargo-clippy` passed in all six cells of check 9 — including the two whose selected toolchain carries no such component — so the test reported present for a tool that did not run. No other machine or rustup version was tested" |
 | 6 | "**`command -v` cannot fail**" (check 9's result column) | **Restated** to the observation: "passed in every cell, the absent ones included" |
 | 7 | "an alias runs with no `cargo-<sub>` executable **anywhere**" (check 11) | **Too wide** — the evidence is one `command -v` on one `PATH`. Narrowed to "no `cargo-myver` executable on `PATH`" |
 | 8 | "Precedence is **built-in > alias > external**" (check 11) | **Not established** — two collisions were run (alias beats external, with the warning; built-in beats external). The built-in-versus-alias order was never exercised and is now stated as not asserted |
@@ -551,6 +561,45 @@ checked and left**, as follows.
 | 16 | "Layer 4 (`ubi`) has **never** been exercised" (unproven 6) | **Holds** — a statement about this decision's own work, and accurate |
 | 17 | "**never** linked into the template's artifact" (licence finding) | **Holds** — recorded as `raw/opus.md`'s argument for a reading this decision explicitly does not adopt, not as an observation of anything run here |
 | 18 | "a separate process **cannot** reach the template's address space" (fitness gate 3) | **Left, and classified** — a property of process isolation, not a characterisation of any output this decision recorded; no check here bears on it, and gate 3 already declines to assert an `unsafe` posture |
+
+Revision 3 (sha256
+`93157625c1b307d3e9d7c10b320accfc72c69422556c47cd94fdc4f9ed5c2182`) was
+**rejected** by the empirical audit `review/audit-codex.r3.md` (actor
+`audit-codex-2026-09-05T155503Z-4141a35b69e0-r3`, model `gpt-5.6-terra`, family
+openai) on a **single finding**, and the finding was about this table. That audit
+rebuilt the four toolchain fixtures, the two aliases and the two stubs, reran
+checks 1 and 3, all nine commands of check 9 in `neg`, `pos` and `c196`, check 10
+in all four channel directories, check 11 and check 12's bare-name negative case
+on macOS, and repeated the check-9 matrix and the check-11 precedence probes on
+Lima Ubuntu; every result reproduced, including the alias warning and the two
+precedence relations, and it confirmed `git diff --quiet HEAD^ HEAD --
+review/evidence` exits 0, so revision 3 modified no evidence log
+(`evidence/audit-dev-toolchain-provisioning-r3.log`). Its **F1**: rows 3, 4 and 5
+above described edits that had not landed. The sweep said correction 3 was
+"scoped to that machine", but `BASELINE-REVIEW: F181` still read "cannot fail for
+a rustup component **on any machine where rustup** itself is installed", and the
+owned parameter still opened "**wherever** rustup is installed" — universals the
+cited logs do not record, since those logs contain one macOS host, 13 symlinks,
+three toolchain cells, and one Linux VM added by the r2 and r3 audits. The audit
+also confirmed the precedence correction sound and revision 3's refusal to assert
+the built-in-versus-alias order.
+
+**Revision 4** (this text; 2026-09-10, model `claude-opus-5`) lands the three
+edits and closes the gap that produced the finding. Two sentences are rewritten —
+the `BASELINE-REVIEW: F181` clause and the owned parameter's closing clause —
+each now asserting only the observed cells and naming the host, the toolchain
+count, the rustup version and the one Linux VM, and each stating in terms that no
+other machine or rustup version was tested. Rows 3, 4 and 5 of this table are
+rewritten to quote the landed text, and the table gains the two reading
+conventions above, the second of which is the process change: every verdict is
+now re-read from the file after editing rather than written from intent. Every
+other row was re-opened at its location in this file and confirmed to read as the
+table says; none needed a further edit. Nothing else changes — no check was
+rerun, no evidence log was touched, and the presence test and its matrix, the
+alias answer, the recommendation, the survey, the licence question, the five
+adjudications, disagreement 6 and the unproven list all stand. The change is six
+hunks (`git diff -U0` against the committed revision 3), 62 lines added and 13
+removed, all of them wording.
 
 **Disagreements, and the evidence that settled each.**
 
