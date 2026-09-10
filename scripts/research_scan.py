@@ -63,6 +63,31 @@ def audit_of(path: Path) -> dict | None:
     }
 
 
+def provider_jobs(run: Path) -> dict[str, str]:
+    """Provider job ids recorded for a Doxa operation, whatever the file is called.
+
+    Attempts after the first are numbered (`doxa-status3-initial.json`), and a
+    failed operation records a checkpoint copy instead, whose providers sit at
+    the top level rather than under `data`. Read every candidate and merge, so a
+    rescan never depends on one filename or one shape.
+    """
+    jobs: dict[str, str] = {}
+    ops = run / "operations"
+    if not ops.is_dir():
+        return jobs
+    for f in sorted(ops.glob("doxa-*.json")):
+        try:
+            doc = json.loads(f.read_text())
+        except Exception:
+            continue
+        provs = doc.get("providers") or (doc.get("data") or {}).get("providers") or {}
+        if isinstance(provs, dict):
+            for name, v in provs.items():
+                if isinstance(v, dict) and v.get("job_id"):
+                    jobs.setdefault(name, v["job_id"])
+    return jobs
+
+
 def scan_run(run: Path) -> dict:
     manifest = json.loads((run / "manifest.json").read_text())
     review = run / "review"
@@ -84,13 +109,10 @@ def scan_run(run: Path) -> dict:
     for engine, op in manifest["operations"].items():
         if op["state"] in {"submitting", "submitted", "running", "unknown", "partial", "failed"}:
             entry = {"state": op["state"], "operation_id": op.get("operation_id")}
-            status = run / "operations/doxa-status-initial.json"
-            if engine == "doxa" and status.is_file():
-                try:
-                    provs = json.loads(status.read_text())["data"]["providers"]
-                    entry["provider_jobs"] = {k: v.get("job_id") for k, v in provs.items()}
-                except Exception:
-                    pass
+            if engine == "doxa":
+                jobs = provider_jobs(run)
+                if jobs:
+                    entry["provider_jobs"] = jobs
             info["in_flight"][engine] = entry
 
     if decision.is_file():
