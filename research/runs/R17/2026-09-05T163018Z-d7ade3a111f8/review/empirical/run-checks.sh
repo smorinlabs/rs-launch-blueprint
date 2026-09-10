@@ -26,10 +26,14 @@ trap 'rm -rf "$WORK"' EXIT
 
 PASS=0
 FAIL=0
+SKIP=0
 say() { printf '\n===== %s =====\n' "$*"; }
 assert() { # assert <label> <expected> <actual>
   if [ "$2" = "$3" ]; then printf 'RESULT %s: PASS (expected=%s actual=%s)\n' "$1" "$2" "$3"; PASS=$((PASS+1));
   else printf 'RESULT %s: FAIL (expected=%s actual=%s)\n' "$1" "$2" "$3"; FAIL=$((FAIL+1)); fi
+}
+skip() { # skip <label> <reason> — never counted as a pass; a check that cannot fail is not evidence
+  printf 'RESULT %s: SKIP (%s)\n' "$1" "$2"; SKIP=$((SKIP+1));
 }
 
 say "00 toolchain and host"
@@ -185,8 +189,7 @@ assert 07e-signer-workflow-observed-in-certificate \
   "https://github.com/mongodb/kingfisher/.github/workflows/release.yml@refs/heads/main" "$ATT_SIGNER"
 echo "-- negative control: the same command with a non-writable Sigstore trusted-root cache."
 if [ "$(id -u)" -eq 0 ]; then
-  echo "   SKIPPED-AS-ROOT: mode 0500 does not stop uid 0, so this control cannot run as root."
-  assert 07f-verifier-fails-without-a-writable-sigstore-cache skipped-as-root skipped-as-root
+  skip 07f-verifier-fails-without-a-writable-sigstore-cache "running as uid 0; mode 0500 does not constrain root, so this control cannot be exercised"
 else
   RO_CACHE="$WORK/ro-cache"; mkdir -p "$RO_CACHE"; chmod 500 "$RO_CACHE"
   XDG_CACHE_HOME="$RO_CACHE" \
@@ -289,5 +292,5 @@ cat <<'NOTE'
   all three is an acceptance check for P03, not a settled fact here.
 NOTE
 
-printf '\nsummary: PASS=%d FAIL=%d\n' "$PASS" "$FAIL"
+printf '\nsummary: PASS=%d FAIL=%d SKIP=%d\n' "$PASS" "$FAIL" "$SKIP"
 [ "$FAIL" -eq 0 ] && { echo "RESULT: PASS"; exit 0; } || { echo "RESULT: FAIL"; exit 1; }
