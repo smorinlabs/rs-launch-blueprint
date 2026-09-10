@@ -272,11 +272,16 @@ terminal layer, and the template will already need terminal knowledge for R65.
 
 ### Qualified shortlist
 
-Every candidate here passed all six gates (per-candidate gate answers precede the
-figures below; popularity was not consulted to reach them). **Only two crates qualified,
-and that is a finding**: three of the five surveyed spinner crates fail a gate outright,
-which is unusually thin for a category this well-trafficked and is itself an argument
-against treating the spinner-only bin as a real alternative.
+The candidate here passed all six gates (the per-candidate gate answers precede the
+figures below; popularity was not consulted to reach them). **Exactly one crate
+qualified, and the prompt is right that fewer is a finding.** Of the five rendering
+candidates surveyed, four fail a gate outright — three on an undeclared MSRV
+(`spinners`, `spinoff`, `spinach`) and one on the total absence of CI (`cliclack`) —
+and a fifth is category-wrong. For a category with 5,301 reverse dependencies that is
+strikingly thin, and it is itself the argument against treating the spinner-only bin as
+a live alternative: the bin exists, but nothing in it meets a template's baseline
+hygiene. The gate rule applied is uniform — an undeclared `rust-version` is a fail for
+every candidate, incumbent included; `indicatif` declares one.
 
 **Gate answers — `indicatif` 0.18.6**
 1. *License*: `MIT` (`crates.io/api/v1/crates/indicatif/versions`, `license`, and
@@ -320,28 +325,13 @@ against treating the spinner-only bin as a real alternative.
    costs. **Pass** (stated qualitatively; no measured byte figure is quoted because no
    crate exists to build, and inventing one would violate the constraint).
 
-**Gate answers — `cliclack` 0.5.6**
-1. *License* `MIT` — **pass**. 2. *MSRV* — **no `rust-version` declared** on any
-version (`crates.io/api/v1/crates/cliclack/versions`, `rust_version: None`), so its MSRV
-is undeclared and untested; but its dependency floor is bounded by `indicatif` 1.85,
-which it re-exports, so the effective floor is under 1.96 — **pass with a finding**
-(undeclared MSRV means a patch release could silently raise it). 3. RustSec **404**,
-no advisories; unsafe posture inherited from `console`/`libc` — **pass**. 4. Both
-required OSes: it is a prompts library used cross-platform, and its dependency
-`indicatif` is CI-tested on both — **pass**. 5. `default` features pull `console`,
-`indicatif`, `once_cell`, `strsim`, `textwrap`, `zeroize` (+ `derive`); no async
-runtime — **pass**. 6. Materially heavier than `indicatif` alone: six direct
-dependencies including `zeroize`'s derive proc-macro — **pass, with the cost noted**.
-
 | Name | Role | 90-day downloads | All-time downloads | Stars | Last release | Maintenance | Notable adopters | One-line trade-off |
 |---|---|---|---|---|---|---|---|---|
 | `indicatif` | General progress/spinner rendering on a `ProgressDrawTarget` | 47,129,967 | 214,311,835 | 5,212 | 0.18.6, 2026-07-01 | **active** | `rust-lang/rustup`, `astral-sh/uv`, `uutils/coreutils`, `nextest-rs/nextest`, `cargo-generate`, `huggingface/tokenizers`, `rerun-io/rerun`, `flamegraph-rs/flamegraph` | Carries bar/multi-progress types the template will not use; costs nothing at runtime, mild conceptual surface |
-| `cliclack` | Opinionated prompt suite (Clack port) that *includes* a spinner, built on `indicatif` | 1,028,866 | 3,340,001 | 366 | 0.5.6, 2026-08-10 | **active** | Wraps `indicatif`, appears in its reverse-dependency list | Bundles the whole prompt/UX stack, so it silently pre-empts R61 (`interactive-prompts`) instead of deciding only this item |
 
 *Maintenance rubric applied.* `indicatif` = **active**: released 2026-07-01 (2.3 months
 before retrieval, inside the 6-month trigger window), `pushed_at 2026-09-07`, not
 archived, and — the concrete signal — measured issue responsiveness below.
-`cliclack` = **active**: released 2026-08-10, `pushed_at 2026-08-10`, not archived.
 
 *Issue responsiveness — `indicatif`.* The 10 most recently opened issues
 (`GET https://api.github.com/search/issues?q=repo:console-rs/indicatif+is:issue&sort=created&order=desc&per_page=10`,
@@ -363,10 +353,12 @@ then `GET /repos/console-rs/indicatif/issues/<n>/comments` for each, retrieved
 | #798 | unanswered (0 comments, closed) |
 
 **Median days to first maintainer response: 0.13** (about 3 hours), across the 8
-answered. **Unanswered: 2** — both were closed with zero comments, i.e. resolved or
-dismissed by maintainer action rather than ignored. Every response came from the same
-`MEMBER`, `djc`, which is the one dependability caveat worth naming: responsiveness is
-excellent but concentrated in a single maintainer.
+answered. **Unanswered: 2** — #814 and #798 are both *closed with zero comments*. I did
+not read their `closed_by` field, so I state only what the endpoint shows: closed
+without comment. Whether that was maintainer resolution or author withdrawal is
+unverified. Every response came from the same `MEMBER`, `djc`, which is the one
+dependability caveat worth naming: responsiveness is excellent but concentrated in a
+single maintainer.
 
 ### Excluded by gate
 

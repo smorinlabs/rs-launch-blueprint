@@ -156,6 +156,8 @@ Both test kinds run unconditionally in the default `cargo test` — no Cargo fea
 
 ### Members
 
+Three members. Two are `[dev-dependencies]` (`proptest`, `insta`); the third (`cargo-insta`) is a provisioned `cargo-<sub>` binary that supplies the snapshot review workflow and appears in no manifest. Each carries its own figures, gate verdicts and sources below.
+
 #### proptest
 
 ##### Landscape
@@ -238,6 +240,16 @@ Excellent. The template's property targets are the two seams py names: the domai
 ##### Parameters
 
 Owns nothing (`owns:` is empty in `## Couplings`). Consumed parameters, all satisfied at their fixed values: `license` = `MIT OR Apache-2.0` (proptest is exactly this); `msrv-policy` floor 1.96 vs. proptest's 1.85 published / 1.86 at HEAD; `rust-edition` = 2024 — proptest 1.11.0 is itself edition 2021, which is fine because editions are per-crate and a 2024 crate may depend on a 2021 crate; `target-os-matrix` = `ubuntu-latest, macos-latest` — satisfied with the CI caveat in gate 4. No `CONFLICT:` lines.
+
+##### Migration implications
+
+Files this member alone adds or changes in the template:
+- **Added** `crates/<lib>/Cargo.toml` -> `[dev-dependencies] proptest = "1.11"` (or a `[workspace.dependencies]` entry plus `proptest.workspace = true`, following whichever style P03 adopts; `paradigmxyz/reth` uses the workspace form at `Cargo.toml:625`, commit `040bef7b319c`, retrieved 2026-09-10).
+- **Added** `crates/<lib>/tests/properties.rs` - two properties at the seams py names: the domain model's JSON wire form and the config file's write-read cycle. Direct analogue of py@b08bccfb `tests/core/test_properties.py`.
+- **Added, and committed on purpose** `crates/<lib>/proptest-regressions/properties.txt` - created the first time a counterexample is found; replaying it is acceptance criterion 3. This artifact class has **no py analogue** (Hypothesis keeps its example database in an uncommitted `.hypothesis/` cache), so it is the one genuinely new thing a contributor must be told about.
+- **Modified** `.gitignore` - must not exclude `proptest-regressions/`.
+- **Modified** `CONTRIBUTING.md` / `AGENTS.md` - one sentence stating that `proptest-regressions/` is committed deliberately and must not be deleted.
+- **Not changed:** no production dependency, no `src/` file, no public API surface, no binary. The crate is dev-only.
 
 ##### Validation strategy
 
@@ -373,6 +385,16 @@ Excellent, and specifically better than the alternatives on the two things this 
 
 Owns nothing. Consumed: `license` = `MIT OR Apache-2.0` — satisfied under the dev-dependency reading, with the strict reading flagged at gate 1; `msrv-policy` floor 1.96 vs. insta's 1.66.0 (tree floor 1.85); `rust-edition` = 2024 — insta 1.48.0 is edition 2021, which is fine per-crate; `target-os-matrix` — insta's own CI covers both required runners plus Windows. No `CONFLICT:` lines.
 
+##### Migration implications
+
+Files this member alone adds or changes in the template:
+- **Added** `crates/<cli>/Cargo.toml` -> `[dev-dependencies] insta = { version = "1.48", features = ["filters"] }`. The `filters` feature is what allows the crate version in `--help` to be replaced with a stable sentinel; `json`, `yaml` and `redactions` are deliberately **not** enabled (see gate 5) and would be added only if R71 later routes an OpenAPI snapshot through insta.
+- **Added** `crates/<cli>/tests/help_snapshots.rs` - walks the command tree with `get_subcommands`, renders each `--help` in-process with `term_width(80)` + `render_long_help()`, and asserts one snapshot per command path. Direct analogue of py@b08bccfb `tests/cli/test_help_snapshots.py`, including a doc comment that carries the regeneration command exactly as py's docstring does.
+- **Added** `crates/<cli>/tests/snapshots/help_snapshots__*.snap` - **one file per command path**. py keeps all help snapshots in a single aggregate `tests/cli/__snapshots__/test_help_snapshots.ambr`; insta's one-file-per-snapshot layout is a mechanical difference that makes each command's diff independent in a pull request, which strengthens rather than weakens Principle B.
+- **Modified** `.gitignore` - must not exclude `tests/snapshots/`; should exclude the transient `*.snap.new` and `*.pending-snap`.
+- **Modified** CI test job (shape owned by R11) - nothing mandatory. GitHub Actions already sets `CI=true`, so `INSTA_UPDATE`'s `auto` mode resolves to `no` and an unreviewed snapshot fails with no template-side configuration.
+- **Not changed:** no production dependency, no `src/` file, no public API surface, no binary size.
+
 ##### Validation strategy
 
 Proposed, not executed:
@@ -475,6 +497,16 @@ Provision `cargo-insta` 1.48 as a developer tool, invoked as `cargo insta`. Two 
 ##### Parameters
 
 Owns nothing. Consumed: `package-manager-invocation` (R42, resolved) — `cargo-insta`'s executable is named `cargo-<sub>`, so it is invoked as **`cargo insta`** in every Justfile recipe and lefthook job, and presence is tested with `command -v cargo-insta` because it is installed from crates.io rather than by rustup. `target-os-matrix` — prebuilt binaries cover `aarch64-apple-darwin` and `x86_64-unknown-linux-gnu`, matching both runners. `license`, `msrv-policy` — see gates 1 and 2. No `CONFLICT:` lines.
+
+##### Migration implications
+
+This member changes **no** `Cargo.toml` in the template - it is a provisioned binary, not a dependency. What it does change:
+- **Modified** the dev-tool provisioning list (owned by R42) - add `cargo-insta` 1.48, pinned to the same minor line as the `insta` dev-dependency, presence-tested with `command -v cargo-insta` (R42's rule for a crates.io-acquired executable, as distinct from `rustup component list --installed` for a rustup component).
+- **Modified** `justfile` (shape owned by R42/R27) - a `snapshot-review` recipe running `cargo insta review`, so the command is discoverable without opening the test file. Invocation is `cargo insta`, never `cargo-insta`, because the executable is named `cargo-<sub>` (R42's `package-manager-invocation`).
+- **Modified** CI test job (shape owned by R11) - optionally one step, `cargo insta test --unreferenced=reject`, to fail the build on snapshot files that outlive their tests. This guard has no py analogue.
+- **Modified** CI cache configuration (owned by R10) - the installed binary is worth caching so each run does not recompile or re-download it.
+- **Modified** `CONTRIBUTING.md` - the regeneration instruction (`cargo insta review`) and the no-install fallback (`INSTA_UPDATE=always cargo test`).
+- **Not changed:** no manifest, no source file, no fixture. A contributor who skips installing it can still run every test; only the review workflow is unavailable.
 
 ##### Validation strategy
 

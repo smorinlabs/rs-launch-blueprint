@@ -179,7 +179,6 @@ assumed by this item per the prompt's `## Out of scope`, and are unaffected by b
 **Essential behaviors.** For every release whose version the automation itself decides — that is,
 every release carrying no version override (**Override precedence** above), since an override is a
 deliberate human act that replaces the computed number and these are requirements on the computation:
-
 1. a commit that breaks the public API moves whichever digit the host resolver treats as the
    incompatibility boundary;
 2. a commit that only adds API moves a digit the resolver treats as compatible, so existing
@@ -759,8 +758,11 @@ claim. The edits are:
    revision 3 blurred that. (Revision 4 wrote that asymmetry without the version-override condition
    that governs both branches, which is the defect revision 5 repairs — see **Override precedence**
    in `## Decision`;)
-3. a sweep of every other sentence stating a version number or bump outcome, each now either marked
-   as holding for all histories or given the condition under which it holds — the per-commit-type
+3. a sweep of every other sentence stating a version number or bump outcome, each marked as holding
+   for all histories or given the condition under which it holds. **That sweep was done by reading
+   and was incomplete** — it conditioned outcomes on the commit history while omitting the version
+   override that precedes the history entirely, which is the fourth audit's finding and what
+   revision 5 re-swept mechanically. What it did reach: the per-commit-type
    bump summary gained the aggregation rule (`determineReleaseType` takes the strongest type
    present), acceptance criteria A1–A4 name the release's commit mix rather than a lone commit, the
    (C)/(D)/(E) readings are stated in general form (`0.(y+1).0`) with the demonstrated row named as

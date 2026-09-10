@@ -1253,14 +1253,20 @@ ecosystem and updates only numeric or dated channels; and that a 3-day cooldown 
 applies with no configuration. Each of these has both a documentation citation and,
 where the documentation is silent, an implementation citation.
 
-**Medium confidence** on three judgments. First, that a single catch-all group is the
+**Medium confidence** on four judgments. First, that a single catch-all group is the
 right batching for *this* template — it rests on GitHub's stated advice plus 4 of 11
 surveyed Cargo entries, and the alternative (a `[patch]` / `[minor, major]` split)
-becomes better if one weekly PR turns out to be too large to review. Second, on the
-label interaction: the "declared custom label must already exist" sentence and the
-"Dependabot creates default labels automatically" sentence were not reconciled against
-a live repository. Third, on the grouped-subject length arithmetic against F152's
-50-column cap, which was computed, not executed.
+becomes better if one weekly PR turns out to be too large to review. Second, and more
+sharply, that a configured catch-all group reliably batches at all: a live branch-name
+check on 2026-09-10 found grouping working at `cargo-bins/cargo-binstall`
+(`dependabot/cargo/deps-2076c6ea14`) and **not** working at `ratatui/ratatui`
+(`dependabot/cargo/duct-1.1.2` and three sibling per-dependency branches) under an
+apparently equivalent configuration, and this report could not establish why. Third, on
+the label *declaration form* — the "a declared custom label is ignored if absent"
+sentence and the "Dependabot creates default labels automatically" sentence were not
+reconciled for the case where a declared string equals a default (the label *values*
+themselves were observed live and are high confidence). Fourth, on the grouped-subject
+length arithmetic against F152's 50-column cap, which was computed, not executed.
 
 **Explicitly unverified:** no part of this configuration was run. No Dependabot
 installation, no PR, no `committed` invocation, no template.
@@ -1370,7 +1376,16 @@ because it changed a claim: a summarizing fetch of the rendered
 supported-ecosystems page reported that Cargo does **not** support private registries;
 the documentation source shows the opposite — the Cargo row is
 `Version updates ✓ | Security updates ✓ | Private repositories ✓ | Private registries ✓
-| Vendoring ✗` — and the source is what this report cites. **Not verified:** no
+| Vendoring ✗` — and the source is what this report cites. Live pull-request behavior was
+sampled through `GET https://api.github.com/repos/<o>/<r>/pulls?state=all&per_page=100`
+(reading `head.ref`, `title`, `labels` and `user.login`) for `ratatui/ratatui`,
+`cargo-bins/cargo-binstall`, `pola-rs/polars` and `servo/servo`, and configuration
+history through `GET https://api.github.com/repos/ratatui/ratatui/commits?path=.github/dependabot.yml`,
+all retrieved 2026-09-10; that sweep produced the two executed findings in this report
+(default labels confirmed; grouping observed working at one repository and not at
+another) and one **unexplained** result, ratatui's per-dependency branches under a
+catch-all group, which is reported as unexplained rather than rationalized.
+**Not verified:** no
 crates.io endpoint was queried, because this bundle has no crate members (the figure
 table's crate rows — 90-day downloads, all-time downloads, last release, RustSec
 advisories, reverse-dependency adopters — are `inapplicable` for every member and are
