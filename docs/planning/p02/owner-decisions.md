@@ -23,8 +23,9 @@ Status as of 2026-09-10. Fourteen items are published. The programme is
 | 6. R25 prompt correction | nothing | a defective prompt stays on the record |
 | 7. Baseline-review questions | nothing yet; several are inputs to unadmitted items | later items research around them |
 | 8. Model substitution acknowledgment | nothing | an approval record stays incomplete |
+| 9. Does your CLI standard bind this port | two items, one already published | R60 cites it the way R67 already does |
 
-Decisions 4 through 8 block no research. They can be answered at any time. Only
+Decisions 4 through 9 block no research. They can be answered at any time. Only
 1, 2 and 3 change what happens next.
 
 ## 1. The Wave 0 review gate
@@ -254,6 +255,32 @@ provider's deep-research model was substituted. It was never recorded.
 record is incomplete without it.
 
 **Response that settles it.** "Acknowledged".
+
+## 9. Whether your CLI Design Standard binds this port
+
+**What is being asked.** To confirm, not to decide. R60 flagged as an owner call
+whether the organisation's CLI Design Standard at
+`/Users/stevemorin/c/cli-standards/cli-design-standard.md` governs this template.
+
+**Evidence.** It is already load-bearing in a published decision. R67 read the
+standard on 2026-09-09, adjudicated one of its rules as a requirement that is
+org-locked, and quoted its exit-code table verbatim as the contract this template
+adopts. R60 reaches the same document independently for command ordering and
+completion behaviour, and its report notes the TypeScript repository had already
+reconciled onto it.
+
+**Options.**
+
+- **(a) Confirm it binds.** Nothing changes. R60 cites it the way R67 already
+  does, and future items do the same.
+- **(b) Say it does not bind.** R67 is reopened along with R60, because R67's
+  exit-code contract rests on it.
+
+**Recommendation: (a).** This is a confirmation of something two independent
+items found and one published decision already relies on. Denying it costs a
+resolved item.
+
+**Response that settles it.** "The CLI standard binds" or "it does not".
 
 ## Retired from this list
 
