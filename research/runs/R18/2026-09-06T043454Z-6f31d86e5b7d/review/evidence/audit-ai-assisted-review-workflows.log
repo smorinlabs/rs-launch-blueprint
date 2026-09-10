@@ -1,0 +1,218 @@
+# R18 empirical-audit rerun
+actor: audit-codex-2026-09-06T043454Z-6f31d86e5b7d
+model: gpt-5.6-terra
+retrieved: 2026-09-10T05:28:14Z through 2026-09-10T05:34:00Z (UTC)
+
+## Linux attempt required by the audit request
+
+```text
+$ limactl shell ubuntu -- bash -lc 'source "$HOME/.cargo/env"; uname -srm; gh --version; actionlint --version; rustc --version; cargo --version'
+Linux 6.17.0-41-generic aarch64
+bash: line 1: gh: command not found
+bash: line 1: actionlint: command not found
+rustc 1.98.1 (48a229cea 2026-09-01)
+cargo 1.98.1 (797e8a9bc 2026-08-05)
+exit: 0
+```
+
+`limactl` was callable and the repository mount was available, but the VM lacks both
+executables that the recorded check needs. The remaining read-only rerun therefore used
+the macOS toolchain that produced the decision's original evidence. No workflow,
+credential, or provider run was created or used.
+
+## Toolchain
+
+```text
+$ uname -srm; rustc --version; cargo --version; actionlint --version; gh --version | head -1
+Darwin 25.4.0 arm64
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+1.7.12
+installed by building from source
+built with go1.26.1 compiler for darwin/arm64
+gh version 2.98.0 (2026-08-20)
+exit: 0
+```
+
+## Check 1 — job-level contexts
+
+```text
+$ curl -sS -A 'rs-launch-blueprint-research/R18-audit' -w '\nHTTP %{http_code}\n' https://raw.githubusercontent.com/github/docs/main/content/actions/reference/workflows-and-actions/contexts.md | grep -E 'HTTP 200|jobs\.<job_id>\.(if|steps\.if|env)' -A 2 -B 1
+| `jobs.<job_id>.env` | `github, needs, strategy, matrix, vars, secrets, inputs` | None |
+| `jobs.<job_id>.if` | `github, needs, vars, inputs` | `always, cancelled, success, failure` |
+| `jobs.<job_id>.steps.if` | `github, needs, strategy, matrix, job, runner, env, vars, steps, inputs` | `always, cancelled, success, failure, hashFiles` |
+HTTP 200
+exit: 0
+```
+
+This reproduces the cited context fact exactly: job-level `if:` has `github`,
+`needs`, `vars`, and `inputs`, not `secrets`; `jobs.<job_id>.env` does include
+`secrets`. It establishes expression availability, not a GitHub-hosted runtime
+conclusion for an unset variable.
+
+## Check 2 — release and tag-series state
+
+```text
+$ gh api repos/anthropics/claude-code-action --jq '{stargazers_count,archived,license:.license.spdx_id,pushed_at,created_at}'
+{"archived":false,"created_at":"2025-05-19T15:26:50Z","license":"MIT","pushed_at":"2026-09-09T20:12:20Z","stargazers_count":8833}
+exit: 0
+$ gh api 'repos/anthropics/claude-code-action/releases?per_page=10' --jq '.[]|{tag_name,published_at,prerelease}'
+{"prerelease":false,"published_at":"2026-09-09T20:12:09Z","tag_name":"v1.0.220"}
+{"prerelease":false,"published_at":"2025-08-26T17:01:10Z","tag_name":"v1"}
+{"prerelease":false,"published_at":"2026-09-08T23:57:14Z","tag_name":"v1.0.219"}
+{"prerelease":false,"published_at":"2026-09-08T20:39:25Z","tag_name":"v1.0.218"}
+{"prerelease":false,"published_at":"2026-09-06T02:56:44Z","tag_name":"v1.0.217"}
+{"prerelease":false,"published_at":"2026-09-04T19:59:57Z","tag_name":"v1.0.216"}
+{"prerelease":false,"published_at":"2026-09-03T23:50:05Z","tag_name":"v1.0.215"}
+{"prerelease":false,"published_at":"2026-09-02T22:35:40Z","tag_name":"v1.0.214"}
+{"prerelease":false,"published_at":"2026-09-01T22:34:45Z","tag_name":"v1.0.213"}
+{"prerelease":false,"published_at":"2026-09-01T17:55:35Z","tag_name":"v1.0.212"}
+exit: 0
+$ gh api repos/anthropics/claude-code-action/git/ref/tags/v2
+gh: Not Found (HTTP 404)
+{"message":"Not Found","documentation_url":"https://docs.github.com/rest/git/refs#get-a-reference","status":"404"}
+exit: 1
+$ gh api 'repos/anthropics/claude-code-action/git/refs/tags?per_page=100' --jq length
+287
+exit: 0
+$ gh api 'search/issues?q=repo:anthropics/claude-code-action+is:issue+is:open' --jq .total_count
+457
+exit: 0
+$ gh api 'search/code?q=%22anthropics%2Fclaude-code-action%22+path%3A.github%2Fworkflows' --jq .total_count
+20480
+exit: 0
+$ gh api 'search/code?q=org%3Arust-lang+%22claude-code-action%22' --jq .total_count
+0
+exit: 0
+```
+
+The release-list evidence supports `v1.0.220` as the newest patch release at
+the recorded retrieval time and supports the claimed cadence. The direct `v2`
+lookup correctly returns HTTP 404, but its process exit is 1. The existing
+`action-release.log` records a blank exit after this command, so it cannot
+support the decision table's `Exit: 0 (404 expected)` without an explicit
+expected-failure wrapper.
+
+## Check 3 — four engine-cited tags
+
+```text
+$ gh api repos/anthropics/claude-code-action/git/ref/tags/v1.0.220 --jq '{ref,object}'
+{"object":{"sha":"020e931323e467e00b803ad64e03410d3796b8f7","type":"tag"},"ref":"refs/tags/v1.0.220"}
+$ gh api repos/anthropics/claude-code-action/git/tags/020e931323e467e00b803ad64e03410d3796b8f7 --jq '{tag,sha,object}'
+{"object":{"sha":"19dda84776b3518d98b8798e591daee763049ed3","type":"commit"},"sha":"020e931323e467e00b803ad64e03410d3796b8f7","tag":"v1.0.220"}
+$ gh api repos/anthropics/claude-code-action/git/ref/tags/v1.0.219 --jq '{ref,object}'
+{"object":{"sha":"edeb53db9b99ad823c31c54b43df20472010d965","type":"tag"},"ref":"refs/tags/v1.0.219"}
+$ gh api repos/anthropics/claude-code-action/git/tags/edeb53db9b99ad823c31c54b43df20472010d965 --jq '{tag,sha,object}'
+{"object":{"sha":"5ccc3a35a6367cdb8e6fbd0728287467540ecfe2","type":"commit"},"sha":"edeb53db9b99ad823c31c54b43df20472010d965","tag":"v1.0.219"}
+$ gh api repos/anthropics/claude-code-action/git/ref/tags/v1.0.217 --jq '{ref,object}'
+{"object":{"sha":"ef7878a0506921197f7f9cd8a6c8dc7b11497021","type":"tag"},"ref":"refs/tags/v1.0.217"}
+$ gh api repos/anthropics/claude-code-action/git/tags/ef7878a0506921197f7f9cd8a6c8dc7b11497021 --jq '{tag,sha,object}'
+{"object":{"sha":"9c5ddab2e6d17b83ea679153b31f1d5f023cf636","type":"commit"},"sha":"ef7878a0506921197f7f9cd8a6c8dc7b11497021","tag":"v1.0.217"}
+$ gh api repos/anthropics/claude-code-action/git/ref/tags/v1.0.175 --jq '{ref,object}'
+{"object":{"sha":"e3b2771caf63a7d585066ee84cc62c5cd0855c76","type":"tag"},"ref":"refs/tags/v1.0.175"}
+$ gh api repos/anthropics/claude-code-action/git/tags/e3b2771caf63a7d585066ee84cc62c5cd0855c76 --jq '{tag,sha,object}'
+{"object":{"sha":"1298632ce7736903d02a1435002705aa2a594a6c","type":"commit"},"sha":"e3b2771caf63a7d585066ee84cc62c5cd0855c76","tag":"v1.0.175"}
+all commands exit: 0
+```
+
+All four tags resolve. The two explicit commit claims in the decision are
+exactly reproduced.
+
+## Check 4 — source and documentation citations
+
+Eight direct `curl` spot checks, each against
+`https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/`,
+returned HTTP 200: `action.yml`, `.github/workflows/claude-review.yml`,
+`.github/workflows/claude.yml`, `examples/pr-review-comprehensive.yml`,
+`examples/claude.yml`, `docs/setup.md`, `docs/security.md`, and `docs/faq.md`.
+Their inspected text reproduced the cited facts: composite execution; federation
+inputs; maintainer review `types: [opened]` and `pull-requests: write`;
+maintainer assistant's four event/mention condition and `@main`; WIF's three
+identifiers, administrator requirement, `id-token: write` requirement, and
+inline-classification tradeoff; the untrusted-ref warning; and no-prompt
+interactive mode. `examples/claude.yml` and pinned py are identical from `on:`
+through the last `if:` clause; their following `runs-on` lines intentionally
+differ (`ubuntu-latest` versus py's variable fallback).
+
+## Check 5 — issues, advisory, and plugin
+
+```text
+$ gh api repos/anthropics/claude-code-action/issues/{1121,1068,1482}
+#1121 open, created 2026-03-24T11:17:16Z, comments 1
+#1068 open, created 2026-03-18T02:45:08Z, comments 0
+#1482 open, created 2026-07-08T18:10:59Z, comments 0
+all commands exit: 0
+$ gh api repos/anthropics/claude-code-action/issues/1121/comments --jq '.[]|{assoc:.author_association,created_at}'
+{"assoc":"NONE","created_at":"2026-05-09T16:09:22Z"}
+exit: 0
+$ gh api repos/anthropics/claude-code-action/security-advisories --jq '.[]|{ghsa_id,cve_id,severity,published_at,state,patched:[.vulnerabilities[]?.patched_versions],summary}'
+{"cve_id":"CVE-2026-47751","ghsa_id":"GHSA-8q5r-mmjf-575q","patched":["1.0.74"],"published_at":"2026-05-20T18:00:24Z","severity":"medium","state":"published","summary":"Malicious MCP Server Configuration in PRs Enables Remote Code Execution and Secret Exfiltration"}
+exit: 0
+$ gh api repos/anthropics/claude-code/contents/plugins/code-review --jq '.[]|[.name,.type]|@tsv'
+.claude-plugin dir
+README.md file
+commands dir
+exit: 0
+```
+
+The advisory facts are supported. `v1.0.220` and py's `v1.0.175` are both
+numerically above patched version `1.0.74`. A case-insensitive search of
+`raw/codex.md`, `raw/opus.md`, and all three Doxa provider reports found neither
+the GHSA identifier nor the CVE identifier.
+
+## Check 6 — pinned precedents
+
+```text
+$ git -C /Users/stevemorin/c/py-launch-blueprint show b08bccfb55d05f15e46a83b52c5660b1881d19f5:.github/workflows/claude-code-review.yml
+# reproduces [opened, synchronize, ready_for_review, reopened], same-repository
+# guard, both type-based bot guards, pull-requests: read, id-token: write,
+# v1.0.175, the OAuth-secret input, and --comment.
+exit: 0
+$ git -C /Users/stevemorin/c/py-launch-blueprint show b08bccfb55d05f15e46a83b52c5660b1881d19f5:.github/workflows/claude.yml
+# reproduces the four events, four-clause @claude condition, write permissions,
+# id-token: write, actions: read, and no active prompt input.
+exit: 0
+$ git -C /Users/stevemorin/c/ts-launch-blueprint ls-tree -r --name-only cb1cbcb2e88b898e8c081b0abbfabc1630079c00 -- .github/workflows
+# eight workflow paths; exit: 0
+$ git -C /Users/stevemorin/c/ts-launch-blueprint ls-tree -r --name-only cb1cbcb -- .github/ | grep -ci claude
+0
+exit: 1
+```
+
+The output supports the cited py and ts facts. GNU/BSD `grep -c` returns 1 when
+the count is zero, however. The existing `source-repos-pinned.log` also omits
+an exit line for this final command. Therefore the decision table's check-6
+`Exit: 0` is not reproduced unless the zero-match exit is explicitly handled.
+
+## Check 7 — fixture syntax and negative control
+
+```text
+$ cd review/evidence && actionlint candidate-claude-code-review.yml candidate-claude.yml
+exit: 0
+$ actionlint candidate-secrets-in-job-if-NEGATIVE.yml
+candidate-secrets-in-job-if-NEGATIVE.yml:14:9: context "secrets" is not allowed here. available contexts are "github", "inputs", "needs", "vars". see https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability for more details [expression]
+   |
+14 |     if: secrets.CLAUDE_CODE_OAUTH_TOKEN != ''
+   |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+exit: 1
+```
+
+This reproduces both candidate acceptance and the quoted rejection exactly.
+
+## Citation and adjudication assessment
+
+Each cited log supports its underlying source fact, with two exceptions limited
+to the table's asserted aggregate exit status: check 2's expected HTTP-404
+command exits 1 and check 6's expected zero-match `grep -ci` exits 1. The
+F051 adjudication is honest about relying on reference concordance plus an
+unrelated third-party reproduction rather than a causal proof. The federation
+adjudication is also honest: it names the Anthropic-organization/admin burden,
+the inline-comment-classification behavior change, and the unresolved billing
+relationship. Those limits are appropriately left for P03.
+
+The decision nevertheless overclaims runtime evidence at `review/DECISION.md:16`
+and `:143`: context availability plus static lint do not prove that every
+unconfigured repository's job is skipped rather than failed. The decision's
+own U2 correctly records that exact behavior as unproven. The claim must be
+qualified as a proposed P03 behavior, rather than described as refuted by the
+recorded checks.
