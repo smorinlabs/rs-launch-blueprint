@@ -26,9 +26,16 @@ not researched again from scratch.
   `re-verify: <date or event>`.
 - `## Parameters` — `- owns <param> = <value>` for every parameter on the
   prompt's `- owns:` line; `- assumes <param> = <value>` for every fixed
-  parameter (`msrv-policy`, `rust-edition`, `target-os-matrix`, `license`, quoted
-  exactly from `docs/port/PARAMETERS.md`) and every consumed parameter (value
-  from the owner's published decision); any `CONFLICT:` line the raws raised.
+  parameter (`msrv-policy`, `rust-edition`, `target-os-matrix`, `license`) and
+  every consumed parameter (value from the owner's published decision); any
+  `CONFLICT:` line the raws raised.
+  **Format, and publication fails on it:** the packaging validator reads
+  everything after `= ` as the value and compares it byte-for-byte with
+  `docs/port/PARAMETERS.md`. So write the registry's value bare, with no
+  backticks around it, no citation, and no commentary on the same line:
+  `- assumes rust-edition = 2024`, never ``- assumes rust-edition = `2024`
+  (fixed, see registry)``. Say whatever you need to say about how a parameter
+  bears on the decision in prose after the list, not on the line itself.
 - `## Empirical check` — toolchain (`rustc --version`, `cargo --version`, OS),
   the exact command(s), the working directory, and the observed output. **Verify
   claims; never implement the recommendation.** This is a research programme: the
