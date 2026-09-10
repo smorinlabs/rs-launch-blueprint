@@ -55,6 +55,18 @@ not researched again from scratch.
   disagreements between engines, and the evidence that settled each; state
   uncertainty where evidence is incomplete.
 
+**A saved script and a saved log make a claim you must be able to keep.** If you
+say the log is the command's output, an auditor will rerun the script and diff
+it, and two items have already been rejected because the rerun differed. Live
+sources drift: a rendered documentation page reorders a list, a counter moves, a
+timestamp changes. So before you write that sentence, rerun your own script and
+diff it against the log you are about to cite. Then either say the log is
+reproducible byte-for-byte, having just shown that it is, or state exactly what
+varies and the rule for comparing across it -- and where a source is volatile
+enough to matter, snapshot it into the evidence directory and read the snapshot.
+Never describe a log as the complete reproduced output of a command you have not
+just re-run against it.
+
 **Revising after a rejection: enumerate mechanically, never by reading.** The
 single most common reason a decision is rejected in this programme is a
 supporting sentence stated more absolutely than its evidence, and the single
