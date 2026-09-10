@@ -48,7 +48,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R43 | ai-assistant-repo-furniture | bundle | ts-only | DIVERGENT | — | [prompt](topics/43-ai-assistant-repo-furniture/prompts/ai-assistant-repo-furniture.prompt.md) | open |
 | R44 | devcontainer-environment | pattern | py-only | DIVERGENT | — | [prompt](topics/44-devcontainer-environment/prompts/devcontainer-environment.prompt.md) | open |
 | R45 | pr-comment-bot-trigger-block | pattern | py-only | DIVERGENT | — | [prompt](topics/45-pr-comment-bot-trigger-block/prompts/pr-comment-bot-trigger-block.prompt.md) | open |
-| R46 | per-file-license-header | pattern | different | DIVERGENT | — | [prompt](topics/46-per-file-license-header/prompts/per-file-license-header.prompt.md) | open |
+| R46 | per-file-license-header | pattern | different | DIVERGENT | — | [prompt](topics/46-per-file-license-header/prompts/per-file-license-header.prompt.md) | resolved |
 | R47 | contributors-recipe-mode | pattern | different | DIVERGENT | — | [prompt](topics/47-contributors-recipe-mode/prompts/contributors-recipe-mode.prompt.md) | resolved |
 | R48 | mocking-crates | bundle | different | DIVERGENT | — | [prompt](topics/48-mocking-crates/prompts/mocking-crates.prompt.md) | open |
 | R49 | build-target-declaration | crate | same | COMMON → SUBSTITUTE | build-tool-output-shape | [prompt](topics/49-build-target-declaration/prompts/build-target-declaration.prompt.md) | open |

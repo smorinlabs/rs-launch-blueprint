@@ -64,9 +64,18 @@
     },
     {
       "at": "2026-09-06T05:28:38Z",
-      "state": "succeeded",
+      "correction": "raw/codex.md revised after defective evidence checks: r1 gpt-5.6-luna (collected hash-named copy), r2 under gpt-6-astra (resume without -m), r3 and r4 gpt-5.6-luna; the current raw/codex.md is r4; current sha256 c108365826aaa34286a328b870aafba727f99eb474db1348fcb0278b00658bed; recorded by the controller",
       "provider": "codex",
-      "correction": "raw/codex.md revised after defective evidence checks: r1 gpt-5.6-luna (collected hash-named copy), r2 under gpt-6-astra (resume without -m), r3 and r4 gpt-5.6-luna; the current raw/codex.md is r4; current sha256 c108365826aaa34286a328b870aafba727f99eb474db1348fcb0278b00658bed; recorded by the controller"
+      "state": "succeeded"
+    },
+    {
+      "at": "2026-09-10T02:40:58Z",
+      "publication": {
+        "acceptance_sha256": "622902e8a928ff1d130ea1af50a4c00c88c95ee3690128fe9235724c5c00f4d0",
+        "decision_sha256": "a95cbbfae000d539bb57aaf3d67b71510c22c62457f6e215a219d9640a6808bd",
+        "transaction": "6219d3850ac440afa8436386363b85ea"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -100,13 +109,18 @@
     }
   },
   "prompt_source": "research/topics/46-per-file-license-header/prompts/per-file-license-header.prompt.md",
+  "publication": {
+    "acceptance_sha256": "622902e8a928ff1d130ea1af50a4c00c88c95ee3690128fe9235724c5c00f4d0",
+    "decision_sha256": "a95cbbfae000d539bb57aaf3d67b71510c22c62457f6e215a219d9640a6808bd",
+    "transaction": "6219d3850ac440afa8436386363b85ea"
+  },
   "remaining_budget": "no paid engine (Light tier)",
   "required_engines": [
     "codex"
   ],
   "run_id": "2026-09-05T160304Z-5cba7fe96ae4",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "light",
-  "updated_at": "2026-09-05T16:13:10Z"
+  "updated_at": "2026-09-10T02:40:58Z"
 }
