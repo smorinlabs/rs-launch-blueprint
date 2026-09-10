@@ -1,0 +1,39 @@
+# revision 2 — Run B re-executed on codeql-bundle-v2.26.4 (the bundle github/codeql-action v4.37.9 resolves) against the revision-2 fixture tree — 2026-09-10T01:16:53Z — cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/fixture — macOS 26.4 arm64
+$ codeql version --format=text | head -1
+CodeQL command-line toolchain release 2.26.4.
+$ cargo --version; rustc --version
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+$ shasum -a 256 .github/codeql/codeql-config.yml .github/workflows/codeql.yml
+cb9e6f6e4e904c0829233064631160db2c57f3592c717d6ea7ffb4862f062734  .github/codeql/codeql-config.yml
+74e9346e70312dad3d3d55e20fa11d67889b057b61c1e202937b66ef1d20d37d  .github/workflows/codeql.yml
+
+$ codeql database create <W>/db-cfg-r2 --language=rust --build-mode=none --source-root=. --codescanning-config=.github/codeql/codeql-config.yml --overwrite
+Successfully created database at /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/.work/db-cfg-r2.
+exit=0
+total .rs archived: 5848
+  fixture files:
+    crates/inner/src/lib.rs
+    docs/snippet.rs
+    examples/example.rs
+    src/lib.rs
+    src/main.rs
+
+$ codeql database analyze <W>/db-cfg-r2 --format=sarif-latest --output=<W>/cfg-r2.sarif --rerun   (no suite argument)
+Starting evaluation of codeql/rust-queries/queries/security/CWE-117/LogInjection.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-825/AccessAfterLifetime.ql.
+CodeQL scanned 5 out of 5 Rust files in this invocation. Typically CodeQL is configured to analyze a single CodeQL language per invocation, so check other invocations to determine overall coverage information.
+| Total number of Rust files that were extracted with errors   |     0 |
+| Total number of Rust files that were extracted without error |     5 |
+exit=0
+$ python3 /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/sarif-summary.py <W>/cfg-r2.sarif | grep -E '^rules|^results|^  rust/[a-z-]+  '
+rules present in SARIF (rust/*): 27
+results: 7
+  rust/access-after-lifetime-ended  crates/inner/src/lib.rs:12
+  rust/access-after-lifetime-ended  docs/snippet.rs:12
+  rust/access-after-lifetime-ended  examples/example.rs:12
+  rust/access-after-lifetime-ended  src/lib.rs:14
+  rust/access-after-lifetime-ended  src/lib.rs:47
+  rust/access-invalid-pointer  src/lib.rs:25
+  rust/cleartext-logging  src/lib.rs:33
+exit=0

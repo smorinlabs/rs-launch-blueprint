@@ -1,0 +1,145 @@
+# codeql resolve queries — Rust suites at codeql-bundle-v2.26.4 (CLI 2.26.4, pack codeql/rust-queries 0.1.41) — 2026-09-09T07:21:52Z — macOS 26.4 arm64
+
+$ empirical/tools/codeql/codeql resolve queries codeql/rust-queries:codeql-suites/rust-code-scanning.qls > empirical/tools/.work/rust-code-scanning.raw
+exit=0 stderr-lines=2
+queries resolved: 36 total; security/*: 16
+  queries/security/CWE-020/RegexInjection.ql
+  queries/security/CWE-022/TaintedPath.ql
+  queries/security/CWE-079/XSS.ql
+  queries/security/CWE-089/SqlInjection.ql
+  queries/security/CWE-295/DisabledCertificateCheck.ql
+  queries/security/CWE-311/CleartextTransmission.ql
+  queries/security/CWE-312/CleartextLogging.ql
+  queries/security/CWE-312/CleartextStorageDatabase.ql
+  queries/security/CWE-319/UseOfHttp.ql
+  queries/security/CWE-327/BrokenCryptoAlgorithm.ql
+  queries/security/CWE-327/WeakSensitiveDataHashing.ql
+  queries/security/CWE-614/InsecureCookie.ql
+  queries/security/CWE-770/UncontrolledAllocationSize.ql
+  queries/security/CWE-798/HardcodedCryptographicValue.ql
+  queries/security/CWE-825/AccessInvalidPointer.ql
+  queries/security/CWE-918/RequestForgery.ql
+
+$ empirical/tools/codeql/codeql resolve queries codeql/rust-queries:codeql-suites/rust-security-extended.qls > empirical/tools/.work/rust-security-extended.raw
+exit=0 stderr-lines=2
+queries resolved: 38 total; security/*: 18
+  queries/security/CWE-020/RegexInjection.ql
+  queries/security/CWE-022/TaintedPath.ql
+  queries/security/CWE-079/XSS.ql
+  queries/security/CWE-089/SqlInjection.ql
+  queries/security/CWE-117/LogInjection.ql
+  queries/security/CWE-295/DisabledCertificateCheck.ql
+  queries/security/CWE-311/CleartextTransmission.ql
+  queries/security/CWE-312/CleartextLogging.ql
+  queries/security/CWE-312/CleartextStorageDatabase.ql
+  queries/security/CWE-319/UseOfHttp.ql
+  queries/security/CWE-327/BrokenCryptoAlgorithm.ql
+  queries/security/CWE-327/WeakSensitiveDataHashing.ql
+  queries/security/CWE-614/InsecureCookie.ql
+  queries/security/CWE-770/UncontrolledAllocationSize.ql
+  queries/security/CWE-798/HardcodedCryptographicValue.ql
+  queries/security/CWE-825/AccessAfterLifetime.ql
+  queries/security/CWE-825/AccessInvalidPointer.ql
+  queries/security/CWE-918/RequestForgery.ql
+
+$ empirical/tools/codeql/codeql resolve queries codeql/rust-queries:codeql-suites/rust-security-and-quality.qls > empirical/tools/.work/rust-security-and-quality.raw
+exit=0 stderr-lines=2
+queries resolved: 40 total; security/*: 19
+  queries/security/CWE-020/RegexInjection.ql
+  queries/security/CWE-022/TaintedPath.ql
+  queries/security/CWE-079/XSS.ql
+  queries/security/CWE-089/SqlInjection.ql
+  queries/security/CWE-117/LogInjection.ql
+  queries/security/CWE-295/DisabledCertificateCheck.ql
+  queries/security/CWE-311/CleartextTransmission.ql
+  queries/security/CWE-312/CleartextLogging.ql
+  queries/security/CWE-312/CleartextStorageDatabase.ql
+  queries/security/CWE-319/UseOfHttp.ql
+  queries/security/CWE-327/BrokenCryptoAlgorithm.ql
+  queries/security/CWE-327/WeakSensitiveDataHashing.ql
+  queries/security/CWE-614/InsecureCookie.ql
+  queries/security/CWE-696/BadCtorInitialization.ql
+  queries/security/CWE-770/UncontrolledAllocationSize.ql
+  queries/security/CWE-798/HardcodedCryptographicValue.ql
+  queries/security/CWE-825/AccessAfterLifetime.ql
+  queries/security/CWE-825/AccessInvalidPointer.ql
+  queries/security/CWE-918/RequestForgery.ql
+
+$ empirical/tools/codeql/codeql resolve queries codeql/rust-queries:codeql-suites/rust-security-experimental.qls > empirical/tools/.work/rust-security-experimental.raw
+exit=0 stderr-lines=2
+queries resolved: 38 total; security/*: 18
+  queries/security/CWE-020/RegexInjection.ql
+  queries/security/CWE-022/TaintedPath.ql
+  queries/security/CWE-079/XSS.ql
+  queries/security/CWE-089/SqlInjection.ql
+  queries/security/CWE-117/LogInjection.ql
+  queries/security/CWE-295/DisabledCertificateCheck.ql
+  queries/security/CWE-311/CleartextTransmission.ql
+  queries/security/CWE-312/CleartextLogging.ql
+  queries/security/CWE-312/CleartextStorageDatabase.ql
+  queries/security/CWE-319/UseOfHttp.ql
+  queries/security/CWE-327/BrokenCryptoAlgorithm.ql
+  queries/security/CWE-327/WeakSensitiveDataHashing.ql
+  queries/security/CWE-614/InsecureCookie.ql
+  queries/security/CWE-770/UncontrolledAllocationSize.ql
+  queries/security/CWE-798/HardcodedCryptographicValue.ql
+  queries/security/CWE-825/AccessAfterLifetime.ql
+  queries/security/CWE-825/AccessInvalidPointer.ql
+  queries/security/CWE-918/RequestForgery.ql
+
+$ diff empirical/tools/.work/rust-code-scanning.txt empirical/tools/.work/rust-security-extended.txt
+14a15
+> queries/security/CWE-117/LogInjection.ql
+24a26
+> queries/security/CWE-825/AccessAfterLifetime.ql
+exit=1
+
+$ diff empirical/tools/.work/rust-security-extended.txt empirical/tools/.work/rust-security-and-quality.txt
+23a24
+> queries/security/CWE-696/BadCtorInitialization.ql
+38a40
+> queries/unusedentities/UnusedVariable.ql
+exit=1
+
+$ diff empirical/tools/.work/rust-security-extended.txt empirical/tools/.work/rust-security-experimental.txt
+exit=0 (0 = identical)
+
+# metadata of the two delta queries and the two security-and-quality extras (known pack paths)
+
+$ grep -E '@(id|kind|precision|problem.severity|security-severity|tags)' /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-117/LogInjection.ql
+ * @kind path-problem
+ * @problem.severity error
+ * @security-severity 6.1
+ * @precision medium
+ * @id rust/log-injection
+ * @tags security
+
+$ grep -E '@(id|kind|precision|problem.severity|security-severity|tags)' /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-825/AccessAfterLifetime.ql
+ * @kind path-problem
+ * @problem.severity error
+ * @security-severity 9.8
+ * @precision medium
+ * @id rust/access-after-lifetime-ended
+ * @tags reliability
+
+$ grep -E '@(id|kind|precision|problem.severity|security-severity|tags)' /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-825/AccessInvalidPointer.ql
+ * @kind path-problem
+ * @problem.severity error
+ * @security-severity 7.5
+ * @precision high
+ * @id rust/access-invalid-pointer
+ * @tags reliability
+
+$ grep -E '@(id|kind|precision|problem.severity|security-severity|tags)' /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-696/BadCtorInitialization.ql
+ * @kind path-problem
+ * @problem.severity error
+ * @precision high
+ * @id rust/ctor-initialization
+ * @tags reliability
+
+$ grep -E '@(id|kind|precision|problem.severity|security-severity|tags)' /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/unusedentities/UnusedVariable.ql
+ * @kind problem
+ * @problem.severity recommendation
+ * @precision high
+ * @id rust/unused-variable
+ * @tags maintainability

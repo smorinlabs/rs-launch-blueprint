@@ -1,0 +1,1525 @@
+# R16 clean empirical audit rerun
+# UTC: 2026-09-10T01:03:08Z
+# Fresh fixture: /private/tmp/r16-codeql-audit-clean.CcUyxI/fixture
+$ /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/codeql database create /private/tmp/r16-codeql-audit-clean.CcUyxI/db-198 --language=rust --build-mode=none --source-root=. --codescanning-config=.github/codeql/codeql-config.yml --overwrite
+Initializing database at /private/tmp/r16-codeql-audit-clean.CcUyxI/db-198.
+Package install location: /Users/stevemorin/.codeql/packages
+Nothing downloaded.
+Running build command: []
+Running command in /private/tmp/r16-codeql-audit-clean.CcUyxI/fixture: [/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/rust/tools/autobuild.sh]
+[2026-09-09 18:03:16] [build-stderr] Scanning for files in /private/tmp/r16-codeql-audit-clean.CcUyxI/fixture...
+[2026-09-09 18:03:16] [build-stderr] /private/tmp/r16-codeql-audit-clean.CcUyxI/db-198: Indexing files in in /private/tmp/r16-codeql-audit-clean.CcUyxI/fixture...
+[2026-09-09 18:03:16] [build-stderr] Running command in /private/tmp/r16-codeql-audit-clean.CcUyxI/fixture: [/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/rust/tools/index-files.sh, /private/tmp/r16-codeql-audit-clean.CcUyxI/db-198/working/files-to-index9874936004554380031.list]
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]  INFO configuration: {
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     scratch_dir: "/private/tmp/r16-codeql-audit-clean.CcUyxI/db-198/working",
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     trap_dir: "/private/tmp/r16-codeql-audit-clean.CcUyxI/db-198/trap/rust",
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     source_archive_dir: "/private/tmp/r16-codeql-audit-clean.CcUyxI/db-198/src",
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     diagnostic_dir: "/private/tmp/r16-codeql-audit-clean.CcUyxI/db-198/diagnostic/extractors/rust",
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     cargo_target_dir: None,
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     cargo_target: None,
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     cargo_features: [],
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     cargo_cfg_overrides: [],
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     cargo_extra_env: {},
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     cargo_extra_args: [],
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     cargo_all_targets: false,
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     logging_flamegraph: None,
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     logging_verbosity: Some(
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]         "progress",
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     ),
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     trap_compression: Zstd,
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     number of inputs: 5,
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     qltest: false,
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     qltest_cargo_check: false,
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     qltest_dependencies: [],
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     qltest_use_nightly: false,
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     sysroot: None,
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     sysroot_src: None,
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     rustc_src: None,
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     build_script_command: [],
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     extra_includes: [],
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     proc_macro_server: None,
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     extract_dependencies_as_source: false,
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]     force_library_mode: false,
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout] }
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]  INFO found manifests:
+[2026-09-09 18:03:17] [build-stdout] [2026-09-09 18:03:17] [build-stdout]   /private/tmp/r16-codeql-audit-clean.CcUyxI/fixture/Cargo.toml
+[2026-09-09 18:03:22] [build-stdout] [2026-09-09 18:03:22] [build-stdout]  INFO /private/tmp/r16-codeql-audit-clean.CcUyxI/fixture/docs/snippet.rs:1:1: semantic analyzer unavailable (not included as a module): macro expansion will be skipped.
+[2026-09-09 18:04:04] [build-stdout] [2026-09-09 18:04:04] [build-stdout]  INFO total duration (LoadSource): 2.234s
+[2026-09-09 18:04:04] [build-stdout] [2026-09-09 18:04:04] [build-stdout]  INFO total duration (Parse): 0.000s
+[2026-09-09 18:04:04] [build-stdout] [2026-09-09 18:04:04] [build-stdout]  INFO total duration (ParseLibrary): 6.921s
+[2026-09-09 18:04:04] [build-stdout] [2026-09-09 18:04:04] [build-stdout]  INFO total duration (ExtractLibrary): 24.167s
+[2026-09-09 18:04:04] [build-stdout] [2026-09-09 18:04:04] [build-stdout]  INFO total duration (LoadManifest): 2.682s
+[2026-09-09 18:04:04] [build-stdout] [2026-09-09 18:04:04] [build-stdout]  INFO total duration (CrateGraph): 0.018s
+[2026-09-09 18:04:04] [build-stdout] [2026-09-09 18:04:04] [build-stdout]  INFO total duration (FindManifests): 0.005s
+[2026-09-09 18:04:04] [build-stdout] [2026-09-09 18:04:04] [build-stdout]  INFO total duration (Extract): 0.313s
+[2026-09-09 18:04:04] [build-stdout] [2026-09-09 18:04:04] [build-stdout]  INFO total duration: 47.730s
+Finalizing database at /private/tmp/r16-codeql-audit-clean.CcUyxI/db-198.
+Running TRAP import for CodeQL database at /private/tmp/r16-codeql-audit-clean.CcUyxI/db-198...
+Importing TRAP files
+Merging relations
+Finished writing database (relations: 73.45 MiB; string pool: 22.03 MiB).
+TRAP import complete (52.9s).
+Finished zipping source archive (17.91 MiB).
+Successfully created database at /private/tmp/r16-codeql-audit-clean.CcUyxI/db-198.
+exit=0
+$ /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/codeql database analyze /private/tmp/r16-codeql-audit-clean.CcUyxI/db-198 --format=sarif-latest --output=/private/tmp/r16-codeql-audit-clean.CcUyxI/cfg-198.sarif --rerun
+Running queries.
+Resolving data extensions.
+Finished resolving data extensions.
+Loading data extensions.
+Finished loading data extensions.
+[1/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-319/UseOfHttp.qlx.
+[2/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-327/BrokenCryptoAlgorithm.qlx.
+[3/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-327/WeakSensitiveDataHashing.qlx.
+[4/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-311/CleartextTransmission.qlx.
+[5/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-918/RequestForgery.qlx.
+[6/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-825/AccessInvalidPointer.qlx.
+[7/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-614/InsecureCookie.qlx.
+[8/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-089/SqlInjection.qlx.
+[9/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-020/RegexInjection.qlx.
+[10/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-295/DisabledCertificateCheck.qlx.
+[11/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-770/UncontrolledAllocationSize.qlx.
+[12/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-312/CleartextStorageDatabase.qlx.
+[13/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-312/CleartextLogging.qlx.
+[14/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-798/HardcodedCryptographicValue.qlx.
+[15/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-022/TaintedPath.qlx.
+[16/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-079/XSS.qlx.
+[17/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-825/AccessAfterLifetime.qlx.
+[18/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-117/LogInjection.qlx.
+[19/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/ExtractionErrors.qlx.
+[20/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/CfgConsistencyCounts.qlx.
+[21/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/DataFlowConsistencyCounts.qlx.
+[22/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/UnextractedElements.qlx.
+[23/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/AstConsistencyCounts.qlx.
+[24/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/TypeInferenceConsistencyCounts.qlx.
+[25/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/UnresolvedMacroCalls.qlx.
+[26/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/ExtractedFiles.qlx.
+[27/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/ExtractionWarnings.qlx.
+[28/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/SsaConsistencyCounts.qlx.
+[29/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/telemetry/DatabaseQualityDiagnostics.qlx.
+[30/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/telemetry/ExtractorInformation.qlx.
+[31/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/summary/SummaryStats.qlx.
+[32/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/summary/NumberOfFilesExtractedWithErrors.qlx.
+[33/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/summary/LinesOfCode.qlx.
+[34/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/summary/NodesWithTypeAtLengthLimit.qlx.
+[35/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/summary/NumberOfSuccessfullyExtractedFiles.qlx.
+[36/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/summary/LinesOfUserCode.qlx.
+[37/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/summary/SummaryStatsReduced.qlx.
+[38/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/summary/QuerySinkCounts.qlx.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/AstConsistencyCounts.ql.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/CfgConsistencyCounts.ql.
+[1/38 eval 46.8s] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/AstConsistencyCounts.bqrs.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/DataFlowConsistencyCounts.ql.
+[2/38 eval 9.6s] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/CfgConsistencyCounts.bqrs.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/ExtractedFiles.ql.
+[3/38 eval 23.6s] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/DataFlowConsistencyCounts.bqrs.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/ExtractionErrors.ql.
+[4/38 eval 48ms] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/ExtractedFiles.bqrs.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/ExtractionWarnings.ql.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/SsaConsistencyCounts.ql.
+[5/38 eval 374ms] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/ExtractionErrors.bqrs.
+[6/38 eval 2ms] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/ExtractionWarnings.bqrs.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/TypeInferenceConsistencyCounts.ql.
+[7/38 eval 84ms] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/SsaConsistencyCounts.bqrs.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/UnextractedElements.ql.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/UnresolvedMacroCalls.ql.
+[8/38 eval 2.8s] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/TypeInferenceConsistencyCounts.bqrs.
+[9/38 eval 2ms] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/UnextractedElements.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-020/RegexInjection.ql.
+[10/38 eval 48ms] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/UnresolvedMacroCalls.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-022/TaintedPath.ql.
+[11/38 eval 136ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-020/RegexInjection.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-079/XSS.ql.
+[12/38 eval 60ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-022/TaintedPath.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-089/SqlInjection.ql.
+[13/38 eval 96ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-079/XSS.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-117/LogInjection.ql.
+[14/38 eval 14ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-089/SqlInjection.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-295/DisabledCertificateCheck.ql.
+[15/38 eval 1ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-117/LogInjection.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-311/CleartextTransmission.ql.
+[16/38 eval 153ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-295/DisabledCertificateCheck.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-312/CleartextLogging.ql.
+[17/38 eval 1.3s] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-311/CleartextTransmission.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-312/CleartextStorageDatabase.ql.
+[18/38 eval 285ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-312/CleartextLogging.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-319/UseOfHttp.ql.
+[19/38 eval 11ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-312/CleartextStorageDatabase.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-327/BrokenCryptoAlgorithm.ql.
+[20/38 eval 157ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-319/UseOfHttp.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-327/WeakSensitiveDataHashing.ql.
+[21/38 eval 245ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-327/BrokenCryptoAlgorithm.bqrs.
+[22/38 eval 478ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-327/WeakSensitiveDataHashing.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-614/InsecureCookie.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-770/UncontrolledAllocationSize.ql.
+[23/38 eval 14ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-614/InsecureCookie.bqrs.
+[24/38 eval 10ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-770/UncontrolledAllocationSize.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-798/HardcodedCryptographicValue.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-825/AccessAfterLifetime.ql.
+[25/38 eval 10ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-798/HardcodedCryptographicValue.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-825/AccessInvalidPointer.ql.
+[26/38 eval 381ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-825/AccessAfterLifetime.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-918/RequestForgery.ql.
+[27/38 eval 193ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-825/AccessInvalidPointer.bqrs.
+Starting evaluation of codeql/rust-queries/queries/summary/LinesOfCode.ql.
+[28/38 eval 11ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-918/RequestForgery.bqrs.
+Starting evaluation of codeql/rust-queries/queries/summary/LinesOfUserCode.ql.
+[29/38 eval 1.6s] Evaluation done; writing results to codeql/rust-queries/queries/summary/LinesOfCode.bqrs.
+Starting evaluation of codeql/rust-queries/queries/summary/NodesWithTypeAtLengthLimit.ql.
+[30/38 eval 4ms] Evaluation done; writing results to codeql/rust-queries/queries/summary/LinesOfUserCode.bqrs.
+Starting evaluation of codeql/rust-queries/queries/summary/NumberOfFilesExtractedWithErrors.ql.
+[31/38 eval 903ms] Evaluation done; writing results to codeql/rust-queries/queries/summary/NodesWithTypeAtLengthLimit.bqrs.
+Starting evaluation of codeql/rust-queries/queries/summary/NumberOfSuccessfullyExtractedFiles.ql.
+Starting evaluation of codeql/rust-queries/queries/summary/QuerySinkCounts.ql.
+[32/38 eval 45ms] Evaluation done; writing results to codeql/rust-queries/queries/summary/NumberOfFilesExtractedWithErrors.bqrs.
+[33/38 eval 2ms] Evaluation done; writing results to codeql/rust-queries/queries/summary/NumberOfSuccessfullyExtractedFiles.bqrs.
+Starting evaluation of codeql/rust-queries/queries/summary/SummaryStats.ql.
+[34/38 eval 176ms] Evaluation done; writing results to codeql/rust-queries/queries/summary/QuerySinkCounts.bqrs.
+Starting evaluation of codeql/rust-queries/queries/summary/SummaryStatsReduced.ql.
+[35/38 eval 1.3s] Evaluation done; writing results to codeql/rust-queries/queries/summary/SummaryStats.bqrs.
+Starting evaluation of codeql/rust-queries/queries/telemetry/DatabaseQualityDiagnostics.ql.
+[36/38 eval 434ms] Evaluation done; writing results to codeql/rust-queries/queries/summary/SummaryStatsReduced.bqrs.
+Starting evaluation of codeql/rust-queries/queries/telemetry/ExtractorInformation.ql.
+[37/38 eval 670ms] Evaluation done; writing results to codeql/rust-queries/queries/telemetry/DatabaseQualityDiagnostics.bqrs.
+[38/38 eval 2.7s] Evaluation done; writing results to codeql/rust-queries/queries/telemetry/ExtractorInformation.bqrs.
+Shutting down query evaluator.
+Interpreting results.
+CodeQL scanned 5 out of 5 Rust files in this invocation. Typically CodeQL is configured to analyze a single CodeQL language per invocation, so check other invocations to determine overall coverage information.
+Analysis produced the following metric data:
+
+|                            Metric                            | Value |
++--------------------------------------------------------------+-------+
+| Total number of Rust files that were extracted with errors   |     0 |
+| Total number of Rust files that were extracted without error |     5 |
+
+exit=0
+$ shasum -a 256 review/empirical/tools/codeql-bundle-osx64.tar.zst
+546ab3318398602ca1861253ea3b772a3f76512476938e8f03a0c0adf07e0ef7  review/empirical/tools/codeql-bundle-osx64.tar.zst
+# Published asset digest: sha256:546ab3318398602ca1861253ea3b772a3f76512476938e8f03a0c0adf07e0ef7
+$ /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/codeql version --format=text
+CodeQL command-line toolchain release 2.26.4.
+Copyright (C) 2019-2026 GitHub, Inc.
+Unpacked in: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql
+   Analysis results depend critically on separately distributed query and
+   extractor modules. To list modules that are visible to the toolchain,
+   use 'codeql resolve packs' and 'codeql resolve languages'.
+exit=0
+$ /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/codeql resolve queries codeql/rust-queries:codeql-suites/rust-code-scanning.qls
+Recording pack reference codeql/rust-queries at /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41.
+Recording pack reference codeql/suite-helpers at /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/.codeql/libraries/codeql/suite-helpers/1.0.56.
+exit=0
+$ /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/codeql resolve queries codeql/rust-queries:codeql-suites/rust-security-extended.qls
+Recording pack reference codeql/rust-queries at /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41.
+Recording pack reference codeql/suite-helpers at /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/.codeql/libraries/codeql/suite-helpers/1.0.56.
+exit=0
+$ diff default.txt extended.txt
+16a17,18
+> /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-825/AccessAfterLifetime.ql
+> /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-117/LogInjection.ql
+exit=1 (1 means differences found)
+$ cargo --version; rustc --version; cargo build --workspace --all-targets; cargo test --workspace
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+   Compiling log v0.4.34
+   Compiling inner v0.1.0 (/private/tmp/r16-codeql-audit-clean.CcUyxI/fixture/crates/inner)
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> crates/inner/src/lib.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `inner` (lib) generated 1 warning (1 duplicate)
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> crates/inner/tests/nested.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `inner` (lib test) generated 1 warning
+   Compiling rs_codeql_fixture v0.1.0 (/private/tmp/r16-codeql-audit-clean.CcUyxI/fixture)
+warning: `inner` (test "nested") generated 1 warning
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> src/lib.rs:9:9
+  |
+7 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+8 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+9 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+  --> src/lib.rs:42:13
+   |
+40 |         fn get_pointer() -> *const i64 {
+   |                             ---------- return type is `*const i64`
+41 |             let val = 123;
+   |                 --- local variable `val` is dropped at the end of the function
+42 |             &val
+   |             ^^^^
+   |
+   = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+   = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+
+warning: `rs_codeql_fixture` (lib) generated 1 warning
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> benches/bench.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> tests/integration.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `rs_codeql_fixture` (lib test) generated 2 warnings (1 duplicate)
+warning: `rs_codeql_fixture` (bench "bench") generated 1 warning
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> examples/example.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `rs_codeql_fixture` (test "integration") generated 1 warning
+warning: `rs_codeql_fixture` (example "example") generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.71s
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> src/lib.rs:9:9
+  |
+7 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+8 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+9 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> crates/inner/src/lib.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+  --> src/lib.rs:42:13
+   |
+40 |         fn get_pointer() -> *const i64 {
+   |                             ---------- return type is `*const i64`
+41 |             let val = 123;
+   |                 --- local variable `val` is dropped at the end of the function
+42 |             &val
+   |             ^^^^
+   |
+   = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+   = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+
+warning: `rs_codeql_fixture` (lib) generated 1 warning
+warning: `inner` (lib) generated 1 warning
+warning: `rs_codeql_fixture` (lib test) generated 2 warnings (1 duplicate)
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> crates/inner/tests/nested.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> examples/example.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `inner` (test "nested") generated 1 warning
+warning: `rs_codeql_fixture` (example "example") generated 1 warning
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> tests/integration.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `rs_codeql_fixture` (test "integration") generated 1 warning
+warning: `inner` (lib test) generated 1 warning (1 duplicate)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running unittests src/lib.rs (/private/tmp/r16-codeql-audit-clean.CcUyxI/cargo-198/debug/deps/inner-56fd50112fb5e0be)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/nested.rs (/private/tmp/r16-codeql-audit-clean.CcUyxI/cargo-198/debug/deps/nested-2d282bffde6ed8cb)
+
+running 1 test
+test nested_compiles ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/private/tmp/r16-codeql-audit-clean.CcUyxI/cargo-198/debug/deps/rs_codeql_fixture-2df6ae88c7db07b9)
+
+running 1 test
+test tests::compiles ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/private/tmp/r16-codeql-audit-clean.CcUyxI/cargo-198/debug/deps/rs_codeql_fixture-07302dd20999d4dc)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/integration.rs (/private/tmp/r16-codeql-audit-clean.CcUyxI/cargo-198/debug/deps/integration-092d895591974eb7)
+
+running 1 test
+test integration_compiles ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests inner
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests rs_codeql_fixture
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+build-exit=0 test-exit=0
+$ python3 <run>/review/empirical/sarif-summary.py <cfg-198.sarif>
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python: can't open file '/private/tmp/r16-codeql-audit-clean.CcUyxI/fixture/review/empirical/sarif-summary.py': [Errno 2] No such file or directory
+exit=2
+$ PATH="/Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin:$PATH" /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/codeql database create /private/tmp/r16-codeql-audit-clean.CcUyxI/db-196 --language=rust --build-mode=none --source-root=. --codescanning-config=.github/codeql/codeql-config.yml --overwrite
+Initializing database at /private/tmp/r16-codeql-audit-clean.CcUyxI/db-196.
+Package install location: /Users/stevemorin/.codeql/packages
+Nothing downloaded.
+Running build command: []
+Running command in /private/tmp/r16-codeql-audit-clean.CcUyxI/fixture: [/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/rust/tools/autobuild.sh]
+[2026-09-09 18:07:26] [build-stderr] Scanning for files in /private/tmp/r16-codeql-audit-clean.CcUyxI/fixture...
+[2026-09-09 18:07:26] [build-stderr] /private/tmp/r16-codeql-audit-clean.CcUyxI/db-196: Indexing files in in /private/tmp/r16-codeql-audit-clean.CcUyxI/fixture...
+[2026-09-09 18:07:26] [build-stderr] Running command in /private/tmp/r16-codeql-audit-clean.CcUyxI/fixture: [/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/rust/tools/index-files.sh, /private/tmp/r16-codeql-audit-clean.CcUyxI/db-196/working/files-to-index1197964331474148711.list]
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]  INFO configuration: {
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     scratch_dir: "/private/tmp/r16-codeql-audit-clean.CcUyxI/db-196/working",
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     trap_dir: "/private/tmp/r16-codeql-audit-clean.CcUyxI/db-196/trap/rust",
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     source_archive_dir: "/private/tmp/r16-codeql-audit-clean.CcUyxI/db-196/src",
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     diagnostic_dir: "/private/tmp/r16-codeql-audit-clean.CcUyxI/db-196/diagnostic/extractors/rust",
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     cargo_target_dir: None,
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     cargo_target: None,
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     cargo_features: [],
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     cargo_cfg_overrides: [],
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     cargo_extra_env: {},
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     cargo_extra_args: [],
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     cargo_all_targets: false,
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     logging_flamegraph: None,
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     logging_verbosity: Some(
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]         "progress",
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     ),
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     trap_compression: Zstd,
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     number of inputs: 5,
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     qltest: false,
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     qltest_cargo_check: false,
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     qltest_dependencies: [],
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     qltest_use_nightly: false,
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     sysroot: None,
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     sysroot_src: None,
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     rustc_src: None,
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     build_script_command: [],
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     extra_includes: [],
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     proc_macro_server: None,
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     extract_dependencies_as_source: false,
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]     force_library_mode: false,
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout] }
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]  INFO found manifests:
+[2026-09-09 18:07:26] [build-stdout] [2026-09-09 18:07:26] [build-stdout]   /private/tmp/r16-codeql-audit-clean.CcUyxI/fixture/Cargo.toml
+[2026-09-09 18:07:29] [build-stdout] [2026-09-09 18:07:29] [build-stdout]  INFO /private/tmp/r16-codeql-audit-clean.CcUyxI/fixture/docs/snippet.rs:1:1: semantic analyzer unavailable (not included as a module): macro expansion will be skipped.
+[2026-09-09 18:07:51] [build-stdout] [2026-09-09 18:07:51] [build-stdout]  INFO total duration (FindManifests): 0.002s
+[2026-09-09 18:07:51] [build-stdout] [2026-09-09 18:07:51] [build-stdout]  INFO total duration (ExtractLibrary): 14.793s
+[2026-09-09 18:07:51] [build-stdout] [2026-09-09 18:07:51] [build-stdout]  INFO total duration (LoadManifest): 0.788s
+[2026-09-09 18:07:51] [build-stdout] [2026-09-09 18:07:51] [build-stdout]  INFO total duration (ParseLibrary): 2.207s
+[2026-09-09 18:07:51] [build-stdout] [2026-09-09 18:07:51] [build-stdout]  INFO total duration (Parse): 0.000s
+[2026-09-09 18:07:51] [build-stdout] [2026-09-09 18:07:51] [build-stdout]  INFO total duration (Extract): 0.234s
+[2026-09-09 18:07:51] [build-stdout] [2026-09-09 18:07:51] [build-stdout]  INFO total duration (LoadSource): 1.934s
+[2026-09-09 18:07:51] [build-stdout] [2026-09-09 18:07:51] [build-stdout]  INFO total duration (CrateGraph): 0.011s
+[2026-09-09 18:07:51] [build-stdout] [2026-09-09 18:07:51] [build-stdout]  INFO total duration: 24.496s
+Finalizing database at /private/tmp/r16-codeql-audit-clean.CcUyxI/db-196.
+Running TRAP import for CodeQL database at /private/tmp/r16-codeql-audit-clean.CcUyxI/db-196...
+Importing TRAP files
+Merging relations
+Finished writing database (relations: 32.10 MiB; string pool: 19.03 MiB).
+TRAP import complete (15.4s).
+Finished zipping source archive (7.27 MiB).
+Successfully created database at /private/tmp/r16-codeql-audit-clean.CcUyxI/db-196.
+exit=0
+$ PATH="/Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin:$PATH" /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/codeql database analyze /private/tmp/r16-codeql-audit-clean.CcUyxI/db-196 --format=sarif-latest --output=/private/tmp/r16-codeql-audit-clean.CcUyxI/cfg-196.sarif --rerun
+Running queries.
+Resolving data extensions.
+Finished resolving data extensions.
+Loading data extensions.
+Finished loading data extensions.
+[1/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-319/UseOfHttp.qlx.
+[2/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-327/BrokenCryptoAlgorithm.qlx.
+[3/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-327/WeakSensitiveDataHashing.qlx.
+[4/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-311/CleartextTransmission.qlx.
+[5/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-918/RequestForgery.qlx.
+[6/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-825/AccessInvalidPointer.qlx.
+[7/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-614/InsecureCookie.qlx.
+[8/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-089/SqlInjection.qlx.
+[9/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-020/RegexInjection.qlx.
+[10/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-295/DisabledCertificateCheck.qlx.
+[11/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-770/UncontrolledAllocationSize.qlx.
+[12/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-312/CleartextStorageDatabase.qlx.
+[13/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-312/CleartextLogging.qlx.
+[14/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-798/HardcodedCryptographicValue.qlx.
+[15/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-022/TaintedPath.qlx.
+[16/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-079/XSS.qlx.
+[17/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-825/AccessAfterLifetime.qlx.
+[18/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/security/CWE-117/LogInjection.qlx.
+[19/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/ExtractionErrors.qlx.
+[20/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/CfgConsistencyCounts.qlx.
+[21/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/DataFlowConsistencyCounts.qlx.
+[22/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/UnextractedElements.qlx.
+[23/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/AstConsistencyCounts.qlx.
+[24/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/TypeInferenceConsistencyCounts.qlx.
+[25/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/UnresolvedMacroCalls.qlx.
+[26/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/ExtractedFiles.qlx.
+[27/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/ExtractionWarnings.qlx.
+[28/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/diagnostics/SsaConsistencyCounts.qlx.
+[29/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/telemetry/DatabaseQualityDiagnostics.qlx.
+[30/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/telemetry/ExtractorInformation.qlx.
+[31/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/summary/SummaryStats.qlx.
+[32/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/summary/NumberOfFilesExtractedWithErrors.qlx.
+[33/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/summary/LinesOfCode.qlx.
+[34/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/summary/NodesWithTypeAtLengthLimit.qlx.
+[35/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/summary/NumberOfSuccessfullyExtractedFiles.qlx.
+[36/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/summary/LinesOfUserCode.qlx.
+[37/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/summary/SummaryStatsReduced.qlx.
+[38/38] Loaded /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/qlpacks/codeql/rust-queries/0.1.41/queries/summary/QuerySinkCounts.qlx.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/AstConsistencyCounts.ql.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/CfgConsistencyCounts.ql.
+[1/38 eval 34.6s] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/AstConsistencyCounts.bqrs.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/DataFlowConsistencyCounts.ql.
+[2/38 eval 5.2s] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/CfgConsistencyCounts.bqrs.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/ExtractedFiles.ql.
+[3/38 eval 19.5s] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/DataFlowConsistencyCounts.bqrs.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/ExtractionErrors.ql.
+[4/38 eval 9ms] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/ExtractedFiles.bqrs.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/ExtractionWarnings.ql.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/SsaConsistencyCounts.ql.
+[5/38 eval 190ms] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/ExtractionErrors.bqrs.
+[6/38 eval 2ms] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/ExtractionWarnings.bqrs.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/TypeInferenceConsistencyCounts.ql.
+[7/38 eval 48ms] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/SsaConsistencyCounts.bqrs.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/UnextractedElements.ql.
+Starting evaluation of codeql/rust-queries/queries/diagnostics/UnresolvedMacroCalls.ql.
+[8/38 eval 1.8s] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/TypeInferenceConsistencyCounts.bqrs.
+[9/38 eval 2ms] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/UnextractedElements.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-020/RegexInjection.ql.
+[10/38 eval 25ms] Evaluation done; writing results to codeql/rust-queries/queries/diagnostics/UnresolvedMacroCalls.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-022/TaintedPath.ql.
+[11/38 eval 80ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-020/RegexInjection.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-079/XSS.ql.
+[12/38 eval 38ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-022/TaintedPath.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-089/SqlInjection.ql.
+[13/38 eval 44ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-079/XSS.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-117/LogInjection.ql.
+[14/38 eval 13ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-089/SqlInjection.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-295/DisabledCertificateCheck.ql.
+[15/38 eval 2ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-117/LogInjection.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-311/CleartextTransmission.ql.
+[16/38 eval 84ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-295/DisabledCertificateCheck.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-312/CleartextLogging.ql.
+[17/38 eval 508ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-311/CleartextTransmission.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-312/CleartextStorageDatabase.ql.
+[18/38 eval 256ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-312/CleartextLogging.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-319/UseOfHttp.ql.
+[19/38 eval 17ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-312/CleartextStorageDatabase.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-327/BrokenCryptoAlgorithm.ql.
+[20/38 eval 113ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-319/UseOfHttp.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-327/WeakSensitiveDataHashing.ql.
+[21/38 eval 195ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-327/BrokenCryptoAlgorithm.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-614/InsecureCookie.ql.
+[22/38 eval 316ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-327/WeakSensitiveDataHashing.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-770/UncontrolledAllocationSize.ql.
+[23/38 eval 14ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-614/InsecureCookie.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-798/HardcodedCryptographicValue.ql.
+[24/38 eval 11ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-770/UncontrolledAllocationSize.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-825/AccessAfterLifetime.ql.
+[25/38 eval 10ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-798/HardcodedCryptographicValue.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-825/AccessInvalidPointer.ql.
+[26/38 eval 207ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-825/AccessAfterLifetime.bqrs.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-918/RequestForgery.ql.
+[27/38 eval 95ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-825/AccessInvalidPointer.bqrs.
+Starting evaluation of codeql/rust-queries/queries/summary/LinesOfCode.ql.
+[28/38 eval 9ms] Evaluation done; writing results to codeql/rust-queries/queries/security/CWE-918/RequestForgery.bqrs.
+Starting evaluation of codeql/rust-queries/queries/summary/LinesOfUserCode.ql.
+[29/38 eval 813ms] Evaluation done; writing results to codeql/rust-queries/queries/summary/LinesOfCode.bqrs.
+Starting evaluation of codeql/rust-queries/queries/summary/NodesWithTypeAtLengthLimit.ql.
+[30/38 eval 4ms] Evaluation done; writing results to codeql/rust-queries/queries/summary/LinesOfUserCode.bqrs.
+Starting evaluation of codeql/rust-queries/queries/summary/NumberOfFilesExtractedWithErrors.ql.
+[31/38 eval 259ms] Evaluation done; writing results to codeql/rust-queries/queries/summary/NodesWithTypeAtLengthLimit.bqrs.
+Starting evaluation of codeql/rust-queries/queries/summary/NumberOfSuccessfullyExtractedFiles.ql.
+Starting evaluation of codeql/rust-queries/queries/summary/QuerySinkCounts.ql.
+[32/38 eval 46ms] Evaluation done; writing results to codeql/rust-queries/queries/summary/NumberOfFilesExtractedWithErrors.bqrs.
+[33/38 eval 2ms] Evaluation done; writing results to codeql/rust-queries/queries/summary/NumberOfSuccessfullyExtractedFiles.bqrs.
+Starting evaluation of codeql/rust-queries/queries/summary/SummaryStats.ql.
+[34/38 eval 242ms] Evaluation done; writing results to codeql/rust-queries/queries/summary/QuerySinkCounts.bqrs.
+Starting evaluation of codeql/rust-queries/queries/summary/SummaryStatsReduced.ql.
+[35/38 eval 1.3s] Evaluation done; writing results to codeql/rust-queries/queries/summary/SummaryStats.bqrs.
+[36/38 eval 237ms] Evaluation done; writing results to codeql/rust-queries/queries/summary/SummaryStatsReduced.bqrs.
+Starting evaluation of codeql/rust-queries/queries/telemetry/DatabaseQualityDiagnostics.ql.
+Starting evaluation of codeql/rust-queries/queries/telemetry/ExtractorInformation.ql.
+[37/38 eval 335ms] Evaluation done; writing results to codeql/rust-queries/queries/telemetry/DatabaseQualityDiagnostics.bqrs.
+[38/38 eval 3.1s] Evaluation done; writing results to codeql/rust-queries/queries/telemetry/ExtractorInformation.bqrs.
+Shutting down query evaluator.
+Interpreting results.
+CodeQL scanned 5 out of 5 Rust files in this invocation. Typically CodeQL is configured to analyze a single CodeQL language per invocation, so check other invocations to determine overall coverage information.
+Analysis produced the following metric data:
+
+|                            Metric                            | Value |
++--------------------------------------------------------------+-------+
+| Total number of Rust files that were extracted with errors   |     0 |
+| Total number of Rust files that were extracted without error |     5 |
+
+exit=0
+$ PATH="/Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin:$PATH" cargo --version; rustc --version; cargo build --workspace --all-targets; cargo test --workspace
+cargo 1.96.0 (30a34c682 2026-05-25)
+rustc 1.96.0 (ac68faa20 2026-05-25)
+   Compiling log v0.4.34
+   Compiling inner v0.1.0 (/private/tmp/r16-codeql-audit-clean.CcUyxI/fixture/crates/inner)
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> crates/inner/src/lib.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `inner` (lib) generated 1 warning
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> crates/inner/tests/nested.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+   Compiling rs_codeql_fixture v0.1.0 (/private/tmp/r16-codeql-audit-clean.CcUyxI/fixture)
+warning: `inner` (lib test) generated 1 warning (1 duplicate)
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> src/lib.rs:9:9
+  |
+7 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+8 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+9 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+  --> src/lib.rs:42:13
+   |
+40 |         fn get_pointer() -> *const i64 {
+   |                             ---------- return type is `*const i64`
+41 |             let val = 123;
+   |                 --- local variable `val` is dropped at the end of the function
+42 |             &val
+   |             ^^^^
+   |
+   = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+   = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+
+warning: `inner` (test "nested") generated 1 warning
+warning: `rs_codeql_fixture` (lib) generated 1 warning
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> examples/example.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> benches/bench.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> tests/integration.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `rs_codeql_fixture` (lib test) generated 2 warnings (1 duplicate)
+warning: `rs_codeql_fixture` (example "example") generated 1 warning
+warning: `rs_codeql_fixture` (bench "bench") generated 1 warning
+warning: `rs_codeql_fixture` (test "integration") generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.09s
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> src/lib.rs:9:9
+  |
+7 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+8 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+9 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `rs_codeql_fixture` (lib) generated 1 warning
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> crates/inner/src/lib.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> tests/integration.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `inner` (lib) generated 1 warning
+warning: `rs_codeql_fixture` (test "integration") generated 1 warning
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> crates/inner/tests/nested.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> examples/example.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+  --> src/lib.rs:42:13
+   |
+40 |         fn get_pointer() -> *const i64 {
+   |                             ---------- return type is `*const i64`
+41 |             let val = 123;
+   |                 --- local variable `val` is dropped at the end of the function
+42 |             &val
+   |             ^^^^
+   |
+   = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+   = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+
+warning: `inner` (test "nested") generated 1 warning
+warning: `rs_codeql_fixture` (example "example") generated 1 warning
+warning: `rs_codeql_fixture` (lib test) generated 2 warnings (1 duplicate)
+warning: `inner` (lib test) generated 1 warning (1 duplicate)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+     Running unittests src/lib.rs (/private/tmp/r16-codeql-audit-clean.CcUyxI/cargo-196/debug/deps/inner-fd7e75ff9635d4bf)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/nested.rs (/private/tmp/r16-codeql-audit-clean.CcUyxI/cargo-196/debug/deps/nested-cecfb9c73ad2aaff)
+
+running 1 test
+test nested_compiles ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/private/tmp/r16-codeql-audit-clean.CcUyxI/cargo-196/debug/deps/rs_codeql_fixture-63ac8f77f9b5d6f0)
+
+running 1 test
+test tests::compiles ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/private/tmp/r16-codeql-audit-clean.CcUyxI/cargo-196/debug/deps/rs_codeql_fixture-30824ff7a6acaa50)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/integration.rs (/private/tmp/r16-codeql-audit-clean.CcUyxI/cargo-196/debug/deps/integration-802c7cb6288181a6)
+
+running 1 test
+test integration_compiles ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests inner
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests rs_codeql_fixture
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+build-exit=0 test-exit=0
+$ python3 <run>/review/empirical/sarif-summary.py <cfg-196.sarif>
+/opt/homebrew/Cellar/python@3.14/3.14.7/Frameworks/Python.framework/Versions/3.14/Resources/Python.app/Contents/MacOS/Python: can't open file '/private/tmp/r16-codeql-audit-clean.CcUyxI/fixture/review/empirical/sarif-summary.py': [Errno 2] No such file or directory
+exit=2
+$ limactl shell ubuntu -- bash -lc source\ \$HOME/.cargo/env\;\ copy\ fresh\ fixture\ from\ /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/fixture\ excluding\ target\;\ run\ stable\ and\ 1.96.0\ cargo\ build/test\;\ verify\ CodeQL\ absent
+time="2026-09-09T18:10:06-07:00" level=warning msg="failed to detect whether running under rosetta, assuming false" error="failed to read sysctl \"sysctl.proc_translated\": operation not permitted"
+Linux 6.17.0-41-generic aarch64
+cargo 1.98.1 (797e8a9bc 2026-08-05)
+rustc 1.98.1 (48a229cea 2026-09-01)
+   Compiling log v0.4.34
+   Compiling inner v0.1.0 (/tmp/r16-codeql-audit-linux.EOd7Kn/crates/inner)
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> crates/inner/src/lib.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `inner` (lib) generated 1 warning
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> crates/inner/tests/nested.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+   Compiling rs_codeql_fixture v0.1.0 (/tmp/r16-codeql-audit-linux.EOd7Kn)
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> src/lib.rs:9:9
+  |
+7 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+8 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+9 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+  --> src/lib.rs:42:13
+   |
+40 |         fn get_pointer() -> *const i64 {
+   |                             ---------- return type is `*const i64`
+41 |             let val = 123;
+   |                 --- local variable `val` is dropped at the end of the function
+42 |             &val
+   |             ^^^^
+   |
+   = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+   = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+
+warning: `rs_codeql_fixture` (lib) generated 1 warning
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> benches/bench.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> examples/example.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> tests/integration.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `inner` (lib test) generated 1 warning (1 duplicate)
+warning: `inner` (test "nested") generated 1 warning
+warning: `rs_codeql_fixture` (bench "bench") generated 1 warning
+warning: `rs_codeql_fixture` (example "example") generated 1 warning
+warning: `rs_codeql_fixture` (lib test) generated 2 warnings (1 duplicate)
+warning: `rs_codeql_fixture` (test "integration") generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.33s
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> src/lib.rs:9:9
+  |
+7 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+8 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+9 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `rs_codeql_fixture` (lib) generated 1 warning
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> crates/inner/src/lib.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> tests/integration.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> examples/example.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `inner` (lib) generated 1 warning
+warning: `rs_codeql_fixture` (test "integration") generated 1 warning
+warning: `rs_codeql_fixture` (example "example") generated 1 warning
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> crates/inner/tests/nested.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+  --> src/lib.rs:42:13
+   |
+40 |         fn get_pointer() -> *const i64 {
+   |                             ---------- return type is `*const i64`
+41 |             let val = 123;
+   |                 --- local variable `val` is dropped at the end of the function
+42 |             &val
+   |             ^^^^
+   |
+   = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+   = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+
+warning: `inner` (test "nested") generated 1 warning
+warning: `rs_codeql_fixture` (lib test) generated 2 warnings (1 duplicate)
+warning: `inner` (lib test) generated 1 warning (1 duplicate)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running unittests src/lib.rs (cargo-stable/debug/deps/inner-32382778e85dbd4f)
+     Running tests/nested.rs (cargo-stable/debug/deps/nested-68e1beb5887ba075)
+
+running 1 test
+test nested_compiles ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (cargo-stable/debug/deps/rs_codeql_fixture-b6f7dfed14cd5c78)
+
+running 1 test
+test tests::compiles ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (cargo-stable/debug/deps/rs_codeql_fixture-7c987c1bfdcb8767)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/integration.rs (cargo-stable/debug/deps/integration-f2a9f7410dd2ed31)
+
+running 1 test
+test integration_compiles ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests inner
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests rs_codeql_fixture
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+stable-build-exit=0 stable-test-exit=0
+cargo 1.96.0 (30a34c682 2026-05-25)
+rustc 1.96.0 (ac68faa20 2026-05-25)
+   Compiling log v0.4.34
+   Compiling inner v0.1.0 (/tmp/r16-codeql-audit-linux.EOd7Kn/crates/inner)
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> crates/inner/src/lib.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `inner` (lib) generated 1 warning
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> crates/inner/tests/nested.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+   Compiling rs_codeql_fixture v0.1.0 (/tmp/r16-codeql-audit-linux.EOd7Kn)
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> src/lib.rs:9:9
+  |
+7 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+8 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+9 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+  --> src/lib.rs:42:13
+   |
+40 |         fn get_pointer() -> *const i64 {
+   |                             ---------- return type is `*const i64`
+41 |             let val = 123;
+   |                 --- local variable `val` is dropped at the end of the function
+42 |             &val
+   |             ^^^^
+   |
+   = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+   = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+
+warning: `rs_codeql_fixture` (lib) generated 1 warning
+warning: `inner` (lib test) generated 1 warning (1 duplicate)
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> benches/bench.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> examples/example.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> tests/integration.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `inner` (test "nested") generated 1 warning
+warning: `rs_codeql_fixture` (bench "bench") generated 1 warning
+warning: `rs_codeql_fixture` (lib test) generated 2 warnings (1 duplicate)
+warning: `rs_codeql_fixture` (example "example") generated 1 warning
+warning: `rs_codeql_fixture` (test "integration") generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.37s
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> src/lib.rs:9:9
+  |
+7 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+8 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+9 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `rs_codeql_fixture` (lib) generated 1 warning
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> crates/inner/src/lib.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> tests/integration.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> examples/example.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: `inner` (lib) generated 1 warning
+warning: `rs_codeql_fixture` (test "integration") generated 1 warning
+warning: `rs_codeql_fixture` (example "example") generated 1 warning
+warning: function returns a dangling pointer to dropped local variable `val`
+ --> crates/inner/tests/nested.rs:7:9
+  |
+5 |     fn get_pointer() -> *const i64 {
+  |                         ---------- return type is `*const i64`
+6 |         let val = 123;
+  |             --- local variable `val` is dropped at the end of the function
+7 |         &val
+  |         ^^^^
+  |
+  = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+  = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+  = note: `#[warn(dangling_pointers_from_locals)]` on by default
+
+warning: function returns a dangling pointer to dropped local variable `val`
+  --> src/lib.rs:42:13
+   |
+40 |         fn get_pointer() -> *const i64 {
+   |                             ---------- return type is `*const i64`
+41 |             let val = 123;
+   |                 --- local variable `val` is dropped at the end of the function
+42 |             &val
+   |             ^^^^
+   |
+   = note: a dangling pointer is safe, but dereferencing one is undefined behavior
+   = note: for more information, see <https://doc.rust-lang.org/reference/destructors.html>
+
+warning: `inner` (test "nested") generated 1 warning
+warning: `rs_codeql_fixture` (lib test) generated 2 warnings (1 duplicate)
+warning: `inner` (lib test) generated 1 warning (1 duplicate)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+     Running unittests src/lib.rs (cargo-196/debug/deps/inner-6570758dfd910864)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/nested.rs (cargo-196/debug/deps/nested-097b11d0914bf70b)
+
+running 1 test
+test nested_compiles ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (cargo-196/debug/deps/rs_codeql_fixture-a4c9cbb6a8e37745)
+
+running 1 test
+test tests::compiles ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (cargo-196/debug/deps/rs_codeql_fixture-bb5d0bc01bca080d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/integration.rs (cargo-196/debug/deps/integration-587ac03e0861b290)
+
+running 1 test
+test integration_compiles ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests inner
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+   Doc-tests rs_codeql_fixture
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+floor-build-exit=0 floor-test-exit=0
+codeql-not-available-on-linux-aarch64
+linux-leg-exit=0
+# Five cited-source spot checks via curl
+$ curl -fsSL https://raw.githubusercontent.com/github/codeql-action/v4.37.9/src/defaults.json | rg bundleVersion
+  "bundleVersion": "codeql-bundle-v2.26.4",
+  "cliVersion": "2.26.4",
+$ curl -fsSL https://raw.githubusercontent.com/github/codeql-action/v4.37.9/init/action.yml | rg config-file|queries
+90:  config-file:
+91-    description: Path of the config file to use
+92-    required: false
+--
+99:  queries:
+100-    description: Comma-separated list of additional queries to run. By default, this overrides the same setting in a configuration file; prefix with "+" to use both sets of queries.
+101-    required: false
+$ curl -fsSL https://raw.githubusercontent.com/github/codeql/codeql-cli/v2.26.4/rust/codeql-extractor.yml | rg build_modes|none|file_types
+6:build_modes:
+7-  - none
+8-default_queries:
+--
+14:file_types:
+15-  - name: rust
+16-    display_name: Rust files
+$ curl -fsSL https://codeql.github.com/codeql-query-help/rust/rust-log-injection/ | rg rust-security-extended
+   - rust-security-extended.qls
+$ curl -fsSL https://doc.rust-lang.org/book/ch11-03-test-organization.html | rg Integration Tests
+<h3 id="integration-tests"><a class="header" href="#integration-tests">Integration Tests</a></h3>
+citation-spot-checks-exit=0
+$ rg -c /queries/security/ default.txt; rg -c /queries/security/ extended.txt
+default-security-query-count=16
+extended-security-query-count=18
+$ python3 <run>/review/empirical/sarif-summary.py <cfg-198.sarif>
+rules present in SARIF (rust/*): 27
+  rust/access-after-lifetime-ended
+  rust/access-invalid-pointer
+  rust/cleartext-logging
+  rust/cleartext-storage-database
+  rust/cleartext-transmission
+  rust/disabled-certificate-check
+  rust/hard-coded-cryptographic-value
+  rust/insecure-cookie
+  rust/log-injection
+  rust/non-https-url
+  rust/path-injection
+  rust/regex-injection
+  rust/request-forgery
+  rust/sql-injection
+  rust/summary/lines-of-code
+  rust/summary/lines-of-user-code
+  rust/summary/nodes-at-type-path-length-limit
+  rust/summary/number-of-files-extracted-with-errors
+  rust/summary/number-of-successfully-extracted-files
+  rust/summary/query-sink-counts
+  rust/summary/reduced-summary-statistics
+  rust/summary/summary-statistics
+  rust/telemetry/extraction-information
+  rust/uncontrolled-allocation-size
+  rust/weak-cryptographic-algorithm
+  rust/weak-sensitive-data-hashing
+  rust/xss
+results: 7
+  rust/access-after-lifetime-ended  crates/inner/src/lib.rs:12
+  rust/access-after-lifetime-ended  docs/snippet.rs:12
+  rust/access-after-lifetime-ended  examples/example.rs:12
+  rust/access-after-lifetime-ended  src/lib.rs:14
+  rust/access-after-lifetime-ended  src/lib.rs:47
+  rust/access-invalid-pointer  src/lib.rs:25
+  rust/cleartext-logging  src/lib.rs:33
+exit=0
+$ python3 <run>/review/empirical/sarif-summary.py <cfg-196.sarif>
+rules present in SARIF (rust/*): 27
+  rust/access-after-lifetime-ended
+  rust/access-invalid-pointer
+  rust/cleartext-logging
+  rust/cleartext-storage-database
+  rust/cleartext-transmission
+  rust/disabled-certificate-check
+  rust/hard-coded-cryptographic-value
+  rust/insecure-cookie
+  rust/log-injection
+  rust/non-https-url
+  rust/path-injection
+  rust/regex-injection
+  rust/request-forgery
+  rust/sql-injection
+  rust/summary/lines-of-code
+  rust/summary/lines-of-user-code
+  rust/summary/nodes-at-type-path-length-limit
+  rust/summary/number-of-files-extracted-with-errors
+  rust/summary/number-of-successfully-extracted-files
+  rust/summary/query-sink-counts
+  rust/summary/reduced-summary-statistics
+  rust/summary/summary-statistics
+  rust/telemetry/extraction-information
+  rust/uncontrolled-allocation-size
+  rust/weak-cryptographic-algorithm
+  rust/weak-sensitive-data-hashing
+  rust/xss
+results: 7
+  rust/access-after-lifetime-ended  crates/inner/src/lib.rs:12
+  rust/access-after-lifetime-ended  docs/snippet.rs:12
+  rust/access-after-lifetime-ended  examples/example.rs:12
+  rust/access-after-lifetime-ended  src/lib.rs:14
+  rust/access-after-lifetime-ended  src/lib.rs:47
+  rust/access-invalid-pointer  src/lib.rs:25
+  rust/cleartext-logging  src/lib.rs:33
+exit=0
+$ actionlint .github/workflows/codeql.yml
+exit=0
+$ python3 -c <YAML parse and Init guard>
+workflow-init-guard=PASS
+exit=0

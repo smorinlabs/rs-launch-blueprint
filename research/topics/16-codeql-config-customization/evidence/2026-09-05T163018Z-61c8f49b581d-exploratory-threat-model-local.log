@@ -1,0 +1,19 @@
+# Exploratory — does rust/log-injection fire on an argv source when the 'local' threat model is enabled? (not part of the recommendation) — 2026-09-09T07:49:47Z — CodeQL 2.26.4 — macOS 26.4 arm64
+$ codeql database analyze <W>/db-bare codeql/rust-queries:codeql-suites/rust-security-extended.qls --threat-model local --format=sarif-latest --output=<W>/bare-extended-local.sarif --rerun
+CodeQL scanned 8 out of 8 Rust files in this invocation. Typically CodeQL is configured to analyze a single CodeQL language per invocation, so check other invocations to determine overall coverage information.
+| Total number of Rust files that were extracted with errors   |     0 |
+| Total number of Rust files that were extracted without error |     8 |
+exit=0
+$ python3 empirical/sarif-summary.py <W>/bare-extended-local.sarif | grep -E '^results|^  rust/[a-z-]+  '
+results: 10
+  rust/access-after-lifetime-ended  benches/bench.rs:12
+  rust/access-after-lifetime-ended  crates/inner/src/lib.rs:12
+  rust/access-after-lifetime-ended  crates/inner/tests/nested.rs:12
+  rust/access-after-lifetime-ended  docs/snippet.rs:12
+  rust/access-after-lifetime-ended  examples/example.rs:12
+  rust/access-after-lifetime-ended  src/lib.rs:14
+  rust/access-after-lifetime-ended  src/lib.rs:47
+  rust/access-after-lifetime-ended  tests/integration.rs:12
+  rust/access-invalid-pointer  src/lib.rs:25
+  rust/cleartext-logging  src/lib.rs:33
+exit=0

@@ -1,0 +1,87 @@
+# revision 2 — supplementary dynamic check on codeql-bundle-v2.26.0 (the bundle py's inherited github/codeql-action@v4.37.0 resolves) — 2026-09-10T01:19:46Z — cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/fixture — macOS 26.4 arm64
+$ (cd empirical/tools/bundle-2.26.0 && shasum -a 256 -c codeql-bundle-osx64.tar.zst.checksum.txt)
+codeql-bundle-osx64.tar.zst: OK
+exit=0
+$ codeql version --format=json | jq version,sha
+2.26.0 d91323f65aac3dfb68abb241929aea94bffc5b3e
+exit=0
+$ grep -n -A2 '^build_modes' empirical/tools/bundle-2.26.0/codeql/rust/codeql-extractor.yml
+6:build_modes:
+7-  - none
+8-default_queries:
+exit=0
+
+$ codeql resolve queries codeql/rust-queries:codeql-suites/rust-code-scanning.qls
+exit=0
+pack: rust-queries/0.1.37; queries resolved: 36 total; security/*: 16
+
+$ codeql resolve queries codeql/rust-queries:codeql-suites/rust-security-extended.qls
+exit=0
+pack: rust-queries/0.1.37; queries resolved: 38 total; security/*: 18
+
+$ diff 2260-rust-code-scanning.txt 2260-rust-security-extended.txt
+14a15
+> queries/security/CWE-117/LogInjection.ql
+24a26
+> queries/security/CWE-825/AccessAfterLifetime.ql
+exit=1
+
+== leg: stable ==
+$ cargo --version; rustc --version
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+$ codeql database create <W>/db-2260-stable --language=rust --build-mode=none --source-root=. --codescanning-config=.github/codeql/codeql-config.yml --overwrite
+Successfully created database at /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/.work/db-2260-stable.
+exit=0
+total .rs archived: 5839
+  fixture files:
+    crates/inner/src/lib.rs
+    docs/snippet.rs
+    examples/example.rs
+    src/lib.rs
+    src/main.rs
+$ codeql database analyze <W>/db-2260-stable --format=sarif-latest --output=<W>/2260-stable.sarif --rerun   (no suite argument)
+Starting evaluation of codeql/rust-queries/queries/security/CWE-117/LogInjection.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-825/AccessAfterLifetime.ql.
+CodeQL scanned 5 out of 5 Rust files in this invocation. Typically CodeQL is configured to analyze a single CodeQL language per invocation, so check other invocations to determine overall coverage information.
+exit=0
+$ python3 sarif-summary.py <W>/2260-stable.sarif
+rules present in SARIF (rust/*): 27
+results: 6
+  rust/access-after-lifetime-ended  crates/inner/src/lib.rs:12
+  rust/access-after-lifetime-ended  docs/snippet.rs:12
+  rust/access-after-lifetime-ended  examples/example.rs:12
+  rust/access-after-lifetime-ended  src/lib.rs:14
+  rust/access-after-lifetime-ended  src/lib.rs:47
+  rust/access-invalid-pointer  src/lib.rs:25
+exit=0
+
+== leg: 1.96.0 ==
+$ cargo --version; rustc --version
+cargo 1.96.0 (30a34c682 2026-05-25)
+rustc 1.96.0 (ac68faa20 2026-05-25)
+$ codeql database create <W>/db-2260-1.96.0 --language=rust --build-mode=none --source-root=. --codescanning-config=.github/codeql/codeql-config.yml --overwrite
+Successfully created database at /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/.work/db-2260-1.96.0.
+exit=0
+total .rs archived: 1980
+  fixture files:
+    crates/inner/src/lib.rs
+    docs/snippet.rs
+    examples/example.rs
+    src/lib.rs
+    src/main.rs
+$ codeql database analyze <W>/db-2260-1.96.0 --format=sarif-latest --output=<W>/2260-1.96.0.sarif --rerun   (no suite argument)
+Starting evaluation of codeql/rust-queries/queries/security/CWE-117/LogInjection.ql.
+Starting evaluation of codeql/rust-queries/queries/security/CWE-825/AccessAfterLifetime.ql.
+CodeQL scanned 5 out of 5 Rust files in this invocation. Typically CodeQL is configured to analyze a single CodeQL language per invocation, so check other invocations to determine overall coverage information.
+exit=0
+$ python3 sarif-summary.py <W>/2260-1.96.0.sarif
+rules present in SARIF (rust/*): 27
+results: 6
+  rust/access-after-lifetime-ended  crates/inner/src/lib.rs:12
+  rust/access-after-lifetime-ended  docs/snippet.rs:12
+  rust/access-after-lifetime-ended  examples/example.rs:12
+  rust/access-after-lifetime-ended  src/lib.rs:14
+  rust/access-after-lifetime-ended  src/lib.rs:47
+  rust/access-invalid-pointer  src/lib.rs:25
+exit=0
