@@ -1,0 +1,7 @@
+[Audit](review/audit-codex.md) SHA-256: `b8525cd9…f583993`
+
+Verdict: reject.
+
+Reruns exited 0 at Rust 1.98.0 and 1.96.0; Linux cargo-only leg also passed. Full [evidence log](review/evidence/audit-codeql-config-customization.log).
+
+Finding: workflow pins `init@v4.37.0` (CodeQL 2.26.0), but dynamic evidence ran only 2.26.4 from v4.37.9.
