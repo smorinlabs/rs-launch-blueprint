@@ -169,6 +169,15 @@
       },
       "provider": "doxa",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-10T14:36:08Z",
+      "publication": {
+        "acceptance_sha256": "39a0e02634f0d4813a9f664a3d3871219151315390bd623fccc9fc55e7c1633f",
+        "decision_sha256": "ca5a731081e51ab5d0eea91dd9f4ef8a456855df026354ed1f8146bea77f6d7f",
+        "transaction": "d31243ef13744b35ac35923aefd80884"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -234,6 +243,11 @@
     }
   },
   "prompt_source": "research/topics/42-dev-toolchain-provisioning/prompts/dev-toolchain-provisioning.prompt.md",
+  "publication": {
+    "acceptance_sha256": "39a0e02634f0d4813a9f664a3d3871219151315390bd623fccc9fc55e7c1633f",
+    "decision_sha256": "ca5a731081e51ab5d0eea91dd9f4ef8a456855df026354ed1f8146bea77f6d7f",
+    "transaction": "d31243ef13744b35ac35923aefd80884"
+  },
   "remaining_budget": "USD 300.00 remaining of USD 300.00 bulk Deep ceiling (Doxa admissions paused; no automatic retry)",
   "required_engines": [
     "codex",
@@ -242,7 +256,7 @@
   ],
   "run_id": "2026-09-05T155503Z-4141a35b69e0",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "deep",
-  "updated_at": "2026-09-09T07:31:10Z"
+  "updated_at": "2026-09-10T14:36:08Z"
 }

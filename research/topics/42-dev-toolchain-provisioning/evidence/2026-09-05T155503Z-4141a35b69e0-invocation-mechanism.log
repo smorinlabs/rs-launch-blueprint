@@ -1,0 +1,76 @@
+# Invocation-mechanism checks. Working directory: /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42 (session scratchpad, outside the repo).
+# Retrieved/run: 2026-09-10T05:15:47Z
+
+--- scratch rust-toolchain.toml under test ---
+[toolchain]
+channel = "stable"
+profile = "minimal"
+components = ["rustfmt", "clippy"]
+
+$ rustup show active-toolchain
+stable-aarch64-apple-darwin (overridden by '/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42/rust-toolchain.toml')
+exit=0
+
+$ cargo fmt --version
+rustfmt 1.9.0
+exit=0
+$ cargo clippy --version
+clippy 0.1.98
+exit=0
+$ command -v cargo
+/opt/homebrew/bin/cargo
+
+# Cargo custom-subcommand dispatch: a stub executable named cargo-demo on PATH,
+# invoked as 'cargo demo'. Tests the Cargo book's documented dispatch contract.
+$ PATH=/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42/bin:$PATH cargo demo --flag 1
+cargo-demo invoked argv: demo --flag 1
+exit=0
+$ PATH=/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42/bin:$PATH command -v cargo-demo
+/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42/bin/cargo-demo
+exit=0
+$ command -v cargo-demo   # without the stub dir on PATH (negative control)
+exit=1
+
+# Bare-binary vs cargo-proxy resolution on this host (an observed hazard, not a recommendation):
+$ command -v rustc; rustc --version
+/opt/homebrew/bin/rustc
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+$ rustup which rustc; cargo --version
+/Users/stevemorin/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+
+--- follow-up: does the toolchain file actually select the component versions? ---
+$ command -v cargo-fmt cargo-clippy   (the executables 'cargo fmt'/'cargo clippy' dispatch to)
+/opt/homebrew/bin/cargo-fmt
+/opt/homebrew/bin/cargo-clippy
+
+# A: inside /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42 (rust-toolchain.toml channel=stable present)
+$ rustup show active-toolchain
+stable-aarch64-apple-darwin (overridden by '/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42/rust-toolchain.toml')
+$ cargo clippy --version
+clippy 0.1.98
+
+# B: inside /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42-notoolchain (no rust-toolchain.toml; rustup default applies)
+$ rustup show active-toolchain
+stable-aarch64-apple-darwin (default)
+$ cargo clippy --version
+clippy 0.1.98
+$ cargo fmt --version
+rustfmt 1.9.0
+
+--- read-only probe: does the rustup 'stable' toolchain itself contain the components? ---
+$ rustup which cargo-fmt
+/Users/stevemorin/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo-fmt
+exit=0
+$ rustup which cargo-clippy
+/Users/stevemorin/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo-clippy
+exit=0
+$ rustup component list --installed
+cargo-aarch64-apple-darwin
+clippy-aarch64-apple-darwin
+rust-analyzer-aarch64-apple-darwin
+rust-docs-aarch64-apple-darwin
+rust-std-aarch64-apple-darwin
+rustc-aarch64-apple-darwin
+rustfmt-aarch64-apple-darwin
+exit=0
