@@ -26,7 +26,7 @@ target declarer, the packager and the publisher, and its declaration surface is 
 |---|---|---|
 | Built-in / first-party toolchain | **Cargo manifest targets** — `[lib]`, `[[bin]]`, `[[example]]`, `[[test]]`, `[[bench]]`, with `name`, `path`, `required-features`, `doc`, `test`, `crate-type`; `[package]` `include`/`exclude`, `default-run`, `rust-version`, `publish`, `autobins`/`autolib`. **`cargo package` / `cargo publish`** (produces the single `.crate` archive). **`build.rs` build scripts** (first-party codegen hook). **Cargo features** (`[features]`) as the conditional-compilation gate | The entire category. Nothing else in Rust declares a build target |
 | Established industry standard (third-party, orchestrates *around* Cargo) | `cargo-dist` (the tool is now named **`dist`**), `cross`, `cargo-zigbuild`, `cargo-binstall` (via `[package.metadata.binstall]`), `cbindgen`, `maturin`, `wasm-pack`, the **`cargo-xtask` pattern** | Release-artifact fan-out, cross-compilation, alternate-ecosystem outputs. None of them replaces `[[bin]]`/`[lib]`; every one of them *reads* those declarations |
-| Up-and-comer | `dist` under its new name (`axodotdev/cargo-dist`), `cargo-packager`, `bazelbuild/rules_rust` / Buck2 as whole-build-system replacements | Installer/bundle generation and non-Cargo build graphs. `rules_rust` (840 stars, `GET https://api.github.com/repos/bazelbuild/rules_rust`, 2026-09-10) replaces the *builder* but not `Cargo.toml`'s `[package]` metadata, which crates.io publishing still requires |
+| Up-and-comer | `dist` under its new name (`axodotdev/cargo-dist`, configured in a separate `dist-workspace.toml`), `cargo-packager`, `bazelbuild/rules_rust` / Buck2 as whole-build-system replacements | Installer/bundle generation and non-Cargo build graphs. `rules_rust` (840 stars, `GET https://api.github.com/repos/bazelbuild/rules_rust`, 2026-09-10) replaces the *builder* but not `Cargo.toml`'s `[package]` metadata, which crates.io publishing still requires |
 
 **Authoritative sources used, and why each is authoritative.**
 
@@ -74,12 +74,13 @@ regarded.** Star counts and repository state from `GET https://api.github.com/re
 | `bytecodealliance/wasmtime` | 18616 stars; Bytecode Alliance flagship | package `wasmtime-cli`, `[lib] doctest = false`, `[[bin]] name = "wasmtime" path = "src/bin/wasmtime.rs" doc = false`, `default-run = "wasmtime"` — **names diverge**, plus `[package.metadata.binstall]` | `exclude = [...]` |
 | `crate-ci/typos` | 4125 stars; widely used in CI | workspace `default-members = ["crates/typos-cli"]`; package `typos-cli`, bin `typos` — **names diverge** | `include = ["build.rs","src/**/*","Cargo.toml","Cargo.lock","LICENSE*","README.md","examples/**/*"]` |
 
-Two things fall straight out of that table. **First**, six of the seven use `exclude` (deny-list) and
-only `typos` uses `include` (allow-list) — the ecosystem's default posture is "ship the git-tracked
-tree minus named directories". **Second**, four of seven deliberately diverge the distribution name
-from the binary name (`ripgrep`/`rg`, `wasmtime-cli`/`wasmtime`, `typos-cli`/`typos`, and mdBook's
-package `mdbook` matching by coincidence of a short product name), and none of them needs an
-install-time lookup flag to do it.
+Two things fall straight out of that table (eight projects). **First**, **seven of the eight** use
+`exclude` (deny-list) — ripgrep, bat, just, atuin, mdBook, wasmtime, and cargo at the workspace level
+— and only `typos` uses `include` (allow-list); the ecosystem's default posture is "ship the
+git-tracked tree minus named directories". **Second**, **three of the eight** deliberately diverge the
+distribution name from the binary name (`ripgrep`/`rg`, `wasmtime-cli`/`wasmtime`,
+`typos-cli`/`typos`); the other five match because the product name is already short. None of the
+three needs an install-time lookup flag to do it.
 
 **Fit framing.** Every candidate below is judged against this template's actual shape — one CLI, one
 consumable library, one optional web service (`web-extra-surface`, R69, still unresolved) — and
@@ -190,22 +191,9 @@ declares `[lib]`, one `[[bin]]`, `[features]`, and an `exclude` list.
 
 **BASELINE-REVIEW finding.**
 
-BASELINE-REVIEW: F212 — the recorded principle treats the build backend/bundler as a *selectable
-third-party tool*, which is what makes R49 an item of kind `crate` in `research/CLAUDE.md` and what
-makes the prompt's crate figure table (90-day downloads, last release, advisories, adopters) the
-required evidence — proposed change: reclassify R49's item kind from `crate` to `pattern`, or to an
-explicit `crate (first-party toolchain, zero added dependencies)` sub-kind, and record F212's
-substitute as "the Cargo toolchain, no crates.io dependency", so that downstream items and the
-`check-research-tree.sh` gate do not expect a version range for a crate that does not exist —
-evidence: (a) the Cargo Book documents `[lib]`/`[[bin]]`/`include`/`exclude` as manifest fields of
-the toolchain itself with no pluggable backend interface analogous to PEP 517
-(<https://doc.rust-lang.org/cargo/reference/cargo-targets.html> and
-<https://doc.rust-lang.org/cargo/reference/manifest.html>, 2026-09-10); (b) the ledger row itself
-already anticipates this — *"Cargo is Rust's native build system with no separate backend/bundler
-crate needed"* (`docs/port/COMMONALITY.md:216`); (c) every crate figure required by this prompt is
-`inapplicable` to the recommended answer, as recorded in `### Qualified shortlist` below. Affected
-items: R49 (this item); informationally R68 and R50, whose prompts describe R49 as declaring build
-targets — neither statement changes. I have not edited the ledger or the index.
+BASELINE-REVIEW: F212 — principle: the build backend/bundler is a *selectable third-party tool*, which is what makes R49 an item of kind `crate` in `research/CLAUDE.md` and makes the prompt's crate figure table (90-day downloads, last release, advisories, adopters) the required evidence — proposed change: reclassify R49's item kind from `crate` to `pattern`, or to an explicit `crate (first-party toolchain, zero added dependencies)` sub-kind, and record F212's substitute as "the Cargo toolchain, no crates.io dependency", so downstream items and the `check-research-tree.sh` gate do not expect a version range for a crate that does not exist — evidence: (a) the Cargo Book documents `[lib]`/`[[bin]]`/`include`/`exclude` as manifest fields of the toolchain itself, with no pluggable backend interface analogous to PEP 517 (<https://doc.rust-lang.org/cargo/reference/cargo-targets.html> and <https://doc.rust-lang.org/cargo/reference/manifest.html>, 2026-09-10); (b) the ledger row already anticipates it — "Cargo is Rust's native build system with no separate backend/bundler crate needed" (`docs/port/COMMONALITY.md:216`); (c) every crate figure this prompt requires is `inapplicable` to the recommended answer, as recorded in `### Qualified shortlist`; affected items: R49 (this item), and informationally R68 and R50, whose prompts describe R49 as declaring build targets — neither statement changes.
+
+I have not edited the ledger or the research index.
 
 ### Dominant choice
 
@@ -235,9 +223,74 @@ is nonetheless warranted.
 | Name | Role | 90-day downloads | All-time downloads | Stars | Last release | Maintenance | Notable adopters | One-line trade-off |
 |---|---|---|---|---|---|---|---|---|
 | **Cargo manifest targets** (`[lib]`, `[[bin]]`, `include`/`exclude`) | declares the build targets and the packaged-file scope | `inapplicable` — not a crates.io crate; ships in the toolchain, so `crate.recent_downloads` has no meaning | `inapplicable` — same reason | 15462 (`rust-lang/cargo`, `GET https://api.github.com/repos/rust-lang/cargo`, 2026-09-10) | `inapplicable` as a crates.io release; tracks the six-week stable train | `active` — `pushed_at` 2026-09-08T15:46:17Z, `archived: false` (same endpoint) | every project in the practice table above | zero flexibility: what Cargo does not model (multi-artifact release fan-out) must be modelled outside the manifest |
-| `cargo-dist` (tool renamed **`dist`**) | release-artifact orchestration; reads `[[bin]]`, writes installers and CI | 19922 (`GET https://crates.io/api/v1/crates/cargo-dist` → `crate.recent_downloads`, 2026-09-10) | 175385 (same endpoint, `crate.downloads`) | 2112 (`GET https://api.github.com/repos/axodotdev/cargo-dist`, 2026-09-10) | 0.32.0, 2026-05-22T05:58:59Z (`GET https://crates.io/api/v1/crates/cargo-dist/versions`, newest non-yanked, 2026-09-10) | **`at-risk`** — concrete signal: 0 of the 10 most recently opened issues (#2504, #2492, #2489, #2457, #2456, #2446, #2444, #2443, #2442, #2437) has any comment from a MEMBER/OWNER/COLLABORATOR, so median days-to-first-maintainer-response is **undefined and the unanswered count is 10/10** (`GET https://api.github.com/search/issues?q=repo:axodotdev/cargo-dist+is:issue&sort=created&order=desc` plus each issue's `/comments`, 2026-09-10); 297 open issues (`GET https://api.github.com/search/issues?q=repo:axodotdev/cargo-dist+is:issue+is:open` → `total_count`, 2026-09-10). Not `dormant`: maintainer `mistydemeo` committed 2026-09-04 (`GET https://api.github.com/repos/axodotdev/cargo-dist/commits`) and no unpatched advisory exists | axodotdev's own `axolotlsay`; widely used by Rust CLI projects for GitHub-Release installers | buys multi-platform installer generation this item does not need, at the cost of a tool whose issue tracker is unattended |
+| `cargo-dist` (tool renamed **`dist`**) | release-artifact orchestration; reads `[[bin]]`, writes installers and CI | 19922 (`GET https://crates.io/api/v1/crates/cargo-dist` → `crate.recent_downloads`, 2026-09-10) | 175385 (same endpoint, `crate.downloads`) | 2112 (`GET https://api.github.com/repos/axodotdev/cargo-dist`, 2026-09-10) | 0.32.0, 2026-05-22T05:58:59Z (`GET https://crates.io/api/v1/crates/cargo-dist/versions`, newest non-yanked, 2026-09-10) | **`active`** — see the responsiveness measurement and its correction immediately below | `atuinsh/atuin` and `astral-sh/uv` each carry a `dist-workspace.toml` at their repository root (`GET https://api.github.com/repos/<o>/<r>/contents/dist-workspace.toml`, 2026-09-10; atuin's pins `cargo-dist-version = "0.31.0"`) | buys multi-platform installer generation this item does not need, and moves part of the build declaration out of `Cargo.toml` into a second file |
 | `cargo-xtask` (**pattern**, not a crate) | in-repo build orchestration written in Rust, bootstrapped from `cargo` alone | `inapplicable` — a repository convention, not a published crate (the crates.io name `xtask` is an unrelated package: 953 all-time downloads, `GET https://crates.io/api/v1/crates/xtask`, 2026-09-10) | `inapplicable` | 1319 (`GET https://api.github.com/repos/matklad/cargo-xtask`, 2026-09-10) | `inapplicable` — spec repository, `pushed_at` 2025-10-28T14:42:08Z | `stable-quiet` — a frozen specification; quiet is the expected state for a spec repo, and its own README calls it *"not an officially recommended workflow"* | `rust-lang/cargo` itself | zero dependencies, but every orchestration step becomes code this template must maintain and test |
 | `build.rs` build scripts | first-party codegen/asset hook run before compilation | `inapplicable` — a Cargo feature | `inapplicable` | `inapplicable` | `inapplicable` | `active` (part of Cargo) | ubiquitous | adds a compile-time step and a rebuild-trigger surface; unnecessary unless something must be generated |
+
+**Issue responsiveness for `cargo-dist`, and a correction to my own first measurement.** My initial
+pass filtered comments by GitHub's `author_association` field over the 10 most recently opened issues
+(#2504, #2492, #2489, #2457, #2456, #2446, #2444, #2443, #2442, #2437) and found **zero** from a
+`MEMBER`, `OWNER` or `COLLABORATOR`, which would have supported an `at-risk` verdict. **That figure
+was a filter artifact and I withdraw it.** The project's active maintainer, `mistydemeo` — who
+authored a commit to `main` on 2026-09-04T19:47:56Z
+(`GET https://api.github.com/repos/axodotdev/cargo-dist/commits`, 2026-09-10) — comments with
+`author_association: CONTRIBUTOR`, so the filter excluded exactly the person it was meant to find.
+Re-measuring by login across the same ten issues
+(`GET https://api.github.com/repos/axodotdev/cargo-dist/issues/<n>/comments`, 2026-09-10):
+
+| Issue | Opened | First maintainer comment | Days to first response |
+|---|---|---|---|
+| #2504 | 2026-09-08T21:38:56Z | `mistydemeo` 2026-09-09T01:42:34Z | 0.17 |
+| #2492 | 2026-08-27T16:53:13Z | `mistydemeo` 2026-08-27T17:02:01Z | 0.006 |
+| #2489 | 2026-08-21T13:22:02Z | `mistydemeo` 2026-08-28T06:04:48Z | 6.70 |
+| #2457 | 2026-08-07T06:44:41Z | `mistydemeo` 2026-08-07T18:46:16Z | 0.50 |
+| #2456 | 2026-08-05T17:15:03Z | `mistydemeo` 2026-08-05T17:22:21Z | 0.005 |
+| #2446 | 2026-07-01T16:14:51Z | none | — |
+| #2444 | 2026-06-29T11:37:57Z | `mistydemeo` 2026-06-29T16:41:29Z | 0.21 |
+| #2443 | 2026-06-29T10:32:26Z | none | — |
+| #2442 | 2026-06-29T05:47:43Z | none | — |
+| #2437 | 2026-06-22T05:16:41Z | none | — |
+
+**Median days to first maintainer response: 0.19** (about 4.6 hours) over the 6 answered issues.
+**Unanswered count: 4 of 10.** Combined with 297 open issues
+(`GET https://api.github.com/search/issues?q=repo:axodotdev/cargo-dist+is:issue+is:open` →
+`total_count`, 2026-09-10), a maintainer commit six days before retrieval, `archived: false`, no
+RustSec record, and a last release 2026-05-22 (3.5 months, below the rubric's 6-month
+investigate-trigger), the rubric verdict is **`active`**, not `at-risk`. One adjacent observation,
+recorded as a fact and not as a verdict: the documentation domain `opensource.axo.dev` that the
+project's own book links point at returns **NXDOMAIN** (`host opensource.axo.dev`, 2026-09-10), while
+the GitHub Pages mirror `axodotdev.github.io/cargo-dist/book/` serves normally. That is a hosting
+signal about the sponsoring company, not a code-side signal about maintenance, and the rubric
+requires a concrete code-side signal for `at-risk`, which I do not have.
+
+**Gates for the three non-dominant shortlist rows** (stated rather than omitted, per the prompt):
+
+- **`cargo-dist` 0.32.0.** Gate 1 — pass: `license = "MIT OR Apache-2.0"`
+  (`GET https://crates.io/api/v1/crates/cargo-dist/versions`, 2026-09-10). Gate 2 — pass and mostly
+  `inapplicable`: `rust_version = "1.74"` on 0.32.0, far below any plausible policy floor, and it is
+  installed as a standalone binary so its dependency tree never merges with the template's. Gate 3 —
+  pass: `https://rustsec.org/packages/cargo-dist.html` returns HTTP 404 (no advisory record);
+  `unsafe` posture `inapplicable` to the template, since no `cargo-dist` code is compiled into the
+  template's artifacts. Gate 4 — pass: it exists to build for many targets and its own repository
+  runs a Rust CI workflow badge on `main`
+  (<https://raw.githubusercontent.com/axodotdev/cargo-dist/main/README.md>, 2026-09-10); it is
+  invoked identically on `ubuntu-latest` and `macos-latest`. Gate 5 — `inapplicable`: a separately
+  installed binary contributes no Cargo features and no async runtime to the template. Gate 6 —
+  `inapplicable` for binary size (nothing is linked); compile-time cost is the CI wall-clock of the
+  release job it generates, which is R68's to measure, not this item's.
+- **`cargo-xtask` (pattern).** Gates 1, 2, 3, 5 and 6 are all `inapplicable`: it is a repository
+  convention with no published artifact, no license of its own that the template consumes, no
+  dependency tree, no features and no linked code — the `xtask` binary the template would write is
+  the template's own code, governed by the template's own gates. Gate 4 — pass by construction: an
+  xtask is a Rust binary built by the same toolchain on both matrix legs, which is the stated reason
+  the pattern exists (*"Unlike bash, it can more easily be cross platform, as it doesn't use the
+  shell."*, <https://raw.githubusercontent.com/matklad/cargo-xtask/master/README.md>, 2026-09-10).
+- **`build.rs` build scripts.** Gates 1, 2, 3 and 5 are `inapplicable`: a build script is a first-party
+  Cargo mechanism, not a dependency; it has no license, no MSRV, no advisory surface and no features
+  of its own. Gate 4 — pass: build scripts run on every host Cargo supports. Gate 6 — the only gate
+  with real content: a build script adds a compile-time step to **every** build and a rebuild-trigger
+  surface, and contributes no binary size unless it generates code that is then compiled. That cost is
+  why the recommendation below declines it absent a concrete need.
 
 **Gate results for the dominant choice** (answered before any popularity figure was weighed):
 
@@ -250,7 +303,10 @@ is nonetheless warranted.
    constraint*: Cargo is the toolchain, not a dependency, so it has no `rust-version` to check
    against the policy. The manifest fields recommended here (`[lib]`, `[[bin]]`, `required-features`,
    `include`/`exclude`, `default-run`) have been stable Cargo features for many years and impose no
-   floor above `edition = "2024"`, which itself requires Rust 1.85 or newer.
+   floor above `edition = "2024"`, which requires Rust 1.85.0 or newer — the 1.85.0 release
+   announcement states *"We are excited to announce that the Rust 2024 Edition is now stable!"* and
+   *"This stabilizes the 2024 edition as well."*
+   (<https://blog.rust-lang.org/2025/02/20/Rust-1.85.0/>, 2026-09-10).
 3. **No open RustSec advisory; `unsafe` posture** — pass. `https://rustsec.org/packages/cargo.html`
    is not applicable (Cargo is not consumed as a crates.io dependency here); each third-party
    candidate was checked individually and every page returned **HTTP 404**, i.e. no advisory record:
@@ -275,9 +331,16 @@ is nonetheless warranted.
 **Failed a fitness gate.**
 
 - **`cross` 0.2.5** — fails **gate 4** (must work on every OS in `ubuntu-latest, macos-latest`).
-  `cross` executes the build inside a container and therefore needs a working Docker or Podman
-  daemon; the GitHub-hosted `macos-latest` runner does not provide one, so the same invocation
-  cannot run on both matrix legs. Independently a maintenance trigger to investigate: last
+  `cross` executes the build inside a container: its own README lists under **Dependencies** *"[Docker].
+  … Requires version 20.10 (API 1.40) or later."* and *"[Podman]. Requires version 3.4.0 or later."*,
+  and states *"but relies on Docker or Podman. For Docker, you'll have to start the daemon before you
+  can use it."* (<https://raw.githubusercontent.com/cross-rs/cross/main/README.md>, 2026-09-10). The
+  GitHub-hosted macOS runner ships neither: the `macos-15` image manifest contains **no occurrence of
+  `docker`, `podman` or `colima`**, while the Ubuntu 24.04 image manifest lists *"Docker Client
+  28.0.4"* and *"Docker Server 28.0.4"*
+  (`GET https://api.github.com/repos/actions/runner-images/contents/images/macos/macos-15-Readme.md`
+  and `.../images/ubuntu/Ubuntu2404-Readme.md`, both 2026-09-10). So the same `cross` invocation
+  cannot run on both matrix legs without provisioning a container engine on macOS. Independently a maintenance trigger to investigate: last
   non-yanked release **0.2.5, 2023-02-04T17:28:19Z**
   (`GET https://crates.io/api/v1/crates/cross/versions`, 2026-09-10) — over three years — with
   307766 90-day downloads and 6269217 all-time (`GET https://crates.io/api/v1/crates/cross`,
@@ -331,11 +394,14 @@ is nonetheless warranted.
 
 ### Up-and-comers
 
-- **`dist`** (crate `cargo-dist`) — genuinely the emerging convention for "declare your release
-  artifacts in the manifest": it introduces a `[workspace.metadata.dist]` table and generates the
-  release workflow from it. Its own README (2026-09-10) opens *"`dist` (formerly known as
-  `cargo-dist`)"*, confirming the rename while the crates.io name stays `cargo-dist`. Watch item, not
-  an adoption for this item — and see the `at-risk` signal recorded above.
+- **`dist`** (crate `cargo-dist`) — genuinely the emerging convention for declaring release artifacts
+  and generating the release workflow from that declaration. Its own README (2026-09-10) opens
+  *"`dist` (formerly known as `cargo-dist`)"*, confirming the rename while the crates.io name stays
+  `cargo-dist`. Note the direction of travel: the in-`Cargo.toml` `[workspace.metadata.dist]` form is
+  *"deprecated in 0.23.0"* in favor of a separate `dist-workspace.toml`
+  (<https://axodotdev.github.io/cargo-dist/book/workspaces/structure.html>, 2026-09-10), so `dist` is
+  moving **away** from being a manifest-level declaration and toward being a second build description
+  alongside `Cargo.toml`. Watch item for R68, not an adoption for this item.
 - **`cargo-packager`** — the CrabNebula alternative to `dist` for bundled/desktop artifacts. Younger
   (477 stars) and further from this template's shape.
 - **`[package.metadata.binstall]` as a de-facto standard.** Both `wasmtime` and `atuin` now carry it
@@ -403,7 +469,7 @@ build-orchestration dependency**. Concretely:
    configuration will be skipped"*, and that `target/` and any sub-package directory are *"always
    excluded"* while `Cargo.toml`, a minimized `Cargo.lock` and any `license-file` are *"always
    included"* (manifest reference, 2026-09-10), so an allow-list is not needed to make the boundary
-   deterministic the way it is in npm; (b) 6 of the 7 well-regarded projects surveyed use `exclude`
+   deterministic the way it is in npm; (b) 7 of the 8 well-regarded projects surveyed use `exclude`
    and only `typos` uses `include`; (c) a **template** is forked and extended, and an `include`
    allow-list silently omits any directory a downstream user adds, which is the worst failure mode
    for this repository's purpose. Exclude at minimum `/.github/*`, `/docs/*`, `/research/*` and any
@@ -458,17 +524,39 @@ list (R26/F039/F078). Where my recommendation touches those, I have said so and 
 `[lib]`/`[[bin]]` declarations.**
 
 **The condition under which it wins:** if **R68 resolves F214 to "cross-compiled binaries attached to
-GitHub Releases, with generated installer scripts"**, then a second declaration surface —
-`[workspace.metadata.dist]` — becomes the place where the build output shape is actually described,
-and part of F212 legitimately moves there. In that world, adopting `dist` at R68 and having R49's
-answer be "the manifest targets `dist` reads" is coherent, and the alternative (hand-writing a
-release matrix that duplicates the target list) is worse. It does **not** win if R68 chooses
-crates.io-only distribution, and it does not win merely because it is popular.
+GitHub Releases, with generated installer scripts"**, then a second declaration surface becomes the
+place where the shipped output shape is actually described, and part of F212 legitimately moves
+there. In that world, adopting `dist` at R68 and having R49's answer be "the manifest targets `dist`
+reads" is coherent, and the alternative — hand-writing a release matrix that duplicates the target
+list — is worse. It does **not** win if R68 chooses crates.io-only distribution, and it does not win
+merely because it is popular.
 
-Two things must be re-checked before anyone acts on that condition: the **10/10 unanswered recent
-issues** figure recorded above, and whether `dist`'s MSRV (`rust_version = "1.74"` on 0.32.0,
+**One correction to how I first framed this runner-up.** I initially described `dist`'s configuration
+as *manifest-level*, on the assumption that `[workspace.metadata.dist]` in `Cargo.toml` is its
+current home. It is not. `dist`'s own book states the workspace file may be `dist-workspace.toml`, or
+*"(deprecated in 0.23.0) `Cargo.toml` (Rust users only, goes in `[workspace.metadata.dist]`)"*
+(<https://axodotdev.github.io/cargo-dist/book/workspaces/structure.html>, 2026-09-10). The
+in-manifest form is **deprecated as of 0.23.0**, and both adopters I verified confirm the current
+shape empirically: `atuinsh/atuin` and `astral-sh/uv` each carry a root `dist-workspace.toml`
+(`GET https://api.github.com/repos/<o>/<r>/contents/dist-workspace.toml`, 2026-09-10), with atuin's
+containing `[workspace] members = ["cargo:."]` and a `[dist]` table pinning
+`cargo-dist-version = "0.31.0"`
+(<https://raw.githubusercontent.com/atuinsh/atuin/main/dist-workspace.toml>, 2026-09-10).
+
+That materially **weakens** the runner-up on this item's own terms. Behavior **B1** in
+`### Principles and implementation` is *"exactly one manifest declares every produced artifact; there
+is no second, out-of-band build description"*, and py satisfies it with one `pyproject.toml` while ts
+already pays a two-file cost (`package.json` + `tsdown.config.ts`). Adopting `dist` reproduces
+exactly that two-file cost in Rust — `Cargo.toml` plus `dist-workspace.toml` — which is the one
+structural regression Rust otherwise avoids for free. It does not disqualify `dist` for R68's
+question, where a second file may well be the right price for cross-compiled release artifacts. It
+does mean the runner-up should not be sold as "a single readable statement of what we ship".
+
+Two things must be re-checked before anyone acts on the winning condition: whether the
+`[workspace.metadata.dist]` deprecation has become a removal at the version R68 would adopt, and
+whether `dist`'s MSRV (`rust_version = "1.74"` on 0.32.0,
 `GET https://crates.io/api/v1/crates/cargo-dist/versions`, 2026-09-10 — comfortably below any
-plausible policy floor) still holds at the version R68 would adopt.
+plausible policy floor) still holds there.
 
 **Second runner-up: the `cargo-xtask` pattern.** It wins only if the template accumulates
 orchestration that is genuinely repository-specific and cross-platform-hostile in shell. Its own
@@ -479,11 +567,14 @@ a second orchestration mechanism would need a specific job that `just` cannot do
 ### Tradeoffs
 
 **Versus `dist`.** Gives up: generated cross-platform installer scripts, a generated release
-workflow, checksum and attestation plumbing, and `[workspace.metadata.dist]` as a single readable
-statement of "what we ship". Why the cost is accepted: all of it is F214, which **R68 owns and this
-item is explicitly forbidden to decide**; adopting `dist` here would pre-empt that decision with a
-dependency. The maintenance signal reinforces it — 0 of 10 most recent issues answered by a
-maintainer (2026-09-10) is not a state in which to take an unforced dependency.
+workflow, and checksum and attestation plumbing. Why the cost is accepted: all of it is F214, which
+**R68 owns and this item is explicitly forbidden to decide**; adopting `dist` here would pre-empt
+that decision with a dependency. The maintenance signal does **not** support this tradeoff — `dist`
+is `active`, with a 0.19-day median first maintainer response over the ten most recent issues — and I
+say so rather than reaching for a health argument I measured my way out of. What does support it is
+structural: `dist`'s configuration now lives in a separate `dist-workspace.toml`, the in-manifest
+form being deprecated in 0.23.0, so adopting it here would trade Rust's one-file declaration for the
+same two-file split ts already pays.
 
 **Versus `cargo-xtask`.** Gives up: build orchestration expressed in Rust rather than in `just`
 recipes, and the ability to bootstrap from `cargo` alone. Why accepted: the template already has a
@@ -635,7 +726,7 @@ to substitute for `uv_build` — is not a judgement call.
 1. **Web behind a feature rather than a second binary.** Contingent on R69, which is unresolved. The
    evidence (mdBook + the documented `required-features` skip behavior) is good but the requirement
    is not yet known.
-2. **`exclude` rather than `include`.** A 6:1 practice split and a template-specific failure-mode
+2. **`exclude` rather than `include`.** A 7:1 practice split and a template-specific failure-mode
    argument, against a strict-principle-fidelity argument for `include`. Reasonable people land
    either way; the R26 CI guard makes the choice low-stakes.
 
@@ -646,9 +737,12 @@ analogy from py's `plbp`, not a research finding. It needs an owner decision.
 
 - **R69 resolves.** If the web surface becomes a separate process, revisit `### Fit for this
   template` (web) and add a second `[[bin]]` plus `default-run` to `build-tool-output-shape`.
-- **R68 resolves F214 to cross-compiled release binaries.** Re-run the `dist` figures and the
-  maintainer-responsiveness measurement before adopting it; the `at-risk` signal recorded here is
-  three months' worth of issue history and will have moved.
+- **R68 resolves F214 to cross-compiled release binaries.** Re-run the `dist` figures and check
+  whether the `[workspace.metadata.dist]` deprecation (0.23.0) has become a removal; the
+  responsiveness measurement recorded here covers roughly three months of issue history and will have
+  moved. Measure maintainer responsiveness **by login, not by `author_association`** — the active
+  maintainer comments as `CONTRIBUTOR`, and the association filter produces a false `at-risk` reading,
+  as it did on my first pass.
 - **R02 resolves to a workspace.** Re-read `### Parameters` — the fields move to member manifests and
   `[workspace.package]` inheritance (as `mdBook`, `ripgrep`, `typos` and `atuin` all do) becomes the
   right expression.
@@ -733,8 +827,25 @@ Endpoints queried for figures (all 2026-09-10 unless the value itself carries a 
   `rust-cross/cargo-zigbuild` 3; `mozilla/cbindgen` 225; `crabnebula-dev/cargo-packager` 35.
 - `GET https://api.github.com/search/issues?q=repo:axodotdev/cargo-dist+is:issue&sort=created&order=desc&per_page=10`
   plus `GET https://api.github.com/repos/axodotdev/cargo-dist/issues/<n>/comments` for each — issues
-  #2504, #2492, #2489, #2457, #2456, #2446, #2444, #2443, #2442, #2437: **zero** comments from any
-  MEMBER, OWNER or COLLABORATOR on any of the ten.
+  #2504, #2492, #2489, #2457, #2456, #2446, #2444, #2443, #2442, #2437. Measured **by login**:
+  `mistydemeo` answered 6 of the 10, median 0.19 days to first response, 4 unanswered (per-issue
+  timestamps in `### Qualified shortlist`). Measured by `author_association` the same ten return zero
+  MEMBER/OWNER/COLLABORATOR comments — a filter artifact, since `mistydemeo` comments as
+  `CONTRIBUTOR`; the by-login figure is the one this report relies on.
+- `https://raw.githubusercontent.com/cross-rs/cross/main/README.md` — `cross`'s Dependencies section
+  (Docker 20.10+ or Podman 3.4.0+, daemon must be started before use).
+- `GET https://api.github.com/repos/actions/runner-images/contents/images/macos/macos-15-Readme.md`
+  and `.../images/ubuntu/Ubuntu2404-Readme.md` — no `docker`/`podman`/`colima` entry in the macOS
+  image manifest; "Docker Client 28.0.4" and "Docker Server 28.0.4" in the Ubuntu 24.04 manifest.
+- <https://blog.rust-lang.org/2025/02/20/Rust-1.85.0/> — Rust 1.85.0 stabilizes the 2024 edition.
+- <https://axodotdev.github.io/cargo-dist/book/workspaces/structure.html> — `dist`'s workspace
+  configuration file is `dist-workspace.toml`, with `Cargo.toml`'s `[workspace.metadata.dist]`
+  "deprecated in 0.23.0". The `opensource.axo.dev` host that the project's book links point at
+  returns NXDOMAIN (`host opensource.axo.dev`, 2026-09-10); the GitHub Pages copy above serves.
+- `GET https://api.github.com/repos/atuinsh/atuin/contents/dist-workspace.toml` and
+  `GET https://api.github.com/repos/astral-sh/uv/contents/dist-workspace.toml` — both present;
+  `https://raw.githubusercontent.com/atuinsh/atuin/main/dist-workspace.toml` shows
+  `[workspace] members = ["cargo:."]` and `[dist] cargo-dist-version = "0.31.0"`.
 - `GET https://api.github.com/repos/axodotdev/cargo-dist/commits` and `/releases` — maintainer commit
   by `mistydemeo` 2026-09-04T19:47:56Z; releases v0.32.0 2026-05-22 and v0.31.0 2026-02-23.
 - `https://rustsec.org/packages/<name>.html` — **HTTP 404** (no advisory record) for `cargo-dist`,
@@ -754,10 +865,18 @@ and the Edition Guide), `blog.rust-lang.org`, and `raw.githubusercontent.com` fo
 manifests. **What I could not verify:** (1) any latency, throughput, binary-size
 or compile-time **measurement** — no Rust source exists in `rs-launch-blueprint`, so every
 performance statement in this report is qualitative and labelled as such, and no benchmark was run;
-(2) whether the ten unanswered `cargo-dist` issues reflect a maintainer notice or a deliberate triage
-policy — I found no such notice, and I report the measurement rather than a cause; (3) the
+(2) whether `mistydemeo` holds a formal maintainer role — GitHub reports
+`author_association: CONTRIBUTOR`, so I infer maintainer standing from direct commits to `main` plus
+consistent issue triage rather than from a declared role, and I flag that inference rather than
+asserting the role; (3) whether the four unanswered `cargo-dist` issues reflect a triage policy or a
+backlog — I found no maintainer notice either way and report the measurement, not a cause; (4) the
 `rust-lang/mdBook` and `rust-lang/cargo` release cadences on crates.io, which I did not need and did
 not query; (5) `median days to first maintainer response` for candidates other than `cargo-dist` —
 not measured, because every other candidate was excluded by gate or by scope before popularity or
-responsiveness would have been weighed. Every figure above names the endpoint that produced it, and
-none was carried over from memory.
+responsiveness would have been weighed. **One figure in this report was measured, written into an
+earlier draft, and then withdrawn**: the "0 of 10 issues answered by a maintainer" reading of
+`cargo-dist`, an `author_association` filter artifact. The corrected by-login measurement (6 of 10
+answered, median 0.19 days) is in `### Qualified shortlist`, the maintenance verdict was changed from
+`at-risk` to `active`, and every argument that had rested on the withdrawn figure was rewritten rather
+than left standing. Every figure above names the endpoint that produced it, and none was carried over
+from memory.
