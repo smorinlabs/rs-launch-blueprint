@@ -1,0 +1,45 @@
+# action-release.log
+retrieved: 2026-09-10T05:15:39Z (UTC)
+
+$ gh api repos/anthropics/claude-code-action/releases/latest --jq "{tag_name,prerelease,published_at,draft}"
+{"draft":false,"prerelease":false,"published_at":"2025-08-26T17:01:10Z","tag_name":"v1"}
+exit: 0
+
+$ gh api repos/anthropics/claude-code-action --jq "{full_name,stargazers_count,archived,pushed_at,license:.license.spdx_id,created_at}"
+{"archived":false,"created_at":"2025-05-19T15:26:50Z","full_name":"anthropics/claude-code-action","license":"MIT","pushed_at":"2026-09-09T20:12:20Z","stargazers_count":8833}
+exit: 0
+
+$ gh api "repos/anthropics/claude-code-action/releases?per_page=10" --jq ".[]|[.tag_name,.published_at,(.prerelease|tostring)]|@tsv"
+v1.0.220	2026-09-09T20:12:09Z	false
+v1	2025-08-26T17:01:10Z	false
+v1.0.219	2026-09-08T23:57:14Z	false
+v1.0.218	2026-09-08T20:39:25Z	false
+v1.0.217	2026-09-06T02:56:44Z	false
+v1.0.216	2026-09-04T19:59:57Z	false
+v1.0.215	2026-09-03T23:50:05Z	false
+v1.0.214	2026-09-02T22:35:40Z	false
+v1.0.213	2026-09-01T22:34:45Z	false
+v1.0.212	2026-09-01T17:55:35Z	false
+exit: 0
+
+$ gh api repos/anthropics/claude-code-action/git/ref/tags/v2  (expect 404: no v2 major)
+{"message":"Not Found","documentation_url":"https://docs.github.com/rest/git/refs#get-a-reference","status":"404"}gh: Not Found (HTTP 404)
+exit: 
+
+$ gh api repos/anthropics/claude-code-action/git/ref/tags/v1 --jq ".object"
+{"sha":"246ee390af8a13e339c745634ccd08580e8309c0","type":"tag","url":"https://api.github.com/repos/anthropics/claude-code-action/git/tags/246ee390af8a13e339c745634ccd08580e8309c0"}
+
+$ gh api "repos/anthropics/claude-code-action/git/refs/tags?per_page=100" --jq "length"  (page 1 count)
+287
+
+$ gh api "search/issues?q=repo:anthropics/claude-code-action+is:issue+is:open" --jq ".total_count"
+457
+
+$ gh api repos/actions/checkout/releases/latest --jq ".tag_name+\" \"+.published_at"   (py pins @v7; maintainer refs use @v6)
+v7.0.1 2026-07-20T15:10:05Z
+
+$ gh api "search/code?q=%22anthropics/claude-code-action%22+path:.github/workflows" --jq ".total_count"  (cross-ecosystem adoption)
+20480
+
+$ gh api "search/code?q=org:rust-lang+%22claude-code-action%22" --jq ".total_count"  (Rust first-party org adoption)
+0
