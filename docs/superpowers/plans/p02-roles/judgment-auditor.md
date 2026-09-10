@@ -11,8 +11,12 @@ level and preserves it with a justified native design; whether the architecture
 alternatives were genuinely compared and the library selection follows from
 principles and evidence, not popularity or repository agreement; whether every
 required decision field, owned and assumed parameter, fitness gate and source
-date is present and correct; whether the empirical check demonstrates the
-principle rather than mere startup; whether `BASELINE-REVIEW:` and `CONFLICT:`
+date is present and correct; whether the empirical check verifies the claims it
+is cited for and whether the decision claims only what that evidence
+establishes, recording the rest as unproven with what would prove it (this is a
+research programme: P03 builds and proves the template, so a decision must not
+implement its own recommendation and must not be faulted for declining to);
+whether `BASELINE-REVIEW:` and `CONFLICT:`
 lines were handled as the runbook requires; and whether the audit-codex rerun is
 consistent with the decision.
 
