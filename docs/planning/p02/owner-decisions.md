@@ -23,7 +23,7 @@ Status as of 2026-09-10. Fourteen items are published. The programme is
 | 6. R25 prompt correction | nothing | a defective prompt stays on the record |
 | 7. Baseline-review questions | nothing yet; several are inputs to unadmitted items | later items research around them |
 | 8. Model substitution acknowledgment | nothing | an approval record stays incomplete |
-| 9. Does your CLI standard bind this port | two items, one already published | R60 cites it the way R67 already does |
+| 9. CLI standard, and one waiver under it | two items, one already published | R60 cites it as R67 does, and needs a waiver recorded |
 
 Decisions 4 through 9 block no research. They can be answered at any time. Only
 1, 2 and 3 change what happens next.
@@ -293,7 +293,21 @@ reconciled onto it.
 items found and one published decision already relies on. Denying it costs a
 resolved item.
 
-**Response that settles it.** "The CLI standard binds" or "it does not".
+**A waiver rides with this answer.** R60 recorded the programme's first
+override, `OV-01`: its recommendation deviates from the standard's rule on
+extended version output, so the tool would print target and compiler lines the
+rule does not call for. The decision records the argument and three options as
+the charter requires, and it cannot grant itself the waiver, because the
+standard's own conformance clause reserves that to you. If the standard binds,
+this needs a yes or a no.
+
+**Recommendation on the waiver: grant it.** The rule it deviates from is a
+should, not a must, and extended version output is what a Rust command-line tool
+is expected to print. Refusing costs nothing either, since the decision names
+the conforming alternative.
+
+**Response that settles both.** "The CLI standard binds, and OV-01 is waived",
+or either half negated.
 
 ## Retired from this list
 

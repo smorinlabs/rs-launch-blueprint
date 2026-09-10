@@ -1,0 +1,1142 @@
+R60 cli-parsing-framework — empirical verification log
+Run: 2026-09-10. Host: macOS 26.4 arm64. Toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew) / cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew).
+Working directory for every command: /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r60 (a scratch directory; nothing was written into the template repository).
+Nothing here implements the recommendation: no CLI, no command surface, no completion command, no build.rs was written.
+The only Rust files created are two resolution-only manifests plus an EMPTY src/lib.rs each, used to make cargo resolve the pins.
+
+################################################################
+# 01-registry.log
+################################################################
+### crates.io clap
+  recent_downloads= 226398266 downloads= 1119879906 max_stable= 4.6.6 repository= https://github.com/clap-rs/clap
+  newest_unyanked num= 4.6.6 created_at= 2026-08-06T14:03:25.998957Z license= MIT OR Apache-2.0 rust_version= 1.85 edition= 2024
+### crates.io clap_builder
+  recent_downloads= 191766340 downloads= 738136971 max_stable= 4.6.6 repository= https://github.com/clap-rs/clap
+  newest_unyanked num= 4.6.6 created_at= 2026-08-06T14:03:23.670959Z license= MIT OR Apache-2.0 rust_version= 1.85 edition= 2024
+### crates.io clap_derive
+  recent_downloads= 179474090 downloads= 748647999 max_stable= 4.6.4 repository= https://github.com/clap-rs/clap
+  newest_unyanked num= 4.6.4 created_at= 2026-07-21T21:59:21.295220Z license= MIT OR Apache-2.0 rust_version= 1.85 edition= 2024
+### crates.io clap_complete
+  recent_downloads= 27337048 downloads= 111559662 max_stable= 4.6.9 repository= https://github.com/clap-rs/clap
+  newest_unyanked num= 4.6.9 created_at= 2026-08-06T13:28:20.621576Z license= MIT OR Apache-2.0 rust_version= 1.85 edition= 2024
+### crates.io strsim
+  recent_downloads= 214874401 downloads= 1058928430 max_stable= 0.11.1 repository= https://github.com/rapidfuzz/strsim-rs
+  newest_unyanked num= 0.11.1 created_at= 2024-04-02T22:18:09.406790Z license= MIT rust_version= 1.56 edition= None
+### crates.io anstream
+  recent_downloads= 175572974 downloads= 670994993 max_stable= 1.0.0 repository= https://github.com/rust-cli/anstyle.git
+  newest_unyanked num= 1.0.0 created_at= 2026-02-11T13:23:11.167553Z license= MIT OR Apache-2.0 rust_version= 1.66.0 edition= 2021
+### crates.io vergen
+  recent_downloads= 7989499 downloads= 50980313 max_stable= 10.0.3 repository= https://github.com/rustyhorde/vergen
+  newest_unyanked num= 10.0.3 created_at= 2026-08-24T16:17:36.406962Z license= MIT OR Apache-2.0 rust_version= 1.96.0 edition= 2024
+### crates.io built
+  recent_downloads= 17292502 downloads= 60961741 max_stable= 0.8.1 repository= https://github.com/lukaslueg/built
+  newest_unyanked num= 0.8.1 created_at= 2026-05-21T20:10:07.082823Z license= MIT rust_version= 1.87 edition= 2024
+### crates.io shadow-rs
+  recent_downloads= 2102473 downloads= 10597460 max_stable= 2.0.0 repository= https://github.com/baoyachi/shadow-rs
+  newest_unyanked num= 2.0.0 created_at= 2026-04-23T03:26:12.010770Z license= MIT AND Apache-2.0 rust_version= None edition= 2021
+### crates.io bpaf
+  recent_downloads= 1646479 downloads= 7762267 max_stable= 0.9.27 repository= https://github.com/pacak/bpaf
+  newest_unyanked num= 0.9.27 created_at= 2026-07-29T15:42:10.202113Z license= MIT OR Apache-2.0 rust_version= 1.68 edition= 2021
+### crates.io argh
+  recent_downloads= 2591232 downloads= 15979230 max_stable= 0.1.19 repository= https://github.com/google/argh
+  newest_unyanked num= 0.1.19 created_at= 2026-03-16T21:42:12.185358Z license= BSD-3-Clause rust_version= None edition= 2018
+### crates.io lexopt
+  recent_downloads= 2649654 downloads= 12530446 max_stable= 0.3.2 repository= https://github.com/blyxxyz/lexopt
+  newest_unyanked num= 0.3.2 created_at= 2026-02-28T22:31:39.383874Z license= MIT rust_version= None edition= 2018
+### crates.io pico-args
+  recent_downloads= 17195148 downloads= 72822435 max_stable= 0.5.0 repository= https://github.com/RazrFalcon/pico-args
+  newest_unyanked num= 0.5.0 created_at= 2022-06-04T12:11:35.198777Z license= MIT rust_version= None edition= 2018
+
+################################################################
+# 02-github-rustsec.log
+################################################################
+### github clap-rs/clap
+  stars= 16697 archived= False pushed_at= 2026-09-09T22:30:08Z license= Apache-2.0
+  open_issues_total_count= 369
+### github rustyhorde/vergen
+  stars= 473 archived= False pushed_at= 2026-09-06T16:53:07Z license= Apache-2.0
+  open_issues_total_count= 3
+### github lukaslueg/built
+  stars= 198 archived= False pushed_at= 2026-06-07T22:06:58Z license= MIT
+  open_issues_total_count= 8
+### github baoyachi/shadow-rs
+  stars= 700 archived= False pushed_at= 2026-05-19T05:48:53Z license= MIT
+  open_issues_total_count= 8
+### github pacak/bpaf
+  stars= 461 archived= False pushed_at= 2026-09-05T14:53:43Z license= Apache-2.0
+  open_issues_total_count= 63
+### github google/argh
+  stars= 1954 archived= False pushed_at= 2026-05-27T23:18:03Z license= BSD-3-Clause
+  open_issues_total_count= 64
+### github blyxxyz/lexopt
+  stars= 420 archived= False pushed_at= 2026-02-28T22:40:58Z license= MIT
+  open_issues_total_count= 3
+### github RazrFalcon/pico-args
+  stars= 648 archived= False pushed_at= 2023-10-19T07:31:56Z license= MIT
+  open_issues_total_count= 2
+### github rosetta-rs/argparse-rosetta-rs
+  stars= 195 archived= False pushed_at= 2026-09-01T02:15:46Z license= MIT
+  open_issues_total_count= 3
+### rustsec
+  clap http=404 rustsec-id-mentions=0
+  clap_builder http=404 rustsec-id-mentions=0
+  clap_derive http=404 rustsec-id-mentions=0
+  clap_complete http=404 rustsec-id-mentions=0
+  strsim http=404 rustsec-id-mentions=0
+  vergen http=404 rustsec-id-mentions=0
+  built http=404 rustsec-id-mentions=0
+  shadow-rs http=404 rustsec-id-mentions=0
+
+################################################################
+# 03-rustsec-control.log
+################################################################
+### rustsec control: a crate known to carry an advisory (R67 cites RUSTSEC-2026-0190 against anyhow)
+  anyhow http=200 ids=RUSTSEC-2026-0190 
+  atty  http=200 ids=RUSTSEC-2021-0145 RUSTSEC-2024-0375 
+
+################################################################
+# 04-clap-source-A.log
+################################################################
+=== A. clap 4.6.6 Cargo.toml: features, msrv, license, deps ===
+13:edition = "2024"
+14:rust-version = "1.85"
+15-name = "clap"
+16-version = "4.6.6"
+--
+41:license = "MIT OR Apache-2.0"
+42-repository = "https://github.com/clap-rs/clap"
+43-resolver = "2"
+--
+107:[features]
+108-cargo = ["clap_builder/cargo"]
+109-color = ["clap_builder/color"]
+--- feature table ---
+[features]
+cargo = ["clap_builder/cargo"]
+color = ["clap_builder/color"]
+debug = [
+    "clap_builder/debug",
+    "clap_derive?/debug",
+]
+default = [
+    "std",
+    "color",
+    "help",
+    "usage",
+    "error-context",
+    "suggestions",
+]
+deprecated = [
+    "clap_builder/deprecated",
+    "clap_derive?/deprecated",
+]
+derive = ["dep:clap_derive"]
+env = ["clap_builder/env"]
+error-context = ["clap_builder/error-context"]
+help = ["clap_builder/help"]
+std = ["clap_builder/std"]
+string = ["clap_builder/string"]
+suggestions = ["clap_builder/suggestions"]
+unicode = ["clap_builder/unicode"]
+unstable-derive-ui-tests = []
+unstable-doc = [
+    "clap_builder/unstable-doc",
+    "derive",
+]
+unstable-ext = ["clap_builder/unstable-ext"]
+unstable-markdown = ["clap_derive/unstable-markdown"]
+unstable-styles = ["clap_builder/unstable-styles"]
+unstable-v5 = [
+    "clap_builder/unstable-v5",
+    "clap_derive?/unstable-v5",
+    "deprecated",
+]
+
+=== B. clap_builder 4.6.6 Cargo.toml deps (strsim gating) ===
+59:color = ["dep:anstream"]
+67:    "suggestions",
+75:suggestions = [
+76:    "dep:strsim",
+105:[dependencies.anstream]
+119:[dependencies.strsim]
+
+=== C. long_version vs version rendering ===
+clap_builder-4.6.6/src/output/help_template.rs:295:            .or_else(|| self.cmd.get_long_version());
+clap_builder-4.6.6/src/builder/action.rs:328:    /// Depending on the flag, [`Command::long_version`][super::Command::long_version] may be shown
+clap_builder-4.6.6/src/builder/command.rs:82:    long_version: Option<Str>,
+clap_builder-4.6.6/src/builder/command.rs:1078:    /// See also [`Command::render_long_version`].
+clap_builder-4.6.6/src/builder/command.rs:1095:    /// [`--version` (long)]: Command::long_version()
+clap_builder-4.6.6/src/builder/command.rs:1116:    /// println!("{}", cmd.render_long_version());
+clap_builder-4.6.6/src/builder/command.rs:1120:    /// [`--version` (long)]: Command::long_version()
+clap_builder-4.6.6/src/builder/command.rs:1122:    pub fn render_long_version(&self) -> String {
+clap_builder-4.6.6/src/builder/command.rs:2099:    /// If [`Command::long_version`] is not specified, this message will be displayed for `--version`.
+clap_builder-4.6.6/src/builder/command.rs:2142:    ///     .long_version(
+clap_builder-4.6.6/src/builder/command.rs:2151:    pub fn long_version(mut self, ver: impl IntoResettable<Str>) -> Self {
+clap_builder-4.6.6/src/builder/command.rs:2152:        self.long_version = ver.into_resettable().into_option();
+clap_builder-4.6.6/src/builder/command.rs:3781:    pub fn get_long_version(&self) -> Option<&str> {
+clap_builder-4.6.6/src/builder/command.rs:3782:        self.long_version.as_deref()
+clap_builder-4.6.6/src/builder/command.rs:4145:            || (self.version.is_none() && self.long_version.is_none())
+clap_builder-4.6.6/src/builder/command.rs:4795:                if let Some(long_version) = self.long_version.as_ref() {
+clap_builder-4.6.6/src/builder/command.rs:4796:                    sc.long_version.get_or_insert_with(|| long_version.clone());
+clap_builder-4.6.6/src/builder/command.rs:4856:                help_help_subcmd.long_version = None;
+clap_builder-4.6.6/src/builder/command.rs:4876:            help_subcmd.long_version = None;
+clap_builder-4.6.6/src/builder/command.rs:4902:            self.long_version
+clap_builder-4.6.6/src/builder/command.rs:4909:                .or(self.long_version.as_deref())
+clap_builder-4.6.6/src/builder/command.rs:5206:            long_version: Default::default(),
+clap_builder-4.6.6/src/builder/debug_asserts.rs:18:    if cmd.get_version().is_none() && cmd.get_long_version().is_none() {
+clap_builder-4.6.6/src/builder/debug_asserts.rs:22:            "Command {}: No version information via Command::version or Command::long_version to propagate",
+clap_builder-4.6.6/src/builder/debug_asserts.rs:36:            "Command {}: `ArgAction::Version` used without providing Command::version or Command::long_version",
+
+################################################################
+# 04-clap-source-B.log
+################################################################
+=== D. ArgAction::Version doc (action.rs 315-345) ===
+    ///
+    /// // Existing help still exists
+    /// let err = cmd.clone().try_get_matches_from(["mycmd", "-h"]).unwrap_err();
+    /// assert_eq!(err.kind(), clap::error::ErrorKind::DisplayHelp);
+    ///
+    /// // New help available
+    /// let err = cmd.try_get_matches_from(["mycmd", "-?"]).unwrap_err();
+    /// assert_eq!(err.kind(), clap::error::ErrorKind::DisplayHelp);
+    /// # }
+    /// ```
+    HelpLong,
+    /// When encountered, display [`Command::version`][super::Command::version]
+    ///
+    /// Depending on the flag, [`Command::long_version`][super::Command::long_version] may be shown
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use clap_builder as clap;
+    /// # use clap::Command;
+    /// # use clap::Arg;
+    /// let cmd = Command::new("mycmd")
+    ///     .version("1.0.0")
+    ///     .arg(
+    ///         Arg::new("special-version")
+    ///             .long("special-version")
+    ///             .action(clap::ArgAction::Version)
+    ///     );
+    ///
+    /// // Existing version still exists
+    /// let err = cmd.clone().try_get_matches_from(["mycmd", "--version"]).unwrap_err();
+
+=== E. parser: which renderer for Version action ===
+clap_builder-4.6.6/src/builder/command.rs:698:    /// [`ErrorKind::DisplayHelp`] or [`ErrorKind::DisplayVersion`] respectively. You must call
+clap_builder-4.6.6/src/builder/command.rs:724:    /// [`ErrorKind::DisplayVersion`]: crate::error::ErrorKind::DisplayVersion
+clap_builder-4.6.6/src/builder/command.rs:775:    /// or [`ErrorKind::DisplayVersion`] respectively. You must call [`Error::exit`] or
+clap_builder-4.6.6/src/builder/command.rs:811:    /// [`ErrorKind::DisplayVersion`]: crate::error::ErrorKind::DisplayVersion
+clap_builder-4.6.6/src/builder/command.rs:829:    /// or [`ErrorKind::DisplayVersion`] respectively. You must call [`Error::exit`] or
+clap_builder-4.6.6/src/builder/command.rs:1078:    /// See also [`Command::render_long_version`].
+clap_builder-4.6.6/src/builder/command.rs:1091:    /// println!("{}", cmd.render_version());
+clap_builder-4.6.6/src/builder/command.rs:1097:    pub fn render_version(&self) -> String {
+clap_builder-4.6.6/src/builder/command.rs:1098:        self._render_version(false)
+clap_builder-4.6.6/src/builder/command.rs:1103:    /// See also [`Command::render_version`].
+clap_builder-4.6.6/src/builder/command.rs:1116:    /// println!("{}", cmd.render_long_version());
+clap_builder-4.6.6/src/builder/command.rs:1122:    pub fn render_long_version(&self) -> String {
+clap_builder-4.6.6/src/builder/command.rs:1123:        self._render_version(true)
+clap_builder-4.6.6/src/builder/command.rs:1490:    /// assert_eq!(res.unwrap_err().kind(), ErrorKind::DisplayVersion);
+clap_builder-4.6.6/src/builder/command.rs:4898:    pub(crate) fn _render_version(&self, use_long: bool) -> String {
+clap_builder-4.6.6/src/builder/command.rs:4899:        debug!("Command::_render_version");
+clap_builder-4.6.6/src/builder/command.rs:5151:        let msg = self._render_version(use_long);
+
+=== F. command.rs 1070-1130 (render_version / render_long_version) ===
+        let usage = Usage::new(self);
+        write_help(&mut styled, self, &usage, true);
+        ok!(write!(w, "{styled}"));
+        w.flush()
+    }
+
+    /// Version message rendered as if the user ran `-V`.
+    ///
+    /// See also [`Command::render_long_version`].
+    ///
+    /// ### Coloring
+    ///
+    /// This function does not try to color the message nor it inserts any [ANSI escape codes].
+    ///
+    /// ### Examples
+    ///
+    /// ```rust
+    /// # use clap_builder as clap;
+    /// # use clap::Command;
+    /// use std::io;
+    /// let cmd = Command::new("myprog");
+    /// println!("{}", cmd.render_version());
+    /// ```
+    /// [`io::Write`]: std::io::Write
+    /// [`-V` (short)]: Command::version()
+    /// [`--version` (long)]: Command::long_version()
+    /// [ANSI escape codes]: https://en.wikipedia.org/wiki/ANSI_escape_code
+    pub fn render_version(&self) -> String {
+        self._render_version(false)
+    }
+
+    /// Version message rendered as if the user ran `--version`.
+    ///
+    /// See also [`Command::render_version`].
+    ///
+    /// ### Coloring
+    ///
+    /// This function does not try to color the message nor it inserts any [ANSI escape codes].
+    ///
+    /// ### Examples
+    ///
+    /// ```rust
+    /// # use clap_builder as clap;
+    /// # use clap::Command;
+    /// use std::io;
+    /// let cmd = Command::new("myprog");
+    /// println!("{}", cmd.render_long_version());
+    /// ```
+    /// [`io::Write`]: std::io::Write
+    /// [`-V` (short)]: Command::version()
+    /// [`--version` (long)]: Command::long_version()
+    /// [ANSI escape codes]: https://en.wikipedia.org/wiki/ANSI_escape_code
+    pub fn render_long_version(&self) -> String {
+        self._render_version(true)
+    }
+
+    /// Usage statement
+    ///
+    /// **Note:** this will ensure the `Command` has been sufficiently [built][Command::build].
+    ///
+    /// # Panics
+
+################################################################
+# 04-clap-source-C.log
+################################################################
+=== G. _render_version body (command.rs 4895-4925) ===
+        cmd
+    }
+
+    pub(crate) fn _render_version(&self, use_long: bool) -> String {
+        debug!("Command::_render_version");
+
+        let ver = if use_long {
+            self.long_version
+                .as_deref()
+                .or(self.version.as_deref())
+                .unwrap_or_default()
+        } else {
+            self.version
+                .as_deref()
+                .or(self.long_version.as_deref())
+                .unwrap_or_default()
+        };
+        let display_name = self.get_display_name().unwrap_or_else(|| self.get_name());
+        format!("{display_name} {ver}\n")
+    }
+
+    pub(crate) fn format_group(&self, g: &Id) -> StyledStr {
+        use std::fmt::Write as _;
+
+        let g_string = self
+            .unroll_args_in_group(g)
+            .iter()
+            .filter_map(|x| self.find(x))
+            .map(|x| {
+                if x.is_positional() {
+                    // Print val_name for positional arguments. e.g. <file_name>
+
+=== H. use_long determination (command.rs 5140,5160) + call site ===
+            use_long && self.long_help_exists(),
+        );
+
+        use_long = use_long && self.long_help_exists();
+        let usage = Usage::new(self);
+
+        let mut styled = StyledStr::new();
+        write_help(&mut styled, self, &usage, use_long);
+
+        styled
+    }
+
+    pub(crate) fn write_version_err(&self, use_long: bool) -> StyledStr {
+        let msg = self._render_version(use_long);
+        StyledStr::from(msg)
+    }
+
+    pub(crate) fn long_help_exists(&self) -> bool {
+        debug!("Command::long_help_exists: {}", self.long_help_exists);
+        self.long_help_exists
+    }
+
+    fn long_help_exists_(&self) -> bool {
+
+=== I. who calls version_err / use_long ===
+clap_builder-4.6.6/src/builder/command.rs:4898:    pub(crate) fn _render_version(&self, use_long: bool) -> String {
+clap_builder-4.6.6/src/builder/command.rs:4901:        let ver = if use_long {
+clap_builder-4.6.6/src/builder/command.rs:5134:    pub(crate) fn write_help_err(&self, mut use_long: bool) -> StyledStr {
+clap_builder-4.6.6/src/builder/command.rs:5136:            "Command::write_help_err: {}, use_long={:?}",
+clap_builder-4.6.6/src/builder/command.rs:5138:            use_long && self.long_help_exists(),
+clap_builder-4.6.6/src/builder/command.rs:5141:        use_long = use_long && self.long_help_exists();
+clap_builder-4.6.6/src/builder/command.rs:5145:        write_help(&mut styled, self, &usage, use_long);
+clap_builder-4.6.6/src/builder/command.rs:5150:    pub(crate) fn write_version_err(&self, use_long: bool) -> StyledStr {
+clap_builder-4.6.6/src/builder/command.rs:5151:        let msg = self._render_version(use_long);
+clap_builder-4.6.6/src/parser/parser.rs:1303:                let use_long = match ident {
+clap_builder-4.6.6/src/parser/parser.rs:1309:                debug!("Help: use_long={use_long}");
+clap_builder-4.6.6/src/parser/parser.rs:1310:                Err(self.help_err(use_long))
+clap_builder-4.6.6/src/parser/parser.rs:1313:                let use_long = false;
+clap_builder-4.6.6/src/parser/parser.rs:1314:                debug!("Help: use_long={use_long}");
+clap_builder-4.6.6/src/parser/parser.rs:1315:                Err(self.help_err(use_long))
+clap_builder-4.6.6/src/parser/parser.rs:1318:                let use_long = true;
+clap_builder-4.6.6/src/parser/parser.rs:1319:                debug!("Help: use_long={use_long}");
+clap_builder-4.6.6/src/parser/parser.rs:1320:                Err(self.help_err(use_long))
+clap_builder-4.6.6/src/parser/parser.rs:1323:                let use_long = match ident {
+clap_builder-4.6.6/src/parser/parser.rs:1329:                debug!("Version: use_long={use_long}");
+
+################################################################
+# 04-clap-source-D.log
+################################################################
+=== J. parser.rs 1295-1345: Help/Version ident->use_long ===
+                };
+
+                matcher.remove(arg.get_id());
+                self.start_custom_arg(matcher, arg, source);
+                ok!(self.push_arg_values(arg, raw_vals, source, matcher));
+                Ok(ParseResult::ValuesDone)
+            }
+            ArgAction::Help => {
+                let use_long = match ident {
+                    Some(Identifier::Long) => true,
+                    Some(Identifier::Short) => false,
+                    Some(Identifier::Index) => true,
+                    None => true,
+                };
+                debug!("Help: use_long={use_long}");
+                Err(self.help_err(use_long))
+            }
+            ArgAction::HelpShort => {
+                let use_long = false;
+                debug!("Help: use_long={use_long}");
+                Err(self.help_err(use_long))
+            }
+            ArgAction::HelpLong => {
+                let use_long = true;
+                debug!("Help: use_long={use_long}");
+                Err(self.help_err(use_long))
+            }
+            ArgAction::Version => {
+                let use_long = match ident {
+                    Some(Identifier::Long) => true,
+                    Some(Identifier::Short) => false,
+                    Some(Identifier::Index) => true,
+                    None => true,
+                };
+                debug!("Version: use_long={use_long}");
+                Err(self.version_err(use_long))
+            }
+        }
+    }
+
+    fn verify_num_args(&self, arg: &Arg, raw_vals: &[OsString]) -> ClapResult<()> {
+        if self.cmd.is_ignore_errors_set() {
+            return Ok(());
+        }
+
+        let actual = raw_vals.len();
+        let expected = arg.get_num_args().expect(INTERNAL_ERROR_MSG);
+
+        if 0 < expected.min_values() && actual == 0 {
+            // Issue 665 (https://github.com/clap-rs/clap/issues/665)
+            // Issue 1105 (https://github.com/clap-rs/clap/issues/1105)
+
+################################################################
+# 04-clap-source-E.log
+################################################################
+=== K. suggestions: strsim usage + threshold ===
+clap_builder-4.6.6/src/parser/features/suggestions.rs:17:        // GH #4660: using `jaro` because `jaro_winkler` implementation in `strsim-rs` is wrong
+clap_builder-4.6.6/src/parser/features/suggestions.rs:19:        let confidence = strsim::jaro(v, pv.as_ref());
+clap_builder-4.6.6/src/parser/features/suggestions.rs:21:        if confidence > 0.7 {
+clap_builder-4.6.6/src/parser/features/suggestions.rs:22:            let new_elem = (confidence, pv.as_ref().to_owned());
+clap_builder-4.6.6/src/parser/features/suggestions.rs:25:                    if probe.0 > confidence {
+--- did_you_mean body ---
+// Internal
+use crate::builder::Command;
+
+/// Find strings from an iterable of `possible_values` similar to a given value `v`
+/// Returns a Vec of all possible values that exceed a similarity threshold
+/// sorted by ascending similarity, most similar comes last
+#[cfg(feature = "suggestions")]
+pub(crate) fn did_you_mean<T, I>(v: &str, possible_values: I) -> Vec<String>
+where
+    T: AsRef<str>,
+    I: IntoIterator<Item = T>,
+{
+    use std::cmp::Ordering;
+
+    let mut candidates: Vec<(f64, String)> = Vec::new();
+    for pv in possible_values {
+        // GH #4660: using `jaro` because `jaro_winkler` implementation in `strsim-rs` is wrong
+        // causing strings with common prefix >=10 to be considered perfectly similar
+        let confidence = strsim::jaro(v, pv.as_ref());
+
+        if confidence > 0.7 {
+            let new_elem = (confidence, pv.as_ref().to_owned());
+            let pos = candidates
+                .binary_search_by(|probe| {
+                    if probe.0 > confidence {
+                        Ordering::Greater
+                    } else {
+                        Ordering::Less
+                    }
+                })
+                .unwrap_or_else(|e| e);
+            candidates.insert(pos, new_elem);
+        }
+    }
+
+    candidates.into_iter().map(|(_, pv)| pv).collect()
+}
+
+#[cfg(not(feature = "suggestions"))]
+pub(crate) fn did_you_mean<T, I>(_: &str, _: I) -> Vec<String>
+where
+    T: AsRef<str>,
+    I: IntoIterator<Item = T>,
+{
+    Vec::new()
+}
+
+/// Returns a suffix that can be empty, or is the standard 'did you mean' phrase
+pub(crate) fn did_you_mean_flag<'a, 'help, I, T>(
+    arg: &str,
+    remaining_args: &[&std::ffi::OsStr],
+    longs: I,
+    subcommands: impl IntoIterator<Item = &'a mut Command>,
+) -> Option<(String, Option<String>)>
+where
+    'help: 'a,
+    T: AsRef<str>,
+    I: IntoIterator<Item = T>,
+{
+    use crate::mkeymap::KeyType;
+
+################################################################
+# 04-clap-source-F.log
+################################################################
+=== L. Arg::env (per-argument only; no global prefix API) ===
+clap_builder-4.6.6/src/builder/arg.rs:2205:    pub fn env(mut self, name: impl IntoResettable<OsStr>) -> Self {
+clap_builder-4.6.6/src/builder/arg.rs:2221:    pub fn env_os(self, name: impl Into<OsStr>) -> Self {
+--- any global env prefix API? ---
+--- mut_args (the builder post-pass Doxa-OpenAI proposes) ---
+clap_builder-4.6.6/src/builder/command.rs:244:    pub fn mut_arg<F>(mut self, arg_id: impl AsRef<str>, f: F) -> Self
+clap_builder-4.6.6/src/builder/command.rs-245-    where
+clap_builder-4.6.6/src/builder/command.rs-246-        F: FnOnce(Arg) -> Arg,
+clap_builder-4.6.6/src/builder/command.rs-247-    {
+clap_builder-4.6.6/src/builder/command.rs-248-        let id = arg_id.as_ref();
+clap_builder-4.6.6/src/builder/command.rs-249-        let a = self
+clap_builder-4.6.6/src/builder/command.rs-250-            .args
+--
+clap_builder-4.6.6/src/builder/command.rs:296:    pub fn mut_args<F>(mut self, f: F) -> Self
+clap_builder-4.6.6/src/builder/command.rs-297-    where
+clap_builder-4.6.6/src/builder/command.rs-298-        F: FnMut(Arg) -> Arg,
+clap_builder-4.6.6/src/builder/command.rs-299-    {
+clap_builder-4.6.6/src/builder/command.rs-300-        self.args.mut_args(f);
+clap_builder-4.6.6/src/builder/command.rs-301-        self
+clap_builder-4.6.6/src/builder/command.rs-302-    }
+
+=== M. Arg::global propagation ===
+clap_builder-4.6.6/src/builder/arg.rs:917:    pub fn global(self, yes: bool) -> Self {
+clap_builder-4.6.6/src/builder/arg.rs-918-        if yes {
+clap_builder-4.6.6/src/builder/arg.rs-919-            self.setting(ArgSettings::Global)
+clap_builder-4.6.6/src/builder/arg.rs-920-        } else {
+clap_builder-4.6.6/src/builder/arg.rs-921-            self.unset_setting(ArgSettings::Global)
+clap_builder-4.6.6/src/builder/arg.rs-922-        }
+clap_builder-4.6.6/src/builder/arg.rs-923-    }
+clap_builder-4.6.6/src/builder/arg.rs-924-
+clap_builder-4.6.6/src/builder/arg.rs-925-    #[inline]
+clap_builder-4.6.6/src/builder/arg.rs-926-    pub(crate) fn is_set(&self, s: ArgSettings) -> bool {
+clap_builder-4.6.6/src/builder/arg.rs-927-        self.settings.is_set(s)
+clap_builder-4.6.6/src/builder/arg.rs-928-    }
+clap_builder-4.6.6/src/builder/arg.rs-929-
+
+=== N. ErrorKind + exit_code (R67 coupling) ===
+clap_builder-4.6.6/src/error/mod.rs:218:    pub fn use_stderr(&self) -> bool {
+clap_builder-4.6.6/src/error/mod.rs-219-        self.stream() == Stream::Stderr
+clap_builder-4.6.6/src/error/mod.rs-220-    }
+clap_builder-4.6.6/src/error/mod.rs-221-
+clap_builder-4.6.6/src/error/mod.rs-222-    pub(crate) fn stream(&self) -> Stream {
+--
+clap_builder-4.6.6/src/error/mod.rs:224:            ErrorKind::DisplayHelp | ErrorKind::DisplayVersion => Stream::Stdout,
+clap_builder-4.6.6/src/error/mod.rs-225-            _ => Stream::Stderr,
+clap_builder-4.6.6/src/error/mod.rs-226-        }
+clap_builder-4.6.6/src/error/mod.rs-227-    }
+clap_builder-4.6.6/src/error/mod.rs-228-
+--
+clap_builder-4.6.6/src/error/mod.rs:233:    pub fn exit_code(&self) -> i32 {
+clap_builder-4.6.6/src/error/mod.rs-234-        if self.use_stderr() {
+clap_builder-4.6.6/src/error/mod.rs-235-            USAGE_CODE
+clap_builder-4.6.6/src/error/mod.rs-236-        } else {
+clap_builder-4.6.6/src/error/mod.rs-237-            SUCCESS_CODE
+
+################################################################
+# 04-clap-source-G.log
+################################################################
+=== O. USAGE_CODE / SUCCESS_CODE ===
+clap_builder-4.6.6/src/error/mod.rs:27:use crate::util::{SUCCESS_CODE, USAGE_CODE, color::ColorChoice};
+clap_builder-4.6.6/src/error/mod.rs:235:            USAGE_CODE
+clap_builder-4.6.6/src/error/mod.rs:237:            SUCCESS_CODE
+
+=== P. Arg::env doc (arg.rs 2160-2210) ===
+    /// env::set_var("MY_FLAG", "env");
+    /// # }
+    ///
+    /// let m = Command::new("prog")
+    ///     .arg(Arg::new("flag")
+    ///         .long("flag")
+    ///         .env("MY_FLAG")
+    ///         .action(ArgAction::Set)
+    ///         .default_value("default"))
+    ///     .get_matches_from(vec![
+    ///         "prog"
+    ///     ]);
+    ///
+    /// assert_eq!(m.get_one::<String>("flag").unwrap(), "env");
+    /// ```
+    ///
+    /// In this example, we show the use of multiple values in a single environment variable:
+    ///
+    /// ```rust
+    /// # use clap_builder as clap;
+    /// # use std::env;
+    /// # use clap::{Command, Arg, ArgAction};
+    ///
+    /// # unsafe {
+    /// env::set_var("MY_FLAG_MULTI", "env1,env2");
+    /// # }
+    ///
+    /// let m = Command::new("prog")
+    ///     .arg(Arg::new("flag")
+    ///         .long("flag")
+    ///         .env("MY_FLAG_MULTI")
+    ///         .action(ArgAction::Set)
+    ///         .num_args(1..)
+    ///         .value_delimiter(','))
+    ///     .get_matches_from(vec![
+    ///         "prog"
+    ///     ]);
+    ///
+    /// assert_eq!(m.get_many::<String>("flag").unwrap().collect::<Vec<_>>(), vec!["env1", "env2"]);
+    /// ```
+    /// [`Arg::action(ArgAction::Set)`]: Arg::action()
+    /// [`Arg::value_delimiter(',')`]: Arg::value_delimiter()
+    #[cfg(feature = "env")]
+    #[inline]
+    #[must_use]
+    pub fn env(mut self, name: impl IntoResettable<OsStr>) -> Self {
+        if let Some(name) = name.into_resettable().into_option() {
+            let value = env::var_os(&name);
+            self.env = Some((name, value));
+
+################################################################
+# 04-clap-source-H.log
+################################################################
+=== AB. Arg::global doc (arg.rs 875-918) ===
+    }
+
+    /// Specifies that an argument can be matched to all child [`Subcommand`]s.
+    ///
+    /// <div class="warning">
+    ///
+    /// **NOTE:** Global arguments *only* propagate down, **not** up (to parent commands), however
+    /// their values once a user uses them will be propagated back up to parents. In effect, this
+    /// means one should *define* all global arguments at the top level, however it doesn't matter
+    /// where the user *uses* the global argument.
+    ///
+    /// </div>
+    ///
+    /// # Examples
+    ///
+    /// Assume an application with two subcommands, and you'd like to define a
+    /// `--verbose` flag that can be called on any of the subcommands and parent, but you don't
+    /// want to clutter the source with three duplicate [`Arg`] definitions.
+    ///
+    /// ```rust
+    /// # use clap_builder as clap;
+    /// # use clap::{Command, Arg, ArgAction};
+    /// let m = Command::new("prog")
+    ///     .arg(Arg::new("verb")
+    ///         .long("verbose")
+    ///         .short('v')
+    ///         .action(ArgAction::SetTrue)
+    ///         .global(true))
+    ///     .subcommand(Command::new("test"))
+    ///     .subcommand(Command::new("do-stuff"))
+    ///     .get_matches_from(vec![
+    ///         "prog", "do-stuff", "--verbose"
+    ///     ]);
+    ///
+    /// assert_eq!(m.subcommand_name(), Some("do-stuff"));
+    /// let sub_m = m.subcommand_matches("do-stuff").unwrap();
+    /// assert_eq!(sub_m.get_flag("verb"), true);
+    /// ```
+    ///
+    /// [`Subcommand`]: crate::Subcommand
+    #[inline]
+    #[must_use]
+    pub fn global(self, yes: bool) -> Self {
+        if yes {
+
+=== AC. infer_subcommands / infer_long_args defaults (R3.10 no prefix abbreviation) ===
+1826-    /// # use clap::{Command, Arg};
+1827-    /// let m = Command::new("prog")
+1828-    ///     .infer_subcommands(true)
+1829-    ///     .subcommand(Command::new("test"))
+1830-    ///     .get_matches_from(vec![
+1831-    ///         "prog", "te"
+1832-    ///     ]);
+1833-    /// assert_eq!(m.subcommand_name(), Some("test"));
+1834-    /// ```
+1835-    ///
+1836-    /// [subcommand]: crate::Command::subcommand()
+1837-    /// [positional/free arguments]: crate::Arg::index()
+1838-    /// [aliases]: crate::Command::aliases()
+1839-    #[inline]
+1840:    pub fn infer_subcommands(self, yes: bool) -> Self {
+clap_builder-4.6.6/src/builder/app_settings.rs:56:    InferLongArgs,
+clap_builder-4.6.6/src/builder/app_settings.rs:57:    InferSubcommands,
+
+################################################################
+# 05-clap-complete.log
+################################################################
+26:pub(crate) const SUCCESS_CODE: i32 = 0;
+32:pub(crate) const USAGE_CODE: i32 = 2;
+
+=== Q. clap_complete 4.6.9: deps, features, shells ===
+13:edition = "2024"
+14:rust-version = "1.85"
+40:license = "MIT OR Apache-2.0"
+[features]
+debug = ["clap/debug"]
+default = []
+unstable-doc = ["unstable-dynamic"]
+unstable-dynamic = [
+    "dep:clap_lex",
+    "dep:shlex",
+    "dep:is_executable",
+    "clap/unstable-ext",
+]
+unstable-shell-tests = [
+    "dep:completest",
+    "dep:completest-pty",
+]
+
+[lib]
+name = "clap_complete"
+path = "src/lib.rs"
+bench = false
+
+[[example]]
+--- dependencies ---
+127:[dependencies.clap]
+128-version = "4.5.20"
+129-features = ["std"]
+130-default-features = false
+131-
+132:[dependencies.clap_lex]
+133-version = "1.0.0"
+134-optional = true
+135-
+136:[dependencies.completest]
+137-version = "1.1.0"
+138-optional = true
+139-
+140:[dependencies.completest-pty]
+141-version = "1.1.0"
+142-optional = true
+143-
+144:[dependencies.is_executable]
+145-version = "1.0.5"
+146-optional = true
+147-
+148:[dependencies.shlex]
+149-version = "2.0.0"
+150-optional = true
+151-
+152-[dev-dependencies.automod]
+153-version = "1.0.16"
+154-
+--- Shell enum variants ---
+clap_complete-4.6.9/src/aot/shells/shell.rs:15:pub enum Shell {
+clap_complete-4.6.9/src/aot/shells/shell.rs-16-    /// Bourne Again `SHell` (bash)
+clap_complete-4.6.9/src/aot/shells/shell.rs-17-    Bash,
+clap_complete-4.6.9/src/aot/shells/shell.rs-18-    /// Elvish shell
+clap_complete-4.6.9/src/aot/shells/shell.rs-19-    Elvish,
+clap_complete-4.6.9/src/aot/shells/shell.rs-20-    /// Friendly Interactive `SHell` (fish)
+clap_complete-4.6.9/src/aot/shells/shell.rs-21-    Fish,
+clap_complete-4.6.9/src/aot/shells/shell.rs-22-    /// `PowerShell`
+clap_complete-4.6.9/src/aot/shells/shell.rs-23-    PowerShell,
+clap_complete-4.6.9/src/aot/shells/shell.rs-24-    /// Z `SHell` (zsh)
+clap_complete-4.6.9/src/aot/shells/shell.rs-25-    Zsh,
+clap_complete-4.6.9/src/aot/shells/shell.rs-26-}
+clap_complete-4.6.9/src/aot/shells/shell.rs-27-
+clap_complete-4.6.9/src/aot/shells/shell.rs-28-impl Display for Shell {
+clap_complete-4.6.9/src/aot/shells/shell.rs-29-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+--- generate fn signature ---
+clap_complete-4.6.9/src/aot/generator/mod.rs:229:pub fn generate_to<G, S, T>(
+clap_complete-4.6.9/src/aot/generator/mod.rs-230-    generator: G,
+clap_complete-4.6.9/src/aot/generator/mod.rs-231-    cmd: &mut Command,
+clap_complete-4.6.9/src/aot/generator/mod.rs-232-    bin_name: S,
+clap_complete-4.6.9/src/aot/generator/mod.rs-233-    out_dir: T,
+clap_complete-4.6.9/src/aot/generator/mod.rs-234-) -> Result<PathBuf, Error>
+clap_complete-4.6.9/src/aot/generator/mod.rs-235-where
+clap_complete-4.6.9/src/aot/generator/mod.rs-236-    G: Generator,
+clap_complete-4.6.9/src/aot/generator/mod.rs-237-    S: Into<String>,
+--
+clap_complete-4.6.9/src/aot/generator/mod.rs:284:pub fn generate<G, S>(generator: G, cmd: &mut Command, bin_name: S, buf: &mut dyn Write)
+clap_complete-4.6.9/src/aot/generator/mod.rs-285-where
+clap_complete-4.6.9/src/aot/generator/mod.rs-286-    G: Generator,
+clap_complete-4.6.9/src/aot/generator/mod.rs-287-    S: Into<String>,
+clap_complete-4.6.9/src/aot/generator/mod.rs-288-{
+clap_complete-4.6.9/src/aot/generator/mod.rs-289-    cmd.set_bin_name(bin_name);
+clap_complete-4.6.9/src/aot/generator/mod.rs-290-    _generate::<G>(generator, cmd, buf);
+clap_complete-4.6.9/src/aot/generator/mod.rs-291-}
+clap_complete-4.6.9/src/aot/generator/mod.rs-292-
+
+################################################################
+# 06-toolchain-buildscript.log
+################################################################
+=== R. Rust stable at retrieval date ===
+  tag_name= 1.98.1 published_at= 2026-09-03T13:14:07Z
+  local toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew) / cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew) / macOS 26.4 arm64
+
+=== S. rustc -vV (the data a dependency-free build.rs would read) ===
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+binary: rustc
+commit-hash: 88d9e12ae178fab0fb5cc050a94da85685d449ea
+commit-date: 2026-08-18
+host: aarch64-apple-darwin
+release: 1.98.0
+LLVM version: 22.1.8
+
+=== T. Cargo reference: env vars Cargo sets for build scripts ===
+   TARGET — the target triple that is being compiled for. Native code should be
+   HOST — the host triple of the Rust compiler.
+   RUSTC — Instead of running rustc, Cargo will execute this specified
+   PROFILE — release for release builds, debug for other builds. This is
+   CARGO_PKG_VERSION — The full version of your package.
+
+################################################################
+# 07-resolution.log
+################################################################
+=== U. MSRV-aware resolution of the recommended pins (manifest + empty lib.rs only; no CLI code) ===
+[package]
+name = "r60-resolution-check"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.96"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[dependencies]
+clap = { version = "4.6.6", features = ["derive", "env", "string", "wrap_help"] }
+clap_complete = "4.6.9"
+--- cargo generate-lockfile ---
+    Updating crates.io index
+     Locking 28 packages to latest Rust 1.96 compatible versions
+exit=0
+--- cargo tree -e normal ---
+ Downloading crates ...
+  Downloaded bitflags v2.13.2
+  Downloaded clap_complete v4.6.9
+r60-resolution-check v0.0.0 (/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r60/resolve)
+├── clap v4.6.6
+│   ├── clap_builder v4.6.6
+│   │   ├── anstream v1.0.0
+│   │   │   ├── anstyle v1.0.14
+│   │   │   ├── anstyle-parse v1.0.0
+│   │   │   │   └── utf8parse v0.2.2
+│   │   │   ├── anstyle-query v1.1.5
+│   │   │   ├── colorchoice v1.0.5
+│   │   │   ├── is_terminal_polyfill v1.70.2
+│   │   │   └── utf8parse v0.2.2
+│   │   ├── anstyle v1.0.14
+│   │   ├── clap_lex v1.1.0
+│   │   ├── strsim v0.11.1
+│   │   └── terminal_size v0.4.4
+│   │       └── rustix v1.1.4
+│   │           ├── bitflags v2.13.2
+│   │           ├── errno v0.3.14
+│   │           │   └── libc v0.2.189
+│   │           └── libc v0.2.189
+│   └── clap_derive v4.6.4 (proc-macro)
+│       ├── heck v0.5.0
+│       ├── proc-macro2 v1.0.107
+│       │   └── unicode-ident v1.0.24
+│       ├── quote v1.0.47
+│       │   └── proc-macro2 v1.0.107 (*)
+│       └── syn v3.0.5
+│           ├── proc-macro2 v1.0.107 (*)
+│           ├── quote v1.0.47 (*)
+│           └── unicode-ident v1.0.24
+└── clap_complete v4.6.9
+    └── clap v4.6.6 (*)
+--- resolved versions of interest ---
+name = "anstream"
+version = "1.0.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+--
+name = "clap"
+version = "4.6.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+--
+name = "clap_builder"
+version = "4.6.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+--
+name = "clap_complete"
+version = "4.6.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+--
+name = "clap_derive"
+version = "4.6.4"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+--
+name = "strsim"
+version = "0.11.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+
+################################################################
+# 08-audit-license.log
+################################################################
+=== V. advisory audit of the resolved tree ===
+    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+      Loaded 1243 security advisories (from /Users/stevemorin/.cargo/advisory-db)
+    Updating crates.io index
+    Scanning Cargo.lock for vulnerabilities (29 crate dependencies)
+
+=== W. licenses of every crate in the resolved tree (from the registry) ===
+  anstream: MIT OR Apache-2.0
+  anstyle: MIT OR Apache-2.0
+  anstyle-parse: MIT OR Apache-2.0
+  anstyle-query: MIT OR Apache-2.0
+  anstyle-wincon: MIT OR Apache-2.0
+  bitflags: MIT OR Apache-2.0
+  clap: MIT OR Apache-2.0
+  clap_builder: MIT OR Apache-2.0
+  clap_complete: MIT OR Apache-2.0
+  clap_derive: MIT OR Apache-2.0
+  clap_lex: MIT OR Apache-2.0
+  colorchoice: MIT OR Apache-2.0
+  errno: MIT OR Apache-2.0
+  heck: MIT OR Apache-2.0
+  is_terminal_polyfill: MIT OR Apache-2.0
+  libc: MIT OR Apache-2.0
+  linux-raw-sys: Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT
+  once_cell_polyfill: MIT OR Apache-2.0
+  proc-macro2: MIT OR Apache-2.0
+  quote: MIT OR Apache-2.0
+  rustix: Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT
+  strsim: MIT
+  syn: MIT OR Apache-2.0
+  terminal_size: MIT OR Apache-2.0
+  unicode-ident: (MIT OR Apache-2.0) AND Unicode-3.0
+  utf8parse: Apache-2.0 OR MIT
+  windows-link: MIT OR Apache-2.0
+  windows-sys: MIT OR Apache-2.0
+  non-MIT/Apache licenses: none
+
+################################################################
+# 09-vergen-msrv.log
+################################################################
+=== X. does vergen 10.0.3 (declared rust-version 1.96.0) resolve at the current MSRV floor 1.96? ===
+    Updating crates.io index
+     Locking 18 packages to latest Rust 1.96 compatible versions
+  exit=0
+name = "vergen"
+version = "10.0.3"
+  --- and at a floor one minor lower (the floor as it stood before Rust 1.98) ---
+     Locking 18 packages to latest Rust 1.95 compatible versions
+      Adding vergen v10.0.3 (requires Rust 1.96.0)
+      Adding vergen-lib v10.0.3 (requires Rust 1.96.0)
+name = "vergen"
+version = "10.0.3"
+
+################################################################
+# 10-source-pins.log
+################################################################
+=== Y. py precedent read through the pin b08bccfb55d05f15e46a83b52c5660b1881d19f5 ===
+--- py cli/main.py: framework import, extended version, auto_envvar_prefix, completion ---
+import click
+def _print_version(ctx: click.Context, _param: click.Parameter, value: bool) -> None:
+    """Eager callback: print version + runtime info, then exit."""
+    if not value or ctx.resilient_parsing:
+        return
+    click.echo(f"{_PROG_NAME} {__version__}")
+    click.echo(f"python {platform.python_version()}")
+    click.echo(f"platform {platform.platform()}")
+    ctx.exit()
+
+    cls=SuggestingGroup,
+    context_settings={
+        "help_option_names": ["-h", "--help"],
+        # Every option also resolves from a <APP_NAME>_* env var (R1.2). The
+        # shared global options set explicit flat names (PLBP_OUTPUT,
+        # PLBP_CONFIG); this prefix is the catch-all for any others.
+        "auto_envvar_prefix": APP_NAME.upper(),
+    },
+)
+@click.option(
+    "-V",
+
+@cli.command(name="completion")
+@click.argument("shell", type=click.Choice(["bash", "zsh", "fish"]))
+def completion(shell: str) -> None:
+    """Print a shell completion script.
+
+    Examples:
+        plbp completion bash >> ~/.bashrc
+        eval "$(plbp completion zsh)"
+    """
+--- py cli/commands/__init__.py:24-28 (command groups) ---
+
+#: Nouns registered on the root group (see ``main.py``).
+COMMAND_GROUPS = [projects_group, config_group]
+
+__all__ = ["COMMAND_GROUPS", "config_group", "projects_group"]
+--- py cli/options.py:58-66, 86-110, 226-236 ---
+        "--output",
+        "output_mode",
+        type=click.Choice(_OUTPUT_CHOICES),
+        default=None,
+        envvar="PLBP_OUTPUT",
+        help="Output format. [default: text]",
+    ),
+    click.option(
+        "--json",
+        "log_level",
+        type=click.Choice(list(LOG_LEVELS)),
+        default=None,
+        envvar="PLBP_LOG_LEVEL",
+        help="Explicit console log level (overrides -v/-q).",
+    ),
+    click.option(
+        "--log-file",
+        "log_file",
+        is_flag=False,
+        flag_value=LOG_FILE_DEFAULT_SENTINEL,
+        default=None,
+        envvar="PLBP_LOG_FILE",
+        help="Enable rotating file logging (PATH optional; default: XDG state).",
+    ),
+    click.option("--no-color", is_flag=True, help="Disable colored output."),
+    click.option(
+        "--config",
+        "config_file",
+        type=click.Path(dir_okay=False),
+        default=None,
+        envvar="PLBP_CONFIG",
+        help="Path to a TOML config file (overrides layered discovery).",
+    ),
+    click.option(
+            )
+            if app.verbose:
+                app.renderer.err.print_exception()
+            raise SystemExit(int(ExitCode.IO)) from exc
+
+    decorated: Any = wrapper
+    for option in reversed(_GLOBAL_OPTIONS):
+        decorated = option(decorated)
+    return cast(F, decorated)
+
+
+--- py cli/groups.py:44-52 (difflib did-you-mean) ---
+        try:
+            return super().resolve_command(ctx, args)
+        except click.UsageError as exc:
+            name = click.utils.make_str(args[0])
+            matches = difflib.get_close_matches(
+                name, self.list_commands(ctx), n=3, cutoff=_CUTOFF
+            )
+            if not matches:
+                raise
+
+=== Z. ts precedent read through the pin cb1cbcb2e88b898e8c081b0abbfabc1630079c00 ===
+import { Command, CommanderError } from 'commander';
+    .name('ts-projects')
+    .description('Search and select projects.')
+    .version(`ts-projects ${VERSION}`, '-V, --version', 'output the version number')
+    // Usage errors must exit 2 (cli-standards R6.1); Commander defaults
+    // to 1, so exitOverride routes everything through runCli's mapping.
+    .exitOverride()
+    .showSuggestionAfterError(true)
+    .configureOutput({
+      writeOut: (text) => deps.stdout(text),
+      writeErr: (text) => deps.stderr(text),
+    })
+    .option(
+      '-v, --verbose',
+      'increase verbosity (repeatable: -v debug, -vv trace)',
+      (_value: string | undefined, previous: number) => previous + 1,
+--- ts src/commands/projects.ts:68-72 ---
+): void {
+  program
+    .command('projects', { isDefault: true })
+    .description('search and select projects')
+    .option('--workspace <name>', 'filter projects by workspace name')
+
+################################################################
+# 11-adopters.log
+################################################################
+=== AA. adopter manifests (GET /repos/<o>/<r>/contents/Cargo.toml, base64-decoded), grepped for clap lines ===
+--- rust-lang/cargo ---
+  Cargo.toml:42: clap = "4.6.0"
+  Cargo.toml:43: clap_complete = { version = "4.6.0", features = ["unstable-dynamic"] }
+  Cargo.toml:173: clap = { workspace = true, features = ["wrap_help"] }
+  Cargo.toml:174: clap_complete.workspace = true
+--- rust-lang/rustup ---
+  Cargo.toml:46: clap = { version = "4", features = ["derive", "wrap_help", "string"] }
+  Cargo.toml:47: clap-cargo = "0.19.0"
+  Cargo.toml:48: clap_complete = { version = "4", features = ["unstable-dynamic"] }
+--- astral-sh/uv ---
+  Cargo.toml:125: clap = { version = "4.5.17", features = [
+  Cargo.toml:131: clap_complete_command = { version = "0.6.1" }
+--- astral-sh/ruff ---
+  Cargo.toml:82: clap = { version = "4.5.3", features = ["derive"] }
+  Cargo.toml:83: clap_complete_command = { version = "0.6.0" }
+--- casey/just ---
+  Cargo.toml:24: clap = { version = "4.0.0", features = ["derive", "env", "string", "wrap_help"] }
+  Cargo.toml:25: clap_complete = { version = "=4.6.8", features = ["unstable-dynamic"] }
+  Cargo.toml:26: clap_mangen = "0.3.0"
+--- starship/starship ---
+  Cargo.toml:38: clap = { version = "4.6.6", features = ["derive", "cargo", "unicode"] }
+  Cargo.toml:39: clap_complete = "4.6.9"
+  Cargo.toml:79: shadow-rs = { version = "2.0.0", default-features = false, features = ["build"] }
+  Cargo.toml:120: shadow-rs = { version = "2.0.0", default-features = false, features = ["build"] }
+--- BurntSushi/ripgrep ---
+  Cargo.toml:63: lexopt = "0.3.0"
+
+################################################################
+# crate tarball digests (downloaded from https://static.crates.io/crates/<name>/<name>-<version>.crate, 2026-09-10)
+################################################################
+7b48fea5a88e9ae728a2dcbedbfc0e730f7d60da42e1cb049a83c9fb8b789889  clap_builder-4.6.6.crate
+3be2ad0423bdbbb0e25bc89add796f3559706d4a95e1bc98e4d9662a957b6a19  clap_complete-4.6.9.crate
+d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061  clap_derive-4.6.4.crate
+473c7e07f409a8d772161724aa8db6a765a2532a70f9667eeb7b49d3d02fbdca  clap-4.6.6.crate
+
+################################################################
+# cargo audit on the resolved tree (working dir /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r60/resolve)
+################################################################
+    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+      Loaded 1243 security advisories (from /Users/stevemorin/.cargo/advisory-db)
+    Updating crates.io index
+    Scanning Cargo.lock for vulnerabilities (29 crate dependencies)
+cargo audit exit=0
+################################################################
+# 12-tree-msrv.log — declared rust-version of every package in the resolved tree
+# command: cargo metadata --format-version 1 --all-features (working dir $WORK/resolve)
+################################################################
+packages in tree: 29  declaring rust-version: 28
+  r60-resolution-check 0.0.0 -> rust-version 1.96
+  clap 4.6.6 -> rust-version 1.85
+  clap_builder 4.6.6 -> rust-version 1.85
+  clap_complete 4.6.9 -> rust-version 1.85
+  clap_derive 4.6.4 -> rust-version 1.85
+  clap_lex 1.1.0 -> rust-version 1.85
+  proc-macro2 1.0.107 -> rust-version 1.71
+  quote 1.0.47 -> rust-version 1.71
+  no rust-version declared: ['utf8parse']
