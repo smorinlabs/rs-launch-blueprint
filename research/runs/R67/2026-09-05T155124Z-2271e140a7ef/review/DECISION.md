@@ -1,4 +1,4 @@
-# R67 — Error and exit-code contract (bundle, Deep, keystone) — revision 2, 2026-09-10
+# R67 — Error and exit-code contract (bundle, Deep, keystone) — revision 3, 2026-09-10
 
 Synthesized 2026-09-09 from three engines' raw reports (five provider bodies) plus
 the verification runs recorded under `## Empirical check`. This is a research
@@ -350,13 +350,18 @@ BASELINE-REVIEW: F301 — an unexpected error's stack trace reaches the user onl
 (retrieved 2026-09-09) documents `Backtrace::capture` as "a noop if the `RUST_BACKTRACE` or `RUST_LIB_BACKTRACE` backtrace variables are both not set" and its body returns `Inner::Disabled` unless `Backtrace::enabled()`, while `force_capture` "ignores the values of the `RUST_BACKTRACE` and `RUST_LIB_BACKTRACE` environment variables"; and the two sources disagree on (b), py `src/py_launch_blueprint/cli/options.py:227-228` printing the traceback with no mode check while ts `src/router.ts:210-218` returns before the trace gate at `:223` (`docs/port/BASELINE-REVIEW.md:154`, owner question at `:194`).
 
 The prompt's `- owns:` line lists **only** `error-taxonomy-exit-codes`, so this
-item does **not** claim the backtrace capture rule. Both are stated as
-assumptions, not published contract: no backtrace is captured unless
-`RUST_BACKTRACE`/`RUST_LIB_BACKTRACE` is set (`capture`, never `force_capture`),
-and the trace never enters the JSON envelope — it reaches only human verbose mode
-and the crash record — which makes machine-mode suppression automatic rather than
-a separate rule. If the owner accepts the amendment, R67 publishes those two
-rules; if not, they stay P03 implementation choices. OpenAI's proposal to use
+item does **not** claim the backtrace capture rule, and — corrected in revision
+3 — publishes no trace rule in its owned parameter either. Both criteria are
+stated here as assumptions, not published contract: that no backtrace is captured
+unless `RUST_BACKTRACE`/`RUST_LIB_BACKTRACE` is set (`capture`, never
+`force_capture`), and that a captured trace reaches only human verbose mode and
+the crash record. What the owned parameter *does* publish is narrower and is
+squarely this item's own (F295/F296): the envelope has the three keys `code`,
+`message` and optional `hint`, and this item defines no further field. A trace
+therefore has no field to occupy — but that is a consequence of the field list,
+not a disclosure rule, and this item asserts none. If the owner accepts the
+amendment, R67 publishes the two criteria; if not, they stay P03 implementation
+choices. OpenAI's proposal to use
 `force_capture` for the UNEXPECTED code is explicitly **not** adopted: it would
 change the cost and privacy contract the owner has not yet dispositioned.
 
@@ -364,7 +369,7 @@ re-verify: 2027-03-09, or earlier on any of — a RustSec advisory against `this
 
 ## Parameters
 
-- owns error-taxonomy-exit-codes = `error-contract/v1`: **Catalog** — `RSLB` + three digits, stable and append-only, sourced from an explicit `const fn ErrorCode::as_str(&self) -> &'static str` match on a `#[non_exhaustive]` enum in the library crate, never derived from a variant name, `Debug`, `Display`, `type_name`, a discriminant or a `strum` derive; a `pub const ErrorCode::ALL` lists every member and a pinned-row test enforces append-only. **Exit taxonomy** (`#[repr(u8)] enum Exit` → `std::process::ExitCode`, per the org CLI Design Standard R6.1, org-locked, unchanged from ts D-016(2)): `0` success, `1` generic runtime error, `2` usage/parse error, `3` not found, `4` auth required, `5` conflict, `130` SIGINT, `143` SIGTERM; unlisted failures collapse to `1`. **Initial catalog rows** (hundreds digit = exit code for the `1xx`–`5xx` blocks; `RSLB000` is the UNEXPECTED sentinel): `RSLB000` unexpected → 1; `RSLB101` I/O → 1; `RSLB102` transport (DNS/connect/timeout/TLS) → 1; `RSLB103` remote-API failure → 1; `RSLB104` config layer unreadable → 1; `RSLB201` usage/parse (including the CLI parser's own errors) → 2; `RSLB202` config document unparsable → 2; `RSLB203` config value invalid → 2; `RSLB204` secret supplied through a prohibited channel → 2; `RSLB205` required non-auth input missing under `--no-input` → 2; `RSLB301` resource not found → 3; `RSLB401` credentials absent → 4; `RSLB402` credentials rejected → 4; `RSLB501` conflict/precondition failed → 5; `RSLB901` SIGINT → 130; `RSLB902` SIGTERM → 143; `RSLB903` prompt cancelled or prompt stdin closed → 130. **Envelope** — a single stderr JSON object `{"error":{"code","message","hint"?}}`; `hint` is an optional structured string field carried beside `code` and `message`, omitted (not `null`) when absent and rendered as its own line in human output — its Rust return type is P03's choice and must be able to name the offending input per R7.6, so a borrowed-or-owned string is expected rather than a `&'static str`; stdout stays byte-empty on the error path; no backtrace and no cause array is serialized into the envelope. **Broken pipe** — a `BrokenPipe` result on the *result* stream ends the process at `0`, silently, with no envelope; a `BrokenPipe` while writing an already-selected error envelope to stderr retains the original application exit status rather than overriding it; a `BrokenPipe` on any other application stream is `RSLB101`/1; no `SIGPIPE` handler is installed and `println!`/`print!` are lint-denied in binary crates. **Boundary precedence** — signal → broken pipe → domain downcast → unexpected; `main` returns `ExitCode` and does not call `process::exit` on the error path; all streams are flushed before exit on every path including signal. **Crash record** — CLI surface only, UNEXPECTED class only, an injected best-effort sink writing `0600` newline-delimited JSON with timestamp, version, PID, code and sanitized cause chain and never argv, environment, headers, tokens or config contents; a write failure never changes the envelope or the exit code; **the location is not decided here and the default sink is a no-op until R57 answers**. **Layering** — `thiserror` in the library crate, `anyhow` (`>= 1.0.103`) in binary crates only; the library crate must not depend on `anyhow`, must install no signal handler or panic hook, and must write to no process stream or file.
+- owns error-taxonomy-exit-codes = `error-contract/v1`: **Catalog** — `RSLB` + three digits, stable and append-only, sourced from an explicit `const fn ErrorCode::as_str(&self) -> &'static str` match on a `#[non_exhaustive]` enum in the library crate, never derived from a variant name, `Debug`, `Display`, `type_name`, a discriminant or a `strum` derive; a `pub const ErrorCode::ALL` lists every member and a pinned-row test enforces append-only. **Exit taxonomy** (`#[repr(u8)] enum Exit` → `std::process::ExitCode`, per the org CLI Design Standard R6.1, org-locked, unchanged from ts D-016(2)): `0` success, `1` generic runtime error, `2` usage/parse error, `3` not found, `4` auth required, `5` conflict, `130` SIGINT, `143` SIGTERM; unlisted failures collapse to `1`. **Initial catalog rows** (hundreds digit = exit code for the `1xx`–`5xx` blocks; `RSLB000` is the UNEXPECTED sentinel): `RSLB000` unexpected → 1; `RSLB101` I/O → 1; `RSLB102` transport (DNS/connect/timeout/TLS) → 1; `RSLB103` remote-API failure → 1; `RSLB104` config layer unreadable → 1; `RSLB201` usage/parse (including the CLI parser's own errors) → 2; `RSLB202` config document unparsable → 2; `RSLB203` config value invalid → 2 (**this template's choice, not derived from the standard — see `## Engines`, Disagreement 4**); `RSLB204` secret supplied through a prohibited channel → 2 (**likewise this template's choice; the standard assigns secrets no exit code**); `RSLB205` required non-auth input or consent missing because prompting is disabled or unavailable — `--no-input`, no TTY, or closed stdin — → 2; `RSLB301` resource not found → 3; `RSLB401` credentials absent → 4; `RSLB402` credentials rejected → 4; `RSLB501` conflict/precondition failed → 5; `RSLB901` SIGINT → 130; `RSLB902` SIGTERM → 143; `RSLB903` prompt interrupted by Ctrl-C → 130 (a closed prompt stdin is **not** this code: it is required input that prompting cannot supply, so it is `RSLB205`/2 — see `## Engines`, Disagreement 4). **Envelope** — a single stderr JSON object `{"error":{"code","message","hint"?}}`; `hint` is an optional structured string field carried beside `code` and `message`, omitted (not `null`) when absent and rendered as its own line in human output — its Rust return type is P03's choice and must be able to name the offending input per R7.6, so a borrowed-or-owned string is expected rather than a `&'static str`; stdout stays byte-empty on the error path. This item defines exactly those three keys and defines no trace, cause-array or diagnostic field; R7.8 permits further documented fields, and any such field is a separate addition owned by the item that needs it. What a *stack trace* may do is deliberately absent from this contract: it is F301's, and F301's acceptance criteria are an open owner question (see `## Decision`). **Broken pipe** — a `BrokenPipe` result on the *result* stream ends the process at `0`, silently, with no envelope; a `BrokenPipe` while writing an already-selected error envelope to stderr retains the original application exit status rather than overriding it; a `BrokenPipe` on any other application stream is `RSLB101`/1; no `SIGPIPE` handler is installed and `println!`/`print!` are lint-denied in binary crates. **Boundary precedence** — signal → broken pipe → domain downcast → unexpected; `main` returns `ExitCode` and does not call `process::exit` on the error path; all streams are flushed before exit on every path including signal. **Crash record** — CLI surface only, UNEXPECTED class only, an injected best-effort sink writing `0600` newline-delimited JSON with timestamp, version, PID, code and sanitized cause chain and never argv, environment, headers, tokens or config contents; a write failure never changes the envelope or the exit code; **the location is not decided here and the default sink is a no-op until R57 answers**. **Layering** — `thiserror` in the library crate, `anyhow` (`>= 1.0.103`) in binary crates only; the library crate must not depend on `anyhow`, must install no signal handler or panic hook, and must write to no process stream or file.
 - assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
 - assumes rust-edition = 2024
 - assumes target-os-matrix = ubuntu-latest, macos-latest
@@ -553,14 +558,54 @@ floor that E14's control shows is load-bearing.
 **Disagreement 4 — the exit code for a configuration failure.** codex maps all
 config faults to `1`; opus, OpenAI and Perplexity map them all to `2`; Gemini's
 own table is internally inconsistent (it assigns `std::io` failures to `5`, which
-its same paragraph assigns to conflict) and was not weighed. **Settled by the
-authority all four were paraphrasing.** R6.1's `2` is "usage / parse error" and
-R8.2 `(MUST)` splits the case explicitly: exit `2` when required non-auth input
-is missing or invalid, exit `1` for "runtime input failures such as unreadable
-files". The catalog therefore carries both (`RSLB202`/`RSLB203` → 2 for an
-unparsable or invalid document, `RSLB104` → 1 for an unreadable layer), which is
-also what R54–R56 need in order to route without inventing codes. No engine
-proposed this split.
+its same paragraph assigns to conflict) and was not weighed. **Partly settled by the authority all four
+were paraphrasing, and partly a labelled choice — the two are separated here
+because R52–R56 and R70 consume this row.** Revision 3 corrects an over-reading in
+revisions 1 and 2, which paraphrased R8.2 as exit `2` for input "missing **or
+invalid**". R8.2 `(MUST)` says no such thing; verbatim, from this run's own
+evidence log, it is: "Use exit `2` when required non-auth input or consent is
+**missing** because prompting is disabled/unavailable, use exit `4` when
+authentication or authorization input is missing, and use exit `1` for runtime
+input failures such as unreadable files." Nothing there covers an *invalid*
+value, and R6.1's `2` is "Usage / parse error (bad flags, missing args)" with the
+stated default that "Unlisted failures collapse to `1`". Splitting the four
+assignments by what actually supports each:
+
+| Row | Exit | Basis |
+|---|---|---|
+| `RSLB104` config layer unreadable | 1 | **Standard-derived.** R8.2's "runtime input failures such as unreadable files", verbatim. |
+| `RSLB202` config document unparsable | 2 | **Standard-derived**, on R6.1's *parse error* limb. The parenthetical "(bad flags, missing args)" narrows the example, not the class; a malformed document is a parse failure of user-supplied input. |
+| `RSLB205` required input missing because prompting is disabled or unavailable | 2 | **Standard-derived.** R8.2's first clause, verbatim, including the "prompting is disabled/unavailable" condition — which is why revision 3 widened this row beyond `--no-input` to cover a missing TTY and a closed stdin. |
+| `RSLB203` config value invalid | 2 | **This template's choice.** Neither rule covers it, and R6.1's own default for an unlisted failure is `1`. |
+| `RSLB204` secret supplied through a prohibited channel | 2 | **This template's choice.** R5.5 and R5.6 govern secrets and assign no exit code at all; R6.1's default would again be `1`. |
+
+The reasoning for both choices, stated so R52–R56 can overturn it rather than
+inherit it silently: `RSLB202` is already `2`, and "the document parsed but a
+value is out of range" is the same user-facing failure with the same remedy —
+edit your configuration. Routing it to `1` would split one condition across two
+codes, so a script repairing its own config would have to test both, and it would
+put "your input is wrong" in the same bucket as "the network failed", which is
+the signal R6.1's structured-but-small scheme exists to preserve. `RSLB204` is
+the same shape: a rejection of user-supplied configuration input. The cost if the
+choice is wrong is one catalog row and one arm of the `exit()` match; a
+conformance audit reading R6.1 strictly could call `2` over-broad here, and
+R55/R56 are the items positioned to raise it.
+
+**The same defect, found by sweeping the rest of the taxonomy, and fixed.**
+Revisions 1 and 2 mapped "prompt stdin closed" to `RSLB903`/130 alongside a
+Ctrl-C interruption. That is not an unlabelled choice but a **contradiction of an
+org-locked MUST**: a closed prompt stdin is precisely "required non-auth input …
+missing because prompting is disabled/unavailable", which R8.2 assigns `2`. It is
+also not `SIGINT`, so R6.1's `130` — "Interrupted by `SIGINT` (Ctrl-C)" — does not
+reach it. Revision 3 therefore narrows `RSLB903` to a real Ctrl-C interruption and
+routes a closed prompt stdin to `RSLB205`/2. This **departs from ts D-033**, which
+exits 130 on "prompt interrupt/stdin-close" alike; the departure is recorded
+rather than hidden, and its ground is that D-016(2) reconciled ts to this same
+org-locked standard in the first place, so an R8.2 `MUST` outranks a later port
+decision that did not consider it. ESC-cancellation is still assigned no code
+here — it is R61's product question, as `## Decision` states. No engine proposed
+any of these distinctions; all five reports mapped configuration wholesale to
+either `1` or `2`.
 
 **Disagreement 5 — the catalog's token format.** codex and OpenAI reuse py's
 `PLBP` prefix, opus chooses `RSLB`, Perplexity chooses `RSBP`. **Not
@@ -664,6 +709,47 @@ this). Nothing else changed: the owned parameter value, the other twelve
 verification rows, the eight disagreement resolutions, the BASELINE-REVIEW F301
 handling, the recorded-not-escalated Perplexity `CONFLICT:`, the status paragraph
 and the unproven list are unchanged from revision 1.
+
+**Audits of revision 2, and what revision 3 changed.** Revision 2 (sha256
+`530fe209e3f5d052e4cd754711936b22778a8831bf2c2f3795e1811fc0e0a4f3`) was
+**approved** by `audit-codex-2026-09-05T155124Z-2271e140a7ef-r2`
+(`review/audit-codex.r2.md`) and **rejected** by
+`audit-fable-2026-09-05T155124Z-2271e140a7ef-r2` (claude-opus-5,
+`review/audit-fable.r2.md`) on two findings, both repaired here. **F1** — the
+decision paraphrased the org-locked R8.2 as exit `2` for input "missing **or
+invalid**"; the rule, and this run's own evidence log, say only "missing", and
+`RSLB203` (config value invalid → 2) was presented as standard-derived when
+neither R6.1 nor R8.2 covers it. **F2** — the exclusion of a stack trace from the
+JSON envelope was called an assumption and "not published contract" in
+`## Decision`, yet was published in the owned parameter, the artifact consumers
+actually read.
+
+Revision 3 makes exactly these changes and no others. (i) The R8.2 paraphrase in
+Disagreement 4 is replaced by the rule verbatim, and every configuration and
+input assignment is re-sorted into a table separating standard-derived rows
+(`RSLB104`→1, `RSLB202`→2, `RSLB205`→2) from this template's choices
+(`RSLB203`→2, `RSLB204`→2, both kept at 2 with their reasoning and their cost if
+wrong stated). (ii) `RSLB203` and `RSLB204` are marked as choices **in the owned
+parameter itself**, so a consumer reading only that line cannot mistake them for
+requirements. (iii) The F2 contradiction is resolved by **removing the trace rule
+from the owned parameter**, because the prompt's `- owns:` line is the authority
+and does not include F301's criteria; what remains published is the envelope's
+three-key field list, which F295/F296 do own, and the `## Decision` paragraph now
+says so instead of claiming a suppression rule it does not assert. (iv) The
+sweep the auditor asked for found one further instance and it was a contradiction
+rather than a mislabel: `RSLB903` covered "prompt stdin closed", which R8.2
+assigns `2`; `RSLB903` is narrowed to a Ctrl-C interruption, the closed-stdin case
+moves to `RSLB205`, and `RSLB205` is widened from `--no-input` to R8.2's full
+"prompting is disabled/unavailable" condition. That is a change to two rows of
+the owned parameter, stated plainly rather than described as editorial. The
+recommendation, the stack, the exit integers, the other twelve verification rows,
+the other seven disagreement resolutions, the BASELINE-REVIEW F301 line, the
+recorded-not-escalated Perplexity `CONFLICT:`, the status paragraph, the
+`re-verify:` line and the unproven list are unchanged from revision 2. Two
+accounting points the auditor checked and confirmed are also unchanged because
+they were already right: this decision has **seven** formal consumers (R03,
+R52–R56, R70) alongside five coupled items, and the rejected signal crate was
+proposed by **one** report (Perplexity), as Disagreement 2 records.
 
 **Where the evidence is incomplete, stated as uncertainty rather than averaged
 away.** Everything under `## Empirical check` is a registry query, a source read

@@ -115,6 +115,60 @@
       },
       "provider": "doxa",
       "state": "succeeded"
+    },
+    {
+      "actor": "research-opus-2026-09-06T043454Z-6f31d86e5b7d",
+      "at": "2026-09-10T02:47:34Z",
+      "operation": {
+        "actor": "research-opus-2026-09-06T043454Z-6f31d86e5b7d",
+        "at": "2026-09-10T02:47:34Z",
+        "model": "claude-opus-5[1m]",
+        "provider": "opus",
+        "request_id": "bfed11aea7304de887cc0e39d6fec10f",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-opus-2026-09-06T043454Z-6f31d86e5b7d",
+      "at": "2026-09-10T04:47:31Z",
+      "operation": {
+        "actor": "research-opus-2026-09-06T043454Z-6f31d86e5b7d",
+        "actual_model": "claude-opus-5[1m]",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-10T02:47:34Z",
+        "model": "claude-opus-5[1m]",
+        "operation_id": "agent:research-opus-2026-09-06T043454Z-6f31d86e5b7d:0d053806271b213b",
+        "provider": "opus",
+        "request_id": "bfed11aea7304de887cc0e39d6fec10f",
+        "returned_at": "2026-09-10T04:47:31Z",
+        "state": "submitted"
+      },
+      "provider": "opus",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-opus-2026-09-06T043454Z-6f31d86e5b7d",
+      "at": "2026-09-10T04:47:32Z",
+      "operation": {
+        "actor": "research-opus-2026-09-06T043454Z-6f31d86e5b7d",
+        "actual_model": "claude-opus-5[1m]",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-10T02:47:34Z",
+        "collected_at": "2026-09-10T04:47:32Z",
+        "model": "claude-opus-5[1m]",
+        "operation_id": "agent:research-opus-2026-09-06T043454Z-6f31d86e5b7d:0d053806271b213b",
+        "provider": "opus",
+        "raw": "research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/raw/opus-0d053806271b213b15c80df745bd5d7f235e3e6e5bd936bd7b98c5f50a663802.md",
+        "raw_sha256": "0d053806271b213b15c80df745bd5d7f235e3e6e5bd936bd7b98c5f50a663802",
+        "reason": "",
+        "request_id": "bfed11aea7304de887cc0e39d6fec10f",
+        "returned_at": "2026-09-10T04:47:31Z",
+        "state": "succeeded"
+      },
+      "provider": "opus",
+      "state": "succeeded"
     }
   ],
   "input_hashes": {
@@ -161,6 +215,22 @@
       "request_id": "1aa224e41962413fae9fe03d8ad19c67",
       "returned_at": "2026-09-09T07:32:52Z",
       "state": "succeeded"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-06T043454Z-6f31d86e5b7d",
+      "actual_model": "claude-opus-5[1m]",
+      "actual_provider": "claude-agent-tool",
+      "at": "2026-09-10T02:47:34Z",
+      "collected_at": "2026-09-10T04:47:32Z",
+      "model": "claude-opus-5[1m]",
+      "operation_id": "agent:research-opus-2026-09-06T043454Z-6f31d86e5b7d:0d053806271b213b",
+      "provider": "opus",
+      "raw": "research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/raw/opus-0d053806271b213b15c80df745bd5d7f235e3e6e5bd936bd7b98c5f50a663802.md",
+      "raw_sha256": "0d053806271b213b15c80df745bd5d7f235e3e6e5bd936bd7b98c5f50a663802",
+      "reason": "",
+      "request_id": "bfed11aea7304de887cc0e39d6fec10f",
+      "returned_at": "2026-09-10T04:47:31Z",
+      "state": "succeeded"
     }
   },
   "prompt_source": "research/topics/18-ai-assisted-review-workflows/prompts/ai-assisted-review-workflows.prompt.md",
@@ -172,7 +242,7 @@
   ],
   "run_id": "2026-09-06T043454Z-6f31d86e5b7d",
   "schema_version": 1,
-  "state": "partial",
+  "state": "collected",
   "tier": "deep",
-  "updated_at": "2026-09-09T07:46:41Z"
+  "updated_at": "2026-09-10T04:47:32Z"
 }
