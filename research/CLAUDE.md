@@ -4,7 +4,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 
 | id | slug | kind | origin | verdict | owns | prompt | status |
 |---|---|---|---|---|---|---|---|
-| R01 | ports-and-adapters-seam | bundle | different | DIVERGENT | http-transport-injection-seam | [prompt](topics/01-ports-and-adapters-seam/prompts/ports-and-adapters-seam.prompt.md) | open |
+| R01 | ports-and-adapters-seam | bundle | different | DIVERGENT | http-transport-injection-seam | [prompt](topics/01-ports-and-adapters-seam/prompts/ports-and-adapters-seam.prompt.md) | resolved |
 | R02 | crate-boundary-enforcement | bundle | py-only | DIVERGENT | — | [prompt](topics/02-crate-boundary-enforcement/prompts/crate-boundary-enforcement.prompt.md) | open |
 | R03 | port-absence-vs-failure-contract | pattern | different | DIVERGENT | — | [prompt](topics/03-port-absence-vs-failure-contract/prompts/port-absence-vs-failure-contract.prompt.md) | open |
 | R04 | public-api-surface-enforcement | pattern | different | DIVERGENT | — | [prompt](topics/04-public-api-surface-enforcement/prompts/public-api-surface-enforcement.prompt.md) | resolved |

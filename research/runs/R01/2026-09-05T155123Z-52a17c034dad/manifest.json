@@ -169,6 +169,15 @@
       },
       "provider": "doxa",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-10T02:25:59Z",
+      "publication": {
+        "acceptance_sha256": "4d46366db90f8e1d48abc0fba949b959706ec6361b869ed05f94aa1277457615",
+        "decision_sha256": "8025fd5b1a959b1e76fa9a738176071b418fd411aa2ba6ad5c6e4bffbd9a018f",
+        "transaction": "1cc1b25bceda4d9f9d109c29f4b7488c"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -234,6 +243,11 @@
     }
   },
   "prompt_source": "research/topics/01-ports-and-adapters-seam/prompts/ports-and-adapters-seam.prompt.md",
+  "publication": {
+    "acceptance_sha256": "4d46366db90f8e1d48abc0fba949b959706ec6361b869ed05f94aa1277457615",
+    "decision_sha256": "8025fd5b1a959b1e76fa9a738176071b418fd411aa2ba6ad5c6e4bffbd9a018f",
+    "transaction": "1cc1b25bceda4d9f9d109c29f4b7488c"
+  },
   "remaining_budget": "USD 300.00 remaining of USD 300.00 bulk Deep ceiling (no Doxa submission before the pilot publishes; no automatic retry)",
   "required_engines": [
     "codex",
@@ -242,7 +256,7 @@
   ],
   "run_id": "2026-09-05T155123Z-52a17c034dad",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "deep",
-  "updated_at": "2026-09-09T07:29:11Z"
+  "updated_at": "2026-09-10T02:25:59Z"
 }
