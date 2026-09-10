@@ -31,6 +31,14 @@
 # workspace with its own [workspace] table, vendored non-member package with a
 # lock, excluded standalone package, unparsable template manifest) and A4b
 # (whole-script timing) are added.
+# Revised 2026-09-09 after judgment audit r4 (finding F1, observations O1 and O5):
+# the script resolves each root from its own directory so that root's
+# .cargo/config* applies; the spy now records the working directory; repository H
+# (a nested root with its own .cargo/config.toml [patch.crates-io] in the stale
+# and the freshly-resolved state, a nested root whose Cargo.lock is Git-ignored,
+# a .cargo/config.toml below a workspace root) and F5 (a manifest-level
+# [patch.crates-io] at the top level) are added; a stub `anyhow` crate outside
+# the repository backs the [patch] cases.
 #
 # Every case runs the fixture's scripts/check-cargo-lock.sh either directly or as a
 # real .git/hooks/pre-commit driven by `git commit`. CARGO_BIN points at a spy
@@ -94,7 +102,7 @@ mk_spy() {
   mkdir -p "$WORK/bin"
   cat > "$WORK/bin/cargo-spy" <<'EOS'
 #!/usr/bin/env bash
-printf 'cargo %s\n' "$*" >> "${CARGO_SPY_LOG:?}"
+printf 'cargo %s (cwd %s)\n' "$*" "$PWD" >> "${CARGO_SPY_LOG:?}"
 exec cargo "$@"
 EOS
   chmod +x "$WORK/bin/cargo-spy"
@@ -117,10 +125,12 @@ alt_vs_pick() {
 }
 
 run_toolchain() {
-  local label="$1" dir="$2" i A B C D E E2 E3 F G lock0 lock1 lock2 stat0
+  local label="$1" dir="$2" i A B C D E E2 E3 F G H Gp Hp STUB lock0 lock1 lock2 lock3 stat0
   if [ -n "$dir" ]; then export PATH="$dir:$ORIG_PATH"; else export PATH="$ORIG_PATH"; fi
   WORK="$WORK_DIR/$label"; rm -rf "$WORK"; mkdir -p "$WORK"
   mk_spy
+  mkdir -p "$WORK/stub-anyhow/src"; printf '[package]\nname = "anyhow"\nversion = "1.0.104"\nedition = "2021"\n' > "$WORK/stub-anyhow/Cargo.toml"; : > "$WORK/stub-anyhow/src/lib.rs"
+  STUB=$(cd "$WORK/stub-anyhow" && pwd -P)
   export CARGO_BIN="$WORK/bin/cargo-spy"
   export CARGO_SPY_LOG="$WORK/cargo-spy.log"; : > "$CARGO_SPY_LOG"
   echo; echo "=== toolchain $label (PATH prefix: ${dir:-<none>}) started $(now) ==="
@@ -452,9 +462,22 @@ run_toolchain() {
   capture git commit -qm "chore: malformed manifest"
   expect "$label/F4" "malformed member manifest: git commit blocked" 1 "$STATUS"; show "$(printf '%s\n' "$OUT" | tail -2)"
   git reset -q --hard HEAD
+  printf '\n[patch.crates-io]\nanyhow = { path = "%s" }\n' "$STUB" >> Cargo.toml; git add Cargo.toml
+  capture bash scripts/check-cargo-lock.sh
+  expect "$label/F5" "manifest-level [patch.crates-io] at the top level (stub anyhow outside the repository): refused" 1 "$STATUS"; show "$OUT"
+  expect_str "$label/F5" "Cargo names the change" "Adding anyhow v1.0.104 (" "$OUT"
+  expect_str "$label/F5" "lock diff stat shown" "Cargo.lock | 2 --" "$OUT"
+  expect_eq "$label/F5" "Cargo.lock bytes unchanged after refusal" "$lock0" "$(sha256_of Cargo.lock)"
+  capture cargo update --workspace
+  expect "$label/F5" "repair: cargo update --workspace" 0 "$STATUS"; show "$OUT"
+  git add Cargo.lock
+  capture git commit -qm "chore: patch anyhow from a path"
+  expect "$label/F5" "patched manifest and lock both staged: git commit" 0 "$STATUS"; show "$OUT"
+  capture bash scripts/check-cargo-lock.sh --all
+  expect "$label/F5" "--all after the patched commit" 0 "$STATUS"; show "$OUT"
 
   ## Repo G: independent workspaces beneath the top level (empirical audit r3, F1)
-  G=$(mk_repo repo-g); cd "$G"
+  G=$(mk_repo repo-g); cd "$G"; Gp=$(pwd -P)
   echo "--- repo G: $G"
   mkdir -p nested/src; printf '[package]\nname = "nested"\nversion = "0.1.0"\nedition = "2024"\n\n[dependencies]\nanyhow = "1"\n\n[workspace]\n' > nested/Cargo.toml; echo 'fn main() {}' > nested/src/main.rs
   capture bash -c 'cd nested && cargo update --workspace'
@@ -473,10 +496,10 @@ exclude = ["tools\/standalone"]/'
   capture /usr/bin/time -p git commit -qm "chore: add nested, vendored, excluded and template manifests"
   expect "$label/G0" "setup commit through the hook (three workspace roots, two skipped candidates)" 0 "$STATUS"; show "$OUT"
   expect_str "$label/G0" "vendored non-member and template manifest skipped" "note: 2 candidate manifest(s) skipped" "$OUT"
-  expect_str "$label/G0" "nested root resolved" "cargo update --workspace --manifest-path nested/Cargo.toml" "$(spy_log)"
-  expect_str "$label/G0" "excluded standalone root resolved" "cargo update --workspace --manifest-path tools/standalone/Cargo.toml" "$(spy_log)"
-  expect_not_str "$label/G0" "vendored package not resolved (locate-project only)" "cargo update --workspace --manifest-path vendored/foo/Cargo.toml" "$(spy_log)"
-  expect_not_str "$label/G0" "template manifest not resolved (locate-project only)" "cargo update --workspace --manifest-path tmpl/Cargo.toml" "$(spy_log)"
+  expect_str "$label/G0" "nested root resolved from its own directory" "cargo update --workspace (cwd $Gp/nested)" "$(spy_log)"
+  expect_str "$label/G0" "excluded standalone root resolved from its own directory" "cargo update --workspace (cwd $Gp/tools/standalone)" "$(spy_log)"
+  expect_not_str "$label/G0" "vendored package not resolved (locate-project only)" "cargo update --workspace (cwd $Gp/vendored/foo)" "$(spy_log)"
+  expect_not_str "$label/G0" "template manifest not resolved (locate-project only)" "cargo update --workspace (cwd $Gp/tmpl)" "$(spy_log)"
   expect_str "$label/G0" "vendored candidate was asked, and rejected by, Cargo" "cargo locate-project --workspace --message-format plain --manifest-path vendored/foo/Cargo.toml" "$(spy_log)"
   expect_eq "$label/G0" "resolves run (update --workspace invocations)" "$(grep -c 'cargo update --workspace' "$CARGO_SPY_LOG")" "3"
   record "$label/G0" "guarded setup commit wall seconds real=$(real_seconds "$OUT") (three roots resolved, four locate-project calls)"
@@ -493,7 +516,7 @@ exclude = ["tools\/standalone"]/'
   expect "$label/G1c" "stale nested independent workspace (anyhow = \"=1.0.100\", lock at 1.0.104): direct check refuses" 1 "$STATUS"; show "$OUT"
   expect_str "$label/G1c" "Cargo names the change" "Downgrading anyhow" "$OUT"
   expect_str "$label/G1c" "nested lock diff stat shown" "nested/Cargo.lock |" "$OUT"
-  expect_str "$label/G1c" "nested root resolved" "cargo update --workspace --manifest-path nested/Cargo.toml" "$(spy_log)"
+  expect_str "$label/G1c" "nested root resolved from its own directory" "cargo update --workspace (cwd $Gp/nested)" "$(spy_log)"
   expect_eq "$label/G1c" "nested Cargo.lock bytes unchanged after refusal (restored)" "$lock0" "$(sha256_of nested/Cargo.lock)"
   capture git commit -qm "chore: pin anyhow in nested"
   expect "$label/G1d" "stale nested workspace: git commit blocked" 1 "$STATUS"; show "$(printf '%s\n' "$OUT" | tail -1)"
@@ -505,8 +528,8 @@ exclude = ["tools\/standalone"]/'
   : > "$CARGO_SPY_LOG"
   capture git commit -qm "chore: pin anyhow in nested"
   expect "$label/G1f" "nested manifest and lock both staged: git commit" 0 "$STATUS"; show "$OUT"
-  expect_str "$label/G1f" "top-level root resolved" "cargo update --workspace --manifest-path Cargo.toml" "$(spy_log)"
-  expect_str "$label/G1f" "nested root resolved" "cargo update --workspace --manifest-path nested/Cargo.toml" "$(spy_log)"
+  expect_str "$label/G1f" "top-level root resolved from the top level" "cargo update --workspace (cwd $Gp)" "$(spy_log)"
+  expect_str "$label/G1f" "nested root resolved from its own directory" "cargo update --workspace (cwd $Gp/nested)" "$(spy_log)"
   printf '# r41 root trigger with vendored lock present\n' >> Cargo.toml; git add Cargo.toml
   capture bash scripts/check-cargo-lock.sh
   expect "$label/G2" "vendored non-member package with its own Cargo.lock: no false refusal" 0 "$STATUS"; show "$OUT"
@@ -518,6 +541,76 @@ exclude = ["tools\/standalone"]/'
   expect "$label/G3" "stale excluded standalone package: refused" 1 "$STATUS"; show "$OUT"
   expect_str "$label/G3" "standalone lock diff stat shown" "tools/standalone/Cargo.lock |" "$OUT"
   expect_eq "$label/G3" "standalone Cargo.lock bytes unchanged after refusal (restored)" "$lock0" "$(sha256_of tools/standalone/Cargo.lock)"
+  git reset -q --hard HEAD
+
+  ## Repo H: configuration context of nested roots (judgment audit r4, F1 and O1) and a config below a root
+  H=$(mk_repo repo-h); cd "$H"; Hp=$(pwd -P)
+  echo "--- repo H: $H"
+  mkdir -p nested/src; printf '[package]\nname = "nested"\nversion = "0.1.0"\nedition = "2024"\n\n[dependencies]\nanyhow = "1"\n\n[workspace]\n' > nested/Cargo.toml; echo 'fn main() {}' > nested/src/main.rs
+  capture bash -c 'cd nested && cargo update --workspace'
+  expect "$label/H0" "setup: nested independent workspace gets its own Cargo.lock" 0 "$STATUS"; show "$OUT"
+  git add -A
+  capture git commit -qm "chore: add nested workspace"
+  expect "$label/H0" "setup commit through the hook" 0 "$STATUS"; show "$OUT"
+  lock0=$(sha256_of nested/Cargo.lock)
+  mkdir -p nested/.cargo; printf '[patch.crates-io]\nanyhow = { path = "%s" }\n' "$STUB" > nested/.cargo/config.toml; git add nested/.cargo/config.toml
+  capture cargo update --workspace --manifest-path nested/Cargo.toml
+  expect "$label/H1a" "revision-4 resolve (top-level cwd, --manifest-path): passes the stale nested lock, config not applied" 0 "$STATUS"; show "$OUT"
+  expect_eq "$label/H1a" "nested Cargo.lock untouched by the top-level-cwd resolve (the false pass)" "$lock0" "$(sha256_of nested/Cargo.lock)"
+  : > "$CARGO_SPY_LOG"
+  capture bash scripts/check-cargo-lock.sh
+  expect "$label/H1b" "nested/.cargo/config.toml with [patch.crates-io] staged, nested lock in registry form: refused" 1 "$STATUS"; show "$OUT"
+  expect_str "$label/H1b" "Cargo names the change" "Adding anyhow v1.0.104 (" "$OUT"
+  expect_str "$label/H1b" "nested lock diff stat shown" "nested/Cargo.lock | 2 --" "$OUT"
+  expect_str "$label/H1b" "nested root resolved from its own directory" "cargo update --workspace (cwd $Hp/nested)" "$(spy_log)"
+  expect_eq "$label/H1b" "nested Cargo.lock bytes unchanged after refusal (restored)" "$lock0" "$(sha256_of nested/Cargo.lock)"
+  capture git commit -qm "chore: patch anyhow in nested"
+  expect "$label/H1c" "stale state: git commit blocked" 1 "$STATUS"; show "$(printf '%s\n' "$OUT" | tail -1)"
+  expect_eq "$label/H1c" "no commit was created (rev-list count)" "$(git rev-list --count HEAD)" "2"
+  capture bash -c 'cd nested && cargo update --workspace'
+  expect "$label/H2a" "repair per remediation, in the nested directory" 0 "$STATUS"; show "$OUT"
+  lock1=$(sha256_of nested/Cargo.lock)
+  record "$label/H2a" "$(git diff --stat --no-ext-diff -- nested/Cargo.lock | tail -1 | sed 's/^ *//'); patched nested lock sha256=$lock1"
+  git add nested/Cargo.lock
+  : > "$CARGO_SPY_LOG"
+  capture bash scripts/check-cargo-lock.sh
+  expect "$label/H2b" "freshly-resolved state (config and patched lock staged): accepted" 0 "$STATUS"; show "$OUT"
+  expect_str "$label/H2b" "nested root resolved from its own directory" "cargo update --workspace (cwd $Hp/nested)" "$(spy_log)"
+  expect_eq "$label/H2b" "patched nested lock untouched" "$lock1" "$(sha256_of nested/Cargo.lock)"
+  capture git commit -qm "chore: patch anyhow in nested"
+  expect "$label/H2c" "freshly-resolved state: git commit" 0 "$STATUS"; show "$OUT"
+  capture cargo update --workspace --manifest-path nested/Cargo.toml
+  expect "$label/H2d" "revision-4 resolve on the committed patched state: config not applied, lock rewritten (the false refusal)" 0 "$STATUS"; show "$OUT"
+  record "$label/H2d" "$(git diff --stat --no-ext-diff -- nested/Cargo.lock | tail -1 | sed 's/^ *//')"
+  expect_eq "$label/H2d" "top-level-cwd resolve changed the patched nested lock" "$([ "$lock1" != "$(sha256_of nested/Cargo.lock)" ] && echo changed || echo unchanged)" "changed"
+  git checkout --quiet -- nested/Cargo.lock
+  capture bash scripts/check-cargo-lock.sh --all
+  expect "$label/H2e" "--all on the committed patched state" 0 "$STATUS"; show "$OUT"
+  mkdir -p ignored/src; printf '[package]\nname = "ignored"\nversion = "0.1.0"\nedition = "2024"\n\n[dependencies]\nanyhow = "1"\n\n[workspace]\n' > ignored/Cargo.toml; echo 'fn main() {}' > ignored/src/main.rs; printf 'Cargo.lock\n' > ignored/.gitignore
+  capture bash -c 'cd ignored && cargo update --workspace'
+  expect "$label/H3" "setup: nested root whose Cargo.lock is Git-ignored" 0 "$STATUS"; show "$OUT"
+  git add ignored
+  : > "$CARGO_SPY_LOG"
+  capture git commit -qm "chore: add a workspace with an ignored lockfile"
+  expect "$label/H3a" "setup commit through the hook" 0 "$STATUS"; show "$OUT"
+  expect_str "$label/H3a" "ignored-lock note" "ignored/Cargo.lock is Git-ignored; that workspace is not checked" "$OUT"
+  expect_not_str "$label/H3a" "ignored root not resolved" "cargo update --workspace (cwd $Hp/ignored)" "$(spy_log)"
+  lock2=$(sha256_of ignored/Cargo.lock)
+  rewrite ignored/Cargo.toml 's/^anyhow = "1"$/anyhow = "=1.0.100"/'; git add ignored/Cargo.toml
+  capture bash scripts/check-cargo-lock.sh
+  expect "$label/H3b" "stale manifest of the ignored-lock workspace: passes vacuously (no lockfile in the repository)" 0 "$STATUS"; show "$OUT"
+  expect_eq "$label/H3b" "ignored Cargo.lock bytes unchanged on disk (no resolve ran, nothing written)" "$lock2" "$(sha256_of ignored/Cargo.lock)"
+  git reset -q --hard HEAD
+  lock3=$(sha256_of Cargo.lock)
+  mkdir -p crates/cli/.cargo; printf '[patch.crates-io]\nanyhow = { path = "%s" }\n' "$STUB" > crates/cli/.cargo/config.toml; git add crates/cli/.cargo/config.toml
+  capture bash scripts/check-cargo-lock.sh
+  expect "$label/H4a" "crates/cli/.cargo/config.toml with [patch.crates-io] (below the root): not applied, passes with a note" 0 "$STATUS"; show "$OUT"
+  expect_str "$label/H4a" "unapplied-config note names the file" "not applied by this check (Cargo reads it only for commands run inside that directory): crates/cli/.cargo/config.toml" "$OUT"
+  expect_eq "$label/H4a" "root Cargo.lock bytes unchanged" "$lock3" "$(sha256_of Cargo.lock)"
+  capture bash -c 'cd crates/cli && cargo update --workspace'
+  expect "$label/H4b" "disclosed limit: the same resolve run inside crates/cli applies the config and rewrites the root lock" 0 "$STATUS"; show "$OUT"
+  record "$label/H4b" "$(git diff --stat --no-ext-diff -- Cargo.lock | tail -1 | sed 's/^ *//')"
+  expect_eq "$label/H4b" "root Cargo.lock changed by the in-member resolve" "$([ "$lock3" != "$(sha256_of Cargo.lock)" ] && echo changed || echo unchanged)" "changed"
   git reset -q --hard HEAD
   cd "$HERE"
   echo "=== toolchain $label finished $(now) ==="

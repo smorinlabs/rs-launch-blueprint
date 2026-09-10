@@ -14,7 +14,7 @@
 #
 # Usage: bash run-linux-leg.sh > ../evidence/<new-log-name>.log 2>&1
 # Always write a new log name; never overwrite an existing evidence log
-# (r1: lockfile-freshness-acceptance-linux.log; r2: …-linux.r2.log; r3: …-linux.r3.log; r4: …-linux.r4.log).
+# (r1: lockfile-freshness-acceptance-linux.log; r2: …-linux.r2.log; r3: …-linux.r3.log; r4: …-linux.r4.log; r5: …-linux.r5.log).
 set -u
 HERE=$(cd "$(dirname "$0")" && pwd)
 TMP=$(limactl shell ubuntu -- bash -lc 'mktemp -d /tmp/r41-synth-XXXXXX' 2>/dev/null | tr -d '\r' | tail -1)

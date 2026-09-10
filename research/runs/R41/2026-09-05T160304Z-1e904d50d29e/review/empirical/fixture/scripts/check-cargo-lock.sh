@@ -1,12 +1,13 @@
 #!/usr/bin/env bash
-# Lockfile-freshness check (R41, decision revision 4): refuse a commit whose
+# Lockfile-freshness check (R41, decision revision 5): refuse a commit whose
 # staged Cargo resolution inputs (manifests, Cargo.lock, .cargo/config[.toml])
 # would make any Cargo.lock in the repository change. The test is the one
 # `uv lock --check` makes -- "would the lockfile change after a resolution?" --
 # realized, for every workspace root in the repository, as a conservative
-# unlocked resolve (`cargo update --workspace`: workspace members re-read, other
-# packages touched only if absent from the lockfile) followed by a Git
-# comparison of every Cargo.lock against the index. Whatever Cargo wrote is
+# unlocked resolve run from that root's own directory (`cargo update
+# --workspace`: workspace members re-read, other packages touched only if absent
+# from the lockfile) followed by a Git comparison of every Cargo.lock against
+# the index. Whatever Cargo wrote is
 # restored from the index before the script exits, so a refusal never leaves
 # the worktree modified.
 #
@@ -30,6 +31,14 @@
 # non-member package under another workspace, a vendored crate, an unparsable
 # template manifest -- are skipped, because Cargo cannot resolve them from there
 # either. A single-workspace repository therefore runs no extra Cargo process.
+# Each root is resolved from its own directory, so the `.cargo/config*` of that
+# directory and of its parents apply, exactly as they do to the developer's
+# `cargo update --workspace` there (judgment audit r4, finding F1). A
+# `.cargo/config*` *below* a workspace root (inside a member directory) is not
+# applied: Cargo reads it only for commands run inside that directory, so the
+# committed lockfile is evaluated in the root-directory context, and such a file
+# is reported. A root whose Cargo.lock is Git-ignored (and untracked) has no
+# lockfile to keep fresh and is not resolved, so nothing is written there.
 #
 # Runs Cargo only when such an input is staged, and refuses to run it while any
 # such input differs between the index and the worktree or exists untracked and
@@ -101,18 +110,43 @@ if [[ ${#roots[@]} -eq 0 ]]; then
     exit 1
 fi
 
-# Conservative resolve of each root. Cargo writes Cargo.lock only when its
-# contents would change (src/ops/lockfile.rs, write_pkg_lockfile), so a fresh
-# lockfile is not touched. Cargo's log (Adding/Removing/Updating lines) is shown
-# only on failure.
+# Configuration files the resolve cannot apply: a `.cargo/config*` whose
+# directory is neither a workspace root directory nor an ancestor of one.
+unapplied=""
+while IFS= read -r cfg; do
+    [[ -n "$cfg" ]] || continue
+    d=$(dirname "$(dirname "$cfg")")
+    applied=0
+    [[ "$d" == . ]] && applied=1
+    for root in ${roots[@]+"${roots[@]}"}; do
+        rd=$(dirname "$root")
+        if [[ "$rd" == "$d" || "$rd" == "$d"/* ]]; then applied=1; fi
+    done
+    [[ "$applied" == 1 ]] || unapplied+=" $cfg"
+done <<< "$(git ls-files -- ':(glob)**/.cargo/config' ':(glob)**/.cargo/config.toml')"
+if [[ -n "$unapplied" ]]; then
+    echo "note: Cargo config below a workspace root is not applied by this check (Cargo reads it only for commands run inside that directory):$unapplied" >&2
+fi
+
+# Conservative resolve of each root, from the root's own directory. Cargo writes
+# Cargo.lock only when its contents would change (src/ops/lockfile.rs,
+# write_pkg_lockfile), so a fresh lockfile is not touched. Cargo's log
+# (Adding/Removing/Updating lines) is shown only on failure. A root whose
+# Cargo.lock is Git-ignored and untracked is skipped: there is no lockfile in
+# the repository to keep fresh, and skipping it leaves nothing written on disk.
 cargo_log=""
 for root in ${roots[@]+"${roots[@]}"}; do
-    if root_log=$("${CARGO_BIN:-cargo}" update --workspace --manifest-path "$root" 2>&1); then
+    rootdir=$(dirname "$root")
+    if git check-ignore -q "$rootdir/Cargo.lock"; then
+        echo "note: $rootdir/Cargo.lock is Git-ignored; that workspace is not checked" >&2
+        continue
+    fi
+    if root_log=$(cd "$rootdir" && "${CARGO_BIN:-cargo}" update --workspace 2>&1); then
         cargo_log+="$root_log"$'\n'
     else
         result=$?
         printf '%s\n' "$root_log" >&2
-        echo "FAIL: Cargo lockfile validation could not complete for workspace $root; see Cargo diagnostics above. For cache/network errors, fetch dependencies and retry." >&2
+        echo "FAIL: Cargo lockfile validation could not complete for workspace $rootdir; see Cargo diagnostics above. For cache/network errors, fetch dependencies and retry." >&2
         exit "$result"
     fi
 done

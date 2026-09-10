@@ -1,0 +1,1456 @@
+R41 lockfile-freshness-check acceptance run — started 2026-09-10T01:09:01Z
+runner: ./run-checks.sh
+fixture: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/fixture
+WORK_DIR: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work
+uname -a: Darwin Steves-MacBook-Pro.local 25.4.0 Darwin Kernel Version 25.4.0: Thu Mar 19 19:33:25 PDT 2026; root:xnu-12377.101.15~1/RELEASE_ARM64_T6041 arm64
+sw_vers: ProductName:		macOS ProductVersion:		26.4 BuildVersion:		25E246 
+git: git version 2.50.1 (Apple Git-155); bash: 3.2.57(1)-release; time: /usr/bin/time
+fixture files (sha256  path):
+  b53ee26e6ff1da219b0563333a76d2c9ec19eec713d6ee54e11a1edacb0e9f3d  ./.gitignore
+  3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e  ./Cargo.lock
+  b18ff1a2338b4e216f03f9f56f19e734be5e3943199d9ce8368841d5be39a8d5  ./Cargo.toml
+  18fa3893c6735e8bc7ca45981cdfc41f1ed5ec1140257e517cf657af1e1d6ff3  ./crates/cli/Cargo.toml
+  40eebd180d2376ac9ccfe7e0809360dde44a1d4302a038d7e2d8c8734a373786  ./crates/cli/src/main.rs
+  93848b26efabe425f8cea277d9369490f7d3cb47f3644f42acbfb11ea3567863  ./crates/core/Cargo.toml
+  04e44da29a3c8156cb611d0e316850503b49f56f58421c79239c597df5f3ff4a  ./crates/core/src/lib.rs
+  76c53f51c01d57eb8aa9817c19203322112e340ef35d69cf9ad285b6e3696018  ./crates/web/Cargo.toml
+  6d028420964a0e4e78ee798c35d5317190f9932e1ccd5f0656cc6e250c6d8c36  ./crates/web/src/main.rs
+  9bcad423cf7b8ab350882ebfe965772f3e2d24250e4f4df2c5e34e9eb9d8696e  ./README.md
+  3bfc96349f2e3ba9adbb30efc8e580da6831f6b15864dc26408c76845289629c  ./scripts/check-cargo-lock.sh
+
+=== toolchain floor-1.96.0 (PATH prefix: /Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin) started 2026-09-10T01:09:02Z ===
+cargo: /Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo -> cargo 1.96.0 (30a34c682 2026-05-25)
+rustc: /Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/rustc -> rustc 1.96.0 (ac68faa20 2026-05-25)
+CARGO_HOME: <unset: default ~/.cargo>
+--- repo A: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-a
+RECORD [floor-1.96.0/A0] core.hooksPath in repo A = '' (empty: .git/hooks/pre-commit is used)
+  $ bash -c /usr/bin/time -p cargo metadata --locked --format-version=1 >/dev/null
+PASS [floor-1.96.0/A1] clean committed tree: cargo metadata --locked --format-version=1 (revision-2 command, control) -> exit 0 (expected 0)
+    | real 0.16
+    | user 0.02
+    | sys 0.05
+RECORD [floor-1.96.0/A1] warm direct locked metadata wall seconds real=0.16
+  $ bash -c /usr/bin/time -p cargo update --workspace
+PASS [floor-1.96.0/A1b] clean committed tree: cargo update --workspace (recommended resolve) -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    | real 0.03
+    | user 0.01
+    | sys 0.01
+RECORD [floor-1.96.0/A1b] warm direct recommended resolve wall seconds real=0.03
+  $ git diff --quiet --no-ext-diff -- Cargo.lock
+PASS [floor-1.96.0/A1b] fresh lock not rewritten by the unlocked resolve (git diff --quiet -- Cargo.lock) -> exit 0 (expected 0)
+PASS [floor-1.96.0/A1b] Cargo.lock bytes unchanged: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ /usr/bin/time -p git commit -qm chore: member manifest comment 1
+PASS [floor-1.96.0/A2.1] staged member-manifest comment: git commit through pre-commit hook -> exit 0 (expected 0)
+    | real 1.26
+    | user 0.09
+    | sys 0.11
+PASS [floor-1.96.0/A2.1] hook ran the recommended command: output contains 'cargo update --workspace'
+RECORD [floor-1.96.0/A2.1] warm guarded commit wall seconds real=1.26
+  $ /usr/bin/time -p git commit -qm chore: member manifest comment 2
+PASS [floor-1.96.0/A2.2] staged member-manifest comment: git commit through pre-commit hook -> exit 0 (expected 0)
+    | real 0.50
+    | user 0.10
+    | sys 0.13
+PASS [floor-1.96.0/A2.2] hook ran the recommended command: output contains 'cargo update --workspace'
+RECORD [floor-1.96.0/A2.2] warm guarded commit wall seconds real=0.50
+  $ /usr/bin/time -p git commit -qm chore: member manifest comment 3
+PASS [floor-1.96.0/A2.3] staged member-manifest comment: git commit through pre-commit hook -> exit 0 (expected 0)
+    | real 0.33
+    | user 0.10
+    | sys 0.12
+PASS [floor-1.96.0/A2.3] hook ran the recommended command: output contains 'cargo update --workspace'
+RECORD [floor-1.96.0/A2.3] warm guarded commit wall seconds real=0.33
+  $ git commit -qm chore: root manifest comment
+PASS [floor-1.96.0/A3] staged root-manifest comment: git commit -> exit 0 (expected 0)
+PASS [floor-1.96.0/A3] root manifest triggers Cargo: output contains 'cargo update --workspace'
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [floor-1.96.0/A4] --all on a clean committed tree with nothing staged -> exit 0 (expected 0)
+PASS [floor-1.96.0/A4] --all invoked Cargo unconditionally: output contains 'cargo update --workspace'
+PASS [floor-1.96.0/A4] single-workspace repository: no locate-project call: output lacks 'cargo locate-project'
+  $ bash -c /usr/bin/time -p bash scripts/check-cargo-lock.sh --all
+PASS [floor-1.96.0/A4b] --all on the clean tree, whole script timed (discovery + resolve + compare) -> exit 0 (expected 0)
+    | real 0.55
+    | user 0.15
+    | sys 0.18
+RECORD [floor-1.96.0/A4b] warm whole-script --all wall seconds real=0.55
+  $ bash -c CARGO_HOME="$1" /usr/bin/time -p cargo metadata --locked --format-version=1 >/dev/null _ /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/cold-home
+PASS [floor-1.96.0/A5] cold empty CARGO_HOME (registry index + crate fetch): cargo metadata --locked (control) -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |  Downloading crates ...
+    |   Downloaded anyhow v1.0.104
+    | real 0.33
+    | user 0.05
+    | sys 0.05
+RECORD [floor-1.96.0/A5] cold direct locked metadata wall seconds real=0.33
+  $ bash -c CARGO_HOME="$1" /usr/bin/time -p cargo update --workspace _ /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/cold-home-update
+PASS [floor-1.96.0/A5b] cold empty CARGO_HOME: cargo update --workspace (recommended resolve; index only) -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    | real 0.08
+    | user 0.02
+    | sys 0.01
+RECORD [floor-1.96.0/A5b] cold direct recommended resolve wall seconds real=0.08; crate archives fetched into the cold home: 0 (locked metadata control fetched: 1)
+PASS [floor-1.96.0/A5b] Cargo.lock bytes unchanged after the cold resolve: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash -c /usr/bin/time -p cargo check --workspace --all-targets --locked
+PASS [floor-1.96.0/A6] cargo check --workspace --all-targets --locked at this toolchain (rust-version = "1.96") -> exit 0 (expected 0)
+    |     Checking r41-web v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-a/crates/web)
+    |     Checking r41-cli v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-a/crates/cli)
+    |     Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.26s
+    | real 1.28
+    | user 0.42
+    | sys 0.45
+RECORD [floor-1.96.0/A6] locked check wall seconds real=1.28
+  $ git commit -qm chore: add resolution-neutral .cargo/config.toml
+PASS [floor-1.96.0/A7] staged .cargo/config.toml (resolution-neutral key): git commit -> exit 0 (expected 0)
+PASS [floor-1.96.0/A7] .cargo/config.toml triggers Cargo: output contains 'cargo update --workspace'
+--- repo B: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-b
+RECORD [floor-1.96.0/B0] committed Cargo.lock sha256=3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/B1] stale: staged manifest adds serde_json, Cargo.lock untouched: direct check -> exit 1 (expected 1)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+    |  Cargo.lock | 98 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    |  1 file changed, 98 insertions(+)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/B1] Cargo's own resolve summary shown: output contains 'Adding serde_json'
+PASS [floor-1.96.0/B1] lock diff stat shown: output contains 'Cargo.lock |'
+PASS [floor-1.96.0/B1] remediation message present: output contains 'out of date'
+PASS [floor-1.96.0/B1] hook ran the recommended command: output contains 'cargo update --workspace'
+PASS [floor-1.96.0/B1] Cargo.lock bytes unchanged after refusal (restored): 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ /usr/bin/time -p git commit -qm feat(core): add serde_json (stale lock)
+PASS [floor-1.96.0/B2] stale: git commit blocked by pre-commit hook -> exit 1 (expected 1)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+    |  Cargo.lock | 98 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    |  1 file changed, 98 insertions(+)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+    | real 1.29
+    | user 0.13
+    | sys 0.16
+PASS [floor-1.96.0/B2] Cargo.lock bytes unchanged after blocked commit: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+PASS [floor-1.96.0/B2] no commit was created (rev-list count): 1 == 1
+RECORD [floor-1.96.0/B2] blocked commit wall seconds real=1.29
+  $ bash -c cargo metadata --locked --no-deps --format-version=1 >/dev/null
+PASS [floor-1.96.0/B3a] false-pass control: --no-deps on the stale tree returns success -> exit 0 (expected 0)
+  $ cargo update --locked --dry-run
+PASS [floor-1.96.0/B3b] false-pass control: cargo update --locked --dry-run on the stale tree returns success -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+    | warning: not updating lockfile due to dry run
+  $ cargo check --workspace --locked
+PASS [floor-1.96.0/B3c] runner-up (locked compile): cargo check --workspace --locked on the stale tree -> exit 101 (expected 101)
+    |     Updating crates.io index
+    | error: cannot update the lock file /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-b/Cargo.lock because --locked was passed to prevent this
+    | help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+  $ cargo update --workspace --locked
+PASS [floor-1.96.0/B3d] locked form of the recommended command: cargo update --workspace --locked on the stale tree -> exit 101 (expected 101)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+    | error: cannot update the lock file /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-b/Cargo.lock because --locked was passed to prevent this
+    | help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+PASS [floor-1.96.0/B3] Cargo.lock bytes unchanged after all controls and probes: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash -c cargo metadata --format-version=1 >/dev/null
+PASS [floor-1.96.0/B3e] alternative: unlocked cargo metadata --format-version=1 rewrites the lock -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+RECORD [floor-1.96.0/B3e] unlocked metadata diff stat: 1 file changed, 98 insertions(+); sha256=1c006eedb946698f166e8f298d9997885dd04992724895d13927581f89119125
+PASS [floor-1.96.0/B3e] lock restored from the index: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ cargo update --workspace
+PASS [floor-1.96.0/B4] repair per remediation: cargo update --workspace rewrites Cargo.lock -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+PASS [floor-1.96.0/B4] Cargo.lock changed by the repair: changed == changed
+RECORD [floor-1.96.0/B4] repaired Cargo.lock sha256=1c006eedb946698f166e8f298d9997885dd04992724895d13927581f89119125; 1 file changed, 98 insertions(+)
+PASS [floor-1.96.0/B4] repair diff stat equals the unlocked-metadata alternative's: 1 file changed, 98 insertions(+) == 1 file changed, 98 insertions(+)
+  $ bash -c cargo metadata --locked --format-version=1 >/dev/null
+PASS [floor-1.96.0/B5a] hazard: bare cargo metadata --locked passes while the repaired lock is unstaged -> exit 0 (expected 0)
+  $ cargo update --workspace
+PASS [floor-1.96.0/B5a2] hazard is command-independent: bare cargo update --workspace also passes with the repaired lock unstaged -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+PASS [floor-1.96.0/B5a2] repaired lock untouched by the bare resolve: 1c006eedb946698f166e8f298d9997885dd04992724895d13927581f89119125 == 1c006eedb946698f166e8f298d9997885dd04992724895d13927581f89119125
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/B5b] parity guard: repaired lock unstaged -> check refuses before Cargo -> exit 1 (expected 1)
+    | FAIL: Cargo resolution inputs differ from the index. Stage the intended manifests, config and lockfile together, or restore the unstaged edits.
+PASS [floor-1.96.0/B5b] parity message: output contains 'differ from the index'
+PASS [floor-1.96.0/B5b] Cargo not invoked (spy log bytes): 0 == 0
+  $ git commit -qm feat(core): add serde_json (lock unstaged)
+PASS [floor-1.96.0/B5c] parity guard: git commit blocked -> exit 1 (expected 1)
+    | FAIL: Cargo resolution inputs differ from the index. Stage the intended manifests, config and lockfile together, or restore the unstaged edits.
+  $ /usr/bin/time -p git commit -qm feat(core): add serde_json
+PASS [floor-1.96.0/B6] repaired manifest and lockfile both staged: git commit -> exit 0 (expected 0)
+    | real 1.36
+    | user 0.12
+    | sys 0.14
+PASS [floor-1.96.0/B6] hook ran Cargo on the repaired commit: output contains 'cargo update --workspace'
+RECORD [floor-1.96.0/B6] repaired commit wall seconds real=1.36; serde_json entries in Cargo.lock: 1
+  $ cargo update --workspace
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/B7a] reverse parity: staged lockfile with unstaged member manifest -> refused -> exit 1 (expected 1)
+    | FAIL: Cargo resolution inputs differ from the index. Stage the intended manifests, config and lockfile together, or restore the unstaged edits.
+  $ git commit -qm chore: lockfile only
+PASS [floor-1.96.0/B7b] reverse parity: git commit blocked -> exit 1 (expected 1)
+    | FAIL: Cargo resolution inputs differ from the index. Stage the intended manifests, config and lockfile together, or restore the unstaged edits.
+--- repo C: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-c
+  $ env CARGO_BIN=/nonexistent/r41-cargo /usr/bin/time -p git commit -qm docs: unrelated
+PASS [floor-1.96.0/C1] unrelated staged file, CARGO_BIN=/nonexistent: commit succeeds without Cargo -> exit 0 (expected 0)
+    | SKIP: no staged Cargo resolution inputs
+    | real 0.71
+    | user 0.03
+    | sys 0.04
+PASS [floor-1.96.0/C1] skip diagnostic: output contains 'SKIP: no staged Cargo resolution inputs'
+RECORD [floor-1.96.0/C1] skip commit wall seconds real=0.71
+  $ git commit -q --no-verify -m feat(core): add serde_json bypassing the hook
+PASS [floor-1.96.0/C2a] git commit --no-verify commits a stale lock -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/C2b] clean index, stale committed lock: default mode skips (nothing staged) -> exit 0 (expected 0)
+    | SKIP: no staged Cargo resolution inputs
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [floor-1.96.0/C2c] clean index, stale committed lock: --all catches it -> exit 1 (expected 1)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+    |  Cargo.lock | 98 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    |  1 file changed, 98 insertions(+)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/C2c] out-of-date message: output contains 'out of date'
+PASS [floor-1.96.0/C2c] committed lock left unchanged on disk (restored): 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/C3] untracked Cargo.toml elsewhere in the repo -> refused before Cargo -> exit 1 (expected 1)
+    | FAIL: untracked Cargo resolution inputs exist. Stage the intended inputs or move unrelated inputs outside this workspace.
+PASS [floor-1.96.0/C3] untracked message: output contains 'untracked Cargo resolution inputs'
+--- repo D: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-d
+  $ cargo package -p r41-core --locked
+PASS [floor-1.96.0/D1] cargo package -p r41-core --locked on the clean committed tree (default verification) -> exit 0 (expected 0)
+    |     Packaged 5 files, 1.3KiB (949B compressed)
+    |    Verifying r41-core v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-d/crates/core)
+    |    Compiling r41-core v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-d/target/package/r41-core-0.1.0)
+    |     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.58s
+RECORD [floor-1.96.0/D1] Cargo files under target/package: target/package/r41-core-0.1.0/Cargo.lock target/package/r41-core-0.1.0/Cargo.toml target/package/r41-core-0.1.0/Cargo.toml.orig 
+PASS [floor-1.96.0/D1] package output is Git-ignored (git status --short line count): 0 == 0
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [floor-1.96.0/D2] --all on a clean index with target/package present -> exit 0 (expected 0)
+PASS [floor-1.96.0/D2] --all reached Cargo: output contains 'cargo update --workspace'
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/D3a] staged manifest comment with target/package present: direct check -> exit 0 (expected 0)
+  $ git commit -qm chore: manifest comment after cargo package
+PASS [floor-1.96.0/D3b] staged manifest comment with target/package present: git commit -> exit 0 (expected 0)
+PASS [floor-1.96.0/D3b] hook reached Cargo: output contains 'cargo update --workspace'
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/D4] stale manifest with target/package present: still refused -> exit 1 (expected 1)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+    |  Cargo.lock | 98 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    |  1 file changed, 98 insertions(+)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/D4] refusal came from the lock comparison, not from the untracked scan: output contains 'out of date'
+PASS [floor-1.96.0/D4] no untracked-input refusal: output lacks 'untracked Cargo resolution inputs'
+--- repo E: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-e
+PASS [floor-1.96.0/E0] committed lock carries the r41-web entry: 1 == 1
+RECORD [floor-1.96.0/E0] staged: 1 file changed, 1 insertion(+), 1 deletion(-); members now: members = ["crates/core", "crates/cli"]
+  $ bash -c cargo metadata --locked --format-version=1 >/dev/null
+PASS [floor-1.96.0/E1a] revision-2 command: cargo metadata --locked passes the orphan lock entry (false pass) -> exit 0 (expected 0)
+  $ cargo update --workspace --locked
+PASS [floor-1.96.0/E1b] cargo update --workspace --locked passes the orphan (false pass) -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+  $ cargo generate-lockfile --locked
+RECORD [floor-1.96.0/E1c] cargo generate-lockfile --locked on the orphan tree -> exit 0 (0 = false pass; 101 would mean only that a newer registry version exists, since this command re-resolves to latest)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96 compatible version
+  $ cargo check --workspace --locked
+PASS [floor-1.96.0/E1d] cargo check --workspace --locked passes the orphan (false pass) -> exit 0 (expected 0)
+    |     Checking r41-cli v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-e/crates/cli)
+    |     Finished `dev` profile [unoptimized + debuginfo] target(s) in 1.29s
+PASS [floor-1.96.0/E1] Cargo.lock bytes unchanged after the four --locked probes: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/E1e] leaf member removed (members list only): direct check refuses -> exit 1 (expected 1)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |  Cargo.lock | 7 -------
+    |  1 file changed, 7 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/E1e] out-of-date message: output contains 'out of date'
+PASS [floor-1.96.0/E1e] lock diff stat shown: output contains 'Cargo.lock |'
+PASS [floor-1.96.0/E1e] hook ran the recommended command: output contains 'cargo update --workspace'
+PASS [floor-1.96.0/E1e] Cargo.lock bytes unchanged after refusal (restored): 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ /usr/bin/time -p git commit -qm refactor: drop the web member
+PASS [floor-1.96.0/E1f] leaf member removed: git commit blocked by pre-commit hook -> exit 1 (expected 1)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |  Cargo.lock | 7 -------
+    |  1 file changed, 7 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+    | real 0.85
+    | user 0.08
+    | sys 0.09
+PASS [floor-1.96.0/E1f] no commit was created (rev-list count): 1 == 1
+PASS [floor-1.96.0/E1f] Cargo.lock bytes unchanged after blocked commit: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+RECORD [floor-1.96.0/E1f] blocked commit wall seconds real=0.85
+  $ bash -c cargo metadata --format-version=1 >/dev/null
+PASS [floor-1.96.0/E1g.alt] alternative: unlocked cargo metadata --format-version=1 rewrites the lock -> exit 0 (expected 0)
+RECORD [floor-1.96.0/E1g.alt] unlocked metadata diff stat: 1 file changed, 7 deletions(-)
+  $ cargo update --workspace
+PASS [floor-1.96.0/E1g.pick] recommended: cargo update --workspace rewrites the lock -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+RECORD [floor-1.96.0/E1g.pick] cargo update --workspace diff stat: 1 file changed, 7 deletions(-)
+PASS [floor-1.96.0/E1g] both unlocked commands produce the same lock change: 1 file changed, 7 deletions(-) == 1 file changed, 7 deletions(-)
+  $ cargo update --workspace
+PASS [floor-1.96.0/E1h] repair per remediation: cargo update --workspace prunes the orphan -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+RECORD [floor-1.96.0/E1h] repaired Cargo.lock sha256=8879701a9e262f199c4854f6a287b25390fea2fecfbd431f8a824b4c6e61f3aa; 1 file changed, 7 deletions(-)
+PASS [floor-1.96.0/E1h] orphan r41-web entry gone from the repaired lock: 0 == 0
+  $ /usr/bin/time -p git commit -qm refactor: drop the web member
+PASS [floor-1.96.0/E1i] manifest and pruned lock both staged: git commit -> exit 0 (expected 0)
+    | real 0.19
+    | user 0.07
+    | sys 0.08
+PASS [floor-1.96.0/E1i] hook ran Cargo on the repaired commit: output contains 'cargo update --workspace'
+RECORD [floor-1.96.0/E1i] repaired commit wall seconds real=0.19
+--- repo E2: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-e2
+RECORD [floor-1.96.0/E2.0] staged (name-status): M Cargo.toml;D crates/web/Cargo.toml;D crates/web/src/main.rs;
+  $ bash -c cargo metadata --locked --format-version=1 >/dev/null
+PASS [floor-1.96.0/E2a] revision-2 command: cargo metadata --locked passes with the member deleted (false pass) -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/E2b] member deleted with git rm: direct check refuses (trigger sees the staged deletion) -> exit 1 (expected 1)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |  Cargo.lock | 7 -------
+    |  1 file changed, 7 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/E2b] out-of-date message: output contains 'out of date'
+PASS [floor-1.96.0/E2b] trigger did not skip: output lacks 'SKIP'
+PASS [floor-1.96.0/E2b] Cargo.lock bytes unchanged after refusal (restored): 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ git commit -qm refactor: delete the web member
+PASS [floor-1.96.0/E2c] member deleted with git rm: git commit blocked -> exit 1 (expected 1)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |  Cargo.lock | 7 -------
+    |  1 file changed, 7 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/E2c] no commit was created (rev-list count): 1 == 1
+  $ cargo update --workspace
+PASS [floor-1.96.0/E2d] repair: cargo update --workspace -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+  $ git commit -qm refactor: delete the web member
+PASS [floor-1.96.0/E2e] manifest, deletions and pruned lock all staged: git commit -> exit 0 (expected 0)
+PASS [floor-1.96.0/E2e] hook ran Cargo on the repaired commit: output contains 'cargo update --workspace'
+PASS [floor-1.96.0/E2e] crates/web no longer in the tree: absent == absent
+PASS [floor-1.96.0/E2e] orphan r41-web entry gone from the committed lock: 0 == 0
+--- repo E3: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-e3
+  $ git commit -q --no-verify -m refactor: drop the web member bypassing the hook
+PASS [floor-1.96.0/E3a] git commit --no-verify commits the orphan lock entry -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/E3b] clean index, committed orphan: default mode skips (nothing staged) -> exit 0 (expected 0)
+    | SKIP: no staged Cargo resolution inputs
+  $ bash -c cargo metadata --locked --format-version=1 >/dev/null
+PASS [floor-1.96.0/E3c] revision-2 CI command: cargo metadata --locked passes the committed orphan (false pass) -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [floor-1.96.0/E3c2] clean index, committed orphan: --all catches it -> exit 1 (expected 1)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |  Cargo.lock | 7 -------
+    |  1 file changed, 7 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/E3c2] out-of-date message: output contains 'out of date'
+PASS [floor-1.96.0/E3c2] committed lock left unchanged on disk (restored): 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ cargo update --workspace
+PASS [floor-1.96.0/E3d] lock-only repair: cargo update --workspace prunes the committed orphan -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+RECORD [floor-1.96.0/E3d] 1 file changed, 7 deletions(-)
+  $ git commit -qm chore: prune Cargo.lock
+PASS [floor-1.96.0/E3d] lock-only repair commit is accepted (it is the repair, not churn past the hook) -> exit 0 (expected 0)
+PASS [floor-1.96.0/E3d] hook ran Cargo on the lock-only commit: output contains 'cargo update --workspace'
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [floor-1.96.0/E3e] --all after the repair commit -> exit 0 (expected 0)
+  $ bash -c cargo metadata --locked --format-version=1 >/dev/null
+PASS [floor-1.96.0/E4a] normalization: lock with an extra trailing blank line passes --locked (parsed resolves equal) -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/E4b] normalization: the script refuses it (Cargo would rewrite the file) -> exit 1 (expected 1)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |  Cargo.lock | 1 -
+    |  1 file changed, 1 deletion(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/E4b] one-line stat: output contains '1 deletion(-)'
+PASS [floor-1.96.0/E4b] staged lock bytes unchanged after refusal (restored from the index): 489593d66fecf3a99ceebbfe45867c1ffcf997902d446d6d7ced8cca9dfccb09 == 489593d66fecf3a99ceebbfe45867c1ffcf997902d446d6d7ced8cca9dfccb09
+PASS [floor-1.96.0/E5] lockfile rewritten to version = 3 and staged: 1 == 1
+  $ git commit -qm chore: lockfile version 3
+PASS [floor-1.96.0/E5] version = 3 lockfile on a fresh graph: git commit (no false refusal from format migration) -> exit 0 (expected 0)
+PASS [floor-1.96.0/E5] hook ran Cargo: output contains 'cargo update --workspace'
+PASS [floor-1.96.0/E5] version line preserved after the guarded commit: 1 == 1
+  $ git commit -q --no-verify -m chore: drop Cargo.lock bypassing the hook
+PASS [floor-1.96.0/E6] no Cargo.lock in the repository (removed with --no-verify) -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/E6a] staged manifest with no lockfile: the resolve would create Cargo.lock -> refused -> exit 1 (expected 1)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96 compatible version
+    | would create: Cargo.lock
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/E6a] created-lock message: output contains 'would create: Cargo.lock'
+PASS [floor-1.96.0/E6a] created Cargo.lock removed again: absent == absent
+PASS [floor-1.96.0/E6a] worktree otherwise untouched (git status --short): M  Cargo.toml; == M  Cargo.toml;
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [floor-1.96.0/E6b] --all with no lockfile in the repository -> refused -> exit 1 (expected 1)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96 compatible version
+    | would create: Cargo.lock
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/E6b] created Cargo.lock removed again: absent == absent
+--- repo F: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-f
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/F1] requirement change anyhow = "=1.0.100" (locked 1.0.104): refused -> exit 1 (expected 1)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96 compatible version
+    |  Downgrading anyhow v1.0.104 -> v1.0.100 (available: v1.0.104)
+    |  Cargo.lock | 4 ++--
+    |  1 file changed, 2 insertions(+), 2 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/F1] Cargo names the change: output contains 'Downgrading anyhow'
+PASS [floor-1.96.0/F1] Cargo.lock bytes unchanged after refusal: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash -c cargo metadata --format-version=1 >/dev/null
+PASS [floor-1.96.0/F1.alt] alternative: unlocked cargo metadata --format-version=1 rewrites the lock -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96 compatible version
+    |  Downgrading anyhow v1.0.104 -> v1.0.100 (available: v1.0.104)
+RECORD [floor-1.96.0/F1.alt] unlocked metadata diff stat: 1 file changed, 2 insertions(+), 2 deletions(-)
+  $ cargo update --workspace
+PASS [floor-1.96.0/F1.pick] recommended: cargo update --workspace rewrites the lock -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96 compatible version
+    |  Downgrading anyhow v1.0.104 -> v1.0.100 (available: v1.0.104)
+RECORD [floor-1.96.0/F1.pick] cargo update --workspace diff stat: 1 file changed, 2 insertions(+), 2 deletions(-)
+PASS [floor-1.96.0/F1] both unlocked commands produce the same lock change: 1 file changed, 2 insertions(+), 2 deletions(-) == 1 file changed, 2 insertions(+), 2 deletions(-)
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/F2] workspace.package version bump 0.1.0 -> 0.2.0 (R23 case): refused -> exit 1 (expected 1)
+    |      Locking 3 packages to latest Rust 1.96 compatible versions
+    |     Updating r41-cli v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-f/crates/cli) -> v0.2.0
+    |     Updating r41-core v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-f/crates/core) -> v0.2.0
+    |     Updating r41-web v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-f/crates/web) -> v0.2.0
+    |  Cargo.lock | 6 +++---
+    |  1 file changed, 3 insertions(+), 3 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/F2] Cargo names the change: output contains 'Updating r41-core'
+PASS [floor-1.96.0/F2] Cargo.lock bytes unchanged after refusal: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash -c cargo metadata --format-version=1 >/dev/null
+PASS [floor-1.96.0/F2.alt] alternative: unlocked cargo metadata --format-version=1 rewrites the lock -> exit 0 (expected 0)
+RECORD [floor-1.96.0/F2.alt] unlocked metadata diff stat: 1 file changed, 3 insertions(+), 3 deletions(-)
+  $ cargo update --workspace
+PASS [floor-1.96.0/F2.pick] recommended: cargo update --workspace rewrites the lock -> exit 0 (expected 0)
+    |      Locking 3 packages to latest Rust 1.96 compatible versions
+    |     Updating r41-cli v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-f/crates/cli) -> v0.2.0
+    |     Updating r41-core v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-f/crates/core) -> v0.2.0
+    |     Updating r41-web v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-f/crates/web) -> v0.2.0
+RECORD [floor-1.96.0/F2.pick] cargo update --workspace diff stat: 1 file changed, 3 insertions(+), 3 deletions(-)
+PASS [floor-1.96.0/F2] both unlocked commands produce the same lock change: 1 file changed, 3 insertions(+), 3 deletions(-) == 1 file changed, 3 insertions(+), 3 deletions(-)
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/F3] registry edge anyhow removed from crates/cli: refused -> exit 1 (expected 1)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |     Removing anyhow v1.0.104
+    |  Cargo.lock | 7 -------
+    |  1 file changed, 7 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/F3] Cargo names the change: output contains 'Removing anyhow'
+PASS [floor-1.96.0/F3] Cargo.lock bytes unchanged after refusal: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash -c cargo metadata --format-version=1 >/dev/null
+PASS [floor-1.96.0/F3.alt] alternative: unlocked cargo metadata --format-version=1 rewrites the lock -> exit 0 (expected 0)
+RECORD [floor-1.96.0/F3.alt] unlocked metadata diff stat: 1 file changed, 7 deletions(-)
+  $ cargo update --workspace
+PASS [floor-1.96.0/F3.pick] recommended: cargo update --workspace rewrites the lock -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |     Removing anyhow v1.0.104
+RECORD [floor-1.96.0/F3.pick] cargo update --workspace diff stat: 1 file changed, 7 deletions(-)
+PASS [floor-1.96.0/F3] both unlocked commands produce the same lock change: 1 file changed, 7 deletions(-) == 1 file changed, 7 deletions(-)
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/F4] malformed member manifest: Cargo fails, its status propagates (validation could not complete) -> exit 101 (expected 101)
+    | error: key with no value, expected `=`
+    |   --> crates/cli/Cargo.toml:12:6
+    |    |
+    | 12 | this is not toml [
+    |    |      ^
+    | error: failed to load manifest for workspace member `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-f/crates/cli`
+    | referenced by workspace at `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-f/Cargo.toml`
+    | FAIL: Cargo lockfile validation could not complete for workspace .; see Cargo diagnostics above. For cache/network errors, fetch dependencies and retry.
+PASS [floor-1.96.0/F4] Cargo diagnostic preserved: output contains 'failed to load manifest'
+PASS [floor-1.96.0/F4] could-not-complete message, not out-of-date: output contains 'could not complete'
+PASS [floor-1.96.0/F4] no out-of-date verdict on a Cargo failure: output lacks 'out of date'
+PASS [floor-1.96.0/F4] Cargo.lock bytes unchanged: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ git commit -qm chore: malformed manifest
+PASS [floor-1.96.0/F4] malformed member manifest: git commit blocked -> exit 1 (expected 1)
+    | referenced by workspace at `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-f/Cargo.toml`
+    | FAIL: Cargo lockfile validation could not complete for workspace .; see Cargo diagnostics above. For cache/network errors, fetch dependencies and retry.
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/F5] manifest-level [patch.crates-io] at the top level (stub anyhow outside the repository): refused -> exit 1 (expected 1)
+    |      Locking 1 package to latest Rust 1.96 compatible version
+    |       Adding anyhow v1.0.104 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/stub-anyhow)
+    |     Removing anyhow v1.0.104
+    |  Cargo.lock | 2 --
+    |  1 file changed, 2 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/F5] Cargo names the change: output contains 'Adding anyhow v1.0.104 ('
+PASS [floor-1.96.0/F5] lock diff stat shown: output contains 'Cargo.lock | 2 --'
+PASS [floor-1.96.0/F5] Cargo.lock bytes unchanged after refusal: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ cargo update --workspace
+PASS [floor-1.96.0/F5] repair: cargo update --workspace -> exit 0 (expected 0)
+    |      Locking 1 package to latest Rust 1.96 compatible version
+    |       Adding anyhow v1.0.104 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/stub-anyhow)
+    |     Removing anyhow v1.0.104
+  $ git commit -qm chore: patch anyhow from a path
+PASS [floor-1.96.0/F5] patched manifest and lock both staged: git commit -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [floor-1.96.0/F5] --all after the patched commit -> exit 0 (expected 0)
+--- repo G: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-g
+  $ bash -c cd nested && cargo update --workspace
+PASS [floor-1.96.0/G0] setup: nested independent workspace (own [workspace] table) gets its own Cargo.lock -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96.0 compatible version
+  $ bash -c cd tools/standalone && cargo update --workspace
+PASS [floor-1.96.0/G0] setup: excluded standalone package gets its own Cargo.lock -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96.0 compatible version
+RECORD [floor-1.96.0/G0] tracked lockfiles: Cargo.lock nested/Cargo.lock tools/standalone/Cargo.lock vendored/foo/Cargo.lock ; exclude line: exclude = ["tools/standalone"]
+  $ /usr/bin/time -p git commit -qm chore: add nested, vendored, excluded and template manifests
+PASS [floor-1.96.0/G0] setup commit through the hook (three workspace roots, two skipped candidates) -> exit 0 (expected 0)
+    | note: 2 candidate manifest(s) skipped: Cargo does not treat them as workspace roots
+    | real 1.23
+    | user 0.26
+    | sys 0.27
+PASS [floor-1.96.0/G0] vendored non-member and template manifest skipped: output contains 'note: 2 candidate manifest(s) skipped'
+PASS [floor-1.96.0/G0] nested root resolved from its own directory: output contains 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-g/nested)'
+PASS [floor-1.96.0/G0] excluded standalone root resolved from its own directory: output contains 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-g/tools/standalone)'
+PASS [floor-1.96.0/G0] vendored package not resolved (locate-project only): output lacks 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-g/vendored/foo)'
+PASS [floor-1.96.0/G0] template manifest not resolved (locate-project only): output lacks 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-g/tmpl)'
+PASS [floor-1.96.0/G0] vendored candidate was asked, and rejected by, Cargo: output contains 'cargo locate-project --workspace --message-format plain --manifest-path vendored/foo/Cargo.toml'
+PASS [floor-1.96.0/G0] resolves run (update --workspace invocations): 3 == 3
+RECORD [floor-1.96.0/G0] guarded setup commit wall seconds real=1.23 (three roots resolved, four locate-project calls)
+  $ cargo update --workspace
+PASS [floor-1.96.0/G1a] revision-3 command from the top level: root-only cargo update --workspace passes -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+  $ git diff --quiet --no-ext-diff -- nested/Cargo.lock
+PASS [floor-1.96.0/G1a] nested Cargo.lock untouched by the root resolve (the false pass) -> exit 0 (expected 0)
+  $ bash -c cargo metadata --locked --format-version=1 >/dev/null
+PASS [floor-1.96.0/G1b] cargo metadata --locked from the top level passes the stale nested workspace -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/G1c] stale nested independent workspace (anyhow = "=1.0.100", lock at 1.0.104): direct check refuses -> exit 1 (expected 1)
+    | note: 2 candidate manifest(s) skipped: Cargo does not treat them as workspace roots
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96.0 compatible version
+    |  Downgrading anyhow v1.0.104 -> v1.0.100 (available: v1.0.104)
+    |      Locking 0 packages to latest Rust 1.96.0 compatible versions
+    |  nested/Cargo.lock | 4 ++--
+    |  1 file changed, 2 insertions(+), 2 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/G1c] Cargo names the change: output contains 'Downgrading anyhow'
+PASS [floor-1.96.0/G1c] nested lock diff stat shown: output contains 'nested/Cargo.lock |'
+PASS [floor-1.96.0/G1c] nested root resolved from its own directory: output contains 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-g/nested)'
+PASS [floor-1.96.0/G1c] nested Cargo.lock bytes unchanged after refusal (restored): 5e8692b19a4d9cbf55a64b52239bc4dcebe09c46ebe33aa9f90959f9103a15b7 == 5e8692b19a4d9cbf55a64b52239bc4dcebe09c46ebe33aa9f90959f9103a15b7
+  $ git commit -qm chore: pin anyhow in nested
+PASS [floor-1.96.0/G1d] stale nested workspace: git commit blocked -> exit 1 (expected 1)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/G1d] no commit was created (rev-list count): 2 == 2
+  $ bash -c cd nested && cargo update --workspace
+PASS [floor-1.96.0/G1e] repair in the nested workspace: cargo update --workspace -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96.0 compatible version
+    |  Downgrading anyhow v1.0.104 -> v1.0.100 (available: v1.0.104)
+RECORD [floor-1.96.0/G1e] 1 file changed, 2 insertions(+), 2 deletions(-)
+  $ git commit -qm chore: pin anyhow in nested
+PASS [floor-1.96.0/G1f] nested manifest and lock both staged: git commit -> exit 0 (expected 0)
+    | note: 2 candidate manifest(s) skipped: Cargo does not treat them as workspace roots
+PASS [floor-1.96.0/G1f] top-level root resolved from the top level: output contains 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-g)'
+PASS [floor-1.96.0/G1f] nested root resolved from its own directory: output contains 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-g/nested)'
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/G2] vendored non-member package with its own Cargo.lock: no false refusal -> exit 0 (expected 0)
+    | note: 2 candidate manifest(s) skipped: Cargo does not treat them as workspace roots
+PASS [floor-1.96.0/G2] vendored Cargo.lock bytes unchanged: 15e97abe5b1d5e432ecbfb6737ff5b4b4d37e18156d93ae3e6d043bcb5e7ed0f == 15e97abe5b1d5e432ecbfb6737ff5b4b4d37e18156d93ae3e6d043bcb5e7ed0f
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/G3] stale excluded standalone package: refused -> exit 1 (expected 1)
+    | note: 2 candidate manifest(s) skipped: Cargo does not treat them as workspace roots
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |      Locking 0 packages to latest Rust 1.96.0 compatible versions
+    | note: pass `--verbose` to see 1 unchanged dependencies behind latest
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96.0 compatible version
+    |  Downgrading anyhow v1.0.104 -> v1.0.100 (available: v1.0.104)
+    |  tools/standalone/Cargo.lock | 4 ++--
+    |  1 file changed, 2 insertions(+), 2 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/G3] standalone lock diff stat shown: output contains 'tools/standalone/Cargo.lock |'
+PASS [floor-1.96.0/G3] standalone Cargo.lock bytes unchanged after refusal (restored): fd5c6ad03b71419858e144ddb17d010344229f0d4e934fb4c54390838dfd6e68 == fd5c6ad03b71419858e144ddb17d010344229f0d4e934fb4c54390838dfd6e68
+--- repo H: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-h
+  $ bash -c cd nested && cargo update --workspace
+PASS [floor-1.96.0/H0] setup: nested independent workspace gets its own Cargo.lock -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96.0 compatible version
+  $ git commit -qm chore: add nested workspace
+PASS [floor-1.96.0/H0] setup commit through the hook -> exit 0 (expected 0)
+  $ cargo update --workspace --manifest-path nested/Cargo.toml
+PASS [floor-1.96.0/H1a] revision-4 resolve (top-level cwd, --manifest-path): passes the stale nested lock, config not applied -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96.0 compatible versions
+PASS [floor-1.96.0/H1a] nested Cargo.lock untouched by the top-level-cwd resolve (the false pass): 5e8692b19a4d9cbf55a64b52239bc4dcebe09c46ebe33aa9f90959f9103a15b7 == 5e8692b19a4d9cbf55a64b52239bc4dcebe09c46ebe33aa9f90959f9103a15b7
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/H1b] nested/.cargo/config.toml with [patch.crates-io] staged, nested lock in registry form: refused -> exit 1 (expected 1)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |      Locking 1 package to latest Rust 1.96.0 compatible version
+    |       Adding anyhow v1.0.104 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/stub-anyhow)
+    |     Removing anyhow v1.0.104
+    |  nested/Cargo.lock | 2 --
+    |  1 file changed, 2 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/H1b] Cargo names the change: output contains 'Adding anyhow v1.0.104 ('
+PASS [floor-1.96.0/H1b] nested lock diff stat shown: output contains 'nested/Cargo.lock | 2 --'
+PASS [floor-1.96.0/H1b] nested root resolved from its own directory: output contains 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-h/nested)'
+PASS [floor-1.96.0/H1b] nested Cargo.lock bytes unchanged after refusal (restored): 5e8692b19a4d9cbf55a64b52239bc4dcebe09c46ebe33aa9f90959f9103a15b7 == 5e8692b19a4d9cbf55a64b52239bc4dcebe09c46ebe33aa9f90959f9103a15b7
+  $ git commit -qm chore: patch anyhow in nested
+PASS [floor-1.96.0/H1c] stale state: git commit blocked -> exit 1 (expected 1)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [floor-1.96.0/H1c] no commit was created (rev-list count): 2 == 2
+  $ bash -c cd nested && cargo update --workspace
+PASS [floor-1.96.0/H2a] repair per remediation, in the nested directory -> exit 0 (expected 0)
+    |      Locking 1 package to latest Rust 1.96.0 compatible version
+    |       Adding anyhow v1.0.104 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/stub-anyhow)
+    |     Removing anyhow v1.0.104
+RECORD [floor-1.96.0/H2a] 1 file changed, 2 deletions(-); patched nested lock sha256=fc7c7ff08911f10cfea13a3a19a4e817dd02bfb1e8075dfe7216e6dff075e709
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/H2b] freshly-resolved state (config and patched lock staged): accepted -> exit 0 (expected 0)
+PASS [floor-1.96.0/H2b] nested root resolved from its own directory: output contains 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-h/nested)'
+PASS [floor-1.96.0/H2b] patched nested lock untouched: fc7c7ff08911f10cfea13a3a19a4e817dd02bfb1e8075dfe7216e6dff075e709 == fc7c7ff08911f10cfea13a3a19a4e817dd02bfb1e8075dfe7216e6dff075e709
+  $ git commit -qm chore: patch anyhow in nested
+PASS [floor-1.96.0/H2c] freshly-resolved state: git commit -> exit 0 (expected 0)
+  $ cargo update --workspace --manifest-path nested/Cargo.toml
+PASS [floor-1.96.0/H2d] revision-4 resolve on the committed patched state: config not applied, lock rewritten (the false refusal) -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96.0 compatible version
+    |       Adding anyhow v1.0.104
+RECORD [floor-1.96.0/H2d] 1 file changed, 2 insertions(+)
+PASS [floor-1.96.0/H2d] top-level-cwd resolve changed the patched nested lock: changed == changed
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [floor-1.96.0/H2e] --all on the committed patched state -> exit 0 (expected 0)
+  $ bash -c cd ignored && cargo update --workspace
+PASS [floor-1.96.0/H3] setup: nested root whose Cargo.lock is Git-ignored -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96.0 compatible version
+  $ git commit -qm chore: add a workspace with an ignored lockfile
+PASS [floor-1.96.0/H3a] setup commit through the hook -> exit 0 (expected 0)
+    | note: ignored/Cargo.lock is Git-ignored; that workspace is not checked
+PASS [floor-1.96.0/H3a] ignored-lock note: output contains 'ignored/Cargo.lock is Git-ignored; that workspace is not checked'
+PASS [floor-1.96.0/H3a] ignored root not resolved: output lacks 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/repo-h/ignored)'
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/H3b] stale manifest of the ignored-lock workspace: passes vacuously (no lockfile in the repository) -> exit 0 (expected 0)
+    | note: ignored/Cargo.lock is Git-ignored; that workspace is not checked
+PASS [floor-1.96.0/H3b] ignored Cargo.lock bytes unchanged on disk (no resolve ran, nothing written): 8322ce7d8fbfe71fcb34e1ccd36b19d1f84a1d5bf3fec79b2c472797762d08fb == 8322ce7d8fbfe71fcb34e1ccd36b19d1f84a1d5bf3fec79b2c472797762d08fb
+  $ bash scripts/check-cargo-lock.sh
+PASS [floor-1.96.0/H4a] crates/cli/.cargo/config.toml with [patch.crates-io] (below the root): not applied, passes with a note -> exit 0 (expected 0)
+    | note: Cargo config below a workspace root is not applied by this check (Cargo reads it only for commands run inside that directory): crates/cli/.cargo/config.toml
+    | note: ignored/Cargo.lock is Git-ignored; that workspace is not checked
+PASS [floor-1.96.0/H4a] unapplied-config note names the file: output contains 'not applied by this check (Cargo reads it only for commands run inside that directory): crates/cli/.cargo/config.toml'
+PASS [floor-1.96.0/H4a] root Cargo.lock bytes unchanged: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash -c cd crates/cli && cargo update --workspace
+PASS [floor-1.96.0/H4b] disclosed limit: the same resolve run inside crates/cli applies the config and rewrites the root lock -> exit 0 (expected 0)
+    |      Locking 1 package to latest Rust 1.96 compatible version
+    |       Adding anyhow v1.0.104 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/floor-1.96.0/stub-anyhow)
+    |     Removing anyhow v1.0.104
+RECORD [floor-1.96.0/H4b] 1 file changed, 2 deletions(-)
+PASS [floor-1.96.0/H4b] root Cargo.lock changed by the in-member resolve: changed == changed
+=== toolchain floor-1.96.0 finished 2026-09-10T01:09:50Z ===
+
+=== toolchain stable-1.98.0-homebrew (PATH prefix: <none>) started 2026-09-10T01:09:50Z ===
+cargo: /opt/homebrew/bin/cargo -> cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+rustc: /opt/homebrew/bin/rustc -> rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+CARGO_HOME: <unset: default ~/.cargo>
+--- repo A: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-a
+RECORD [stable-1.98.0-homebrew/A0] core.hooksPath in repo A = '' (empty: .git/hooks/pre-commit is used)
+  $ bash -c /usr/bin/time -p cargo metadata --locked --format-version=1 >/dev/null
+PASS [stable-1.98.0-homebrew/A1] clean committed tree: cargo metadata --locked --format-version=1 (revision-2 command, control) -> exit 0 (expected 0)
+    | real 0.24
+    | user 0.05
+    | sys 0.05
+RECORD [stable-1.98.0-homebrew/A1] warm direct locked metadata wall seconds real=0.24
+  $ bash -c /usr/bin/time -p cargo update --workspace
+PASS [stable-1.98.0-homebrew/A1b] clean committed tree: cargo update --workspace (recommended resolve) -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    | real 0.08
+    | user 0.03
+    | sys 0.02
+RECORD [stable-1.98.0-homebrew/A1b] warm direct recommended resolve wall seconds real=0.08
+  $ git diff --quiet --no-ext-diff -- Cargo.lock
+PASS [stable-1.98.0-homebrew/A1b] fresh lock not rewritten by the unlocked resolve (git diff --quiet -- Cargo.lock) -> exit 0 (expected 0)
+PASS [stable-1.98.0-homebrew/A1b] Cargo.lock bytes unchanged: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ /usr/bin/time -p git commit -qm chore: member manifest comment 1
+PASS [stable-1.98.0-homebrew/A2.1] staged member-manifest comment: git commit through pre-commit hook -> exit 0 (expected 0)
+    | real 1.29
+    | user 0.08
+    | sys 0.08
+PASS [stable-1.98.0-homebrew/A2.1] hook ran the recommended command: output contains 'cargo update --workspace'
+RECORD [stable-1.98.0-homebrew/A2.1] warm guarded commit wall seconds real=1.29
+  $ /usr/bin/time -p git commit -qm chore: member manifest comment 2
+PASS [stable-1.98.0-homebrew/A2.2] staged member-manifest comment: git commit through pre-commit hook -> exit 0 (expected 0)
+    | real 0.15
+    | user 0.06
+    | sys 0.06
+PASS [stable-1.98.0-homebrew/A2.2] hook ran the recommended command: output contains 'cargo update --workspace'
+RECORD [stable-1.98.0-homebrew/A2.2] warm guarded commit wall seconds real=0.15
+  $ /usr/bin/time -p git commit -qm chore: member manifest comment 3
+PASS [stable-1.98.0-homebrew/A2.3] staged member-manifest comment: git commit through pre-commit hook -> exit 0 (expected 0)
+    | real 0.15
+    | user 0.06
+    | sys 0.06
+PASS [stable-1.98.0-homebrew/A2.3] hook ran the recommended command: output contains 'cargo update --workspace'
+RECORD [stable-1.98.0-homebrew/A2.3] warm guarded commit wall seconds real=0.15
+  $ git commit -qm chore: root manifest comment
+PASS [stable-1.98.0-homebrew/A3] staged root-manifest comment: git commit -> exit 0 (expected 0)
+PASS [stable-1.98.0-homebrew/A3] root manifest triggers Cargo: output contains 'cargo update --workspace'
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [stable-1.98.0-homebrew/A4] --all on a clean committed tree with nothing staged -> exit 0 (expected 0)
+PASS [stable-1.98.0-homebrew/A4] --all invoked Cargo unconditionally: output contains 'cargo update --workspace'
+PASS [stable-1.98.0-homebrew/A4] single-workspace repository: no locate-project call: output lacks 'cargo locate-project'
+  $ bash -c /usr/bin/time -p bash scripts/check-cargo-lock.sh --all
+PASS [stable-1.98.0-homebrew/A4b] --all on the clean tree, whole script timed (discovery + resolve + compare) -> exit 0 (expected 0)
+    | real 0.19
+    | user 0.09
+    | sys 0.08
+RECORD [stable-1.98.0-homebrew/A4b] warm whole-script --all wall seconds real=0.19
+  $ bash -c CARGO_HOME="$1" /usr/bin/time -p cargo metadata --locked --format-version=1 >/dev/null _ /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/cold-home
+PASS [stable-1.98.0-homebrew/A5] cold empty CARGO_HOME (registry index + crate fetch): cargo metadata --locked (control) -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |  Downloading crates ...
+    |   Downloaded anyhow v1.0.104
+    | real 0.16
+    | user 0.04
+    | sys 0.03
+RECORD [stable-1.98.0-homebrew/A5] cold direct locked metadata wall seconds real=0.16
+  $ bash -c CARGO_HOME="$1" /usr/bin/time -p cargo update --workspace _ /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/cold-home-update
+PASS [stable-1.98.0-homebrew/A5b] cold empty CARGO_HOME: cargo update --workspace (recommended resolve; index only) -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    | real 0.17
+    | user 0.02
+    | sys 0.01
+RECORD [stable-1.98.0-homebrew/A5b] cold direct recommended resolve wall seconds real=0.17; crate archives fetched into the cold home: 0 (locked metadata control fetched: 1)
+PASS [stable-1.98.0-homebrew/A5b] Cargo.lock bytes unchanged after the cold resolve: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash -c /usr/bin/time -p cargo check --workspace --all-targets --locked
+PASS [stable-1.98.0-homebrew/A6] cargo check --workspace --all-targets --locked at this toolchain (rust-version = "1.96") -> exit 0 (expected 0)
+    |     Checking r41-web v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-a/crates/web)
+    |     Checking r41-cli v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-a/crates/cli)
+    |     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.97s
+    | real 0.98
+    | user 0.39
+    | sys 0.32
+RECORD [stable-1.98.0-homebrew/A6] locked check wall seconds real=0.98
+  $ git commit -qm chore: add resolution-neutral .cargo/config.toml
+PASS [stable-1.98.0-homebrew/A7] staged .cargo/config.toml (resolution-neutral key): git commit -> exit 0 (expected 0)
+PASS [stable-1.98.0-homebrew/A7] .cargo/config.toml triggers Cargo: output contains 'cargo update --workspace'
+--- repo B: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-b
+RECORD [stable-1.98.0-homebrew/B0] committed Cargo.lock sha256=3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/B1] stale: staged manifest adds serde_json, Cargo.lock untouched: direct check -> exit 1 (expected 1)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+    |  Cargo.lock | 98 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    |  1 file changed, 98 insertions(+)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/B1] Cargo's own resolve summary shown: output contains 'Adding serde_json'
+PASS [stable-1.98.0-homebrew/B1] lock diff stat shown: output contains 'Cargo.lock |'
+PASS [stable-1.98.0-homebrew/B1] remediation message present: output contains 'out of date'
+PASS [stable-1.98.0-homebrew/B1] hook ran the recommended command: output contains 'cargo update --workspace'
+PASS [stable-1.98.0-homebrew/B1] Cargo.lock bytes unchanged after refusal (restored): 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ /usr/bin/time -p git commit -qm feat(core): add serde_json (stale lock)
+PASS [stable-1.98.0-homebrew/B2] stale: git commit blocked by pre-commit hook -> exit 1 (expected 1)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+    |  Cargo.lock | 98 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    |  1 file changed, 98 insertions(+)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+    | real 0.80
+    | user 0.09
+    | sys 0.07
+PASS [stable-1.98.0-homebrew/B2] Cargo.lock bytes unchanged after blocked commit: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+PASS [stable-1.98.0-homebrew/B2] no commit was created (rev-list count): 1 == 1
+RECORD [stable-1.98.0-homebrew/B2] blocked commit wall seconds real=0.80
+  $ bash -c cargo metadata --locked --no-deps --format-version=1 >/dev/null
+PASS [stable-1.98.0-homebrew/B3a] false-pass control: --no-deps on the stale tree returns success -> exit 0 (expected 0)
+  $ cargo update --locked --dry-run
+PASS [stable-1.98.0-homebrew/B3b] false-pass control: cargo update --locked --dry-run on the stale tree returns success -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+    | warning: not updating lockfile due to dry run
+  $ cargo check --workspace --locked
+PASS [stable-1.98.0-homebrew/B3c] runner-up (locked compile): cargo check --workspace --locked on the stale tree -> exit 101 (expected 101)
+    |     Updating crates.io index
+    | error: cannot update the lock file /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-b/Cargo.lock because --locked was passed to prevent this
+    | help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+  $ cargo update --workspace --locked
+PASS [stable-1.98.0-homebrew/B3d] locked form of the recommended command: cargo update --workspace --locked on the stale tree -> exit 101 (expected 101)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+    | error: cannot update the lock file /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-b/Cargo.lock because --locked was passed to prevent this
+    | help: to generate the lock file without accessing the network, remove the --locked flag and use --offline instead.
+PASS [stable-1.98.0-homebrew/B3] Cargo.lock bytes unchanged after all controls and probes: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash -c cargo metadata --format-version=1 >/dev/null
+PASS [stable-1.98.0-homebrew/B3e] alternative: unlocked cargo metadata --format-version=1 rewrites the lock -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+RECORD [stable-1.98.0-homebrew/B3e] unlocked metadata diff stat: 1 file changed, 98 insertions(+); sha256=1c006eedb946698f166e8f298d9997885dd04992724895d13927581f89119125
+PASS [stable-1.98.0-homebrew/B3e] lock restored from the index: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ cargo update --workspace
+PASS [stable-1.98.0-homebrew/B4] repair per remediation: cargo update --workspace rewrites Cargo.lock -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+PASS [stable-1.98.0-homebrew/B4] Cargo.lock changed by the repair: changed == changed
+RECORD [stable-1.98.0-homebrew/B4] repaired Cargo.lock sha256=1c006eedb946698f166e8f298d9997885dd04992724895d13927581f89119125; 1 file changed, 98 insertions(+)
+PASS [stable-1.98.0-homebrew/B4] repair diff stat equals the unlocked-metadata alternative's: 1 file changed, 98 insertions(+) == 1 file changed, 98 insertions(+)
+  $ bash -c cargo metadata --locked --format-version=1 >/dev/null
+PASS [stable-1.98.0-homebrew/B5a] hazard: bare cargo metadata --locked passes while the repaired lock is unstaged -> exit 0 (expected 0)
+  $ cargo update --workspace
+PASS [stable-1.98.0-homebrew/B5a2] hazard is command-independent: bare cargo update --workspace also passes with the repaired lock unstaged -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+PASS [stable-1.98.0-homebrew/B5a2] repaired lock untouched by the bare resolve: 1c006eedb946698f166e8f298d9997885dd04992724895d13927581f89119125 == 1c006eedb946698f166e8f298d9997885dd04992724895d13927581f89119125
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/B5b] parity guard: repaired lock unstaged -> check refuses before Cargo -> exit 1 (expected 1)
+    | FAIL: Cargo resolution inputs differ from the index. Stage the intended manifests, config and lockfile together, or restore the unstaged edits.
+PASS [stable-1.98.0-homebrew/B5b] parity message: output contains 'differ from the index'
+PASS [stable-1.98.0-homebrew/B5b] Cargo not invoked (spy log bytes): 0 == 0
+  $ git commit -qm feat(core): add serde_json (lock unstaged)
+PASS [stable-1.98.0-homebrew/B5c] parity guard: git commit blocked -> exit 1 (expected 1)
+    | FAIL: Cargo resolution inputs differ from the index. Stage the intended manifests, config and lockfile together, or restore the unstaged edits.
+  $ /usr/bin/time -p git commit -qm feat(core): add serde_json
+PASS [stable-1.98.0-homebrew/B6] repaired manifest and lockfile both staged: git commit -> exit 0 (expected 0)
+    | real 0.17
+    | user 0.08
+    | sys 0.07
+PASS [stable-1.98.0-homebrew/B6] hook ran Cargo on the repaired commit: output contains 'cargo update --workspace'
+RECORD [stable-1.98.0-homebrew/B6] repaired commit wall seconds real=0.17; serde_json entries in Cargo.lock: 1
+  $ cargo update --workspace
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/B7a] reverse parity: staged lockfile with unstaged member manifest -> refused -> exit 1 (expected 1)
+    | FAIL: Cargo resolution inputs differ from the index. Stage the intended manifests, config and lockfile together, or restore the unstaged edits.
+  $ git commit -qm chore: lockfile only
+PASS [stable-1.98.0-homebrew/B7b] reverse parity: git commit blocked -> exit 1 (expected 1)
+    | FAIL: Cargo resolution inputs differ from the index. Stage the intended manifests, config and lockfile together, or restore the unstaged edits.
+--- repo C: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-c
+  $ env CARGO_BIN=/nonexistent/r41-cargo /usr/bin/time -p git commit -qm docs: unrelated
+PASS [stable-1.98.0-homebrew/C1] unrelated staged file, CARGO_BIN=/nonexistent: commit succeeds without Cargo -> exit 0 (expected 0)
+    | SKIP: no staged Cargo resolution inputs
+    | real 0.49
+    | user 0.01
+    | sys 0.02
+PASS [stable-1.98.0-homebrew/C1] skip diagnostic: output contains 'SKIP: no staged Cargo resolution inputs'
+RECORD [stable-1.98.0-homebrew/C1] skip commit wall seconds real=0.49
+  $ git commit -q --no-verify -m feat(core): add serde_json bypassing the hook
+PASS [stable-1.98.0-homebrew/C2a] git commit --no-verify commits a stale lock -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/C2b] clean index, stale committed lock: default mode skips (nothing staged) -> exit 0 (expected 0)
+    | SKIP: no staged Cargo resolution inputs
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [stable-1.98.0-homebrew/C2c] clean index, stale committed lock: --all catches it -> exit 1 (expected 1)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+    |  Cargo.lock | 98 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    |  1 file changed, 98 insertions(+)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/C2c] out-of-date message: output contains 'out of date'
+PASS [stable-1.98.0-homebrew/C2c] committed lock left unchanged on disk (restored): 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/C3] untracked Cargo.toml elsewhere in the repo -> refused before Cargo -> exit 1 (expected 1)
+    | FAIL: untracked Cargo resolution inputs exist. Stage the intended inputs or move unrelated inputs outside this workspace.
+PASS [stable-1.98.0-homebrew/C3] untracked message: output contains 'untracked Cargo resolution inputs'
+--- repo D: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-d
+  $ cargo package -p r41-core --locked
+PASS [stable-1.98.0-homebrew/D1] cargo package -p r41-core --locked on the clean committed tree (default verification) -> exit 0 (expected 0)
+    |     Packaged 5 files, 1.3KiB (948B compressed)
+    |    Verifying r41-core v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-d/crates/core)
+    |    Compiling r41-core v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-d/target/package/r41-core-0.1.0)
+    |     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.14s
+RECORD [stable-1.98.0-homebrew/D1] Cargo files under target/package: target/package/r41-core-0.1.0/Cargo.lock target/package/r41-core-0.1.0/Cargo.toml target/package/r41-core-0.1.0/Cargo.toml.orig 
+PASS [stable-1.98.0-homebrew/D1] package output is Git-ignored (git status --short line count): 0 == 0
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [stable-1.98.0-homebrew/D2] --all on a clean index with target/package present -> exit 0 (expected 0)
+PASS [stable-1.98.0-homebrew/D2] --all reached Cargo: output contains 'cargo update --workspace'
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/D3a] staged manifest comment with target/package present: direct check -> exit 0 (expected 0)
+  $ git commit -qm chore: manifest comment after cargo package
+PASS [stable-1.98.0-homebrew/D3b] staged manifest comment with target/package present: git commit -> exit 0 (expected 0)
+PASS [stable-1.98.0-homebrew/D3b] hook reached Cargo: output contains 'cargo update --workspace'
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/D4] stale manifest with target/package present: still refused -> exit 1 (expected 1)
+    |     Updating crates.io index
+    |      Locking 11 packages to latest Rust 1.96 compatible versions
+    |       Adding itoa v1.0.18
+    |       Adding memchr v2.8.3
+    |       Adding proc-macro2 v1.0.107
+    |       Adding quote v1.0.47
+    |       Adding serde v1.0.229
+    |       Adding serde_core v1.0.229
+    |       Adding serde_derive v1.0.229
+    |       Adding serde_json v1.0.151
+    |       Adding syn v3.0.5
+    |       Adding unicode-ident v1.0.24
+    |       Adding zmij v1.0.23
+    |  Cargo.lock | 98 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+    |  1 file changed, 98 insertions(+)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/D4] refusal came from the lock comparison, not from the untracked scan: output contains 'out of date'
+PASS [stable-1.98.0-homebrew/D4] no untracked-input refusal: output lacks 'untracked Cargo resolution inputs'
+--- repo E: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-e
+PASS [stable-1.98.0-homebrew/E0] committed lock carries the r41-web entry: 1 == 1
+RECORD [stable-1.98.0-homebrew/E0] staged: 1 file changed, 1 insertion(+), 1 deletion(-); members now: members = ["crates/core", "crates/cli"]
+  $ bash -c cargo metadata --locked --format-version=1 >/dev/null
+PASS [stable-1.98.0-homebrew/E1a] revision-2 command: cargo metadata --locked passes the orphan lock entry (false pass) -> exit 0 (expected 0)
+  $ cargo update --workspace --locked
+PASS [stable-1.98.0-homebrew/E1b] cargo update --workspace --locked passes the orphan (false pass) -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+  $ cargo generate-lockfile --locked
+RECORD [stable-1.98.0-homebrew/E1c] cargo generate-lockfile --locked on the orphan tree -> exit 0 (0 = false pass; 101 would mean only that a newer registry version exists, since this command re-resolves to latest)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96 compatible version
+  $ cargo check --workspace --locked
+PASS [stable-1.98.0-homebrew/E1d] cargo check --workspace --locked passes the orphan (false pass) -> exit 0 (expected 0)
+    |     Checking r41-cli v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-e/crates/cli)
+    |     Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.58s
+PASS [stable-1.98.0-homebrew/E1] Cargo.lock bytes unchanged after the four --locked probes: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/E1e] leaf member removed (members list only): direct check refuses -> exit 1 (expected 1)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |  Cargo.lock | 7 -------
+    |  1 file changed, 7 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/E1e] out-of-date message: output contains 'out of date'
+PASS [stable-1.98.0-homebrew/E1e] lock diff stat shown: output contains 'Cargo.lock |'
+PASS [stable-1.98.0-homebrew/E1e] hook ran the recommended command: output contains 'cargo update --workspace'
+PASS [stable-1.98.0-homebrew/E1e] Cargo.lock bytes unchanged after refusal (restored): 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ /usr/bin/time -p git commit -qm refactor: drop the web member
+PASS [stable-1.98.0-homebrew/E1f] leaf member removed: git commit blocked by pre-commit hook -> exit 1 (expected 1)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |  Cargo.lock | 7 -------
+    |  1 file changed, 7 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+    | real 0.62
+    | user 0.06
+    | sys 0.06
+PASS [stable-1.98.0-homebrew/E1f] no commit was created (rev-list count): 1 == 1
+PASS [stable-1.98.0-homebrew/E1f] Cargo.lock bytes unchanged after blocked commit: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+RECORD [stable-1.98.0-homebrew/E1f] blocked commit wall seconds real=0.62
+  $ bash -c cargo metadata --format-version=1 >/dev/null
+PASS [stable-1.98.0-homebrew/E1g.alt] alternative: unlocked cargo metadata --format-version=1 rewrites the lock -> exit 0 (expected 0)
+RECORD [stable-1.98.0-homebrew/E1g.alt] unlocked metadata diff stat: 1 file changed, 7 deletions(-)
+  $ cargo update --workspace
+PASS [stable-1.98.0-homebrew/E1g.pick] recommended: cargo update --workspace rewrites the lock -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+RECORD [stable-1.98.0-homebrew/E1g.pick] cargo update --workspace diff stat: 1 file changed, 7 deletions(-)
+PASS [stable-1.98.0-homebrew/E1g] both unlocked commands produce the same lock change: 1 file changed, 7 deletions(-) == 1 file changed, 7 deletions(-)
+  $ cargo update --workspace
+PASS [stable-1.98.0-homebrew/E1h] repair per remediation: cargo update --workspace prunes the orphan -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+RECORD [stable-1.98.0-homebrew/E1h] repaired Cargo.lock sha256=8879701a9e262f199c4854f6a287b25390fea2fecfbd431f8a824b4c6e61f3aa; 1 file changed, 7 deletions(-)
+PASS [stable-1.98.0-homebrew/E1h] orphan r41-web entry gone from the repaired lock: 0 == 0
+  $ /usr/bin/time -p git commit -qm refactor: drop the web member
+PASS [stable-1.98.0-homebrew/E1i] manifest and pruned lock both staged: git commit -> exit 0 (expected 0)
+    | real 0.13
+    | user 0.05
+    | sys 0.05
+PASS [stable-1.98.0-homebrew/E1i] hook ran Cargo on the repaired commit: output contains 'cargo update --workspace'
+RECORD [stable-1.98.0-homebrew/E1i] repaired commit wall seconds real=0.13
+--- repo E2: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-e2
+RECORD [stable-1.98.0-homebrew/E2.0] staged (name-status): M Cargo.toml;D crates/web/Cargo.toml;D crates/web/src/main.rs;
+  $ bash -c cargo metadata --locked --format-version=1 >/dev/null
+PASS [stable-1.98.0-homebrew/E2a] revision-2 command: cargo metadata --locked passes with the member deleted (false pass) -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/E2b] member deleted with git rm: direct check refuses (trigger sees the staged deletion) -> exit 1 (expected 1)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |  Cargo.lock | 7 -------
+    |  1 file changed, 7 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/E2b] out-of-date message: output contains 'out of date'
+PASS [stable-1.98.0-homebrew/E2b] trigger did not skip: output lacks 'SKIP'
+PASS [stable-1.98.0-homebrew/E2b] Cargo.lock bytes unchanged after refusal (restored): 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ git commit -qm refactor: delete the web member
+PASS [stable-1.98.0-homebrew/E2c] member deleted with git rm: git commit blocked -> exit 1 (expected 1)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |  Cargo.lock | 7 -------
+    |  1 file changed, 7 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/E2c] no commit was created (rev-list count): 1 == 1
+  $ cargo update --workspace
+PASS [stable-1.98.0-homebrew/E2d] repair: cargo update --workspace -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+  $ git commit -qm refactor: delete the web member
+PASS [stable-1.98.0-homebrew/E2e] manifest, deletions and pruned lock all staged: git commit -> exit 0 (expected 0)
+PASS [stable-1.98.0-homebrew/E2e] hook ran Cargo on the repaired commit: output contains 'cargo update --workspace'
+PASS [stable-1.98.0-homebrew/E2e] crates/web no longer in the tree: absent == absent
+PASS [stable-1.98.0-homebrew/E2e] orphan r41-web entry gone from the committed lock: 0 == 0
+--- repo E3: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-e3
+  $ git commit -q --no-verify -m refactor: drop the web member bypassing the hook
+PASS [stable-1.98.0-homebrew/E3a] git commit --no-verify commits the orphan lock entry -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/E3b] clean index, committed orphan: default mode skips (nothing staged) -> exit 0 (expected 0)
+    | SKIP: no staged Cargo resolution inputs
+  $ bash -c cargo metadata --locked --format-version=1 >/dev/null
+PASS [stable-1.98.0-homebrew/E3c] revision-2 CI command: cargo metadata --locked passes the committed orphan (false pass) -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [stable-1.98.0-homebrew/E3c2] clean index, committed orphan: --all catches it -> exit 1 (expected 1)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |  Cargo.lock | 7 -------
+    |  1 file changed, 7 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/E3c2] out-of-date message: output contains 'out of date'
+PASS [stable-1.98.0-homebrew/E3c2] committed lock left unchanged on disk (restored): 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ cargo update --workspace
+PASS [stable-1.98.0-homebrew/E3d] lock-only repair: cargo update --workspace prunes the committed orphan -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+RECORD [stable-1.98.0-homebrew/E3d] 1 file changed, 7 deletions(-)
+  $ git commit -qm chore: prune Cargo.lock
+PASS [stable-1.98.0-homebrew/E3d] lock-only repair commit is accepted (it is the repair, not churn past the hook) -> exit 0 (expected 0)
+PASS [stable-1.98.0-homebrew/E3d] hook ran Cargo on the lock-only commit: output contains 'cargo update --workspace'
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [stable-1.98.0-homebrew/E3e] --all after the repair commit -> exit 0 (expected 0)
+  $ bash -c cargo metadata --locked --format-version=1 >/dev/null
+PASS [stable-1.98.0-homebrew/E4a] normalization: lock with an extra trailing blank line passes --locked (parsed resolves equal) -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/E4b] normalization: the script refuses it (Cargo would rewrite the file) -> exit 1 (expected 1)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |  Cargo.lock | 1 -
+    |  1 file changed, 1 deletion(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/E4b] one-line stat: output contains '1 deletion(-)'
+PASS [stable-1.98.0-homebrew/E4b] staged lock bytes unchanged after refusal (restored from the index): 489593d66fecf3a99ceebbfe45867c1ffcf997902d446d6d7ced8cca9dfccb09 == 489593d66fecf3a99ceebbfe45867c1ffcf997902d446d6d7ced8cca9dfccb09
+PASS [stable-1.98.0-homebrew/E5] lockfile rewritten to version = 3 and staged: 1 == 1
+  $ git commit -qm chore: lockfile version 3
+PASS [stable-1.98.0-homebrew/E5] version = 3 lockfile on a fresh graph: git commit (no false refusal from format migration) -> exit 0 (expected 0)
+PASS [stable-1.98.0-homebrew/E5] hook ran Cargo: output contains 'cargo update --workspace'
+PASS [stable-1.98.0-homebrew/E5] version line preserved after the guarded commit: 1 == 1
+  $ git commit -q --no-verify -m chore: drop Cargo.lock bypassing the hook
+PASS [stable-1.98.0-homebrew/E6] no Cargo.lock in the repository (removed with --no-verify) -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/E6a] staged manifest with no lockfile: the resolve would create Cargo.lock -> refused -> exit 1 (expected 1)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96 compatible version
+    | would create: Cargo.lock
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/E6a] created-lock message: output contains 'would create: Cargo.lock'
+PASS [stable-1.98.0-homebrew/E6a] created Cargo.lock removed again: absent == absent
+PASS [stable-1.98.0-homebrew/E6a] worktree otherwise untouched (git status --short): M  Cargo.toml; == M  Cargo.toml;
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [stable-1.98.0-homebrew/E6b] --all with no lockfile in the repository -> refused -> exit 1 (expected 1)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96 compatible version
+    | would create: Cargo.lock
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/E6b] created Cargo.lock removed again: absent == absent
+--- repo F: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-f
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/F1] requirement change anyhow = "=1.0.100" (locked 1.0.104): refused -> exit 1 (expected 1)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96 compatible version
+    |  Downgrading anyhow v1.0.104 -> v1.0.100 (available: v1.0.104)
+    |  Cargo.lock | 4 ++--
+    |  1 file changed, 2 insertions(+), 2 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/F1] Cargo names the change: output contains 'Downgrading anyhow'
+PASS [stable-1.98.0-homebrew/F1] Cargo.lock bytes unchanged after refusal: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash -c cargo metadata --format-version=1 >/dev/null
+PASS [stable-1.98.0-homebrew/F1.alt] alternative: unlocked cargo metadata --format-version=1 rewrites the lock -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96 compatible version
+    |  Downgrading anyhow v1.0.104 -> v1.0.100 (available: v1.0.104)
+RECORD [stable-1.98.0-homebrew/F1.alt] unlocked metadata diff stat: 1 file changed, 2 insertions(+), 2 deletions(-)
+  $ cargo update --workspace
+PASS [stable-1.98.0-homebrew/F1.pick] recommended: cargo update --workspace rewrites the lock -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.96 compatible version
+    |  Downgrading anyhow v1.0.104 -> v1.0.100 (available: v1.0.104)
+RECORD [stable-1.98.0-homebrew/F1.pick] cargo update --workspace diff stat: 1 file changed, 2 insertions(+), 2 deletions(-)
+PASS [stable-1.98.0-homebrew/F1] both unlocked commands produce the same lock change: 1 file changed, 2 insertions(+), 2 deletions(-) == 1 file changed, 2 insertions(+), 2 deletions(-)
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/F2] workspace.package version bump 0.1.0 -> 0.2.0 (R23 case): refused -> exit 1 (expected 1)
+    |      Locking 3 packages to latest Rust 1.96 compatible versions
+    |     Updating r41-cli v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-f/crates/cli) -> v0.2.0
+    |     Updating r41-core v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-f/crates/core) -> v0.2.0
+    |     Updating r41-web v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-f/crates/web) -> v0.2.0
+    |  Cargo.lock | 6 +++---
+    |  1 file changed, 3 insertions(+), 3 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/F2] Cargo names the change: output contains 'Updating r41-core'
+PASS [stable-1.98.0-homebrew/F2] Cargo.lock bytes unchanged after refusal: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash -c cargo metadata --format-version=1 >/dev/null
+PASS [stable-1.98.0-homebrew/F2.alt] alternative: unlocked cargo metadata --format-version=1 rewrites the lock -> exit 0 (expected 0)
+RECORD [stable-1.98.0-homebrew/F2.alt] unlocked metadata diff stat: 1 file changed, 3 insertions(+), 3 deletions(-)
+  $ cargo update --workspace
+PASS [stable-1.98.0-homebrew/F2.pick] recommended: cargo update --workspace rewrites the lock -> exit 0 (expected 0)
+    |      Locking 3 packages to latest Rust 1.96 compatible versions
+    |     Updating r41-cli v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-f/crates/cli) -> v0.2.0
+    |     Updating r41-core v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-f/crates/core) -> v0.2.0
+    |     Updating r41-web v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-f/crates/web) -> v0.2.0
+RECORD [stable-1.98.0-homebrew/F2.pick] cargo update --workspace diff stat: 1 file changed, 3 insertions(+), 3 deletions(-)
+PASS [stable-1.98.0-homebrew/F2] both unlocked commands produce the same lock change: 1 file changed, 3 insertions(+), 3 deletions(-) == 1 file changed, 3 insertions(+), 3 deletions(-)
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/F3] registry edge anyhow removed from crates/cli: refused -> exit 1 (expected 1)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |     Removing anyhow v1.0.104
+    |  Cargo.lock | 7 -------
+    |  1 file changed, 7 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/F3] Cargo names the change: output contains 'Removing anyhow'
+PASS [stable-1.98.0-homebrew/F3] Cargo.lock bytes unchanged after refusal: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash -c cargo metadata --format-version=1 >/dev/null
+PASS [stable-1.98.0-homebrew/F3.alt] alternative: unlocked cargo metadata --format-version=1 rewrites the lock -> exit 0 (expected 0)
+RECORD [stable-1.98.0-homebrew/F3.alt] unlocked metadata diff stat: 1 file changed, 7 deletions(-)
+  $ cargo update --workspace
+PASS [stable-1.98.0-homebrew/F3.pick] recommended: cargo update --workspace rewrites the lock -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |     Removing anyhow v1.0.104
+RECORD [stable-1.98.0-homebrew/F3.pick] cargo update --workspace diff stat: 1 file changed, 7 deletions(-)
+PASS [stable-1.98.0-homebrew/F3] both unlocked commands produce the same lock change: 1 file changed, 7 deletions(-) == 1 file changed, 7 deletions(-)
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/F4] malformed member manifest: Cargo fails, its status propagates (validation could not complete) -> exit 101 (expected 101)
+    | error: key with no value, expected `=`
+    |   --> crates/cli/Cargo.toml:12:6
+    |    |
+    | 12 | this is not toml [
+    |    |      ^
+    | error: failed to load manifest for workspace member `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-f/crates/cli`
+    | referenced by workspace at `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-f/Cargo.toml`
+    | FAIL: Cargo lockfile validation could not complete for workspace .; see Cargo diagnostics above. For cache/network errors, fetch dependencies and retry.
+PASS [stable-1.98.0-homebrew/F4] Cargo diagnostic preserved: output contains 'failed to load manifest'
+PASS [stable-1.98.0-homebrew/F4] could-not-complete message, not out-of-date: output contains 'could not complete'
+PASS [stable-1.98.0-homebrew/F4] no out-of-date verdict on a Cargo failure: output lacks 'out of date'
+PASS [stable-1.98.0-homebrew/F4] Cargo.lock bytes unchanged: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ git commit -qm chore: malformed manifest
+PASS [stable-1.98.0-homebrew/F4] malformed member manifest: git commit blocked -> exit 1 (expected 1)
+    | referenced by workspace at `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-f/Cargo.toml`
+    | FAIL: Cargo lockfile validation could not complete for workspace .; see Cargo diagnostics above. For cache/network errors, fetch dependencies and retry.
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/F5] manifest-level [patch.crates-io] at the top level (stub anyhow outside the repository): refused -> exit 1 (expected 1)
+    |      Locking 1 package to latest Rust 1.96 compatible version
+    |       Adding anyhow v1.0.104 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/stub-anyhow)
+    |     Removing anyhow v1.0.104
+    |  Cargo.lock | 2 --
+    |  1 file changed, 2 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/F5] Cargo names the change: output contains 'Adding anyhow v1.0.104 ('
+PASS [stable-1.98.0-homebrew/F5] lock diff stat shown: output contains 'Cargo.lock | 2 --'
+PASS [stable-1.98.0-homebrew/F5] Cargo.lock bytes unchanged after refusal: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ cargo update --workspace
+PASS [stable-1.98.0-homebrew/F5] repair: cargo update --workspace -> exit 0 (expected 0)
+    |      Locking 1 package to latest Rust 1.96 compatible version
+    |       Adding anyhow v1.0.104 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/stub-anyhow)
+    |     Removing anyhow v1.0.104
+  $ git commit -qm chore: patch anyhow from a path
+PASS [stable-1.98.0-homebrew/F5] patched manifest and lock both staged: git commit -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [stable-1.98.0-homebrew/F5] --all after the patched commit -> exit 0 (expected 0)
+--- repo G: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-g
+  $ bash -c cd nested && cargo update --workspace
+PASS [stable-1.98.0-homebrew/G0] setup: nested independent workspace (own [workspace] table) gets its own Cargo.lock -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.98.0 compatible version
+  $ bash -c cd tools/standalone && cargo update --workspace
+PASS [stable-1.98.0-homebrew/G0] setup: excluded standalone package gets its own Cargo.lock -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.98.0 compatible version
+RECORD [stable-1.98.0-homebrew/G0] tracked lockfiles: Cargo.lock nested/Cargo.lock tools/standalone/Cargo.lock vendored/foo/Cargo.lock ; exclude line: exclude = ["tools/standalone"]
+  $ /usr/bin/time -p git commit -qm chore: add nested, vendored, excluded and template manifests
+PASS [stable-1.98.0-homebrew/G0] setup commit through the hook (three workspace roots, two skipped candidates) -> exit 0 (expected 0)
+    | note: 2 candidate manifest(s) skipped: Cargo does not treat them as workspace roots
+    | real 1.08
+    | user 0.26
+    | sys 0.24
+PASS [stable-1.98.0-homebrew/G0] vendored non-member and template manifest skipped: output contains 'note: 2 candidate manifest(s) skipped'
+PASS [stable-1.98.0-homebrew/G0] nested root resolved from its own directory: output contains 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-g/nested)'
+PASS [stable-1.98.0-homebrew/G0] excluded standalone root resolved from its own directory: output contains 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-g/tools/standalone)'
+PASS [stable-1.98.0-homebrew/G0] vendored package not resolved (locate-project only): output lacks 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-g/vendored/foo)'
+PASS [stable-1.98.0-homebrew/G0] template manifest not resolved (locate-project only): output lacks 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-g/tmpl)'
+PASS [stable-1.98.0-homebrew/G0] vendored candidate was asked, and rejected by, Cargo: output contains 'cargo locate-project --workspace --message-format plain --manifest-path vendored/foo/Cargo.toml'
+PASS [stable-1.98.0-homebrew/G0] resolves run (update --workspace invocations): 3 == 3
+RECORD [stable-1.98.0-homebrew/G0] guarded setup commit wall seconds real=1.08 (three roots resolved, four locate-project calls)
+  $ cargo update --workspace
+PASS [stable-1.98.0-homebrew/G1a] revision-3 command from the top level: root-only cargo update --workspace passes -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+  $ git diff --quiet --no-ext-diff -- nested/Cargo.lock
+PASS [stable-1.98.0-homebrew/G1a] nested Cargo.lock untouched by the root resolve (the false pass) -> exit 0 (expected 0)
+  $ bash -c cargo metadata --locked --format-version=1 >/dev/null
+PASS [stable-1.98.0-homebrew/G1b] cargo metadata --locked from the top level passes the stale nested workspace -> exit 0 (expected 0)
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/G1c] stale nested independent workspace (anyhow = "=1.0.100", lock at 1.0.104): direct check refuses -> exit 1 (expected 1)
+    | note: 2 candidate manifest(s) skipped: Cargo does not treat them as workspace roots
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.98.0 compatible version
+    |  Downgrading anyhow v1.0.104 -> v1.0.100 (available: v1.0.104)
+    |      Locking 0 packages to latest Rust 1.98.0 compatible versions
+    |  nested/Cargo.lock | 4 ++--
+    |  1 file changed, 2 insertions(+), 2 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/G1c] Cargo names the change: output contains 'Downgrading anyhow'
+PASS [stable-1.98.0-homebrew/G1c] nested lock diff stat shown: output contains 'nested/Cargo.lock |'
+PASS [stable-1.98.0-homebrew/G1c] nested root resolved from its own directory: output contains 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-g/nested)'
+PASS [stable-1.98.0-homebrew/G1c] nested Cargo.lock bytes unchanged after refusal (restored): 5e8692b19a4d9cbf55a64b52239bc4dcebe09c46ebe33aa9f90959f9103a15b7 == 5e8692b19a4d9cbf55a64b52239bc4dcebe09c46ebe33aa9f90959f9103a15b7
+  $ git commit -qm chore: pin anyhow in nested
+PASS [stable-1.98.0-homebrew/G1d] stale nested workspace: git commit blocked -> exit 1 (expected 1)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/G1d] no commit was created (rev-list count): 2 == 2
+  $ bash -c cd nested && cargo update --workspace
+PASS [stable-1.98.0-homebrew/G1e] repair in the nested workspace: cargo update --workspace -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.98.0 compatible version
+    |  Downgrading anyhow v1.0.104 -> v1.0.100 (available: v1.0.104)
+RECORD [stable-1.98.0-homebrew/G1e] 1 file changed, 2 insertions(+), 2 deletions(-)
+  $ git commit -qm chore: pin anyhow in nested
+PASS [stable-1.98.0-homebrew/G1f] nested manifest and lock both staged: git commit -> exit 0 (expected 0)
+    | note: 2 candidate manifest(s) skipped: Cargo does not treat them as workspace roots
+PASS [stable-1.98.0-homebrew/G1f] top-level root resolved from the top level: output contains 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-g)'
+PASS [stable-1.98.0-homebrew/G1f] nested root resolved from its own directory: output contains 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-g/nested)'
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/G2] vendored non-member package with its own Cargo.lock: no false refusal -> exit 0 (expected 0)
+    | note: 2 candidate manifest(s) skipped: Cargo does not treat them as workspace roots
+PASS [stable-1.98.0-homebrew/G2] vendored Cargo.lock bytes unchanged: 15e97abe5b1d5e432ecbfb6737ff5b4b4d37e18156d93ae3e6d043bcb5e7ed0f == 15e97abe5b1d5e432ecbfb6737ff5b4b4d37e18156d93ae3e6d043bcb5e7ed0f
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/G3] stale excluded standalone package: refused -> exit 1 (expected 1)
+    | note: 2 candidate manifest(s) skipped: Cargo does not treat them as workspace roots
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |      Locking 0 packages to latest Rust 1.98.0 compatible versions
+    | note: pass `--verbose` to see 1 unchanged dependencies behind latest
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.98.0 compatible version
+    |  Downgrading anyhow v1.0.104 -> v1.0.100 (available: v1.0.104)
+    |  tools/standalone/Cargo.lock | 4 ++--
+    |  1 file changed, 2 insertions(+), 2 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/G3] standalone lock diff stat shown: output contains 'tools/standalone/Cargo.lock |'
+PASS [stable-1.98.0-homebrew/G3] standalone Cargo.lock bytes unchanged after refusal (restored): fd5c6ad03b71419858e144ddb17d010344229f0d4e934fb4c54390838dfd6e68 == fd5c6ad03b71419858e144ddb17d010344229f0d4e934fb4c54390838dfd6e68
+--- repo H: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-h
+  $ bash -c cd nested && cargo update --workspace
+PASS [stable-1.98.0-homebrew/H0] setup: nested independent workspace gets its own Cargo.lock -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.98.0 compatible version
+  $ git commit -qm chore: add nested workspace
+PASS [stable-1.98.0-homebrew/H0] setup commit through the hook -> exit 0 (expected 0)
+  $ cargo update --workspace --manifest-path nested/Cargo.toml
+PASS [stable-1.98.0-homebrew/H1a] revision-4 resolve (top-level cwd, --manifest-path): passes the stale nested lock, config not applied -> exit 0 (expected 0)
+    |      Locking 0 packages to latest Rust 1.98.0 compatible versions
+PASS [stable-1.98.0-homebrew/H1a] nested Cargo.lock untouched by the top-level-cwd resolve (the false pass): 5e8692b19a4d9cbf55a64b52239bc4dcebe09c46ebe33aa9f90959f9103a15b7 == 5e8692b19a4d9cbf55a64b52239bc4dcebe09c46ebe33aa9f90959f9103a15b7
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/H1b] nested/.cargo/config.toml with [patch.crates-io] staged, nested lock in registry form: refused -> exit 1 (expected 1)
+    |      Locking 0 packages to latest Rust 1.96 compatible versions
+    |      Locking 1 package to latest Rust 1.98.0 compatible version
+    |       Adding anyhow v1.0.104 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/stub-anyhow)
+    |     Removing anyhow v1.0.104
+    |  nested/Cargo.lock | 2 --
+    |  1 file changed, 2 deletions(-)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/H1b] Cargo names the change: output contains 'Adding anyhow v1.0.104 ('
+PASS [stable-1.98.0-homebrew/H1b] nested lock diff stat shown: output contains 'nested/Cargo.lock | 2 --'
+PASS [stable-1.98.0-homebrew/H1b] nested root resolved from its own directory: output contains 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-h/nested)'
+PASS [stable-1.98.0-homebrew/H1b] nested Cargo.lock bytes unchanged after refusal (restored): 5e8692b19a4d9cbf55a64b52239bc4dcebe09c46ebe33aa9f90959f9103a15b7 == 5e8692b19a4d9cbf55a64b52239bc4dcebe09c46ebe33aa9f90959f9103a15b7
+  $ git commit -qm chore: patch anyhow in nested
+PASS [stable-1.98.0-homebrew/H1c] stale state: git commit blocked -> exit 1 (expected 1)
+    | FAIL: Cargo.lock is out of date for the staged Cargo inputs (it would change; restored, nothing was modified). Run cargo update --workspace in the directory of each Cargo.lock listed above, review the Cargo.lock diff, stage Cargo.lock with the intended manifests, and commit again.
+PASS [stable-1.98.0-homebrew/H1c] no commit was created (rev-list count): 2 == 2
+  $ bash -c cd nested && cargo update --workspace
+PASS [stable-1.98.0-homebrew/H2a] repair per remediation, in the nested directory -> exit 0 (expected 0)
+    |      Locking 1 package to latest Rust 1.98.0 compatible version
+    |       Adding anyhow v1.0.104 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/stub-anyhow)
+    |     Removing anyhow v1.0.104
+RECORD [stable-1.98.0-homebrew/H2a] 1 file changed, 2 deletions(-); patched nested lock sha256=fc7c7ff08911f10cfea13a3a19a4e817dd02bfb1e8075dfe7216e6dff075e709
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/H2b] freshly-resolved state (config and patched lock staged): accepted -> exit 0 (expected 0)
+PASS [stable-1.98.0-homebrew/H2b] nested root resolved from its own directory: output contains 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-h/nested)'
+PASS [stable-1.98.0-homebrew/H2b] patched nested lock untouched: fc7c7ff08911f10cfea13a3a19a4e817dd02bfb1e8075dfe7216e6dff075e709 == fc7c7ff08911f10cfea13a3a19a4e817dd02bfb1e8075dfe7216e6dff075e709
+  $ git commit -qm chore: patch anyhow in nested
+PASS [stable-1.98.0-homebrew/H2c] freshly-resolved state: git commit -> exit 0 (expected 0)
+  $ cargo update --workspace --manifest-path nested/Cargo.toml
+PASS [stable-1.98.0-homebrew/H2d] revision-4 resolve on the committed patched state: config not applied, lock rewritten (the false refusal) -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.98.0 compatible version
+    |       Adding anyhow v1.0.104
+RECORD [stable-1.98.0-homebrew/H2d] 1 file changed, 2 insertions(+)
+PASS [stable-1.98.0-homebrew/H2d] top-level-cwd resolve changed the patched nested lock: changed == changed
+  $ bash scripts/check-cargo-lock.sh --all
+PASS [stable-1.98.0-homebrew/H2e] --all on the committed patched state -> exit 0 (expected 0)
+  $ bash -c cd ignored && cargo update --workspace
+PASS [stable-1.98.0-homebrew/H3] setup: nested root whose Cargo.lock is Git-ignored -> exit 0 (expected 0)
+    |     Updating crates.io index
+    |      Locking 1 package to latest Rust 1.98.0 compatible version
+  $ git commit -qm chore: add a workspace with an ignored lockfile
+PASS [stable-1.98.0-homebrew/H3a] setup commit through the hook -> exit 0 (expected 0)
+    | note: ignored/Cargo.lock is Git-ignored; that workspace is not checked
+PASS [stable-1.98.0-homebrew/H3a] ignored-lock note: output contains 'ignored/Cargo.lock is Git-ignored; that workspace is not checked'
+PASS [stable-1.98.0-homebrew/H3a] ignored root not resolved: output lacks 'cargo update --workspace (cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/repo-h/ignored)'
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/H3b] stale manifest of the ignored-lock workspace: passes vacuously (no lockfile in the repository) -> exit 0 (expected 0)
+    | note: ignored/Cargo.lock is Git-ignored; that workspace is not checked
+PASS [stable-1.98.0-homebrew/H3b] ignored Cargo.lock bytes unchanged on disk (no resolve ran, nothing written): 8322ce7d8fbfe71fcb34e1ccd36b19d1f84a1d5bf3fec79b2c472797762d08fb == 8322ce7d8fbfe71fcb34e1ccd36b19d1f84a1d5bf3fec79b2c472797762d08fb
+  $ bash scripts/check-cargo-lock.sh
+PASS [stable-1.98.0-homebrew/H4a] crates/cli/.cargo/config.toml with [patch.crates-io] (below the root): not applied, passes with a note -> exit 0 (expected 0)
+    | note: Cargo config below a workspace root is not applied by this check (Cargo reads it only for commands run inside that directory): crates/cli/.cargo/config.toml
+    | note: ignored/Cargo.lock is Git-ignored; that workspace is not checked
+PASS [stable-1.98.0-homebrew/H4a] unapplied-config note names the file: output contains 'not applied by this check (Cargo reads it only for commands run inside that directory): crates/cli/.cargo/config.toml'
+PASS [stable-1.98.0-homebrew/H4a] root Cargo.lock bytes unchanged: 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e == 3782ae1d34532a9b4d5151d9100634469560bbc414b9a57296350667864c5f2e
+  $ bash -c cd crates/cli && cargo update --workspace
+PASS [stable-1.98.0-homebrew/H4b] disclosed limit: the same resolve run inside crates/cli applies the config and rewrites the root lock -> exit 0 (expected 0)
+    |      Locking 1 package to latest Rust 1.96 compatible version
+    |       Adding anyhow v1.0.104 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R41/2026-09-05T160304Z-1e904d50d29e/review/empirical/.work/stable-1.98.0-homebrew/stub-anyhow)
+    |     Removing anyhow v1.0.104
+RECORD [stable-1.98.0-homebrew/H4b] 1 file changed, 2 deletions(-)
+PASS [stable-1.98.0-homebrew/H4b] root Cargo.lock changed by the in-member resolve: changed == changed
+=== toolchain stable-1.98.0-homebrew finished 2026-09-10T01:10:27Z ===
+
+summary: PASS=436 FAIL=0 RECORD=76
+RESULT: PASS
