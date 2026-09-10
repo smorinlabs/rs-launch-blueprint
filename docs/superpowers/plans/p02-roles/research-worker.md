@@ -14,6 +14,14 @@ Inputs (all paths are given in your task message):
   `docs/port/PARAMETERS.md`, `docs/port/areas/*.md`, `docs/port/BASELINE-REVIEW.md`).
   Do not modify anything outside the run directory.
 
+**Do not list the run directory's `raw/` directory.** You are one of several
+independent engines and the others' reports sit there. Two workers have reported
+that a recursive orientation listing printed the other engines' filenames before
+they realised what the directory held. Read `inputs/prompt.md` by its full path
+and write your own file by its full path; you never need to see what else is in
+`raw/`. Knowing a filename is not contamination, but the listing is avoidable and
+the disclosure it forces is not free.
+
 Output: exactly one Markdown file at the path named in your task message. It must
 use the prompt's `## Answer template` field names as H3 headings, in that exact
 order, each with a nonempty body, outside code fences. For a `bundle` item, put
