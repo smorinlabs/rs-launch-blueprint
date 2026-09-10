@@ -1,4 +1,4 @@
-# R25 — Pre-1.0 semver bump strategy (pattern, Deep) — revision 3, 2026-09-10
+# R25 — Pre-1.0 semver bump strategy (pattern, Deep) — revision 4, 2026-09-10
 
 ## Decision
 
@@ -11,13 +11,17 @@ survive implementation, it is **revised against this recorded research**, not re
 from scratch; the executed evidence under `## Empirical check` is the baseline any revision argues
 against.
 
-**This is revision 3 (2026-09-10).** Two prior revisions were rejected by empirical audit, both on
-precision rather than on the recommendation: revision 1 for claiming the TypeScript source
-repository "first published v0.1.1", revision 2 for saying release-please merges the release commit.
-The recommendation has never changed. What changed each time is the exactness of a supporting
-statement about who does what. Revision 3 also rewrites the four `- assumes` lines into the bare
-form the packaging validator compares byte-for-byte against `docs/port/PARAMETERS.md`. Both diffs
-are itemised at the top of `## Engines`.
+**This is revision 4 (2026-09-10).** Three prior revisions were rejected by empirical audit, none
+of them on the recommendation and all three on the same defect: a supporting sentence stated more
+absolutely than its evidence. Revision 1 claimed the TypeScript source repository "first published
+v0.1.1" when the evidence showed a release commit; revision 2 said release-please merges the release
+commit when the repository does; revision 3 said a seeded `0.1.0` makes the first release `0.1.1`
+when that holds only for some commit histories. The recommendation has never changed. Revision 4
+conditions every remaining statement of a resulting version number on the history that produces it,
+and marks the ones that hold unconditionally as such. Revision 3 also rewrote the four `- assumes`
+lines into the bare form the packaging validator compares byte-for-byte against
+`docs/port/PARAMETERS.md`; those lines are unchanged here. All diffs are itemised at the top of
+`## Engines`.
 
 **Recommendation.** `rs-launch-blueprint` launches **pre-1.0 at `0.1.0`** with release-please's
 pre-major dampening fully enabled. Three artifacts, and one of them is deliberately empty:
@@ -26,7 +30,7 @@ pre-major dampening fully enabled. Three artifacts, and one of them is deliberat
 |---|---|---|
 | `Cargo.toml` → `[package] version` | `"0.1.0"` | What `cargo new` itself emits (executed, cargo 1.98.0) |
 | `release-please-config.json` | `"release-type": "rust"`, `"bump-minor-pre-major": true`, `"bump-patch-for-minor-pre-major": true` | The unique flag pair that makes each commit type move the digit Cargo's resolver treats as its compatibility class |
-| `.release-please-manifest.json` | created **empty**: `{}` | So the **first version release-please releases is `0.1.0`**. A seeded `{".": "0.1.0"}` is read as an *already-released* version, and the first release would then be `0.1.1`. Derived from the tool's source; unproven until P03's first Release PR — see `## Engines`, unproven item 2 |
+| `.release-please-manifest.json` | created **empty**: `{}` | So the **first version release-please releases is `0.1.0`**, whatever the commits are: with no latest release, `BaseStrategy.buildNewVersion` returns `initialReleaseVersion()` without consulting commit types at all. A seeded `{".": "0.1.0"}` instead makes `0.1.0` the *previous* release, and the next proposed version is then whatever the strategy computes from the commits since — `0.1.1` for a patch-or-feature-only history, `0.2.0` for one containing a breaking change (probe rows *A both true · 0.1.0*). Derived from the tool's source; unproven until P03's first Release PR — see `## Engines`, unproven item 2 |
 
 **Vocabulary, used exactly and consistently from here on**, because the whole manifest argument
 turns on these distinctions and two earlier revisions blurred them. Each term is defined from
@@ -70,10 +74,12 @@ publication; retrieved 2026-09-09), which is the version reached through
 table below were established at `v17.11.2` only; at `v17.6.0`, the floor of that range, one thing
 was checked — that `Rust.initialReleaseVersion()` still returns `0.1.0`.
 
-**Resulting bump table (executed, not asserted):** from `0.1.z`, `fix:` → patch, non-breaking
-`feat:` → patch, `feat!:`/`BREAKING CHANGE:` → minor. From `1.0.0` and above both flags are inert
-and ordinary SemVer resumes. Full 36-row output in
-`review/evidence/release-please-bump-probe.log`.
+**Resulting bump table (executed, not asserted), per commit type:** from `0.1.z`, `fix:` → patch,
+non-breaking `feat:` → patch, `feat!:`/`BREAKING CHANGE:` → minor. From `1.0.0` and above both flags
+are inert and ordinary SemVer resumes. A release usually aggregates several commits, and the
+strongest type present wins: `determineReleaseType` counts breaking commits first, then features,
+and falls through to a patch bump — so a release containing one `feat!:` among many `fix:` commits
+moves the minor digit. Full 36-row output in `review/evidence/release-please-bump-probe.log`.
 
 **Ledger rows this settles.** `F070` — *pre-1.0 semver bump strategy*, `docs/port/COMMONALITY.md:76`,
 verdict `DIVERGENT`, origin `ts-only`, item `R25`. This decision supplies F070's content: rs adopts
@@ -101,7 +107,8 @@ assumed by this item per the prompt's `## Out of scope`, and are unaffected by b
 - *Agreement level*: **capability / standard.** What must agree across the three repositories is
   the capability — an automated bumper whose output is correct under the host ecosystem's own
   compatibility rule. What **may vary** is the flag setting, because each ecosystem's compatibility
-  rule is its own and because both flags are unreachable code above `1.0.0`.
+  rule is its own and because both flags are unreachable code at `1.0.0` and above
+  (`Version.isPreMajor` is `this.major < 1`, so they go inert *at* `1.0.0`, not after it).
 
 **Essential behaviors.** For every release the automation cuts:
 
@@ -120,10 +127,10 @@ configuration rather than of a single run.
 | # | Criterion | Status in P02 |
 |---|---|---|
 | A0 | The template's initial `[package] version` equals what a fresh Rust package starts at | **Executed** — `cargo new` emits `version = "0.1.0"` |
-| A1 | Given `fix:` only, the next version differs only in the patch digit | **Executed** — `0.1.3 → 0.1.4` |
-| A2 | Given a non-breaking `feat:`, the next version stays inside the current caret band | **Executed** — `0.1.3 → 0.1.4`; and a bare Cargo requirement `"0.7.0"` locks `axum` to `0.7.9` while `0.8.9` exists |
-| A3 | Given `feat!:` / `BREAKING CHANGE:`, the next version leaves the caret band | **Executed** — `0.1.3 → 0.2.0` |
-| A4 | No release crosses `0.x → 1.x` without an explicit human act | **Argued from source, not executed end to end** — under both flags `true` no commit type produces `1.0.0`; graduation requires a `Release-As: 1.0.0` footer. P03 proves it on the real repository |
+| A1 | Given a release whose commits are `fix:` only, the next version differs only in the patch digit | **Executed** — `0.1.3 → 0.1.4` |
+| A2 | Given a release containing a non-breaking `feat:` and no breaking commit, the next version stays inside the current caret band | **Executed** — `0.1.3 → 0.1.4`; and a bare Cargo requirement `"0.7.0"` locks `axum` to `0.7.9` while `0.8.9` exists |
+| A3 | Given a release containing a `feat!:` / `BREAKING CHANGE:`, the next version leaves the caret band | **Executed** — `0.1.3 → 0.2.0` |
+| A4 | No release crosses `0.x → 1.x` without an explicit human act | **Argued from source, not executed end to end** — under both flags `true`, from any pre-1.0 baseline, no commit type produces `1.0.0`; graduation requires a `Release-As: 1.0.0` footer. P03 proves it on the real repository |
 
 **Cargo's compatibility rule, quoted rather than paraphrased.** The Cargo Book's SemVer reference
 states: *"This guide uses the terms 'major' and 'minor' assuming this relates to a '1.0.0' release
@@ -266,13 +273,15 @@ the resulting version.
 | D | `bump-minor-pre-major` only (what the prompt's gloss describes) | 0.1.4 | **0.2.0** | 0.2.0 | 1.0.1 | 1.1.0 | 2.0.0 |
 | E | `bump-patch-for-minor-pre-major` only | 0.1.4 | 0.1.4 | **1.0.0** | 1.0.1 | 1.1.0 | 2.0.0 |
 
-Reading the bold cells against Cargo's rule: under (C) and (E) the *first breaking change ever
-merged silently promotes the crate to `1.0.0`* — an irreversible stability claim made by a bot.
-Under (C) and (D) a *non-breaking* `feat` produces `0.2.0`, which every Cargo consumer of `"0.1"`
-reads as incompatible: the crate withholds a compatible release and forces a manifest edit across
-its consumers for no reason. Only (A) satisfies A1–A4. Option (B) is arithmetically correct — above
-`1.0.0` every configuration behaves identically — so its cost is not arithmetic but the claim it
-makes on day one.
+Reading the bold cells against Cargo's rule, and stating each as the general case rather than as
+the one row that demonstrates it: under (C) and (E), from any pre-1.0 baseline, the *first release
+containing a breaking change silently promotes the crate to `1.0.0`* — an irreversible stability
+claim made by a bot. Under (C) and (D), from a `0.y.z` baseline, a release whose strongest commit is
+a *non-breaking* `feat` produces `0.(y+1).0` — `0.2.0` in the demonstrated `0.1.3` row — which every
+Cargo consumer of the `0.y` band reads as incompatible: the crate withholds a compatible release and forces a manifest edit across
+its consumers for no reason. Only (A) satisfies A1–A4. Option (B) is arithmetically correct — at
+`1.0.0` and above every configuration behaves identically, as the right-hand columns show — so its
+cost is not arithmetic but the claim it makes on day one.
 
 **Why the manifest is created empty, and what the first released version therefore is.** This is
 the artifact the raw reports left unsettled, and it is what the prompt's value test names — the
@@ -290,13 +299,25 @@ controls is which version release-please *releases* first. Read at `v17.11.2`:
   `v17.6.0`. `BaseStrategy.initialReleaseVersion()` returns `1.0.0` unless the `initial-version` key
   is set; `python.ts` also overrides to `0.1.0`; `node.ts` has no override and so inherits `1.0.0`.
 
-Two consequences. First, **`release-type: rust` starts a brand-new crate at `0.1.0` with no seeding,
-no `initial-version` key and no hand-written manifest entry** — the seeding ts had to do is a `node`
-problem, not a Rust one. Second, **seeding `{".": "0.1.0"}` would make the first released version
-`0.1.1`, not `0.1.0`.**
+Two consequences, and the asymmetry between them is the whole argument. First, **`release-type:
+rust` starts a brand-new crate at `0.1.0` with no seeding, no `initial-version` key and no
+hand-written manifest entry** — the seeding ts had to do is a `node` problem, not a Rust one. This
+first consequence is unconditional in the commits: with no latest release, `buildNewVersion` returns
+`initialReleaseVersion()` before any commit type is examined, so `0.1.0` is proposed whatever landed
+(given at least one releasable commit and no `Release-As:` override).
+
+Second, **seeding `{".": "0.1.0"}` makes `0.1.0` the *previous* release rather than the next one, so
+the first proposed version is never `0.1.0` — but which version it is depends on the commits since
+the seed.** Under the recommended flags the probe gives both answers from a `0.1.0` baseline: a
+patch-or-feature-only history yields `0.1.1`, and a history containing a breaking change yields
+`0.2.0` (`evidence/release-please-bump-probe.log`, rows *A both true · 0.1.0*: `fix:` → `0.1.1`,
+`feat:` → `0.1.1`, `feat!:` → `0.2.0`). Revision 3 wrote `0.1.1` unconditionally; that is true only
+of the first of those histories, and it is the claim the third audit rejected.
 
 That second consequence is an inference **from the tool's source**, and the source is its only
-authority: `BaseStrategy.buildNewVersion` plus `Manifest`'s backfill block, quoted above. The ts
+authority: `BaseStrategy.buildNewVersion` plus `Manifest`'s backfill block, quoted above — the
+narrow proven premise being that a manifest entry is the package's *last-released/current* version,
+which the strategy then bumps from according to the conventional commits it finds. The ts
 repository corroborates it, and revision 1 overstated what that corroboration is. What ts's history
 actually establishes, each item checked separately in
 `review/evidence/ts-registry-publication-check.log` (executed 2026-09-10):
@@ -319,7 +340,9 @@ is carried over to crates.io here.
 If `0.1.0` is to be the first version released, the manifest must be created empty
 (`echo "{}" > .release-please-manifest.json`, the maintainers' own bootstrap instruction — the file
 has to exist because the manifest updater runs with `createIfMissing: false`) and `Cargo.toml` left
-at `0.1.0`. Release-please then **opens a Release PR proposing `0.1.0`**, whose changes include
+at `0.1.0`. Release-please then **opens a Release PR proposing `0.1.0`** — proposed on the strength
+of there being no latest release, so it does not depend on which commit types landed — whose changes
+include
 writing `{".": "0.1.0"}` into the manifest; **the repository merges that PR**; and release-please
 then tags the merged commit, in whatever form `include-v-in-tag` produces, and creates a GitHub
 release. Whether that release reaches crates.io is F075's business, not this item's, and P03 proves
@@ -356,15 +379,16 @@ it wires the first release.
 - *Web service (optional feature-gated surface).* A feature-gated HTTP surface built on pre-1.0
   dependencies inherits their churn: an `axum` `0.8 → 0.9` bump is, by Cargo's rule, a breaking
   change, and where those types reach the template's public API it is breaking for the template too.
-  Under (A) that propagates as `0.1.z → 0.2.0` — accurate and cheap. Under (B) the same routine
-  upstream bump forces `1.x → 2.0.0`, driving the major digit up for reasons unrelated to the
+  Under (A) that propagates as `0.y.z → 0.(y+1).0` — `0.1.z → 0.2.0` at the launch version —
+  accurate and cheap. Under (B) the same routine upstream bump forces `1.x → 2.0.0`, and the next
+  one `2.x → 3.0.0`, driving the major digit up for reasons unrelated to the
   template's own design. This is the strongest practical argument against (B), and it is specific to
   a Rust web stack; ts faced nothing equivalent.
 
 **Ranked runner-up, and the condition under which it wins.** Option (B) — launch at `1.0.0` with
 ordinary SemVer, py's present shape. It requires an override (`"initial-version": "1.0.0"`, or hand
-seeding), because `release-type: rust` otherwise starts at `0.1.0`. It is a runner-up rather than a
-rejected option because above `1.0.0` its arithmetic is identical to (A)'s; its whole cost is the
+seeding), because with no latest release `release-type: rust` otherwise starts at `0.1.0`. It is a runner-up rather than a
+rejected option because at `1.0.0` and above its arithmetic is identical to (A)'s; its whole cost is the
 claim it makes on day one. It wins only if, **before first publication**, all of the following hold:
 R04's public-API enforcement is wired and the curated surface is final; no crate appearing in that
 public surface is itself pre-1.0 (C-STABLE); the web surface's dependency churn is walled off behind
@@ -501,6 +525,51 @@ P03's work.
 
 ## Engines
 
+**Audit of revision 3, and what revision 4 changed.** Revision 3
+(sha256 `23d42766b5319c95de680b50dc20334332243e66079eab5f0b981b02c6df9fbd`) was **rejected** by
+`audit-codex-2026-09-05T164357Z-eec460755121-r3` (`review/audit-codex.r3.md`, model gpt-5.6-terra)
+on one finding, and **confirmed** on the repair the previous round had made.
+
+- *Confirmed by the audit.* "The vocabulary and division of labour are now accurate. The pinned
+  README says release-please maintains Release PRs, tells the repository to merge one, then tags the
+  commit." The audit's rerun also matched this decision on the manifest-existence claim, the
+  `bootstrap-sha` claim, the 36-row bump table and the four `- assumes` lines. All of that stands
+  unchanged in revision 4.
+- *Rejected by the audit — an overstated consequence.* Revision 3 said in three places that seeding
+  `{".": "0.1.0"}` makes the first release or Release PR `0.1.1`. The proven premise is narrower: a
+  manifest entry is the package's last-released/current version, which `Manifest` backfills as
+  `latestRelease` and `BaseStrategy.buildNewVersion` then bumps according to the *subsequent*
+  commits. My own probe carries the counterexample — from `0.1.0` with both recommended flags,
+  `feat!:` yields `0.2.0`, not `0.1.1`. The finding is correct, and it is the third consecutive
+  rejection of the same shape: right mechanism, right recommendation, a number stated as though it
+  were unconditional.
+
+**What revision 4 changed, and nothing else.** The recommendation (launch at `0.1.0`,
+`release-type: rust`, both flags `true`, empty manifest), the confirmed prompt correction, the
+corrected vocabulary and division of labour, the registry finding, the parameter lines, all seven
+checks and their logs, and the unproven list all stand as written. No evidence log was changed and
+no check was re-run — the counterexample was already in
+`evidence/release-please-bump-probe.log`, which is precisely why revision 3 should not have made the
+claim. The edits are:
+
+1. the three rejected locations — the recommendation table's manifest cell, the "Two consequences"
+   passage, and `## Engines` item 2 — rewritten to say the seed makes `0.1.0` the *previous*
+   release and that the next proposed version depends on the commits since, citing probe rows
+   *A both true · 0.1.0* for both outcomes (`0.1.1` on a patch-or-feature-only history, `0.2.0` on
+   one containing a breaking change);
+2. the **asymmetry stated explicitly**, because it is the actual argument for the empty manifest:
+   with no latest release, `buildNewVersion` returns `initialReleaseVersion()` *before* examining
+   any commit type, so `0.1.0` is proposed whatever landed; with a seed, the outcome is
+   commit-dependent. One branch is unconditional and the other is not, and revision 3 blurred that;
+3. a sweep of every other sentence stating a version number or bump outcome, each now either marked
+   as holding for all histories or given the condition under which it holds — the per-commit-type
+   bump summary gained the aggregation rule (`determineReleaseType` takes the strongest type
+   present), acceptance criteria A1–A4 name the release's commit mix rather than a lone commit, the
+   (C)/(D)/(E) readings are stated in general form (`0.(y+1).0`) with the demonstrated row named as
+   the example, the runner-up's `initial-version` override is conditioned on there being no latest
+   release, and unproven item 1's `0.1.1 → 0.1.2 → 0.2.0` sequence names the one history that
+   produces it and states what batching the same commits differently would give instead.
+
 **Audit of revision 2, and what revision 3 changed.** Revision 2
 (sha256 `9dfb724a0c4a90b5cea05fbd387ddaa79da8428bf3aaffbd0f61180d6b256c14`) was **rejected** by
 `audit-codex-2026-09-05T164357Z-eec460755121-r2` (`review/audit-codex.r2.md`, model gpt-5.6-terra)
@@ -632,10 +701,12 @@ tool source rather than by counting votes.
    `.release-please-manifest.json` as `{".": "0.1.0"}` *and* relies on
    `Rust.initialReleaseVersion()` returning `0.1.0`. Those do not compose. `src/manifest.ts`'s
    "backfill latest release tags from manifest" block treats a manifest entry as the *last released*
-   version, and `docs/manifest-releaser.md` says the same in prose, so a seeded `0.1.0` makes the
-   first Release PR propose `0.1.1`. **The proof is the source; ts's history is corroboration only**
-   — it seeded `0.1.0` at `19ff9b5`, and its first release commit and tag were `v0.1.1`, with the
-   seeded number appearing as neither. Revision 1 wrote that ts "first published v0.1.1"; it did
+   version, and `docs/manifest-releaser.md` says the same in prose, so a seeded `0.1.0` becomes the
+   previous release and the first Release PR proposes whatever the strategy computes from the
+   commits since — `0.1.1` on a patch-or-feature-only history, `0.2.0` on one with a breaking change
+   (probe rows *A both true · 0.1.0*). **The proof is the source; ts's history is corroboration
+   only** — it seeded `0.1.0` at `19ff9b5`, and on its actual commit history its first release
+   commit and tag were `v0.1.1`, with the seeded number appearing as neither. Revision 1 wrote that ts "first published v0.1.1"; it did
    not, and that overstatement is finding 1 of the audit recorded below. This decision therefore
    creates the manifest **empty** so the first version released is `0.1.0`.
 3. **doxa-openai's bootstrap-only `release-as: 0.1.0` is not adopted.** It solves the same worry a
@@ -677,7 +748,9 @@ tool source rather than by counting votes.
 
 1. **The end-to-end proposal.** `npx release-please@17.11.2 release-pr --repo-url=<owner>/<repo>
    --dry-run` against the real template repository after `fix:`, then `feat:`, then `feat!:`
-   commits. Expected `0.1.1`, `0.1.2`, `0.2.0` from a released `0.1.0`. Check 3 proved the
+   commits, each released before the next lands. Expected `0.1.1`, then `0.1.2`, then `0.2.0`,
+   starting from a released `0.1.0` — a sequence that holds for that history and no other; batched
+   differently, the same three commits release once as `0.2.0`. Check 3 proved the
    arithmetic in isolation; only this exercises the real strategy including `Cargo.toml` and
    `Cargo.lock` rewriting. **Not run here: it needs a GitHub token and a repository, and building
    either would be implementing the recommendation.**
