@@ -153,6 +153,7 @@ def scan_run(run: Path) -> dict:
             "revision": int(m.group(1)) if m else 1,
         }
         info["parameter_mismatches"] = parameter_mismatches(decision, registry_values(ROOT))
+        info["has_identities"] = (review / "identities.json").is_file()
         for kind, name in (("empirical", "audit-codex.md"), ("judgment", "audit-fable.md")):
             a = audit_of(review / name)
             if a:
@@ -188,6 +189,12 @@ def next_action(status: str, run: dict | None) -> str:
         return "judgment audit"
     if jud["verdict"] != "approve":
         return f"revise (round {run['rounds'] + 1}): judgment rejected"
+    if not run.get("has_identities"):
+        # The packager refuses without it, and no earlier step writes it: the
+        # empirical block must name the empirical auditor's own replay, because
+        # the validator requires that executor to be the empirical auditor and
+        # its family to differ from the synthesis family.
+        return "write review/identities.json, then package + publish"
     return "package + publish"
 
 

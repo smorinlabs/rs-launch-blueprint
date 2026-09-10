@@ -55,6 +55,19 @@ not researched again from scratch.
   disagreements between engines, and the evidence that settled each; state
   uncertainty where evidence is incomplete.
 
+**Revising after a rejection: enumerate mechanically, never by reading.** The
+single most common reason a decision is rejected in this programme is a
+supporting sentence stated more absolutely than its evidence, and the single
+most common reason a revision is rejected again is that the writer fixed the
+locations the auditor named and then swept for the rest by re-reading the
+document. Reading misses them. Before you make any edit, search the file for
+every line carrying the claim's subject -- the identifier, the number, the verb
+that asserts an outcome -- and build the complete list of line numbers first.
+That list is the work queue. Edit only from it, then re-run the same search
+against the edited file and confirm every entry now carries its conditions. You
+may state a qualification once in full and refer to it from the other
+locations, provided each of those locations actually carries the reference.
+
 Do not add other H2 headings. Do not include `## Supersedes` (this is the first
 revision). Cite sources with URLs and retrieval dates carried over from the raws
 you relied on. Do not edit the prompt, the ledger, the index or the registry.
