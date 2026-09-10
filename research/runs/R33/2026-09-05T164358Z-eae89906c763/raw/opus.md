@@ -500,3 +500,152 @@ Re-verify if: insta and cargo-insta stop releasing in lockstep; the `--unreferen
 - https://insta.rs/docs/quickstart/ — `CI` env var, `INSTA_UPDATE` modes, `.new` files (2026-09-10)
 - py@b08bccfb `tests/cli/test_help_snapshots.py` (the `--snapshot-update` instruction) (2026-09-10)
 - `docs/port/PARAMETERS.md` — `package-manager-invocation` (R42), read from this repository's working tree (2026-09-10)
+
+### Compatibility
+
+The three members are proven to work together by three independent kinds of evidence.
+
+**1. A shared adopter running proptest and insta in one workspace.** `paradigmxyz/reth` declares, in one `[workspace.dependencies]` block, `insta = "1.47"` (`Cargo.toml:624`), `proptest = "1.7"` (`:625`) and `proptest-derive = "0.7"` (`:626`) — commit `040bef7b319c`, retrieved 2026-09-10. reth is a major, actively developed Ethereum execution client, i.e. exactly the kind of correctness-critical, multi-crate Rust workspace this template is a scaled-down version of. This is direct evidence that the property-testing and snapshot members coexist in one `cargo test` run with no feature conflict.
+
+**2. A second shared adopter for the snapshot side plus a rival, showing no exclusivity.** `astral-sh/ruff` declares `insta = "1.35.1"` (`Cargo.toml:124`), `insta-cmd = "0.7.0"` (`:125`), `quickcheck = "1.0.3"` (`:154`) **and** `snapbox = "1.0.0"` (`:181`) in one workspace — commit `c3813a501faf`, retrieved 2026-09-10. Two snapshot libraries and a property-test library share a dependency graph without conflict, which also means the template could later add snapbox-based transcript tests under R32 without displacing insta.
+
+**3. A version matrix, guaranteed by construction, for the two insta members.** `insta` and `cargo-insta` are workspace members of the same repository — `mitsuhiko/insta` `Cargo.toml` declares `[workspace] members = ["cargo-insta"]` (retrieved 2026-09-10) — and are published in lockstep: both are at **1.48.0**, both `created_at` **2026-06-11**, both `Apache-2.0`, both `rust_version` 1.66.0 (`GET https://crates.io/api/v1/crates/{insta,cargo-insta}/versions`, retrieved 2026-09-10). The compatibility rule for the template is therefore simple and checkable: pin the `insta` dev-dependency and the `cargo-insta` tool to the same minor version.
+
+**Dependency-graph compatibility, stated rather than assumed.** proptest 1.11.0 and insta 1.48.0 share exactly one direct dependency, `tempfile` (proptest via the default `fork` feature; insta unconditionally), both on the `3.x` line — `tempfile ^3` for insta and `tempfile` (workspace-pinned, `3.x`) for proptest's `rusty-fork`/`fork` path (`GET /api/v1/crates/{proptest/1.11.0,insta/1.48.0}/dependencies`, retrieved 2026-09-10). One semver-compatible shared crate is a unification, not a conflict. No other direct dependency is shared, so there is no duplicate-version risk between the members. **Caveat:** this is read from the declared requirement lists, not from a resolved `Cargo.lock` — no lockfile exists to resolve against until P03 builds the workspace, and I did not construct a throwaway workspace to produce one.
+
+**Toolchain compatibility.** Highest published `rust-version` across the three members is proptest's **1.85** (1.86 at proptest HEAD); highest across their direct dependency sets is also **1.85**. The template's floor is **1.96** (stable 1.98.1 minus two minors, per `channel-rust-stable.toml`, retrieved 2026-09-10), so the whole stack clears it with at least 11 minor versions of headroom. All three members are edition 2021 crates, which a 2024-edition workspace consumes without issue because editions are per-crate.
+
+**OS compatibility.** insta and cargo-insta are first-party-tested on `ubuntu-latest` and `macos-latest` (and Windows); cargo-insta additionally ships prebuilt `aarch64-apple-darwin` and `x86_64-apple-darwin` binaries. proptest's own CI is `ubuntu-24.04` only; its macOS coverage is inherited from consumer CI (`rust-lang/cargo`, whose matrix includes `macos-15`). The template's own `macos-latest` leg becomes the direct proof for that member.
+
+### Parameters
+
+This item owns no parameter (`owns:` is empty in `## Couplings`). Every parameter below is consumed at its recorded value and is satisfied by the recommendation.
+
+- `assumes license = MIT OR Apache-2.0` — proptest is exactly this; `cargo-insta` and `insta` are `Apache-2.0`, which is compatible under the dev-dependency reading argued at insta's gate 1. **Owner-visible note, not a conflict:** if R13's `cargo-deny` license policy is later written to require every dependency at any depth to be dual-licensed, `insta` fails that stricter rule and `snapbox` 1.2.2 (`MIT OR Apache-2.0`) is the drop-in replacement. The parameter's *value* does not need to change; only its interpretation needs confirming when R13 writes the allowlist.
+- `assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI` — computed floor **1.96** against stable 1.98.1 (2026-09-01). Member floors: proptest 1.85 (1.86 at HEAD), insta 1.66.0, cargo-insta 1.66.0. Highest direct-dependency floor 1.85. Clears with ≥ 11 minor versions of headroom.
+- `assumes rust-edition = 2024` — all three members are edition 2021 crates; a 2024-edition workspace consumes 2021 crates normally. No action.
+- `assumes target-os-matrix = ubuntu-latest, macos-latest` — insta and cargo-insta test on both first-party; proptest tests on ubuntu only and inherits macOS coverage from `rust-lang/cargo`'s matrix. Recorded as a residual risk under proptest's gate 4, not a conflict.
+- `assumes package-manager-invocation = <R42's resolved value>` — `cargo-insta` is invoked as **`cargo insta`** (its executable is `cargo-<sub>`), and its presence is tested with `command -v cargo-insta` because it is acquired from crates.io rather than installed by rustup. This matches R42's rule verbatim (`docs/port/PARAMETERS.md`, read 2026-09-10).
+- `assumes ci-job-structure = <R11, unresolved>` — R11's value is still `—` in `docs/port/PARAMETERS.md` (read 2026-09-10). This item needs nothing from it beyond "the test job runs `cargo test` and sets `CI=true`", which GitHub Actions does on every runner unconditionally. No conflict either way R11 resolves.
+
+**Related-item assumptions that are not registry parameters** (recorded so P03 can trace them):
+
+- **R32 (`test-harness-and-execution`, open).** This item assumes only that R32's runner still executes plain `#[test]` functions — `proptest!` expands to one, and `insta::assert_snapshot!` is an assertion inside one. Both work under `cargo test` and under `cargo nextest`. If R32 introduces a marker or tier taxonomy, the correct placement of these two suites is the **default tier**, per acceptance criterion 1 and py's precedent (neither py file carries a `slow` or `live` marker, so neither is excluded by py's `addopts = "-m 'not live and not slow'"`).
+- **R60 (`cli-parsing-framework`, open).** The recommended help-snapshot architecture (B2, in-process render) assumes the CLI framework exposes an in-process help renderer and a way to enumerate subcommands. clap provides both (`Command::render_long_help`, `Command::get_subcommands`), and clap is by far the likely outcome. If R60 selects a framework without an in-process renderer, this item's *architecture* changes to B1 (spawn the built binary) and `insta-cmd` or `trycmd` enters the stack; the *principle*, the crate for the assertion, and every gate verdict are unaffected.
+- **R71 (`openapi-generation-pipeline`, open).** If R71 decides to snapshot the OpenAPI document, insta with `features = ["json"]` is available and would avoid a second snapshot tool. Note for the record that py does **not** set this precedent — py's OpenAPI snapshot is a hand-rolled comparison, not syrupy (py@b08bccfb `tests/web/test_openapi_snapshot.py`). R71 decides; this item neither assumes nor requires it.
+- **R13 (`dependency-vulnerability-scanning`, open).** See the license note above.
+
+**No `CONFLICT:` lines.** Every consumed parameter is satisfiable at its recorded value; no recommendation requires one to change.
+
+### Migration implications
+
+File-level changes in the `rs-launch-blueprint` template. Paths use the workspace shape implied by "CLI + library + web service"; P03 substitutes its actual crate names.
+
+**Added — manifests**
+- `crates/<lib>/Cargo.toml` → `[dev-dependencies] proptest = "1.11"`.
+- `crates/<cli>/Cargo.toml` → `[dev-dependencies] insta = { version = "1.48", features = ["filters"] }`, plus whatever R60's CLI framework needs for the test target.
+- If the workspace uses `[workspace.dependencies]` (reth and ruff both do), both entries go there and the member manifests inherit with `proptest.workspace = true` / `insta.workspace = true`.
+
+**Added — test sources**
+- `crates/<lib>/tests/properties.rs` — the F122 suite; two properties mirroring py's named seams (domain-model JSON round trip, config write→read round trip). Analogue of py@b08bccfb `tests/core/test_properties.py`.
+- `crates/<cli>/tests/help_snapshots.rs` — the F123 suite; walks the command tree, renders each `--help` in-process, one `assert_snapshot!` per path. Analogue of py@b08bccfb `tests/cli/test_help_snapshots.py`. Its doc comment carries the regeneration command, mirroring py's docstring.
+
+**Added — committed fixtures and generated state**
+- `crates/<cli>/tests/snapshots/help_snapshots__*.snap` — one file per command path. Analogue of py@b08bccfb `tests/cli/__snapshots__/test_help_snapshots.ambr` (py uses one aggregate `.ambr`; insta uses one file per snapshot, a mechanical difference that makes per-command diffs finer-grained).
+- `crates/<lib>/proptest-regressions/properties.txt` — created the first time a counterexample is found. **Must be committed**; this has no py analogue and is the one genuinely new artifact class.
+
+**Modified**
+- `.gitignore` — must **not** exclude `proptest-regressions/` or `tests/snapshots/`; it **should** exclude `*.snap.new` and `*.pending-snap`, which are transient review artifacts.
+- CI test job (shape owned by R11) — the `cargo test` step gains nothing mandatory; optionally a `cargo insta test --unreferenced=reject` step for the orphan sweep. `CI=true` is already set by GitHub Actions, so the unreviewed-snapshot failure needs no configuration.
+- Dev-tool provisioning (owned by R42) — `cargo-insta` 1.48 added to the provisioned-tool list, presence-tested with `command -v cargo-insta`, invoked as `cargo insta`.
+- `justfile` (shape owned by R42/R27) — a `snapshot-review` recipe running `cargo insta review`, so the command is discoverable without reading the test file.
+- `CONTRIBUTING.md` / `AGENTS.md` — two sentences: how to regenerate snapshots, and that `proptest-regressions/` is committed on purpose and must not be deleted.
+- `docs/port/COMMONALITY.md` rows F122 and F123 — resolved to the crates above, with `Item` already naming R33. No verdict change: both stay `DIVERGENT` / origin `py-only`, which remains factually correct at both pins.
+
+**Not changed**
+- No production `Cargo.toml` dependency, no `src/` file, no public API surface (R04), no binary size, no runtime behavior. Every change above is confined to test targets, fixtures, developer tooling and documentation.
+
+**Follow-on (out of this repository, recorded as rationale only).** The py/ts follow-on project should add both capabilities to `ts-launch-blueprint`: `vitest` 4.x already ships `toMatchSnapshot`, so Principle B costs zero new dependencies there, and `fast-check` is the established TypeScript analogue of Hypothesis for Principle A. Verified at the pin: `ts@cb1cbcb2` `package.json` lists `vitest ^4.1.10` and `@vitest/coverage-v8 ^4.1.10` and no `fast-check`; `git grep -l -E "toMatchSnapshot|toMatchInlineSnapshot|fast-check|fc\.assert" cb1cbcb2` returns no files (both run 2026-09-10).
+
+### Validation strategy
+
+Everything in this section is **proposed**. Nothing here was executed: no Rust workspace exists in this repository yet, and this item is research, not implementation. The one class of checks I *did* run is evidence retrieval — the crates.io, GitHub, RustSec, docs.rs and pinned-repository reads listed in `### Sources` and in each member's `Sources` field, all on 2026-09-10.
+
+**Proposed acceptance checks, mapped to the criteria in `### Principles and implementation`.**
+
+| # | Command | Expected behavior | Criterion |
+|---|---|---|---|
+| 1 | `cargo test --workspace` on a clean tree | Both suites run and pass with no extra flag, feature or env var; `git status` clean | 1 |
+| 2 | Remove a field from the domain model's serializer, then `cargo test -p <lib> --test properties` | Fails with a **minimized** counterexample (an empty or single-character string, not a 60-character random one) | 2 |
+| 3 | Rerun check 2 without reverting | Same counterexample reported first; `crates/<lib>/proptest-regressions/properties.txt` now exists and contains its seed | 3 |
+| 4 | `PROPTEST_CASES=2048 cargo test -p <lib> --test properties` | Passes; visibly longer runtime, proving the documented env override is live | — |
+| 5 | Rename a CLI flag, then `cargo test -p <cli> --test help_snapshots` | Fails; output shows a textual diff of old vs. new help; a `.snap.new` file appears beside the reference | 4 |
+| 6 | Add a subcommand, rerun check 5's command | The new command's help is reported as an unseen snapshot without any edit to a list of command names | 5 |
+| 7 | `CI=true cargo test -p <cli> --test help_snapshots` with check 5's rename still applied | Fails, and **no** file is written into the workspace (`git status` shows only the source edit) | 6 |
+| 8 | `cargo insta test --unreferenced=reject` after deleting a snapshot's test but leaving its `.snap` | Non-zero exit naming the orphaned file | 6 |
+| 9 | `cargo insta review`, accept the intended change | Interactive per-snapshot diff; after accepting, the `.snap` file shows as modified in `git diff` | 7 |
+| 10 | Same workspace on `macos-latest` in CI | Checks 1, 5 and 7 behave identically — this is the template's own direct proof of proptest's macOS support, which proptest's first-party CI does not provide | gate 4 |
+
+**Determinism pins the checks depend on** (each must be present in the test source or the check is not meaningful): `Command::term_width(80)` to fix wrapping; `render_long_help()`'s `StyledStr` `Display`, which is documented ANSI-free so no color pin is needed; an `insta` filter replacing the crate version with a stable sentinel so a release bump does not touch every snapshot.
+
+**One flag to confirm before writing the workflow.** The exact spelling `cargo insta test --check` is **not** documented on the insta CLI page I retrieved (https://insta.rs/docs/cli/, 2026-09-10), so check 8 is written against `--unreferenced=reject`, which *is* documented. P03 should run `cargo insta test --help` once and confirm the flag string before committing the CI step.
+
+### Confidence & re-verify trigger
+
+**High — adopt both capabilities.** The first bin of the landscape map is empty: neither `libtest` nor `cargo` provides generative or snapshot testing, so this is a real decision with no free default, and both capabilities are supported by mature, gate-clean crates. py's rationale for each transfers to Rust unchanged, and neither has an ecosystem-specific reason to be dropped.
+
+**High — `proptest` for F122.** 46.6M 90-day downloads (4.4× quickcheck), 10,387 reverse dependencies (6.8× quickcheck), chosen by `rust-lang/cargo` for its own resolver invariants, all six gates passed, and a strategy model that maps directly onto py's explicit-strategy suite. The one soft spot is its ubuntu-only first-party CI, mitigated by consumer evidence and by the template's own macOS leg.
+
+**High — `insta` for F123.** 26.4M 90-day downloads (8.3× snapbox, 3.6× expect-test), 4,383 reverse dependencies (28× snapbox), first-party CI on both required runners, adopters in `ruff`, `uv`, `arrow-rs` and `reth`, and the only candidate with built-in CI enforcement of unreviewed *and* orphaned snapshots. It is also the only one whose default idiom is an external committed reference file, which is the architectural property Principle B fixes.
+
+**High — `cargo-insta` as the third member.** Released in lockstep with insta, prebuilt for both runners including Apple Silicon, and it supplies the per-snapshot review that is insta's main ergonomic advantage.
+
+**Medium — the in-process help-render architecture (B2).** Right by default and a direct analogue of py's `CliRunner`, but it depends on R60 selecting a framework with an in-process renderer, and R32 could later want a spawn-based transcript test alongside it.
+
+**Medium — omitting `proptest-derive`.** A judgment about the template's domain-model size that P03 may reasonably reverse; nothing about it fails a gate.
+
+**Medium-low — that the license reading stands.** insta and cargo-insta are `Apache-2.0`, not dual. I argue this passes gate 1 for a dev-dependency, but it is an owner-visible interpretation, and `snapbox` is the ready substitute if the stricter reading wins.
+
+**Explicitly not claimed.** No `unsafe`-block audit of any crate. No measured build time, binary size or test-suite wall clock — every performance statement is qualitative or is the maintainers' own published figure. No annual-Rust-survey adoption figure for testing crates (checked; the published results do not break them out). No resolved `Cargo.lock` compatibility proof (no workspace exists to resolve). No `expect-test` issue-responsiveness sample.
+
+**Re-verify triggers.** Any one of these invalidates part of this answer:
+1. proptest's published `rust-version` rises above the template's floor (currently 1.96; HEAD already reads 1.86) — or, symmetrically, the floor rises past a member as stable advances. At stable 1.98.1 the floor is 1.96; the binding member is proptest at 1.85, so the margin is 11 minors.
+2. A RustSec advisory appears at `https://rustsec.org/packages/{proptest,insta,cargo-insta}.html` (all three return HTTP 404 today).
+3. R13's `cargo-deny` policy adopts a strict all-dependencies-dual license rule → switch the snapshot member to `snapbox` 1.2.2.
+4. R60 selects a CLI framework with no in-process help renderer → the snapshot architecture moves to B1 and `insta-cmd` or `trycmd` joins the stack.
+5. R32 introduces a test tiering scheme that would place either suite outside the default `cargo test` run → re-argue acceptance criterion 1.
+6. proptest's CI still has no macOS leg **and** a macOS-specific failure is observed in the template's own matrix.
+7. `bolero` reaches 1.0 with a stable-only property mode, or `proptest-derive` reaches 1.0.
+8. `insta` and `cargo-insta` stop releasing in lockstep, breaking the version-matrix argument in `### Compatibility`.
+
+### Sources
+
+**Primary endpoints queried (all 2026-09-10).**
+- crates.io `GET https://crates.io/api/v1/crates/<name>` for: `proptest`, `quickcheck`, `insta`, `cargo-insta`, `snapbox`, `expect-test`, `insta-cmd`, `trycmd`, `goldenfile`, `proptest-derive`, `arbitrary`, `bolero` — fields `crate.recent_downloads`, `crate.downloads`, `crate.max_stable_version`, `crate.repository`.
+- crates.io `GET https://crates.io/api/v1/crates/<name>/versions` for the same crates plus the dependency-MSRV check on `rand`, `rand_chacha`, `rand_xorshift`, `bitflags`, `num-traits`, `unarray`, `regex-syntax`, `rusty-fork`, `tempfile`, `bit-set`, `similar`, `once_cell`, `console` — fields `num`, `created_at`, `yanked`, `license`, `rust_version`, `edition`.
+- crates.io `GET https://crates.io/api/v1/crates/<name>/dependencies` for `proptest/1.11.0`, `insta/1.48.0`, `quickcheck/1.1.0`, `snapbox/1.2.2`, `proptest-derive/0.8.0`.
+- crates.io `GET https://crates.io/api/v1/crates/<name>/reverse_dependencies?per_page=1` — `meta.total`: proptest 10,387; insta 4,383; quickcheck 1,536; expect-test 313; snapbox 156.
+- GitHub `GET https://api.github.com/repos/<o>/<r>` for `proptest-rs/proptest`, `BurntSushi/quickcheck`, `mitsuhiko/insta`, `assert-rs/snapbox`, `rust-analyzer/expect-test`, `mitsuhiko/insta-cmd`, `rust-fuzz/arbitrary`, `camshaft/bolero`, `calder/rust-goldenfile` — `stargazers_count`, `archived`, `pushed_at`, `license.spdx_id`.
+- GitHub `GET https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+is:open` — `total_count`: proptest 124, insta 55, snapbox 44, quickcheck 19, expect-test 15. (`open_issues_count` from the repos endpoint was deliberately **not** used, per the figure table.)
+- GitHub `GET https://api.github.com/repos/<o>/<r>/issues?state=all&sort=created&direction=desc` plus `/issues/<n>/comments` for the responsiveness samples.
+- GitHub contents API for `Cargo.toml`, `LICENSE`, `.github/workflows/*.yml`, `tests/builder/help.rs`, `tests/builder/utils.rs`, `README.md` at the commits named inline.
+- RustSec `https://rustsec.org/packages/<name>.html` for `proptest`, `quickcheck`, `insta`, `cargo-insta`, `snapbox`, `expect-test`, `proptest-derive`, `insta-cmd` — **all returned HTTP 404**.
+- `https://static.rust-lang.org/dist/channel-rust-stable.toml` — `[pkg.rust] version = "1.98.1 (48a229cea 2026-09-01)"`.
+
+**Documentation.**
+- https://doc.rust-lang.org/cargo/guide/tests.html and https://doc.rust-lang.org/book/ch11-01-writing-tests.html — the toolchain's built-in test capability.
+- https://proptest-rs.github.io/proptest/proptest/vs-quickcheck.html — proptest vs quickcheck, maintainers' own.
+- https://docs.rs/proptest/latest/proptest/test_runner/struct.Config.html — `cases`, `failure_persistence`, `fork`, `timeout`, `PROPTEST_*` env overrides.
+- https://insta.rs/docs/cli/ — `review`, `test`, `accept`, `reject`, `pending-snapshots`, `--unreferenced`, `--accept`, `--accept-unseen`, `--review`, `--snapshot`.
+- https://insta.rs/docs/quickstart/ — `CI` env var, `INSTA_UPDATE` modes, `.snap.new` files.
+- https://docs.rs/insta/latest/insta/ — assertion macros, `Settings::add_filter`, redactions, inline snapshots.
+- https://docs.rs/snapbox/latest/snapbox/ — `assert_data_eq!`, `str![]`, `file![]`, `SNAPSHOTS`, feature list.
+- https://docs.rs/clap/latest/clap/struct.Command.html — `render_long_help`, `render_help`, `get_subcommands`.
+- https://docs.rs/clap/latest/clap/builder/struct.StyledStr.html — "Color-unaware printing. Never uses coloring." and `ansi()`.
+- https://blog.rust-lang.org/2026/03/02/2025-State-Of-Rust-Survey-results/ — checked for testing-crate adoption; not broken out.
+
+**Pinned source repositories.** py@`b08bccfb55d05f15e46a83b52c5660b1881d19f5` read via `git -C ~/c/py-launch-blueprint show b08bccfb:<path>`: `tests/core/test_properties.py`, `tests/cli/test_help_snapshots.py`, `tests/web/test_openapi_snapshot.py`, `pyproject.toml` (lines 93, 100, 271-298), `.github/workflows/ci.yml`, and the tree listing that confirms `tests/cli/__snapshots__/test_help_snapshots.ambr`. ts@`cb1cbcb2e88b898e8c081b0abbfabc1630079c00` read via `git -C ~/c/ts-launch-blueprint show cb1cbcb2:package.json` and `git grep -l … cb1cbcb2`. This repository's own working tree was read for `docs/port/COMMONALITY.md` (rows F122, F123) and `docs/port/PARAMETERS.md` (the four fixed parameters and R42's resolved `package-manager-invocation`).
+
+**Third-party repositories, each at a commit fetched 2026-09-10.** `rust-lang/cargo` @ `e7506208ff1b`; `paradigmxyz/reth` @ `040bef7b319c`; `astral-sh/ruff` @ `c3813a501faf`; `astral-sh/uv` @ `a22198b1b536`; `clap-rs/clap` @ `48ed7869b91a`; `apache/arrow-rs` @ `f9e02ba76ad1`; `rust-lang/rust-analyzer` @ `a879a4cbadc3`. `mitsuhiko/insta`, `proptest-rs/proptest`, `assert-rs/snapbox`, `BurntSushi/quickcheck` and `rust-analyzer/expect-test` were read at their default branch on the same date.
+
+**Method notes.** I queried the crates.io crate, versions, dependencies and reverse-dependencies endpoints; the GitHub repos, search/issues, issues, contents and commits endpoints (authenticated via `gh api`, so the 60/hour anonymous limit did not apply); `rustsec.org/packages/<name>.html`; `static.rust-lang.org/dist/channel-rust-stable.toml`; docs.rs; and the maintainers' documentation sites. Both pinned source repositories were read through their pin, never from a working-tree path. **What I could not verify, in full:** (1) the annual Rust survey does not publish testing-crate adoption, so no survey figure appears anywhere in this report; (2) issue-responsiveness samples are smaller than 10 for two repositories because the recent-activity feed is dominated by pull requests — proptest yielded 8 issues (4 answered at 4.9 / 24.4 / 1.3 / 15.5 days → median 10.2 days among answered, 4 unanswered) and snapbox yielded 7 (1 answered at 0.1 days, 6 unanswered); insta yielded 10 (5 answered, median 0.4 days) and quickcheck yielded 10 (3 answered, all at 0.0 days, 7 unanswered); "maintainer" was inferred from a comment's `author_association` being OWNER, MEMBER or COLLABORATOR, which understates responsiveness for maintainers who close issues by commit rather than by comment — assert-rs/snapbox in particular; (3) I did not sample `expect-test`'s issue responsiveness; (4) I did not audit any crate's source for `unsafe` blocks and make no `unsafe`-count claim — the posture stated is "dev-dependency, therefore in no shipped artifact"; (5) no build, benchmark or test run was performed, so every compile-time, binary-size and runtime statement is qualitative or is a maintainer's own published figure; (6) dependency-tree MSRV was computed from the newest published version of each direct dependency, not from a resolved `Cargo.lock`, because no workspace exists to resolve — the figure is 1.85 either way and the margin to the 1.96 floor is large; (7) `docs.rs` for `clap::Command` listed `term_width` in the method index but the fetched excerpt did not include its prose, so its role is evidenced by clap's own `tests/builder/help.rs:367` usage rather than by its doc text; (8) the insta CLI documentation page does **not** document a `cargo insta test --check` flag, so no such flag is asserted anywhere in this report — the CI enforcement claimed rests on the documented `CI`/`INSTA_UPDATE` behavior and on `--unreferenced`; (9) a discrepancy is recorded rather than resolved: proptest's published 1.11.0 declares `rust_version` 1.85 on crates.io while the repository's default branch declares 1.86 and pins CI at 1.86.0. **Endpoint failures:** none. Every RustSec 404 is a documented absence of an advisory page, not a retrieval failure.

@@ -322,8 +322,10 @@ confirms rather than contradicts the principle behind F063/F066/F073. Two raw re
 
 **Architecture alternatives compared, before any flag was chosen.**
 
-1. *Commit-derived automated bump with ecosystem-aware pre-major dampening.* The version is a pure
-   function of commit history plus a policy declared in configuration. Integration cost: two JSON
+1. *Commit-derived automated bump with ecosystem-aware pre-major dampening.* The version is a
+   function of commit history plus a policy declared in configuration — pure in the commit history
+   except where a version override displaces it (**Override precedence** above), which is the
+   deliberate escape hatch rather than a leak in the model. Integration cost: two JSON
    booleans. Dependability: machine-enforced on every release, so it cannot drift with maintainer
    attention. Its residual risk is that it trusts the commit message — a breaking change mislabelled
    `feat:` ships as a patch bump.
@@ -510,7 +512,7 @@ corporate policies treat `0.x` as experimental. That cost is accepted because a 
 followed by an early `2.0.0` is more damaging than honest pre-1.0 iteration, because `0.x` carries
 no visible adoption penalty in Rust (four of the six widely-adopted crates sampled above are
 pre-1.0, several with nine-figure all-time download counts), and because pre-1.0 is the recoverable
-direction — graduation is a commit footer, retreat from `1.0.0` is not. Versus (C)/(D)/(E): the
+direction — graduation is one override commit footer away, retreat from `1.0.0` is not. Versus (C)/(D)/(E): the
 familiar teaching that `feat` bumps the minor digit. That cost is accepted because under Cargo's
 rule a `0.x` minor bump *is* an incompatibility signal, and the translation happens in CI where no
 contributor has to think about it. The residual risk (A) does not remove is a breaking change
@@ -598,11 +600,14 @@ node v26.5.0, npm 12.0.1
 no CI workflow was written, and nothing was created inside the repository worktree. Every command
 below ran in the session scratchpad
 (`/private/tmp/claude-501/.../scratchpad`, abbreviated `<scratch>`) except the read-only toolchain
-and repository reads. All seven checks in the table below exited `0` **except check 7's first
+and repository reads. All eight checks in the table below exited `0` **except check 7's first
 command, whose non-zero exit is itself the result** — `npm view ts-launch-blueprint@0.1.1` exits 1
 with `E404`, which is what the check was run to find out. All HTTP fetches returned `200` except
 where a status is quoted otherwise. Retrieval date: **2026-09-09** for checks 1–6, **2026-09-10**
-for check 7, which was added in revision 2.
+for check 7 (added in revision 2) and for check 8 (added in revision 5). Check 8 verifies a claim
+about the tool's ordering and implements nothing; its output was **appended** to the existing
+`evidence/release-please-source-v17.11.2.log` under a dated banner rather than replacing it, and no
+other evidence log was changed.
 
 | # | What it decides | Command (working directory) | Result | Log |
 |---|---|---|---|---|
@@ -627,6 +632,93 @@ real scratch repository (it needs a GitHub token and a throwaway repository), an
 P03's work.
 
 ## Engines
+
+**Audit of revision 4, and what revision 5 changed.** Revision 4
+(sha256 `5a744eb02d24894777e7d795a95e4f54defaf6f0afddb61ede654aa1254643d4`) was **rejected** by
+`audit-codex-2026-09-05T164357Z-eec460755121-r4` (`review/audit-codex.r4.md`, model gpt-5.6-terra)
+on one finding, and **confirmed** on everything else it checked.
+
+- *Rejected by the audit — an outcome asserted as if nothing could override it.* Revision 4 stated
+  the `Release-As` exception at one location and asserted an empty-manifest or seeded outcome without
+  it at six others. The auditor's inverse control selected `0.7.0` for a breaking commit carrying a
+  `Release-As: 0.7.0` footer. **The finding is correct**, and I verified its mechanism first-hand
+  rather than adopting it: check 8 reads `src/strategies/base.ts:543-574` at `v17.11.2` and confirms
+  the ordering the auditor named, with `this.releaseAs` at line 547 and the `RELEASE AS` commit note
+  at 554-564 both preceding the `latestRelease` check at 566 and `initialReleaseVersion()` at 573.
+- *Two things the source read added that the finding did not name.* First, the deprecated
+  configuration and the commit footer are **two separate paths**, not one, and the `release-as` value
+  has a second source besides the configuration key — the `--release-as` command-line option, which
+  `parseConfig` writes over the key for every package (`manifest.ts:1444-1463`,
+  `bin/release-please.ts:290-293`). The decision's wording now matches that. Second, and more
+  consequential for the sweep, the footer is honoured **again** inside
+  `DefaultVersioningStrategy.determineReleaseType` (`default.ts:74-82`) before any flag branch. That
+  removes the tempting escape hatch that statements scoped to the versioning strategy are exempt:
+  check 3's probe drives that strategy directly and is itself subject to the footer. Every
+  version-outcome statement in this decision therefore carries the condition.
+- *Confirmed by the audit, and unchanged in revision 5.* All 36 version outcomes against their named
+  starting versions, flag configurations and commit histories; the aggregation rule; the two
+  pre-major boundary phrases against `Version.isPreMajor` (`this.major < 1`); and the four
+  `- assumes` lines byte-for-byte against `docs/port/PARAMETERS.md`. None of those lines was
+  reworded. The `- assumes` lines were re-checked against the registry after the edits and are
+  unchanged.
+
+**Mechanism this decision depends on, recorded here because it was implicit for four revisions.**
+The version override described under **Override precedence** in `## Decision` is a mechanism of the
+recommended tool, not a caveat about it: `release-type: rust` plus an empty manifest yields `0.1.0`
+only for a history in which neither override path fires. It is recorded as a *dependency* rather
+than an unproven item because it was read from the pinned source (check 8), and as corroboration the
+r4 auditor's independent inverse control produced `0.7.0` from a `Release-As: 0.7.0` footer
+(`review/evidence/audit-r25-r4.log`). What stays unproven is the same thing as before — the
+end-to-end first Release PR — now with the override condition attached to it in unproven item 2.
+
+**What revision 5 changed, and nothing else.** The recommendation (launch at `0.1.0`,
+`release-type: rust`, both flags `true`, empty manifest), the vocabulary and division of labour, the
+registry finding, the parameter lines, checks 1-7 and their logs, and the unproven list all stand as
+written. Checks 1-7 were not re-run and no existing evidence log content was altered; check 8's
+output was appended to `evidence/release-please-source-v17.11.2.log` under a dated banner on
+2026-09-10. The edits are:
+
+1. **the sweep method changed, because reading the document four times had failed four times.**
+   Locations were enumerated mechanically before any edit: a regular expression matching version
+   numbers, `first release`, `next release`, `initial`, `manifest`, `propose`, `Release-As`,
+   `release-as`, `bump`, `→`, `moves the`, `digit`, `yields`, `produces`, `releases`, `released`,
+   `returns` and `starts at` matched **293 lines**; classifying each for whether it asserts what
+   version comes out of something produced a queue of **25 locations carrying 26 assertions**;
+   **all 25 were edited**; the same enumeration was re-run against the edited file and every queued
+   location was confirmed to carry its conditions. Explicitly excluded, and why: the two
+   `isPreMajor` phrases and the schema quotations (audit-confirmed, and a quotation may not be
+   edited), the four `- assumes` lines (byte-compared), the options-table cell values and probe
+   citations (governed by their preamble), the ts history table (observed events, not predicted
+   outcomes), and the historical revision records except where one restates the defect;
+2. **the exception stated once and in full** as **Override precedence** in `## Decision` — the
+   four-step order in `buildNewVersion` with pinned line numbers, the two separate paths with their
+   two sources apiece, the second check-site inside `DefaultVersioningStrategy`, and the two limits
+   on its reach (the recommended config sets no `release-as` key; the empty manifest makes a footer
+   anywhere in the scanned history fire on the first Release PR). Every one of the 25 locations
+   carries the word *override* in its governing sentence, which is what makes the sweep re-runnable
+   by an auditor;
+3. **three wrong-actor statements corrected**, all found by the enumeration rather than reported by
+   the audit: the `determineReleaseType` description omitted the `RELEASE AS` short-circuit that
+   precedes its breaking/feature count; the runner-up paragraph credited `DefaultVersioningStrategy`
+   with honouring the footer "before any other decision" when `BaseStrategy.buildNewVersion` acts
+   first in the running flow; and `## Engines` item 3 said "the strategy already returns `0.1.0`"
+   when the value comes from `buildNewVersion` returning `Rust.initialReleaseVersion()`;
+4. **the prompt-defect claim narrowed from two documents to one.** Revisions 1-4 said the reversed
+   flag gloss should be fixed in the binding prompt *and* in the F070 explanatory prose at
+   `docs/port/COMMONALITY.md:76`. Read directly on 2026-09-10, that cell reads *"whether
+   rs-launch-blueprint starts pre-1.0 (bump-minor-pre-major/bump-patch-for-minor-pre-major) or
+   post-1.0 like py"*: it names both flags and glosses neither, so it cannot state their roles in
+   reverse, and `git log` shows the cell never carried a gloss (only its `Item` column changed,
+   `R27` → `R25`). The defect is in the binding prompt alone, at
+   `research/topics/25-semver-bump-strategy/prompts/semver-bump-strategy.prompt.md` line 28. Three
+   locations carried the overstated version and all three were corrected, including `## Engines`
+   item 5, which had mis-restated doxa-openai's conditional request (*"correct any wording that
+   says…"*) as an assertion about that file's contents. Neither the prompt nor the commonality file
+   is edited by this decision. This is the same failure mode as the `Release-As` finding — a claim
+   propagated to more locations than the evidence supports — and it was found the same way;
+5. **check 8 added**, run by me rather than taken from the audit, and appended rather than
+   overwriting: it reads the six pinned files that establish the override ordering and the two
+   paths.
 
 **Audit of revision 3, and what revision 4 changed.** Revision 3
 (sha256 `23d42766b5319c95de680b50dc20334332243e66079eab5f0b981b02c6df9fbd`) was **rejected** by
@@ -663,7 +755,10 @@ claim. The edits are:
 2. the **asymmetry stated explicitly**, because it is the actual argument for the empty manifest:
    with no latest release, `buildNewVersion` returns `initialReleaseVersion()` *before* examining
    any commit type, so `0.1.0` is proposed whatever landed; with a seed, the outcome is
-   commit-dependent. One branch is unconditional and the other is not, and revision 3 blurred that;
+   commit-dependent. One branch is unconditional in the commit types and the other is not, and
+   revision 3 blurred that. (Revision 4 wrote that asymmetry without the version-override condition
+   that governs both branches, which is the defect revision 5 repairs — see **Override precedence**
+   in `## Decision`;)
 3. a sweep of every other sentence stating a version number or bump outcome, each now either marked
    as holding for all histories or given the condition under which it holds — the per-commit-type
    bump summary gained the aggregation rule (`determineReleaseType` takes the strongest type
@@ -809,18 +904,24 @@ tool source rather than by counting votes.
    `Rust.initialReleaseVersion()` returning `0.1.0`. Those do not compose. `src/manifest.ts`'s
    "backfill latest release tags from manifest" block treats a manifest entry as the *last released*
    version, and `docs/manifest-releaser.md` says the same in prose, so a seeded `0.1.0` becomes the
-   previous release and the first Release PR proposes whatever the strategy computes from the
+   previous release and, with no version override in force (**Override precedence** in
+   `## Decision`), the first Release PR proposes whatever the strategy computes from the
    commits since — `0.1.1` on a patch-or-feature-only history, `0.2.0` on one with a breaking change
    (probe rows *A both true · 0.1.0*). **The proof is the source; ts's history is corroboration
    only** — it seeded `0.1.0` at `19ff9b5`, and on its actual commit history its first release
    commit and tag were `v0.1.1`, with the seeded number appearing as neither. Revision 1 wrote that ts "first published v0.1.1"; it did
    not, and that overstatement is finding 1 of the audit recorded below. This decision therefore
-   creates the manifest **empty** so the first version released is `0.1.0`.
+   creates the manifest **empty**, so that on a history carrying no version override the first
+   version released is `0.1.0`.
 3. **doxa-openai's bootstrap-only `release-as: 0.1.0` is not adopted.** It solves the same worry a
    different way, but the schema marks the `release-as` config key *"[DEPRECATED] … Consider using a
    `Release-As` commit instead"* and the docs warn that leaving it in place makes subsequent runs
    keep proposing the same version. With `release-type: rust` and an empty manifest it is
-   unnecessary — the strategy already returns `0.1.0`.
+   unnecessary, and the actor is worth naming precisely: the version does not come from the
+   versioning strategy at all but from `BaseStrategy.buildNewVersion` returning
+   `Rust.initialReleaseVersion()` (`base.ts:573`), which is `0.1.0`. Adopting doxa-openai's key would
+   put a standing override ahead of that return (`base.ts:547`) — the first step of **Override
+   precedence** in `## Decision` — and so would replace a correct computed result with a pinned one.
 4. **doxa-gemini's `BASELINE-REVIEW: F066, F073 — replace release-please with release-plz` is
    recorded and not adopted.** The binding prompt's `## Out of scope` states that whether the
    template uses release-please at all is settled by F063, F066 and F073 (`COMMON → REUSE`) and that
@@ -859,15 +960,24 @@ tool source rather than by counting votes.
 
 1. **The end-to-end proposal.** `npx release-please@17.11.2 release-pr --repo-url=<owner>/<repo>
    --dry-run` against the real template repository after `fix:`, then `feat:`, then `feat!:`
-   commits, each released before the next lands. Expected `0.1.1`, then `0.1.2`, then `0.2.0`,
-   starting from a released `0.1.0` — a sequence that holds for that history and no other; batched
-   differently, the same three commits release once as `0.2.0`. Check 3 proved the
+   commits, each released before the next lands, and none of them carrying a `Release-As:` footer.
+   Expected `0.1.1`, then `0.1.2`, then `0.2.0`,
+   starting from a released `0.1.0` — a sequence that holds for that history, that batching and no
+   version override, and for nothing else; batched
+   differently, the same three commits release once as `0.2.0`, and any one of them carrying an
+   override releases that override's version instead (**Override precedence** in `## Decision`).
+   Check 3 proved the
    arithmetic in isolation; only this exercises the real strategy including `Cargo.toml` and
    `Cargo.lock` rewriting. **Not run here: it needs a GitHub token and a repository, and building
    either would be implementing the recommendation.**
-2. **That the first version release-please releases is `0.1.0`.** The empty-manifest reading is
+2. **That the first version release-please releases is `0.1.0`, on a bootstrap history carrying no
+   version override.** The empty-manifest reading is
    derived from the pinned source and corroborated by ts's contrary history; no first release was
-   executed here, and none could be without building the template. P03 proves it the first time the
+   executed here, and none could be without building the template. The override condition is not a
+   formality for this item in particular: the empty manifest makes the first run scan the entire
+   default-branch history, so P03 must confirm that no commit in that history carries a `Release-As:`
+   footer and that no `release-as` value is configured or passed (**Override precedence** in
+   `## Decision`). P03 proves it the first time the
    Release PR opens — this is the artifact the prompt's value test names, so it is checked before
    the release, not after. **Separately unproven, and claimed nowhere above: that the released
    `0.1.0` reaches crates.io.** That is F074's guard and F075's publishing path, not R25's, and ts

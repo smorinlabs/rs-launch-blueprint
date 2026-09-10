@@ -22,7 +22,7 @@ commands the human-facing welcome names.
 
 | Bin | Candidates found | Note |
 |---|---|---|
-| Built-in or first-party toolchain (Rust/Cargo) | *empty* | Cargo, rustup and `rustc` define no AI-assistant configuration path. `cargo metadata`, `Cargo.toml` `[package.metadata]` and `rust-toolchain.toml` carry no agent-instruction convention. Verified by absence in the Cargo book's manifest reference (https://doc.rust-lang.org/cargo/reference/manifest.html, retrieved 2026-09-10). This bin being empty is the reason the decision is a repo-hygiene decision, not a Rust-ecosystem decision. |
+| Built-in or first-party toolchain (Rust/Cargo) | *empty* | Cargo, rustup and `rustc` define no AI-assistant configuration path. `cargo metadata`, `Cargo.toml` `[package.metadata]` and `rust-toolchain.toml` carry no agent-instruction convention. Verified by absence: `curl -sS https://doc.rust-lang.org/cargo/reference/manifest.html \| grep -ciE 'agents\.md\|\.cursor\|windsurf\|claude'` returned **0** (retrieved 2026-09-10). This bin being empty is the reason the decision is a repo-hygiene decision, not a Rust-ecosystem decision. |
 | Established industry standard | **`AGENTS.md`** (the hub, F197, out of scope for re-decision but the baseline every spoke is measured against); **`.cursor/rules/*.mdc`** (Cursor project rules); **`.claude/settings.json`** keys, including `companyAnnouncements`; **`CLAUDE.md`** with an `@AGENTS.md` import (F197's spoke) | `AGENTS.md` is "used by over 60k open-source projects" and "is now stewarded by the Agentic AI Foundation under the Linux Foundation" (https://agents.md/, retrieved 2026-09-10). |
 | Up-and-comer / in transition | **`.devin/rules/*.md`** (the successor to `.windsurf/rules/*.md`); **`AGENTS.local.md`** (personal, gitignored, Devin CLI); Claude Code **`SessionStart` hooks** as a repo-scoped session-context mechanism; **agent "skills"** directories (`.claude/skills/`, `.agents/`) | `.devin/rules/` is documented as "preferred… takes precedence over `.windsurf/`" (https://docs.devin.ai/cli/extensibility/rules.md, retrieved 2026-09-10). |
 | Legacy / demoted | **`.windsurf/rules/*.md`** (fallback only), **`.windsurfrules`** (labelled "Legacy Windsurf workspace rules"), **`.cursorrules`** (superseded by `.cursor/rules/`) | Same Devin CLI page, "Supported File Names" table, retrieved 2026-09-10. |
@@ -72,6 +72,16 @@ shapes this template presents — CLI (`ripgrep`, `bat`, `starship`, `just`, `uu
 `typos`, `uv`, `ruff`), library (`serde`, `tokio`, `clap`, `reqwest`, `sqlx`, `egui`,
 `bevy`) and service/server (`axum`, `vector`, `qdrant`, `meilisearch`, `risingwave`,
 `tikv`, `surrealdb`, `lancedb`).
+
+The standing evidence, cited rather than asserted, from
+`GET https://api.github.com/repos/<owner>/<repo>` over the same 50 repositories
+(retrieved 2026-09-10): `stargazers_count` ranges from **4,125** (`crate-ci/typos`, the
+least-starred member of the set) through a median of **30,782** to **123,077**
+(`rustdesk/rustdesk`); `pushed_at` shows **47 of 50 pushed within September 2026**, and
+the least recently pushed repository in the whole set, `BurntSushi/ripgrep`, was pushed
+`2026-08-04T13:59:44Z` — 37 days before retrieval. Every repository in the census is
+therefore both widely adopted and actively maintained by these measures. (One redirect
+was followed: `launchbadge/sqlx` resolves to `transact-rs/sqlx`.)
 
 Result (n = 50, retrieved 2026-09-10):
 
@@ -525,10 +535,16 @@ A second change compounds this. The rule-file mechanism ts wrote to belongs to
 agent only.** The Devin Local agent — the default agent for new tabs — does not persist
 memories" (https://docs.devin.ai/desktop/cascade/memories.md, retrieved 2026-09-10). The
 default agent reads rules through the Devin CLI rules system, where `.windsurf/rules/`
-survives only under "Rules From Other Tools" — an import layer the user can switch off
-in `config.json` (`"windsurf": true` is a toggle, https://docs.devin.ai/cli/extensibility/rules.md,
-retrieved 2026-09-10). `AGENTS.md`, by contrast, is that page's recommended path and is
-read by default.
+appears under "Rules From Other Tools" rather than among Devin's native paths. To be
+precise about the asymmetry, because it is narrower than it first looks: the
+`read_config_from` block shows `agents_standard`, `cursor`, `windsurf` and `claude` all
+set to `true`, so `.windsurf/rules/` and `AGENTS.md` are **both read by default and both
+switchable off by the user** (https://docs.devin.ai/cli/extensibility/rules.md, retrieved
+2026-09-10). The real differences are the ones this member turns on: `AGENTS.md` is
+labelled "Recommended" in the supported-file table and read automatically, `.devin/`
+"takes precedence over `.windsurf/`", the single-file `.windsurfrules` is labelled
+"Legacy", and the rule directory belongs natively to Cascade, the agent the vendor now
+calls legacy.
 
 The ts precedent commits one file at `ts@cb1cbcb2`:
 `.windsurf/rules/justfile-rules.md`, frontmatter `trigger: glob` / `globs: Justfile`,
@@ -545,9 +561,9 @@ four documented activation modes (`always_on`, `model_decision`, `glob`, `manual
 https://docs.devin.ai/desktop/cascade/memories.md, retrieved 2026-09-10). So this is not a
 "broken file" finding. It is a **placement and audience** finding: the file sits at a
 fallback path, in a directory named for a product that no longer exists under that name,
-read by the legacy agent by default and by the default agent only through a toggleable
-import layer, and its content restates conventions that F177 and F178 record as
-`just`-native and `COMMON → REUSE`.
+native to Cascade (the legacy agent) and reached by the default agent only through the
+other-tools import layer, and its content restates conventions that F177 and F178 record
+as `just`-native and `COMMON → REUSE`.
 
 The architectural alternative that preserves the same behaviour with none of that is the
 hub: root `AGENTS.md` is processed by the same rules engine as an always-on rule
@@ -632,7 +648,7 @@ Devin's documentation stops listing `AGENTS.md` as read-by-default, or if the
 
 | | Ship `.windsurf/rules/` (ts shape) | Ship `.devin/rules/` | Omit both (recommended) |
 |---|---|---|---|
-| Read by Devin Local (default agent) | Only via a user-toggleable import layer | Yes | Yes, via `AGENTS.md` |
+| Read by Devin Local (default agent) | Yes, via the other-tools import layer (default on, user-toggleable) | Yes | Yes, via `AGENTS.md` (also default on, user-toggleable) |
 | Path status per vendor docs | Fallback / legacy product name | Preferred | N/A |
 | Policy sources | 2 | 2 | 1 |
 | Rust-project precedent | 0 of 50 | 0 of 50 | 24 of 50 carry `AGENTS.md` |
@@ -1051,9 +1067,9 @@ three keys in one file).
 - `assumes task-runner tool = just` — F176, `docs/port/COMMONALITY.md:180`,
   `COMMON → REUSE` ("tool: just (casey/just v1.58.0, checked 2026-09-02"). The
   announcement names `just` recipes on this basis.
-- `assumes package-manager-invocation = <R42's resolved value>` — recipes invoke a
-  `cargo-<sub>` tool as `cargo <sub>` and every other tool as a bare executable, with no
-  provisioner prefix in any Justfile recipe (`docs/port/PARAMETERS.md`, R42, resolved).
+- `assumes package-manager-invocation = invoke a tool whose executable is named
+  cargo-<sub> as cargo <sub>` — and every other tool as a bare executable resolved on
+  PATH, with no provisioner, runner or package-manager prefix in any Justfile recipe (`docs/port/PARAMETERS.md`, R42, resolved).
   This is why the welcome names `just` recipes rather than raw `cargo` invocations.
 - `assumes AI-agent instruction hub = single canonical AGENTS.md + thin per-tool import` —
   F197, `docs/port/COMMONALITY.md:201`, `COMMON → REUSE`. Re-confirmed, not challenged,

@@ -580,16 +580,54 @@ the four named groups and their 20 package patterns. Not ported from ts: the
 `update-types` filter.
 
 ##### Validation strategy
-Proposed, not executed: over the first four weeks after P03, count open Dependabot PRs
-on Monday afternoon; expect ≤ 2 from routine updates. Deliberately falsifiable check —
-introduce a dependency on a `0.x` crate, wait for a `0.x → 0.(x+1)` release, and
-confirm the bump appears inside the catch-all group's PR (it would have been labelled
-`minor` and silently batched under ts's filter).
+Proposed for P03, not executed on a template: over the first four weeks, count open
+Dependabot PRs on Monday afternoon and expect ≤ 2 from routine updates; and, as a
+deliberately falsifiable check, add a `0.x` dependency, wait for a `0.x → 0.(x+1)`
+release, and confirm the bump appears inside the catch-all group's PR (ts's filter
+would have labelled it `minor`).
+
+**Executed, on live repositories, 2026-09-10 — and it returned a mixed result that
+must be carried forward.** Dependabot encodes grouping in the branch name, so
+`GET https://api.github.com/repos/<o>/<r>/pulls?state=all&per_page=100` settles whether
+a configured group is actually batching. At `cargo-bins/cargo-binstall`, whose Cargo
+entry is `groups: { deps: { patterns: ["*"] } }`, it is: branch
+`dependabot/cargo/deps-2076c6ea14`, title `build(deps): bump astral-tokio-tar from
+0.6.4 to 0.7.0 **in the deps group**` (created 2026-09-05) — so a one-member group
+still produces a group branch and says so in the title. At `ratatui/ratatui`, whose
+Cargo entry carries an apparently equivalent `groups: { cargo-dependencies: { patterns:
+["*"] } }` committed on 2026-04-14 ("build(deps): tune Dependabot update policy
+(#2497)",
+`GET https://api.github.com/repos/ratatui/ratatui/commits?path=.github/dependabot.yml`),
+it is **not**: the four Cargo PRs opened on 2026-09-07 are
+`dependabot/cargo/duct-1.1.2`, `dependabot/cargo/serde-1.0.229`,
+`dependabot/cargo/trybuild-1.0.120` and `dependabot/cargo/lru-0.18.4` — per-dependency
+branches with no group segment, and no grouped title appears anywhere in that
+repository's last 100 pull requests. **I could not determine why**, and I decline to
+invent a mechanism: the two configurations differ in cooldown, PR limit and identifier
+but not in the grouping predicate. The consequence for this recommendation is recorded
+under `Confidence` below and as check 3 in the item-level `### Validation strategy`:
+grouping must be observed on the P03 template, not assumed from the file.
+
+The same sweep also shows what an *ungrouped* entry costs, which is the positive case
+for grouping both entries rather than only `cargo`: cargo-binstall's `github-actions`
+entry has no group and a `daily` interval, and its four most recent Dependabot branches
+are `dependabot/github_actions/taiki-e/install-action-2.87.5`, `-2.87.6`, `-2.87.7` and
+`-2.87.8`, opened on four consecutive days for the same action.
 
 ##### Confidence & re-verify trigger
-High. Re-verify if Dependabot ships the `cargo-compatible`/`cargo-incompatible`
-`update-types` values requested in #9681 — that would make an honest SemVer-filtered
-split possible and would reopen the choice between (a) and the runner-up (1).
+**High on the choice, medium on the mechanism's reliability.** High that a catch-all
+`patterns: ["*"]` group is the right predicate for this template, and high that ts's
+`update-types` filter is the wrong one for Cargo — both rest on documentation, on
+implementation source, and on the Cargo book's own compatibility rule. Medium that a
+configured catch-all group reliably batches: it demonstrably does at cargo-binstall and
+demonstrably does not at ratatui, for reasons this report could not establish (evidence
+under `Validation strategy` above). Nothing about that anomaly favours a different
+predicate — an `update-types` group would be subject to the same behavior — so it is a
+verification obligation for P03, not a reason to choose otherwise. Re-verify (a) on
+the first four weeks of the P03 template's own Dependabot PRs, and (b) if Dependabot
+ships the `cargo-compatible`/`cargo-incompatible` `update-types` values requested in
+#9681, which would make an honest SemVer-filtered split possible and reopen the choice
+between the catch-all and the runner-up.
 
 ##### Sources
 Options-reference source (`groups`, `dependency-type` support list, "any outdated
@@ -803,16 +841,30 @@ always present.
 Adds one line per entry. No repository label definitions are required, by construction.
 
 ##### Validation strategy
-Proposed, not executed: after the first Dependabot PR, confirm it carries exactly
-`dependencies` and the ecosystem label, and confirm both labels exist under the
-repository's **Issues → Labels** page having been created by Dependabot rather than by
-hand.
+**Executed, on a live repository, 2026-09-10.** `ratatui/ratatui` declares **no**
+`labels` key, so its PRs show the defaults directly: the three most recent Dependabot
+pull requests carry `labels = dependencies,rust` (Cargo) and
+`labels = dependencies,github_actions` (Actions)
+(`GET https://api.github.com/repos/ratatui/ratatui/pulls?state=all&per_page=100`,
+retrieved 2026-09-10). That confirms both registered defaults read from
+`dependabot-core`, including the underscored `github_actions`, against running
+behavior rather than against source alone.
+
+Proposed for P03, not executed: after the template's first Dependabot PR, confirm it
+carries exactly `dependencies` plus the ecosystem label, and confirm both labels exist
+under the repository's **Issues → Labels** page having been created by Dependabot
+rather than by hand.
 
 ##### Confidence & re-verify trigger
-Medium-high — the values are read from the implementation, but the interaction between
-"declared custom label" and "auto-created default label" is documented in two separate
-sentences and was not executed against a live repository. Re-verify by observing the
-first PR on the P03 template; re-verify also if `dependabot-core` changes either
+**High on the values** — `dependencies` + `rust` and `dependencies` + `github_actions`
+were read from the implementation and then observed on live pull requests (above).
+**Medium on the declaration form**: the interaction between "a declared custom label is
+ignored if it does not exist" and "Dependabot creates its default labels
+automatically" is documented in two separate sentences and was not executed for the
+case that matters — a *declared* label whose string equals a default. That uncertainty
+is why the recommendation deliberately chooses values where both readings give the same
+outcome, and why omitting `labels` is ranked first among the runners-up. Re-verify on
+the P03 template's first PR, and if `dependabot-core` changes either
 `register_label_details` call.
 
 ##### Sources
@@ -1077,16 +1129,24 @@ of one schema, and the proof that they are tested together is threefold.
    2026-09-10). A combination that the schema rejects is rejected before any PR opens
    and is reported on the repository's Dependabot tab, so an incompatible pair is
    observable rather than latent.
-2. **A shared adopter running the same combination.** `ratatui/ratatui` (22543 stars,
-   `pushed_at 2026-09-07`) declares, in one file, both ecosystems, a catch-all
-   `patterns: ["*"]` group per ecosystem, `cooldown.default-days`,
-   `open-pull-requests-limit`, and `versioning-strategy: increase-if-necessary` on the
-   Cargo entry — every member of this stack except `labels` and `commit-message`
+2. **Shared adopters running the same combination — with one caveat that is stated,
+   not smoothed over.** `ratatui/ratatui` (22543 stars, `pushed_at 2026-09-07`)
+   declares, in one file, both ecosystems, a catch-all `patterns: ["*"]` group per
+   ecosystem, `cooldown.default-days`, `open-pull-requests-limit`, and
+   `versioning-strategy: increase-if-necessary` on the Cargo entry — every member of
+   this stack except `labels` and `commit-message`
    (`GET https://raw.githubusercontent.com/ratatui/ratatui/HEAD/.github/dependabot.yml`,
    retrieved 2026-09-10). `pola-rs/polars` (39702 stars) supplies the missing pair,
    running `labels` and a `commit-message.prefix` alongside a catch-all group on its
-   Cargo entry (same endpoint pattern, retrieved 2026-09-10). Between them the six
-   members are demonstrated in production on two live, widely-used Rust repositories.
+   Cargo entry (same endpoint pattern, retrieved 2026-09-10). So the six keys coexist
+   in one accepted file on two live, widely-used Rust repositories. **The caveat:**
+   coexistence is not the same as observed batching. ratatui's Dependabot pull requests
+   on 2026-09-07 are per-dependency branches (`dependabot/cargo/duct-1.1.2` and three
+   more) despite that catch-all group, while `cargo-bins/cargo-binstall`'s equivalent
+   group does produce a grouped branch (`dependabot/cargo/deps-2076c6ea14`). The
+   evidence and its consequence are recorded in member 2's `Validation strategy` and
+   `Confidence` fields; the compatibility claim made here is the narrow one — the keys
+   are accepted together — not the broader claim that the group always batches.
 3. **A per-key ecosystem matrix**, which is where the real incompatibilities live. The
    documented support lists were checked key by key against `cargo` and
    `github-actions`:
@@ -1156,22 +1216,26 @@ ignored".
 
 ### Validation strategy
 
-Every check below is **proposed**. **None was executed**: the Rust template does not
-exist, and Dependabot's behavior can only be observed on a live GitHub repository with
-the configuration installed. The two things this report *did* execute are read-only
-retrievals — the endpoint queries and repository reads listed under `### Sources`.
+Every check below is **proposed for P03**. **None was executed against the template**,
+which does not exist. Two checks were executed against *other people's* live
+repositories, and both are reported where they belong rather than being folded in
+here: the default-label check (check 9), confirmed on `ratatui/ratatui`'s pull
+requests, and the grouping check (check 3), which returned **grouped** at
+`cargo-bins/cargo-binstall` and **ungrouped** at `ratatui/ratatui` under an apparently
+equivalent configuration — see member 2's `Validation strategy`. Everything else this
+report executed is a read-only retrieval listed under `### Sources`.
 
 | # | Check | Command / observation | Expected result |
 |---|---|---|---|
 | 1 | The file is syntactically valid and both entries are live | Repository → **Insights → Dependency graph → Dependabot**; or `gh api repos/<o>/<r>/dependabot/alerts` for the adjacent surface | Two entries listed, each with a "Last checked" timestamp, no configuration-error banner |
 | 2 | One entry covers the whole workspace | Open the first `cargo` PR; `git show --stat` on its head commit | Only root `Cargo.toml` and `Cargo.lock` touched; no member manifest |
-| 3 | Grouping actually batches | Count open Dependabot PRs each Monday for four weeks | ≤ 2 routine PRs open at any time |
+| 3 | Grouping actually batches — **the check with a mixed live result; run it first** | Count open Dependabot PRs each Monday for four weeks, and read `head.ref` on each: a grouped PR's branch is `dependabot/cargo/<group>-<hash>` | ≤ 2 routine PRs open at any time, each on a group branch. If per-dependency branches appear instead, the catch-all group is not batching (as observed at ratatui) and member 2 must be revised |
 | 4 | The commit contract holds | The F157 CI step on a Dependabot PR (`committed` with `--config committed.bot.toml`) | Exit 0; subject matches `^chore\(deps\): ` |
 | 5 | The 0.x case the ts shape would have mislabelled | Add a `0.x` dependency; wait for a `0.x → 0.(x+1)` release; inspect the grouped PR | The bump appears in the catch-all group's PR and is presented as an ordinary member of it, with no "minor/patch" claim anywhere in the title |
 | 6 | Cooldown is in force | Note a version published < 5 days ago on `GET https://crates.io/api/v1/crates/<name>/versions`; check the Monday PR | That version is absent until day 6 |
 | 7 | Manifest churn is avoided | A patch bump inside an existing caret range | `Cargo.lock` changes; `Cargo.toml` does not |
 | 8 | The MSRV guard still bites | Force a bump that raises the required Rust version (e.g. by lowering `rust-version` temporarily in a scratch branch) | The MSRV CI job fails on the grouped PR; the PR does not merge |
-| 9 | Labels land | The first PR of each ecosystem | `dependencies` + `rust`, and `dependencies` + `github_actions`, both labels present in the repository |
+| 9 | Labels land | The first PR of each ecosystem | `dependencies` + `rust`, and `dependencies` + `github_actions`, both labels present in the repository. **Already observed on a live repository** (`ratatui/ratatui`, 2026-09-10), so a different result on the template indicates a template-specific fault |
 
 Check 5 is the falsifying test for this report's central claim, and check 8 is the
 falsifying test for the MSRV coupling; if either fails, the grouping recommendation

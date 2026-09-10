@@ -259,8 +259,10 @@ method demands.
 
 ### Qualified shortlist
 
-Only **two** candidates pass every applicable gate. Fewer than five is a finding: the category is
-thin once a licence-clean, non-Docker, actively maintained, validating scanner is required.
+Only **three** candidates pass every applicable gate, and only **one** of the three also meets the
+verified-only capability requirement. Fewer than five is a finding: the category is thin once a
+licence-clean, non-Docker, actively maintained scanner is required, and thinner still once live
+validation is required.
 
 **Crate-figure applicability, stated once for the whole shortlist.** Every candidate is a
 standalone executable invoked by a CI job — a Go binary, a Python package, or a Rust binary
@@ -269,10 +271,35 @@ distributed as a release tarball. **None is published on crates.io**, so `crate.
 `inapplicable` for every row, with the per-candidate evidence recorded in `### Sources`. GitHub
 release cadence and repository figures are substituted, and are labelled as such.
 
+**Fitness gates, answered per candidate before any popularity figure below is weighed.** The six
+gates were written for a crate that enters the template's Cargo graph; no candidate here does, so
+several answers are `inapplicable` with the reason stated rather than omitted.
+
+*Kingfisher (`mongodb/kingfisher`), the recommended pick.*
+1. **Licence — pass.** Apache-2.0 (`GET https://api.github.com/repos/mongodb/kingfisher`, 2026-09-10), directly compatible with `MIT OR Apache-2.0`; and as an executed build tool it imposes no obligation on the template's artifacts in any case.
+2. **MSRV — `inapplicable` under the recommended install path.** The template installs a prebuilt release binary, so no Rust toolchain compiles Kingfisher and the policy never applies. Recorded because it nearly bit: were P03 to build from source, Kingfisher declares `rust-version = "1.96"` (`GET .../contents/Cargo.toml`, 2026-09-10) against a current stable of 1.98.1 (`https://static.rust-lang.org/dist/channel-rust-stable.toml`, 2026-09-10), which is *exactly* the `stable - 2` floor, with no headroom.
+3. **Advisories and `unsafe` — pass, with the posture stated.** RustSec is `inapplicable`: no MongoDB Kingfisher crate is published (`https://rustsec.org/packages/kingfisher.html` → HTTP 404, 2026-09-10), so no advisory page can exist. `unsafe` posture, since this candidate *is* Rust: its workspace depends on `vectorscan-rs = "0.0.6"` (`GET .../contents/Cargo.toml`, 2026-09-10), an FFI binding to the Vectorscan C matching library, so its dependency tree necessarily contains unsafe FFI. That posture is `inapplicable` to `rs-launch-blueprint` itself — the binary is executed as a subprocess, never linked — and it is *not* inapplicable to the CI trust decision, which is why provenance verification is part of the recommended install step.
+4. **Runner matrix — pass.** Release assets cover `linux-x64`, `linux-arm64`, `darwin-x64`, `darwin-arm64` (`GET .../releases/tags/v2.2.0`, 2026-09-10) and its own CI runs `ubuntu-24.04`, `ubuntu-24.04-arm`, `macos-14` (`GET .../contents/.github/workflows/ci.yml`, 2026-09-10). Windows is supported — `kingfisher-windows-x64.zip`, `kingfisher-windows-arm64.zip` — noted, not required.
+5. **Default features and async-runtime coupling — `inapplicable`, and that is the point.** Nothing is added to the template's Cargo graph, so there are no Cargo features to select and no async runtime is imposed on `rs-launch-blueprint`. Whatever runtime Kingfisher uses internally is confined to its own process and cannot conflict with the runtime R05 selects.
+6. **Binary size and compile-time cost — stated.** Compile-time cost to the template is **zero**: a prebuilt binary is downloaded, never compiled. Binary size 25.3 MiB for v2.1.0 on macOS arm64 (`docs/COMPARISON.md`, vendor-authored, 2026-09-10) — a per-job CI download, not a shipped artifact.
+
+*Gitleaks CLI (`gitleaks/gitleaks`), run directly.* 1. **Licence — pass**, MIT (`GET https://api.github.com/repos/gitleaks/gitleaks`, 2026-09-10). 2. **MSRV — `inapplicable`**, a Go binary with no Cargo manifest. 3. **Advisories/`unsafe` — `inapplicable`**, not a crate, so no RustSec page and no Rust `unsafe` posture to state. 4. **Runner matrix — pass**, Go cross-compiles and the project publishes Linux, macOS and Windows release archives. 5. **Features/async coupling — `inapplicable`**, nothing enters the Cargo graph. 6. **Size/compile cost — stated**: 14.6 MiB on macOS arm64 (`docs/COMPARISON.md`, vendor-authored, 2026-09-10), zero compile-time cost to the template.
+
+*detect-secrets (`Yelp/detect-secrets`).* 1. **Licence — pass**, Apache-2.0 (`GET https://api.github.com/repos/Yelp/detect-secrets`, 2026-09-10). 2. **MSRV — `inapplicable`**, a Python package. 3. **Advisories/`unsafe` — `inapplicable`**, not a crate. 4. **Runner matrix — pass**, pure Python running anywhere a CPython interpreter does, which both matrix runners provide. 5. **Features/async coupling — `inapplicable`** to the Cargo graph; note instead that it couples CI to a **Python toolchain**, which a Rust template otherwise does not need. 6. **Size/compile cost — stated**: a pip install of a small pure-Python package; zero compile-time cost to the template.
+
 | Name | Role | 90-day downloads | All-time downloads | Stars | Last release | Maintenance state | Notable adopters | One-line trade-off |
 |---|---|---|---|---|---|---|---|---|
 | **Kingfisher** (`mongodb/kingfisher`) | CI-tier scanner CLI with live credential validation; Rust, Apache-2.0 | inapplicable — not on crates.io (`GET https://crates.io/api/v1/crates/kingfisher` returns an unrelated crate at `github.com/mongrov/kingfisher`; MongoDB's workspace sets `publish = false`), 2026-09-10 | inapplicable — same reason | 1,226 (`GET https://api.github.com/repos/mongodb/kingfisher`, 2026-09-10) | v2.2.0, 2026-09-09T08:15:21Z (`GET .../releases`, 2026-09-10) | **active** — released the day before retrieval; `pushed_at` 2026-09-09T08:15:20Z; 4 open issues; 9 of 10 recent issues answered by a maintainer, median 2.48 days | MongoDB itself (4 workflow files in `org:mongodb` reference it, org-scoped code search, 2026-09-10); no third-party well-regarded adopter found — **stated evidence gap** | Youngest and single-vendor, and ships no first-party GitHub Action, so the workflow must install the binary itself |
 | **Gitleaks CLI** (`gitleaks/gitleaks`, run directly, *not* via `gitleaks-action`) | CI-tier regex/entropy scanner; Go, MIT | inapplicable — not on crates.io (`GET https://crates.io/api/v1/crates/gitleaks` → `crate 'gitleaks' does not exist`), 2026-09-10 | inapplicable — same reason | 29,207 (`GET https://api.github.com/repos/gitleaks/gitleaks`, 2026-09-10) | v8.30.1, 2026-03-21T02:17:58Z (`GET .../releases`, 2026-09-10) | **stable-quiet** — 5.7 months since the last release, which per the rubric is a trigger to investigate, not a verdict; investigation found `pushed_at` 2026-09-09T04:18:49Z (active commits) but 0 of 10 recent issues answered by a maintainer and 267 open issues. Not `at-risk`: no concrete failure signal, no unpatched advisory, no maintainer notice | Very widely used as a pre-commit hook, including in py's own hook tier (`ADR-02`, referenced from `.github/workflows/secret-scan.yml:2` at pin `b08bccfb`) | **Cannot validate credentials at all** — it reports candidates only, so it cannot satisfy the verified-only requirement on its own |
+| **detect-secrets** (`Yelp/detect-secrets`) | CI-tier entropy/regex scanner with a checked-in baseline file; Python, Apache-2.0 | inapplicable — not on crates.io (`GET https://crates.io/api/v1/crates/detect-secrets` was not queried because the project is a Python package published to PyPI, never to crates.io), 2026-09-10 | inapplicable — same reason | 4,633 (`GET https://api.github.com/repos/Yelp/detect-secrets`, 2026-09-10) | v1.5.0, 2024-05-06T18:05:06Z (`GET .../releases`, 2026-09-10) | **stable-quiet** — 28 months since the last release, which the rubric makes a trigger to investigate, not a verdict; investigation found `pushed_at` 2026-04-02T17:10:40Z (commits 5 months before retrieval), `archived` false, and 99 open issues (`GET https://api.github.com/search/issues?q=repo:Yelp/detect-secrets+is:issue+is:open`, 2026-09-10). Not `at-risk`: no unpatched advisory, no broken build on a current interpreter, no maintainer notice — but the 28-month release gap is the weakest maintenance signal of the three | Long-standing use as a pre-commit hook in large Python estates | **Cannot validate credentials**, and adds a Python toolchain to a Rust template's CI — two deficits where Gitleaks has one |
+
+
+**Reading this table honestly:** all three pass every applicable gate, but gates are not the whole
+test. Only Kingfisher meets the *capability* requirement — live validation — that
+`### Principles and implementation` establishes as essential behavior 2. Gitleaks CLI and
+detect-secrets are listed because they genuinely clear the gates and would be the right answer under
+a different policy (see the last paragraph of `### Ranked runner-up`), not because they are viable
+under this one. Excluding them at gate level would have misreported *why* they lose.
 
 ### Excluded by gate
 
@@ -320,13 +347,12 @@ and stays on the shortlist. Figures: 644 stars, 43 open issues
 `crate 'noseyparker' does not exist` (2026-09-10). This is a genuine loss — it was the other
 Rust-native option — and its archival is a material part of why Kingfisher has no Rust-native rival.
 
-**`Yelp/detect-secrets` — fails the capability requirement, gates otherwise clean.** Apache-2.0,
-4,633 stars, `pushed_at` 2026-04-02T17:10:40Z, not archived
-(`GET https://api.github.com/repos/Yelp/detect-secrets`, 2026-09-10). It performs entropy and
-regex detection with a baseline file and **does not validate credentials against provider APIs**,
-so it cannot produce the verified-only verdict this item requires. It would also add a Python
-toolchain to a Rust template's CI. Gate 2, gate 3 (RustSec) and the `unsafe` posture are
-`inapplicable` — it is a Python package, not a crate.
+**`Yelp/detect-secrets` — not excluded by any gate; it is in `### Qualified shortlist`.** Recorded
+here only to prevent a misreading: it passes all six gates (answers itemized in that section) and
+loses on **fit**, not on a gate, because it performs entropy and regex detection with a baseline
+file and **does not validate credentials against provider APIs**, so it cannot produce the
+verified-only verdict this item requires. Gitleaks CLI has the identical deficit and is treated
+identically.
 
 **GitGuardian `ggshield` and Semgrep Secrets — excluded before gating.** Both require a vendor
 account and an API token stored as a repository secret for CI to pass on a fresh clone, which
@@ -380,10 +406,14 @@ publish time — a good reason to enable native scanning alongside the workflow.
 
 **Web service.** This is the surface with real exposure: a web template accumulates `.env.example`
 files, database URLs, JWT signing keys and OIDC client secrets, and the `.env` → committed-by-accident
-path is the single most common way a live credential enters a repository. Kingfisher validates
-database credentials specifically — `CredentialUri` routes PostgreSQL, MySQL/MariaDB, MongoDB and
-supported JDBC connection strings to database validators (`docs/USAGE.md:337`, retrieved
-2026-09-10) — which is exactly the credential class a Rust web template leaks. This is the
+path is the single most common way a live credential enters a repository. Kingfisher documents
+database-credential validators specifically — `CredentialUri` routes PostgreSQL, MySQL/MariaDB,
+MongoDB and supported JDBC connection strings to database validators — which is exactly the
+credential class a Rust web template leaks. **Precision note:** that sentence appears in
+`docs/USAGE.md:337` under the *direct validation* subcommand's section (whose own exit codes are
+documented at line 339), not under `kingfisher scan`. The validators are very likely shared, but I
+did not confirm scan-time invocation from the documentation, so P03 should verify it with
+acceptance check 1 rather than assume it. This is the
 strongest fit argument for the recommendation and it is specific to the web surface.
 
 ### Recommendation
@@ -676,9 +706,9 @@ All URLs retrieved **2026-09-10** unless stated otherwise.
 - `praetorian-inc/noseyparker`: 2,343 stars, **`archived` true**, `pushed_at` 2026-02-21T13:04:04Z, Apache-2.0.
 - `Yelp/detect-secrets`: 4,633 stars, `archived` false, `pushed_at` 2026-04-02T17:10:40Z, Apache-2.0, Python.
 
-**GitHub REST — open issues, `GET https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+is:open`, field `total_count`.** trufflehog 267 · gitleaks 267 · gitleaks-action 43 · kingfisher 4.
+**GitHub REST — open issues, `GET https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+is:open`, field `total_count`.** trufflehog 267 · gitleaks 267 · gitleaks-action 43 · kingfisher 4 · detect-secrets 99.
 
-**GitHub REST — releases, `GET https://api.github.com/repos/<o>/<r>/releases`.** trufflehog v3.97.4 2026-09-03T20:01:40Z (also v3.97.3, v3.97.2 on 2026-09-03/02) · gitleaks v8.30.1 2026-03-21T02:17:58Z · gitleaks-action v3.0.0 2026-05-30T21:42:15Z · kingfisher v2.2.0 2026-09-09T08:15:21Z, v2.1.0 2026-08-30T22:55:10Z, v2.0.0 2026-08-23T23:23:16Z. Assets for `GET .../releases/tags/v2.2.0`: `kingfisher-darwin-arm64.tgz, kingfisher-darwin-x64.tgz, kingfisher-linux-arm64.deb/.rpm/.tgz, kingfisher-linux-x64.deb/.rpm/.tgz, kingfisher-windows-arm64.zip, kingfisher-windows-x64.zip, multiple.intoto.jsonl`.
+**GitHub REST — releases, `GET https://api.github.com/repos/<o>/<r>/releases`.** trufflehog v3.97.4 2026-09-03T20:01:40Z (also v3.97.3, v3.97.2 on 2026-09-03/02) · gitleaks v8.30.1 2026-03-21T02:17:58Z · gitleaks-action v3.0.0 2026-05-30T21:42:15Z · kingfisher v2.2.0 2026-09-09T08:15:21Z, v2.1.0 2026-08-30T22:55:10Z, v2.0.0 2026-08-23T23:23:16Z · detect-secrets v1.5.0 2024-05-06T18:05:06Z (previous v1.4.0 2022-10-05T17:13:10Z). Assets for `GET .../releases/tags/v2.2.0`: `kingfisher-darwin-arm64.tgz, kingfisher-darwin-x64.tgz, kingfisher-linux-arm64.deb/.rpm/.tgz, kingfisher-linux-x64.deb/.rpm/.tgz, kingfisher-windows-arm64.zip, kingfisher-windows-x64.zip, multiple.intoto.jsonl`.
 
 **GitHub REST — issue responsiveness.** `GET https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+sort:created-desc&per_page=10` for the 10 most recent issues, then `GET https://api.github.com/repos/<o>/<r>/issues/<n>/comments?per_page=40` filtered to `author_association` in {OWNER, MEMBER, COLLABORATOR}. trufflehog: 0/10 answered (issues 5299, 5276, 5262, 5254, 5232, 5218, 5205, 5190, 5187, 5184). gitleaks: 0/10 answered (2257, 2256, 2239, 2232, 2231, 2225, 2223, 2218, 2214, 2198). kingfisher: 9/10 answered, per-issue lags 2.50, 1.55, 4.23, 0.67, 0.27, 0.54, 2.68, none, 3.90, 2.48 days → median 2.48 days.
 
