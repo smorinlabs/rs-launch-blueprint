@@ -1,0 +1,43 @@
+# contexts-availability.log
+retrieved: 2026-09-10T05:15:23Z (UTC)
+source: https://raw.githubusercontent.com/github/docs/main/content/actions/reference/workflows-and-actions/contexts.md
+
+$ curl -sS -o /tmp/ctx.md -w "%{http_code}
+" <contexts.md>
+200
+exit: 0
+
+$ grep -n "jobs.<job_id>" /tmp/r18-ctx.md
+90:| `jobs.<job_id>.concurrency` | `github, needs, strategy, matrix, inputs, vars` | None |
+91:| `jobs.<job_id>.container` | `github, needs, strategy, matrix, vars, inputs` | None |
+92:| `jobs.<job_id>.container.credentials` | `github, needs, strategy, matrix, env, vars, secrets, inputs` | None |
+93:| `jobs.<job_id>.container.env.<env_id>` | `github, needs, strategy, matrix, job, runner, env, vars, secrets, inputs` | None |
+94:| `jobs.<job_id>.container.image` | `github, needs, strategy, matrix, vars, inputs` | None |
+95:| `jobs.<job_id>.continue-on-error` | `github, needs, strategy, vars, matrix, inputs` | None |
+96:| `jobs.<job_id>.defaults.run` | `github, needs, strategy, matrix, env, vars, inputs` | None |
+97:| `jobs.<job_id>.env` | `github, needs, strategy, matrix, vars, secrets, inputs` | None |
+98:| `jobs.<job_id>.environment` | `github, needs, strategy, matrix, vars, inputs` | None |
+99:| `jobs.<job_id>.environment.url` | `github, needs, strategy, matrix, job, runner, env, vars, steps, inputs` | None |
+100:| `jobs.<job_id>.if` | `github, needs, vars, inputs` | `always, cancelled, success, failure` |
+101:| `jobs.<job_id>.name` | `github, needs, strategy, matrix, vars, inputs` | None |
+102:| `jobs.<job_id>.outputs.<output_id>` | `github, needs, strategy, matrix, job, runner, env, vars, secrets, steps, inputs` | None |
+103:| `jobs.<job_id>.runs-on` | `github, needs, strategy, matrix, vars, inputs` | None |
+104:| `jobs.<job_id>.secrets.<secrets_id>` | `github, needs, strategy, matrix, secrets, inputs, vars` | None |
+105:| `jobs.<job_id>.services` | `github, needs, strategy, matrix, vars, inputs` | None |
+106:| `jobs.<job_id>.services.<service_id>.credentials` | `github, needs, strategy, matrix, env, vars, secrets, inputs` | None |
+107:| `jobs.<job_id>.services.<service_id>.env.<env_id>` | `github, needs, strategy, matrix, job, runner, env, vars, secrets, inputs` | None |
+108:| `jobs.<job_id>.steps.continue-on-error` | `github, needs, strategy, matrix, job, runner, env, vars, secrets, steps, inputs` | `hashFiles` |
+109:| `jobs.<job_id>.steps.env` | `github, needs, strategy, matrix, job, runner, env, vars, secrets, steps, inputs` | `hashFiles` |
+110:| `jobs.<job_id>.steps.if` | `github, needs, strategy, matrix, job, runner, env, vars, steps, inputs` | `always, cancelled, success, failure, hashFiles` |
+111:| `jobs.<job_id>.steps.name` | `github, needs, strategy, matrix, job, runner, env, vars, secrets, steps, inputs` | `hashFiles` |
+112:| `jobs.<job_id>.steps.run` | `github, needs, strategy, matrix, job, runner, env, vars, secrets, steps, inputs` | `hashFiles` |
+113:| `jobs.<job_id>.steps.timeout-minutes` | `github, needs, strategy, matrix, job, runner, env, vars, secrets, steps, inputs` | `hashFiles` |
+114:| `jobs.<job_id>.steps.with` | `github, needs, strategy, matrix, job, runner, env, vars, secrets, steps, inputs` | `hashFiles` |
+115:| `jobs.<job_id>.steps.working-directory` | `github, needs, strategy, matrix, job, runner, env, vars, secrets, steps, inputs` | `hashFiles` |
+116:| `jobs.<job_id>.strategy` | `github, needs, vars, inputs` | None |
+117:| `jobs.<job_id>.timeout-minutes` | `github, needs, strategy, matrix, vars, inputs` | None |
+118:| `jobs.<job_id>.with.<with_id>` | `github, needs, strategy, matrix, inputs, vars` | None |
+475:| `jobs.<job_id>.result` | `string` | The result of a job in the reusable workflow. Possible values are `success`, `failure`, `cancelled`, or `skipped`. |
+476:| `jobs.<job_id>.outputs` | `object` | The set of outputs of a job in a reusable workflow. |
+477:| `jobs.<job_id>.outputs.<output_name>` | `string` | The value of a specific output for a job in a reusable workflow. |
+830:The `inputs` context contains input properties passed to an action, to a reusable workflow, or to a manually triggered workflow. For reusable workflows, the input names and types are defined in the [`workflow_call` event configuration](/actions/reference/workflows-and-actions/events-that-trigger-workflows) of a reusable workflow, and the input values are passed from [`jobs.<job_id>.with`](/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idwith) in an external workflow that calls the reusable workflow. For manually triggered workflows, the inputs are defined in the [`workflow_dispatch` event configuration](/actions/reference/workflows-and-actions/events-that-trigger-workflows#workflow_dispatch) of a workflow.

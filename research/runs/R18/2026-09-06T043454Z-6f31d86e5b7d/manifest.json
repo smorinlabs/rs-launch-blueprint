@@ -169,6 +169,15 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-10T14:56:03Z",
+      "publication": {
+        "acceptance_sha256": "389f23799310e3a4277f9209aab03112ea0f1aa829d86912d7883dca0f0dc876",
+        "decision_sha256": "b45a17a342bfa49689c3571e71c14ab55c2fa64e0f9337032876739babdae205",
+        "transaction": "5087bbfb3c7b4ab4988938506da02cae"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -234,6 +243,11 @@
     }
   },
   "prompt_source": "research/topics/18-ai-assisted-review-workflows/prompts/ai-assisted-review-workflows.prompt.md",
+  "publication": {
+    "acceptance_sha256": "389f23799310e3a4277f9209aab03112ea0f1aa829d86912d7883dca0f0dc876",
+    "decision_sha256": "b45a17a342bfa49689c3571e71c14ab55c2fa64e0f9337032876739babdae205",
+    "transaction": "5087bbfb3c7b4ab4988938506da02cae"
+  },
   "remaining_budget": "no paid engine before the pilot publishes (Doxa admissions paused)",
   "required_engines": [
     "codex",
@@ -242,7 +256,7 @@
   ],
   "run_id": "2026-09-06T043454Z-6f31d86e5b7d",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "deep",
-  "updated_at": "2026-09-10T04:47:32Z"
+  "updated_at": "2026-09-10T14:56:03Z"
 }

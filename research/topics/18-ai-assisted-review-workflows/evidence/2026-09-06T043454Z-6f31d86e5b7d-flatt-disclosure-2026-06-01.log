@@ -1,0 +1,174 @@
+# R18 revision 3 — the security disclosure doxa-gemini cited (JA-02)
+# Captured 2026-09-10T06:27:34Z. Read-only fetch, no credential.
+
+$ curl -sS -L -o flatt.html -w "http=%{http_code} bytes=%{size_download}
+" \
+    "https://flatt.tech/research/posts/poisoning-claude-code-one-github-issue-to-break-the-supply-chain/"
+http=200 bytes=65148
+exit: 0
+
+# Identification: RyotaK (@ryotkak), GMO Flatt Security Inc., published 2026-06-01.
+# Title: 'Poisoning Claude Code: One GitHub Issue to Break the Supply Chain'
+
+# ---- verbatim excerpts (from the rendered text of the fetched page) ----
+
+[TL;DR / fix version]
+57:Anthropic has acknowledged these vulnerabilities and fixed them as of Claude Code GitHub Actions v1.0.94.
+
+[exploited in the wild]
+ Variants of the misconfiguration issues described in this article were 
+actively exploited
+in the wild
+ before this article was published.
+
+[CVSS rating and bounty]
+640:They rated these vulnerabilities 7.8 under CVSS v4.0 and awarded $3,800, plus a $1,000 bonus for the bypasses I reported, as part of their bug bounty program.
+
+[OIDC request credentials are the exfiltration target]
+276:ACTIONS_ID_TOKEN_REQUEST_TOKEN
+286:ACTIONS_ID_TOKEN_REQUEST_TOKEN
+294:ACTIONS_ID_TOKEN_REQUEST_TOKEN
+336:ACTIONS_ID_TOKEN_REQUEST_TOKEN
+532:ACTIONS_ID_TOKEN_REQUEST_TOKEN
+
+[Phase 1 precondition — the input this decision leaves empty]
+45:allowed_non_write_users
+411:allowed_non_write_users
+415:allowed_non_write_users: "*"
+418:⚠️ Non-Write User Access (RISKY): The allowed_non_write_users parameter allows bypassing the write permission requirement. This is a significant security risk and should only be used for workflows with extremely limited permissions (e.g., issue labeling workflows that only have issues: write permission).
+502:allowed_non_write_users: "*"
+516:allowed_non_write_users: "*"
+573:allowed_non_write_users
+626:allowed_non_write_users
+633:allowed_non_write_users
+
+[remediations Anthropic shipped in response]
+Anthropic was very responsive and addressed these issues by disallowing GitHub Apps from triggering workflows by default.
+They also disabled the summary section, fixed other vectors for data exfiltration, and decided to scrub environment variables from the child processes spawned by Claude Code to mitigate the additional exfiltration vectors I reported.
+Additionally, they implemented a mitigation for the issue editing vector by ignoring issues and comments edited after the workflow is triggered, which prevents the chaining workflow attack described above.
+They rated these vulnerabilities 7.8 under CVSS v4.0 and awarded $3,800, plus a $1,000 bonus for the bypasses I reported, as part of their bug bounty program.
+
+[timeline]
+2026-01-12
+Permission bypass vulnerability reported to Anthropic
+2026-01-16
+Anthropic fixed 
+the permission bypass vulnerability
+2026-01-17
+Misconfiguration issues reported to Anthropic
+2026-02-17
+A similar misconfiguration in Cline’s GitHub Actions was exploited in the wild
+2026 Feb-Apr
+Several rounds of remediation and follow-up bypasses
+2026-06-01
+
+[researchers closing judgement]
+. The permission model around Claude Code isn’t hardened enough to safely handle untrusted input. To illustrate how fragile this boundary is: at the time of writing, I have reported around 50 separate vulnerabilities to Anthropic that allow attackers to bypass the permission system and execute arbitrary commands in Claude Code.
+Conclusion
+In this article, I explained a supply chain vulnerability in Claude Code GitHub Actions that could allow an attacker to compromise any repository using this workflow, including Anthropic’s own repositories.
+Anthropic was very responsive and addressed these issues by disallowing GitHub Apps from triggering workflows by default.
+They also disabled the summary section, fixed other vectors for data exfiltration, and decided to scrub environment variables from the child processes spawned by Claude Code to mitigate the additional exfiltration vectors I reported.
+Additionally, they implemented a mitigation for the issue editing vector by ignoring issues and comments edited after the workflow is triggered, which prevents the chaining workflow attack described above.
+They rated these vulnerabilities 7.8 under CVSS v4.0 and awarded $3,800, plus a $1,000 bonus for the bypasses I reported, as part of their bug bounty program.
+That said, supply chain security remains a relatively under-incentivized area for researchers, despite the potentially devastating impact of these vulnerabilities. Without stronger incentives for researchers to look into this space, we will likely continue to see incidents like this.
+With the rise of AI-powered tools and services, it’s worth remembering that prompt injection is not a solved problem, and it can still be used to control the behavior of AI systems.
+Timeline
+Date
+Event
+2026-01-12
+Permission bypass vulnerability reported to Anthropic
+2026-01-16
+Anthropic fixed 
+the permission bypass vulnerability
+2026-01-17
+Misconfiguration issues reported to Anthropic
+2026-02-17
+A similar misconfiguration in Cline’s GitHub Actions was exploited in the wild
+2026 Feb-Apr
+Several rounds of remediation and follow-up bypasses
+2026-06-01
+Published this article
+Shameless Plug
+At GMO Flatt Security, we provide top-notch penetration testing for a wide range of targets, including Web, Mobile, Cloud, LLM, and IoT.
+https://flatt.tech/en/professional/penetration_test
+We also developed Takumi, our AI security engineer. Built by world-class offensive security experts, Takumi brings human-level reasoning to application security. Using a hybrid AI-powered SAST/DAST approach, it audits your code and live apps to uncover everything from classic vulnerabilities to logic flaws like broken authentication and authorization — all validated through safe exploit simulations for near-zero false positives.
+https://flatt.tech/en/takumi
+Based in Japan, we work with clients globally, including industry leaders like Canonical Ltd.
+If you’d like to learn more, please contact us at 
+https://flatt.tech/en
+To be clear, I didn’t compromise any of Anthropic’s repositories during my research. All findings were validated in my own test repositories to prevent any unintended impact. 
+↩︎
+This description alone isn’t enough to reliably trigger command execution. The actual exploit requires more sophisticated prompt engineering to consistently convince Claude Code to execute the commands. 
+↩︎
+Claude Code mitigates trivial reads of 
+/proc/self/environ
+, such as a plain 
+cat
+. These mitigations raise the bar but are defense-in-depth, not a security boundary; more sophisticated exfiltration techniques remain possible. 
+↩︎
+Search
+Results
+No results found
+Try adjusting your search query
+
+# ---- the tag-mode workflow the article reproduces as the Phase 2 target ----
+name
+: Run Claude Code slash command
+uses
+name
+: Run Claude Code for Issue Triage
+timeout-minutes
+: 
+5
+uses
+name
+: Run Claude Code for Issue Triage
+timeout-minutes
+: 
+5
+uses
+name
+: Claude Code
+on
+:
+issue_comment
+:
+types
+: [created]
+pull_request_review_comment
+:
+types
+: [created]
+issues
+:
+types
+: [opened, assigned]
+pull_request_review
+:
+types
+: [submitted]
+jobs
+:
+claude
+:
+if
+: |
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude')) ||
+      (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')))
+runs-on
+: ubuntu-latest
+permissions
+:
+contents
+: read
+pull-requests
+: read
+issues
+: read
+id-token
+: write
+actions
+: read 
+# Required for Claude to read CI results on PRs

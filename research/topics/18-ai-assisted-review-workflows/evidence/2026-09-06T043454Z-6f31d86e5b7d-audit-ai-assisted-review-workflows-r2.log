@@ -1,0 +1,160 @@
+# R18 revision-2 empirical audit — audit-codex-2026-09-06T043454Z-6f31d86e5b7d-r2
+# Scope: read-only research audit. No workflow was installed, no provider or
+# GitHub credential was used, and no GitHub Action was triggered.
+
+cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d
+decision-sha256: c22e74ed1190419913c22ecadce4cd7e84536a0f2bf3e123d394886c98f0e343
+
+=== VM capability check ===
+$ limactl shell ubuntu -- bash -lc 'source "$HOME/.cargo/env"; command -v actionlint; actionlint --version; command -v gh; gh --version'
+Linux 6.17.0-41-generic aarch64
+bash: line 1: actionlint: command not found
+bash: line 1: gh: command not found
+
+The Linux VM is callable, but it cannot run the recorded actionlint/gh suite.
+The task prohibits credential use, so the authenticated gh commands were not
+rerun on macOS. The credential-free commands below were rerun on macOS; the
+historical gh exits were checked against their revision-2 addenda and parent
+prefixes.
+
+=== macOS credential-free rerun ===
+$ uname -srm; actionlint --version
+Darwin 25.4.0 arm64
+1.7.12
+installed by building from source
+built with go1.26.1 compiler for darwin/arm64
+
+$ cd review/evidence && actionlint candidate-claude-code-review.yml candidate-claude.yml
+exit: 0
+
+$ cd review/evidence && actionlint candidate-secrets-in-job-if-NEGATIVE.yml
+candidate-secrets-in-job-if-NEGATIVE.yml:14:9: context "secrets" is not allowed here. available contexts are "github", "inputs", "needs", "vars". see https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability for more details [expression]
+   |
+14 |     if: secrets.CLAUDE_CODE_OAUTH_TOKEN != ''
+   |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+exit: 1
+
+$ git -C ~/c/ts-launch-blueprint ls-tree -r --name-only cb1cbcb2e88b898e8c081b0abbfabc1630079c00 -- .github/workflows
+.github/workflows/ci.yml
+.github/workflows/codeql.yml
+.github/workflows/dependency-review.yml
+.github/workflows/difftree-pr-comment.yml
+.github/workflows/manual-pr-security-scan.yml
+.github/workflows/publish.yml
+.github/workflows/release-please.yml
+.github/workflows/update-contributors.yml
+exit: 0
+
+$ git -C ~/c/ts-launch-blueprint ls-tree -r --name-only cb1cbcb -- .github/ | grep -ci claude
+0
+exit: 1
+
+$ git -C ~/c/ts-launch-blueprint ls-tree -r --name-only cb1cbcb -- .github/ > /dev/null
+exit: 0
+
+=== Five cited public-document spot checks; curl was unauthenticated ===
+$ curl -fsSL https://raw.githubusercontent.com/github/docs/main/content/actions/reference/workflows-and-actions/contexts.md | shasum -a 256
+7dd35d881dc2502922b2911b8f620542cb9fe174236a414bc02481089f3d2aac  -
+pipeline-exit: 0
+
+$ curl -fsSL https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/action.yml | shasum -a 256
+87b706489e63483c9c32c12af36467dd34e309becca35f7a8ead4d1e0664c4df  -
+pipeline-exit: 0
+
+$ curl -fsSL https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/.github/workflows/claude.yml | shasum -a 256
+561061a503e4658e765089afc5a68d2036e7a09030795535bbf5e8e065cea2a2  -
+pipeline-exit: 0
+
+$ curl -fsSL https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/docs/faq.md | shasum -a 256
+e6525702f666556f74b127525f50060fde53055a9ac9f3cb1c55ee7faf451122  -
+pipeline-exit: 0
+
+$ curl -fsSL https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/docs/setup.md | shasum -a 256
+7425c2b89b59bc48f9f5449b5e214f4a57538da91845d6c3a7abac9bb2c4ba4d  -
+pipeline-exit: 0
+
+$ curl -fsSL contexts.md | rg '^\\| `jobs\\.<job_id>\\.if` \\|'
+| `jobs.<job_id>.if` | `github, needs, vars, inputs` | `always, cancelled, success, failure` |
+pipeline-exit: 0
+
+$ curl -fsSL action.yml | rg -n 'label_trigger|assignee_trigger|runner\\.os'
+12:  assignee_trigger:
+15:  label_trigger:
+228:      if: ${{ inputs.allowed_non_write_users != '' && runner.os == 'Linux' }}
+269:      if: ${{ inputs.allowed_non_write_users != '' && runner.os != 'Windows' }}
+293:        ASSIGNEE_TRIGGER: ${{ inputs.assignee_trigger }}
+294:        LABEL_TRIGGER: ${{ inputs.label_trigger }}
+395:      if: ${{ always() && inputs.allowed_non_write_users != '' && runner.os != 'Windows' }}
+pipeline-exit: 0
+
+$ curl -fsSL maintainer-claude.yml | sed -n '1,23p'
+name: Claude Code
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+pipeline-exit: 0
+
+$ curl -fsSL faq.md | rg -n -C 1 'Without `prompt` input'
+137-- **With `prompt` input**: Runs in automation mode - executes immediately without waiting for @claude mentions
+138:- **Without `prompt` input**: Runs in interactive mode - waits for @claude mentions in comments
+139-
+pipeline-exit: 0
+
+$ curl -fsSL setup.md | rg -n -C 1 'Do not set.*alongside|Inline comment classification|federation'
+54-- The workflow must grant `id-token: write` permission so the action can fetch a GitHub OIDC token. The default GitHub App authentication path already requires this permission.
+55:- Do not set `anthropic_api_key` or `claude_code_oauth_token` alongside the federation inputs — a static credential takes precedence and federation will not be used.
+56-- The GitHub OIDC token is requested with audience `https://api.anthropic.com` by default, so set the federation rule's expected audience to that value (or leave the rule's audience unmatched). Use `anthropic_oidc_audience` only if your rule expects a different audience.
+57:- Inline comment classification (`classify_inline_comments`) currently requires `anthropic_api_key`; with federation it is skipped and unconfirmed inline comments are posted directly.
+pipeline-exit: 0
+
+=== Revision-2 append integrity ===
+Each parent SHA is the full revision-1 file from HEAD^. The current-prefix SHA
+is the first parent-lines lines of the current file.
+
+review/evidence/action-release.log
+parent-lines: 60
+parent-sha256: 641510716c48cf06144ed99bd9515accb1cca2a32dfc438f6b6f76532e0070fa
+current-prefix-sha256: 641510716c48cf06144ed99bd9515accb1cca2a32dfc438f6b6f76532e0070fa
+prefix-identical: yes
+addendum: dated revision-2 block; gh api git/ref/tags/v2 -> HTTP 404, exit: 1
+
+review/evidence/source-repos-pinned.log
+parent-lines: 143
+parent-sha256: 51a272c0b9bcda3277f92c7a930eca400e249fc0de8f7f56fb2436c5f585d802
+current-prefix-sha256: 51a272c0b9bcda3277f92c7a930eca400e249fc0de8f7f56fb2436c5f585d802
+prefix-identical: yes
+addendum: dated revision-2 block; grep -ci claude -> 0, exit: 1; producing ls-tree -> exit: 0
+
+review/evidence/action-source-v1.0.220.log
+parent-lines: 179
+parent-sha256: 880eb8534ed5587ff23709c54c92b79e2c21cc78e44ceb9153ac2dbecbde7631
+current-prefix-sha256: 880eb8534ed5587ff23709c54c92b79e2c21cc78e44ceb9153ac2dbecbde7631
+prefix-identical: yes
+addendum: dated revision-2 block; action.yml fetch -> HTTP 200, exit: 0; grep runner.os -> exit: 0
+
+=== Table and claim audit ===
+All seven `Exit (per command, as the cited log records it)` cells now agree
+with their cited logs. Logged positive commands say 0; the v2 `gh api` lookup,
+the zero-match terminal grep, and the negative actionlint control say 1; every
+unlogged command is explicitly marked `not recorded in the log`. The local
+rerun reproduced check 6's ls-tree/grep exits and check 7's actionlint exits.
+
+The current decision does not present an observed runtime result for the
+variable gate. It labels skipped-versus-failed as U2, fork/bot skip results as
+U3, and step-level behaviour as an unexecuted expectation. Its B1-B6 rows are
+P03 acceptance criteria. The historical fixture comment says `SKIPPED`, but
+the decision explicitly classifies that fixture statement as U2, not evidence.
+
+The label-trigger correction is correct and honest: `action.yml` declares the
+input default `label_trigger: "claude"`, but the recommended assistant fixture
+and the cited maintainer workflow subscribe only to `issues: [opened, assigned]`.
+Neither subscribes to `issues: [labeled]`; a label event therefore cannot invoke
+the action through this configuration. DECISION.md says the default becomes a
+path only if a later revision adds `labeled`, rather than claiming a present run.
