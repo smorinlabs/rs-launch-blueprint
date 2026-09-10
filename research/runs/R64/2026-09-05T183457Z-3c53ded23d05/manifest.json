@@ -61,6 +61,20 @@
       },
       "provider": "codex",
       "state": "succeeded"
+    },
+    {
+      "actor": "research-opus-2026-09-05T183457Z-3c53ded23d05",
+      "at": "2026-09-10T14:56:51Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T183457Z-3c53ded23d05",
+        "at": "2026-09-10T14:56:51Z",
+        "model": "claude-opus-5",
+        "provider": "opus",
+        "request_id": "5c65f73c0dcf4033a9d4c67952d91678",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
     }
   ],
   "input_hashes": {
@@ -91,6 +105,14 @@
       "request_id": "4540288f2eff4216bf2d08230b24a355",
       "returned_at": "2026-09-06T04:44:02Z",
       "state": "succeeded"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T183457Z-3c53ded23d05",
+      "at": "2026-09-10T14:56:51Z",
+      "model": "claude-opus-5",
+      "provider": "opus",
+      "request_id": "5c65f73c0dcf4033a9d4c67952d91678",
+      "state": "submitting"
     }
   },
   "prompt_source": "research/topics/64-pager-integration/prompts/pager-integration.prompt.md",
@@ -103,5 +125,5 @@
   "schema_version": 1,
   "state": "partial",
   "tier": "focused",
-  "updated_at": "2026-09-06T04:44:02Z"
+  "updated_at": "2026-09-10T14:56:51Z"
 }

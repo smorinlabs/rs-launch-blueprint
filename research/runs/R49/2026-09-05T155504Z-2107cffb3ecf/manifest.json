@@ -115,6 +115,20 @@
       },
       "provider": "doxa",
       "state": "succeeded"
+    },
+    {
+      "actor": "research-opus-2026-09-05T155504Z-2107cffb3ecf",
+      "at": "2026-09-10T14:56:50Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T155504Z-2107cffb3ecf",
+        "at": "2026-09-10T14:56:50Z",
+        "model": "claude-opus-5",
+        "provider": "opus",
+        "request_id": "c7e2e39330a148658443979e80509f1c",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
     }
   ],
   "input_hashes": {
@@ -161,6 +175,14 @@
       "request_id": "7f2f0cf1b479497fb45e25e8b6af4b78",
       "returned_at": "2026-09-09T07:33:01Z",
       "state": "succeeded"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T155504Z-2107cffb3ecf",
+      "at": "2026-09-10T14:56:50Z",
+      "model": "claude-opus-5",
+      "provider": "opus",
+      "request_id": "c7e2e39330a148658443979e80509f1c",
+      "state": "submitting"
     }
   },
   "prompt_source": "research/topics/49-build-target-declaration/prompts/build-target-declaration.prompt.md",
@@ -174,5 +196,5 @@
   "schema_version": 1,
   "state": "partial",
   "tier": "deep",
-  "updated_at": "2026-09-10T00:54:51Z"
+  "updated_at": "2026-09-10T14:56:50Z"
 }
