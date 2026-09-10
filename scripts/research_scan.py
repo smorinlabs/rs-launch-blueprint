@@ -63,6 +63,36 @@ def audit_of(path: Path) -> dict | None:
     }
 
 
+def registry_values(root: Path) -> dict[str, str]:
+    """Fixed-parameter values, parsed the way the publication validator parses them."""
+    values: dict[str, str] = {}
+    header = None
+    for line in (root / "docs/port/PARAMETERS.md").read_text().splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if {"param", "kind", "owner", "value"}.issubset(cells):
+            header = {name: i for i, name in enumerate(cells)}
+        elif header and len(cells) >= len(header) and cells[header["param"]]:
+            values[cells[header["param"]]] = cells[header["value"]]
+    return values
+
+
+def parameter_mismatches(decision: Path, registry: dict[str, str]) -> list[str]:
+    """Parameter lines whose value would not match the registry at publication.
+
+    The validator reads everything after "= " as the value and compares it
+    byte-for-byte, so a backticked value or a trailing citation fails even when
+    the value itself is right. Publication refuses the bundle, and because any
+    edit to the decision unbinds its audits, the fix costs a full audit round.
+    Catching it here, before the audits run, is the whole point.
+    """
+    bad = []
+    for m in re.finditer(r"(?m)^- assumes\s+`?([a-z-]+)`?\s*=\s*(.+?)\s*$", decision.read_text()):
+        name, value = m.group(1), m.group(2)
+        if name in registry and value != registry[name]:
+            bad.append(name)
+    return bad
+
+
 def provider_jobs(run: Path) -> dict[str, str]:
     """Provider job ids recorded for a Doxa operation, whatever the file is called.
 
@@ -122,6 +152,7 @@ def scan_run(run: Path) -> dict:
             "sha256": sha256(decision),
             "revision": int(m.group(1)) if m else 1,
         }
+        info["parameter_mismatches"] = parameter_mismatches(decision, registry_values(ROOT))
         for kind, name in (("empirical", "audit-codex.md"), ("judgment", "audit-fable.md")):
             a = audit_of(review / name)
             if a:
@@ -143,6 +174,8 @@ def next_action(status: str, run: dict | None) -> str:
         return "research: " + ", ".join(missing)
     if run["decision"] is None:
         return "synthesize"
+    if run.get("parameter_mismatches"):
+        return "fix parameter lines before auditing: " + ", ".join(run["parameter_mismatches"])
     emp, jud = run["audits"].get("empirical"), run["audits"].get("judgment")
     stale = [k for k, a in run["audits"].items() if not a["binds_current_decision"]]
     if stale:
