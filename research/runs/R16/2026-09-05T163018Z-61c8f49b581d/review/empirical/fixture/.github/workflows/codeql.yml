@@ -1,6 +1,7 @@
 # CodeQL static analysis — inherited workflow shape (F027, COMMON → REUSE):
 # trigger set, runtime visibility gate and permissions are the source repos'.
-# R16 adds only the `config-file:` input on the Init step; the Rust values
+# R16 adds the `config-file:` input on the Init step and pins the action to the
+# release whose bundle the empirical check executed (v4.37.9 -> 2.26.4); the Rust values
 # `languages: rust` / `build-mode: none` are the extractor's sole build mode.
 #
 # Advanced setup: this workflow + .github/codeql/codeql-config.yml ARE the
@@ -57,13 +58,13 @@ jobs:
           persist-credentials: false
 
       - name: Init CodeQL
-        uses: github/codeql-action/init@v4.37.0
+        uses: github/codeql-action/init@v4.37.9
         with:
           languages: rust
           build-mode: none
           config-file: ./.github/codeql/codeql-config.yml
 
       - name: Analyze
-        uses: github/codeql-action/analyze@v4.37.0
+        uses: github/codeql-action/analyze@v4.37.9
         with:
           category: "/language:rust"

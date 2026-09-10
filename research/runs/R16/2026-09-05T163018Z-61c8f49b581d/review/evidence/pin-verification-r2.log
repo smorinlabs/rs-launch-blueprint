@@ -1,0 +1,30 @@
+# revision 2 — binding the workflow pin to the executed bundle — retrieved 2026-09-10T01:15:57Z
+$ curl -sS https://api.github.com/repos/github/codeql-action/git/ref/tags/v4.37.9   (tag exists; object sha)
+refs/tags/v4.37.9 tag a35ac6e6798d72df5475948b28efb89edc2e19ca
+exit=0
+$ curl -sS https://raw.githubusercontent.com/github/codeql-action/v4.37.9/src/defaults.json
+{
+  "bundleVersion": "codeql-bundle-v2.26.4",
+  "cliVersion": "2.26.4",
+  "priorBundleVersion": "codeql-bundle-v2.26.3",
+  "priorCliVersion": "2.26.3"
+}
+exit=0
+$ curl -sS https://api.github.com/repos/github/codeql-action/releases/latest | jq tag_name,published_at
+codeql-bundle-v2.27.0 2026-09-09T11:31:59Z
+exit=0
+$ curl -sS https://raw.githubusercontent.com/github/codeql-action/v4.37.0/src/defaults.json   (py's inherited pin, for contrast)
+{
+  "bundleVersion": "codeql-bundle-v2.26.0",
+  "cliVersion": "2.26.0",
+  "priorBundleVersion": "codeql-bundle-v2.25.6",
+  "priorCliVersion": "2.25.6"
+}
+exit=0
+$ codeql version --format=json | jq version,sha   (the bundle executed by every -r1 and -r2 CodeQL run)
+2.26.4 6b1e4dee94adb20f90a671f3fc9e04be32eecf65
+exit=0
+$ cat empirical/tools/cli-version-2.26.4.txt (release asset of codeql-bundle-v2.26.4)
+2.26.4
+
+exit=0
