@@ -1,4 +1,4 @@
-# R25 — Pre-1.0 semver bump strategy (pattern, Deep) — revision 5, 2026-09-10
+# R25 — Pre-1.0 semver bump strategy (pattern, Deep) — revision 6, 2026-09-10
 
 ## Decision
 
@@ -11,7 +11,22 @@ survive implementation, it is **revised against this recorded research**, not re
 from scratch; the executed evidence under `## Empirical check` is the baseline any revision argues
 against.
 
-**This is revision 5 (2026-09-10).** Four prior revisions were rejected by empirical audit. Not one
+**This is revision 6 (2026-09-10).** It corrects exactly one supporting sentence and changes nothing
+else. Item 2 of *What revision 5 changed* said that **Override precedence** records "the two separate
+paths with their two sources apiece". That is wrong, and it contradicted this decision's own correct
+statement under **Override precedence**: the paths are asymmetric. The `release-as` value has two
+sources — the deprecated `release-as` configuration key and the `--release-as` command-line option —
+and the `Release-As:` commit footer has one. The fifth audit
+(`review/evidence/audit-r25-r5.log`) confirmed the rest: the revision-5 sweep is complete, with no
+unconditioned version outcome left in the file; the two override paths and the footer's second
+check-site inside `DefaultVersioningStrategy` are described accurately; every region an earlier audit
+approved is untouched, the four `- assumes` lines still matching `docs/port/PARAMETERS.md`
+byte-for-byte; and the recommendation is supported. Revision 6 ran no new probe. Before editing, the
+file was searched for every location stating how many sources an override path has or characterising
+the two paths as parallel; every other such location either names the sources asymmetrically or counts
+paths rather than sources, and the one location that asserted symmetry is the one edited.
+
+**Revision 5 (2026-09-10).** Four prior revisions were rejected by empirical audit. Not one
 rejection touched the recommendation, and all four are the same defect: **a supporting sentence
 stated more absolutely than its evidence.** Revision 1 claimed the TypeScript source repository
 "first published v0.1.1" when the evidence showed only a release commit; revision 2 said
@@ -627,7 +642,10 @@ where a status is quoted otherwise. Retrieval date: **2026-09-09** for checks 1�
 for check 7 (added in revision 2) and for check 8 (added in revision 5). Check 8 verifies a claim
 about the tool's ordering and implements nothing; its output was **appended** to the existing
 `evidence/release-please-source-v17.11.2.log` under a dated banner rather than replacing it, and no
-other evidence log was changed.
+other evidence log was changed. **Revision 6 ran no new probe.** On **2026-09-10** it appended one
+further dated entry to that same log, recording that check 8's captured excerpts were re-read at the
+pin to confirm the source mapping of the two override paths — two sources for the `release-as` value,
+one for the `Release-As:` commit footer — with no new fetch and no other log altered.
 
 | # | What it decides | Command (working directory) | Result | Log |
 |---|---|---|---|---|
@@ -724,7 +742,9 @@ output was appended to `evidence/release-please-source-v17.11.2.log` under a dat
    outcomes), and the historical revision records except where one restates the defect;
 2. **the exception stated once and in full** as **Override precedence** in `## Decision` — the
    four-step order in `buildNewVersion` with pinned line numbers, the two separate paths with their
-   two sources apiece, the second check-site inside `DefaultVersioningStrategy`, and the two limits
+   asymmetric sources — two for the `release-as` value (the deprecated configuration key and the
+   `--release-as` option), one for the `Release-As:` commit footer — the second check-site inside
+   `DefaultVersioningStrategy`, and the two limits
    on its reach (the recommended config sets no `release-as` key; the empty manifest makes a footer
    anywhere in the scanned history fire on the first Release PR). Every one of the 25 locations
    carries the word *override* in its governing sentence, which is what makes the sweep re-runnable

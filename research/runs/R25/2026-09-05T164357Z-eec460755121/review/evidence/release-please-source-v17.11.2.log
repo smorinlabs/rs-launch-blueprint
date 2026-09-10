@@ -466,3 +466,29 @@ $ grep -n "releaseAs\|release-as" src/manifest.ts
 ## Corroboration, not the proof: the r4 auditor's inverse control selected 0.7.0 for a
 ## breaking commit carrying Release-As: 0.7.0 (evidence/audit-r25-r4.log).
 exit=0
+
+############################################################
+# APPENDED 2026-09-10 (revision 6): re-read of the two override paths' source mapping
+# No new probe was run; nothing was fetched. The check-8 excerpts captured above under the
+# 2026-09-10 banner (all paths HTTP 200 at pinned tag v17.11.2) were re-read directly to
+# settle how many sources each override path has.
+#
+# Path 1 -- the release-as VALUE consumed at base.ts:547-552 -- has TWO sources:
+#   (a) the deprecated configuration key: schemas/config.json:53-56 ("[DEPRECATED] Override
+#       the next version of this package"), mapped at manifest.ts:1403
+#       (releaseAs: config['release-as']);
+#   (b) the --release-as command-line option: bin/release-please.ts:290-293
+#       ("override the semantically determined release version"), which parseConfig writes
+#       over the configuration key for every package at manifest.ts:1444-1463
+#       (repositoryConfig[path].releaseAs = releaseAs, lines 1460-1461).
+#
+# Path 2 -- the Release-As: commit FOOTER consumed at base.ts:554-564 -- has ONE source:
+#   commit.ts:262 lower-cases the footer key and compares it with 'release-as', and
+#   commit.ts:284-293 pushes the single note {title: 'RELEASE AS', text: <version>}.
+#   No other producer of a 'RELEASE AS' note appears in the captured excerpts.
+#
+# => The two paths are ASYMMETRIC in their sources: 2 for the value, 1 for the footer.
+#    Revision 6 corrects the one sentence that said "two sources apiece" and changes
+#    nothing else. Path count (two), ordering, and the second check-site inside
+#    DefaultVersioningStrategy.determineReleaseType (default.ts:74-82) are unchanged.
+exit=0
