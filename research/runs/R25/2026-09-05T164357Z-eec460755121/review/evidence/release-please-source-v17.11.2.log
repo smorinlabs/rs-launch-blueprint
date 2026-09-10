@@ -492,3 +492,51 @@ exit=0
 #    nothing else. Path count (two), ordering, and the second check-site inside
 #    DefaultVersioningStrategy.determineReleaseType (default.ts:74-82) are unchanged.
 exit=0
+
+############################################################
+# APPENDED 2026-09-10 (revision 7): which raw reports emitted a BASELINE-REVIEW: line
+# This is a read of files already inside this run directory (raw/), not a source fetch:
+# no probe was run, no network request was made, nothing was installed. It is appended
+# here to keep the no-probe revision entries of this decision together in one log.
+# Byte-reproducible: the inputs are static files in raw/, which do not drift.
+#
+# Exact pipeline, run once per file from this run directory:
+#   $ grep -n 'BASELINE-REVIEW' "$f" | sed 's/^/#   /' | cut -c1-200
+#   for f in raw/doxa-openai.normalized.md raw/doxa-gemini.normalized.md \
+#            raw/doxa-perplexity.normalized.md raw/codex.md raw/opus.md
+#   (the sed prefix and the 200-column cut are part of the capture, so each line below is
+#    the grep line prefixed with '#   ' and truncated to 200 columns.)
+#
+# --- raw/doxa-openai.normalized.md ---
+#   82:**BASELINE-REVIEW: F070 — resolver-aligned impact tiers must be described using Release Please’s actual algorithm — retain the pre-1.0 dampening pattern for rs, but correct any wording that say
+# --- raw/doxa-gemini.normalized.md ---
+#   29:**BASELINE-REVIEW: F066, F073 — Release tool orchestration — Replace `release-please` with `release-plz`**
+#   53:However, the orchestrator tools evaluated as evidence to execute this pattern (`release-please` and `release-plz`) must be rigorously vetted against the parameters. If the owner accepts the `BA
+#   75:The research definitively recommends that **`rs-launch-blueprint` must launch at a pre-1.0 version (`0.1.0`) with dampened version bumping semantics strictly enabled**. If the baseline is maint
+#   99:*(Note: If the `BASELINE-REVIEW` proposing the shift to `release-plz` is formally accepted by the repository owner, the two `release_please_*` parameters are rendered obsolete and deprecated, a
+# --- raw/doxa-perplexity.normalized.md ---
+#   71:> BASELINE-REVIEW: F070 — pre‑1.0 semver dampening — reclassify as a common architectural pattern for new library‑shaped blueprints — evidence: SemVer’s major version zero rules[11][12], Cargo’
+# --- raw/codex.md ---
+#   26:No `BASELINE-REVIEW:` line is emitted: F070 is an open `DIVERGENT` decision, not a retained baseline being challenged.
+# --- raw/opus.md ---
+#   124:**No `BASELINE-REVIEW:` finding is emitted.** F070 is `DIVERGENT`, not `COMMON → REUSE` or `ADOPT`, so it is not a baseline row; and the analysis above confirms rather than challenges the reco
+#   192:**Web service (optional feature-gated surface).** F017's principle is that the web surface ships as an optional capability behind a Cargo feature (`docs/port/BASELINE-REVIEW.md`, F017, `retain
+#   389:- `docs/port/BASELINE-REVIEW.md` — F014, F017, F019 rows consulted for agreement-level vocabulary and the web-as-optional-capability principle
+#
+# EMITTED (three, one each):
+#   raw/doxa-openai.normalized.md:82      BASELINE-REVIEW: F070 -- resolver-aligned impact tiers ...
+#   raw/doxa-gemini.normalized.md:29      BASELINE-REVIEW: F066, F073 -- Release tool orchestration ...
+#   raw/doxa-perplexity.normalized.md:71  BASELINE-REVIEW: F070 -- pre-1.0 semver dampening ...
+# NOT EMITTED (token present only in the negative):
+#   raw/codex.md:26   "No `BASELINE-REVIEW:` line is emitted"
+#   raw/opus.md:124   "No `BASELINE-REVIEW:` finding is emitted."
+#   The grep's other two opus hits (raw/opus.md:192 and :389) are not the token at all: they
+#   name the file docs/port/BASELINE-REVIEW.md, which carries no trailing colon. The token
+#   that counts as an emitted finding is `BASELINE-REVIEW:` with the colon.
+#
+# => The emitting set is exactly those three. DECISION.md revision 7 corrects the tally
+#    from two to three at the three locations that stated it, and labels `## Engines`
+#    item 7 as the third BASELINE-REVIEW: line. The separate count at the Ownership
+#    paragraph -- "Two raw reports invented owned parameters" -- was checked against
+#    `## Engines` item 6 (doxa-gemini and doxa-perplexity) and is correct; unchanged.
+exit=0

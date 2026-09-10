@@ -1,5 +1,5 @@
 # r18-trigger-phrase-pin.log
-captured: 2026-09-10T15:22:10Z
+captured: 2026-09-10T23:00:33Z
 host toolchain:
   rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
   cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
@@ -122,11 +122,15 @@ GET https://www.greptile.com/docs/llms-full.txt -> 371153 bytes
 
 === end of checks ===
 
-=== script source (reproduced so this log is self-contained) ===
+=== script source (emitted by this script, so the log is self-contained) ===
 #!/usr/bin/env bash
 # R45 empirical check — verifies the three R18-derived claims the Opus raw's
 # recommendation rests on, plus the two source-repo facts. Verification only:
-# nothing is written to any repository, no workflow is enabled, no bot is invoked.
+# no source-repository, template or workflow file is written, no workflow is
+# enabled and no bot is invoked. It writes its own stdout (redirected to the
+# evidence log by the recorded command) and four intermediate downloads into a
+# private mktemp -d directory removed on exit: action-v1.0.220.yml,
+# trigger-v1.0.220.ts, greptile-llms-full.txt and greptile-err.txt.
 set -uo pipefail
 REPO=/Users/stevemorin/c/rs-launch-blueprint-p02-plan
 PY=~/c/py-launch-blueprint
@@ -134,7 +138,8 @@ TS=~/c/ts-launch-blueprint
 PYPIN=b08bccfb55d05f15e46a83b52c5660b1881d19f5
 TSPIN=cb1cbcb2e88b898e8c081b0abbfabc1630079c00
 ACTPIN=19dda84776b3518d98b8798e591daee763049ed3   # anthropics/claude-code-action v1.0.220
-SCRATCH="/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad"
+SCRATCH="$(mktemp -d)"                            # private temp dir; removed on exit
+trap 'rm -rf "$SCRATCH"' EXIT
 
 echo "# r18-trigger-phrase-pin.log"
 echo "captured: $(date -u +%Y-%m-%dT%H:%M:%SZ)"
@@ -212,3 +217,6 @@ else
 fi
 echo
 echo "=== end of checks ==="
+echo
+echo "=== script source (emitted by this script, so the log is self-contained) ==="
+cat "$0"

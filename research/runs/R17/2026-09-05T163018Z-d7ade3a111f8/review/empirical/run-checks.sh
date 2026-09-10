@@ -136,11 +136,26 @@ if [ ! -x "$KF_DIR/kingfisher" ]; then
   tar xzf "$KF_DIR/kingfisher-darwin-arm64.tgz" -C "$KF_DIR"
 fi
 shasum -a 256 "$KF_DIR/kingfisher-darwin-arm64.tgz"
-gh attestation verify "$KF_DIR/kingfisher-darwin-arm64.tgz" --repo mongodb/kingfisher --format json \
+LOCAL_DIGEST=$(shasum -a 256 "$KF_DIR/kingfisher-darwin-arm64.tgz" | cut -d' ' -f1)
+# `gh attestation verify` initialises its Sigstore verifier from TUF trusted-root metadata that it
+# refreshes into $XDG_CACHE_HOME/gh/.sigstore (default $HOME/.cache/gh/.sigstore). If that path is
+# not writable the verifier cannot be built and gh exits 1 with
+# "no valid Sigstore verifiers could be initialized" — before it looks at the artifact at all.
+# Revision 1 of this script inherited whatever $HOME the caller had, so the check passed in a
+# permissive shell and failed under a sandbox whose writes are confined to the workspace and
+# $TMPDIR. The cache is therefore redirected into $WORK, which every such sandbox can write.
+# Network egress to api.github.com, tuf-repo-cdn.sigstore.dev and tuf-repo.github.com, and an
+# authenticated gh, are still required; 07f below records the failure mode as executed evidence.
+GH_SIGSTORE_CACHE="$WORK/gh-cache"
+mkdir -p "$GH_SIGSTORE_CACHE"
+XDG_CACHE_HOME="$GH_SIGSTORE_CACHE" \
+  gh attestation verify "$KF_DIR/kingfisher-darwin-arm64.tgz" --repo mongodb/kingfisher --format json \
   > "$WORK/att.json" 2>"$WORK/att.err"
 ATT_EXIT=$?
 assert 07a-slsa-provenance-verifies 0 "$ATT_EXIT"
-python3 - "$WORK/att.json" <<'PY'
+ATT_DIGEST=""; ATT_SIGNER=""
+if [ -s "$WORK/att.json" ]; then
+  python3 - "$WORK/att.json" <<'PY'
 import json,sys
 d=json.load(open(sys.argv[1]))
 c=d[0]["verificationResult"]["signature"]["certificate"]
@@ -149,6 +164,12 @@ print("attestations:",len(d))
 print("subject:", s["name"], s["digest"])
 print({k:c.get(k) for k in ["sourceRepositoryURI","sourceRepositoryDigest","buildSignerURI","runnerEnvironment"]})
 PY
+  ATT_DIGEST=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))[0]["verificationResult"]["statement"]["subject"][0]["digest"]["sha256"])' "$WORK/att.json")
+  ATT_SIGNER=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))[0]["verificationResult"]["signature"]["certificate"]["buildSignerURI"])' "$WORK/att.json")
+else
+  echo "-- gh produced no attestation JSON; its stderr follows:"
+  sed -n '1,10p' "$WORK/att.err"
+fi
 KF_VERSION=$("$KF_DIR/kingfisher" --version | tr -d '\n')
 echo "-- macOS execution: $KF_VERSION"
 assert 07b-macos-binary-runs "kingfisher 2.2.0" "$KF_VERSION"
@@ -156,6 +177,36 @@ RULE_COUNT=$("$KF_DIR/kingfisher" rules list --format json 2>/dev/null | python3
 echo "-- built-in rules listed: $RULE_COUNT (total rules; the listing exposes no validator flag,"
 echo "   so this is NOT comparable to TruffleHog's stated 700+ actively-verifying detectors)"
 assert 07c-rules-listed-and-counted 485 "$RULE_COUNT"
+assert 07d-attested-subject-digest-equals-the-downloaded-file "$LOCAL_DIGEST" "$ATT_DIGEST"
+echo "-- the signer workflow below is READ FROM the certificate, not enforced by the flags used:"
+echo "   --repo mongodb/kingfisher constrains the repository identity only; enforcing the workflow"
+echo "   path needs --signer-workflow or --cert-identity, which this check does not pass."
+assert 07e-signer-workflow-observed-in-certificate \
+  "https://github.com/mongodb/kingfisher/.github/workflows/release.yml@refs/heads/main" "$ATT_SIGNER"
+echo "-- negative control: the same command with a non-writable Sigstore trusted-root cache."
+if [ "$(id -u)" -eq 0 ]; then
+  echo "   SKIPPED-AS-ROOT: mode 0500 does not stop uid 0, so this control cannot run as root."
+  assert 07f-verifier-fails-without-a-writable-sigstore-cache skipped-as-root skipped-as-root
+else
+  RO_CACHE="$WORK/ro-cache"; mkdir -p "$RO_CACHE"; chmod 500 "$RO_CACHE"
+  XDG_CACHE_HOME="$RO_CACHE" \
+    gh attestation verify "$KF_DIR/kingfisher-darwin-arm64.tgz" --repo mongodb/kingfisher --format json \
+    > "$WORK/att-ro.json" 2>"$WORK/att-ro.err"
+  RO_EXIT=$?
+  chmod 700 "$RO_CACHE"
+  echo "   gh stderr (wording is gh 2.98.0's):"; sed -n '1,3p' "$WORK/att-ro.err"
+  RO_MSG=$(grep -c 'no valid Sigstore verifiers could be initialized' "$WORK/att-ro.err")
+  assert 07f-verifier-fails-without-a-writable-sigstore-cache "1 1" "$RO_EXIT $RO_MSG"
+fi
+echo "-- second prerequisite: the command needs an authenticated gh, so P03's install step needs a token."
+NOAUTH_HOME="$WORK/noauth-home"; mkdir -p "$NOAUTH_HOME"
+env -i PATH="$PATH" HOME="$NOAUTH_HOME" \
+  gh attestation verify "$KF_DIR/kingfisher-darwin-arm64.tgz" --repo mongodb/kingfisher --format json \
+  > "$WORK/att-noauth.json" 2>"$WORK/att-noauth.err"
+NOAUTH_EXIT=$?
+echo "   gh stderr (wording is gh 2.98.0's):"; sed -n '1,2p' "$WORK/att-noauth.err"
+NOAUTH_MSG=$(grep -c 'gh auth login' "$WORK/att-noauth.err")
+assert 07g-verifier-requires-an-authenticated-gh "4 1" "$NOAUTH_EXIT $NOAUTH_MSG"
 
 say "08 verified-only behaviour on non-live, template-shaped credentials (fixture A)"
 python3 - "$WORK/fixA" <<'PY'
@@ -230,6 +281,12 @@ cat <<'NOTE'
 - No benchmark was reproduced. Every comparative runtime, network-request and binary-size figure in
   the raw reports comes from MongoDB's own docs/COMPARISON.md and stays vendor-authored.
 - No workflow file, template or repository scaffold was created by this script.
+- Whether `gh attestation verify` succeeds inside a GitHub Actions job was NOT executed: no CI exists
+  for this template yet. Section 07 proves the command on a developer machine with a writable
+  Sigstore cache, network egress to api.github.com / tuf-repo-cdn.sigstore.dev / tuf-repo.github.com,
+  and an authenticated gh (assertions 07f and 07g execute both prerequisites as negative controls),
+  so P03's install step needs GH_TOKEN in its environment. Whether a GitHub-hosted runner satisfies
+  all three is an acceptance check for P03, not a settled fact here.
 NOTE
 
 printf '\nsummary: PASS=%d FAIL=%d\n' "$PASS" "$FAIL"

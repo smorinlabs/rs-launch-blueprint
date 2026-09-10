@@ -1,4 +1,4 @@
-# R25 — Pre-1.0 semver bump strategy (pattern, Deep) — revision 6, 2026-09-10
+# R25 — Pre-1.0 semver bump strategy (pattern, Deep) — revision 7, 2026-09-10
 
 ## Decision
 
@@ -11,7 +11,56 @@ survive implementation, it is **revised against this recorded research**, not re
 from scratch; the executed evidence under `## Empirical check` is the baseline any revision argues
 against.
 
-**This is revision 6 (2026-09-10).** It corrects exactly one supporting sentence and changes nothing
+**This is revision 7 (2026-09-10).** It corrects **a count and a label**, and changes nothing else in
+the argument. The sixth empirical audit
+(`review/audit-codex.md`, model gpt-5.6-terra, `review/evidence/audit-r25-r6.log`) **approved**
+revision 6 with no findings. The judgment audit that followed (`review/audit-fable.r6.md`, model
+claude-opus-5) **endorses the recommendation** — launch at `0.1.0`, `release-type: rust`, both
+pre-major flags `true`, manifest created empty — and agrees the controller was right to continue
+past the round limit; its single finding is a tally. This decision said in three places that **two**
+raw reports emitted `BASELINE-REVIEW:` lines. **Three** did, one each:
+`raw/doxa-openai.normalized.md:82`, `raw/doxa-gemini.normalized.md:29` and
+`raw/doxa-perplexity.normalized.md:71`. `## Engines` item 7 recorded the third's substance but never
+identified it as a `BASELINE-REVIEW:` line, so a controller adjudicating those lines under runbook §4
+from this decision's own tally would have checked two and closed on two. Revision 7 makes the four
+edits that finding asks for — the count at each of the three locations, and the label on item 7.
+
+It also makes one further clarification, which the judgment auditor asked the controller to
+consider, at both places that route the `bootstrap-sha` question away from R25 — the implementation
+note under `### Principles and implementation` and unproven item 5 under `## Engines`. Each now names
+the ledger row that owns the pin itself, **F071** *release-please bootstrap-sha pin*
+(`docs/port/COMMONALITY.md:77`, `ADOPT`, no research item), alongside the F066/R24 routing of
+changelog scope that was already there. The auditor's other observation — adjudicating or explicitly
+closing doxa-gemini's release-plz proposal against F066 and F073 under runbook §4 — is a controller
+filing action outside this document and is not acted on here.
+
+Revision 7 ran no new probe; it re-read raw reports already in this run directory — the three that
+emit a `BASELINE-REVIEW:` line and the two that carry that token, colon included, only in the
+negative (`## Empirical check`). Before editing, the file was enumerated mechanically rather than re-read, with two patterns
+run over **revision 6 of this file**, chosen to cover **counts and labels** rather than the phrase
+alone. Pattern 1, the token `BASELINE-REVIEW`, returned six lines: `:349`, `:352`, `:852`, `:895`,
+`:980` and `:989`. Pattern 2, a counting word
+(*one/two/three/four/five/both/neither/none/all/each*) standing before *raw*, *report*, *engine* or
+*doxa*, returned four: `:351`, `:602`, `:932` and `:937`. Their disposition: `:351-352`, `:852` and
+`:895` stated the miscount and were corrected; `:349`, `:980` and `:989` were checked and are
+correct as written (`:349` denies that *this decision* emits a line, and `:980`/`:989` are the two
+`## Engines` items that already carried the label); `:602` (*"Two raw reports invented owned
+parameters"*) was checked against `## Engines` item 6 and names exactly doxa-gemini and
+doxa-perplexity; `:932` (*"those three Doxa bodies"*) and `:937` (*"All five engines agree"*) were
+checked against the engine table above them. Those four are correct and were left untouched.
+**Neither pattern could return item 7**, because the defect there was the *absence* of the token: it
+was found by walking each `## Engines` item against the three raw lines the grep over `raw/` names,
+and the label was added there. That is the auditor's lesson in its exact form — revision 5's sweep
+enumerated *version-outcome* assertions and could not reach a count of baseline-review lines, and no
+token pattern can reach a missing label, so a mechanical sweep is only as wide as its pattern and
+must be closed by an enumeration of the artifacts themselves.
+Nothing else moved. Everything the six empirical audits approved — the version outcomes and their
+conditioning markers, **Override precedence**, the pre-major boundary phrases, the schema
+quotations, the options table, the source-repository history table and the four `- assumes` lines —
+was confirmed unchanged by diffing this revision against the revision-6 blob
+(sha256 `91ca2e8691aed687715dbec9cacdb90d59558445cc6a5bfa425bd1b4b0c7949e`), not from memory.
+
+**Revision 6 (2026-09-10).** It corrects exactly one supporting sentence and changes nothing
 else. Item 2 of *What revision 5 changed* said that **Override precedence** records "the two separate
 paths with their two sources apiece". That is wrong, and it contradicted this decision's own correct
 statement under **Override precedence**: the paths are asymmetric. The `release-as` value has two
@@ -348,8 +397,10 @@ rs, and no change to ts is made here.
 
 **No `BASELINE-REVIEW:` finding is emitted by this decision.** F070 is `DIVERGENT`, not a retained
 `COMMON → REUSE` or `ADOPT` baseline row, so there is no baseline to challenge; and the analysis
-confirms rather than contradicts the principle behind F063/F066/F073. Two raw reports did emit
-`BASELINE-REVIEW:` lines — both are handled under `## Engines`, and neither is adopted.
+confirms rather than contradicts the principle behind F063/F066/F073. Three raw reports did emit
+`BASELINE-REVIEW:` lines — `raw/doxa-openai.normalized.md:82`, `raw/doxa-gemini.normalized.md:29`
+and `raw/doxa-perplexity.normalized.md:71`, handled under `## Engines` as items 5, 4 and 7
+respectively, and none is adopted.
 
 **Architecture alternatives compared, before any flag was chosen.**
 
@@ -485,8 +536,11 @@ the released number at the first Release PR (`## Engines`, unproven item 2).
 no manifest entry, the first Release PR *"will collect all the commits (in the history of the
 default/configured branch) to parse out conventional commits for changelog generation"*
 (`docs/manifest-releaser.md`, v17.11.2). The documented control is a top-level `"bootstrap-sha"` key, which py already uses
-(`b08bccf`). Changelog scope is F066/R24 territory, not R25's; P03 should set it deliberately when
-it wires the first release.
+(`b08bccf`). The pin itself is owned by ledger row **F071**, *release-please bootstrap-sha pin*
+(`docs/port/COMMONALITY.md:77`, `ADOPT`, no research item, *"mechanical: pin the commit
+release-please starts scanning from when first configured"*); what the resulting first changelog
+contains is F066/R24 territory. Neither is R25's; P03 should set the pin deliberately when it wires
+the first release.
 
 **Fit for this template, per shape.**
 
@@ -646,6 +700,25 @@ other evidence log was changed. **Revision 6 ran no new probe.** On **2026-09-10
 further dated entry to that same log, recording that check 8's captured excerpts were re-read at the
 pin to confirm the source mapping of the two override paths — two sources for the `release-as` value,
 one for the `Release-As:` commit footer — with no new fetch and no other log altered.
+
+**Revision 7 ran no new probe either.** On **2026-09-10** it appended one further dated entry to that
+same `evidence/release-please-source-v17.11.2.log`, under the banner *"which raw reports emitted a
+`BASELINE-REVIEW:` line"*. The entry records the one pipeline it ran — `grep -n 'BASELINE-REVIEW'
+"$f" | sed 's/^/#   /' | cut -c1-200`, once for each of `raw/doxa-openai.normalized.md`,
+`raw/doxa-gemini.normalized.md`, `raw/doxa-perplexity.normalized.md`, `raw/codex.md` and
+`raw/opus.md`, in this run directory — and its output as captured, each line carrying the `#   `
+prefix and cut at 200 columns. That is a read of static files already inside this run directory, not a source
+fetch: nothing was fetched, installed or executed against a network endpoint, which is why it is
+appended to the existing log rather than opening a new check. The finding: **three** raws emit a
+`BASELINE-REVIEW:` line, one each, at `raw/doxa-openai.normalized.md:82`,
+`raw/doxa-gemini.normalized.md:29` and `raw/doxa-perplexity.normalized.md:71`; `raw/codex.md:26` and
+`raw/opus.md:124` carry `BASELINE-REVIEW:` only in the negative (*"No `BASELINE-REVIEW:` line is
+emitted"*). The grep's two remaining `raw/opus.md` hits, `:192` and `:389`, are not that token at
+all: they name the file `docs/port/BASELINE-REVIEW.md`, which has no trailing colon. The colon is
+what distinguishes an emitted finding from a reference to the ledger's baseline-review file. Because the inputs are static files that do
+not drift, the appended output is reproducible byte-for-byte, and it was re-run and diffed against
+the appended block before this sentence was written. No other evidence log was changed and no check
+was re-run.
 
 | # | What it decides | Command (working directory) | Result | Log |
 |---|---|---|---|---|
@@ -849,7 +922,7 @@ on one finding, and **confirmed** on five.
 **What revision 3 changed, and nothing else.** The recommendation (launch at `0.1.0`,
 `release-type: rust`, both flags `true`, empty manifest), the confirmed prompt correction and its
 evidence, the registry check and its finding that ts never published `0.1.0`, `0.1.1` or `0.1.2`,
-the two recorded-but-not-adopted `BASELINE-REVIEW:` lines, all seven checks and their logs, and the
+the three recorded-but-not-adopted `BASELINE-REVIEW:` lines, all seven checks and their logs, and the
 unproven list all stand as written. No evidence log was changed and no check was re-run. The edits
 are:
 
@@ -892,7 +965,7 @@ one finding, and **confirmed** on the load-bearing one.
 
 **What revision 2 changed, and nothing else.** The recommendation (launch at `0.1.0`,
 `release-type: rust`, both flags `true`, empty manifest), the confirmed prompt correction and its
-evidence, the two recorded-but-not-adopted `BASELINE-REVIEW:` lines, checks 1–6 and their logs, and
+evidence, the three recorded-but-not-adopted `BASELINE-REVIEW:` lines, checks 1–6 and their logs, and
 the unproven list all stand as written. The edits are:
 
 1. a **vocabulary paragraph** in `## Decision` defining release commit / tag / registry publication
@@ -998,8 +1071,11 @@ tool source rather than by counting votes.
    `owns release_please_bump_minor_pre_major`, `owns R25.versioning-epoch`, and others). R25 owns
    nothing: the prompt's `- owns:` line is empty and `research/CLAUDE.md` records `—`. `## Parameters`
    above records `owns: none`.
-7. **doxa-perplexity proposes reclassifying F070 away from `DIVERGENT` and editing
-   `docs/port/COMMONALITY.md`.** Outside R25's authority; not done, and recorded here instead.
+7. **doxa-perplexity's `BASELINE-REVIEW: F070 — pre-1.0 semver dampening — reclassify as a common
+   architectural pattern for new library-shaped blueprints` is recorded and not adopted**
+   (`raw/doxa-perplexity.normalized.md:71`). It proposes reclassifying F070 away from `DIVERGENT`
+   and editing `docs/port/COMMONALITY.md`. Outside R25's authority; not done, and recorded here
+   instead. This is the third of the three emitted `BASELINE-REVIEW:` lines, with items 4 and 5.
 8. **codex's evidence was documentation-only for the implementation question** — its report notes
    that a GitHub REST probe of the implementation source returned HTTP 403, so it relied on
    maintainer docs and schema. Checks 2 and 3 here fill that gap with the pinned source and an
@@ -1047,9 +1123,11 @@ tool source rather than by counting votes.
 4. **Acceptance criterion A4** (no bot-driven `0.x → 1.x` promotion) as a property of the running
    repository rather than of the configuration, and the `Release-As: 1.0.0` graduation path, which
    was read from source and never executed.
-5. **The `bootstrap-sha` question that rides along with the empty manifest** — what the first
-   changelog should contain. R25 does not decide it; F066/R24 do. P03 must set it deliberately
-   rather than inherit whatever the full history produces.
+5. **The `bootstrap-sha` question that rides along with the empty manifest** — the pin itself, and
+   what the first changelog should contain. R25 decides neither: the pin is ledger row **F071**
+   (`release-please bootstrap-sha pin`, `ADOPT`, no research item, mechanical), and the changelog
+   scope is F066/R24's. P03 must set the pin deliberately rather than inherit whatever the full
+   history produces.
 6. **Issue responsiveness** (median days to first maintainer response over the 10 most recently
    opened issues) for release-please and for `cargo-semver-checks`. The prompt's evidence table
    requires it; it was not measured and is not estimated.
