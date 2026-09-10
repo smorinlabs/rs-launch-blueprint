@@ -169,6 +169,15 @@
       },
       "provider": "doxa",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-10T05:46:10Z",
+      "publication": {
+        "acceptance_sha256": "b13d6e803e1b6c383a18971d02e398b386852f712d06d92e1c7352562174f422",
+        "decision_sha256": "16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497",
+        "transaction": "52c4ec271d7b4ff8b73b1420b167bade"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -234,6 +243,11 @@
     }
   },
   "prompt_source": "research/topics/67-error-and-exit-code-contract/prompts/error-and-exit-code-contract.prompt.md",
+  "publication": {
+    "acceptance_sha256": "b13d6e803e1b6c383a18971d02e398b386852f712d06d92e1c7352562174f422",
+    "decision_sha256": "16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497",
+    "transaction": "52c4ec271d7b4ff8b73b1420b167bade"
+  },
   "remaining_budget": "USD 300.00 remaining of USD 300.00 bulk Deep ceiling (no Doxa submission before the pilot publishes; no automatic retry)",
   "required_engines": [
     "codex",
@@ -242,7 +256,7 @@
   ],
   "run_id": "2026-09-05T155124Z-2271e140a7ef",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "deep",
-  "updated_at": "2026-09-09T07:31:05Z"
+  "updated_at": "2026-09-10T05:46:10Z"
 }

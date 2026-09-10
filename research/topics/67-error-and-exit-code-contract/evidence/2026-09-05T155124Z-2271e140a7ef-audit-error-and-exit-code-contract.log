@@ -1,0 +1,2141 @@
+time="2026-09-09T19:30:20-07:00" level=warning msg="failed to detect whether running under rosetta, assuming false" error="failed to read sysctl \"sysctl.proc_translated\": operation not permitted"
+# R67 empirical-auditor rerun
+cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R67/2026-09-05T155124Z-2271e140a7ef
+host: Linux lima-ubuntu 6.17.0-41-generic #41-Ubuntu SMP PREEMPT_DYNAMIC Sat Jun 20 17:41:03 UTC 2026 aarch64 GNU/Linux
+rustc: rustc 1.98.1 (48a229cea 2026-09-01)
+cargo: cargo 1.98.1 (797e8a9bc 2026-08-05)
+cargo-audit: error: no such command: `audit`
+
+help: a command with a similar name exists: `add`
+
+help: view all installed commands with `cargo --list`
+help: find a package to install `audit` with `cargo search cargo-audit`
+
+## E1 crates.io selected fields
+
+=== $ curl crates.io thiserror
+thiserror	350390985	1436032398	2.0.20	
+
+[exit=0]
+=== $ curl crates.io versions thiserror
+2.0.20	2026-08-08T06:22:23.795550Z	1.71	MIT OR Apache-2.0
+
+[exit=0]
+
+=== $ curl crates.io anyhow
+anyhow	206068310	942920266	1.0.104	
+
+[exit=0]
+=== $ curl crates.io versions anyhow
+1.0.104	2026-07-18T20:59:37.656167Z	1.68	MIT OR Apache-2.0
+
+[exit=0]
+
+=== $ curl crates.io signal-hook
+signal-hook	52617700	235773971	0.4.4	
+
+[exit=0]
+=== $ curl crates.io versions signal-hook
+0.4.4	2026-04-04T08:08:58.259635Z	1.66	MIT OR Apache-2.0
+
+[exit=0]
+
+=== $ curl crates.io ctrlc
+ctrlc	20977033	122696775	3.5.2	
+
+[exit=0]
+=== $ curl crates.io versions ctrlc
+3.5.2	2026-02-10T20:41:44.442750Z	1.69.0	MIT/Apache-2.0
+
+[exit=0]
+
+=== $ curl crates.io strum
+strum	133569704	619448770	0.28.0	
+
+[exit=0]
+=== $ curl crates.io versions strum
+0.28.0	2026-02-22T15:46:16.247520Z	1.71	MIT
+
+[exit=0]
+
+=== $ curl crates.io inquire
+inquire	5097514	20203144	0.9.4	
+
+[exit=0]
+=== $ curl crates.io versions inquire
+0.9.4	2026-02-24T17:21:33.418470Z	1.80.0	MIT
+
+[exit=0]
+
+=== $ curl crates.io etcetera
+etcetera	31683342	105128197	0.11.0	
+
+[exit=0]
+=== $ curl crates.io versions etcetera
+0.11.0	2025-10-28T13:28:11.765603Z	1.87.0	MIT OR Apache-2.0
+
+[exit=0]
+
+=== $ curl crates.io miette
+miette	16825104	72811399	7.6.0	
+
+[exit=0]
+=== $ curl crates.io versions miette
+7.6.0	2025-04-27T04:53:40.567063Z	1.70.0	Apache-2.0
+
+[exit=0]
+
+=== $ curl crates.io human-panic
+human-panic	2750696	13220540	2.0.8	
+
+[exit=0]
+=== $ curl crates.io versions human-panic
+2.0.8	2026-04-02T15:43:33.195856Z	1.88	MIT OR Apache-2.0
+
+[exit=0]
+
+=== $ curl crates.io exitcode
+exitcode	830039	9036319	1.1.2	
+
+[exit=0]
+=== $ curl crates.io versions exitcode
+1.1.2	2017-06-18T18:21:36.405587Z	-	Apache-2.0
+
+[exit=0]
+
+=== $ curl crates.io sysexits
+sysexits	211934	1536178	0.13.0	
+
+[exit=0]
+=== $ curl crates.io versions sysexits
+0.13.0	2026-02-28T14:38:30.063991Z	1.87.0	Apache-2.0 OR MIT
+
+[exit=0]
+
+=== $ curl crates.io serde_json
+serde_json	301631570	1277306669	1.0.151	
+
+[exit=0]
+=== $ curl crates.io versions serde_json
+1.0.151	2026-07-20T05:54:44.078083Z	1.71	MIT OR Apache-2.0
+
+[exit=0]
+
+## E2 GitHub repository selected fields
+
+=== $ gh api repos/dtolnay/thiserror
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ gh api repos/dtolnay/anyhow
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ gh api repos/vorner/signal-hook
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ gh api repos/Detegr/rust-ctrlc
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ gh api repos/Peternator7/strum
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ gh api repos/mikaelmello/inquire
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ gh api repos/zkat/miette
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ gh api repos/rust-cli/human-panic
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ gh api repos/benwilber/exitcode
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ gh api repos/sorairolake/sysexits-rs
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ gh api repos/lunacookies/etcetera
+main: line 8: gh: command not found
+
+[exit=127]
+
+## E3 GitHub open issue counts
+
+=== $ gh api search/issues repo:dtolnay/thiserror
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ gh api search/issues repo:dtolnay/anyhow
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ gh api search/issues repo:vorner/signal-hook
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ gh api search/issues repo:Detegr/rust-ctrlc
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ gh api search/issues repo:mikaelmello/inquire
+main: line 8: gh: command not found
+
+[exit=127]
+
+## E4 RustSec package pages and authoritative advisory-db directories
+
+=== $ curl -o /dev/null -w HTTP_CODE rustsec package thiserror
+404
+
+[exit=0]
+=== $ gh api advisory-db crates/thiserror
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ curl -o /dev/null -w HTTP_CODE rustsec package anyhow
+200
+
+[exit=0]
+=== $ gh api advisory-db crates/anyhow
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ curl -o /dev/null -w HTTP_CODE rustsec package signal-hook
+404
+
+[exit=0]
+=== $ gh api advisory-db crates/signal-hook
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ curl -o /dev/null -w HTTP_CODE rustsec package ctrlc
+404
+
+[exit=0]
+=== $ gh api advisory-db crates/ctrlc
+main: line 8: gh: command not found
+
+[exit=127]
+
+=== $ curl -o /dev/null -w HTTP_CODE rustsec package inquire
+404
+
+[exit=0]
+=== $ gh api advisory-db crates/inquire
+main: line 8: gh: command not found
+
+[exit=127]
+
+## E5 RustSec advisory source
+```toml
+[advisory]
+id = "RUSTSEC-2026-0190"
+package = "anyhow"
+date = "2026-06-25"
+url = "https://github.com/dtolnay/anyhow/issues/451"
+informational = "unsound"
+categories = ["memory-corruption"]
+keywords = ["unsound", "downcast_mut"]
+
+[affected.functions]
+"anyhow::Error::downcast_mut" = ["< 1.0.103"]
+
+[versions]
+patched = [">= 1.0.103"]
+```
+
+# Unsoundness in `Error::downcast_mut()`
+
+Affected versions of this crate violate borrow rules, resulting in undefined behavior, when the user adds context to an error via `Error::context` and then later calls `Error::downcast_mut` on the returned `Error`.
+
+The flaw was corrected in commit `6e8c000` by revising how the mutable reference is constructed, avoiding inclusion of a shared reference in the resulting borrow chain.
+
+## Example
+
+```rust
+use anyhow::Error;
+use std::fmt;
+
+#[derive(Debug)]
+struct ErrorContext(&'static str);
+
+impl fmt::Display for ErrorContext {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        fmt::Display::fmt(&self.0, f)
+    }
+}
+
+fn main() {
+    let mut error = Error::msg("inner error").context(ErrorContext("old context"));
+    let context: &mut ErrorContext = error.downcast_mut().unwrap();
+    context.0 = "new context";
+    println!("{:?}", error);
+}
+```
+
+## Miri output
+
+```
+error: Undefined Behavior: trying to retag from <1538> for Unique permission at alloc602[0x38], but that tag only grants SharedReadOnly permission for this location
+   --> src/ptr.rs:170:18
+    |
+170 |         unsafe { &mut *self.ptr.as_ptr() }
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^ this error occurs as part of retag at alloc602[0x38..0x48]
+    |
+    = help: this indicates a potential bug in the program: it performed an invalid operation, but the Stacked Borrows rules it violated are still experimental
+    = help: see https://github.com/rust-lang/unsafe-code-guidelines/blob/master/wip/stacked-borrows.md for further information
+help: <1538> was created by a SharedReadOnly retag at offsets [0x38..0x48]
+   --> src/ptr.rs:89:18
+    |
+ 89 |             ptr: NonNull::from(ptr),
+    |                  ^^^^^^^^^^^^^^^^^^
+    = note: stack backtrace:
+            0: anyhow::ptr::Mut::<'_, ErrorContext>::deref_mut
+                at src/ptr.rs:170:18: 170:41
+            1: anyhow::error::<impl anyhow::Error>::downcast_mut::<ErrorContext>
+                at src/error.rs:560:18: 560:46
+            2: main
+                at examples/downcast_mut.rs:15:38: 15:58
+```
+
+[exit=0]
+
+## E6 ctrlc 3.5.2 published tarball source
+
+[exit=0]
+e0b1fab2ae45819af2d0731d60f2afe17227ebb1a1538a236da84c93e9a60162  /tmp/tmp.3TOVrTOM9R/ctrlc/ctrlc.crate
+
+[exit=0]
+
+[exit=0]
+93:pub fn set_handler<F>(user_handler: F) -> Result<(), Error>
+94-where
+95-    F: FnMut() + 'static + Send,
+96-{
+97-    init_and_set_handler(user_handler, true)
+98-}
+99-
+100-/// The same as ctrlc::set_handler but errors if a handler already exists for the signal(s).
+101-///
+102-/// # Errors
+103-/// Will return an error if another handler exists or if a system error occurred while setting the
+104-/// handler.
+105-pub fn try_set_handler<F>(user_handler: F) -> Result<(), Error>
+106-where
+107-    F: FnMut() + 'static + Send,
+
+[exit=0]
+42-//! ```
+43-//!
+44-//! # Handling SIGTERM and SIGHUP
+45://! Handling of `SIGTERM` and `SIGHUP` can be enabled with `termination` feature. If this is enabled,
+46-//! the handler specified by `set_handler()` will be executed for `SIGINT`, `SIGTERM` and `SIGHUP`.
+47-//!
+48-
+49-#[macro_use]
+50-
+51-mod error;
+52-mod platform;
+53-pub use platform::Signal;
+--
+73-/// ```
+74-///
+75-/// # Warning
+76:/// On Unix, the handler registration for `SIGINT`, (`SIGTERM` and `SIGHUP` if termination feature
+77-/// is enabled) or `SA_SIGINFO` posix signal handlers will be overwritten. On Windows, multiple
+78-/// handler routines are allowed, but they are called on a last-registered, first-called basis
+79-/// until the signal is handled.
+80-///
+81-/// ctrlc::try_set_handler will error (on Unix) if another signal handler exists for the same
+82-/// signal(s) that ctrlc is trying to attach the handler to.
+83-///
+84-/// On Unix, signal dispositions and signal handlers are inherited by child processes created via
+
+[exit=0]
+92:    let sigint_old = signal::sigaction(signal::Signal::SIGINT, &new_action)?;
+94:        signal::sigaction(signal::Signal::SIGINT, &sigint_old).unwrap();
+100:        let sigterm_old = match signal::sigaction(signal::Signal::SIGTERM, &new_action) {
+103:                signal::sigaction(signal::Signal::SIGINT, &sigint_old).unwrap();
+108:            signal::sigaction(signal::Signal::SIGINT, &sigint_old).unwrap();
+109:            signal::sigaction(signal::Signal::SIGTERM, &sigterm_old).unwrap();
+112:        let sighup_old = match signal::sigaction(signal::Signal::SIGHUP, &new_action) {
+115:                signal::sigaction(signal::Signal::SIGINT, &sigint_old).unwrap();
+116:                signal::sigaction(signal::Signal::SIGTERM, &sigterm_old).unwrap();
+121:            signal::sigaction(signal::Signal::SIGINT, &sigint_old).unwrap();
+122:            signal::sigaction(signal::Signal::SIGTERM, &sigterm_old).unwrap();
+123:            signal::sigaction(signal::Signal::SIGHUP, &sighup_old).unwrap();
+
+[exit=0]
+
+## E7 signal-hook 0.4.4 and inquire 0.9.4 published tarball source
+
+[exit=0]
+
+[exit=0]
+b2a0c28ca5908dbdbcd52e6fdaa00358ab88637f8ab33e1f188dd510eb44b53d  /tmp/tmp.3TOVrTOM9R/source/signal-hook.crate
+6654738b8024300cf062d04a1c13c10c8e2cea598ec1c47dc9b6641159429756  /tmp/tmp.3TOVrTOM9R/source/inquire.crate
+
+[exit=0]
+
+[exit=0]
+
+[exit=0]
+153:pub fn register(signal: c_int, flag: Arc<AtomicBool>) -> Result<SigId, Error> {
+154-    // We use SeqCst for two reasons:
+155-    // * Signals should not come very often, so the performance does not really matter.
+156-    // * We promise the order of actions, but setting different atomics with Relaxed or similar
+157-    //   would not guarantee the effective order.
+158-    unsafe { low_level::register(signal, move || flag.store(true, Ordering::SeqCst)) }
+159-}
+160-
+161-/// Registers an action to set the flag to the given value whenever the signal arrives.
+162:pub fn register_usize(signal: c_int, flag: Arc<AtomicUsize>, value: usize) -> Result<SigId, Error> {
+163-    unsafe { low_level::register(signal, move || flag.store(value, Ordering::SeqCst)) }
+164-}
+165-
+166-/// Terminate the application on a signal if the given condition is true.
+167-///
+168-/// This can be used for different use cases. One of them (with the condition being always true) is
+169-/// just unconditionally terminate on the given signal.
+170-///
+--
+186:pub fn register_conditional_shutdown(
+187-    signal: c_int,
+188-    status: c_int,
+189-    condition: Arc<AtomicBool>,
+190-) -> Result<SigId, Error> {
+191-    let action = move || {
+192-        if condition.load(Ordering::SeqCst) {
+193-            low_level::exit(status);
+194-        }
+--
+217:pub fn register_conditional_default(
+218-    signal: c_int,
+219-    condition: Arc<AtomicBool>,
+220-) -> Result<SigId, Error> {
+221-    // Verify we know about this particular signal.
+222-    low_level::signal_name(signal).ok_or_else(|| Error::from_raw_os_error(EINVAL))?;
+223-    let action = move || {
+224-        if condition.load(Ordering::SeqCst) {
+225-            let _ = low_level::emulate_default_handler(signal);
+
+[exit=0]
+[features]
+channel = []
+default = [
+    "channel",
+    "iterator",
+]
+extended-siginfo = [
+    "channel",
+    "iterator",
+    "extended-siginfo-raw",
+]
+extended-siginfo-raw = ["cc"]
+iterator = ["channel"]
+
+[lib]
+
+[exit=0]
+12:pub enum InquireError {
+13-    /// The input device is not a TTY, which means that enabling raw mode
+14-    /// on the terminal in order to listen to input events is not possible.
+15-    NotTTY,
+--
+25:    OperationCanceled,
+26-
+27-    /// The operation was interrupted by the user after they
+28-    /// pressed Ctrl+C.
+--
+33:    OperationInterrupted,
+34-
+35-    /// Error while executing IO operations.
+36-    Custom(CustomUserError),
+--
+83:            InquireError::OperationCanceled => f.write_str("Operation was canceled by the user"),
+84:            InquireError::OperationInterrupted => {
+85-                f.write_str("Operation was interrupted by the user")
+86-            }
+87-            InquireError::Custom(err) => write!(f, "User-provided error: {}", err),
+
+[exit=0]
+
+## E8 Rust std sources at 1.96.0
+
+[exit=0]
+
+[exit=0]
+
+[exit=0]
+
+[exit=0]
+2101-#[derive(Clone, Copy, Debug, PartialEq)]
+2102-#[stable(feature = "process_exitcode", since = "1.61.0")]
+2103:pub struct ExitCode(imp::ExitCode);
+2104-
+2105-/// Allows extension traits within `std`.
+2106-#[unstable(feature = "sealed", issue = "none")]
+2107-impl crate::sealed::Sealed for ExitCode {}
+2108-
+2109-#[stable(feature = "process_exitcode", since = "1.61.0")]
+--
+2198-
+2199-#[stable(feature = "process_exitcode", since = "1.61.0")]
+2200:impl From<u8> for ExitCode {
+2201-    /// Constructs an `ExitCode` from an arbitrary u8 value.
+2202-    fn from(code: u8) -> Self {
+2203-        ExitCode(imp::ExitCode::from(code))
+2204-    }
+2205-}
+2206-
+--
+2572-    label = "`main` can only return types that implement `{This}`"
+2573-))]
+2574:pub trait Termination {
+2575-    /// Is called to get the representation of the value as status code.
+2576-    /// This status code is returned to the operating system.
+2577-    #[stable(feature = "termination_trait_lib", since = "1.61.0")]
+2578-    fn report(self) -> ExitCode;
+2579-}
+2580-
+
+[exit=0]
+1149-/// the global stream.
+1150-///
+1151-/// However, if the actual I/O causes an error, this function does panic.
+1152-///
+1153-/// Writing to non-blocking stdout/stderr can cause an error, which will lead
+1154-/// this function to panic.
+1155:fn print_to<T>(args: fmt::Arguments<'_>, global_s: fn() -> T, label: &str)
+1156-where
+1157-    T: Write,
+1158-{
+1159-    if print_to_buffer_if_capture_used(args) {
+1160-        // Successfully wrote to capture buffer.
+1161-        return;
+1162-    }
+1163-
+1164-    if let Err(e) = global_s().write_fmt(args) {
+1165-        panic!("failed printing to {label}: {e}");
+1166-    }
+1167-}
+1168-
+1169:fn print_to_buffer_if_capture_used(args: fmt::Arguments<'_>) -> bool {
+1170-    OUTPUT_CAPTURE_USED.load(Ordering::Relaxed)
+1171-        && OUTPUT_CAPTURE.try_with(|s| {
+1172-            // Note that we completely remove a local sink to write to in case
+1173-            // our printing recursively panics/prints, so the recursive
+1174-            // panic/print goes to the global sink instead of our local sink.
+1175-            s.take().map(|w| {
+1176-                let _ = w.lock().unwrap_or_else(|e| e.into_inner()).write_fmt(args);
+1177-                s.set(Some(w));
+1178-            })
+1179-        }) == Ok(Some(()))
+1180-}
+1181-
+1182-/// Used by impl Termination for Result to print error after `main` or a test
+1183-/// has returned. Should avoid panicking, although we can't help it if one of
+
+[exit=0]
+33-    // handler, causing it to kill the program, which isn't exactly what we
+34-    // want!
+35-    //
+36:    // Hence, we set SIGPIPE to ignore when the program starts up in order
+37-    // to prevent this problem. Use `-Zon-broken-pipe=...` to alter this
+38-    // behavior.
+39-    reset_sigpipe(sigpipe);
+40-
+41-    stack_overflow::init();
+
+[exit=0]
+289-    /// the `Backtrace::force_capture` function.
+290-    #[stable(feature = "backtrace", since = "1.65.0")]
+291-    #[inline(never)] // want to make sure there's a frame here to remove
+292:    pub fn capture() -> Backtrace {
+293-        if !Backtrace::enabled() {
+294-            return Backtrace { inner: Inner::Disabled };
+295-        }
+296-        Backtrace::create(Backtrace::capture as fn() -> Backtrace as usize)
+297-    }
+298-
+299-    /// Forcibly captures a full backtrace, regardless of environment variable
+300-    /// configuration.
+--
+308-    /// parts of code.
+309-    #[stable(feature = "backtrace", since = "1.65.0")]
+310-    #[inline(never)] // want to make sure there's a frame here to remove
+311:    pub fn force_capture() -> Backtrace {
+312-        Backtrace::create(Backtrace::force_capture as fn() -> Backtrace as usize)
+313-    }
+314-
+315-    /// Forcibly captures a disabled backtrace, regardless of environment
+316-    /// variable configuration.
+317-    #[stable(feature = "backtrace", since = "1.65.0")]
+318-    #[rustc_const_stable(feature = "backtrace", since = "1.65.0")]
+319-    pub const fn disabled() -> Backtrace {
+
+[exit=0]
+
+## E9 ecosystem authorities
+main: line 8: gh: command not found
+
+[exit=127]
+main: line 8: gh: command not found
+
+[exit=127]
+254:Major: adding new enum variants (without non_exhaustive)
+255-Major: adding new fields to an enum variant
+256-
+257-
+258-Traits
+259-
+260-Major: adding a non-defaulted trait item
+261-Major: any change to trait item signatures
+262-Possibly-breaking: adding a defaulted trait item
+263-Major: adding a trait item that makes the trait non-object safe
+264-Major: adding a type parameter without a default
+265-Minor: adding a defaulted trait type parameter
+266-
+267-
+268-Implementations
+--
+1170:Major: adding new enum variants (without non_exhaustive)
+1171-It is a breaking change to add a new enum variant if the enum does not use the
+1172-#[non_exhaustive] attribute.
+1173-// MAJOR CHANGE
+1174-
+1175-///////////////////////////////////////////////////////////
+1176-// Before
+1177-pub enum E {
+1178-    Variant1,
+1179-}
+1180-
+1181-///////////////////////////////////////////////////////////
+1182-// After
+1183-pub enum E {
+1184-    Variant1,
+
+[exit=0]
+# Exit codes
+
+A program doesn't always succeed.
+And when an error occurs,
+you should make sure to emit the necessary information correctly.
+In addition to
+[telling the user about errors](human-communication.html),
+on most systems,
+when a process exits,
+it also emits an exit code
+(an integer between 0 and 255 is compatible with most platforms).
+You should try to emit the correct code
+for your program's state.
+For example,
+in the ideal case when your program succeeds,
+it should exit with `0`.
+
+When an error occurs, it gets a bit more complicated, though.
+In the wild,
+many tools exit with `1` when a common failure occurs.
+Currently, Rust sets an exit code of `101` when the process panicked.
+Beyond that, people have done many things in their programs.
+
+So, what to do?
+The BSD ecosystem has collected a common definition for their exit codes
+(you can find them [here][`sysexits.h`]).
+The Rust library [`exitcode`] provides these same codes,
+ready to be used in your application.
+Please see its API documentation for the possible values to use.
+
+After you add the `exitcode` dependency to your `Cargo.toml`,
+you can use it like this:
+
+```rust,ignore
+fn main() {
+    // ...actual work...
+    match result {
+        Ok(_) => {
+            println!("Done!");
+            std::process::exit(exitcode::OK);
+        }
+        Err(CustomError::CantReadConfig(e)) => {
+            eprintln!("Error: {}", e);
+            std::process::exit(exitcode::CONFIG);
+        }
+        Err(e) => {
+            eprintln!("Error: {}", e);
+            std::process::exit(exitcode::DATAERR);
+        }
+    }
+}
+```
+
+
+[`exitcode`]: https://crates.io/crates/exitcode
+[`sysexits.h`]: https://www.freebsd.org/cgi/man.cgi?query=sysexits&apropos=0&sektion=0&manpath=FreeBSD+11.2-stable&arch=default&format=html
+
+[exit=0]
+# Signal handling
+
+Processes
+like command line applications
+need to react to signals sent by the operating system.
+The most common example is probably <kbd>Ctrl</kbd>+<kbd>C</kbd>,
+the signal that typically tells a process to terminate.
+To handle signals in Rust programs
+you need to consider how you can receive these signals
+as well as how you can react to them.
+
+<aside>
+
+**Note:**
+If your applications does not need to gracefully shutdown,
+the default handling is fine
+(i.e. exit immediately
+and let the OS cleanup resources like open file handles).
+In that case:
+No need to do what this chapter tells you!
+
+However,
+for applications that need to clean up after themselves,
+this chapter is very relevant!
+For example,
+if your application needs to
+properly close network connections
+(saying "good bye" to the processes at the other end),
+remove temporary files,
+or reset system settings,
+read on.
+
+</aside>
+
+## Differences between operating systems
+
+On Unix systems
+(like Linux, macOS, and FreeBSD)
+a process can receive [signals].
+It can either react to them
+in a default (OS-provided) way,
+catch the signal and handle them in a program-defined way,
+or ignore the signal entirely.
+
+[signals]: https://manpages.ubuntu.com/manpages/bionic/en/man7/signal.7.html
+
+Windows does not have signals.
+You can use [Console Handlers]
+to define callbacks that get executed when an event occurs.
+There is also [structured exception handling]
+which handles all the various types of system exceptions such as division by zero, invalid access exceptions, stack overflow, and so on
+
+[Console Handlers]: https://docs.microsoft.com/en-us/windows/console/console-control-handlers
+[structured exception handling]: https://docs.microsoft.com/en-us/windows/desktop/debug/structured-exception-handling
+
+## First off: Handling Ctrl+C
+
+The [ctrlc] crate does just what the name suggests:
+It allows you to react to the user pressing <kbd>Ctrl</kbd>+<kbd>C</kbd>,
+in a cross-platform way.
+The main way to use the crate is this:
+
+[ctrlc]: https://crates.io/crates/ctrlc
+
+```rust,ignore
+{{#include signals-ctrlc.rs}}
+```
+
+This is, of course, not that helpful:
+It only prints a message but otherwise doesn't stop the program.
+
+In a real-world program,
+it's a good idea to instead set a variable in the signal handler
+that you then check in various places in your program.
+For example,
+you can set an `Arc<AtomicBool>`
+(a boolean shareable between threads)
+in your signal handler,
+and in hot loops,
+or when waiting for a thread,
+you periodically check its value
+and break when it becomes true.
+
+## Handling other types of signals
+
+The [ctrlc] crate only handles <kbd>Ctrl</kbd>+<kbd>C</kbd>,
+or, what on Unix systems would be called `SIGINT` (the "interrupt" signal).
+To react to more Unix signals,
+you should have a look at [signal-hook].
+Its design is described in [this blog post][signal-hook-post],
+and it is currently the library with the widest community support.
+
+Here's a simple example:
+
+```rust,ignore
+{{#include signals-hooked.rs}}
+```
+
+[signal-hook-post]: https://vorner.github.io/2018/06/28/signal-hook.html
+
+## Using channels
+
+Instead of setting a variable
+and having other parts of the program check it,
+you can use channels:
+You create a channel into which the signal handler emits a value
+whenever the signal is received.
+In your application code you use
+this and other channels
+as synchronization points between threads.
+Using [crossbeam-channel] it would look something like this:
+
+[crossbeam-channel]: https://crates.io/crates/crossbeam-channel
+
+```rust,ignore
+{{#include signals-channels.rs}}
+```
+
+## Using futures and streams
+
+If you are using [tokio],
+you are most likely already writing your application
+with asynchronous patterns and an event-driven design.
+Instead of using crossbeam's channels directly,
+you can enable signal-hook's `tokio-support` feature.
+This allows you to call [`.into_async()`]
+on signal-hook's `Signals` types
+to get a new type that implements `futures::Stream`.
+
+[signal-hook]: https://crates.io/crates/signal-hook
+[tokio]: https://tokio.rs/
+[`.into_async()`]: https://docs.rs/signal-hook/0.1.6/signal_hook/iterator/struct.Signals.html#method.into_async
+
+## What to do when you receive another Ctrl+C while you're handling the first Ctrl+C
+
+Most users will press <kbd>Ctrl</kbd>+<kbd>C</kbd>,
+and then give your program a few seconds to exit,
+or tell them what's going on.
+If that doesn't happen,
+they will press <kbd>Ctrl</kbd>+<kbd>C</kbd> again.
+The typical behavior is to have the application quit immediately.
+
+[exit=0]
+
+## E10 organization CLI standard
+### §6 Exit codes
+
+**R6.1 — Exit-code scheme. (MUST)**
+A CLI **MUST** use the following scheme. Unlisted failures collapse to `1`. This is "structured-but-small": enough signal for automation without the BSD `sysexits.h` (64–78) baggage, which we **reject** as over-specified and unavailable on Windows.
+
+| Code | Meaning |
+|------|---------|
+| `0` | Success |
+| `1` | Generic runtime error |
+| `2` | Usage / parse error (bad flags, missing args) |
+| `3` | Not found (the requested resource does not exist) |
+| `4` | Authentication or authorization required |
+| `5` | Conflict / precondition failed |
+| `130` | Interrupted by `SIGINT` (Ctrl-C) |
+| `143` | Terminated by `SIGTERM` |
+
+Note: code `2` means *usage error* here (matching shell/argparse convention), a deliberate divergence from gh, which uses `2` for "cancelled." Cancellation surfaces as `130` for `SIGINT` or `143` for `SIGTERM`.
+
+**R6.2 — Query & empty-result exit codes. (MUST / MAY)**
+By default, a `view`/`describe` of a resource that does not exist **MUST** exit `3` (not found), and an empty `list` **MUST** exit `0` (an empty set is a successful result, not an error). Beyond those defaults, read/query commands **MAY** use exit `1` to mean "ran successfully, found nothing / found differences" (git `diff`/`grep` style), but only for explicit predicate/search commands and only when **documented per command**, so it never collides with `1` = error or with the `3`/`0` defaults above. Expected-negative exit `1` **MUST NOT** emit an error record on stderr; runtime failures still **MUST** emit stderr diagnostics (R7.6/R7.8).
+✅ `acme widget view gone` → `3`; `acme widget list` (no results) → `0`; `acme widget exists foo` → documented `0`/`1` with no error on stderr for `1`
+❌ an empty `list` exiting `1`; an undocumented `1` scripts can't distinguish from failure; printing an error object for an expected predicate miss
+
+**R6.3 — Partial failure. (SHOULD)**
+A command operating on many items **SHOULD** continue on error by default, report a per-item result, and exit `1` if any item failed (no new code); `--fail-fast` **MAY** stop at the first error. The summary **MUST** make clear which items succeeded and which did not.
+✅ `acme widget delete a b c` deletes `b`/`c`, reports `a` failed, exits `1` ❌ aborting the whole batch on the first error with no per-item detail
+
+---
+
+### §7 Output, streams & UX
+
+**R7.1 — stdout vs stderr. (MUST)**
+Streams follow the POSIX file-descriptor contract — fd 1 (stdout) carries the command's *requested result*; fd 2 (stderr) carries everything else: diagnostics, progress, prompts, warnings, and errors (clig.dev, 12-Factor, gcloud). This split is what makes a tool pipeable and lets shells redirect diagnostics (`2>`) independently of data. Requested output goes to stdout **even when it is informational**: explicit help (`--help`/`acme help`), `--version`, and query results are the user's requested data and **MUST** go to stdout with exit `0` (R7.5). Usage text printed because of an error follows the error path instead: stderr with a nonzero exit (R7.9). A warning emitted during a normal data command **MUST** go to stderr so it never contaminates stdout.
+✅ `acme widget list -o json | jq .` works because logs went to stderr; `acme --version` → stdout
+❌ printing a "Fetching…" spinner — or `--version` — to stdout, corrupting/contaminating the data stream
+
+**R7.2 — Human vs machine output. (MUST / SHOULD)**
+The default (`-o table`) is for humans and **MAY** change between releases. Machine formats (`-o json`/`-o jsonl`/`-o yaml`/`-o name`) **MUST** be stable within a major version (R9.3) so scripts can depend on them. Machine-readable object/map schemas are open by default: within a major version, a machine format **MUST NOT** remove fields, rename fields, change field types, change field semantics, add newly required fields, or change documented collection ordering semantics. Adding optional object/map fields is allowed in a minor release unless the command documents a closed schema. Consumers **SHOULD** ignore unknown object/map fields. Positional tuple-like arrays and closed schemas **MUST NOT** be expanded without a major version unless explicitly documented as open.
+✅ stable JSON keys across `1.x`; adding optional `created_at` in `1.5` ❌ renaming a JSON field in a minor release; changing `created_at` from ISO-8601 string to Unix seconds
+
+**R7.3 — TTY-aware behavior. (SHOULD / MUST)**
+A tool **SHOULD** detect whether stdout is a TTY and adjust *presentation* accordingly: interactive niceties when attached (spinners, pager, prompts), and none of those when piped. TTY state **MUST NOT** change the selected output *format*: `-o` (default `table`) determines the format regardless of whether output is a terminal or a pipe — a pipe only suppresses the niceties (and, per the separate color standard, color). Scripts wanting machine output **MUST** pass an explicit machine format such as `-o json`/`--json` (or `-o jsonl` for documented streams) on commands that emit formatted result data rather than relying on the pipe to switch formats. (Color/styling is governed separately and out of scope here.)
+✅ `acme widget list | cat` is still `table`; `acme widget list --json | jq .` for machine output
+❌ silently emitting JSON instead of the table just because stdout is piped; prompting for confirmation inside a pipe with no TTY
+
+**R7.4 — Pager & progress. (SHOULD)**
+Long human output **MAY** invoke a pager when attached to a TTY, and **MUST** provide `--no-pager` (or honor a standard pager variable) to disable it. Progress indicators **MUST** go to stderr (R7.1) and **MUST** be suppressed when not a TTY or under `--quiet`.
+
+**R7.5 — Help text format. (MUST)**
+Every command **MUST** print structured help containing, in order: a one-line summary, `Usage:`, then `Commands`/`Arguments`/`Flags`/`Examples` sections as applicable. Explicitly requested help (`--help` or `acme help ...`) **MUST** go to stdout and exit `0`; usage/help text printed as part of a usage error **MUST** go to stderr and exit nonzero (R7.9). At least one realistic **example MUST** be shown for non-trivial commands.
+
+```
+
+[exit=0]
+116:| 54 | v1.4.14 review-comment consistency patch | Made affirmative the R7.8 single-object error contract that R7.6 already routed every machine format to — now stated explicitly for `json`/`jsonl`/`yaml`/`name`, including mid-stream failures (synced principles row 33 and the Appendix C checklist); gave R5.2's repository/workspace boundary concrete example markers; restored the `-o` prefix on R9.4's machine-format list; and tightened R3.5's value-taking short-flag cluster wording | Resolves PR #1 reviewer findings; completes an obligation the doc already implied | derived |
+117-
+118----
+119-
+120-## Part III — Specification (normative)
+121-
+122-### §1 Command structure & naming
+123-
+124-**R1.1 — Noun-verb ordering. (MUST, Standard profile)**
+125-A command path **MUST** read *resource then action*: `acme <noun> <verb>`. This is the de facto pattern of the most-praised multi-resource CLIs (gh, kubectl) and scales as resources grow.
+126-✅ `acme project create`, `acme deploy list`
+127-❌ `acme create project`, `acme list-deploys`
+128-
+129-**R1.2 — Nesting depth. (SHOULD)**
+130-Subcommand depth after the binary **SHOULD NOT** exceed three path elements (`acme <group> <noun> <verb>`). Group nouns only when a flat noun set becomes unwieldy. Deeper nesting harms discoverability and tab-completion.
+--
+368:By default, a `view`/`describe` of a resource that does not exist **MUST** exit `3` (not found), and an empty `list` **MUST** exit `0` (an empty set is a successful result, not an error). Beyond those defaults, read/query commands **MAY** use exit `1` to mean "ran successfully, found nothing / found differences" (git `diff`/`grep` style), but only for explicit predicate/search commands and only when **documented per command**, so it never collides with `1` = error or with the `3`/`0` defaults above. Expected-negative exit `1` **MUST NOT** emit an error record on stderr; runtime failures still **MUST** emit stderr diagnostics (R7.6/R7.8).
+369-✅ `acme widget view gone` → `3`; `acme widget list` (no results) → `0`; `acme widget exists foo` → documented `0`/`1` with no error on stderr for `1`
+370-❌ an empty `list` exiting `1`; an undocumented `1` scripts can't distinguish from failure; printing an error object for an expected predicate miss
+371-
+372-**R6.3 — Partial failure. (SHOULD)**
+373-A command operating on many items **SHOULD** continue on error by default, report a per-item result, and exit `1` if any item failed (no new code); `--fail-fast` **MAY** stop at the first error. The summary **MUST** make clear which items succeeded and which did not.
+374-✅ `acme widget delete a b c` deletes `b`/`c`, reports `a` failed, exits `1` ❌ aborting the whole batch on the first error with no per-item detail
+375-
+376----
+377-
+378-### §7 Output, streams & UX
+379-
+380-**R7.1 — stdout vs stderr. (MUST)**
+381-Streams follow the POSIX file-descriptor contract — fd 1 (stdout) carries the command's *requested result*; fd 2 (stderr) carries everything else: diagnostics, progress, prompts, warnings, and errors (clig.dev, 12-Factor, gcloud). This split is what makes a tool pipeable and lets shells redirect diagnostics (`2>`) independently of data. Requested output goes to stdout **even when it is informational**: explicit help (`--help`/`acme help`), `--version`, and query results are the user's requested data and **MUST** go to stdout with exit `0` (R7.5). Usage text printed because of an error follows the error path instead: stderr with a nonzero exit (R7.9). A warning emitted during a normal data command **MUST** go to stderr so it never contaminates stdout.
+382-✅ `acme widget list -o json | jq .` works because logs went to stderr; `acme --version` → stdout
+--
+421:**R7.6 — Error messages. (MUST / SHOULD)**
+422:Errors **MUST** be written to stderr (R7.1) and **SHOULD** be lowercase-first, free of a trailing period, name the offending input in quotes, and state a next step where possible. When a machine output format is active, errors follow the machine-readable error contract in R7.8.
+423-✅ `error: project 'demo' not found — run 'acme project list' to see available projects`
+424-❌ `ERROR!! Something went wrong.`
+425-
+426:**R7.7 — Buffering & flush. (SHOULD / MUST)**
+427:Because stdout is fully buffered when it is not a terminal (ISO C), diagnostics on stderr **SHOULD** be line- or unbuffered so they appear promptly, and a tool **MUST** flush all streams before exiting on every path — success, error, and signal (R9.6) — so no output is lost. Tools **SHOULD NOT** rely on the interleaved ordering of stdout and stderr, since buffering makes that ordering non-deterministic between a TTY and a pipe.
+428-✅ flushing stdout before `exit(0)`; the final JSON line is never dropped on a panic
+429-❌ losing the last line of output because the buffer wasn't flushed before exit
+430-
+431:**R7.8 — Machine-readable error schema. (MUST)**
+432-Under any machine output format (`-o json`/`--json`, `-o jsonl`, `-o yaml`, or `-o name`), an ordinary command error **MUST** be emitted to stderr as a single JSON object: `{"error":{"code":"<stable-string>","message":"<human-readable>"}}` — a JSONL stream **MUST NOT** suppress or replace it (see below). `code` **MUST** be a stable, documented string, and the object **MAY** carry `details`, `request_id`, or other documented fields. JSONL/NDJSON **MAY** be used for documented streaming or multi-record machine output, where each line is one complete JSON object, but it **MUST NOT** replace the single-object error schema for ordinary command failures, including a failure that occurs mid-stream. If a parser can determine that a machine format was requested before reporting a usage error, it **SHOULD** use the same machine-readable error contract; otherwise it **MAY** fall back to the standard human usage error format.
+433-✅ `{"error":{"code":"not_found","message":"project 'demo' not found"}}` ❌ a bare unparseable string under `-o json`; emitting JSONL for a one-error command failure
+434-
+435-**R7.9 — Bare & unknown invocation. (MUST / SHOULD)**
+436-The bare top-level command with no arguments **MUST** print help to stdout and exit `0`. A command *group* invoked with no action (`acme project`) is a usage error: print help to stderr and exit `2`. On an unknown command or flag, the tool **SHOULD** suggest the nearest match.
+437-✅ `acme` → help/stdout/0; `acme projcet list` → "did you mean 'project'?" ❌ `acme project` silently doing nothing and exiting `0`
+438-
+439-**R7.10 — Watch / follow streams. (SHOULD)**
+440:Long-running stream commands use `--watch`/`-w` (re-render on change) or `--follow` (stream appended output; long-only, since `-f` is force). Streaming commands **SHOULD** support `-o jsonl` when they offer machine-readable streams; JSONL/NDJSON output is one complete JSON object per line and **MUST** be flushed per record (R7.7). Human output and non-streaming JSON output are not JSONL by default. Ctrl-C **MUST** exit `130` cleanly.
+441-✅ `acme deploy logs web --follow`; `acme deploy logs web --follow -o jsonl`; `acme widget list --watch` ❌ a buffered `--follow` that shows nothing until exit; making `--json` emit JSONL
+442-
+443-**R7.11 — Deterministic list ordering. (SHOULD)**
+444-`list` output **SHOULD** have a stable, documented default order (e.g., name or creation time) so scripts and diffs are reproducible; `--sort-by` **MAY** override it.
+445-✅ a documented "sorted by name" default ❌ rows returned in nondeterministic API order
+446-
+447-**R7.12 — Error code catalog. (SHOULD)**
+448:A CLI that emits stable machine-readable error codes (R7.8) **SHOULD** document common codes in reference docs or a help topic, and **MAY** expose them as machine-readable metadata. Upstream or domain-specific errors **MAY** be grouped under stable high-level codes with details carrying provider-specific information.
+449-✅ `acme help errors` lists `not_found`, `auth_required`, `rate_limited` ❌ stable error codes with no documentation
+450-
+451----
+452-
+453-### §8 Interaction & safety
+454-
+455-**R8.1 — Confirm destructive actions. (MUST)**
+456-Irreversible or destructive operations **MUST** confirm before proceeding when stdin is a TTY, and **MUST** offer a non-interactive bypass. Prompt text **SHOULD** be written to stderr so stdout remains data-clean (R7.1). Tools **SHOULD NOT** open `/dev/tty` or another controlling terminal for surprise prompts when stdin is not a TTY; if a tool supports that behavior, it **MUST** document it and **MUST** disable it under `--no-input` and non-interactive/CI modes. The two bypass flags are distinct: **`--yes`/`-y`** answers the confirmation prompt (consent), while **`--force`/`-f`** overrides a guard condition — for example, the resource is protected, is in use, or has drifted from its expected state. `--force` **MUST NOT** imply routine consent; a non-interactive guarded destructive action may require both `--force` and `--yes`. Under `--no-input` with no required bypass flag, the command **MUST** fail rather than guess.
+457-✅ `acme project delete demo --yes` skips the y/n prompt; `acme deploy delete web --force --yes` deletes even though it is still receiving traffic
+458-❌ deleting without confirmation and without a bypass flag; requiring `--force` merely to skip a routine prompt
+459-
+460:**R8.2 — Non-interactive / CI behavior. (MUST)**
+461-A tool **MUST** be fully usable without a TTY. It **MUST NOT** block on a prompt when input is unavailable; instead it uses provided flags/env or fails with a clear message. Use exit `2` when required non-auth input or consent is missing because prompting is disabled/unavailable, use exit `4` when authentication or authorization input is missing, and use exit `1` for runtime input failures such as unreadable files. `--no-input` forces this mode explicitly.
+462-
+463-**R8.3 — Idempotency & declarative flows. (SHOULD)**
+464-Where it makes sense, mutating commands **SHOULD** be idempotent (re-running converges, not errors), and declarative inputs **SHOULD** use `apply` (R2.1). Distinguish imperative (`create`, `delete`) from declarative (`apply`) clearly.
+465-✅ `acme widget apply --file manifest.toml` converges on re-run ❌ `apply` that fails because the resource already exists
+466-
+467-**R8.4 — Stronger confirmation for catastrophic actions. (MAY)**
+468-For catastrophic or wide-blast-radius operations, a tool **MAY** require the user to type the resource's name (not just y/n) when interactive; `--yes` still supplies consent and `--force` still overrides guard conditions for automation (R8.1).
+469-✅ "type the project name to confirm deletion:" ❌ deleting an entire project on a single keystroke
+470-
+471-**R8.5 — Interactive setup flows. (MAY / SHOULD)**
+472:A CLI **MAY** provide interactive setup or wizard commands such as `init` or `auth login`. Interactive flows **SHOULD** be cancelable with Ctrl-C using the signal behavior in R9.6, **SHOULD** show what will be written before writing durable state, and **MUST** have a non-interactive path using flags, env, or config. Under `--no-input`, they **MUST** fail rather than prompt.
+473-✅ `acme init --name demo --region us-east-1 --no-input` ❌ a required setup wizard with no flag-based path
+474-
+475-**R8.6 — Dry-run output contract. (SHOULD)**
+476-When `--dry-run` is supported, output **SHOULD** clearly identify planned creates, updates, deletes, and external side effects, and **SHOULD** state whether validation was local-only or server-side. Machine-readable dry-run output **SHOULD** follow the stable machine-output rules in R7.2.
+477-✅ `acme deploy create web --dry-run -o json` reports planned changes ❌ `--dry-run` prints `ok` without saying what would change
+478-
+479----
+480-
+481-### §9 Lifecycle & ecosystem
+482-
+483-**R9.1 — Completion, man pages & help topics. (SHOULD / MAY)**
+484-A CLI **SHOULD** ship shell completion (`acme completion <shell>`) for at least bash, zsh, and fish, and **SHOULD** be able to generate man pages or equivalent reference docs. It **MAY** also provide non-command help *topics* via `acme help <topic>` (e.g., `formatting`, `environment`, `exit-codes`), gh-style.
+485-
+486-**R9.2 — Deprecation policy. (MUST)**
+--
+502:**R9.6 — Signals. (MUST)**
+503:A tool **MUST** exit cleanly on `SIGINT` with code `130`, releasing resources, and **MUST** handle `SIGPIPE`/`EPIPE` gracefully — when a reader like `head` or `less` closes the pipe, exit quietly without a broken-pipe stack trace. It **MUST** also treat `SIGTERM` like `SIGINT` — clean up, flush (R7.7), and exit `143` (128+15) — so it behaves correctly under containers, orchestrators, and CI runners.
+504-✅ `acme widget list | head -5` ends silently; `kill <pid>` shuts down cleanly with code `143` ❌ a Python traceback on `BrokenPipeError`; ignoring SIGTERM until killed with `SIGKILL`
+505-
+506-**R9.7 — Telemetry & update checks. (MUST / SHOULD)**
+507-Telemetry **MAY** be on by default only when it is prominently documented and disclosed, minimizes collected data, and is easy to disable. A CLI with telemetry **MUST** document what is collected, why it is collected, whether it is anonymous/pseudonymous/identified, and all disable mechanisms. It **MUST** support `TOOL_TELEMETRY=0`/`false`, **SHOULD** honor `DO_NOT_TRACK=true`, and **SHOULD** provide a persistent config control such as `acme config set telemetry disabled`. Telemetry **MUST NOT** transmit secrets, full argv, argument values, environment values, file contents, request/response bodies, or resource payloads unless a separate explicit opt-in covers that data. Telemetry and update-availability checks **MUST NOT** run in non-interactive/CI contexts by default. Update checks, if present, **SHOULD** be non-blocking, cached, and disableable. A tool **MAY** offer self-update via `acme upgrade`.
+508-
+509-**R9.8 — Empty-state & first-run. (SHOULD)**
+510-On first run or empty results, a tool **SHOULD** guide the next step rather than printing nothing or a bare error.
+511-✅ `no projects yet — create one with 'acme project create <name>'`
+512-❌ an empty line, or a stack trace, when there is simply nothing to show
+513-
+514-**R9.9 — Release integrity & self-update security. (MUST / SHOULD)**
+515-If a CLI supports self-update, it **MUST** verify update authenticity and integrity before installing. Binary releases **SHOULD** publish checksums and signatures or equivalent provenance, and update mechanisms **SHOULD** document channels, rollback behavior, and how to disable update checks (R9.7).
+516-✅ `acme upgrade` verifies a signed artifact before replacing the binary ❌ downloading and executing an unauthenticated update
+517-
+--
+647:- [ ] R6.1 exit-code scheme · R6.2 predicate/search exit `1` has no stderr error for expected-negative results · R6.3 partial-failure → exit 1 · R7.1 stdout=data/stderr=diagnostics · R7.2 stable open-by-default machine output (`json`/`jsonl`/`yaml`/`name`) with optional additive fields only in non-major releases · R7.5 structured help with example · R7.6 errors to stderr · R7.7 flush before exit · R7.8 single-object JSON error schema under any machine format and JSONL only for documented streams · R7.9 bare→help/0, group→usage/2 · R7.12 error code catalog
+648-
+649-**Safety & lifecycle**
+650:- [ ] R8.1 destructive confirm uses stdin TTY, prompts on stderr, and documents any `/dev/tty` behavior · R8.2 non-interactive exit `2`/`4`/`1` mapping · R8.5 interactive flows have non-interactive path · R8.6 dry-run plans are clear · R9.2 deprecation policy · R9.3 SemVer interface contract · R9.4 UTF-8 + locale-independent machine output · R9.6 clean SIGINT/SIGPIPE/SIGTERM · R9.7 telemetry disclosure, opt-out controls, data minimization, and CI/non-interactive disablement · R9.9 release integrity if self-updating · R9.10 diagnostics/doctor for non-trivial CLIs · R9.11 plugin contract if plugins exist · R9.12 experimental features marked · R9.13 command metadata if provided · R9.14 conformance fixtures for mature CLIs · R3.10 no prefix abbreviation · R5.6 secrets redacted in output
+651-
+652-**Networked tools (if applicable)**
+653-- [ ] R10.1 auth group + token precedence (no token in argv) · R10.2 scope/targeting flags · R10.3 bounded pagination (`--paginate`) · R10.4 wait-by-default + `--no-wait` · R10.6 TLS verified, `--insecure` warns · R10.7 rate-limit retry visibility
+654-
+655----
+656-
+657-## Appendix D — Worked example
+658-
+659-A reference tool, `acme`, that obeys the standard end-to-end.
+660-
+661-**Command tree (noun-verb, depth ≤ 3):**
+662-
+663-```
+664-acme
+--
+739:acme project delete demo --yes                           # non-interactive consent (R8.1/R8.2)
+740:acme widget list | head -3                               # clean SIGPIPE exit (R9.6)
+741-ACME_TOKEN=… acme registry image push app:1.2.3          # secret via env, not argv (R5.5)
+742-acme deploy create web --dry-run                          # preview, no changes (R4.3)
+743-acme project export demo -o yaml --output-file backup.yaml  # -o sets format, --output-file the destination (R3.2)
+744-acme project export demo -o json --output-file -            # --output-file - writes to stdout (R3.2)
+745-acme deploy apply --file ./deploy.toml                      # file input is --file; -f stays force (R3.4)
+746-cat deploy.toml | acme deploy apply                         # auto-stdin when no explicit input source (R3.9)
+747-acme auth login                                            # credentials via login flow, not argv (R10.1)
+748-acme widget list --paginate -o json                        # fetch full result set explicitly (R10.3)
+749-acme deploy logs web --follow -o jsonl                     # streaming JSON Lines; Ctrl-C exits 130 (R7.10)
+750-```
+751-
+752----
+753-
+754-## Appendix E — Framework mapping (informative)
+--
+763:- *Click*: `--help` is automatic (no `-h` unless you add it); add `@click.version_option()` and set `-V`. Use `@click.group()`/`@click.command()` for structure, `count=True` for repeatable `-v`, and handle `BrokenPipeError` to satisfy R9.6.
+764-- *Typer*: same engine as Click; lean on enums for `--output`, and set `context_settings` to add `-h`.
+765-For XDG use `platformdirs`; for config, `tomllib` (stdlib read) plus `tomli-w` to write.
+766-
+767-**TypeScript — oclif / Commander.**
+768-- *Commander*: defaults to `-V`/`--version` and `-h`/`--help`, which matches the standard; declare subcommands for noun-verb and `.option('-v, --verbose', ..., (_, p) => p+1, 0)` for repeatable verbose.
+769:- *oclif*: topic/command structure maps naturally to noun-verb; it provides help and plugin-based completion. Use `env-paths` for XDG-style locations and `process.exitCode` with the §6 codes; install a `process.stdout.on('error')` handler for `EPIPE` (R9.6).
+770-
+771----
+772-
+773-*End of standard. To evolve it, bump the version (SemVer), add a Decision Log row, and update the affected rule and the conformance checklist together so they never drift.*
+
+[exit=0]
+
+## E11 FreeBSD sysexits header
+48: *	EX_USAGE -- The command was used incorrectly, e.g., with
+93:#define EX_OK		0	/* successful termination */
+97:#define EX_USAGE	64	/* command line usage error */
+111:#define EX_CONFIG	78	/* configuration error */
+113:#define EX__MAX	78	/* maximum listed value */
+
+[exit=0]
+
+## E12 reference project manifests and ripgrep implementation
+
+=== $ curl https://raw.githubusercontent.com/rust-lang/cargo/master/Cargo.toml
+14:rust-version = "1.95"  # MSRV:3
+25:anyhow = "1.0.102"
+113:thiserror = "2.0.18"
+152:rust-version = "1.98"  # MSRV:1
+164:anyhow.workspace = true
+222:thiserror.workspace = true
+
+[exit=0]
+
+=== $ curl https://raw.githubusercontent.com/astral-sh/ruff/main/Cargo.toml
+8:rust-version = "1.96"
+70:anyhow = { version = "1.0.80" }
+99:etcetera = { version = "0.11.0" }
+195:thiserror = { version = "2.0.0" }
+
+[exit=0]
+
+=== $ curl https://raw.githubusercontent.com/nushell/nushell/main/Cargo.toml
+4:rust-version = "1.96.1"
+11:rust-version.workspace = true
+138:anyhow = "1.0.104"
+268:thiserror = "2.0.20"
+
+[exit=0]
+
+=== $ curl https://raw.githubusercontent.com/sharkdp/bat/master/Cargo.toml
+14:rust-version = "1.88"
+29:    "etcetera",
+50:thiserror = "2.0"
+67:etcetera = { version = "0.11.0", optional = true }
+110:anyhow = "1.0.97"
+
+[exit=0]
+
+=== $ curl https://raw.githubusercontent.com/BurntSushi/ripgrep/master/Cargo.toml
+28:rust-version.workspace = true
+55:rust-version = "1.96"
+58:anyhow = "1.0.75"
+125:files/directories and binary files.
+
+[exit=0]
+
+=== $ curl https://raw.githubusercontent.com/sharkdp/fd/master/Cargo.toml
+21:rust-version = "1.90.0"
+42:anyhow = "1.0"
+43:etcetera = "0.11"
+
+[exit=0]
+
+=== $ curl https://raw.githubusercontent.com/nextest-rs/nextest/main/Cargo.toml
+16:rust-version = "1.91"
+66:etcetera = "0.11.0"
+149:thiserror = "2.0.20"
+
+[exit=0]
+40-#[global_allocator]
+41-static ALLOC: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
+42-
+43-/// Then, as it was, then again it will be.
+44:fn main() -> ExitCode {
+45-    match run(flags::parse()) {
+46-        Ok(code) => code,
+47-        Err(err) => {
+48-            // Look for a broken pipe error. In this case, we generally want
+--
+52-            // we get an I/O error instead. Traditional C Unix applications
+53-            // quit by getting a PIPE signal that they don't handle, and thus
+54-            // the unhandled signal causes the process to unceremoniously
+55-            // terminate.
+56:            for cause in err.chain() {
+57-                if let Some(ioerr) = cause.downcast_ref::<std::io::Error>() {
+58:                    if ioerr.kind() == std::io::ErrorKind::BrokenPipe {
+59:                        return ExitCode::from(0);
+60-                    }
+61-                }
+62-            }
+63-            eprintln_locked!("{:#}", err);
+64:            ExitCode::from(2)
+65-        }
+66-    }
+67-}
+68-
+--
+89-        Mode::Search(mode) if args.threads() == 1 => search(&args, mode)?,
+90-        Mode::Search(mode) => search_parallel(&args, mode)?,
+91-        Mode::Index(_) => {
+92-            index::write(&args)?;
+93:            return Ok(ExitCode::from(0));
+94-        }
+95-        Mode::Files if args.threads() == 1 => files(&args)?,
+96-        Mode::Files => files_parallel(&args)?,
+97-        Mode::Types => return types(&args),
+98-        Mode::Generate(mode) => return generate(mode),
+99-    };
+100-    Ok(if matched && (args.quiet() || !messages::errored()) {
+101:        ExitCode::from(0)
+102-    } else if messages::errored() {
+103:        ExitCode::from(2)
+104-    } else {
+105:        ExitCode::from(1)
+106-    })
+107-}
+108-
+109-/// The top-level entry point for single-threaded search.
+--
+131-        searched = true;
+132-        let search_result = match searcher.search(&haystack) {
+133-            Ok(search_result) => search_result,
+134-            // A broken pipe means graceful termination.
+135:            Err(err) if err.kind() == std::io::ErrorKind::BrokenPipe => break,
+136-            Err(err) => {
+137-                err_message!("{}: {}", haystack.path().display(), err);
+138-                continue;
+139-            }
+--
+208-                *stats += search_result.stats().unwrap();
+209-            }
+210-            if let Err(err) = bufwtr.print(searcher.printer().get_mut()) {
+211-                // A broken pipe means graceful termination.
+212:                if err.kind() == std::io::ErrorKind::BrokenPipe {
+213-                    return WalkState::Quit;
+214-                }
+215-                // Otherwise, we continue on our merry way.
+216-                err_message!("{}: {}", haystack.path().display(), err);
+--
+254-            break;
+255-        }
+256-        if let Err(err) = path_printer.write(haystack.path()) {
+257-            // A broken pipe means graceful termination.
+258:            if err.kind() == std::io::ErrorKind::BrokenPipe {
+259-                break;
+260-            }
+261-            // Otherwise, we have some other error that's preventing us from
+262-            // writing to stdout, so we should bubble it up.
+--
+323-    if let Err(err) = print_thread.join().unwrap() {
+324-        // A broken pipe means graceful termination, so fall through.
+325-        // Otherwise, something bad happened while writing to stdout, so bubble
+326-        // it up.
+327:        if err.kind() != std::io::ErrorKind::BrokenPipe {
+328-            return Err(err.into());
+329-        }
+330-    }
+331-    Ok(matched.load(Ordering::SeqCst))
+--
+349-            first = false;
+350-        }
+351-        stdout.write_all(b"\n")?;
+352-    }
+353:    Ok(ExitCode::from(if count == 0 { 1 } else { 0 }))
+354-}
+355-
+356-/// Implements ripgrep's "generate" modes.
+357-///
+--
+370-            flags::generate_complete_powershell()
+371-        }
+372-    };
+373-    writeln!(std::io::stdout(), "{}", output.trim_end())?;
+374:    Ok(ExitCode::from(0))
+375-}
+376-
+377-/// Implements ripgrep's "special" modes.
+378-///
+--
+388-/// the user requested version or help information.
+389-fn special(mode: crate::flags::SpecialMode) -> anyhow::Result<ExitCode> {
+390-    use crate::flags::SpecialMode;
+391-
+392:    let mut exit = ExitCode::from(0);
+393-    let output = match mode {
+394-        SpecialMode::HelpShort => flags::generate_help_short(),
+395-        SpecialMode::HelpLong => flags::generate_help_long(),
+396-        SpecialMode::VersionShort => flags::generate_version_short(),
+--
+399-        // exit code if this build of ripgrep doesn't support PCRE2.
+400-        SpecialMode::VersionPCRE2 => {
+401-            let (output, available) = flags::generate_version_pcre2();
+402-            if !available {
+403:                exit = ExitCode::from(1);
+404-            }
+405-            output
+406-        }
+407-    };
+
+[exit=0]
+
+## E13 manifest-only dependency resolution from the three reviewed Cargo.toml files
+/tmp/tmp.3TOVrTOM9R/rslb-contract/.gitignore
+/tmp/tmp.3TOVrTOM9R/rslb-contract/Cargo.toml
+/tmp/tmp.3TOVrTOM9R/rslb-contract/crates/rslb-cli/Cargo.toml
+/tmp/tmp.3TOVrTOM9R/rslb-contract/crates/rslb-core/Cargo.toml
+error: failed to load manifest for workspace member `/tmp/tmp.3TOVrTOM9R/rslb-contract/crates/rslb-core`
+referenced by workspace at `/tmp/tmp.3TOVrTOM9R/rslb-contract/Cargo.toml`
+
+Caused by:
+  failed to parse manifest at `/tmp/tmp.3TOVrTOM9R/rslb-contract/crates/rslb-core/Cargo.toml`
+
+Caused by:
+  no targets specified in the manifest
+  either src/lib.rs, src/main.rs, a [lib] section, or [[bin]] section must be present
+
+[exit=101]
+error: failed to load manifest for workspace member `/tmp/tmp.3TOVrTOM9R/rslb-contract/crates/rslb-core`
+referenced by workspace at `/tmp/tmp.3TOVrTOM9R/rslb-contract/Cargo.toml`
+
+Caused by:
+  failed to parse manifest at `/tmp/tmp.3TOVrTOM9R/rslb-contract/crates/rslb-core/Cargo.toml`
+
+Caused by:
+  no targets specified in the manifest
+  either src/lib.rs, src/main.rs, a [lib] section, or [[bin]] section must be present
+
+[exit=101]
+error: failed to load manifest for workspace member `/tmp/tmp.3TOVrTOM9R/rslb-contract/crates/rslb-core`
+referenced by workspace at `/tmp/tmp.3TOVrTOM9R/rslb-contract/Cargo.toml`
+
+Caused by:
+  failed to parse manifest at `/tmp/tmp.3TOVrTOM9R/rslb-contract/crates/rslb-core/Cargo.toml`
+
+Caused by:
+  no targets specified in the manifest
+  either src/lib.rs, src/main.rs, a [lib] section, or [[bin]] section must be present
+
+[exit=101]
+error: failed to load manifest for workspace member `/tmp/tmp.3TOVrTOM9R/rslb-contract/crates/rslb-core`
+referenced by workspace at `/tmp/tmp.3TOVrTOM9R/rslb-contract/Cargo.toml`
+
+Caused by:
+  failed to parse manifest at `/tmp/tmp.3TOVrTOM9R/rslb-contract/crates/rslb-core/Cargo.toml`
+
+Caused by:
+  no targets specified in the manifest
+  either src/lib.rs, src/main.rs, a [lib] section, or [[bin]] section must be present
+
+[exit=0]
+
+## E14 cargo-audit recommended lockfile
+error: no such command: `audit`
+
+help: a command with a similar name exists: `add`
+
+help: view all installed commands with `cargo --list`
+help: find a package to install `audit` with `cargo search cargo-audit`
+
+[exit=101]
+
+## E14 control: anyhow pinned to =1.0.102
+rm: cannot remove 'rslb-contract-control/Cargo.lock': No such file or directory
+error: failed to load manifest for workspace member `/tmp/tmp.3TOVrTOM9R/rslb-contract-control/crates/rslb-core`
+referenced by workspace at `/tmp/tmp.3TOVrTOM9R/rslb-contract-control/Cargo.toml`
+
+Caused by:
+  failed to parse manifest at `/tmp/tmp.3TOVrTOM9R/rslb-contract-control/crates/rslb-core/Cargo.toml`
+
+Caused by:
+  no targets specified in the manifest
+  either src/lib.rs, src/main.rs, a [lib] section, or [[bin]] section must be present
+
+[exit=101]
+error: no such command: `audit`
+
+help: a command with a similar name exists: `add`
+
+help: view all installed commands with `cargo --list`
+help: find a package to install `audit` with `cargo search cargo-audit`
+
+[exit=101]
+
+## Final source-free invariant
+/tmp/tmp.3TOVrTOM9R/rslb-contract/.gitignore
+/tmp/tmp.3TOVrTOM9R/rslb-contract/Cargo.toml
+/tmp/tmp.3TOVrTOM9R/rslb-contract/crates/rslb-cli/Cargo.toml
+/tmp/tmp.3TOVrTOM9R/rslb-contract/crates/rslb-core/Cargo.toml
+time="2026-09-09T19:31:52-07:00" level=warning msg="failed to detect whether running under rosetta, assuming false" error="failed to read sysctl \"sysctl.proc_translated\": operation not permitted"
+
+# Corrected completion after VM tool/target gaps
+This section preserves the initial exact-command failures above. Public GitHub REST reads reproduce E2/E3 fields because gh is absent in the Linux VM. Temporary empty target stubs are outside the repository and are not compiled; they allow Cargo to parse the three reviewed manifests for E13/E14.
+
+## E2 semantic rerun: GitHub REST selected fields (gh unavailable)
+
+=== $ curl api.github.com/repos/dtolnay/thiserror
+dtolnay/thiserror	5539	false	2026-09-05T05:32:25Z
+
+[exit=0]
+
+=== $ curl api.github.com/repos/dtolnay/anyhow
+dtolnay/anyhow	6649	false	2026-08-22T02:43:42Z
+
+[exit=0]
+
+=== $ curl api.github.com/repos/vorner/signal-hook
+vorner/signal-hook	866	false	2026-04-04T08:10:09Z
+
+[exit=0]
+
+=== $ curl api.github.com/repos/Detegr/rust-ctrlc
+Detegr/rust-ctrlc	667	false	2026-07-22T09:47:21Z
+
+[exit=0]
+
+=== $ curl api.github.com/repos/Peternator7/strum
+Peternator7/strum	2440	false	2026-03-07T01:28:08Z
+
+[exit=0]
+
+=== $ curl api.github.com/repos/mikaelmello/inquire
+mikaelmello/inquire	2623	false	2026-03-02T14:42:29Z
+
+[exit=0]
+
+=== $ curl api.github.com/repos/zkat/miette
+zkat/miette	2602	false	2026-06-25T18:33:54Z
+
+[exit=0]
+
+=== $ curl api.github.com/repos/rust-cli/human-panic
+rust-cli/human-panic	1852	false	2026-09-02T23:45:33Z
+
+[exit=0]
+
+=== $ curl api.github.com/repos/benwilber/exitcode
+benwilber/exitcode	79	false	2022-09-06T08:58:59Z
+
+[exit=0]
+
+=== $ curl api.github.com/repos/sorairolake/sysexits-rs
+sorairolake/sysexits-rs	33	false	2026-09-08T22:50:11Z
+
+[exit=0]
+
+=== $ curl api.github.com/repos/lunacookies/etcetera
+lunacookies/etcetera	150	false	2026-08-04T20:53:17Z
+
+[exit=0]
+
+## E3 semantic rerun: GitHub REST open issue counts (gh unavailable)
+
+=== $ curl api.github.com/search/issues repo:dtolnay/thiserror
+27
+
+[exit=0]
+
+=== $ curl api.github.com/search/issues repo:dtolnay/anyhow
+37
+
+[exit=0]
+
+=== $ curl api.github.com/search/issues repo:vorner/signal-hook
+22
+
+[exit=0]
+
+=== $ curl api.github.com/search/issues repo:Detegr/rust-ctrlc
+11
+
+[exit=0]
+
+=== $ curl api.github.com/search/issues repo:mikaelmello/inquire
+59
+
+[exit=0]
+
+## E4 semantic rerun: advisory-db directory status (gh unavailable)
+
+=== $ curl GitHub contents crates/thiserror
+404
+{
+  "message": "Not Found",
+  "status": "404"
+}
+
+[exit=0]
+
+=== $ curl GitHub contents crates/anyhow
+200
+[
+  "RUSTSEC-2026-0190.md"
+]
+
+[exit=0]
+
+=== $ curl GitHub contents crates/signal-hook
+404
+{
+  "message": "Not Found",
+  "status": "404"
+}
+
+[exit=0]
+
+=== $ curl GitHub contents crates/ctrlc
+404
+{
+  "message": "Not Found",
+  "status": "404"
+}
+
+[exit=0]
+
+=== $ curl GitHub contents crates/inquire
+404
+{
+  "message": "Not Found",
+  "status": "404"
+}
+
+[exit=0]
+
+## E9 semantic rerun: Rust issue state (gh unavailable)
+
+=== $ curl api.github.com/repos/rust-lang/rust/issues/97889
+{
+  "number": 97889,
+  "title": "Tracking Issue for `unix_sigpipe`",
+  "state": "open",
+  "labels": [
+    "C-tracking-issue",
+    "T-libs",
+    "S-tracking-needs-summary",
+    "S-tracking-needs-deep-research",
+    "S-tracking-needs-documentation"
+  ],
+  "created_at": "2022-06-08T17:57:12Z",
+  "updated_at": "2026-08-12T20:01:54Z"
+}
+
+[exit=0]
+
+=== $ curl api.github.com/repos/rust-lang/rust/issues/62569
+{
+  "number": 62569,
+  "title": "Should Rust still ignore SIGPIPE by default?",
+  "state": "open",
+  "labels": [
+    "A-runtime",
+    "T-lang",
+    "A-maybe-future-edition",
+    "T-libs",
+    "I-lang-radar"
+  ],
+  "created_at": "2019-07-10T19:56:27Z",
+  "updated_at": "2026-08-12T21:16:20Z"
+}
+
+[exit=0]
+
+## E13 corrected manifest-only resolution: reviewed manifests plus temporary empty target stubs
+Repository fixture before copy remains source-free:
+review/empirical/rslb-contract/.gitignore
+review/empirical/rslb-contract/Cargo.toml
+review/empirical/rslb-contract/crates/rslb-cli/Cargo.toml
+review/empirical/rslb-contract/crates/rslb-core/Cargo.toml
+Temporary audit copy files (empty stubs only; no cargo build/run follows):
+/tmp/tmp.sALcSTf2LF/rslb-contract/.gitignore
+/tmp/tmp.sALcSTf2LF/rslb-contract/Cargo.toml
+/tmp/tmp.sALcSTf2LF/rslb-contract/crates/rslb-cli/Cargo.toml
+/tmp/tmp.sALcSTf2LF/rslb-contract/crates/rslb-cli/src/main.rs
+/tmp/tmp.sALcSTf2LF/rslb-contract/crates/rslb-core/Cargo.toml
+/tmp/tmp.sALcSTf2LF/rslb-contract/crates/rslb-core/src/lib.rs
+    Updating crates.io index
+     Locking 20 packages to latest Rust 1.96 compatible versions
+
+[exit=0]
+ Downloading crates ...
+  Downloaded signal-hook v0.4.4
+rslb-cli v0.1.0 (/tmp/tmp.sALcSTf2LF/rslb-contract/crates/rslb-cli)
+├── anyhow v1.0.104
+├── rslb-core v0.1.0 (/tmp/tmp.sALcSTf2LF/rslb-contract/crates/rslb-core)
+│   └── thiserror v2.0.20
+│       └── thiserror-impl v2.0.20 (proc-macro)
+│           ├── proc-macro2 v1.0.107
+│           │   └── unicode-ident v1.0.24
+│           ├── quote v1.0.47
+│           │   └── proc-macro2 v1.0.107 (*)
+│           └── syn v3.0.5
+│               ├── proc-macro2 v1.0.107 (*)
+│               ├── quote v1.0.47 (*)
+│               └── unicode-ident v1.0.24
+├── serde_json v1.0.151
+│   ├── itoa v1.0.18
+│   ├── memchr v2.8.3
+│   ├── serde_core v1.0.229
+│   └── zmij v1.0.23
+└── signal-hook v0.4.4
+    ├── libc v0.2.189
+    └── signal-hook-registry v1.4.8
+        ├── errno v0.3.14
+        │   └── libc v0.2.189
+        └── libc v0.2.189
+
+rslb-core v0.1.0 (/tmp/tmp.sALcSTf2LF/rslb-contract/crates/rslb-core) (*)
+
+[exit=0]
+warning: nothing to print.
+
+To find dependencies that require specific target platforms, try to use option `--target all` first, and then narrow your search scope accordingly.
+
+[exit=0]
+anyhow	1.0.104	1.68	MIT OR Apache-2.0
+errno	0.3.14	1.56	MIT OR Apache-2.0
+itoa	1.0.18	1.68	MIT OR Apache-2.0
+libc	0.2.189	1.65	MIT OR Apache-2.0
+memchr	2.8.3	1.61	Unlicense OR MIT
+proc-macro2	1.0.107	1.71	MIT OR Apache-2.0
+quote	1.0.47	1.71	MIT OR Apache-2.0
+rslb-cli	0.1.0	1.96	MIT OR Apache-2.0
+rslb-core	0.1.0	1.96	MIT OR Apache-2.0
+serde	1.0.229	1.56	MIT OR Apache-2.0
+serde_core	1.0.229	1.56	MIT OR Apache-2.0
+serde_derive	1.0.229	1.71	MIT OR Apache-2.0
+serde_json	1.0.151	1.71	MIT OR Apache-2.0
+signal-hook	0.4.4	1.66	MIT OR Apache-2.0
+signal-hook-registry	1.4.8	1.26	MIT OR Apache-2.0
+syn	3.0.5	1.71	MIT OR Apache-2.0
+thiserror	2.0.20	1.71	MIT OR Apache-2.0
+thiserror-impl	2.0.20	1.71	MIT OR Apache-2.0
+unicode-ident	1.0.24	1.71	(MIT OR Apache-2.0) AND Unicode-3.0
+windows-link	0.2.1	1.71	MIT OR Apache-2.0
+windows-sys	0.61.2	1.71	MIT OR Apache-2.0
+zmij	1.0.23	1.71	MIT
+
+[exit=0]
+
+## E14 provision cargo-audit in temporary VM path (tool only)
+    Updating crates.io index
+ Downloading crates ...
+  Downloaded cargo-audit v0.22.1
+  Installing cargo-audit v0.22.1
+    Updating crates.io index
+    Updating crates.io index
+ Downloading crates ...
+  Downloaded abscissa_derive v0.9.0
+  Downloaded abscissa_core v0.9.0
+  Downloaded auditable-extract v0.3.5
+  Downloaded allocator-api2 v0.2.21
+  Downloaded auditable-info v0.10.0
+  Downloaded arc-swap v1.8.1
+  Downloaded autocfg v1.5.0
+  Downloaded async-compression v0.4.37
+  Downloaded auditable-serde v0.9.0
+  Downloaded clap_lex v0.7.7
+  Downloaded compression-core v0.4.31
+  Downloaded binfarce v0.2.1
+  Downloaded canonical-path v2.0.2
+  Downloaded clru v0.6.2
+  Downloaded cmake v0.1.57
+  Downloaded compression-codecs v0.4.36
+  Downloaded display-error-chain v0.2.2
+  Downloaded camino v1.2.2
+  Downloaded cargo-lock v11.0.1
+  Downloaded dunce v1.0.5
+  Downloaded crossbeam-deque v0.8.6
+  Downloaded borsh v1.6.0
+  Downloaded clap v4.5.57
+  Downloaded either v1.15.0
+  Downloaded deranged v0.5.5
+  Downloaded cc v1.2.55
+  Downloaded crossbeam-epoch v0.9.18
+  Downloaded cvss v2.2.0
+  Downloaded aws-lc-rs v1.15.4
+  Downloaded clap_builder v4.5.57
+  Downloaded faster-hex v0.10.0
+  Downloaded fastrand v2.3.0
+  Downloaded find-msvc-tools v0.1.9
+  Downloaded fixedbitset v0.5.7
+  Downloaded eyre v0.6.12
+  Downloaded flate2 v1.1.9
+  Downloaded bstr v1.12.1
+  Downloaded fs-err v3.2.2
+  Downloaded fs_extra v1.3.0
+  Downloaded gix-bitmap v0.2.15
+  Downloaded gix-chunk v0.5.0
+  Downloaded gix-actor v0.38.0
+  Downloaded gix-sec v0.13.0
+  Downloaded color-eyre v0.6.5
+  Downloaded gix v0.78.0
+  Downloaded icu_properties v2.1.2
+  Downloaded gix-config-value v0.17.0
+  Downloaded gix-error v0.0.0
+  Downloaded gix-hashtable v0.12.0
+  Downloaded gix-ignore v0.19.0
+  Downloaded gix-packetline v0.21.0
+  Downloaded gix-glob v0.24.0
+  Downloaded gix-lock v21.0.0
+  Downloaded gix-date v0.13.0
+  Downloaded gix-pathspec v0.15.0
+  Downloaded gix-commitgraph v0.32.0
+  Downloaded gix-fs v0.19.0
+  Downloaded gix-hash v0.22.0
+  Downloaded gix-features v0.46.0
+  Downloaded gix-shallow v0.8.0
+  Downloaded gix-utils v0.3.1
+  Downloaded hash32 v0.3.1
+  Downloaded gix-worktree v0.47.0
+  Downloaded gix-filter v0.25.0
+  Downloaded home v0.5.11
+  Downloaded gix-worktree-state v0.25.0
+  Downloaded idna_adapter v1.2.1
+  Downloaded gix-validate v0.11.0
+  Downloaded gix-trace v0.1.17
+  Downloaded gix-negotiate v0.26.0
+  Downloaded gix-object v0.55.0
+  Downloaded gix-refspec v0.36.0
+  Downloaded gix-revwalk v0.26.0
+  Downloaded gix-submodule v0.25.0
+  Downloaded indenter v0.3.4
+  Downloaded gix-command v0.7.0
+  Downloaded gix-diff v0.58.0
+  Downloaded gix-discover v0.46.0
+  Downloaded gix-revision v0.40.0
+  Downloaded gix-tempfile v21.0.0
+  Downloaded gix-attributes v0.30.0
+  Downloaded gix-config v0.51.0
+  Downloaded gix-index v0.46.0
+  Downloaded gix-path v0.11.0
+  Downloaded gix-transport v0.53.0
+  Downloaded gix-url v0.35.0
+  Downloaded http-body-util v0.1.3
+  Downloaded hyper-rustls v0.27.7
+  Downloaded gix-odb v0.75.0
+  Downloaded kstring v2.0.2
+  Downloaded heapless v0.8.0
+  Downloaded icu_normalizer v2.1.1
+  Downloaded icu_normalizer_data v2.1.1
+  Downloaded icu_provider v2.1.1
+  Downloaded gix-ref v0.58.0
+  Downloaded icu_locale_core v2.1.1
+  Downloaded ipnet v2.11.0
+  Downloaded icu_collections v2.1.1
+  Downloaded jobserver v0.1.34
+  Downloaded gix-pack v0.65.0
+  Downloaded hashbrown v0.15.5
+  Downloaded icu_properties_data v2.1.2
+  Downloaded h2 v0.4.13
+  Downloaded io-close v0.3.7
+  Downloaded gix-prompt v0.13.0
+  Downloaded gix-quote v0.6.1
+  Downloaded itoa v1.0.17
+  Downloaded jiff v0.2.18
+  Downloaded gix-credentials v0.35.0
+  Downloaded gix-protocol v0.56.0
+  Downloaded jiff-static v0.2.18
+  Downloaded gix-traverse v0.52.0
+  Downloaded openssl-probe v0.2.1
+  Downloaded parking_lot_core v0.9.12
+  Downloaded maybe-async v0.2.10
+  Downloaded prodash v31.0.0
+  Downloaded reqwest v0.13.1
+  Downloaded num-conv v0.1.0
+  Downloaded ppv-lite86 v0.2.21
+  Downloaded quote v1.0.44
+  Downloaded owo-colors v4.2.3
+  Downloaded quitters v0.1.0
+  Downloaded rand_core v0.9.5
+  Downloaded litemap v0.8.1
+  Downloaded pin-project-lite v0.2.16
+  Downloaded potential_utf v0.1.4
+  Downloaded memmap2 v0.9.9
+  Downloaded rand v0.9.2
+  Downloaded rayon-core v1.13.0
+  Downloaded lock_api v0.4.14
+  Downloaded rustc-stable-hash v0.1.2
+  Downloaded parking_lot v0.12.5
+  Downloaded mio v1.1.1
+  Downloaded rustc-demangle v0.1.27
+  Downloaded regex v1.12.3
+  Downloaded platforms v3.8.0
+  Downloaded rayon v1.11.0
+  Downloaded quinn-proto v0.11.13
+  Downloaded regex-automata v0.4.14
+  Downloaded regex-syntax v0.8.9
+  Downloaded secrecy v0.10.3
+  Downloaded sha1 v0.10.6
+  Downloaded petgraph v0.8.3
+  Downloaded stable_deref_trait v1.2.1
+  Downloaded shell-words v1.1.1
+  Downloaded rustls-native-certs v0.8.3
+  Downloaded synstructure v0.13.2
+  Downloaded thread_local v1.1.9
+  Downloaded time-core v0.1.7
+  Downloaded rustls-pki-types v1.14.0
+  Downloaded simd-adler32 v0.3.8
+  Downloaded smol_str v0.3.2
+  Downloaded static_assertions v1.1.0
+  Downloaded time-macros v0.2.25
+  Downloaded smallvec v1.15.1
+  Downloaded socket2 v0.6.2
+  Downloaded tinystr v0.8.2
+  Downloaded rustls-platform-verifier v0.6.2
+  Downloaded rustls-webpki v0.103.9
+  Downloaded rustsec v0.32.0
+  Downloaded toml-span v0.6.0
+  Downloaded topological-sort v0.2.2
+  Downloaded tokio-rustls v0.26.4
+  Downloaded time v0.3.45
+  Downloaded tame-index v0.26.0
+  Downloaded tokio-util v0.7.18
+  Downloaded rustls v0.23.36
+  Downloaded sha1-checked v0.10.0
+  Downloaded unicode-bom v2.0.3
+  Downloaded twox-hash v2.1.2
+  Downloaded uluru v3.1.0
+  Downloaded typenum v1.19.0
+  Downloaded unicode-normalization v0.1.25
+  Downloaded tracing-subscriber v0.3.22
+  Downloaded wait-timeout v0.2.1
+  Downloaded wasmparser v0.207.0
+  Downloaded zerofrom-derive v0.1.6
+  Downloaded yoke-derive v0.8.1
+  Downloaded zerofrom v0.1.6
+  Downloaded zerovec-derive v0.11.2
+  Downloaded zmij v1.0.19
+  Downloaded yoke v0.8.1
+  Downloaded writeable v0.6.2
+  Downloaded zeroize v1.8.2
+  Downloaded zerotrie v0.2.3
+  Downloaded zerovec v0.11.5
+  Downloaded zlib-rs v0.5.5
+  Downloaded zerocopy v0.8.38
+  Downloaded aws-lc-sys v0.37.0
+   Compiling proc-macro2 v1.0.106
+   Compiling unicode-ident v1.0.22
+   Compiling quote v1.0.44
+   Compiling libc v0.2.180
+   Compiling memchr v2.7.6
+   Compiling cfg-if v1.0.4
+   Compiling regex-syntax v0.8.9
+   Compiling smallvec v1.15.1
+   Compiling once_cell v1.21.3
+   Compiling bytes v1.11.1
+   Compiling thiserror v2.0.18
+   Compiling stable_deref_trait v1.2.1
+   Compiling tinyvec_macros v0.1.1
+   Compiling crc32fast v1.5.0
+   Compiling crossbeam-utils v0.8.21
+   Compiling aho-corasick v1.1.4
+   Compiling tinyvec v1.10.0
+   Compiling fastrand v2.3.0
+   Compiling gix-trace v0.1.17
+   Compiling syn v2.0.114
+   Compiling unicode-normalization v0.1.25
+   Compiling parking_lot_core v0.9.12
+   Compiling itoa v1.0.17
+   Compiling scopeguard v1.2.0
+   Compiling lock_api v0.4.14
+   Compiling bitflags v2.10.0
+   Compiling gix-utils v0.3.1
+   Compiling parking_lot v0.12.5
+   Compiling crossbeam-channel v0.5.15
+   Compiling same-file v1.0.6
+   Compiling zlib-rs v0.5.5
+   Compiling prodash v31.0.0
+   Compiling regex-automata v0.4.14
+   Compiling walkdir v2.5.0
+   Compiling allocator-api2 v0.2.21
+   Compiling equivalent v1.0.2
+   Compiling typenum v1.19.0
+   Compiling foldhash v0.2.0
+   Compiling version_check v0.9.5
+   Compiling generic-array v0.14.7
+   Compiling hashbrown v0.16.1
+   Compiling byteorder v1.5.0
+   Compiling heapless v0.8.0
+   Compiling hash32 v0.3.1
+   Compiling cpufeatures v0.2.17
+   Compiling serde_core v1.0.228
+   Compiling synstructure v0.13.2
+   Compiling block-buffer v0.10.4
+   Compiling crypto-common v0.1.7
+   Compiling digest v0.10.7
+   Compiling faster-hex v0.10.0
+   Compiling sha1 v0.10.6
+   Compiling winnow v0.7.14
+   Compiling sha1-checked v0.10.0
+   Compiling jiff v0.2.18
+   Compiling thiserror-impl v2.0.18
+   Compiling zerofrom-derive v0.1.6
+   Compiling bstr v1.12.1
+   Compiling gix-validate v0.11.0
+   Compiling gix-error v0.0.0
+   Compiling gix-path v0.11.0
+   Compiling gix-features v0.46.0
+   Compiling rustix v1.1.3
+   Compiling pin-project-lite v0.2.16
+   Compiling gix-hash v0.22.0
+   Compiling gix-hashtable v0.12.0
+   Compiling zerofrom v0.1.6
+   Compiling yoke-derive v0.8.1
+   Compiling linux-raw-sys v0.11.0
+   Compiling jobserver v0.1.34
+   Compiling shlex v1.3.0
+   Compiling find-msvc-tools v0.1.9
+   Compiling zerovec-derive v0.11.2
+   Compiling memmap2 v0.9.9
+   Compiling cc v1.2.55
+   Compiling getrandom v0.3.4
+   Compiling displaydoc v0.2.5
+   Compiling futures-core v0.3.31
+   Compiling dunce v1.0.5
+   Compiling serde v1.0.228
+   Compiling yoke v0.8.1
+   Compiling fs_extra v1.3.0
+   Compiling gix-date v0.13.0
+   Compiling serde_derive v1.0.228
+   Compiling mio v1.1.1
+   Compiling zerovec v0.11.5
+   Compiling gix-actor v0.38.0
+   Compiling cmake v0.1.57
+   Compiling socket2 v0.6.2
+   Compiling gix-object v0.55.0
+   Compiling aws-lc-sys v0.37.0
+   Compiling zeroize v1.8.2
+   Compiling tokio v1.49.0
+   Compiling tempfile v3.24.0
+   Compiling gix-fs v0.19.0
+   Compiling gix-chunk v0.5.0
+   Compiling futures-sink v0.3.31
+   Compiling simd-adler32 v0.3.8
+   Compiling adler2 v2.0.1
+   Compiling miniz_oxide v0.8.9
+   Compiling gix-tempfile v21.0.0
+   Compiling tinystr v0.8.2
+   Compiling gix-quote v0.6.1
+   Compiling tracing-core v0.1.36
+   Compiling percent-encoding v2.3.2
+   Compiling litemap v0.8.1
+   Compiling writeable v0.6.2
+   Compiling aws-lc-rs v1.15.4
+   Compiling icu_locale_core v2.1.1
+   Compiling potential_utf v0.1.4
+   Compiling zerotrie v0.2.3
+   Compiling tracing-attributes v0.1.31
+   Compiling http v1.4.0
+   Compiling slab v0.4.12
+   Compiling fnv v1.0.7
+   Compiling icu_properties_data v2.1.2
+   Compiling icu_normalizer_data v2.1.1
+   Compiling icu_provider v2.1.1
+   Compiling icu_collections v2.1.1
+   Compiling tracing v0.1.44
+   Compiling gix-commitgraph v0.32.0
+   Compiling rustls-pki-types v1.14.0
+   Compiling gix-glob v0.24.0
+   Compiling indexmap v2.13.0
+   Compiling pin-utils v0.1.0
+   Compiling gix-revwalk v0.26.0
+   Compiling http-body v1.0.1
+   Compiling tokio-util v0.7.18
+   Compiling gix-lock v21.0.0
+   Compiling httparse v1.10.1
+   Compiling rustls v0.23.36
+   Compiling futures-io v0.3.31
+   Compiling futures-task v0.3.31
+   Compiling untrusted v0.9.0
+   Compiling futures-util v0.3.31
+   Compiling icu_normalizer v2.1.1
+   Compiling icu_properties v2.1.2
+   Compiling log v0.4.29
+   Compiling atomic-waker v1.1.2
+   Compiling unicode-bom v2.0.3
+   Compiling tower-service v0.3.3
+   Compiling try-lock v0.2.5
+   Compiling subtle v2.6.1
+   Compiling want v0.3.1
+   Compiling idna_adapter v1.2.1
+   Compiling h2 v0.4.13
+   Compiling flate2 v1.1.9
+   Compiling futures-channel v0.3.31
+   Compiling gix-config-value v0.17.0
+   Compiling static_assertions v1.1.0
+   Compiling shell-words v1.1.1
+   Compiling utf8_iter v1.0.4
+   Compiling compression-core v0.4.31
+   Compiling idna v1.1.0
+   Compiling compression-codecs v0.4.36
+   Compiling gix-command v0.7.0
+   Compiling kstring v2.0.2
+   Compiling form_urlencoded v1.2.2
+   Compiling sync_wrapper v1.0.2
+   Compiling gix-sec v0.13.0
+   Compiling encoding_rs v0.8.35
+   Compiling tower-layer v0.3.3
+   Compiling ipnet v2.11.0
+   Compiling base64 v0.22.1
+   Compiling openssl-probe v0.2.1
+   Compiling rustls-native-certs v0.8.3
+   Compiling tower v0.5.3
+   Compiling url v2.5.8
+   Compiling hyper v1.8.1
+   Compiling gix-attributes v0.30.0
+   Compiling async-compression v0.4.37
+   Compiling http-body-util v0.1.3
+   Compiling semver v1.0.27
+   Compiling iri-string v0.7.10
+   Compiling hyper-util v0.1.20
+   Compiling rustversion v1.0.22
+   Compiling zmij v1.0.19
+   Compiling tower-http v0.6.8
+   Compiling gix-ref v0.58.0
+   Compiling gix-url v0.35.0
+   Compiling gix-packetline v0.21.0
+   Compiling serde_json v1.0.149
+   Compiling mime v0.3.17
+   Compiling gix-prompt v0.13.0
+   Compiling gix-revision v0.40.0
+   Compiling gix-traverse v0.52.0
+   Compiling gix-bitmap v0.2.15
+   Compiling crossbeam-epoch v0.9.18
+   Compiling filetime v0.2.27
+   Compiling object v0.37.3
+   Compiling utf8parse v0.2.2
+   Compiling arrayvec v0.7.6
+   Compiling autocfg v1.5.0
+   Compiling rayon-core v1.13.0
+   Compiling gix-refspec v0.36.0
+   Compiling uluru v3.1.0
+   Compiling anstyle-parse v0.2.7
+   Compiling gix-index v0.46.0
+   Compiling fs-err v3.2.2
+   Compiling crossbeam-deque v0.8.6
+   Compiling arc-swap v1.8.1
+   Compiling gix-credentials v0.35.0
+   Compiling gix-ignore v0.19.0
+   Compiling toml_datetime v0.7.5+spec-1.1.0
+   Compiling serde_spanned v1.0.4
+   Compiling toml_parser v1.0.6+spec-1.1.0
+   Compiling clru v0.6.2
+   Compiling camino v1.2.2
+   Compiling foldhash v0.1.5
+   Compiling eyre v0.6.12
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling gimli v0.32.3
+   Compiling colorchoice v1.0.4
+   Compiling anstyle-query v1.1.5
+   Compiling owo-colors v4.2.3
+   Compiling toml_writer v1.0.6+spec-1.1.0
+   Compiling anstyle v1.0.13
+   Compiling toml v0.9.11+spec-1.1.0
+   Compiling anstream v0.6.21
+   Compiling hashbrown v0.15.5
+   Compiling gix-pack v0.65.0
+   Compiling gix-worktree v0.47.0
+   Compiling addr2line v0.25.1
+   Compiling gix-filter v0.25.0
+   Compiling gix-config v0.51.0
+   Compiling gix-pathspec v0.15.0
+   Compiling gix-shallow v0.8.0
+   Compiling gix-negotiate v0.26.0
+   Compiling regex v1.12.3
+   Compiling maybe-async v0.2.10
+   Compiling wasmparser v0.207.0
+   Compiling io-close v0.3.7
+   Compiling topological-sort v0.2.2
+   Compiling lazy_static v1.5.0
+   Compiling strsim v0.11.1
+   Compiling clap_lex v0.7.7
+   Compiling rustc-demangle v0.1.27
+   Compiling powerfmt v0.2.0
+   Compiling binfarce v0.2.1
+   Compiling indenter v0.3.4
+   Compiling either v1.15.0
+   Compiling fixedbitset v0.5.7
+   Compiling heck v0.5.0
+   Compiling clap_derive v4.5.55
+   Compiling petgraph v0.8.3
+   Compiling auditable-extract v0.3.5
+   Compiling rayon v1.11.0
+   Compiling deranged v0.5.5
+   Compiling backtrace v0.3.76
+   Compiling clap_builder v4.5.57
+   Compiling sharded-slab v0.1.7
+   Compiling auditable-serde v0.9.0
+   Compiling gix-worktree-state v0.25.0
+   Compiling gix-submodule v0.25.0
+   Compiling gix-odb v0.75.0
+   Compiling gix-discover v0.46.0
+   Compiling tracing-log v0.2.0
+   Compiling smol_str v0.3.2
+   Compiling gix-diff v0.58.0
+   Compiling matchers v0.2.0
+   Compiling toml-span v0.6.0
+   Compiling thread_local v1.1.9
+   Compiling home v0.5.11
+   Compiling rustc-stable-hash v0.1.2
+   Compiling ident_case v1.0.1
+   Compiling twox-hash v2.1.2
+   Compiling num-conv v0.1.0
+   Compiling nu-ansi-term v0.50.3
+   Compiling time-core v0.1.7
+   Compiling abscissa_derive v0.9.0
+   Compiling time v0.3.45
+   Compiling tracing-subscriber v0.3.22
+   Compiling color-eyre v0.6.5
+   Compiling clap v4.5.57
+   Compiling auditable-info v0.10.0
+   Compiling cargo-lock v11.0.1
+   Compiling quitters v0.1.0
+   Compiling cvss v2.2.0
+   Compiling secrecy v0.10.3
+   Compiling platforms v3.8.0
+   Compiling wait-timeout v0.2.1
+   Compiling termcolor v1.4.1
+   Compiling canonical-path v2.0.2
+   Compiling display-error-chain v0.2.2
+   Compiling abscissa_core v0.9.0
+   Compiling rustls-webpki v0.103.9
+   Compiling tokio-rustls v0.26.4
+   Compiling rustls-platform-verifier v0.6.2
+   Compiling hyper-rustls v0.27.7
+   Compiling reqwest v0.13.1
+   Compiling gix-transport v0.53.0
+   Compiling tame-index v0.26.0
+   Compiling gix-protocol v0.56.0
+   Compiling gix v0.78.0
+   Compiling rustsec v0.32.0
+   Compiling cargo-audit v0.22.1
+    Finished `release` profile [optimized] target(s) in 2m 38s
+  Installing /tmp/tmp.sALcSTf2LF/cargo-audit/bin/cargo-audit
+   Installed package `cargo-audit v0.22.1` (executable `cargo-audit`)
+warning: be sure to add `/tmp/tmp.sALcSTf2LF/cargo-audit/bin` to your PATH to be able to run the installed binaries
+
+[exit=0]
+
+## E14 corrected advisory scan recommended lockfile
+    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+      Loaded 1243 security advisories (from /home/stevemorin.guest/.cargo/advisory-db)
+    Updating crates.io index
+    Scanning Cargo.lock for vulnerabilities (22 crate dependencies)
+
+[exit=0]
+
+## E14 corrected control: anyhow pinned to =1.0.102
+    Updating crates.io index
+     Locking 20 packages to latest Rust 1.96 compatible versions
+      Adding anyhow v1.0.102 (available: v1.0.104)
+
+[exit=0]
+    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+      Loaded 1243 security advisories (from /home/stevemorin.guest/.cargo/advisory-db)
+    Updating crates.io index
+    Scanning Cargo.lock for vulnerabilities (22 crate dependencies)
+Crate:     anyhow
+Version:   1.0.102
+Warning:   unsound
+Title:     Unsoundness in `Error::downcast_mut()`
+Date:      2026-06-25
+ID:        RUSTSEC-2026-0190
+URL:       https://rustsec.org/advisories/RUSTSEC-2026-0190
+Dependency tree:
+anyhow 1.0.102
+└── rslb-cli 0.1.0
+
+warning: 1 allowed warning found
+
+[exit=0]
+
+## Final original-fixture source-free invariant
+/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R67/2026-09-05T155124Z-2271e140a7ef/review/empirical/rslb-contract/.gitignore
+/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R67/2026-09-05T155124Z-2271e140a7ef/review/empirical/rslb-contract/Cargo.toml
+/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R67/2026-09-05T155124Z-2271e140a7ef/review/empirical/rslb-contract/crates/rslb-cli/Cargo.toml
+/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R67/2026-09-05T155124Z-2271e140a7ef/review/empirical/rslb-contract/crates/rslb-core/Cargo.toml

@@ -1,0 +1,78 @@
+# ctrlc source read at the pinned release — retrieved 2026-09-09
+=== $ gh api repos/Detegr/rust-ctrlc/tags --jq '[.[].name][:6]'
+["v3.1.7","3.5.2","3.5.1","3.5.0","3.4.7","3.4.6"]
+
+=== crates.io .crate tarball for ctrlc 3.5.2 (authoritative published source)
+$ curl -L https://static.crates.io/crates/ctrlc/ctrlc-3.5.2.crate  (sha256 below)
+e0b1fab2ae45819af2d0731d60f2afe17227ebb1a1538a236da84c93e9a60162  /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/ctrlcKvcs/ctrlc.crate
+$ grep -n 'pub fn set_handler' -A 12 ctrlc-3.5.2/src/lib.rs
+93:pub fn set_handler<F>(user_handler: F) -> Result<(), Error>
+94-where
+95-    F: FnMut() + 'static + Send,
+96-{
+97-    init_and_set_handler(user_handler, true)
+98-}
+99-
+100-/// The same as ctrlc::set_handler but errors if a handler already exists for the signal(s).
+101-///
+102-/// # Errors
+103-/// Will return an error if another handler exists or if a system error occurred while setting the
+104-/// handler.
+105-pub fn try_set_handler<F>(user_handler: F) -> Result<(), Error>
+106-where
+107-    F: FnMut() + 'static + Send,
+
+$ grep -n 'termination' -B3 -A8 ctrlc-3.5.2/src/lib.rs
+42-//! ```
+43-//!
+44-//! # Handling SIGTERM and SIGHUP
+45://! Handling of `SIGTERM` and `SIGHUP` can be enabled with `termination` feature. If this is enabled,
+46-//! the handler specified by `set_handler()` will be executed for `SIGINT`, `SIGTERM` and `SIGHUP`.
+47-//!
+48-
+49-#[macro_use]
+50-
+51-mod error;
+52-mod platform;
+53-pub use platform::Signal;
+--
+73-/// ```
+74-///
+75-/// # Warning
+76:/// On Unix, the handler registration for `SIGINT`, (`SIGTERM` and `SIGHUP` if termination feature
+77-/// is enabled) or `SA_SIGINFO` posix signal handlers will be overwritten. On Windows, multiple
+78-/// handler routines are allowed, but they are called on a last-registered, first-called basis
+79-/// until the signal is handled.
+80-///
+81-/// ctrlc::try_set_handler will error (on Unix) if another signal handler exists for the same
+82-/// signal(s) that ctrlc is trying to attach the handler to.
+83-///
+84-/// On Unix, signal dispositions and signal handlers are inherited by child processes created via
+
+$ grep -rn 'SIGTERM\|SIGHUP\|SIGINT' ctrlc-3.5.2/src/platform/unix/mod.rs | head -30
+/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/ctrlcKvcs/ctrlc-3.5.2/src/platform/unix/mod.rs:92:    let sigint_old = signal::sigaction(signal::Signal::SIGINT, &new_action)?;
+/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/ctrlcKvcs/ctrlc-3.5.2/src/platform/unix/mod.rs:94:        signal::sigaction(signal::Signal::SIGINT, &sigint_old).unwrap();
+/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/ctrlcKvcs/ctrlc-3.5.2/src/platform/unix/mod.rs:100:        let sigterm_old = match signal::sigaction(signal::Signal::SIGTERM, &new_action) {
+/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/ctrlcKvcs/ctrlc-3.5.2/src/platform/unix/mod.rs:103:                signal::sigaction(signal::Signal::SIGINT, &sigint_old).unwrap();
+/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/ctrlcKvcs/ctrlc-3.5.2/src/platform/unix/mod.rs:108:            signal::sigaction(signal::Signal::SIGINT, &sigint_old).unwrap();
+/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/ctrlcKvcs/ctrlc-3.5.2/src/platform/unix/mod.rs:109:            signal::sigaction(signal::Signal::SIGTERM, &sigterm_old).unwrap();
+/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/ctrlcKvcs/ctrlc-3.5.2/src/platform/unix/mod.rs:112:        let sighup_old = match signal::sigaction(signal::Signal::SIGHUP, &new_action) {
+/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/ctrlcKvcs/ctrlc-3.5.2/src/platform/unix/mod.rs:115:                signal::sigaction(signal::Signal::SIGINT, &sigint_old).unwrap();
+/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/ctrlcKvcs/ctrlc-3.5.2/src/platform/unix/mod.rs:116:                signal::sigaction(signal::Signal::SIGTERM, &sigterm_old).unwrap();
+/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/ctrlcKvcs/ctrlc-3.5.2/src/platform/unix/mod.rs:121:            signal::sigaction(signal::Signal::SIGINT, &sigint_old).unwrap();
+/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/ctrlcKvcs/ctrlc-3.5.2/src/platform/unix/mod.rs:122:            signal::sigaction(signal::Signal::SIGTERM, &sigterm_old).unwrap();
+/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/ctrlcKvcs/ctrlc-3.5.2/src/platform/unix/mod.rs:123:            signal::sigaction(signal::Signal::SIGHUP, &sighup_old).unwrap();
+
+$ grep -n 'rust-version\|edition\|\[features\]' -A4 ctrlc-3.5.2/Cargo.toml
+13:edition = "2021"
+14:rust-version = "1.69.0"
+15-name = "ctrlc"
+16-version = "3.5.2"
+17-authors = ["Antti Keränen <detegr@gmail.com>"]
+18-build = false
+--
+44:[features]
+45-termination = []
+46-
+47-[lib]
+48-name = "ctrlc"
