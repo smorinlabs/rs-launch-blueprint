@@ -25,6 +25,17 @@ metric does not apply. Record `CONFLICT:` and `BASELINE-REVIEW:` lines exactly a
 the prompt instructs. Do not invent figures: if an endpoint fails, say so and
 record what you could verify.
 
+**Read the pinned source repositories at their pin, never from the working tree.**
+`~/c/py-launch-blueprint` is checked out ahead of the programme's pinned commit
+`b08bccfb55d05f15e46a83b52c5660b1881d19f5`, so opening a file by path gives you a
+different version than the one the ledger and every other item cite. Always read
+through the pin: `git -C ~/c/py-launch-blueprint show b08bccfb:<path>`. The same
+applies to `~/c/ts-launch-blueprint` at `cb1cbcb2e88b898e8c081b0abbfabc1630079c00`,
+which is also private and returns HTTP 404 from the network. One item found the
+two commits disagree about something load-bearing: at HEAD the Python repository
+pins several actions by commit, and at the pin it is entirely tag-pinned. If you
+cite both, label which commit each claim comes from.
+
 Evidence access: use `curl -sS` for crates.io (`https://crates.io/api/v1/crates/<name>`,
 `/versions`; send a User-Agent header), GitHub REST (`https://api.github.com/repos/<o>/<r>`,
 `/search/issues?q=repo:<o>/<r>+is:issue+is:open`), RustSec (`https://rustsec.org/packages/<name>.html`),
