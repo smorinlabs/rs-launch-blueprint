@@ -22,15 +22,32 @@ that outcome. Each revision repaired the locations its auditor named and then sw
 reading**, and each sweep missed something.
 
 Revision 5 changes the sweep method rather than only the sentences. Every location was enumerated
-mechanically before a single edit: a regular expression over this file matching version numbers,
-`first release`, `next release`, `initial`, `manifest`, `propose`, `Release-As`, `release-as`,
-`bump`, `→`, `moves the`, `digit`, `yields`, `produces`, `releases`, `released`, `returns` and
-`starts at` produced 293 candidate lines; classifying each one for whether it asserts what version
-comes out of something produced a work queue of **25 locations carrying 26 such assertions**, all 25
-edited. The queue and the exclusions are itemised at the top of `## Engines`. The exception itself is
-stated once and in full under **Override precedence** below, and every one of the 25 locations
-carries the word *override* in its governing sentence, so the sweep is re-runnable: search this file
-for a version-outcome assertion whose governing sentence lacks that word.
+mechanically before a single edit: a regular expression over **revision 4 of this file** matching
+version numbers, `first release`, `next release`, `initial`, `manifest`, `propose`, `Release-As`,
+`release-as`, `bump`, `→`, `moves the`, `digit`, `yields`, `produces`, `releases`, `released`,
+`returns` and `starts at` produced 293 candidate lines; classifying each one for whether it asserts
+what version comes out of something produced a work queue of **25 locations carrying 26 such
+assertions**, all 25 edited. A **second, block-level pass over the edited file** — flagging any
+paragraph or table row containing both a produce-or-result verb and a version literal but not the
+marker word — surfaced **3 further locations**, all edited: architecture alternative 1's "pure
+function of commit history", the graduation clause under *What (A) gives up*, and revision 4's own
+changelog item 3, which claimed a completeness its sweep did not have. **28 locations edited in
+total, found by two passes.** Both methods and the exclusions are itemised at the top of
+`## Engines`. The exception itself is stated once and in full under **Override precedence** below,
+and every one of the 28 locations carries the word *override* in its governing sentence, so the
+sweep is re-runnable by either method: search this file for a version-outcome assertion whose
+governing sentence lacks that word.
+
+**A second overstatement, corrected in the same revision and found the same way.** Revisions 1-4
+said in three places that the reversed gloss of the two flags should be fixed in the binding prompt
+*and* in the F070 explanatory prose at `docs/port/COMMONALITY.md:76`. Read directly on 2026-09-10,
+that row's explanatory cell reads *"whether rs-launch-blueprint starts pre-1.0
+(bump-minor-pre-major/bump-patch-for-minor-pre-major) or post-1.0 like py"* — it names both flags and
+glosses neither, so it cannot state their roles in reverse, and `git log` over that file shows the
+cell never carried a gloss. **Revision 5 narrows the claim from two documents to one:** the defect is
+in the binding prompt alone, at
+`research/topics/25-semver-bump-strategy/prompts/semver-bump-strategy.prompt.md` line 28. All three
+locations were corrected. This decision edits neither the prompt nor the commonality file.
 
 The recommendation has never changed. Revision 3 rewrote the four `- assumes` lines into the bare
 form the packaging validator compares byte-for-byte against `docs/port/PARAMETERS.md`; those lines
@@ -405,9 +422,13 @@ is then depends on the commits since the seed.** Under the recommended flags the
 answers from a `0.1.0` baseline: a patch-or-feature-only history yields `0.1.1`, and a history
 containing a breaking change yields `0.2.0` (`evidence/release-please-bump-probe.log`, rows
 *A both true · 0.1.0*: `fix:` → `0.1.1`, `feat:` → `0.1.1`, `feat!:` → `0.2.0`). An override displaces
-both answers, and can even re-propose `0.1.0` itself, since `base.ts:547` and `base.ts:554-564` parse
-whatever version they are given without comparing it to the latest release (**Override precedence**
-above). Revision 3 wrote `0.1.1` unconditionally; that is true only of the first of those histories,
+both answers (**Override precedence** above). How far that goes — whether an override can name a
+version release-please has already released — is **not** settled by what was read here:
+`buildNewVersion` performs no such comparison at `base.ts:547` or `base.ts:554-564`, but nothing read
+establishes what the surrounding pipeline does with a repeat, and the only recorded evidence in that
+direction is the maintainers' warning quoted under the runner-up below, that a standing `release-as`
+makes subsequent runs keep proposing the same version. Revision 3 wrote `0.1.1` unconditionally;
+that is true only of the first of those histories,
 and it is the claim the third audit rejected.
 
 That second consequence is an inference **from the tool's source**, and the source is its only
@@ -678,13 +699,25 @@ output was appended to `evidence/release-please-source-v17.11.2.log` under a dat
 2026-09-10. The edits are:
 
 1. **the sweep method changed, because reading the document four times had failed four times.**
-   Locations were enumerated mechanically before any edit: a regular expression matching version
+   Locations were enumerated mechanically before any edit, over revision 4 of this file: a regular
+   expression matching version
    numbers, `first release`, `next release`, `initial`, `manifest`, `propose`, `Release-As`,
    `release-as`, `bump`, `→`, `moves the`, `digit`, `yields`, `produces`, `releases`, `released`,
    `returns` and `starts at` matched **293 lines**; classifying each for whether it asserts what
    version comes out of something produced a queue of **25 locations carrying 26 assertions**;
    **all 25 were edited**; the same enumeration was re-run against the edited file and every queued
-   location was confirmed to carry its conditions. Explicitly excluded, and why: the two
+   location was confirmed to carry its conditions. A **second pass with a different method** then ran
+   over the edited file — block-level rather than line-level, flagging any paragraph or table row
+   holding a produce-or-result verb (`propose`, `releases`, `produces`, `yields`, `returns`, `bumps`,
+   `moves`, `starts at`, `gives`, `selected`, `forcing`) together with a version literal but not the
+   marker word. It surfaced **3 locations the line-level queue had not**: architecture alternative 1
+   ("the version is a pure function of commit history"), the graduation clause in *What (A) gives
+   up*, and item 3 of revision 4's own changelog, which asserted a completeness that revision's sweep
+   did not have. All 3 were edited, for **28 in total**. That pass's other 19 flags were reviewed
+   individually and left alone as correct: verbatim quotations, `cargo new` and resolver facts that
+   are not release-please outcomes, ts's observed release history, the historical audit records, and
+   the options-table rows, which are governed by the marked preamble directly above them.
+   Explicitly excluded, and why: the two
    `isPreMajor` phrases and the schema quotations (audit-confirmed, and a quotation may not be
    edited), the four `- assumes` lines (byte-compared), the options-table cell values and probe
    citations (governed by their preamble), the ts history table (observed events, not predicted
