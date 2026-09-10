@@ -328,6 +328,19 @@ survives only as a fact you supply when answering that one.
 
 ## Two things you should know, which are not decisions
 
+**A gate reading was ruled on provisionally, and you can overturn it.** Two
+items applied the minimum-supported-Rust-version fitness gate differently: one
+excluded a candidate for not declaring a version, the other passed a candidate
+that does not declare one. The gate's text compares a version against a window,
+and the clauses about declaring the version and testing it in continuous
+integration belong to the template's own obligations rather than to every
+dependency. So the ruling is that an undeclared version is unproven rather than
+failed, weighed against the candidate but not excluding it. Both items' audits
+were asked to test the ruling, and if either argues the stricter reading, it is
+withdrawn.
+
+
+
 **R41 ran to eight audit rounds** against a runbook limit of five. It published.
 The limit exists to stop an item circling; R41 was converging, not circling, and
 the rounds are recorded.
