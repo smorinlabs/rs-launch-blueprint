@@ -17,7 +17,7 @@ Status as of 2026-09-10. Fourteen items are published. The programme is
 |---|---|---|
 | 1. Wave 0 review gate | all 52 unadmitted items | the programme stops when Wave 0 finishes |
 | 2. R69 early admission | 19 items directly, 33 transitively | the largest dependency cluster stays idle |
-| 3. R66 paid providers | one item's evidence base | R66 decides on one engine instead of three |
+| 3. R66 paid providers | one item's evidence base | R66 decides on three reports instead of five |
 | 4. R18 residual acceptance | nothing in P02 | P03 ships two files that nothing may enable |
 | 5. Licence gate reach | three items now depend on it | P03 uses the slower install backend, and R33 and R81 stay conditional |
 | 6. R25 prompt correction | nothing | a defective prompt stays on the record |
@@ -103,9 +103,18 @@ one paid engine instead of three.
   records that two of its three required engines are missing, and the audits will
   hold it to a narrower claim.
 
-**Recommendation: (a) if R66's subject matters to the template's surface, (b)
-otherwise.** R66 is `output-format-surface`, which most user-facing commands
-touch. That argues for (a), but it is a spend decision and it is yours.
+**Recommendation, revised 2026-09-10 after R66's Opus report landed: (b),
+accept.** When this entry was written the item had one paid report and the
+recommendation was to re-spend. It now has three substantive reports, and more
+importantly the strongest finding on the item did not come from provider breadth
+at all. It came from reading commits and a design record in the pinned sources:
+the TypeScript repository's flag shape is a faithful port of the pre-rewrite
+Python command-line interface, and the Python repository's own design record
+directed the rename before it could spread. So what the divergence analysis
+recorded as an adjudicated divergence is stale-port drift. Two further providers
+would add breadth on ecosystem practice, which is not where this item turned.
+Spend if you want the tier honoured for its own sake; the evidence does not
+require it.
 
 **Response that settles it.** "Re-run Perplexity and Gemini for R66" or "accept
 one provider".
