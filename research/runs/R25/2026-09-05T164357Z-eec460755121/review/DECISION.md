@@ -1,4 +1,4 @@
-# R25 — Pre-1.0 semver bump strategy (pattern, Deep)
+# R25 — Pre-1.0 semver bump strategy (pattern, Deep) — revision 2, 2026-09-10
 
 ## Decision
 
@@ -11,6 +11,11 @@ survive implementation, it is **revised against this recorded research**, not re
 from scratch; the executed evidence under `## Empirical check` is the baseline any revision argues
 against.
 
+**This is revision 2 (2026-09-10).** Revision 1 was rejected by an empirical audit on one claim —
+that the TypeScript source repository "first published v0.1.1" — which its cited evidence did not
+establish. The recommendation is unchanged; what changed is the precision of the supporting claim
+and a new registry check that settles it. The full diff is recorded at the end of `## Engines`.
+
 **Recommendation.** `rs-launch-blueprint` launches **pre-1.0 at `0.1.0`** with release-please's
 pre-major dampening fully enabled. Three artifacts, and one of them is deliberately empty:
 
@@ -18,11 +23,24 @@ pre-major dampening fully enabled. Three artifacts, and one of them is deliberat
 |---|---|---|
 | `Cargo.toml` → `[package] version` | `"0.1.0"` | What `cargo new` itself emits (executed, cargo 1.98.0) |
 | `release-please-config.json` | `"release-type": "rust"`, `"bump-minor-pre-major": true`, `"bump-patch-for-minor-pre-major": true` | The unique flag pair that makes each commit type move the digit Cargo's resolver treats as its compatibility class |
-| `.release-please-manifest.json` | created **empty**: `{}` | So the **first published version is `0.1.0`**. A seeded `{".": "0.1.0"}` is read as the *last released* version and makes the first published version `0.1.1` — see the correction below |
+| `.release-please-manifest.json` | created **empty**: `{}` | So the **first version release-please releases is `0.1.0`**. A seeded `{".": "0.1.0"}` is read as an *already-released* version, and the first release would then be `0.1.1`. Derived from the tool's source; unproven until P03's first Release PR — see `## Engines`, unproven item 2 |
+
+**Vocabulary, used exactly and consistently from here on**, because the whole manifest argument
+turns on the distinction and revision 1 blurred it:
+
+- a **release commit** is the `chore(release): …` commit release-please merges to the default branch;
+- a **tag** is the Git tag the release then carries;
+- a **registry publication** is a version actually served by crates.io (for rs) or npmjs.com (for ts).
+
+They are three different events. Release-please decides the first two. Whether a publication follows
+is the publish workflow's business — ledger rows F074 (tag/version guard) and F075 (OIDC Trusted
+Publishing), both `COMMON → REUSE` and both outside R25. **No claim in this decision infers a
+registry publication from a release commit or a tag.**
 
 Tool under which those keys were read and exercised: **release-please `v17.11.2`**
-(`tag_name` from `GET https://api.github.com/repos/googleapis/release-please/releases/latest`,
-published `2026-08-24T21:20:30Z`, retrieved 2026-09-09), which is the version reached through
+(`tag_name` from `GET https://api.github.com/repos/googleapis/release-please/releases/latest`, whose
+`published_at` field reads `2026-08-24T21:20:30Z` — that is a GitHub release, not a registry
+publication; retrieved 2026-09-09), which is the version reached through
 `googleapis/release-please-action` `v5.0.0` — its `package.json` declares
 `"release-please": "^17.6.0"` (retrieved 2026-09-09). The flag semantics and the executed bump
 table below were established at `v17.11.2` only; at `v17.6.0`, the floor of that range, one thing
@@ -68,7 +86,8 @@ assumed by this item per the prompt's `## Out of scope`, and are unaffected by b
 2. a commit that only adds API moves a digit the resolver treats as compatible, so existing
    consumers receive it with no manifest edit;
 3. a `fix` moves the smallest digit;
-4. the first published version is one the ecosystem reads as an accurate stability claim.
+4. the first version the project releases — and therefore the first one it can publish to
+   crates.io — is one the ecosystem reads as an accurate stability claim.
 
 **Observable acceptance criteria.** These are the checks P03's CI must make pass; A0–A3 were
 proven here against the pinned tool and against `cargo` itself, A4 is a property of the
@@ -231,9 +250,10 @@ its consumers for no reason. Only (A) satisfies A1–A4. Option (B) is arithmeti
 `1.0.0` every configuration behaves identically — so its cost is not arithmetic but the claim it
 makes on day one.
 
-**Why the manifest is created empty, and what the first published version therefore is.** This is
-the artifact the raw reports left unsettled, and it is exactly the prompt's value test ("the
-template's first-published version number"). Read at `v17.11.2`:
+**Why the manifest is created empty, and what the first released version therefore is.** This is
+the artifact the raw reports left unsettled, and it is what the prompt's value test names — the
+prompt's words are "the template's first-published version number", and the part of that this item
+controls is which version release-please *releases* first. Read at `v17.11.2`:
 
 - `BaseStrategy.buildNewVersion` returns `this.initialReleaseVersion()` **only when there is no
   latest release**; otherwise it bumps the latest release's version.
@@ -248,13 +268,36 @@ template's first-published version number"). Read at `v17.11.2`:
 
 Two consequences. First, **`release-type: rust` starts a brand-new crate at `0.1.0` with no seeding,
 no `initial-version` key and no hand-written manifest entry** — the seeding ts had to do is a `node`
-problem, not a Rust one. Second, **seeding `{".": "0.1.0"}` would make the first published version
-`0.1.1`, not `0.1.0`.** That is not a prediction: ts seeded `{".": "0.1.0"}` in commit `19ff9b5` and
-its first release-please release was `chore(release): publish v0.1.1` (`bdc7567`) — `0.1.0` was
-never published. If `0.1.0` is to be the first published version, the manifest must be created empty
+problem, not a Rust one. Second, **seeding `{".": "0.1.0"}` would make the first released version
+`0.1.1`, not `0.1.0`.**
+
+That second consequence is an inference **from the tool's source**, and the source is its only
+authority: `BaseStrategy.buildNewVersion` plus `Manifest`'s backfill block, quoted above. The ts
+repository corroborates it, and revision 1 overstated what that corroboration is. What ts's history
+actually establishes, each item checked separately in
+`review/evidence/ts-registry-publication-check.log` (executed 2026-09-10):
+
+| Event | What ts shows | What it proves |
+|---|---|---|
+| Manifest seed | commit `19ff9b5` wrote `{".": "0.1.0"}` | the seed existed |
+| First **release commit** after the seed | `bdc7567`, `chore(release): publish v0.1.1` | release-please's first release skipped the seeded number |
+| **Tags** in the pinned clone | `ts-launch-blueprint-v0.1.1`, `v0.1.2`, `v0.1.3` — no `v0.1.0` | no tag was ever cut for the seeded number |
+| **Registry publication** on npmjs.com | the name resolves (HTTP 200) with exactly two versions, `0.0.1` (2026-07-21, published by the user account `smorin`, no `repository` field) and `0.1.3` (2026-07-22, published by `GitHub Actions` through a trusted publisher). `npm view ts-launch-blueprint@0.1.1 …` exits 1 with `E404` | ts **never published `0.1.0`, `0.1.1` or `0.1.2`**. Its first pipeline publication was `0.1.3` |
+
+So the corroboration is this and only this: ts seeded `0.1.0`, and its first release commit and tag
+were `v0.1.1` — the seeded number never became a release commit, a tag, **or** a registry version.
+That is consistent with the source reading. It is **not** evidence that ts "published `0.1.1`" — it
+did not — and the divergence between ts's tags and its registry has a recorded cause unrelated to
+bump arithmetic: D-021(5) shipped ts's publish workflow "inert-but-ready until the consumer
+configures the npmjs.com trusted publisher" (pinned clone `cb1cbcb`). Nothing about npm's registry
+is carried over to crates.io here.
+
+If `0.1.0` is to be the first version released, the manifest must be created empty
 (`echo "{}" > .release-please-manifest.json`, the maintainers' own bootstrap instruction) and
-`Cargo.toml` left at `0.1.0`; release-please then proposes `0.1.0`, tags `v0.1.0`, and writes
-`{".": "0.1.0"}` itself.
+`Cargo.toml` left at `0.1.0`; release-please then proposes `0.1.0`, writes `{".": "0.1.0"}` itself,
+and tags it in whatever form the repository's `include-v-in-tag` setting produces. Whether that
+release reaches crates.io is F075's business, not this item's, and P03 proves the released number at
+the first Release PR (`## Engines`, unproven item 2).
 
 *Implementation note that travels with the empty manifest, flagged rather than decided here:* with
 no manifest entry, release-please collects **all** commits in the branch's history for the first
@@ -323,8 +366,8 @@ is the answer to it, and it is proposed, not proven.
 this flag pair (pinned clone `cb1cbcb`). release-plz ships this policy as its Rust-native default and
 documents the opposite as a Cargo SemVer violation. `axum`, `tracing`, `tower` and `config` are
 maintained, heavily adopted crates that keep breaking changes on the `y` digit while pre-1.0.
-release-please itself is **active** by the prompt's rubric: latest release `v17.11.2` published
-2026-08-24, repository `pushed_at` 2026-09-03, `archived: false`, `license.spdx_id` `Apache-2.0`,
+release-please itself is **active** by the prompt's rubric: latest GitHub release `v17.11.2`,
+`published_at` 2026-08-24, repository `pushed_at` 2026-09-03, `archived: false`, `license.spdx_id` `Apache-2.0`,
 297 open issues (`GET https://api.github.com/search/issues?q=repo:googleapis/release-please+is:issue+is:open`,
 retrieved 2026-09-09). No release-drought trigger fires. Issue responsiveness (median days to first
 maintainer response over the 10 most recently opened issues) was **not measured** — recorded as an
@@ -381,8 +424,11 @@ node v26.5.0, npm 12.0.1
 no CI workflow was written, and nothing was created inside the repository worktree. Every command
 below ran in the session scratchpad
 (`/private/tmp/claude-501/.../scratchpad`, abbreviated `<scratch>`) except the read-only toolchain
-and repository reads. All six checks in the table below exited `0`; all HTTP fetches returned
-`200` except where a status is quoted otherwise. Retrieval date for every network figure and quotation: **2026-09-09**.
+and repository reads. All seven checks in the table below exited `0` **except check 7's first
+command, whose non-zero exit is itself the result** — `npm view ts-launch-blueprint@0.1.1` exits 1
+with `E404`, which is what the check was run to find out. All HTTP fetches returned `200` except
+where a status is quoted otherwise. Retrieval date: **2026-09-09** for checks 1–6, **2026-09-10**
+for check 7, which was added in revision 2.
 
 | # | What it decides | Command (working directory) | Result | Log |
 |---|---|---|---|---|
@@ -391,7 +437,8 @@ and repository reads. All six checks in the table below exited `0`; all HTTP fet
 | 3 | Which flag combination produces the table Cargo's rule requires | `npm --prefix <scratch>/rp-probe install release-please@17.11.2` then `node <scratch>/rp-probe/probe.cjs` — 4 configurations × 3 start versions × 3 commit types | 36 rows; only both-flags-`true` gives `fix→z`, `feat→z`, `feat!→y` at `0.x`; exit 0 | `evidence/release-please-bump-probe.log` |
 | 4 | Cargo's own initial version, and whether a `0.y` minor bump really is the incompatibility boundary | `cargo new --lib/--bin --vcs none`; then `cargo generate-lockfile` on three throwaway manifests (`<scratch>`) | `version = "0.1.0"`, `edition = "2024"`; `bitflags = "0.9.0"` → `0.9.1` while `2.13.2` exists; `axum = "0.7.0"` → `0.7.9` while `0.8.9` exists; `bitflags = "1.0.0"` → `1.3.2`, never `2.x`; exit 0 | `evidence/cargo-initial-version-and-resolver.log` |
 | 5 | That every rule attributed to a standard or tool is quoted from a source that covers that case | `curl -sSL` of Cargo Book `semver.html` and `specifying-dependencies.html`, `semver.org`, `rust-lang/api-guidelines` `necessities.md`, release-plz `config.md` (`<scratch>/docs`) | all `200`; the five verbatim quotations reproduced in `### Principles and implementation`; exit 0 | `evidence/authority-quotations.log` |
-| 6 | Maintenance state, adoption figures, and the two source repositories at their pinned commits | `GET api.github.com/repos/...`, `GET api.github.com/search/issues?...`, `GET crates.io/api/v1/crates/<name>` (6 crates); `git -C ~/c/{ts,py}-launch-blueprint show <pinned sha>:<path>` | release-please `v17.11.2` / `pushed_at` 2026-09-03 / `archived: false` / 297 open issues; ts seeded `0.1.0` and first published `v0.1.1`; py adopted release-please at `1.0.0` and sets no `pre-major` key; exit 0 | `evidence/registry-and-source-repos.log` |
+| 6 | Maintenance state, adoption figures, and the two source repositories at their pinned commits | `GET api.github.com/repos/...`, `GET api.github.com/search/issues?...`, `GET crates.io/api/v1/crates/<name>` (6 crates); `git -C ~/c/{ts,py}-launch-blueprint show <pinned sha>:<path>` | release-please `v17.11.2` / `pushed_at` 2026-09-03 / `archived: false` / 297 open issues; ts seeded `0.1.0` and its first release commit was `v0.1.1`; py adopted release-please at `1.0.0` and sets no `pre-major` key; exit 0 | `evidence/registry-and-source-repos.log` (see the correction appended at its foot, and check 7) |
+| 7 | **Added in revision 2.** Whether ts's `v0.1.1` was a release commit, a tag, or a registry publication — three different things | `npm view ts-launch-blueprint@0.1.1 …`; `npm view ts-launch-blueprint versions …` (isolated cache); `curl https://registry.npmjs.org/ts-launch-blueprint`; `git tag --list`; `git log` (`<scratch>`) | release commit `bdc7567` and tag `ts-launch-blueprint-v0.1.1` exist; npm serves only `0.0.1` and `0.1.3`, and `@0.1.1` exits 1 with `E404`; `0.1.0` appears in none of the three | `evidence/ts-registry-publication-check.log` |
 
 **The one method caveat.** Check 3 imports `release-please/build/src/versioning-strategies/default`
 and `.../version` — package-internal build paths, not a public API. A future release may relocate
@@ -405,6 +452,55 @@ real scratch repository (it needs a GitHub token and a throwaway repository), an
 P03's work.
 
 ## Engines
+
+**Audit of revision 1, and what revision 2 changed.** Revision 1
+(sha256 `75d8edd839ae6ad7f69004a4e7947cd43c6d8af73414f81215f876a5a8dc7fc0`) was **rejected** by
+`audit-codex-2026-09-05T164357Z-eec460755121` (`review/audit-codex.r1.md`, model gpt-5.6-terra) on
+one finding, and **confirmed** on the load-bearing one.
+
+- *Confirmed by the audit.* The correction to the binding prompt holds: at `v17.11.2` the schema
+  makes `bump-minor-pre-major` govern **breaking** changes and `bump-patch-for-minor-pre-major`
+  govern **feature** changes, `src/versioning-strategies/default.ts` uses exactly that branch order,
+  and the executed probe reproduces `fix`/`feat` → patch and `feat!` → minor at `0.x`. The audit
+  also reproduced checks 2–6 independently (a Linux rerun on `rustc`/`cargo` 1.98.1, with the
+  Node-dependent check 3 on macOS) and confirmed that each cited log supports the claims it is cited
+  for. That evidence is unchanged in revision 2.
+- *Rejected by the audit.* Revision 1 asserted that ts "first published v0.1.1" and that `0.1.0`
+  "was never published". `review/evidence/registry-and-source-repos.log` supports only a release
+  commit and a tag; the audit found `npm view ts-launch-blueprint@0.1.1 version dist.tarball --json`
+  returns `E404`. The finding is correct: a release commit is not a tag and neither is a registry
+  publication.
+
+**What revision 2 changed, and nothing else.** The recommendation (launch at `0.1.0`,
+`release-type: rust`, both flags `true`, empty manifest), the confirmed prompt correction and its
+evidence, the two recorded-but-not-adopted `BASELINE-REVIEW:` lines, checks 1–6 and their logs, and
+the unproven list all stand as written. The edits are:
+
+1. a **vocabulary paragraph** in `## Decision` defining release commit / tag / registry publication
+   and stating that no claim here infers one from another;
+2. every statement that ts *published* a version replaced by the narrower proven fact — its first
+   **release commit and tag** were `v0.1.1` after a manifest seed of `0.1.0` — with an explicit note
+   of which inference that supports (the source-level reading of the manifest backfill) and which it
+   cannot (anything about a registry);
+3. **check 7 added**, run by me rather than taken from the audit: it separates the three events and
+   records what npmjs.com actually serves;
+4. the maintenance-state figure relabelled as a GitHub release's `published_at`, and essential
+   behavior 4, the manifest-section heading, the check-6 row, `## Engines` item 2 and unproven item 2
+   reworded from "published" to "released" where that is what the evidence supports;
+5. unproven item 2 extended so it cannot be read as contradicting the recommendation: what P03
+   proves is the *released* number, and reaching crates.io is separately unproven and claimed
+   nowhere above.
+
+**A finding of my own, beyond what the audit reported.** The audit checked `@0.1.1` only. Querying
+the whole packument shows npmjs.com serves `ts-launch-blueprint` (HTTP 200) with exactly two
+versions — `0.0.1`, published 2026-07-21 by the user account `smorin` with no `repository` field,
+and `0.1.3`, published 2026-07-22 by `GitHub Actions` through a trusted publisher — so ts's first
+*pipeline* publication was `0.1.3`, and `0.1.0`, `0.1.1` and `0.1.2` were never published at all.
+The cause is recorded in ts's own decision record and is unrelated to bump arithmetic: D-021(5)
+shipped its publish workflow "inert-but-ready until the consumer configures the npmjs.com trusted
+publisher". This strengthens rather than weakens the corroboration — `0.1.0` is absent from all
+three of ts's release commits, tags and registry versions — while confirming the audit's point that
+none of it proves a publication.
 
 | Engine | Report | Recommendation |
 |---|---|---|
@@ -434,15 +530,17 @@ tool source rather than by counting votes.
    describes option (D), which the executed table shows is wrong under Cargo's rule. **The error is
    on the record here and should be fixed at its source** (`inputs/prompt.md` line 28 and the F070
    prose at `docs/port/COMMONALITY.md:76`); this decision edits neither.
-2. **How the first published version is actually produced — a correction to the opus report, which
+2. **How the first released version is actually produced — a correction to the opus report, which
    no engine got fully right.** opus's migration table recommends seeding
    `.release-please-manifest.json` as `{".": "0.1.0"}` *and* relies on
    `Rust.initialReleaseVersion()` returning `0.1.0`. Those do not compose. `src/manifest.ts`'s
    "backfill latest release tags from manifest" block treats a manifest entry as the *last released*
    version, and `docs/manifest-releaser.md` says the same in prose, so a seeded `0.1.0` makes the
-   first Release PR propose `0.1.1`. ts's own history is the proof: it seeded `0.1.0` at `19ff9b5`
-   and its first release was `v0.1.1`. This decision therefore creates the manifest **empty** so the
-   first published version is `0.1.0` — the artifact the prompt's value test names.
+   first Release PR propose `0.1.1`. **The proof is the source; ts's history is corroboration only**
+   — it seeded `0.1.0` at `19ff9b5`, and its first release commit and tag were `v0.1.1`, with the
+   seeded number appearing as neither. Revision 1 wrote that ts "first published v0.1.1"; it did
+   not, and that overstatement is finding 1 of the audit recorded below. This decision therefore
+   creates the manifest **empty** so the first version released is `0.1.0`.
 3. **doxa-openai's bootstrap-only `release-as: 0.1.0` is not adopted.** It solves the same worry a
    different way, but the schema marks the `release-as` config key *"[DEPRECATED] … Consider using a
    `Release-As` commit instead"* and the docs warn that leaving it in place makes subsequent runs
@@ -482,14 +580,18 @@ tool source rather than by counting votes.
 
 1. **The end-to-end proposal.** `npx release-please@17.11.2 release-pr --repo-url=<owner>/<repo>
    --dry-run` against the real template repository after `fix:`, then `feat:`, then `feat!:`
-   commits. Expected `0.1.1`, `0.1.2`, `0.2.0` from a published `0.1.0`. Check 3 proved the
+   commits. Expected `0.1.1`, `0.1.2`, `0.2.0` from a released `0.1.0`. Check 3 proved the
    arithmetic in isolation; only this exercises the real strategy including `Cargo.toml` and
    `Cargo.lock` rewriting. **Not run here: it needs a GitHub token and a repository, and building
    either would be implementing the recommendation.**
-2. **That the first published version is `0.1.0`.** The empty-manifest reading is derived from the
-   pinned source plus ts's contrary history, not from an executed first release. P03 proves it the
-   first time the Release PR opens — and this is the single artifact the prompt's value test names,
-   so it should be checked before the release, not after.
+2. **That the first version release-please releases is `0.1.0`.** The empty-manifest reading is
+   derived from the pinned source and corroborated by ts's contrary history; no first release was
+   executed here, and none could be without building the template. P03 proves it the first time the
+   Release PR opens — this is the artifact the prompt's value test names, so it is checked before
+   the release, not after. **Separately unproven, and claimed nowhere above: that the released
+   `0.1.0` reaches crates.io.** That is F074's guard and F075's publishing path, not R25's, and ts
+   is the cautionary case — release commits and tags `v0.1.1` and `v0.1.2` exist there and were
+   never published to npmjs.com (check 7).
 3. **`cargo-semver-checks` as a pull-request gate** — proposed, not decided. Unproven: that it runs
    green on both `ubuntu-latest` and `macos-latest`, its runtime cost, and its false-positive rate
    on this template's surface. Its job placement is R11's (`ci-job-structure`) to decide, not R25's.

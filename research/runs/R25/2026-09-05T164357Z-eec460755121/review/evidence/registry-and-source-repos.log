@@ -58,3 +58,20 @@ $ git -C ~/c/py-launch-blueprint show 1bd0344:.release-please-manifest.json   # 
       ".": "1.0.0"
     }
   Reading: py adopted release-please already at 1.0.0, so both pre-major flags would have been unreachable code there.
+
+############################################################################
+# CORRECTION APPENDED 2026-09-10 (revision 2). The line above that reads
+#   "Reading: ts seeded the manifest at 0.1.0 and its FIRST release-please release was v0.1.1
+#    — 0.1.0 was never published."
+# overstates what the commands in this log show. `git log` on .release-please-manifest.json
+# establishes a RELEASE COMMIT (bdc7567). It does not establish a Git tag and it does not
+# establish a registry publication. Read that line as:
+#   "ts seeded the manifest at 0.1.0 and its FIRST release-please RELEASE COMMIT was
+#    'chore(release): publish v0.1.1'."
+# The three events are separated, and the npmjs.com registry queried, in
+#   review/evidence/ts-registry-publication-check.log  (executed 2026-09-10).
+# Summary of that check: npm serves ts-launch-blueprint at 0.0.1 and 0.1.3 only;
+# `npm view ts-launch-blueprint@0.1.1` exits 1 with E404; 0.1.0 appears as no release commit,
+# no tag and no registry version.
+# The original capture above is left byte-for-byte intact; nothing in it is rewritten.
+############################################################################
