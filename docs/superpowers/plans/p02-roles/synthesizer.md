@@ -55,6 +55,15 @@ not researched again from scratch.
   disagreements between engines, and the evidence that settled each; state
   uncertainty where evidence is incomplete.
 
+**A pipeline reports its last command's status, so a failing check can print
+success.** One decision was rejected because `git show <bad path> | head` printed
+`exit=0`: the `git show` failed and `head` succeeded. Put `set -o pipefail` at the
+top of any check script, or test each command's status separately, and make every
+check assert on the content it expected rather than on an exit code alone. A
+check that cannot fail is not evidence. The same applies to a script that emits
+fewer checks than the decision cites: if you run a follow-up by hand, add it to
+the script before you cite it, because an auditor reruns the script and counts.
+
 **A saved script and a saved log make a claim you must be able to keep.** If you
 say the log is the command's output, an auditor will rerun the script and diff
 it, and two items have already been rejected because the rerun differed. Live
