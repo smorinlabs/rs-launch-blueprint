@@ -61,6 +61,20 @@
       },
       "provider": "codex",
       "state": "succeeded"
+    },
+    {
+      "actor": "research-opus-2026-09-05T164358Z-eae89906c763",
+      "at": "2026-09-10T14:51:07Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T164358Z-eae89906c763",
+        "at": "2026-09-10T14:51:07Z",
+        "model": "claude-opus-5",
+        "provider": "opus",
+        "request_id": "fde6420e5a924d80a88666a484525f75",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
     }
   ],
   "input_hashes": {
@@ -91,6 +105,14 @@
       "request_id": "1d11f69c2afb4304bc351bf18b368c59",
       "returned_at": "2026-09-05T16:52:09Z",
       "state": "succeeded"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T164358Z-eae89906c763",
+      "at": "2026-09-10T14:51:07Z",
+      "model": "claude-opus-5",
+      "provider": "opus",
+      "request_id": "fde6420e5a924d80a88666a484525f75",
+      "state": "submitting"
     }
   },
   "prompt_source": "research/topics/33-property-and-snapshot-testing/prompts/property-and-snapshot-testing.prompt.md",
@@ -103,5 +125,5 @@
   "schema_version": 1,
   "state": "partial",
   "tier": "focused",
-  "updated_at": "2026-09-05T16:52:09Z"
+  "updated_at": "2026-09-10T14:51:07Z"
 }

@@ -61,6 +61,20 @@
       },
       "provider": "codex",
       "state": "succeeded"
+    },
+    {
+      "actor": "research-opus-2026-09-05T164358Z-bb73f46c3910",
+      "at": "2026-09-10T14:51:07Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T164358Z-bb73f46c3910",
+        "at": "2026-09-10T14:51:07Z",
+        "model": "claude-opus-5",
+        "provider": "opus",
+        "request_id": "dde2c9fd114f4b5ebd1f4ac1f559051e",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
     }
   ],
   "input_hashes": {
@@ -91,6 +105,14 @@
       "request_id": "81ba89d6af954d5aad57aa88f4c0c51a",
       "returned_at": "2026-09-05T16:53:33Z",
       "state": "succeeded"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T164358Z-bb73f46c3910",
+      "at": "2026-09-10T14:51:07Z",
+      "model": "claude-opus-5",
+      "provider": "opus",
+      "request_id": "dde2c9fd114f4b5ebd1f4ac1f559051e",
+      "state": "submitting"
     }
   },
   "prompt_source": "research/topics/26-packed-artifact-content-guard/prompts/packed-artifact-content-guard.prompt.md",
@@ -103,5 +125,5 @@
   "schema_version": 1,
   "state": "partial",
   "tier": "focused",
-  "updated_at": "2026-09-05T16:53:33Z"
+  "updated_at": "2026-09-10T14:51:07Z"
 }
