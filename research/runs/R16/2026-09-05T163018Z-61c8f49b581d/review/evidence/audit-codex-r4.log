@@ -1,0 +1,188 @@
+# R16 revision-4 citation audit — 2026-09-09
+# actor: audit-codex-2026-09-05T163018Z-61c8f49b581d-r4
+# model: gpt-5.6-terra
+# cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d
+
+Scope: revision 4 is documentary by the owner's 2026-09-10 direction. No
+CodeQL command, bundle enumeration, bundle download, checksum operation, or
+Lima command was run. This log records read-only local pinned-source checks
+and live `curl` retrievals. Retrieval date: 2026-09-09 (UTC date of this
+audit session).
+
+## Pinned source repositories
+
+```text
+$ git -C /Users/stevemorin/c/py-launch-blueprint rev-parse b08bccfb55d05f15e46a83b52c5660b1881d19f5
+b08bccfb55d05f15e46a83b52c5660b1881d19f5
+$ git -C /Users/stevemorin/c/ts-launch-blueprint rev-parse cb1cbcb2e88b898e8c081b0abbfabc1630079c00
+cb1cbcb2e88b898e8c081b0abbfabc1630079c00
+$ git -C /Users/stevemorin/c/py-launch-blueprint show b08bccf:.github/workflows/codeql.yml | sed -n '47,66p'
+  analyze:
+    needs: repository-visibility
+    if: ${{ needs.repository-visibility.outputs.is-public == 'true' }}
+    name: analyze (python)
+    runs-on: ${{ vars.RUNNER_UBUNTU || 'ubuntu-latest' }}
+    permissions:
+      contents: read
+      security-events: write
+      actions: read
+    steps:
+      - uses: actions/checkout@v7
+      - name: Init CodeQL
+        uses: github/codeql-action/init@v4.37.0
+        with:
+          languages: python
+          config-file: ./.github/codeql/codeql-config.yml
+```
+
+Result: the decision's revised py runner statement is correct: this is a
+variable-indirected Ubuntu runner, not a literal bare `ubuntu-latest` value.
+The pinned ts workflow separately has literal `runs-on: ubuntu-latest` on its
+CodeQL `analyze` job. The pinned py config has a `queries` key selecting
+`security-extended`; the pinned ts tree has no `.github/codeql` path.
+
+## Live adopter retrievals
+
+```text
+$ curl -fsSL https://raw.githubusercontent.com/surrealdb/surrealdb/main/.github/codeql/codeql-config.yml
+name: "SurrealDB CodeQL Config"
+paths-ignore:
+  - "**/tests/**"
+  - "**/test/**"
+  - "**/benches/**"
+  - "language-tests/**"
+  - "tests/**"
+  - "fuzz/**"
+  - "profiling/**"
+  - "target/**"
+  - "doc/**"
+  - "img/**"
+  - "pkg/**"
+  - "docker/**"
+query-filters:
+  - exclude:
+      tags contain: experimental
+
+$ curl -fsSL https://raw.githubusercontent.com/surrealdb/surrealdb/main/.github/workflows/codeql.yml | sed -n '59,75p'
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@5c8a8a642e79153f5d047b10ec1cba1d1cc65699 # v3.35.1
+        with:
+          languages: rust
+          build-mode: none
+          config-file: ./.github/codeql/codeql-config.yml
+          queries: security-extended
+```
+
+The SurrealDB configuration declares no `queries` key. Its workflow sets
+`config-file:` and inline `queries: security-extended` on the same Init step.
+It is the hybrid the decision says Alt-C forbids, while supporting only the
+`paths-ignore` and `**/`-form practice claims.
+
+```text
+$ curl -fsSL https://raw.githubusercontent.com/wasmCloud/wasmCloud/main/.github/workflows/codeql.yml | sed -n '28,87p'
+  analyze-rust:
+    name: CodeQL (Rust)
+    runs-on: ubuntu-latest
+    ...
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
+        with:
+          languages: rust
+          tools: latest
+          queries: security-extended
+          config: |
+            extraction:
+              rust:
+                cargo_target_dir: ${{ github.workspace }}/target
+
+$ curl -fsSL https://raw.githubusercontent.com/copper-project/copper-rs/master/.github/workflows/codeql.yml | sed -n '13,36p'
+  analyze:
+    name: Analyze (Rust)
+    runs-on: ubuntu-latest
+    ...
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: rust
+          build-mode: none
+          queries: security-extended,security-and-quality
+
+$ curl -fsSL https://raw.githubusercontent.com/xelis-project/xelis-blockchain/master/.github/workflows/security.yml | sed -n '49,71p'
+  codeql:
+    name: CodeQL
+    runs-on: ubuntu-latest
+    ...
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@v4
+        with:
+          languages: rust
+          build-mode: none
+          queries: +security-extended,security-and-quality
+
+$ curl -fsSL https://raw.githubusercontent.com/open-telemetry/opentelemetry-rust/main/.github/workflows/codeql-analysis.yml | sed -n '16,47p'
+  analyze:
+    name: Analyze
+    runs-on: ubuntu-latest
+    ...
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@cdf488f595d80d6e07e03d4674febd5ab45fa938 # v4.37.9
+        with:
+          languages: rust
+```
+
+Result: wasmCloud is the only surveyed adopter using exactly the decision's
+Alt-B shape (inline `security-extended`, no config file). copper-rs and xelis
+use inline selection but add `security-and-quality`, as revision 4 says.
+OpenTelemetry uses neither `queries:` nor `config-file:`. All five adopter
+workflows use `runs-on: ubuntu-latest` for their Rust CodeQL job.
+
+Inverse control for the four non-SurrealDB adopters:
+
+```text
+$ for path in wasmCloud/wasmCloud/main/.github/codeql/codeql-config.yml copper-project/copper-rs/master/.github/codeql/codeql-config.yml xelis-project/xelis-blockchain/master/.github/codeql/codeql-config.yml open-telemetry/opentelemetry-rust/main/.github/codeql/codeql-config.yml; do curl -sS -o /dev/null -w '%{http_code}\n' https://raw.githubusercontent.com/$path; done
+404
+404
+404
+404
+```
+
+## Twenty-repository advanced-setup negative survey
+
+Method: for each named repository, `curl` retrieved
+`GET /repos/<owner>/<repo>/contents/.github/workflows`, then retrieved every
+returned YAML `download_url` and tested its contents for `github/codeql-action`
+or `CodeQL`. The unauthenticated GitHub REST quota was exhausted after sixteen
+repositories; the four remaining identical GETs were retried with the locally
+configured `gh auth token` in the Authorization header. No token was printed.
+
+```text
+rust-lang/cargo                    workflows=4   advanced-CodeQL-init-hits=none
+rust-lang/rust-analyzer            workflows=10  advanced-CodeQL-init-hits=none
+rust-lang/crates.io                workflows=3   advanced-CodeQL-init-hits=none
+tokio-rs/tokio                     workflows=7   advanced-CodeQL-init-hits=none
+tokio-rs/axum                      workflows=2   advanced-CodeQL-init-hits=none
+hyperium/hyper                     workflows=4   advanced-CodeQL-init-hits=none
+rustls/rustls                      workflows=5   advanced-CodeQL-init-hits=none
+astral-sh/uv                       workflows=43  advanced-CodeQL-init-hits=none
+astral-sh/ruff                     workflows=20  advanced-CodeQL-init-hits=none
+denoland/deno                      workflows=22  advanced-CodeQL-init-hits=none
+bytecodealliance/wasmtime          workflows=8   advanced-CodeQL-init-hits=none
+firecracker-microvm/firecracker    workflows=7   advanced-CodeQL-init-hits=none
+aws/aws-lc-rs                      workflows=17  advanced-CodeQL-init-hits=none
+smithy-lang/smithy-rs              workflows=17  advanced-CodeQL-init-hits=none
+cloudflare/pingora                 workflows=5   advanced-CodeQL-init-hits=none
+zed-industries/zed                 workflows=47  advanced-CodeQL-init-hits=none
+pola-rs/polars                     workflows=20  advanced-CodeQL-init-hits=none
+oxc-project/oxc                    workflows=32  advanced-CodeQL-init-hits=none
+biomejs/biome                      workflows=24  advanced-CodeQL-init-hits=none
+sigstore/sigstore-rs               workflows=5   advanced-CodeQL-init-hits=none
+```
+
+`rust-lang/crates.io` is the only literal CodeQL text match: its `ci.yml` uses
+`github/codeql-action/upload-sarif@...` to upload `zizmor` output. It has no
+`github/codeql-action/init`, `analyze`, or `autobuild` step and therefore is not
+an advanced-setup CodeQL workflow. This supports the decision's narrower
+claim, "0 of 20 ... ship an advanced-setup CodeQL workflow," while preserving
+the raw report's stated blind spot for GitHub default setup.
+
+Exit status: 0 after the authenticated retry. No CodeQL execution occurred.
