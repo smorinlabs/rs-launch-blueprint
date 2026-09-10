@@ -23,15 +23,20 @@ in this order, outside code fences:
   exactly from `docs/port/PARAMETERS.md`) and every consumed parameter (value
   from the owner's published decision); any `CONFLICT:` line the raws raised.
 - `## Empirical check` — toolchain (`rustc --version`, `cargo --version`, OS),
-  the exact command(s), the working directory, and the observed output. You must
-  actually run the check: create a minimal fixture under
-  `review/empirical/` in the run directory (a `cargo new` project or the files the
-  recommendation needs), execute the recommended configuration, command or
-  version pin, and paste the real output. Save the full output to
-  `review/evidence/<short-name>.log`. A recommendation that is a configuration,
-  command or version pin is not accepted until this section shows it executed.
-  For web or observability decisions the check must exercise a real request path
-  as the runbook requires.
+  the exact command(s), the working directory, and the observed output. **Verify
+  claims; never implement the recommendation.** This is a research programme: the
+  template does not exist yet and P03 builds it. Run the checks that decide
+  whether what the raws assert is true — query the recorded endpoints (crates.io,
+  the GitHub API, RustSec, docs.rs), read the crate's source at its pinned tag,
+  resolve a query suite or print a tool's effective configuration, run the
+  recommended tool against a few sample inputs, or confirm a version pin exists
+  and installs. Save the full output to `review/evidence/<short-name>.log`.
+  **Do not build the thing being recommended**: no working seam, service, hook
+  pipeline, acceptance script or template scaffold, and no fixture beyond the few
+  files a check needs as input. A claim you cannot verify this way is recorded as
+  unproven under `## Engines`, with what would prove it, and left for P03 to prove
+  in the real template. A recommendation that is a configuration, command or
+  version pin still shows its executed output here.
 - `## Engines` — one line per raw report (`<engine> raw/<file>`), the
   disagreements between engines, and the evidence that settled each; state
   uncertainty where evidence is incomplete.
