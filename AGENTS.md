@@ -9,5 +9,11 @@ Read, in order: `README.md`, `docs/port/README.md` (verdict vocabulary),
 - Track departures from recorded patterns as `OVERRIDE (OV-nn)` with
   `**Argument:**` and `**Options:**`; agreement alone is not evidence of fitness.
 - Never assign a verdict from memory; cite the files in both source repos.
+- Returning to this work after any interruption, start with
+  `uv run --offline --no-project --no-python-downloads --no-cache python3
+  scripts/research_scan.py --todo`. It reconstructs every item's state from the
+  repository, names the next action, and lists unfinished provider operations
+  with the identifiers that recover them. Never rely on an agent's memory of
+  what was running.
 - Run `scripts/check-research-tree.sh` before opening a PR.
 - Work in a worktree branched from `origin/main`; never commit to `main`.
