@@ -1,4 +1,4 @@
-# R67 — Error and exit-code contract (bundle, Deep, keystone)
+# R67 — Error and exit-code contract (bundle, Deep, keystone) — revision 2, 2026-09-10
 
 Synthesized 2026-09-09 from three engines' raw reports (five provider bodies) plus
 the verification runs recorded under `## Empirical check`. This is a research
@@ -333,9 +333,10 @@ compatible design: `anyhow::Error` accepts any `std::error::Error + Send + Sync 
 'static`, which is what `thiserror`'s derive produces, so the boundary
 `downcast_ref::<CoreError>()` is a supported path and not a coincidence. Nothing
 in the stack declares an async runtime, so R05 and R69 stay unconstrained.
-Integration cost, measured by resolution rather than by build: the whole set
-resolves to **22 packages**, **zero duplicate versions**, and a **1.96-compatible**
-lock. Performance is deliberately not a ranking axis: every mechanism here runs
+Integration cost, measured by resolution rather than by build: resolved against
+the two-crate manifest set at `review/empirical/rslb-contract`, the stack locks
+**20 packages** with **zero duplicate versions** at "latest Rust 1.96 compatible
+versions", and `cargo audit` scans **22 crate dependencies** with no findings. Performance is deliberately not a ranking axis: every mechanism here runs
 once per process, on an error or a signal. The costs that do matter — compile
 time, binary size, and any helper thread — are why `signal-hook` is taken with
 `default-features = false` (its `flag` API needs neither the `channel` nor
@@ -359,7 +360,7 @@ rules; if not, they stay P03 implementation choices. OpenAI's proposal to use
 `force_capture` for the UNEXPECTED code is explicitly **not** adopted: it would
 change the cost and privacy contract the owner has not yet dispositioned.
 
-re-verify: 2027-03-09, or earlier on any of — a RustSec advisory against `thiserror`, `anyhow` or `signal-hook`; `rust-lang/rust#97889` closing or `-Zon-broken-pipe` stabilizing (the `println!` ban could then relax); R57 answering (the crash-record path is finalized); R61 answering (`RSLB903` is wired to a typed variant or retired before first release); R05/R69 selecting the async model (the web `SIGTERM` drain path becomes buildable); R60 selecting a parser that does not exit 2 on usage errors; the owner dispositioning the F301 amendment; or Rust stable advancing far enough that the MSRV floor rises above a recommended crate's declared `rust-version` (the highest in the resolved tree is `etcetera` 1.87.0, well clear of the current 1.96 floor).
+re-verify: 2027-03-09, or earlier on any of — a RustSec advisory against `thiserror`, `anyhow` or `signal-hook`; `rust-lang/rust#97889` closing or `-Zon-broken-pipe` stabilizing (the `println!` ban could then relax); R57 answering (the crash-record path is finalized); R61 answering (`RSLB903` is wired to a typed variant or retired before first release); R05/R69 selecting the async model (the web `SIGTERM` drain path becomes buildable); R60 selecting a parser that does not exit 2 on usage errors; the owner dispositioning the F301 amendment; or Rust stable advancing far enough that the MSRV floor rises above a recommended crate's declared `rust-version` (the highest anywhere in the resolved tree is **1.71**, shared by eleven dependencies, so the current 1.96 floor has wide headroom and this trigger is remote).
 
 ## Parameters
 
@@ -409,30 +410,46 @@ for this run; every std source read below was taken at tag `1.96.0`, not at the
 host's 1.98.0, so it proves availability *at the floor*.
 
 **Working directories.** All API queries and source reads ran from
-`/Users/stevemorin/c/rs-launch-blueprint-p02-plan`. The two resolution checks ran
-in throwaway scratchpad directories
-(`…/scratchpad/r67-resolve`, `…/scratchpad/r67-audit-control`), each containing
-only a `Cargo.toml` and an **empty** `src/lib.rs`. Nothing was built and no
-template code, fixture, seam, harness or scaffold was written: the checks
-resolve, inspect and audit *version requirements*, which is what the recommendation
-is. Every command's full output is in `review/evidence/`.
+`/Users/stevemorin/c/rs-launch-blueprint-p02-plan`. E13 and E14 were **rerun on
+2026-09-10 for this revision** against the three manifests as they now stand at
+`review/empirical/rslb-contract` (a workspace root plus `crates/rslb-core` and
+`crates/rslb-cli`, and no Rust source at all). That fixture was **not mutated**:
+because Cargo cannot load a package with no target, the three `Cargo.toml` files
+were copied byte-identically — the copy's and the fixture's sha256 sums are both
+recorded in the log — into a scratchpad directory and given two **empty** target
+stubs (`crates/rslb-core/src/lib.rs`, `crates/rslb-cli/src/main.rs`) solely so
+the manifests parse. The `anyhow = "=1.0.102"` control is the same workspace with
+that one requirement changed. Nothing was built and no template code, seam,
+harness or scaffold was written: the checks resolve, inspect and audit *version
+requirements*, which is what the recommendation is. Every command's full output
+is in `review/evidence/`.
+
+An **earlier, narrower observation** is retained above the continuation header in
+`review/evidence/dependency-resolution.log` and is not the source of any figure
+below: a single-package manifest resolved on 2026-09-09 that additionally carried
+`etcetera = "0.11.0"`. Its scope was "do the pinned requirements co-resolve at
+all", and within that scope it answered; but `etcetera` is a crate **this
+decision does not select** — the crash-log location is deferred to R57 — so its
+22-package / 23-crate figures describe a graph wider than the recommendation and
+are superseded here. The audit that caught the mismatch is recorded under
+`## Engines`.
 
 | # | Command (abbreviated; full text in the log) | Exit | What it verified | Log |
 |---|---|---|---|---|
 | E1 | `curl https://crates.io/api/v1/crates/<n>` and `/versions` for 12 crates | 0 (all HTTP 200) | 90-day and all-time downloads, newest non-yanked `num`/`created_at`/`rust_version`/`license`/default features | `crates-io.log` |
 | E2 | `gh api repos/<o>/<r>` for 11 repositories | 0 | `stargazers_count`, `archived`, `pushed_at` | `github-api.log` |
 | E3 | `gh api "search/issues?q=repo:<o>/<r>+is:issue+is:open"` ×5 | 0 | open **issue** counts (not `open_issues_count`) | `github-issue-search.log` |
-| E4 | `curl -w '%{http_code}' https://rustsec.org/packages/<n>.html` ×5, then `gh api repos/rustsec/advisory-db/contents/crates/<n>` ×5 | 0 | advisory status per package | `rustsec.log` |
+| E4 | `curl -w '%{http_code}' https://rustsec.org/packages/<n>.html` ×5, then `gh api repos/rustsec/advisory-db/contents/crates/<n>` ×5 | 0 | advisory status per package. A 404 on the package page is zero-advisory evidence **only because of its two paired controls**, both run here: the same endpoint returns **200 for `anyhow`**, whose page is backed by RUSTSEC-2026-0190, and the advisory-db API agrees independently (404 for each absent `crates/<n>` directory, 200 listing `RUSTSEC-2026-0190.md` for `anyhow`). A bare 404, unpaired, would prove nothing | `rustsec.log` |
 | E5 | `curl …/advisory-db/main/crates/anyhow/RUSTSEC-2026-0190.md` | 0 | the advisory's own text | `rustsec.log` |
-| E6 | `curl https://static.crates.io/crates/ctrlc/ctrlc-3.5.2.crate` → `tar xzf` → `grep 'pub fn set_handler' -A14 src/lib.rs`, `grep termination -B3 -A8 src/lib.rs`, `grep SIG… src/platform/unix/mod.rs` | 0 | `ctrlc`'s handler takes no signal argument; `termination` fans SIGINT/SIGTERM/SIGHUP into one handler | `ctrlc-source-3.5.2.log` |
-| E7 | same for `signal-hook-0.4.4` and `inquire-0.9.4` | 0 | `flag::register(signal: c_int, flag: Arc<AtomicBool>)` is per-signal; defaults are `channel`+`iterator`; `InquireError::{OperationCanceled, OperationInterrupted}` exist as typed variants | `signal-hook-inquire-source.log` |
+| E6 | `curl https://static.crates.io/crates/ctrlc/ctrlc-3.5.2.crate` → `tar xzf` → `grep 'pub fn set_handler' -A14 src/lib.rs`, `grep termination -B3 -A8 src/lib.rs`, `grep SIG… src/platform/unix/mod.rs` | 0 | `ctrlc`'s handler takes no signal argument; `termination` fans SIGINT/SIGTERM/SIGHUP into one handler. **A source-interface finding only** — it settles what the crate's API can express, and demonstrates no signal, prompt, EPIPE, flushing or destructor behaviour | `ctrlc-source-3.5.2.log` |
+| E7 | same for `signal-hook-0.4.4` and `inquire-0.9.4` | 0 | `flag::register(signal: c_int, flag: Arc<AtomicBool>)` is per-signal; defaults are `channel`+`iterator`; `InquireError::{OperationCanceled, OperationInterrupted}` exist as typed variants. **A source-interface finding only**, on the same terms as E6: no signal, prompt, EPIPE, flushing or destructor behaviour is demonstrated | `signal-hook-inquire-source.log` |
 | E8 | `curl raw…/rust-lang/rust/1.96.0/library/std/src/{process.rs,io/stdio.rs,sys/pal/unix/mod.rs,backtrace.rs}` + targeted `grep` | 0 (HTTP 200) | `ExitCode`/`Termination`/`From<u8>` stable since 1.61.0; `process::exit` runs no destructors; `print_to` panics on a failed write; the runtime sets `SIGPIPE` to `SIG_IGN`; `capture` is env-gated and `force_capture` is not | `std-at-msrv-floor-1.96.0.log` |
 | E9 | `gh api repos/rust-lang/rust/issues/{97889,62569}`; `curl doc.rust-lang.org/cargo/reference/semver.html`; `curl raw…/rust-cli/book/master/src/in-depth/{exit-code,signals}.md` | 0 | both SIGPIPE tracking issues **open**; adding an enum variant without `#[non_exhaustive]` is major; the CLI-WG book names `exitcode` and `ctrlc` | `ecosystem-authorities.log` |
 | E10 | `sed -n '349,400p' /Users/stevemorin/c/cli-standards/cli-design-standard.md` and greps for R7.6–R7.8, R8.2, R9.6 | 0 | R6.1's exact table, "unlisted failures collapse to 1", the explicit `sysexits.h` rejection, R7.8's single-object schema with optional documented fields, R7.7's flush-on-every-path, R9.6's 130/143/EPIPE MUSTs, R8.2's 2/4/1 split | `cli-design-standard-R6-R7.log` |
 | E11 | `curl https://cgit.freebsd.org/src/plain/include/sysexits.h` | 0 (HTTP 200) | `EX_USAGE 64`, `EX_CONFIG 78`, `EX__MAX 78` — the raws' BSD figures are correct | `sysexits-h.log` |
 | E12 | `curl raw…/Cargo.toml` for 7 reference projects; `curl raw…/ripgrep/master/crates/core/main.rs` | 0 | the `thiserror`+`anyhow` split and the `etcetera`-over-`directories` shift; ripgrep's `fn main() -> ExitCode` + chain-walk + `BrokenPipe → ExitCode::from(0)` | `adopter-manifests.log`, `reference-implementations.log` |
-| E13 | `cargo generate-lockfile` → `cargo tree -e normal` → `cargo tree -d` → `cargo metadata … \| jq` on the recommended pins | 0 | **22 packages locked, "latest Rust 1.96 compatible versions", zero duplicate resolutions**; every resolved package's `rust_version` ≤ 1.96 (highest dependency: `etcetera` 1.87.0); every license MIT/Apache-compatible | `dependency-resolution.log` |
-| E14 | `cargo audit` on that lockfile; then a control with `anyhow = "=1.0.102"` | 0 / 0 | recommended set: 1243 advisories loaded, 23 crates scanned, **no findings**. Control: `RUSTSEC-2026-0190 … Warning: unsound … anyhow 1.0.102` — the `>= 1.0.103` floor is load-bearing | `dependency-resolution.log` |
+| E13 | (rerun 2026-09-10 against `review/empirical/rslb-contract`) `cargo generate-lockfile` → `cargo tree -e normal` → `cargo tree -d` → `cargo metadata … \| jq` | 0 | **20 packages locked, "latest Rust 1.96 compatible versions", zero duplicate resolutions** (`cargo tree -d` prints nothing). Resolved normal tree: `anyhow`, `rslb-core → thiserror`, `serde_json`, and `signal-hook` under `cfg(unix)`, plus their transitives — **no `etcetera`**, which this decision does not select. Highest declared `rust-version` among dependencies is **1.71** (shared by `proc-macro2`, `quote`, `serde_derive`, `serde_json`, `syn`, `thiserror`, `thiserror-impl`, `unicode-ident`, `windows-link`, `windows-sys`, `zmij`); every license MIT/Apache-compatible | `dependency-resolution.log` |
+| E14 | (rerun 2026-09-10, same workspace) `cargo audit` on that lockfile; then a control with `anyhow = "=1.0.102"` | 0 / 0 | recommended set: 1243 advisories loaded, **22 crate dependencies scanned, no findings**. Control: `RUSTSEC-2026-0190 … Warning: unsound … anyhow 1.0.102` — the `>= 1.0.103` advisory floor **remains load-bearing on the corrected figures** | `dependency-resolution.log` |
 
 **Figures collected as `## Required evidence` specifies** (crates.io
 `crate.recent_downloads` / `crate.downloads`; newest non-yanked version from
@@ -458,9 +475,11 @@ Fitness gates, answered per selected crate **before** popularity was weighed.
 Gate 1 (license): pass — every package in the resolved tree is MIT/Apache-compatible
 (`memchr` is `Unlicense OR MIT`, `unicode-ident` is `(MIT OR Apache-2.0) AND
 Unicode-3.0`, `zmij` is MIT). Gate 2 (crate **and dependency-tree** MSRV): pass
-and, unlike in either raw, **executed** — E13 shows the whole resolved tree's
-highest declared `rust-version` is `etcetera` 1.87.0, and Cargo itself reported
-"Locking 22 packages to latest Rust 1.96 compatible versions". Gate 3 (advisories
+and, unlike in either raw, **executed** — E13's 2026-09-10 rerun shows the
+highest declared `rust-version` anywhere in the resolved tree is **1.71**, shared
+by eleven dependencies, and Cargo itself reported "Locking 20 packages to latest
+Rust 1.96 compatible versions". The gate passes with more headroom than the
+superseded figures suggested, not less. Gate 3 (advisories
 and `unsafe` posture): pass — `cargo audit` clean on the recommended lock;
 `anyhow`'s single advisory is avoided by version *and* by never calling
 `downcast_mut`; `signal-hook` necessarily encapsulates FFI `unsafe` to install
@@ -473,7 +492,7 @@ and async coupling): stated — `thiserror` `default = ["std"]`, `anyhow`
 `default = ["std"]`, `serde_json` `default = ["std"]`, `signal-hook`
 `default = ["channel","iterator"]` and is taken with `default-features = false`;
 no member declares an async runtime, so R05 and R69 stay free. Gate 6
-(binary-size and compile cost, qualitative): small — 22 packages total, of which
+(binary-size and compile cost, qualitative): small — 20 packages total, of which
 `thiserror`'s proc-macro chain (`syn`/`quote`/`proc-macro2`) is the only
 build-time cost of note and is almost always already in a Rust workspace's graph;
 `anyhow` resolves with **zero** dependencies; `signal-hook` adds `libc` and
@@ -617,6 +636,35 @@ interactive-prompts = inquire`) that no registry row assigns to R67
 (`docs/port/PARAMETERS.md` gives this item exactly one: `error-taxonomy-exit-codes`);
 its parameter block was read for content and disregarded for scope.
 
+**Audit of revision 1, and what revision 2 changed.** The revision-1 draft
+(sha256 `4c7ea6e604bd899a47cf75a3a9e05ef752fd694f6ed9c4446ccc1b391346f97d`) was
+**rejected** by `audit-codex-2026-09-05T155124Z-2271e140a7ef` (gpt-5.6-terra;
+report at `review/audit-codex.r1.md`, rerun log at
+`review/evidence/audit-error-and-exit-code-contract.log`) on exactly one
+substantive finding: the E13/E14 figures were not reproducible from the reviewed
+fixture. They had been taken from a one-package manifest that additionally
+carried `etcetera = "0.11.0"` — a crate this decision does not select — rather
+than from the three manifests at `review/empirical/rslb-contract`. The auditor
+independently reran the checks on a Linux VM and obtained 20 locked packages, no
+`etcetera` in the resolved tree, and 22 scanned crate dependencies. Revision 2
+reran E13 and E14 here against those same three manifests and reproduces the
+auditor's figures exactly; every affected number and crate name in `## Decision`
+and `## Empirical check` is corrected to the rerun, the superseded observation is
+retained in the evidence log under a dated continuation header with its narrower
+scope labelled rather than deleted, and the `anyhow = "=1.0.102"` control was
+rerun in the same workspace shape and still reports RUSTSEC-2026-0190 — so the
+`>= 1.0.103` advisory floor stays load-bearing, and the MSRV gate passes with
+*more* headroom than before (highest dependency `rust-version` 1.71, not 1.87.0).
+The auditor's other three findings were endorsements, and two are now stated
+plainly where the claims are made: the `rustsec.org/packages/<name>.html` 404
+counts as zero-advisory evidence **only** with its paired 200-for-`anyhow` and
+advisory-db controls (E4), and E6/E7 are source-interface findings that
+demonstrate no runtime behaviour (E6, E7 — the unproven list already covered
+this). Nothing else changed: the owned parameter value, the other twelve
+verification rows, the eight disagreement resolutions, the BASELINE-REVIEW F301
+handling, the recorded-not-escalated Perplexity `CONFLICT:`, the status paragraph
+and the unproven list are unchanged from revision 1.
+
 **Where the evidence is incomplete, stated as uncertainty rather than averaged
 away.** Everything under `## Empirical check` is a registry query, a source read
 at a pinned version, a standard read, or a resolution/audit of version
@@ -665,4 +713,4 @@ settled.
    `ErrorCode::ALL`, so neither the enum nor the published catalog can drift.
 8. *Compile time and binary size for the real template.* Proof: a measured
    `cargo clean && cargo build --release` in CI. Only the dependency *count*
-   (22 packages, no duplicates) was established here.
+   (20 packages, no duplicates) was established here.
