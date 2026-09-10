@@ -194,12 +194,21 @@ one line of the recipe body and no invocation anywhere.
 - **(c) Leave it, and use the licence-clean prebuilt alternative if compile time
   proves unacceptable.** The decision names one.
 
-**This is no longer about one item.** R33, property-and-snapshot-testing, reached
-the same gate independently: two of the members it recommends carry a single
-permissive licence rather than the dual expression, and it passes them on the
-same reasoning, that they are development-only and never shipped in the
-artifact. Its decision is being written to remain valid under both branches of
-your ruling, with a named drop-in if the ruling goes the strict way. Expect more
+**This is no longer about one item, and the strict branch is worse than it
+looked.** R33, property-and-snapshot-testing, reached the same gate
+independently. Its first attempt named a substitute for the strict branch, and
+the audit found that substitute's own dependency carries the same single
+licence. Its revision then walked every candidate's required dependencies at
+pinned versions and found that the substitute fails, and so do both members it
+originally recommended, one on a single dependency and one on five. Only the
+property-testing half survives, and it is recorded as not disqualified rather
+than cleared.
+
+So under the strict reading the programme currently has **no proven snapshot
+testing stack at all**, and finding one would need a resolved-tree licence audit
+that no research item can perform, because it needs a workspace the research
+phase is forbidden to create. That is the real cost of the strict branch, and it
+was not visible when this entry was first written. Expect more
 items to reach this gate, because development tooling routinely carries licences
 the shipped artifact would not. R81 is the third, reached within the same day:
 the documentation generator it recommends carries a copyleft licence and it
