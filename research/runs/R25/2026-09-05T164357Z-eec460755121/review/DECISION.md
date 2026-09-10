@@ -253,9 +253,16 @@ digit, not major; fix commits bump patch even under a `0.x` minor". That reverse
   breaking commits and `feat` commits respectively; both are inert once the major digit reaches 1.
 
 The prompt's gloss describes option (D) in the table below — `bump-minor-pre-major` alone — which is
-measurably wrong under Cargo's rule. **The error should be corrected at its source** in
-`research/runs/R25/.../inputs/prompt.md` line 28 and in the F070 explanatory prose in
-`docs/port/COMMONALITY.md:76`; this decision does not edit either file.
+measurably wrong under Cargo's rule. **The error should be corrected at its source, and that source
+is one document, not two.** It is the binding prompt, at
+`research/topics/25-semver-bump-strategy/prompts/semver-bump-strategy.prompt.md` line 28 (reached in
+this run as `inputs/prompt.md`); this decision does not edit it. Revisions 1-4 also named
+`docs/port/COMMONALITY.md:76`, and that was wrong: read directly, the F070 row's explanatory cell
+reads *"whether rs-launch-blueprint starts pre-1.0
+(bump-minor-pre-major/bump-patch-for-minor-pre-major) or post-1.0 like py"*. It names the two flags
+and glosses neither, so it cannot state their roles in reverse, and `git log` over that file shows
+the cell has carried that same wording since the row was written (only its `Item` column changed,
+`R27` → `R25`). Retrieved and read 2026-09-10.
 
 **Are both flags supported identically for `rust` as for `node`? Yes — the MEDIUM question,
 answered from source.** `src/manifest.ts:1395-1396` maps `config['bump-minor-pre-major']` →
@@ -606,6 +613,7 @@ for check 7, which was added in revision 2.
 | 5 | That every rule attributed to a standard or tool is quoted from a source that covers that case | `curl -sSL` of Cargo Book `semver.html` and `specifying-dependencies.html`, `semver.org`, `rust-lang/api-guidelines` `necessities.md`, release-plz `config.md` (`<scratch>/docs`) | all `200`; the five verbatim quotations reproduced in `### Principles and implementation`; exit 0 | `evidence/authority-quotations.log` |
 | 6 | Maintenance state, adoption figures, and the two source repositories at their pinned commits | `GET api.github.com/repos/...`, `GET api.github.com/search/issues?...`, `GET crates.io/api/v1/crates/<name>` (6 crates); `git -C ~/c/{ts,py}-launch-blueprint show <pinned sha>:<path>` | release-please `v17.11.2` / `pushed_at` 2026-09-03 / `archived: false` / 297 open issues; ts seeded `0.1.0` and its first release commit was `v0.1.1`; py adopted release-please at `1.0.0` and sets no `pre-major` key; exit 0 | `evidence/registry-and-source-repos.log` (see the correction appended at its foot, and check 7) |
 | 7 | **Added in revision 2.** Whether ts's `v0.1.1` was a release commit, a tag, or a registry publication — three different things | `npm view ts-launch-blueprint@0.1.1 …`; `npm view ts-launch-blueprint versions …` (isolated cache); `curl https://registry.npmjs.org/ts-launch-blueprint`; `git tag --list`; `git log` (`<scratch>`) | release commit `bdc7567` and tag `ts-launch-blueprint-v0.1.1` exist; npm serves only `0.0.1` and `0.1.3`, and `@0.1.1` exits 1 with `E404`; `0.1.0` appears in none of the three | `evidence/ts-registry-publication-check.log` |
+| 8 | **Added in revision 5.** Where a version override is checked relative to `latestRelease` and `initialReleaseVersion()`, and whether the deprecated configuration and the commit footer are one path or two | `curl -sS -A <ua> https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/<path>` for `src/strategies/base.ts`, `src/commit.ts`, `src/manifest.ts`, `src/versioning-strategies/default.ts`, `src/bin/release-please.ts`, `schemas/config.json` (`<scratch>/rp`), then read at the pinned line ranges | all `200`; `buildNewVersion` checks `this.releaseAs` (`base.ts:547`), then a `RELEASE AS` commit note (`554-564`), then `latestRelease` (`566-571`), then `initialReleaseVersion()` (`573`) — **two separate override paths**, both ahead of the last two checks; the footer is honoured a second time inside `DefaultVersioningStrategy.determineReleaseType` (`default.ts:74-82`), so check 3's probe is subject to it too; exit 0 | `evidence/release-please-source-v17.11.2.log` (appended section dated 2026-09-10) |
 
 **The one method caveat.** Check 3 imports `release-please/build/src/versioning-strategies/default`
 and `.../version` — package-internal build paths, not a public API. A future release may relocate
@@ -789,8 +797,12 @@ tool source rather than by counting votes.
    *"Breaking changes only bump semver minor if version < 1.0.0"* and *"Feature changes only bump
    semver patch if version < 1.0.0"* — the reverse of the prompt's line 28. The prompt's gloss
    describes option (D), which the executed table shows is wrong under Cargo's rule. **The error is
-   on the record here and should be fixed at its source** (`inputs/prompt.md` line 28 and the F070
-   prose at `docs/port/COMMONALITY.md:76`); this decision edits neither.
+   on the record here and should be fixed at its one source** — the binding prompt at
+   `research/topics/25-semver-bump-strategy/prompts/semver-bump-strategy.prompt.md` line 28, reached
+   in this run as `inputs/prompt.md`; this decision does not edit it. Revision 5 removed
+   `docs/port/COMMONALITY.md:76` from this sentence: the F070 cell names both flags and glosses
+   neither, so the defect is not there (read 2026-09-10; see the correction in
+   `### Principles and implementation`).
 2. **How the first released version is actually produced — a correction to the opus report, which
    no engine got fully right.** opus's migration table recommends seeding
    `.release-please-manifest.json` as `{".": "0.1.0"}` *and* relies on
@@ -818,10 +830,14 @@ tool source rather than by counting votes.
    contrary setting a violation of Cargo's SemVer rules — an independent Rust-native tool reaching
    the same policy. If the owner wants the release-tool choice reopened, that is a new item, not a
    revision of this one.
-5. **doxa-openai's `BASELINE-REVIEW: F070` is really the flag-gloss correction, restated.** It asks
-   that F070's explanatory prose stop saying "feat bumps minor". That is item 1 above and this
-   decision records it. It is not a baseline review in the ledger's sense: F070 is `DIVERGENT`, not
-   a retained `REUSE`/`ADOPT` row, so there is no baseline to challenge.
+5. **doxa-openai's `BASELINE-REVIEW: F070` is really the flag-gloss correction, restated.** Quoted
+   exactly, it asks to *"correct any wording that says 'feat bumps minor' when both flags are true to
+   'breaking bumps minor; feat and fix bump patch'"* — a conditional request about wording wherever
+   it occurs, which revisions 1-4 mis-restated as an assertion that F070's own explanatory prose says
+   it. It does not: the F070 cell names both flags and glosses neither (read 2026-09-10). The wording
+   doxa-openai describes occurs in the binding prompt, which is item 1 above. It is not a baseline
+   review in the ledger's sense either: F070 is `DIVERGENT`, not a retained `REUSE`/`ADOPT` row, so
+   there is no baseline to challenge.
 6. **doxa-gemini and doxa-perplexity both invented owned parameters** (`owns initial_version`,
    `owns release_please_bump_minor_pre_major`, `owns R25.versioning-epoch`, and others). R25 owns
    nothing: the prompt's `- owns:` line is empty and `research/CLAUDE.md` records `—`. `## Parameters`

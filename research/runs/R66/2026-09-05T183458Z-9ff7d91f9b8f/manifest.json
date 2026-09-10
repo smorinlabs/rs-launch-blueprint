@@ -132,6 +132,20 @@
       },
       "provider": "doxa",
       "state": "partial"
+    },
+    {
+      "actor": "research-opus-2026-09-05T183458Z-9ff7d91f9b8f",
+      "at": "2026-09-10T15:09:27Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T183458Z-9ff7d91f9b8f",
+        "at": "2026-09-10T15:09:27Z",
+        "model": "claude-opus-5",
+        "provider": "opus",
+        "request_id": "734f7b9880c945f5977602d25a16af38",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
     }
   ],
   "input_hashes": {
@@ -177,6 +191,14 @@
       "returned_at": "2026-09-09T07:34:54Z",
       "state": "partial",
       "unknown_at": "2026-09-09T07:33:07Z"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T183458Z-9ff7d91f9b8f",
+      "at": "2026-09-10T15:09:27Z",
+      "model": "claude-opus-5",
+      "provider": "opus",
+      "request_id": "734f7b9880c945f5977602d25a16af38",
+      "state": "submitting"
     }
   },
   "prompt_source": "research/topics/66-output-format-surface/prompts/output-format-surface.prompt.md",
@@ -190,5 +212,5 @@
   "schema_version": 1,
   "state": "partial",
   "tier": "deep",
-  "updated_at": "2026-09-09T07:34:54Z"
+  "updated_at": "2026-09-10T15:09:27Z"
 }

@@ -337,6 +337,14 @@ inside `groups` (unsupported for `cargo`), and `versioning-strategy` on the
 
 ### Members
 
+Six members, one per key group of the recommended file. None is a crate: each is a
+configuration convention, so the crate figures in the prompt's figure table
+(90-day downloads, all-time downloads, last release, RustSec advisories,
+reverse-dependency adopters) and fitness gates 2 through 6 are `inapplicable` for every
+member, for the reason stated in each member's `Excluded by gate` field. Gate 1
+(licence) is satisfied once, by the single implementation involved,
+`dependabot/dependabot-core` (MIT), which is never linked into the template.
+
 #### Ecosystem declaration set (`package-ecosystem`)
 
 ##### Landscape

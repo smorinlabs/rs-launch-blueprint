@@ -404,3 +404,99 @@ Re-verify if: R13's `cargo-deny` license policy adopts a strict all-dependencies
 - https://github.com/astral-sh/uv `Cargo.toml:328` @ `a22198b1b536`; https://github.com/astral-sh/ruff `Cargo.toml:124,125,154,181` @ `c3813a501faf`; https://github.com/apache/arrow-rs `Cargo.toml:111` @ `f9e02ba76ad1`; https://github.com/rust-lang/rust-analyzer `Cargo.toml:113` @ `a879a4cbadc3` (all 2026-09-10)
 - snapbox / expect-test / insta-cmd / trycmd / goldenfile: `GET https://crates.io/api/v1/crates/<name>` and `/versions`; `GET https://api.github.com/repos/<o>/<r>`; `GET https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+is:open`; `https://rustsec.org/packages/<name>.html`; https://docs.rs/snapbox/latest/snapbox/; assert-rs/snapbox `.github/workflows/ci.yml`; rust-analyzer/expect-test `README.md` (all 2026-09-10)
 - py@b08bccfb `tests/cli/test_help_snapshots.py`, `tests/cli/__snapshots__/test_help_snapshots.ambr`, `tests/web/test_openapi_snapshot.py`, `pyproject.toml:93` (2026-09-10)
+
+#### cargo-insta
+
+##### Landscape
+
+Category: the snapshot **review tool** — the developer-workflow half of Principle B, distinct from the assertion library. Bin: **established industry standard within the insta ecosystem**; it has no independent competitor because each snapshot library ships (or omits) its own updater. The alternatives are not other crates but other *mechanisms*: an environment variable (`INSTA_UPDATE=always`, snapbox's `SNAPSHOTS=overwrite`, expect-test's `UPDATE_EXPECT=1`, goldenfile's `REGENERATE_GOLDENFILES`) or hand-editing the fixture. It is listed as a member rather than folded into insta because it is a separately versioned, separately published artifact with its own figures, it is *not* a `[dev-dependencies]` entry, and it is a provisioning obligation that R42's `package-manager-invocation` parameter governs.
+
+##### Principles and implementation
+
+Realizes the *"regeneration is one documented command"* half of Principle B and acceptance criterion 7, and — via `--unreferenced` — criterion 6's stricter form. py's equivalent is a pytest flag, documented in the test file's own docstring: "After an intentional change, regenerate with: `uv run pytest tests/cli/test_help_snapshots.py --snapshot-update`" (py@b08bccfb `tests/cli/test_help_snapshots.py`).
+
+**Contributor ergonomics compared with syrupy (the MEDIUM question).** These are not the same shape of workflow, and insta's is strictly richer:
+
+| Aspect | py / syrupy | Rust / cargo-insta |
+|---|---|---|
+| Update mechanism | `pytest --snapshot-update` — accepts **everything** in the selected scope, unconditionally | `cargo insta review` — "scans for all non ignored snapshots … and then walks you through all of them", accepting (`a`), rejecting (`r`) or skipping (`s`) **each one** |
+| Bulk accept | the only mode | `cargo insta accept` — "all snapshot changes will be accepted"; `cargo insta reject` for the inverse; `--accept-unseen` accepts "only … new (previously unseen) snapshots" |
+| Reviewing before accepting | read the `git diff` afterwards | the diff is shown per snapshot *before* the accept decision |
+| CI enforcement of unreviewed changes | test simply fails (no snapshot-specific mode) | `CI` env var → `INSTA_UPDATE=no`, no files written; plus `--unreferenced` with `ignore\|warn\|reject\|delete\|auto`, where `auto` is "`reject` in CI and … `delete` if not run from CI" |
+| Editor integration | none specific | `cargo insta pending-snapshots` "Returns a list requiring review; useful for editor integrations" |
+
+(All cargo-insta quotations: https://insta.rs/docs/cli/, retrieved 2026-09-10; the `INSTA_UPDATE`/`CI` behavior: https://insta.rs/docs/quickstart/, retrieved 2026-09-10.) The practical difference for a template: syrupy's blanket `--snapshot-update` makes it easy to accept an unintended change along with an intended one, which is the exact failure Principle B exists to prevent; `cargo insta review`'s per-snapshot gate closes that hole. This is a place where the Rust port *improves* on the py baseline while preserving the principle, and the follow-on py/ts project could note it (syrupy has no per-snapshot review UI; the closest py-side mitigation is scoping `--snapshot-update` to one test file, which py's docstring already does).
+
+**Note on `--check`:** the prompt's MEDIUM question and common usage both suggest a `cargo insta test --check` flag. The insta CLI documentation page I retrieved (https://insta.rs/docs/cli/, 2026-09-10) documents `review`, `test`, `accept`, `reject`, `pending-snapshots`, and the flags `--unreferenced`, `--accept`, `--accept-unseen`, `--review`, `--snapshot` — it does **not** mention `--check`, and it does not mention `INSTA_UPDATE` on that page (that variable is documented on the quickstart page). I therefore do **not** assert that `--check` exists. The CI enforcement I do assert rests on two documented mechanisms: the `CI` environment variable changing `INSTA_UPDATE`'s `auto` default to `no`, and `--unreferenced=auto` behaving as `reject` in CI.
+
+##### Dominant choice
+
+**Yes, by construction** — it is insta's own review tool, released in lockstep from the same workspace (`mitsuhiko/insta` `Cargo.toml` declares `members = ["cargo-insta"]`, retrieved 2026-09-10), and both are at 1.48.0 dated 2026-06-11. Choosing insta and *not* cargo-insta would mean regenerating snapshots through `INSTA_UPDATE=always cargo test`, which discards the per-snapshot review that is the main ergonomic argument for insta over snapbox.
+
+##### Qualified shortlist
+
+**`INSTA_UPDATE=always cargo test` (no extra tool).** Zero provisioning cost; contributors need nothing beyond `cargo`. Rejected as the default because it reproduces syrupy's blanket-accept weakness exactly, and because it leaves `--unreferenced` unavailable (that flag lives on `cargo insta test`, not on the library). Retained as the documented fallback for a contributor who cannot install the binary.
+
+##### Excluded by gate
+
+**None.** Gate-by-gate for `cargo-insta` 1.48.0 (crates.io `/versions`, retrieved 2026-09-10):
+
+1. **License** — `Apache-2.0`. Same analysis as insta's gate 1, and *weaker* in consequence: cargo-insta is not a dependency of the template at all, only a developer tool invoked from a Justfile recipe or lefthook job. It appears in no `Cargo.toml` of the template. **Pass.**
+2. **MSRV** — `rust_version` 1.66.0, identical to insta's. It is built as a standalone binary, so it is not part of the template's dependency tree and does not constrain the workspace's resolved MSRV at all. **Pass.**
+3. **Advisories / `unsafe`** — `https://rustsec.org/packages/cargo-insta.html` → HTTP 404 (no advisory), retrieved 2026-09-10. `unsafe`: not audited; no claim made. It is a developer-machine and CI binary, in no shipped artifact. **Pass, audit gap stated.**
+4. **OS matrix** — **explicitly satisfied with prebuilt binaries.** The insta workspace's `[workspace.metadata.dist]` block declares `targets = ["aarch64-apple-darwin", "x86_64-apple-darwin", "x86_64-unknown-linux-gnu", "x86_64-unknown-linux-musl", "x86_64-pc-windows-msvc"]` with shell and PowerShell installers (mitsuhiko/insta `Cargo.toml`, retrieved 2026-09-10). Both required runners are covered — including Apple Silicon, which matters because `macos-latest` is ARM — and so is Windows. Additionally the repository's own CI runs on `ubuntu-latest`, `macos-latest` and `windows-latest`. **Pass.**
+5. **Default features / async coupling** — not applicable in the dependency sense: it is a binary, not a linked dependency, so it contributes no features to the template's build and has **no async-runtime coupling** with it. Its own build depends on `clap 4.1` with `derive` and `env` features (`mitsuhiko/insta` `[workspace.dependencies]`, retrieved 2026-09-10), which is invisible to the template.
+6. **Binary size / compile time** — **zero impact on the template's binary and on `cargo build`/`cargo test` compile time**, because it is never compiled as part of the workspace. The cost it *does* impose is provisioning: either a `cargo install cargo-insta` compile (a few minutes on a cold machine) or a prebuilt-binary download via the shell/PowerShell installer. On CI this is a cache-and-restore concern that R10 (`dependency-cache-action`) and R42 (`dev-toolchain-provisioning`) own, not this item.
+
+##### Up-and-comers
+
+None. There is no emerging competitor to a library's own first-party review tool, and the adjacent mechanisms (`SNAPSHOTS`, `UPDATE_EXPECT`, `REGENERATE_GOLDENFILES`) are plain environment variables belonging to their own libraries rather than tools in their own right.
+
+##### Fit for this template
+
+Good, with one honest cost. The fit argument: it is the only mechanism in the shortlist that gives per-snapshot review, it ships prebuilt for both required runners including Apple Silicon, and its `--unreferenced=reject` closes a drift hole py has no guard for. The cost: it is a **second class of dependency** — a provisioned binary rather than a `Cargo.toml` line — so it must be declared wherever R42 declares dev tools, presence-tested with `command -v cargo-insta` (R42's rule for a crates.io-installed executable, as opposed to `rustup component list --installed` for a rustup component), and invoked as `cargo insta …` because its executable is named `cargo-insta` (R42's `package-manager-invocation`). A contributor who skips installing it can still run the tests; only the review workflow is unavailable, which is a graceful degradation.
+
+##### Recommendation
+
+Provision `cargo-insta` 1.48 as a developer tool, invoked as `cargo insta`. Two documented entry points: `cargo insta review` for local acceptance after an intentional change, and `cargo insta test --unreferenced=reject` in the CI test job so both unreviewed changes *and* orphaned snapshot files fail the build. Document the regeneration command in the snapshot test file's own doc comment, mirroring py's docstring, so the instruction sits where a contributor hits the failure.
+
+##### Ranked runner-up
+
+1. **`INSTA_UPDATE=always cargo test`** — the no-install fallback; documented as such rather than as the primary path.
+2. **`cargo insta accept`** — not a runner-up to the tool but to the *interactive* workflow: appropriate in a scripted bulk update (for example after a deliberate clap upgrade rewrites every help snapshot), where reviewing 30 mechanically identical diffs by hand adds nothing.
+
+##### Tradeoffs
+
+- **Cost paid:** one more provisioned binary in the contributor setup and in CI; a cache entry; a version to keep in step with the `insta` dev-dependency.
+- **Cost avoided:** blanket snapshot acceptance (syrupy's failure mode); orphaned `.snap` files accumulating silently.
+- **Residual risk:** version skew between the `insta` library and the `cargo-insta` binary. Low in practice — they are released together from one workspace — but the template should pin both to the same minor line and say so.
+- **Reversibility:** total. Dropping it costs only the review UI; the library keeps working.
+
+##### Parameters
+
+Owns nothing. Consumed: `package-manager-invocation` (R42, resolved) — `cargo-insta`'s executable is named `cargo-<sub>`, so it is invoked as **`cargo insta`** in every Justfile recipe and lefthook job, and presence is tested with `command -v cargo-insta` because it is installed from crates.io rather than by rustup. `target-os-matrix` — prebuilt binaries cover `aarch64-apple-darwin` and `x86_64-unknown-linux-gnu`, matching both runners. `license`, `msrv-policy` — see gates 1 and 2. No `CONFLICT:` lines.
+
+##### Validation strategy
+
+Proposed, not executed:
+- `command -v cargo-insta` — expect a path, proving R42-style presence testing works for this tool.
+- `cargo insta --version` — expect `1.48.x`, matching the `insta` dev-dependency's minor line.
+- Change a help string, then `cargo insta review` — expect an interactive per-snapshot diff, and after accepting, a modified `.snap` file in `git status`.
+- Delete a snapshot's test but leave the `.snap` file, then `cargo insta test --unreferenced=reject` — expect a non-zero exit naming the orphaned file.
+
+##### Confidence & re-verify trigger
+
+**High** that the tool is the right companion to insta and that it runs on both required OSes (prebuilt targets are declared in the manifest). **Medium** on the exact CI invocation: I verified `--unreferenced` and its `auto`/`reject` semantics from the maintainer's documentation, but I did **not** verify `cargo insta test --check`, so P03 should confirm the precise flag string against `cargo insta test --help` before writing the workflow step.
+
+Re-verify if: insta and cargo-insta stop releasing in lockstep; the `--unreferenced` flag or its mode names change; R42's provisioning decision changes how crates.io binaries are installed; or a RustSec advisory appears at `https://rustsec.org/packages/cargo-insta.html`.
+
+##### Sources
+
+- `GET https://crates.io/api/v1/crates/cargo-insta` — `recent_downloads` 204,308, `downloads` 1,555,508, `max_stable_version` 1.48.0 (2026-09-10)
+- `GET https://crates.io/api/v1/crates/cargo-insta/versions` — 1.48.0, 2026-06-11, `Apache-2.0`, `rust_version` 1.66.0 (2026-09-10)
+- `https://rustsec.org/packages/cargo-insta.html` — HTTP 404, no advisory page (2026-09-10)
+- mitsuhiko/insta `Cargo.toml` (`members = ["cargo-insta"]`, `[workspace.metadata.dist] targets`, `[workspace.dependencies] clap`), `.github/workflows/tests.yml`, default branch (2026-09-10)
+- https://insta.rs/docs/cli/ — `review`/`test`/`accept`/`reject`/`pending-snapshots`, `--unreferenced`, `--accept`, `--accept-unseen`, `--review`, `--snapshot` (2026-09-10)
+- https://insta.rs/docs/quickstart/ — `CI` env var, `INSTA_UPDATE` modes, `.new` files (2026-09-10)
+- py@b08bccfb `tests/cli/test_help_snapshots.py` (the `--snapshot-update` instruction) (2026-09-10)
+- `docs/port/PARAMETERS.md` — `package-manager-invocation` (R42), read from this repository's working tree (2026-09-10)
