@@ -1,0 +1,158 @@
+# R18 revision-3 empirical audit evidence
+# Actor: audit-codex-2026-09-06T043454Z-6f31d86e5b7d-r3
+# Scope: read-only source and fixture audit. No credential was used, no
+# workflow was installed, and no GitHub Action or provider operation ran.
+
+captured_utc: 2026-09-10T06:57:28Z
+cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d
+decision_sha256: 05b41f871b1111781d5ddb97f71bb51bc2091deb8b6454ee964d88cefe3d7c2e
+
+=== toolchain ===
+$ uname -srm
+Darwin 25.4.0 arm64
+$ actionlint --version
+1.7.12
+installed by building from source
+built with go1.26.1 compiler for darwin/arm64
+
+=== immutable tag resolution ===
+$ git ls-remote https://github.com/anthropics/claude-code-action.git refs/tags/v1.0.220 refs/tags/v1.0.220^{}
+020e931323e467e00b803ad64e03410d3796b8f7	refs/tags/v1.0.220
+19dda84776b3518d98b8798e591daee763049ed3	refs/tags/v1.0.220^{}
+exit: 0
+
+=== pinned-source fetches, unauthenticated ===
+$ for p in action.yml src/github/validation/permissions.ts src/github/validation/actor.ts src/modes/tag/index.ts src/modes/agent/index.ts src/entrypoints/prepare.ts src/github/data/fetcher.ts docs/setup.md docs/security.md; do curl -sS -o /dev/null -w "$p http=%{http_code} bytes=%{size_download} exit=%{exitcode}\\n" "https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/$p"; done
+action.yml http=200 bytes=23689 exit=0
+src/github/validation/permissions.ts http=200 bytes=5716 exit=0
+src/github/validation/actor.ts http=200 bytes=2829 exit=0
+src/modes/tag/index.ts http=200 bytes=6544 exit=0
+src/modes/agent/index.ts http=200 bytes=5228 exit=0
+src/entrypoints/prepare.ts http=200 bytes=3432 exit=0
+src/github/data/fetcher.ts http=200 bytes=21832 exit=0
+docs/setup.md http=200 bytes=9794 exit=0
+docs/security.md http=200 bytes=14238 exit=0
+
+=== guard source ===
+$ sed -n '108,136p' src/github/validation/permissions.ts
+if (actor.endsWith("[bot]")) {
+  core.info(`Actor is a GitHub App: ${actor}`);
+  return true;
+}
+...
+if (permissionLevel === "admin" || permissionLevel === "write") {
+  core.info(`Actor has write access: ${permissionLevel}`);
+  return true;
+}
+
+$ rg -n checkHumanActor src/modes/tag/index.ts src/modes/agent/index.ts
+src/modes/tag/index.ts:43:  await checkHumanActor(octokit.rest, context);
+src/modes/agent/index.ts:30:  await checkHumanActor(octokit.rest, context);
+
+$ sed -n '36,58p' src/entrypoints/prepare.ts
+const githubToken = await setupGitHubToken();
+const octokit = createOctokit(githubToken);
+...
+const hasWritePermissions = await checkWritePermissions(
+  octokit.rest,
+  context,
+  context.inputs.allowedNonWriteUsers,
+  githubTokenProvided,
+);
+if (!hasWritePermissions) {
+  throw new Error("Actor does not have write permissions to the repository");
+}
+exit: 0
+
+Result: `checkWritePermissions` does return true for any login ending in
+`[bot]`. `checkHumanActor` rejects non-User actors unless `allowed_bots`
+permits them, and both tag and agent modes call it. The write check is not in
+either mode preparation: the shared `src/entrypoints/prepare.ts` invokes it
+after `setupGitHubToken()`.
+
+=== remediation activation at the pinned source ===
+$ sed -n '152,160p;224,244p;296,303p' action.yml
+display_report:
+  default: "false"
+show_full_output:
+  default: "false"
+...
+- name: Install subprocess isolation dependencies
+  # Install subprocess isolation dependencies when processing content from non-write users.
+  if: ${{ inputs.allowed_non_write_users != '' && runner.os == 'Linux' }}
+...
+CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: ${{ env.CLAUDE_CODE_SUBPROCESS_ENV_SCRUB || (inputs.allowed_non_write_users != '' && '1') || '' }}
+
+$ rg -n 'allowed_non_write_users|CLAUDE_CODE_SUBPROCESS_ENV_SCRUB|display_report|show_full_output' candidate-claude.r3.yml candidate-claude-code-review.r3.yml
+exit: 1
+
+Result: the two fixtures set neither `allowed_non_write_users` nor the scrub
+environment variable. The action's default-off output controls are active;
+the subprocess scrub/isolation is available in the action but is not activated
+by the recommended configuration.
+
+=== federation versus OIDC exposure ===
+$ sed -n '15,18p;52,57p' docs/setup.md
+Workload Identity Federation (WIF) lets the action authenticate to the Claude API by exchanging the workflow's GitHub Actions OIDC token for a short-lived Anthropic access token — no `ANTHROPIC_API_KEY` secret to create, store, or rotate.
+...
+- The workflow must grant `id-token: write` permission so the action can fetch a GitHub OIDC token.
+- Do not set `anthropic_api_key` or `claude_code_oauth_token` alongside the federation inputs — a static credential takes precedence and federation will not be used.
+
+$ curl -fsSL https://flatt.tech/research/posts/poisoning-claude-code-one-github-issue-to-break-the-supply-chain/ | rg -n -i 'credentials required to request that OIDC token|replicate this process'
+The ACTIONS_ID_TOKEN_REQUEST_TOKEN and ACTIONS_ID_TOKEN_REQUEST_URL environment variables are the credentials required to request that OIDC token, so an attacker who obtains them can replicate the entire token exchange process.
+With the exfiltrated ACTIONS_ID_TOKEN_REQUEST_TOKEN and ACTIONS_ID_TOKEN_REQUEST_URL, an attacker can replicate this process and obtain an installation token for the target repository.
+exit: 0
+
+Result: the decision's correction is supported. Federation removes the stored
+provider credential but requires `id-token: write`; it does not remove the
+OIDC request credentials described by the disclosure.
+
+=== second security chain ===
+$ curl -fsSL https://flatt.tech/research/posts/poisoning-claude-code-one-github-issue-to-break-the-supply-chain/ | rg -n -i 'fixed them as of Claude Code GitHub Actions v1.0.94|Variants of the misconfiguration issues|rated these vulnerabilities 7.8|disallowing GitHub Apps|disabled the summary section|scrub environment variables|ignoring issues and comments edited'
+Variants of the misconfiguration issues described in this article were actively exploited in the wild before this article was published.
+Anthropic has acknowledged these vulnerabilities and fixed them as of Claude Code GitHub Actions v1.0.94.
+Anthropic was very responsive and addressed these issues by disallowing GitHub Apps from triggering workflows by default.
+They also disabled the summary section, fixed other vectors for data exfiltration, and decided to scrub environment variables from the child processes spawned by Claude Code.
+Additionally, they implemented a mitigation for the issue editing vector by ignoring issues and comments edited after the workflow is triggered.
+They rated these vulnerabilities 7.8 under CVSS v4.0.
+exit: 0
+
+Result: S2's revision-3 history is supported: 7.8 CVSS v4.0, exploited
+variants, and fixed as of v1.0.94 without a GitHub advisory. The recommended
+v1.0.220 is above v1.0.94 and S1's 1.0.74. The candidate also leaves the S2
+Phase-1 `allowed_non_write_users: "*"` precondition absent. The disclosure's
+scrub remediation is present in action source but inactive for this candidate,
+as shown above.
+
+=== pre-job controls and lint ===
+$ rg -n '^[[:space:]]+if:|ENABLE_CLAUDE|author_association' candidate-claude.r3.yml candidate-claude-code-review.r3.yml
+candidate-claude-code-review.r3.yml:29:    if: >-
+candidate-claude-code-review.r3.yml:30:      vars.ENABLE_CLAUDE_REVIEW == 'true'
+candidate-claude.r3.yml:46:    if: |
+candidate-claude.r3.yml:47:      vars.ENABLE_CLAUDE_ASSISTANT == 'true' &&
+candidate-claude.r3.yml:49:        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+candidate-claude.r3.yml:51:        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+candidate-claude.r3.yml:53:        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.review.author_association)) ||
+candidate-claude.r3.yml:55:        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)))
+
+$ cd review/evidence && actionlint candidate-claude-code-review.r3.yml candidate-claude.r3.yml
+exit: 0
+
+Result: the association clause is the only actor-trust control before an
+enabled origin job is scheduled. It is not literally the only pre-job control:
+the same job-level `if:` also contains `vars.ENABLE_CLAUDE_ASSISTANT`, which is
+pre-job but is true by construction on the enabled origin.
+
+=== five revision-3 unproven rows ===
+$ rg -n '^\\| \\*\\*U1[1-5]\\*\\*' review/DECISION.md
+298: U11 — draft/ready exactly-once runtime result
+299: U12 — association prefilter prevents job start and billable runner time
+300: U13 — checkout safety
+301: U14 — no attacker-controlled content before both checks return
+302: U15 — two unresolved doxa-gemini citations
+
+Assessment of these rows: U11, U12, U13 and U15 are honest, bounded unproven
+claims with concrete P03 proof. U14 correctly leaves composite-action ordering
+and the fetcher call site unproven, but falsely says both checks are called in
+each mode preparation; the source above locates the write check in the shared
+entrypoint instead.
