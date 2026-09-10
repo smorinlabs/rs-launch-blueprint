@@ -115,6 +115,15 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-10T22:52:23Z",
+      "publication": {
+        "acceptance_sha256": "743a398399100c5f70fa99733b1ce9d3ce95f0c88a295a0813a92dbea2e7d3ce",
+        "decision_sha256": "1a81ae3a6979b937771efae63be83f8db1593ee3561225b3e748b432be13e983",
+        "transaction": "0a3066412e894fca89f5ca88d0a5d9a7"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -164,6 +173,11 @@
     }
   },
   "prompt_source": "research/topics/85-rich-terminal-row-niceties/prompts/rich-terminal-row-niceties.prompt.md",
+  "publication": {
+    "acceptance_sha256": "743a398399100c5f70fa99733b1ce9d3ce95f0c88a295a0813a92dbea2e7d3ce",
+    "decision_sha256": "1a81ae3a6979b937771efae63be83f8db1593ee3561225b3e748b432be13e983",
+    "transaction": "0a3066412e894fca89f5ca88d0a5d9a7"
+  },
   "remaining_budget": "no paid engine before the pilot publishes (Doxa admissions paused)",
   "required_engines": [
     "codex",
@@ -171,7 +185,7 @@
   ],
   "run_id": "2026-09-06T043455Z-beb2d764c756",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "focused",
-  "updated_at": "2026-09-10T15:35:51Z"
+  "updated_at": "2026-09-10T22:52:23Z"
 }

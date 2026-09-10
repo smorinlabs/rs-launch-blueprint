@@ -1,0 +1,187 @@
+
+===== 0. Toolchain and environment =====
+run-utc 2026-09-10T22:50:07Z
+Darwin Steves-MacBook-Pro.local 25.4.0 Darwin Kernel Version 25.4.0: Thu Mar 19 19:33:25 PDT 2026; root:xnu-12377.101.15~1/RELEASE_ARM64_T6041 arm64
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+gh version 2.98.0 (2026-08-20)
+cwd /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+
+===== 1. Pins for the sources read below =====
+dependabot/dependabot-core main = a141eb05a281ffe077024c93d7050a7840d32365
+github/docs           main = f3619f5907dd1da5f44d3bbc4e5566373db1fd15
+PASS  both source repositories pinned by sha
+
+===== 2. CLAIM (opus): Cargo's Dependabot production check is unconditionally true =====
+16:  .register_label_details("cargo", name: "rust", colour: "000000")
+19:Dependabot::Dependency.register_production_check("cargo", ->(_) { true })
+PASS  cargo.rb registers production check as ->(_) { true } — every Cargo dependency is 'production'
+PASS  cargo default label is 'rust'
+
+===== 2b. Same check for a package manager that DOES split dev deps (control) =====
+20:Dependabot::Dependency.register_production_check(
+PASS  npm registers a non-trivial production check (control case)
+
+===== 2c. GitHub Actions default label + the universal dependencies label =====
+18:  .register_label_details(
+PASS  github-actions default label is the UNDERSCORED github_actions
+17:      DEFAULT_DEPENDENCIES_LABEL = "dependencies"
+242:        labels.find { |l| l == DEFAULT_DEPENDENCIES_LABEL } ||
+386:          DEFAULT_DEPENDENCIES_LABEL,
+PASS  default 'dependencies' label confirmed
+
+===== 3. CLAIM (both): the documented per-ecosystem support lists =====
+options-reference bytes: 69648
+--- dependency-type support line ---
+99-| Dependency types | Supported by package managers | Allow updates |
+342-Supported by: `bundler`, `composer`, `mix`, `maven`, `npm`, and `pip`.
+PASS  groups.dependency-type support list does not include cargo
+--- prefix-development support line ---
+158:| `prefix-development` | On supported systems, defines a different prefix to use for commits that update dependencies in the Development dependency group. |
+166:* Used for all commit messages unless `prefix-development` is also defined.
+171:### `prefix-development`
+Supported by: `bundler`, `composer`, `mix`, `maven`, `npm`, `pip`, and `uv`.
+--- versioning-strategy support line ---
+985-Supported by: `bundler`, `cargo`, `composer`, `helm`, `mix`, `npm`, `pip`, `pub`, and `uv`
+PASS  versioning-strategy is supported for cargo (its list omits github-actions)
+--- groups.update-types: the documented value set ---
+338:| `update-types` | Limit the group to one or more semantic versioning levels. Supported values: `minor`, `patch`, and `major`. |
+--- cooldown support table: Cargo row, then the GitHub Actions row (a Liquid variable, not literal text) ---
+239:| Cargo                 | {% octicon "check" aria-label="Supported" %}              | {% octicon "check" aria-label="Supported" %} |
+568:| Cargo       | `cargo`          | v1               |
+252:| {% data variables.product.prodname_actions %} | {% octicon "check" aria-label="Supported" %} | {% octicon "x" aria-label="Not supported" %} |
+--- cooldown default paragraph ---
+196:* Apply a **default cooldown period of 3 days** to version updates, even when `cooldown` is not configured. A new version is not considered for a version update until 3 days after its release. **This default cooldown does not apply to security updates.**
+198:You can configure the `cooldown` option to customize these default cooldown periods and control which dependencies they apply to. When **`cooldown`** is defined:
+223:| `default-days` | **Default cooldown period for dependencies** without specific rules (optional).{% ifversion dependabot-cooldown-default-days %} If not specified, {% data variables.product.prodname_dependabot %} applies a default cooldown of 3 days.{% endif %} |
+--- ungrouped-dependency behavior sentence ---
+326:* Any outdated dependencies that do not match a rule are updated in individual pull requests.
+
+===== 4. CLAIM (opus): Cargo's compatibility rule differs from plain SemVer =====
+left-most non-zero major/minor/patch component is the same.
+0.2.3  :=  &gt;=0.2.3, &lt;0.3.0
+1.2.3  :=  &gt;=1.2.3, &lt;2.0.0
+PASS  Cargo book states the left-most-non-zero compatibility rule (0.1 -> 0.2 is incompatible)
+
+===== 5. CLAIM (opus): Dependabot has no Cargo-aware update-type classification (issue #9681) =====
+{"comments":2,"created_at":"2024-05-06T17:19:47Z","number":9681,"state":"open","title":"Add update types for Cargo-style (in)compatible version upgrades","updated_at":"2026-08-04T12:37:12Z"}
+### Is there an existing issue for this?
+
+- [X] I have searched the existing issues
+
+### Feature description
+
+Currently, the only options for `update-types` in `dependabot.yml` are "major", "minor", and "patch", all defined as per SemVer.  However, Cargo (the Rust package manager) uses [a modified form of SemVer](https://doc.rust-lang.org/cargo/reference/resolver.html#semver-compatibility) in which "Versions are considered compatible if their left-most non-zero major/minor/patch component is the same."  Thus, a version upgrade from v0.1.0 to v0.2.0 is considered "incompatible" even though, by typical SemVer standards, it is minor.
+
+I therefore request that `ignore.update-types` and `groups.*.update-types` gain support for the options `cargo-compatible` and `cargo-incompatible` (just spitballing on the names) for ignoring/grouping (in)compatible version updates.
+PASS  #9681 (cargo-compatible update-types) is still OPEN
+--- how a group's update-types are matched in dependabot-core (is there a 0.x rule?) ---
+42:    attr_reader :update_types
+60:      @update_types = T.let(string_array_rule(rules, "update-types"), T.nilable(T::Array[String]))
+156:    # "patterns", "exclude-patterns", "update-types"). Returns nil when the key
+NOTE  dependency_group.rb contains no Cargo-specific compatibility rule (searched: 'left-most', 'cargo')
+
+===== 5b. CLAIM (opus): Dependabot does not read rust-version (issue #5423) =====
+{"comments":7,"created_at":"2022-07-26T14:08:50Z","number":5423,"state":"open","title":"Take `rust-version` into account when updating lock file / manifest","updated_at":"2026-01-05T16:18:52Z"}
+
+===== 6. CLAIM (opus): cargo's accepted versioning strategies and default =====
+27:        ALLOWED_UPDATE_STRATEGIES = T.let(
+28-          [
+29-            Dependabot::RequirementsUpdateStrategy::LockfileOnly,
+30-            Dependabot::RequirementsUpdateStrategy::BumpVersions,
+31-            Dependabot::RequirementsUpdateStrategy::BumpVersionsIfNecessary
+32-          ].freeze,
+33-          T::Array[Dependabot::RequirementsUpdateStrategy]
+--
+101:          return if ALLOWED_UPDATE_STRATEGIES.include?(update_strategy)
+102-
+103-          raise "Unknown update strategy: #{update_strategy}"
+104-        end
+PASS  cargo restricts the accepted versioning strategies in code
+152-
+153-        # Cargo resolves to the newest compatible version and a bare version is a
+154-        # caret-equivalent (compatible) requirement, so only raise the requirement
+155-        # when it doesn't already allow the new version. Avoids needless churn and
+156-        # MSRV bumps.
+157-        # https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html#caret-requirements
+158:        RequirementsUpdateStrategy::BumpVersionsIfNecessary
+PASS  cargo's default requirements strategy is BumpVersionsIfNecessary (= increase-if-necessary)
+
+===== 6b. CLAIM (opus): one cargo entry at / covers a workspace; a member directory errors =====
+30:        check_rust_workspace_root
+31-
+32-        dependency_set = DependencySet.new
+33-        dependency_set += manifest_dependencies
+34-        dependency_set += lockfile_dependencies if lockfile
+35-
+36-        dependencies = dependency_set.dependencies
+37-        add_lockfile_package_metadata(dependencies) if lockfile
+38-
+--
+106:      def check_rust_workspace_root
+107-        cargo_toml = dependency_files.find { |f| f.name == "Cargo.toml" }
+108-        workspace_root = parsed_file(T.must(cargo_toml))
+109-
+110-        workspace_config = T.cast(toml_table_or_empty(workspace_root["package"])["workspace"], T.nilable(String))
+111-        return unless workspace_config
+112-
+113-        msg = "This project is part of a Rust workspace but is not the " \
+114-              "workspace root."
+PASS  file_parser requires the workspace root
+
+===== 7. PRACTICE: does a configured group actually batch? (branch names carry the group id) =====
+--- cargo-bins/cargo-binstall ---
+config (grouping keys):
+5:  - package-ecosystem: "github-actions"
+11:  - package-ecosystem: "cargo"
+18:    groups:
+20:        patterns:
+8 most recent dependabot branches:
+2026-09-10T01:22:49Z	dependabot/github_actions/taiki-e/install-action-2.87.8	build(deps): bump taiki-e/install-action from 2.85.3 to 2.87.8
+2026-09-09T01:22:50Z	dependabot/github_actions/taiki-e/install-action-2.87.7	build(deps): bump taiki-e/install-action from 2.85.3 to 2.87.7
+2026-09-08T01:23:19Z	dependabot/github_actions/taiki-e/install-action-2.87.6	build(deps): bump taiki-e/install-action from 2.85.3 to 2.87.6
+2026-09-07T01:22:38Z	dependabot/github_actions/taiki-e/install-action-2.87.5	build(deps): bump taiki-e/install-action from 2.85.3 to 2.87.5
+2026-09-05T01:25:19Z	dependabot/cargo/deps-2076c6ea14	build(deps): bump astral-tokio-tar from 0.6.4 to 0.7.0 in the deps group
+2026-09-04T01:22:43Z	dependabot/github_actions/taiki-e/install-action-2.87.3	build(deps): bump taiki-e/install-action from 2.85.3 to 2.87.3
+2026-09-02T01:22:33Z	dependabot/github_actions/taiki-e/install-action-2.87.2	build(deps): bump taiki-e/install-action from 2.85.3 to 2.87.2
+2026-09-01T01:23:29Z	dependabot/github_actions/taiki-e/install-action-2.87.1	build(deps): bump taiki-e/install-action from 2.85.3 to 2.87.1
+--- apache/datafusion ---
+config (grouping keys):
+20:  - package-ecosystem: cargo
+26:    open-pull-requests-limit: 15
+30:        update-types: ["version-update:semver-major"]
+32:        update-types: ["version-update:semver-major"]
+33:    groups:
+37:        patterns:
+40:        update-types:
+45:        patterns:
+53:        patterns:
+55:        exclude-patterns:
+62:        update-types:
+67:  - package-ecosystem: cargo
+74:  - package-ecosystem: npm
+79:    groups:
+83:        patterns:
+85:        update-types:
+88:  - package-ecosystem: "github-actions"
+94:    open-pull-requests-limit: 10
+96:    groups:
+98:        patterns:
+102:  - package-ecosystem: "uv"
+107:    groups:
+111:        patterns:
+113:        update-types:
+8 most recent dependabot branches:
+2026-09-08T09:10:54Z	dependabot/cargo/main/zstd-0.14.0	chore(deps): bump zstd from 0.13.3 to 0.14.0
+2026-09-08T09:10:32Z	dependabot/cargo/main/all-other-cargo-deps-03ff8603f0	chore(deps): bump the all-other-cargo-deps group across 1 directory with 6 updates
+2026-09-08T09:07:17Z	dependabot/github_actions/taiki-e/install-action-2.87.6	chore(deps): bump taiki-e/install-action from 2.87.1 to 2.87.6
+2026-09-08T09:06:54Z	dependabot/github_actions/runs-on/action-2.3.1	chore(deps): bump runs-on/action from 2.3.0 to 2.3.1
+2026-09-08T09:02:36Z	dependabot/cargo/main/arrow-parquet-a49d07efbf	chore(deps): bump the arrow-parquet group with 9 updates
+2026-09-08T09:01:46Z	dependabot/npm_and_yarn/datafusion/wasmtest/datafusion-wasm-app/all-npm-deps-5c56429165	chore(deps-dev): bump webpack from 5.110.1 to 5.110.3 in /datafusion/wasmtest/datafusion-wasm-app in the all-npm-deps group
+--- helix-editor/helix ---
+config (grouping keys):
+6:  - package-ecosystem: "cargo"
+10:    groups:
+12:        update-types:
+16:  - package-ecosystem: "github-actions"
+8 most recent dependabot branches:

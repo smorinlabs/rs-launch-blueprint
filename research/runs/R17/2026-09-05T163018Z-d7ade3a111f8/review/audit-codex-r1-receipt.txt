@@ -1,0 +1,6 @@
+[audit-codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R17/2026-09-05T163018Z-d7ade3a111f8/review/audit-codex.md) — SHA-256 `fc613269…d757fc`; verdict: reject.
+
+Rerun exit: `1`; [evidence log](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R17/2026-09-05T163018Z-d7ade3a111f8/review/evidence/audit-secret-scanning-ci-workflow-r1.log) — 23 checks, 22 pass, 1 fail.
+
+Finding: the claimed successful `gh attestation verify` does not rerun; the verifier cannot initialize Sigstore. The guard narrowing, Kingfisher filter behavior, unproven live-credential exit, parameter equality, and secret-safe log all check out. The Linux VM could not start under the sandbox.
+

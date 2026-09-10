@@ -1,0 +1,158 @@
+# R25 revision-6 empirical audit evidence
+
+Run date: 2026-09-10
+Working directory: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R25/2026-09-05T164357Z-eec460755121`
+Decision digest read: `91ca2e8691aed687715dbec9cacdb90d59558445cc6a5bfa425bd1b4b0c7949e`
+
+## Linux attempt
+
+```text
+limactl shell ubuntu -- bash -lc 'source "$HOME/.cargo/env"; rustc --version'
+fatal: instance `ubuntu` is stopped, run `limactl start ubuntu` to start the instance
+linux-exit=1
+```
+
+`limactl` was callable. The stopped instance prevented the Linux rerun, so the substantive rerun used macOS.
+
+## macOS toolchain and decision identity
+
+```text
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+node v26.5.0
+npm 12.0.1
+Darwin arm64
+91ca2e8691aed687715dbec9cacdb90d59558445cc6a5bfa425bd1b4b0c7949e  review/DECISION.md
+```
+
+## Pinned source rerun
+
+The source mapping was fetched from `googleapis/release-please@v17.11.2` with `curl -fsSL` and the decision's cited line ranges were printed.
+
+```text
+src/strategies/base.ts:547-573
+if (this.releaseAs) { return Version.parse(this.releaseAs); }
+const releaseAsCommit = conventionalCommits.find(... note.title === 'RELEASE AS');
+if (releaseAsCommit) { return Version.parse(note.text); }
+if (latestRelease) { return await this.versioningStrategy.bump(...); }
+return this.initialReleaseVersion();
+
+src/manifest.ts:1403
+releaseAs: config['release-as'],
+
+src/manifest.ts:1442-1462
+@param {string} releaseAs Optional. Override release-as and use the given version
+if (releaseAs) { repositoryConfig[path].releaseAs = releaseAs; }
+
+src/bin/release-please.ts:290-293
+.option('release-as', {
+  describe: 'override the semantically determined release version',
+  type: 'string',
+
+src/commit.ts:262,284-293
+const semanticFooter = node.value.toLowerCase() === 'release-as';
+headerCommit.notes.push({ title: 'RELEASE AS', text: releaseAs });
+
+src/versioning-strategies/default.ts:74-104
+const releaseAs = commit.notes.find(note => note.title === 'RELEASE AS');
+if (releaseAs) { return new CustomVersionUpdate(Version.parse(releaseAs.text).toString()); }
+if (breaking > 0) { ... } else if (features > 0) { ... }
+return new PatchVersionUpdate();
+
+schemas/config.json:53-55
+"release-as": {
+  "description": "[DEPRECATED] Override the next version of this package. Consider using a `Release-As` commit instead.",
+  "type": "string"
+}
+```
+
+The `releaseAs` value therefore has two sources: the schema key and the command-line option that overwrites the mapped value. The separate `Release-As:` footer has one producer, which creates the `RELEASE AS` note the strategy consumes.
+
+## Citation spot checks
+
+```text
+200 https://doc.rust-lang.org/cargo/reference/semver.html
+200 https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
+200 https://semver.org/
+200 https://raw.githubusercontent.com/rust-lang/api-guidelines/master/src/necessities.md
+200 https://raw.githubusercontent.com/release-plz/release-plz/main/website/docs/config.md
+```
+
+## Direct strategy rerun
+
+`release-please@17.11.2` was installed with an isolated npm cache. The direct `DefaultVersioningStrategy` output was:
+
+```text
+A|0.1.0|fix:|0.1.1
+A|0.1.0|feat:|0.1.1
+A|0.1.0|feat!:|0.2.0
+A|0.1.3|fix:|0.1.4
+A|0.1.3|feat:|0.1.4
+A|0.1.3|feat!:|0.2.0
+A|1.0.0|fix:|1.0.1
+A|1.0.0|feat:|1.1.0
+A|1.0.0|feat!:|2.0.0
+C|0.1.0|fix:|0.1.1
+C|0.1.0|feat:|0.2.0
+C|0.1.0|feat!:|1.0.0
+C|0.1.3|fix:|0.1.4
+C|0.1.3|feat:|0.2.0
+C|0.1.3|feat!:|1.0.0
+C|1.0.0|fix:|1.0.1
+C|1.0.0|feat:|1.1.0
+C|1.0.0|feat!:|2.0.0
+D|0.1.0|fix:|0.1.1
+D|0.1.0|feat:|0.2.0
+D|0.1.0|feat!:|0.2.0
+D|0.1.3|fix:|0.1.4
+D|0.1.3|feat:|0.2.0
+D|0.1.3|feat!:|0.2.0
+D|1.0.0|fix:|1.0.1
+D|1.0.0|feat:|1.1.0
+D|1.0.0|feat!:|2.0.0
+E|0.1.0|fix:|0.1.1
+E|0.1.0|feat:|0.1.1
+E|0.1.0|feat!:|1.0.0
+E|0.1.3|fix:|0.1.4
+E|0.1.3|feat:|0.1.4
+E|0.1.3|feat!:|1.0.0
+E|1.0.0|fix:|1.0.1
+E|1.0.0|feat:|1.1.0
+E|1.0.0|feat!:|2.0.0
+found Release-As: 0.7.0, forcing version
+footer|0.1.0|feat! Release-As: 0.7.0|0.7.0
+```
+
+The matrix matches the unchanged decision table. The footer control confirms that all version outcomes need the no-override condition.
+
+## Parent-to-revision diff and protected regions
+
+```text
+changed paths:
+docs/planning/p02/execution-ledger.md
+research/runs/R25/2026-09-05T164357Z-eec460755121/review/DECISION.md
+research/runs/R25/2026-09-05T164357Z-eec460755121/review/evidence/release-please-source-v17.11.2.log
+
+all parent diff hunks: 6
+decision parent diff hunks: 4
+ledger parent diff hunks: 1
+source-log parent diff hunks: 1
+
+pre-major-boundary=unchanged
+schema-quotations=unchanged
+options-table=unchanged
+ts-history-table=unchanged
+assumes-lines=unchanged
+assumes-registry=byte-identical
+no changed version-outcome assertion
+```
+
+The four reported hunks are exactly the `review/DECISION.md` diff against the revision-5 blob. The other two parent-commit hunks are the append-only source reread and execution-ledger record. No other path changed. No changed decision text adds or alters a version outcome.
+
+## Deliberately unproven boundary
+
+`review/DECISION.md:440-445` says that source inspection does not settle whether an override can name an already released version, because the surrounding pipeline was not read. It identifies that pipeline behavior as the required proof. The real first Release PR remains P03 work and is likewise labelled unproven. These are recorded gaps, not defects in the research decision.
+
+## Result
+
+The substantive macOS rerun exited 0. Revision 6's source-count correction, protected-region preservation, conditioned outcome record, and deliberately unproven boundaries all match the evidence.

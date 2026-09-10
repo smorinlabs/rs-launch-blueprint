@@ -1,26 +1,26 @@
-decision-sha256: bd589e40bd9f107c061bdc678489f8165644f5a0bef5794a38fc8d93b2fd0b4f
-actor: audit-codex-2026-09-05T164357Z-eec460755121-r5
+decision-sha256: 91ca2e8691aed687715dbec9cacdb90d59558445cc6a5bfa425bd1b4b0c7949e
+actor: audit-codex-2026-09-05T164357Z-eec460755121-r6
 model: gpt-5.6-terra
 family: openai
-verdict: reject
-unresolved-findings: review/DECISION.md:725-727 says each override path has two sources, but the Release-As commit-footer path has one source; only the releaseAs path has the deprecated configuration key and --release-as option
+verdict: approve
+unresolved-findings: none
 
 ## Rerun
 
-I ran the recorded source, strategy, Cargo, citation, prompt, ledger, parameter, and revision-diff checks from `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R25/2026-09-05T164357Z-eec460755121`. The required Linux argv was attempted after sourcing `$HOME/.cargo/env`, but the stopped `ubuntu` VM could not start because Lima could not unlink its `ha.stdout.log`; the macOS fallback used Rust 1.98.0, Node 26.5.0, npm 12.0.1, and an isolated temporary npm cache. The substantive rerun exit code is 0. Complete output: `review/evidence/audit-r25-r5.log`.
+I read `review/DECISION.md` at the digest above from `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R25/2026-09-05T164357Z-eec460755121`. The requested Linux argv, `limactl shell ubuntu -- bash -lc 'source "$HOME/.cargo/env"; …'`, was callable but returned exit 1 because the `ubuntu` instance is stopped. The substantive fallback ran on macOS with Rust 1.98.0, Cargo 1.98.0, Node 26.5.0, and npm 12.0.1. It fetched the pinned `release-please` v17.11.2 source, checked five cited authorities, ran the 36-cell direct strategy matrix plus the `Release-As: 0.7.0` inverse control, compared the parent revision, and compared every protected region. Substantive rerun exit code: 0. Complete output: `review/evidence/audit-r25-r6.log`.
 
-The source ordering, 36-cell strategy matrix, footer inverse control, citation requests, `cargo new` result, prompt and F070 reads, protected-region diff, and parameter comparison match the decision. The output does not match the revision-5 summary's claim that the two override paths each have two input sources.
+The direct strategy output matches the decision's table. The revision-5-to-revision-6 `DECISION.md` blob has exactly four hunks. The parent commit has exactly three changed paths: those four decision hunks, one append-only evidence-log hunk, and one execution-ledger hunk. The latter two are the documented companion records; no other path changed.
 
 ## Findings
 
-1. **Reject: the override-source summary overstates the footer path.** `review/DECISION.md:725-727` says that the decision records “the two separate paths with their two sources apiece.” Pinned `release-please` v17.11.2 source proves two paths: `this.releaseAs`, whose two inputs are the deprecated `release-as` configuration key and `--release-as`; and a `Release-As:` commit footer, which `src/commit.ts` turns into one `RELEASE AS` note. The decision correctly states this mapping at lines 82-90, but the later summary makes the footer path have a second source that the evidence does not establish. Replace that phrase with the asymmetric fact.
+1. **Confirmed: the correction states the override asymmetry accurately.** Pinned `src/manifest.ts:1403` maps the deprecated `release-as` schema key into `releaseAs`. `src/bin/release-please.ts:290-293` defines `--release-as`, and `parseConfig` at `src/manifest.ts:1444-1462` writes its value over that configuration value. This two-source value reaches `BaseStrategy.buildNewVersion` at `src/strategies/base.ts:547-552`. Separately, `src/commit.ts:262` recognizes one `Release-As:` footer and lines 284-293 create one `RELEASE AS` note; `BaseStrategy` consumes that note at lines 554-564. `DefaultVersioningStrategy.determineReleaseType` consumes the same note before its bump branches at lines 74-82.
 
-2. **Confirmed: the sweep contains no unconditioned current version outcome.** I independently block-enumerated every current release-please or strategy outcome with a version literal and outcome verb. Every in-scope outcome is conditioned by `override` or by an explicit no-override premise. The no-marker candidates are direct recommendations, quotations, observed history, the preamble-governed options table, protected material, or explicitly unproven work. The three second-pass locations are also conditioned: architecture 1 at lines 341-347, graduation at lines 517-528 and 530-535, and the revision-4 changelog at lines 782-804.
+2. **Confirmed: the protected content did not change.** The parent diff leaves the two `Version.isPreMajor` boundary phrases, schema quotations, options-table rows, TypeScript source-history table, and four `- assumes` lines byte-identical. The four assumed values also match `docs/port/PARAMETERS.md` byte-for-byte.
 
-3. **Confirmed: the two override paths and the footer's second check-site are accurate.** `BaseStrategy.buildNewVersion` checks `this.releaseAs`, then a `RELEASE AS` note, then `latestRelease`, then `initialReleaseVersion()`. The configuration key and CLI option feed the first path; the commit footer feeds the second. `DefaultVersioningStrategy.determineReleaseType` finds the same footer before it counts breaking or feature commits. The direct footer control selected `0.7.0` from a breaking `0.1.0` history carrying `Release-As: 0.7.0`.
+3. **Confirmed: no outcome assertion became unconditioned.** The four changed decision hunks add revision metadata and the corrected source-count summary. They add or alter no version-outcome assertion. The rerun of the 36 no-override strategy cells and footer inverse control matches the conditions already attached to the unchanged outcomes.
 
-4. **Confirmed: the approved regions remain untouched.** Revision 5 does not change either `Version.isPreMajor` boundary phrase, the schema quotations, the options-table rows, the TypeScript history table, or the four `- assumes` lines. The assumed values match `docs/port/PARAMETERS.md` byte-for-byte. The binding prompt at `inputs/prompt.md:28` alone reverses the flag gloss; `docs/port/COMMONALITY.md:76` names both flags and glosses neither. The two relevant gaps remain labelled unproven, including repeat-version override behavior and the end-to-end first Release PR.
+4. **Confirmed: unproven work remains labelled rather than asserted.** In particular, `review/DECISION.md:440-445` says that whether an override can name an already released version is not settled by the source read and identifies the surrounding pipeline as the required proof. The end-to-end first Release PR remains P03 validation, not an outcome asserted as executed.
 
 ## Assessment
 
-The recommendation is still supported: launch at `0.1.0`, use `release-type: rust`, enable both pre-major flags, and create an empty manifest. Revision 5 resolves the prior unconditioned-outcome defect. It must correct one new supporting sentence before approval: the source count for the commit-footer override path.
+Approve. Revision 6 repairs the only rejected supporting sentence, preserves the approved recommendation and protected material, and accurately limits the remaining unknowns.
