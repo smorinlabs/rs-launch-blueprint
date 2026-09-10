@@ -1,4 +1,4 @@
-# R25 — Pre-1.0 semver bump strategy (pattern, Deep) — revision 4, 2026-09-10
+# R25 — Pre-1.0 semver bump strategy (pattern, Deep) — revision 5, 2026-09-10
 
 ## Decision
 
@@ -11,17 +11,30 @@ survive implementation, it is **revised against this recorded research**, not re
 from scratch; the executed evidence under `## Empirical check` is the baseline any revision argues
 against.
 
-**This is revision 4 (2026-09-10).** Three prior revisions were rejected by empirical audit, none
-of them on the recommendation and all three on the same defect: a supporting sentence stated more
-absolutely than its evidence. Revision 1 claimed the TypeScript source repository "first published
-v0.1.1" when the evidence showed a release commit; revision 2 said release-please merges the release
-commit when the repository does; revision 3 said a seeded `0.1.0` makes the first release `0.1.1`
-when that holds only for some commit histories. The recommendation has never changed. Revision 4
-conditions every remaining statement of a resulting version number on the history that produces it,
-and marks the ones that hold unconditionally as such. Revision 3 also rewrote the four `- assumes`
-lines into the bare form the packaging validator compares byte-for-byte against
-`docs/port/PARAMETERS.md`; those lines are unchanged here. All diffs are itemised at the top of
-`## Engines`.
+**This is revision 5 (2026-09-10).** Four prior revisions were rejected by empirical audit. Not one
+rejection touched the recommendation, and all four are the same defect: **a supporting sentence
+stated more absolutely than its evidence.** Revision 1 claimed the TypeScript source repository
+"first published v0.1.1" when the evidence showed only a release commit; revision 2 said
+release-please merges the release commit when the repository does; revision 3 said a seeded `0.1.0`
+makes the first release `0.1.1` when that holds only for some commit histories; revision 4 said the
+empty-manifest first version is `0.1.0` "whatever the commits are" when a version override beats
+that outcome. Each revision repaired the locations its auditor named and then swept the rest **by
+reading**, and each sweep missed something.
+
+Revision 5 changes the sweep method rather than only the sentences. Every location was enumerated
+mechanically before a single edit: a regular expression over this file matching version numbers,
+`first release`, `next release`, `initial`, `manifest`, `propose`, `Release-As`, `release-as`,
+`bump`, `→`, `moves the`, `digit`, `yields`, `produces`, `releases`, `released`, `returns` and
+`starts at` produced 293 candidate lines; classifying each one for whether it asserts what version
+comes out of something produced a work queue of **25 locations carrying 26 such assertions**, all 25
+edited. The queue and the exclusions are itemised at the top of `## Engines`. The exception itself is
+stated once and in full under **Override precedence** below, and every one of the 25 locations
+carries the word *override* in its governing sentence, so the sweep is re-runnable: search this file
+for a version-outcome assertion whose governing sentence lacks that word.
+
+The recommendation has never changed. Revision 3 rewrote the four `- assumes` lines into the bare
+form the packaging validator compares byte-for-byte against `docs/port/PARAMETERS.md`; those lines
+are unchanged in revisions 4 and 5 and were not touched by this sweep.
 
 **Recommendation.** `rs-launch-blueprint` launches **pre-1.0 at `0.1.0`** with release-please's
 pre-major dampening fully enabled. Three artifacts, and one of them is deliberately empty:
@@ -30,7 +43,57 @@ pre-major dampening fully enabled. Three artifacts, and one of them is deliberat
 |---|---|---|
 | `Cargo.toml` → `[package] version` | `"0.1.0"` | What `cargo new` itself emits (executed, cargo 1.98.0) |
 | `release-please-config.json` | `"release-type": "rust"`, `"bump-minor-pre-major": true`, `"bump-patch-for-minor-pre-major": true` | The unique flag pair that makes each commit type move the digit Cargo's resolver treats as its compatibility class |
-| `.release-please-manifest.json` | created **empty**: `{}` | So the **first version release-please releases is `0.1.0`**, whatever the commits are: with no latest release, `BaseStrategy.buildNewVersion` returns `initialReleaseVersion()` without consulting commit types at all. A seeded `{".": "0.1.0"}` instead makes `0.1.0` the *previous* release, and the next proposed version is then whatever the strategy computes from the commits since — `0.1.1` for a patch-or-feature-only history, `0.2.0` for one containing a breaking change (probe rows *A both true · 0.1.0*). Derived from the tool's source; unproven until P03's first Release PR — see `## Engines`, unproven item 2 |
+| `.release-please-manifest.json` | created **empty**: `{}` | **Absent a version override** (see **Override precedence** immediately below, which governs both halves of this cell): the **first version release-please releases is `0.1.0`** whatever the commit types are, because with no latest release `BaseStrategy.buildNewVersion` returns `initialReleaseVersion()` without consulting them at all. A seeded `{".": "0.1.0"}` instead makes `0.1.0` the *previous* release, and the next proposed version is then whatever the strategy computes from the commits since — `0.1.1` for a patch-or-feature-only history, `0.2.0` for one containing a breaking change (probe rows *A both true · 0.1.0*). Derived from the tool's source; unproven until P03's first Release PR — see `## Engines`, unproven item 2 |
+
+**Override precedence — the mechanism that outranks every version outcome stated in this decision,
+stated once here and referenced everywhere else.** Read at `v17.11.2`,
+`BaseStrategy.buildNewVersion` (`src/strategies/base.ts:543-574`) decides a package's next version
+by four checks in this order, first match winning:
+
+1. `this.releaseAs`, when set — `return Version.parse(this.releaseAs)` (`base.ts:547-552`);
+2. otherwise the newest conventional commit carrying a note titled `RELEASE AS` —
+   `return Version.parse(note.text)` (`base.ts:554-564`);
+3. otherwise, when a `latestRelease` exists —
+   `this.versioningStrategy.bump(latestRelease.tag.version, conventionalCommits)`
+   (`base.ts:566-571`);
+4. otherwise `this.initialReleaseVersion()` (`base.ts:573`), which `release-type: rust` overrides to
+   `0.1.0`.
+
+**Steps 1 and 2 are two separate paths, not one**, and this decision's wording distinguishes them
+because they have different sources and different lifetimes:
+
+- the **`release-as` value** of step 1 arrives either from the deprecated `release-as` configuration
+  key (`src/manifest.ts:1403`, `releaseAs: config['release-as']`) or from the `--release-as` command
+  line option, whose own help text reads *"override the semantically determined release version"*
+  (`src/bin/release-please.ts:290-293`) and which `parseConfig` writes over the configuration key for
+  every package (`src/manifest.ts:1444-1463`). Set in configuration it persists across runs; passed
+  on the command line it applies to that invocation.
+- the **`Release-As:` commit footer** of step 2 arrives from a single commit: `src/commit.ts:262`
+  lower-cases the footer key and compares it with `release-as`, and lines 282-292 record it as a note
+  `{title: 'RELEASE AS', text: <version>}`.
+
+The footer is checked in a **second** place as well. `DefaultVersioningStrategy.determineReleaseType`
+returns a `CustomVersionUpdate` for the first commit carrying that note *before* it counts breaking
+or feature commits (`src/versioning-strategies/default.ts:74-82`). Step 3 therefore honours the
+footer too — and the executed probe under `## Empirical check` drives that strategy directly, so the
+probe rows are themselves rows for histories with no such footer. **The consequence, which is why
+this paragraph exists: no statement in this decision — about a version release-please releases or
+about a bump the strategy computes — is one that a version override cannot falsify.** Every such
+statement carries its conditions, and each carries the word *override* pointing back here.
+
+Two limits on how far that reaches. The recommended `release-please-config.json` sets no
+`release-as` key, so under the recommendation as written the persistent configuration path is not
+live and the override would have to be a commit footer or a command-line argument. And because the
+empty manifest makes the first run collect the whole default-branch history (the `bootstrap-sha`
+note below), a `Release-As:` footer anywhere in that history — not only on a recent commit — would
+fire on the very first Release PR.
+
+Verified first-hand for revision 5 by fetching `src/strategies/base.ts`, `src/commit.ts`,
+`src/manifest.ts`, `src/versioning-strategies/default.ts`, `src/bin/release-please.ts` and
+`schemas/config.json` at tag `v17.11.2` and reading them; the excerpts are appended to
+`review/evidence/release-please-source-v17.11.2.log` on 2026-09-10 as check 8. The fourth audit's
+inverse control corroborates the reading rather than proving it: a breaking commit carrying
+`Release-As: 0.7.0` selected `0.7.0` (`review/evidence/audit-r25-r4.log`).
 
 **Vocabulary, used exactly and consistently from here on**, because the whole manifest argument
 turns on these distinctions and two earlier revisions blurred them. Each term is defined from
@@ -74,12 +137,15 @@ publication; retrieved 2026-09-09), which is the version reached through
 table below were established at `v17.11.2` only; at `v17.6.0`, the floor of that range, one thing
 was checked — that `Rust.initialReleaseVersion()` still returns `0.1.0`.
 
-**Resulting bump table (executed, not asserted), per commit type:** from `0.1.z`, `fix:` → patch,
-non-breaking `feat:` → patch, `feat!:`/`BREAKING CHANGE:` → minor. From `1.0.0` and above both flags
-are inert and ordinary SemVer resumes. A release usually aggregates several commits, and the
-strongest type present wins: `determineReleaseType` counts breaking commits first, then features,
-and falls through to a patch bump — so a release containing one `feat!:` among many `fix:` commits
-moves the minor digit. Full 36-row output in `review/evidence/release-please-bump-probe.log`.
+**Resulting bump table (executed, not asserted), per commit type, for a release carrying no version
+override:** from `0.1.z`, `fix:` → patch, non-breaking `feat:` → patch, `feat!:`/`BREAKING CHANGE:`
+→ minor. From `1.0.0` and above both flags are inert and ordinary SemVer resumes. A release usually
+aggregates several commits, and — again once no commit in the release carries a `Release-As:` footer
+and no `release-as` value is in force — the strongest type present wins: `determineReleaseType`
+counts breaking commits first, then features, and falls through to a patch bump, so a release
+containing one `feat!:` among many `fix:` commits moves the minor digit. Full 36-row output in
+`review/evidence/release-please-bump-probe.log`; the override that precedes all of this arithmetic
+is **Override precedence** above.
 
 **Ledger rows this settles.** `F070` — *pre-1.0 semver bump strategy*, `docs/port/COMMONALITY.md:76`,
 verdict `DIVERGENT`, origin `ts-only`, item `R25`. This decision supplies F070's content: rs adopts
@@ -110,7 +176,9 @@ assumed by this item per the prompt's `## Out of scope`, and are unaffected by b
   rule is its own and because both flags are unreachable code at `1.0.0` and above
   (`Version.isPreMajor` is `this.major < 1`, so they go inert *at* `1.0.0`, not after it).
 
-**Essential behaviors.** For every release the automation cuts:
+**Essential behaviors.** For every release whose version the automation itself decides — that is,
+every release carrying no version override (**Override precedence** above), since an override is a
+deliberate human act that replaces the computed number and these are requirements on the computation:
 
 1. a commit that breaks the public API moves whichever digit the host resolver treats as the
    incompatibility boundary;

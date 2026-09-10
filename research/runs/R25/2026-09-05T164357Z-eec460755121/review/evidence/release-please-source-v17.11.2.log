@@ -255,3 +255,214 @@ $ grep -n 'this.versioningStrategy =' src/strategies/base.ts
 $ grep -n 'DefaultVersioningStrategy' src/factories/versioning-strategy-factory.ts
 16:import {DefaultVersioningStrategy} from '../versioning-strategies/default';
 41:  default: options => new DefaultVersioningStrategy(options),
+
+############################################################
+# APPENDED 2026-09-10 (revision 5, check 8): version-override precedence
+# Verifying first-hand the ordering the r4 audit named, at pinned tag v17.11.2.
+# Fetched with: curl -sS -A '<ua>' https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/<path>
+# Nothing was implemented; no repository was created; all writes are under review/.
+############################################################
+
+## HTTP status per path
+200  src/strategies/base.ts  (25805 bytes)
+200  src/commit.ts  (14451 bytes)
+200  src/manifest.ts  (62902 bytes)
+200  src/versioning-strategies/default.ts  (4223 bytes)
+200  src/bin/release-please.ts  (29822 bytes)
+200  schemas/config.json  (20617 bytes)
+
+## src/strategies/base.ts:543-574 — buildNewVersion, exact ordering (the r4 audit pinned 547-573)
+543	  protected async buildNewVersion(
+544	    conventionalCommits: ConventionalCommit[],
+545	    latestRelease?: Release
+546	  ): Promise<Version> {
+547	    if (this.releaseAs) {
+548	      this.logger.warn(
+549	        `Setting version for ${this.path} from release-as configuration`
+550	      );
+551	      return Version.parse(this.releaseAs);
+552	    }
+553	
+554	    const releaseAsCommit = conventionalCommits.find(conventionalCommit =>
+555	      conventionalCommit.notes.find(note => note.title === 'RELEASE AS')
+556	    );
+557	    if (releaseAsCommit) {
+558	      const note = releaseAsCommit.notes.find(
+559	        note => note.title === 'RELEASE AS'
+560	      );
+561	      if (note) {
+562	        return Version.parse(note.text);
+563	      }
+564	    }
+565	
+566	    if (latestRelease) {
+567	      return await this.versioningStrategy.bump(
+568	        latestRelease.tag.version,
+569	        conventionalCommits
+570	      );
+571	    }
+572	
+573	    return this.initialReleaseVersion();
+574	  }
+
+## The order, stated: (1) this.releaseAs @547  (2) RELEASE AS note @554-564
+##                    (3) latestRelease -> versioningStrategy.bump @566-571
+##                    (4) initialReleaseVersion() @573
+## => the release-as VALUE and the Release-As FOOTER are two separate paths,
+##    both checked before latestRelease and before initialReleaseVersion().
+
+## Path 1 provenance — where this.releaseAs comes from
+$ grep -n 'releaseAs' src/strategies/base.ts
+74:  releaseAs?: string;
+112:  private releaseAs?: string;
+149:    this.releaseAs = options.releaseAs;
+547:    if (this.releaseAs) {
+551:      return Version.parse(this.releaseAs);
+554:    const releaseAsCommit = conventionalCommits.find(conventionalCommit =>
+557:    if (releaseAsCommit) {
+558:      const note = releaseAsCommit.notes.find(
+$ grep -n "releaseAs\|release-as" src/manifest.ts
+106:  releaseAs?: string;
+168:  'release-as'?: string;
+442:    releaseAs?: string
+448:      parseConfig(github, configFile, targetBranch, path, releaseAs),
+1403:    releaseAs: config['release-as'],
+1442: * @param {string} releaseAs Optional. Override release-as and use the given version
+1449:  releaseAs?: string
+1460:    if (releaseAs) {
+1461:      repositoryConfig[path].releaseAs = releaseAs;
+1762:    releaseAs: pathConfig.releaseAs ?? defaultConfig.releaseAs,
+-- manifest.ts:1434-1463 (the CLI/programmatic route overwrites the config key per package)
+1434	/**
+1435	 * Helper to convert fetch the manifest config from the repository and
+1436	 * parse into configuration for the Manifest.
+1437	 *
+1438	 * @param {GitHub} github GitHub client
+1439	 * @param {string} configFile Path in the repository to the manifest config
+1440	 * @param {string} branch Branch to fetch the config file from
+1441	 * @param {string} onlyPath Optional. Use only the given package
+1442	 * @param {string} releaseAs Optional. Override release-as and use the given version
+1443	 */
+1444	async function parseConfig(
+1445	  github: Scm,
+1446	  configFile: string,
+1447	  branch: string,
+1448	  onlyPath?: string,
+1449	  releaseAs?: string
+1450	): Promise<{config: RepositoryConfig; options: ManifestOptions}> {
+1451	  const config = await fetchManifestConfig(github, configFile, branch);
+1452	  const defaultConfig = extractReleaserConfig(config);
+1453	  const repositoryConfig: RepositoryConfig = {};
+1454	  for (const path in config.packages) {
+1455	    if (onlyPath && onlyPath !== path) continue;
+1456	    repositoryConfig[path] = mergeReleaserConfig(
+1457	      defaultConfig,
+1458	      extractReleaserConfig(config.packages[path])
+1459	    );
+1460	    if (releaseAs) {
+1461	      repositoryConfig[path].releaseAs = releaseAs;
+1462	    }
+1463	  }
+-- src/bin/release-please.ts:288-293 (the --release-as CLI option)
+288	function pullRequestStrategyOptions(yargs: yargs.Argv): yargs.Argv {
+289	  return yargs
+290	    .option('release-as', {
+291	      describe: 'override the semantically determined release version',
+292	      type: 'string',
+293	    })
+-- schemas/config.json:53-56 (the deprecated config key)
+53	        "release-as": {
+54	          "description": "[DEPRECATED] Override the next version of this package. Consider using a `Release-As` commit instead.",
+55	          "type": "string"
+56	        },
+
+## Path 2 provenance — where the RELEASE AS note comes from (the Release-As: commit footer)
+-- src/commit.ts:258-295
+258	      }
+259	      if (parent.type === 'token') {
+260	        parent = ancestors.pop();
+261	        let footerText = '';
+262	        const semanticFooter = node.value.toLowerCase() === 'release-as';
+263	        visit(
+264	          parent,
+265	          ['type', 'scope', 'breaking-change', 'separator', 'text', 'newline'],
+266	          (node: FooterNodes) => {
+267	            switch (node.type) {
+268	              case 'scope':
+269	                footerText += `(${node.value})`;
+270	                break;
+271	              case 'separator':
+272	                // Footers of the form Fixes #99, should not be parsed.
+273	                if (node.value.includes('#')) return;
+274	                footerText += `${node.value} `;
+275	                break;
+276	              default:
+277	                footerText += node.value;
+278	                break;
+279	            }
+280	          }
+281	        );
+282	        // Any footers that carry semantic meaning, e.g., Release-As, should
+283	        // be added to the footer field, for the benefits of post-processing:
+284	        if (semanticFooter) {
+285	          let releaseAs = '';
+286	          visit(parent, ['text'], (node: parser.Text) => {
+287	            releaseAs = node.value;
+288	          });
+289	          // record Release-As footer as a note
+290	          headerCommit.notes.push({
+291	            title: 'RELEASE AS',
+292	            text: releaseAs,
+293	          });
+294	          if (!headerCommit.footer) headerCommit.footer = '';
+295	          headerCommit.footer += `\n${footerText.toLowerCase()}`.trimStart();
+
+## SECOND check-site for the footer: DefaultVersioningStrategy.determineReleaseType
+-- src/versioning-strategies/default.ts:66-104 (RELEASE AS short-circuits BEFORE the breaking/feature count)
+66	  determineReleaseType(
+67	    version: Version,
+68	    commits: ConventionalCommit[]
+69	  ): VersionUpdater {
+70	    // iterate through list of commits and find biggest commit type
+71	    let breaking = 0;
+72	    let features = 0;
+73	    for (const commit of commits) {
+74	      const releaseAs = commit.notes.find(note => note.title === 'RELEASE AS');
+75	      if (releaseAs) {
+76	        // commits are handled newest to oldest, so take the first one (newest) found
+77	        this.logger.debug(
+78	          `found Release-As: ${releaseAs.text}, forcing version`
+79	        );
+80	        return new CustomVersionUpdate(
+81	          Version.parse(releaseAs.text).toString()
+82	        );
+83	      }
+84	      if (commit.breaking) {
+85	        breaking++;
+86	      } else if (commit.type === 'feat' || commit.type === 'feature') {
+87	        features++;
+88	      }
+89	    }
+90	
+91	    if (breaking > 0) {
+92	      if (version.isPreMajor && this.bumpMinorPreMajor) {
+93	        return new MinorVersionUpdate();
+94	      } else {
+95	        return new MajorVersionUpdate();
+96	      }
+97	    } else if (features > 0) {
+98	      if (version.isPreMajor && this.bumpPatchForMinorPreMajor) {
+99	        return new PatchVersionUpdate();
+100	      } else {
+101	        return new MinorVersionUpdate();
+102	      }
+103	    }
+104	    return new PatchVersionUpdate();
+
+## Consequence recorded in DECISION.md revision 5:
+## the executed probe (check 3) drives DefaultVersioningStrategy directly and is therefore
+## itself subject to the Release-As footer. No version-outcome statement in this decision --
+## released version or strategy-computed bump -- is immune to a version override.
+## Corroboration, not the proof: the r4 auditor's inverse control selected 0.7.0 for a
+## breaking commit carrying Release-As: 0.7.0 (evidence/audit-r25-r4.log).
+exit=0
