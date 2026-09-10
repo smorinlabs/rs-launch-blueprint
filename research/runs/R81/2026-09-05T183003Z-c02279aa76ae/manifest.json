@@ -61,6 +61,20 @@
       },
       "provider": "codex",
       "state": "succeeded"
+    },
+    {
+      "actor": "research-opus-2026-09-05T183003Z-c02279aa76ae",
+      "at": "2026-09-10T15:13:44Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T183003Z-c02279aa76ae",
+        "at": "2026-09-10T15:13:44Z",
+        "model": "claude-opus-5",
+        "provider": "opus",
+        "request_id": "0b15a42dd58b486a83eda93b9d2323f2",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
     }
   ],
   "input_hashes": {
@@ -91,6 +105,14 @@
       "request_id": "12949affa4a543d391c528b4f9059b01",
       "returned_at": "2026-09-06T04:33:47Z",
       "state": "succeeded"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T183003Z-c02279aa76ae",
+      "at": "2026-09-10T15:13:44Z",
+      "model": "claude-opus-5",
+      "provider": "opus",
+      "request_id": "0b15a42dd58b486a83eda93b9d2323f2",
+      "state": "submitting"
     }
   },
   "prompt_source": "research/topics/81-docs-delivery-model/prompts/docs-delivery-model.prompt.md",
@@ -103,5 +125,5 @@
   "schema_version": 1,
   "state": "partial",
   "tier": "focused",
-  "updated_at": "2026-09-06T04:33:47Z"
+  "updated_at": "2026-09-10T15:13:44Z"
 }

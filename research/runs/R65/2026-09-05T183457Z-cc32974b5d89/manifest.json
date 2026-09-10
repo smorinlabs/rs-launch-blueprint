@@ -61,6 +61,20 @@
       },
       "provider": "codex",
       "state": "succeeded"
+    },
+    {
+      "actor": "research-opus-2026-09-05T183457Z-cc32974b5d89",
+      "at": "2026-09-10T15:13:44Z",
+      "operation": {
+        "actor": "research-opus-2026-09-05T183457Z-cc32974b5d89",
+        "at": "2026-09-10T15:13:44Z",
+        "model": "claude-opus-5",
+        "provider": "opus",
+        "request_id": "cfbf3713f3274d2b8a8b43f9d9d4a108",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
     }
   ],
   "input_hashes": {
@@ -91,6 +105,14 @@
       "request_id": "cee4dc69f4474023bb5e1b2ad68e2069",
       "returned_at": "2026-09-06T04:42:34Z",
       "state": "succeeded"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T183457Z-cc32974b5d89",
+      "at": "2026-09-10T15:13:44Z",
+      "model": "claude-opus-5",
+      "provider": "opus",
+      "request_id": "cfbf3713f3274d2b8a8b43f9d9d4a108",
+      "state": "submitting"
     }
   },
   "prompt_source": "research/topics/65-color-enablement-chain/prompts/color-enablement-chain.prompt.md",
@@ -103,5 +125,5 @@
   "schema_version": 1,
   "state": "partial",
   "tier": "focused",
-  "updated_at": "2026-09-06T04:42:34Z"
+  "updated_at": "2026-09-10T15:13:44Z"
 }
