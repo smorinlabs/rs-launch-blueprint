@@ -270,3 +270,137 @@ Re-verify if: proptest raises its published `rust-version` above the template's 
 - quickcheck: `GET https://crates.io/api/v1/crates/quickcheck` and `/versions`; `GET https://api.github.com/repos/BurntSushi/quickcheck` and `/commits`; `GET https://api.github.com/search/issues?q=repo:BurntSushi/quickcheck+is:issue+is:open`; `https://rustsec.org/packages/quickcheck.html` (all 2026-09-10)
 - bolero / arbitrary: `GET https://crates.io/api/v1/crates/{bolero,arbitrary}`; `GET https://api.github.com/repos/{camshaft/bolero,rust-fuzz/arbitrary}` (2026-09-10)
 - py@b08bccfb `tests/core/test_properties.py`, `pyproject.toml:100,271-278` (read via `git -C ~/c/py-launch-blueprint show b08bccfb:<path>`, 2026-09-10)
+
+#### insta
+
+##### Landscape
+
+Category: golden-snapshot assertion library for `cargo test`, with committed reference files and a review workflow. Bin: **established industry standard** — the largest snapshot crate by every download and reverse-dependency measure, and the one the two most visible new Rust-implemented developer tools (`ruff`, `uv`) both use. Competitors from the same map: `snapbox` (assert-rs; the crate clap uses for its own `--help` tests), `expect-test` (rust-analyzer's minimal inline snapshotter), and from the up-and-comer bin `insta-cmd`, `trycmd` and `goldenfile`. The no-library alternative is a hand-rolled `include_str!` comparison — which is exactly what py itself does for its *OpenAPI* snapshot (py@b08bccfb `tests/web/test_openapi_snapshot.py`), so the ecosystem-neutral baseline is real and worth beating explicitly.
+
+##### Principles and implementation
+
+Realizes **Principle B**. `insta::assert_snapshot!(value)` writes the reference to `snapshots/<test-target>__<name>.snap` next to the test, i.e. a **committed file separate from the test source** — the structural analogue of py's `tests/cli/__snapshots__/test_help_snapshots.ambr`, and the property Principle B says must agree. On mismatch the test fails and the candidate is written beside the reference with a `.new` extension: "By default the new snapshots are stored next to the old ones with the extra `.new` extension" (https://insta.rs/docs/quickstart/, retrieved 2026-09-10).
+
+**CI enforcement (acceptance criterion 6) is built in, and this is the strongest single reason to prefer insta here.** insta detects CI from the `CI` environment variable: "Insta behaves differently in CI environments. For instance it will not write new snapshot files," and "Please ensure that your CI system sets it" (https://insta.rs/docs/quickstart/, retrieved 2026-09-10). The `INSTA_UPDATE` variable's default mode `auto` is documented as "`no` for CI environments or `new` otherwise" (same page). Separately, `cargo insta test --unreferenced <mode>` takes `ignore | warn | reject | delete | auto`, where `auto` "behaves like `reject` in CI and like `delete` if not run from CI" (https://insta.rs/docs/cli/, retrieved 2026-09-10) — which catches the *other* drift direction: a snapshot file left behind after its test was deleted or renamed. py has no equivalent unreferenced-snapshot check; syrupy's `--snapshot-update` is the update path and unused-snapshot reporting is a separate concern. So insta *exceeds* the py baseline on enforcement rather than merely matching it.
+
+**Dynamic content.** py pins terminal width with `monkeypatch.setenv("COLUMNS", "80")` and needs nothing else, because Click's help contains no timestamp or path. Rust `--help` output for this template will contain the crate version in the `-V, --version` line and possibly a path in an `[env: …]` or default-value annotation. insta's answer is `Settings::add_filter` (regex → replacement, gated behind the `filters` feature) and `redactions` for structured snapshots (https://docs.rs/insta/latest/insta/, retrieved 2026-09-10). `astral-sh/uv` enables exactly these: `insta = { version = "1.46.0", features = ["json", "filters", "redactions"] }` (`Cargo.toml:328`, commit `a22198b1b536`, retrieved 2026-09-10) — a maintained reference implementation of snapshotting a CLI whose output contains volatile paths and versions.
+
+**Composition with clap (B2).** `Cli::command().term_width(80)` pins wrapping; `Command::render_long_help() -> StyledStr` renders help in-process; `StyledStr`'s `Display` is documented "Color-unaware printing. Never uses coloring." so the captured string carries no ANSI (https://docs.rs/clap/latest/clap/builder/struct.StyledStr.html, retrieved 2026-09-10); `Command::get_subcommands` walks the tree so a new subcommand is covered without editing a list (criterion 5). `insta::with_settings!({ snapshot_suffix => … })` gives each command path its own `.snap` file, the analogue of py's `pytest.mark.parametrize(… ids=lambda p: " ".join(("plbp", *p)))`.
+
+##### Dominant choice
+
+**Yes — `insta` is the dominant Rust snapshot crate**, and it is dominant by a wider margin in its bin than proptest is in its own.
+
+| Figure | insta | snapbox | expect-test | Endpoint |
+|---|---|---|---|---|
+| 90-day downloads | **26,382,169** | 3,185,186 | 7,326,545 | `GET https://crates.io/api/v1/crates/<name>` |
+| All-time downloads | **97,830,232** | 12,089,278 | 36,849,824 | same |
+| Reverse dependencies | **4,383** | 156 | 313 | `.../reverse_dependencies?per_page=1` |
+| Stars | **2,957** | 183 | 324 | `GET https://api.github.com/repos/<o>/<r>` |
+| Last push | **2026-09-06** | 2026-09-01 | 2024-12-21 | same, `pushed_at` |
+| Latest non-yanked release | 1.48.0, 2026-06-11 | 1.2.2, 2026-05-26 | 1.5.1, 2024-12-21 | `.../versions` |
+
+All retrieved 2026-09-10. insta leads snapbox by 8.3× on 90-day downloads and 28× on reverse dependencies, and expect-test by 3.6× and 14×.
+
+**On the specific `--help` question the prompt asks:** yes, insta supports it, but the capability is not insta-specific — it comes from the composition above (in-process render → plain `String` → `assert_snapshot!`), with stdout capture unnecessary because nothing is written to stdout, and redaction available via `filters`. If instead the template ever wants to snapshot a *spawned* binary's stdout/stderr/exit code, `insta-cmd` is the same author's adapter — see `Up-and-comers`.
+
+##### Qualified shortlist
+
+**`snapbox` 1.2.2** — the strongest rival, and the one with the most on-point practice evidence. Passes every gate, and beats insta on one of them.
+- crates.io `GET /api/v1/crates/snapbox`, retrieved 2026-09-10: `recent_downloads` 3,185,186; `downloads` 12,089,278; `max_stable_version` 1.2.2; repository https://github.com/assert-rs/snapbox/.
+- `GET /api/v1/crates/snapbox/versions`, retrieved 2026-09-10: newest non-yanked 1.2.2, `created_at` 2026-05-26, `license` **`MIT OR Apache-2.0`**, `rust_version` 1.85, edition 2024.
+- `GET https://api.github.com/repos/assert-rs/snapbox`, retrieved 2026-09-10: `stargazers_count` 183; `archived` false; `pushed_at` 2026-09-01T12:11:04Z.
+- `GET https://api.github.com/search/issues?q=repo:assert-rs/snapbox+is:issue+is:open`, retrieved 2026-09-10: `total_count` **44**.
+- Issue responsiveness (issues endpoint as above, retrieved 2026-09-10): the sample yielded **7** issues, not 10, because the repository's recent activity is overwhelmingly pull requests; **1 answered at 0.1 days**, **6 unanswered**, the most recent unanswered since 2026-04-22 (#440). Caveat: this repository's maintainer commonly resolves issues through commits rather than comments, so an author-association-based measure understates responsiveness here.
+- Advisories: `https://rustsec.org/packages/snapbox.html` → HTTP 404 (no advisory), retrieved 2026-09-10.
+- OS gate: **snapbox beats insta and proptest here** — `.github/workflows/ci.yml` runs `os: ["ubuntu-latest", "windows-latest", "macos-latest"]` on the test job, with a separate `Check MSRV` job (assert-rs/snapbox, retrieved 2026-09-10).
+- Default features `diff`, `color`, `color-auto`; optional `dir`, `cmd`, `json`, `regex`, `term-svg`, `detect-encoding` (https://docs.rs/snapbox/latest/snapbox/, retrieved 2026-09-10). `SNAPSHOTS` is the update env var (same page).
+- Maintenance state: **active** — releases 1.2.0 (2026-03-23), 1.2.1 (2026-04-02), 1.2.2 (2026-05-26), pushed 2026-09-01.
+- **Practice evidence in its favor:** `clap-rs/clap` tests its own `--help` output with snapbox. `tests/builder/help.rs` opens `use snapbox::assert_data_eq; use snapbox::str;` and asserts help text against inline `str![[r#"…"#]]` blocks, pinning width with `.term_width(0)`; the shared helper `tests/builder/utils.rs::assert_output` captures help by calling `try_get_matches_from` and writing the resulting `Error`'s `Display` into a buffer, then `assert_data_eq!` (commit `48ed7869b91a`, retrieved 2026-09-10). This is the closest thing in the ecosystem to the exact test this item specifies.
+- **Why it still loses.** Its help snapshots are *inline* (`str![[…]]`), which collapses the reference into the test source and forfeits the reviewable-separate-file property that Principle B fixes at the architectural level (alternative B3). snapbox does offer `file![]` for external references, so this is a default and idiom mismatch rather than a hard incapability — but choosing snapbox and then using `file![]` against the grain of every published example buys the wrong ergonomics. Add the 8.3×/28× adoption gap, the absence of an interactive review command comparable to `cargo insta review`, and a documented-but-blunter CI story (`SNAPSHOTS=overwrite` as an env var, with no built-in `reject`-in-CI unreferenced sweep), and insta wins on the criteria this item actually weighs. **snapbox is the correct fallback if the `MIT OR Apache-2.0` licensing point below is treated as disqualifying.**
+
+**`expect-test` 1.5.1** — passes every gate; the minimalist option.
+- crates.io, retrieved 2026-09-10: `recent_downloads` 7,326,545; `downloads` 36,849,824; newest non-yanked 1.5.1, `created_at` **2024-12-21**, `license` `MIT OR Apache-2.0`, `rust_version` 1.60.0.
+- GitHub `rust-analyzer/expect-test`, retrieved 2026-09-10: 324 stars, `archived` **false**, `pushed_at` 2024-12-21T13:05:36Z; open issues `total_count` **15** (search endpoint).
+- Responsiveness: not sampled — see `Method notes`.
+- Advisories: `https://rustsec.org/packages/expect-test.html` → HTTP 404 (no advisory), retrieved 2026-09-10.
+- Maintenance state: **stable-quiet.** No release and no push since 2024-12-21 — 20 months, which under the rubric is a trigger to investigate, not a verdict. Investigating: the crate is small and feature-complete by design ("Minimalistic snapshot testing for Rust", https://github.com/rust-analyzer/expect-test README, retrieved 2026-09-10), it is not archived, and `rust-lang/rust-analyzer` still depends on the current version `1.5.1` at HEAD (`Cargo.toml:113`, commit `a879a4cbadc3`, retrieved 2026-09-10) — a first-party-org consumer on the latest release is a strong signal that quiet means finished, not abandoned. No `at-risk` signal (no unpatched advisory, no maintainer notice, no broken build reported); it does not meet `dormant`'s bar either.
+- Why it loses: inline-only by design (alternative B3), so it forfeits the same architectural property snapbox does, and it has no review workflow at all beyond "run with `UPDATE_EXPECT=1`".
+
+##### Excluded by gate
+
+**None excluded — but one gate finding must be recorded rather than waved through.**
+
+Gate-by-gate for `insta` 1.48.0:
+
+1. **License — `Apache-2.0` only, not the dual `MIT OR Apache-2.0`.** Verified twice: crates.io `/versions` reports `license` "Apache-2.0" for 1.48.0, and the repository's `LICENSE` file begins "Apache License / Version 2.0, January 2004" (mitsuhiko/insta, retrieved 2026-09-10); the crate's own `insta/Cargo.toml:4` reads `license = "Apache-2.0"`. **This is a `pass`, and here is the reasoning, stated rather than assumed.** The gate asks whether the candidate's license is *compatible* with the template's `MIT OR Apache-2.0`, not whether it is identical. Apache-2.0 is one of the two arms the template already offers, so no license text new to the repository is introduced. More decisively, insta is a **`[dev-dependencies]`** entry: it is not in the published crate's dependency closure for downstream consumers (Cargo does not propagate dev-dependencies to dependents) and it is linked into no released binary, so no distribution of insta's code occurs through this template at all. `astral-sh/uv` and `astral-sh/ruff`, both Apache-2.0/MIT-dual projects, take the same dependency. **Recorded consequence:** if the owner's intent behind the `license` parameter is the stricter "every dependency at any depth must itself be dual-licensed" — for example because a `cargo-deny` license allowlist under R13 will encode it — then insta fails that stricter reading and `snapbox` (`MIT OR Apache-2.0`, gate-clean, clap's own choice) is the drop-in answer. I flag this as an owner-visible fact, not a `CONFLICT:`: the parameter's value does not need to change, only its interpretation needs to be confirmed when R13 writes the allowlist.
+2. **MSRV** — `rust_version` **1.66.0** for 1.48.0, confirmed in both crates.io `/versions` and `insta/Cargo.toml:8` (`rust-version = "1.66.0"`, mitsuhiko/insta, retrieved 2026-09-10). Against the template's 1.96 floor that is 30 minor versions of headroom — the most conservative floor of any candidate in this item. Dependency-tree floor at default features: `similar` 3.2.0 declares 1.85, `console` 0.16.6 declares 1.71, `once_cell` 1.21.4 declares 1.65, `tempfile` 3.27.0 declares 1.63 (`GET /api/v1/crates/<dep>/versions?per_page=1`, retrieved 2026-09-10) → **tree floor 1.85**, well inside 1.96. Same newest-version caveat as proptest's gate 2. **Pass.**
+3. **Advisories / `unsafe`** — `https://rustsec.org/packages/insta.html` → **HTTP 404** (retrieved 2026-09-10) → no open advisory. Same for `cargo-insta`. `unsafe` posture: I did not audit the source and make no claim about `unsafe` block counts; as a dev-dependency none of its code reaches a shipped artifact. **Pass, with the audit gap stated.**
+4. **OS matrix** — **cleanly passed, unlike proptest.** insta's `.github/workflows/tests.yml` runs its main test job over `os: [ubuntu-latest, macos-latest, windows-latest]`, with separate `build-on-msrv` and lint jobs and a `rust-toolchain.toml`-pinned default (mitsuhiko/insta, retrieved 2026-09-10). Both required template OSes are first-party-tested; Windows is covered though not required. **Pass.**
+5. **Default features / async coupling** — `default = ["colors"]`, where `colors = ["console"]`; `json = ["serde"]`, `yaml = ["serde"]`, `redactions = ["pest", "pest_derive", "serde"]`, `filters = ["regex", "strip-ansi-escapes"]`, `glob = ["walkdir", "globset"]`, plus `csv`, `ron`, `toml` (`insta/Cargo.toml:20-41`, mitsuhiko/insta, retrieved 2026-09-10). **Correction worth recording:** the rendered docs.rs front page lists "Default features: `colors`, `json`, `yaml`", which reflects the docs.rs build configuration, not the crate manifest — the manifest is authoritative and says `colors` only. **No async runtime coupling**; insta is synchronous and neutral to R05. For this template I recommend `features = ["filters"]` so the version string in `--help` can be redacted; `json`/`yaml`/`redactions` are unnecessary for plain-text help and should be added only if R71 later routes the OpenAPI snapshot through insta.
+6. **Binary size / compile time** — **binary size: zero** (dev-dependency; not in the shipped binary, not propagated to downstream consumers). Compile time, qualitatively: **light** — three required crates (`once_cell`, `similar`, `tempfile`) plus `console` from the default `colors` feature. Adding `filters` pulls `regex` and `strip-ansi-escapes`, which is the single largest increment and is still modest; `redactions` would pull `pest` + `pest_derive` (a proc-macro, the most expensive option here) and is not recommended. Qualitative statement only — no build was measured.
+
+##### Up-and-comers
+
+**`insta-cmd` 0.7.0** — crates.io, retrieved 2026-09-10: `recent_downloads` 1,218,815; `downloads` 4,028,291; newest non-yanked 0.7.0, `created_at` 2026-06-14, `license` `Apache-2.0`, `rust_version` 1.68.0. GitHub `mitsuhiko/insta-cmd`, retrieved 2026-09-10: 52 stars, `archived` false, `pushed_at` 2026-06-14T18:11:21Z, `open_issues_count` 6. `https://rustsec.org/packages/insta-cmd.html` → HTTP 404 (no advisory), retrieved 2026-09-10. Same author as insta, snapshots a spawned command's stdout, stderr and exit status. `astral-sh/ruff` uses it (`Cargo.toml:125`, commit `c3813a501faf`). **Not adopted now** because the recommended architecture is B2 (in-process render), which needs no subprocess, and because spawning the built binary belongs to R32's built-binary test tier — adopting it here would pre-empt an item this one does not own. Revisit if R32 establishes a built-binary tier that wants end-to-end CLI transcripts.
+
+**`trycmd` 1.2.1** — crates.io, retrieved 2026-09-10: `recent_downloads` 1,691,592; `downloads` 6,353,704; newest 1.2.1, repository https://github.com/assert-rs/snapbox/ (it ships from the snapbox workspace). Runs `.trycmd`/Markdown transcript files as tests; `clap-rs/clap` uses it alongside snapbox (`Cargo.toml:195`, commit `48ed7869b91a`). Same "spawns the binary / R32 territory" objection as insta-cmd.
+
+**`goldenfile` 1.11.0** — crates.io, retrieved 2026-09-10: `recent_downloads` 847,497; `downloads` 3,827,073. GitHub `calder/rust-goldenfile`, retrieved 2026-09-10: 45 stars, `archived` false, `pushed_at` 2026-02-25T14:27:13Z, `open_issues_count` 0, license MIT. The minimal external-file option: write to a `Goldenfile` handle, regenerate with an env var. Listed because it is the closest packaged form of the hand-rolled baseline. Not adopted: at 45 stars and 847K 90-day downloads it is 31× smaller than insta with no diffing UI and no CI-unreviewed enforcement.
+
+##### Fit for this template
+
+Excellent, and specifically better than the alternatives on the two things this template cares most about. (1) **Reviewable diffs**: `.snap` files land in `git diff` exactly as py's `.ambr` file does, so the F123 principle survives the port unchanged. (2) **CI enforcement without extra wiring**: GitHub Actions sets `CI=true` on every runner, so `INSTA_UPDATE`'s `auto` mode resolves to `no` and an unreviewed snapshot fails the build with no template-side configuration — the workflow author cannot forget it. (3) **Multi-surface reach**: the template is CLI + library + web service, and insta is the only shortlisted crate that is equally idiomatic for a library's `assert_debug_snapshot!` and (with `json`) a future OpenAPI or HTTP-envelope snapshot, without a second snapshot tool entering the workspace. (4) **Cross-OS**: first-party CI on `ubuntu-latest` and `macos-latest`, both of the template's required runners. The one genuine cost is that `cargo insta review` is a *separate binary* a contributor must install — addressed by the third member.
+
+##### Recommendation
+
+`insta = { version = "1.48", features = ["filters"] }` in `[dev-dependencies]`. Help snapshots rendered in-process from clap (`term_width(80)` + `render_long_help()`), one `.snap` file per command path via `with_settings!(snapshot_suffix)`, tree walked with `get_subcommands` so new subcommands are covered automatically. A filter that replaces the crate version with a stable sentinel keeps a release bump from touching every snapshot. Snapshot files committed under `crates/<cli>/tests/snapshots/`.
+
+##### Ranked runner-up
+
+1. **`snapbox` 1.2.2** — the substitute, and the *required* substitute if the `license` parameter is later read strictly (gate 1 above). Full figures in `Qualified shortlist`. It is also the choice a reviewer could reasonably prefer outright, on the strength of clap's own usage; the deciding argument against it is architectural (inline references, alternative B3) rather than one of quality.
+2. **`expect-test` 1.5.1** — the minimalist substitute if the template ever decides inline references are acceptable and wants the smallest possible dependency. Figures in `Qualified shortlist`.
+3. **Hand-rolled `include_str!` comparison** — the zero-dependency floor, and what py itself does for its OpenAPI snapshot. Ranked last because it fails acceptance criteria 6 and 7: there is no update command and no CI-unreviewed distinction, so drift is fixed by hand-editing the fixture, which is precisely the reviewability that Principle B exists to protect.
+
+##### Tradeoffs
+
+- **Cost paid:** four to six extra crates in the test profile; one committed snapshot file per command path, which grows with the CLI's surface; a second developer tool (`cargo-insta`) to provision; an `Apache-2.0`-only dev-dependency in a dual-licensed repository (analyzed at gate 1).
+- **Cost avoided:** silent CLI UX regressions; hand-edited fixtures; a bespoke update script; and — through `--unreferenced` — orphaned snapshot files that outlive their tests, a failure mode py does not guard against.
+- **Residual risk:** the snapshot suite is only as good as its determinism pins. If a future clap version changes help layout, *every* snapshot changes at once — a large but honest diff, and the same risk py carries.
+- **Reversibility:** high. Removing the capability is one dev-dependency, one test file and one `snapshots/` directory.
+
+##### Parameters
+
+Owns nothing. Consumed: `license` = `MIT OR Apache-2.0` — satisfied under the dev-dependency reading, with the strict reading flagged at gate 1; `msrv-policy` floor 1.96 vs. insta's 1.66.0 (tree floor 1.85); `rust-edition` = 2024 — insta 1.48.0 is edition 2021, which is fine per-crate; `target-os-matrix` — insta's own CI covers both required runners plus Windows. No `CONFLICT:` lines.
+
+##### Validation strategy
+
+Proposed, not executed:
+- `cargo test -p <cli> --test help_snapshots` on a clean tree — expect a pass and no `.snap.new` files.
+- Rename a flag, rerun — expect a failure whose output is a textual diff, and a `.snap.new` file beside the reference.
+- `CI=true cargo test -p <cli> --test help_snapshots` with the rename still in place — expect a failure and **no** file written into the workspace (`git status` clean apart from the source edit).
+- Add a subcommand, rerun — expect a *new* snapshot to be reported as unseen rather than silently accepted, proving the tree walk covered it without a list edit.
+
+##### Confidence & re-verify trigger
+
+**High** on insta as the crate: 8.3×/28× lead over its nearest rival, first-party CI on both required OSes, built-in CI enforcement that no rival matches, and four independently well-regarded adopters. **Medium** on the "in-process render rather than spawn" architecture — it is the right default and matches py's `CliRunner`, but R32's built-binary tier could later argue for an end-to-end transcript test alongside it (not instead of it). **Medium-low** confidence that the license reading will not be revisited; that is an owner call, and I have stated the fallback.
+
+Re-verify if: R13's `cargo-deny` license policy adopts a strict all-dependencies-dual rule (→ switch to snapbox); R60 selects a CLI framework without an in-process help renderer (→ the example changes, likely to a spawn-based approach); insta raises `rust-version` above 1.96 (currently 1.66.0, no risk); a RustSec advisory appears at `https://rustsec.org/packages/insta.html`; or `snapbox` publishes an interactive review command and closes the adoption gap.
+
+##### Sources
+
+- `GET https://crates.io/api/v1/crates/insta` — `recent_downloads` 26,382,169, `downloads` 97,830,232, `max_stable_version` 1.48.0 (2026-09-10)
+- `GET https://crates.io/api/v1/crates/insta/versions` — 1.48.0, 2026-06-11, `Apache-2.0`, `rust_version` 1.66.0 (2026-09-10)
+- `GET https://crates.io/api/v1/crates/insta/reverse_dependencies?per_page=1` — `meta.total` 4,383 (2026-09-10)
+- `GET https://api.github.com/repos/mitsuhiko/insta` — stars 2,957, `archived` false, `pushed_at` 2026-09-06T23:26:22Z (2026-09-10)
+- `GET https://api.github.com/search/issues?q=repo:mitsuhiko/insta+is:issue+is:open` — `total_count` 55 (2026-09-10)
+- `GET https://api.github.com/repos/mitsuhiko/insta/issues?state=all&sort=created&direction=desc` — responsiveness sample (2026-09-10)
+- `https://rustsec.org/packages/insta.html` — HTTP 404, no advisory page (2026-09-10)
+- mitsuhiko/insta `insta/Cargo.toml`, `Cargo.toml`, `LICENSE`, `.github/workflows/tests.yml`, default branch (2026-09-10)
+- https://insta.rs/docs/quickstart/ and https://insta.rs/docs/cli/ (2026-09-10)
+- https://docs.rs/insta/latest/insta/ (2026-09-10)
+- https://docs.rs/clap/latest/clap/struct.Command.html and https://docs.rs/clap/latest/clap/builder/struct.StyledStr.html (2026-09-10)
+- https://github.com/clap-rs/clap `tests/builder/help.rs`, `tests/builder/utils.rs`, `Cargo.toml:195,197` @ `48ed7869b91a` (2026-09-10)
+- https://github.com/astral-sh/uv `Cargo.toml:328` @ `a22198b1b536`; https://github.com/astral-sh/ruff `Cargo.toml:124,125,154,181` @ `c3813a501faf`; https://github.com/apache/arrow-rs `Cargo.toml:111` @ `f9e02ba76ad1`; https://github.com/rust-lang/rust-analyzer `Cargo.toml:113` @ `a879a4cbadc3` (all 2026-09-10)
+- snapbox / expect-test / insta-cmd / trycmd / goldenfile: `GET https://crates.io/api/v1/crates/<name>` and `/versions`; `GET https://api.github.com/repos/<o>/<r>`; `GET https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+is:open`; `https://rustsec.org/packages/<name>.html`; https://docs.rs/snapbox/latest/snapbox/; assert-rs/snapbox `.github/workflows/ci.yml`; rust-analyzer/expect-test `README.md` (all 2026-09-10)
+- py@b08bccfb `tests/cli/test_help_snapshots.py`, `tests/cli/__snapshots__/test_help_snapshots.ambr`, `tests/web/test_openapi_snapshot.py`, `pyproject.toml:93` (2026-09-10)

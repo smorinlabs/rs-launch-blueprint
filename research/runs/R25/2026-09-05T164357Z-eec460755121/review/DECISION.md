@@ -195,10 +195,10 @@ configuration rather than of a single run.
 | # | Criterion | Status in P02 |
 |---|---|---|
 | A0 | The template's initial `[package] version` equals what a fresh Rust package starts at | **Executed** — `cargo new` emits `version = "0.1.0"` |
-| A1 | Given a release whose commits are `fix:` only, the next version differs only in the patch digit | **Executed** — `0.1.3 → 0.1.4` |
-| A2 | Given a release containing a non-breaking `feat:` and no breaking commit, the next version stays inside the current caret band | **Executed** — `0.1.3 → 0.1.4`; and a bare Cargo requirement `"0.7.0"` locks `axum` to `0.7.9` while `0.8.9` exists |
-| A3 | Given a release containing a `feat!:` / `BREAKING CHANGE:`, the next version leaves the caret band | **Executed** — `0.1.3 → 0.2.0` |
-| A4 | No release crosses `0.x → 1.x` without an explicit human act | **Argued from source, not executed end to end** — under both flags `true`, from any pre-1.0 baseline, no commit type produces `1.0.0`; graduation requires a `Release-As: 1.0.0` footer. P03 proves it on the real repository |
+| A1 | Given a release with no version override whose commits are `fix:` only, the next version differs only in the patch digit | **Executed** — `0.1.3 → 0.1.4` |
+| A2 | Given a release with no version override containing a non-breaking `feat:` and no breaking commit, the next version stays inside the current caret band | **Executed** — `0.1.3 → 0.1.4`; and a bare Cargo requirement `"0.7.0"` locks `axum` to `0.7.9` while `0.8.9` exists |
+| A3 | Given a release with no version override containing a `feat!:` / `BREAKING CHANGE:`, the next version leaves the caret band | **Executed** — `0.1.3 → 0.2.0` |
+| A4 | No release crosses `0.x → 1.x` without an explicit human act | **Argued from source, not executed end to end** — under both flags `true`, from any pre-1.0 baseline, no commit type produces `1.0.0`; reaching `1.0.0` takes a version override, which is exactly the explicit human act the criterion demands: a `Release-As: 1.0.0` commit footer (the documented route), or the deprecated `release-as` configuration key, or a `--release-as 1.0.0` argument (**Override precedence** above). P03 proves it on the real repository |
 
 **Cargo's compatibility rule, quoted rather than paraphrased.** The Cargo Book's SemVer reference
 states: *"This guide uses the terms 'major' and 'minor' assuming this relates to a '1.0.0' release
@@ -221,7 +221,9 @@ considered stable. Version 1.0.0 defines the public API."* (`https://semver.org/
 claim below is derived from Cargo's documented convention, from Cargo's observed resolver behavior,
 or from the Rust API Guidelines, and each is labeled with which.
 
-Map the four essential behaviors onto Cargo's rule at a `0.y.z` version and the required table is
+Map the four essential behaviors onto Cargo's rule at a `0.y.z` version and the required table — for
+the releases the automation decides, so again no version override in force (**Override precedence**
+above) — is
 `fix → z`, non-breaking `feat → z`, breaking `→ y`. That is exactly `bump-minor-pre-major: true`
 **and** `bump-patch-for-minor-pre-major: true`. The correspondence is arithmetic, not stylistic,
 and `review/evidence/release-please-bump-probe.log` shows that no other flag combination produces
@@ -240,7 +242,9 @@ digit, not major; fix commits bump patch even under a `0.x` minor". That reverse
   < 1.0.0"*, *"feat commits bump semver patch instead of minor if version < 1.0.0"*), and adds
   *"absence defaults to false"* for both.
 - The implementation agrees: `DefaultVersioningStrategy.determineReleaseType`
-  (`src/versioning-strategies/default.ts`) branches on `breaking > 0` first
+  (`src/versioning-strategies/default.ts`) first walks the commits for a `RELEASE AS` note and
+  returns a `CustomVersionUpdate` if it finds one — the override path, lines 74-82, which reaches no
+  flag at all — and only then branches on `breaking > 0`
   (`version.isPreMajor && this.bumpMinorPreMajor` → `MinorVersionUpdate`, else
   `MajorVersionUpdate`), then on `features > 0`
   (`version.isPreMajor && this.bumpPatchForMinorPreMajor` → `PatchVersionUpdate`, else
@@ -331,7 +335,10 @@ belongs to R11 (`ci-job-structure`) and this decision does not claim that slot.
 
 **The options, separated empirically.** Executed 2026-09-09 against `release-please@17.11.2`
 installed into the session scratchpad, driving `DefaultVersioningStrategy` directly. Cell format is
-the resulting version.
+the resulting version. No probe commit carried a `Release-As:` footer and no `release-as` value was
+supplied, so every cell below is the no-override outcome for its row (**Override precedence**
+above); had a probe commit carried the footer, that strategy would have returned the footer's
+version instead of any cell shown here.
 
 | # | Option | `0.1.3` + `fix:` | + `feat:` | + `feat!:` | `1.0.0` + `fix:` | + `feat:` | + `feat!:` |
 |---|---|---|---|---|---|---|---|
@@ -341,8 +348,9 @@ the resulting version.
 | D | `bump-minor-pre-major` only (what the prompt's gloss describes) | 0.1.4 | **0.2.0** | 0.2.0 | 1.0.1 | 1.1.0 | 2.0.0 |
 | E | `bump-patch-for-minor-pre-major` only | 0.1.4 | 0.1.4 | **1.0.0** | 1.0.1 | 1.1.0 | 2.0.0 |
 
-Reading the bold cells against Cargo's rule, and stating each as the general case rather than as
-the one row that demonstrates it: under (C) and (E), from any pre-1.0 baseline, the *first release
+Reading the bold cells against Cargo's rule, stating each as the general case rather than as the one
+row that demonstrates it, and carrying the same no-override condition the table's cells carry
+(**Override precedence** above) into both readings: under (C) and (E), from any pre-1.0 baseline, the *first release
 containing a breaking change silently promotes the crate to `1.0.0`* — an irreversible stability
 claim made by a bot. Under (C) and (D), from a `0.y.z` baseline, a release whose strongest commit is
 a *non-breaking* `feat` produces `0.(y+1).0` — `0.2.0` in the demonstrated `0.1.3` row — which every
@@ -356,8 +364,13 @@ the artifact the raw reports left unsettled, and it is what the prompt's value t
 prompt's words are "the template's first-published version number", and the part of that this item
 controls is which version release-please *releases* first. Read at `v17.11.2`:
 
-- `BaseStrategy.buildNewVersion` returns `this.initialReleaseVersion()` **only when there is no
-  latest release**; otherwise it bumps the latest release's version.
+- `BaseStrategy.buildNewVersion` (`src/strategies/base.ts:543-574`) reaches
+  `this.initialReleaseVersion()` **last, and only when the three checks before it all fall
+  through**: a `release-as` value at `base.ts:547`, then a `RELEASE AS` commit note at
+  `base.ts:554-564` — the two override paths of **Override precedence** above — and then a
+  `latestRelease`, whose presence sends it to `this.versioningStrategy.bump(...)` at
+  `base.ts:566-571` instead. Only with no override and no latest release does line 573 return
+  `this.initialReleaseVersion()`.
 - `Manifest` backfills that latest release *from the manifest file*: the block commented
   `// backfill latest release tags from manifest` treats `this.releasedVersions[path]` as the latest
   release whenever it is present and is not the sentinel `'0.0.0'`. The maintainers' docs say the
@@ -370,17 +383,24 @@ controls is which version release-please *releases* first. Read at `v17.11.2`:
 Two consequences, and the asymmetry between them is the whole argument. First, **`release-type:
 rust` starts a brand-new crate at `0.1.0` with no seeding, no `initial-version` key and no
 hand-written manifest entry** — the seeding ts had to do is a `node` problem, not a Rust one. This
-first consequence is unconditional in the commits: with no latest release, `buildNewVersion` returns
-`initialReleaseVersion()` before any commit type is examined, so `0.1.0` is proposed whatever landed
-(given at least one releasable commit and no `Release-As:` override).
+first consequence is unconditional **in the commit types**, and conditional on nothing else being in
+force: with no latest release, `buildNewVersion` returns `initialReleaseVersion()` before any commit
+type is examined, so `0.1.0` is proposed whatever landed — given at least one releasable commit, and
+given no version override, meaning no `release-as` value from the configuration key or the
+`--release-as` argument and no `Release-As:` commit footer anywhere in the collected history
+(**Override precedence** above). Those two overrides are checked *before* the missing latest release
+is, so they beat this outcome rather than merely competing with it.
 
 Second, **seeding `{".": "0.1.0"}` makes `0.1.0` the *previous* release rather than the next one, so
-the first proposed version is never `0.1.0` — but which version it is depends on the commits since
-the seed.** Under the recommended flags the probe gives both answers from a `0.1.0` baseline: a
-patch-or-feature-only history yields `0.1.1`, and a history containing a breaking change yields
-`0.2.0` (`evidence/release-please-bump-probe.log`, rows *A both true · 0.1.0*: `fix:` → `0.1.1`,
-`feat:` → `0.1.1`, `feat!:` → `0.2.0`). Revision 3 wrote `0.1.1` unconditionally; that is true only
-of the first of those histories, and it is the claim the third audit rejected.
+with no version override in force the first proposed version is never `0.1.0` — and which version it
+is then depends on the commits since the seed.** Under the recommended flags the probe gives both
+answers from a `0.1.0` baseline: a patch-or-feature-only history yields `0.1.1`, and a history
+containing a breaking change yields `0.2.0` (`evidence/release-please-bump-probe.log`, rows
+*A both true · 0.1.0*: `fix:` → `0.1.1`, `feat:` → `0.1.1`, `feat!:` → `0.2.0`). An override displaces
+both answers, and can even re-propose `0.1.0` itself, since `base.ts:547` and `base.ts:554-564` parse
+whatever version they are given without comparing it to the latest release (**Override precedence**
+above). Revision 3 wrote `0.1.1` unconditionally; that is true only of the first of those histories,
+and it is the claim the third audit rejected.
 
 That second consequence is an inference **from the tool's source**, and the source is its only
 authority: `BaseStrategy.buildNewVersion` plus `Manifest`'s backfill block, quoted above — the
@@ -409,8 +429,9 @@ If `0.1.0` is to be the first version released, the manifest must be created emp
 (`echo "{}" > .release-please-manifest.json`, the maintainers' own bootstrap instruction — the file
 has to exist because the manifest updater runs with `createIfMissing: false`) and `Cargo.toml` left
 at `0.1.0`. Release-please then **opens a Release PR proposing `0.1.0`** — proposed on the strength
-of there being no latest release, so it does not depend on which commit types landed — whose changes
-include
+of there being no latest release, so it does not depend on which commit types landed, and equally on
+there being no version override, without which condition the proposal is whatever the override names
+(**Override precedence** above) — whose changes include
 writing `{".": "0.1.0"}` into the manifest; **the repository merges that PR**; and release-please
 then tags the merged commit, in whatever form `include-v-in-tag` produces, and creates a GitHub
 release. Whether that release reaches crates.io is F075's business, not this item's, and P03 proves
@@ -447,15 +468,18 @@ it wires the first release.
 - *Web service (optional feature-gated surface).* A feature-gated HTTP surface built on pre-1.0
   dependencies inherits their churn: an `axum` `0.8 → 0.9` bump is, by Cargo's rule, a breaking
   change, and where those types reach the template's public API it is breaking for the template too.
-  Under (A) that propagates as `0.y.z → 0.(y+1).0` — `0.1.z → 0.2.0` at the launch version —
+  Under (A), and absent a version override on the release (**Override precedence** above), that
+  propagates as `0.y.z → 0.(y+1).0` — `0.1.z → 0.2.0` at the launch version —
   accurate and cheap. Under (B) the same routine upstream bump forces `1.x → 2.0.0`, and the next
   one `2.x → 3.0.0`, driving the major digit up for reasons unrelated to the
   template's own design. This is the strongest practical argument against (B), and it is specific to
   a Rust web stack; ts faced nothing equivalent.
 
 **Ranked runner-up, and the condition under which it wins.** Option (B) — launch at `1.0.0` with
-ordinary SemVer, py's present shape. It requires an override (`"initial-version": "1.0.0"`, or hand
-seeding), because with no latest release `release-type: rust` otherwise starts at `0.1.0`. It is a runner-up rather than a
+ordinary SemVer, py's present shape. It requires a deliberate act to reach that number — the
+`"initial-version": "1.0.0"` key, hand seeding the manifest, or one of the two version overrides of
+**Override precedence** above — because with no latest release and no such act, `release-type: rust`
+starts at `0.1.0`. It is a runner-up rather than a
 rejected option because at `1.0.0` and above its arithmetic is identical to (A)'s; its whole cost is the
 claim it makes on day one. It wins only if, **before first publication**, all of the following hold:
 R04's public-API enforcement is wired and the curated surface is final; no crate appearing in that
@@ -465,11 +489,14 @@ digit. The practical reconciliation is to take (A) now and reach (B)'s position 
 `Release-As: 1.0.0` commit footer — the maintainers document the syntax
 (*"When a commit to the main branch has `Release-As: x.x.x` (case insensitive) in the **commit
 body**, Release Please will open a new pull request for the specified version"*, `README.md`,
-v17.11.2), `DefaultVersioningStrategy` honours it before any other decision, no config change is
-needed, and both flags become inert automatically once `major >= 1`. The deprecated `release-as`
-**config key** is the inferior route: the schema marks it *"[DEPRECATED] … Consider using a
-`Release-As` commit instead"*, and the docs warn that leaving it in place makes subsequent runs keep
-proposing the same version.
+v17.11.2). In the running flow the footer is honoured by `BaseStrategy.buildNewVersion` at
+`base.ts:554-564`, before the latest release is even consulted; `DefaultVersioningStrategy` honours
+the same note again at `default.ts:74-82` before any flag branch, so the override holds on both
+paths (**Override precedence** above). No config change is needed, and both flags become inert
+automatically once `major >= 1`. The deprecated `release-as`
+**config key** is the inferior route to the same override: the schema marks it *"[DEPRECATED] …
+Consider using a `Release-As` commit instead"*, and the docs warn that leaving it in place makes
+subsequent runs keep proposing the same version.
 
 **What (A) gives up.** Versus (B): the stability signal. Some risk-averse consumers and some
 corporate policies treat `0.x` as experimental. That cost is accepted because a false `1.0.0`
@@ -574,7 +601,7 @@ for check 7, which was added in revision 2.
 |---|---|---|---|---|
 | 1 | Toolchain and OS of record | `rustc --version`; `cargo --version`; `sw_vers`; `uname -sm` (repository worktree, read-only) | as quoted above; exit 0 | `evidence/toolchain.log` |
 | 2 | What the two flags actually do, whether they are Rust-specific, and what a fresh Rust crate's initial version is | `curl -sS -A <ua> https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/<path>` for 10 paths, plus `v17.6.0/src/strategies/rust.ts` and `release-please-action/v5.0.0/package.json` (`<scratch>/rp-src`) | all `200`; schema, docs and implementation agree, and all three contradict the prompt's gloss; `Rust.initialReleaseVersion()` → `0.1.0` at both tags; action `v5.0.0` depends on `release-please ^17.6.0`; exit 0 | `evidence/release-please-source-v17.11.2.log` |
-| 3 | Which flag combination produces the table Cargo's rule requires | `npm --prefix <scratch>/rp-probe install release-please@17.11.2` then `node <scratch>/rp-probe/probe.cjs` — 4 configurations × 3 start versions × 3 commit types | 36 rows; only both-flags-`true` gives `fix→z`, `feat→z`, `feat!→y` at `0.x`; exit 0 | `evidence/release-please-bump-probe.log` |
+| 3 | Which flag combination produces the table Cargo's rule requires | `npm --prefix <scratch>/rp-probe install release-please@17.11.2` then `node <scratch>/rp-probe/probe.cjs` — 4 configurations × 3 start versions × 3 commit types, no probe commit carrying a `Release-As:` footer | 36 rows; with no version override in any row, only both-flags-`true` gives `fix→z`, `feat→z`, `feat!→y` at `0.x`; exit 0 | `evidence/release-please-bump-probe.log` |
 | 4 | Cargo's own initial version, and whether a `0.y` minor bump really is the incompatibility boundary | `cargo new --lib/--bin --vcs none`; then `cargo generate-lockfile` on three throwaway manifests (`<scratch>`) | `version = "0.1.0"`, `edition = "2024"`; `bitflags = "0.9.0"` → `0.9.1` while `2.13.2` exists; `axum = "0.7.0"` → `0.7.9` while `0.8.9` exists; `bitflags = "1.0.0"` → `1.3.2`, never `2.x`; exit 0 | `evidence/cargo-initial-version-and-resolver.log` |
 | 5 | That every rule attributed to a standard or tool is quoted from a source that covers that case | `curl -sSL` of Cargo Book `semver.html` and `specifying-dependencies.html`, `semver.org`, `rust-lang/api-guidelines` `necessities.md`, release-plz `config.md` (`<scratch>/docs`) | all `200`; the five verbatim quotations reproduced in `### Principles and implementation`; exit 0 | `evidence/authority-quotations.log` |
 | 6 | Maintenance state, adoption figures, and the two source repositories at their pinned commits | `GET api.github.com/repos/...`, `GET api.github.com/search/issues?...`, `GET crates.io/api/v1/crates/<name>` (6 crates); `git -C ~/c/{ts,py}-launch-blueprint show <pinned sha>:<path>` | release-please `v17.11.2` / `pushed_at` 2026-09-03 / `archived: false` / 297 open issues; ts seeded `0.1.0` and its first release commit was `v0.1.1`; py adopted release-please at `1.0.0` and sets no `pre-major` key; exit 0 | `evidence/registry-and-source-repos.log` (see the correction appended at its foot, and check 7) |

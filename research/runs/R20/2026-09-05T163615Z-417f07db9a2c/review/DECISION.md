@@ -229,9 +229,10 @@ bash research/runs/R20/2026-09-05T163615Z-417f07db9a2c/review/evidence/action-pi
 
 Exit status `0`. Full output:
 `research/runs/R20/2026-09-05T163615Z-417f07db9a2c/review/evidence/action-pin-verification.log`;
-the script is saved beside it as `action-pin-verification.sh`. The log's
-Addendum 1 through Addendum 4 were appended by follow-up commands, each echoed in
-the log under its own section header and independently re-runnable.
+the script is saved beside it as `action-pin-verification.sh`. Sections
+Addendum 1 through Addendum 4 of the log were appended by follow-up commands
+during the same session; those commands are now part of the saved script, so a
+re-run reproduces the whole log (the addendum section headers are normalized).
 
 Observed, all retrieved 2026-09-10:
 

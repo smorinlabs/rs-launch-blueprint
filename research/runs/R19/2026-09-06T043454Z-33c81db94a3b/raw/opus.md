@@ -927,3 +927,385 @@ list, `include`);
 py at pin `b08bccfb`;
 `https://raw.githubusercontent.com/pola-rs/polars/HEAD/.github/dependabot.yml`. All
 retrieved 2026-09-10.
+
+#### Versioning strategy and PR budget (`versioning-strategy`, `schedule`, `open-pull-requests-limit`)
+
+##### Landscape
+Built-in/first-party bin: all three keys are Dependabot's own, and `versioning-strategy`
+is the one key in this stack whose *accepted value set is narrower for Cargo than the
+documentation states*. Established practice on `schedule`: 8 of 11 surveyed Cargo
+entries use `weekly` or `monthly`; only cargo-binstall uses `daily` (on its
+`github-actions` entry) and only servo uses the up-and-comer `interval: cron` with a
+`cronjob` expression. `open-pull-requests-limit` is set by 6 of the 14 surveyed
+projects, from 3 (ratatui) to 20 (cargo-bisect-rustc).
+
+##### Principles and implementation
+Two principles meet here. First, *manifest churn is not an update*: rewriting
+`Cargo.toml` when the existing requirement already admits the new version creates diff
+noise and can raise the effective MSRV for no reason. Second, *the PR stream is
+bounded*: a fixed cadence and a fixed ceiling make review load predictable. Acceptance:
+a patch bump inside an existing caret range updates `Cargo.lock` and leaves
+`Cargo.toml` untouched; and no more than 5 version-update PRs per ecosystem are open at
+once.
+
+##### Dominant choice
+Cargo's own default, which is already `increase-if-necessary`. `dependabot-core` states
+it in code and says why:
+`RequirementsUpdateStrategy::BumpVersionsIfNecessary`, commented "Cargo resolves to the
+newest compatible version and a bare version is a caret-equivalent (compatible)
+requirement, so only raise the requirement when it doesn't already allow the new
+version. Avoids needless churn and MSRV bumps."
+(`cargo/lib/dependabot/cargo/update_checker.rb`, retrieved 2026-09-10). Weekly is the
+dominant schedule; 5 is Dependabot's own default limit — "If five pull requests with
+version updates are open, no further pull requests are raised" (options-reference
+source, retrieved 2026-09-10).
+
+##### Qualified shortlist
+For `versioning-strategy`: (a) `increase-if-necessary` written explicitly; (b) omit and
+inherit the same value; (c) `lockfile-only`; (d) `increase`. For `schedule`:
+`weekly` + `day: monday` (py's value), plain `weekly`, or `monthly`. For the limit:
+`5`, or `3` (ratatui), or omit (also 5).
+
+##### Excluded by gate
+None by fitness gate; gates 2–6 **inapplicable** for a configuration key, gate 1
+satisfied by MIT `dependabot-core`. Two candidates are excluded by capability or by
+consequence. `widen` — documented for the key generally — is **not accepted for
+Cargo**: `ALLOWED_UPDATE_STRATEGIES = [LockfileOnly, BumpVersions,
+BumpVersionsIfNecessary]`
+(`cargo/lib/dependabot/cargo/update_checker/requirements_updater.rb`, retrieved
+2026-09-10), and `check_update_strategy` raises "Unknown update strategy" for anything
+else. `lockfile-only` (c) is excluded by consequence: it would never raise a
+requirement, so a crate whose new major sits outside the caret range would never be
+proposed at all, and the template would quietly stop tracking majors. The key is also
+not valid on the `github-actions` entry — its supported list is "`bundler`, `cargo`,
+`composer`, `helm`, `mix`, `npm`, `pip`, `pub`, and `uv`" (options-reference source,
+retrieved 2026-09-10).
+
+##### Up-and-comers
+`schedule.interval: cron` with a `cronjob` expression (servo's shape, natural-language
+expressions accepted) and `exclude-paths`; neither earns its place in a template with
+one workspace and no fixture trees. `quarterly`, `semiannually` and `yearly` intervals
+are new and too slow for a security-relevant surface.
+
+##### Fit for this template
+`increase-if-necessary` is the right behavior for a Rust workspace whose manifests use
+bare, caret-equivalent requirements, and it is doubly right here because the MSRV
+policy is a fixed parameter: the implementation's own comment names "MSRV bumps" as
+what the strategy avoids. Writing it explicitly is a template choice, not a behavioral
+one — the template teaches the reader that the manifest is deliberately left alone.
+`weekly` + `day: monday` matches py, gives a predictable review slot, and interacts
+correctly with the 5-day cooldown. A limit of 5 leaves headroom for the follow-up PRs
+Dependabot opens when part of a group cannot merge, which is precisely the case a
+catch-all group makes more likely.
+
+##### Recommendation
+`versioning-strategy: "increase-if-necessary"` on the `cargo` entry only;
+`schedule: { interval: "weekly", day: "monday" }` and
+`open-pull-requests-limit: 5` on both entries.
+
+##### Ranked runner-up
+(1) Omit `versioning-strategy` — identical behavior today, one fewer line, at the cost
+of the reader having to know the default; (2) `open-pull-requests-limit: 3` (ratatui's
+value) — tighter, but it can starve the follow-up PRs a blocked group produces;
+(3) `monthly` — GitHub notes "stable libraries do fine on `monthly`", but a template's
+whole point is to model current practice for its consumers, and monthly plus a 5-day
+cooldown stretches the worst-case lag past a month.
+
+##### Tradeoffs
+An explicit `versioning-strategy` restates a default and would need editing if the
+default ever changed to something better; that is the runner-up's argument, and it is a
+close call. Weekly Monday PRs land on the busiest review day. A limit of 5 can mask a
+genuinely stuck stream — nothing new is opened while five sit unmerged — which the
+Dependabot tab makes visible if anyone looks.
+
+##### Parameters
+Owns nothing. Assumes `msrv-policy` (fixed) — the strategy reduces, but does not
+eliminate, MSRV-raising bumps, and the CI MSRV job remains the guard because Dependabot
+does not read `rust-version` (issue #5423, open since 2022-07-26, 7 comments, updated
+2026-01-05,
+`GET https://api.github.com/repos/dependabot/dependabot-core/issues/5423`, retrieved
+2026-09-10). Assumes `rust-edition = 2024`, which puts Cargo's own resolver in the
+MSRV-aware `fallback` mode (resolver `"3"`,
+`https://doc.rust-lang.org/cargo/reference/resolver.html`, retrieved 2026-09-10) —
+a mitigation, not a substitute. No `CONFLICT:` line.
+
+##### Migration implications
+Adds one line (`versioning-strategy`) to the `cargo` entry and three lines
+(`schedule`, `open-pull-requests-limit`) to each entry. Constrains P03's manifests to
+bare/caret requirements rather than pinned `=x.y.z` ones, or the strategy has nothing
+to do.
+
+##### Validation strategy
+Proposed, not executed: after a patch-level bump PR opens, confirm the diff touches
+`Cargo.lock` only and leaves `Cargo.toml` unchanged; after a major bump, confirm
+`Cargo.toml` is edited. Executed result: none — no template exists to run it against.
+
+##### Confidence & re-verify trigger
+High for the accepted-value set and the default (both read from the implementation);
+high for the schedule and limit. Re-verify if `dependabot-core` changes cargo's
+`requirements_update_strategy` default, or if the MSRV request #5423 is implemented —
+that would change what the CI MSRV job has to catch.
+
+##### Sources
+`https://raw.githubusercontent.com/dependabot/dependabot-core/main/cargo/lib/dependabot/cargo/update_checker.rb`;
+`.../cargo/lib/dependabot/cargo/update_checker/requirements_updater.rb`;
+options-reference source (`versioning-strategy` support list and value table,
+`schedule.interval`, `open-pull-requests-limit`);
+`GET https://api.github.com/repos/dependabot/dependabot-core/issues/5423`;
+`https://doc.rust-lang.org/cargo/reference/resolver.html`;
+`https://raw.githubusercontent.com/ratatui/ratatui/HEAD/.github/dependabot.yml`,
+`.../servo/servo/...`, `.../rust-lang/cargo-bisect-rustc/...`; py at pin `b08bccfb`.
+All retrieved 2026-09-10.
+
+### Compatibility
+
+The six members are not independent libraries that might fail to compose; they are keys
+of one schema, and the proof that they are tested together is threefold.
+
+1. **A single validating implementation.** Every key is parsed by one program,
+   `dependabot/dependabot-core` (MIT, 5762 stars, `archived: false`,
+   `pushed_at 2026-09-10T14:55:37Z`,
+   `GET https://api.github.com/repos/dependabot/dependabot-core`, retrieved
+   2026-09-10). A combination that the schema rejects is rejected before any PR opens
+   and is reported on the repository's Dependabot tab, so an incompatible pair is
+   observable rather than latent.
+2. **A shared adopter running the same combination.** `ratatui/ratatui` (22543 stars,
+   `pushed_at 2026-09-07`) declares, in one file, both ecosystems, a catch-all
+   `patterns: ["*"]` group per ecosystem, `cooldown.default-days`,
+   `open-pull-requests-limit`, and `versioning-strategy: increase-if-necessary` on the
+   Cargo entry — every member of this stack except `labels` and `commit-message`
+   (`GET https://raw.githubusercontent.com/ratatui/ratatui/HEAD/.github/dependabot.yml`,
+   retrieved 2026-09-10). `pola-rs/polars` (39702 stars) supplies the missing pair,
+   running `labels` and a `commit-message.prefix` alongside a catch-all group on its
+   Cargo entry (same endpoint pattern, retrieved 2026-09-10). Between them the six
+   members are demonstrated in production on two live, widely-used Rust repositories.
+3. **A per-key ecosystem matrix**, which is where the real incompatibilities live. The
+   documented support lists were checked key by key against `cargo` and
+   `github-actions`:
+
+| Key | `cargo` | `github-actions` | Consequence for the recommended file |
+|---|---|---|---|
+| `groups.patterns` / `update-types` | supported | supported | Catch-all group written on both |
+| `groups.dependency-type` | **not supported** | **not supported** | Never written |
+| `cooldown.default-days` | supported | supported | `5` on both |
+| `cooldown.semver-*-days` | supported | **not supported** | Never written, to keep the entries symmetric |
+| `labels` | supported (default `rust`) | supported (default `github_actions`) | Default values written explicitly |
+| `commit-message.prefix`, `include` | supported | supported | `chore` + `scope` on both |
+| `commit-message.prefix-development` | **not supported** | **not supported** | Never written |
+| `versioning-strategy` | supported (3 of 5 values) | **not supported** | `increase-if-necessary` on `cargo` only |
+| `schedule`, `open-pull-requests-limit` | supported | supported | Written on both |
+
+Support lists from the options-reference source and
+`data/reusables/dependabot/supported-package-managers.md`; the Cargo value restriction
+from `cargo/lib/dependabot/cargo/update_checker/requirements_updater.rb`. All retrieved
+2026-09-10.
+
+### Parameters
+
+R19 **owns no parameter** and **consumes no parameter** — `docs/port/COMMONALITY.md`
+rows F053 and F054 carry `owns: —`, and the item's `## Couplings` block lists
+`owns:` and `consumes:` both empty. The four fixed owner parameters are assumed
+unchanged and none of them is stressed by this answer:
+
+- `assumes rust-edition = 2024` (fixed) — relevant only because edition 2024 defaults
+  Cargo's resolver to `"3"`, the MSRV-aware mode.
+- `assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release,
+  declared as rust-version in Cargo.toml and tested in CI` (fixed) — the CI MSRV job
+  remains the guard against an MSRV-raising bump, because Dependabot does not read
+  `rust-version`.
+- `assumes license = MIT OR Apache-2.0` (fixed) — untouched; no crate is added.
+- `assumes target-os-matrix = ubuntu-latest, macos-latest` (fixed) — untouched;
+  Dependabot runs on GitHub's infrastructure, not in the template's matrix.
+
+Two researched parameters owned elsewhere are relied on and neither needs to change:
+`assumes commit-message-convention = <R38's settled value>` (the eleven-type enum
+containing `chore`, the 50-column soft-line header cap, and the `dependabot[bot]` bot
+exemption) and `assumes ci-job-structure = <R11's value, still open>` for which job
+gates a grouped PR.
+
+**CONFLICT: none.**
+
+### Migration implications
+
+File-level changes in the template, complete:
+
+| File | Change |
+|---|---|
+| `.github/dependabot.yml` | **New file.** Two `updates:` entries (`cargo`, `github-actions`), each with `directory: "/"`, `schedule` (weekly/monday), `cooldown.default-days: 5`, `open-pull-requests-limit: 5`, `labels`, `commit-message` (`prefix: chore`, `include: scope`), and a one-line catch-all `groups` block; `versioning-strategy: increase-if-necessary` on the `cargo` entry only. |
+| `Cargo.toml` (workspace root) | **Constraint, not an edit by this item:** shared dependency versions belong in `[workspace.dependencies]`, and member crates inherit with `workspace = true`, so one Dependabot entry covers all three crates. Requirements stay bare/caret rather than `=`-pinned. |
+| `committed.bot.toml` | **No change**; R38 already specifies it. This item depends on it existing so that F157's CI step passes for long grouped subjects. |
+| `README.md` or `docs/` | **New paragraph:** the two-PR-a-week cadence, the 5-day cooldown, the fact that Cargo bumps always scope as `(deps)`, and the remediation for a grouped PR that fails the MSRV job (add an `ignore` entry for the offending crate; do not relax the job). |
+| `.github/workflows/*` | **No change.** The `github-actions` entry is what keeps R20's SHA pins fresh; it requires the pins to carry a version comment, which R20 specifies. |
+
+Not carried over from py: the third (`npm`/Bun) ecosystem entry, the four role-named
+groups and their package patterns, and `commit-message.prefix-development`. Not carried
+over from ts: `groups.<id>.update-types: [minor, patch]`. Cross-repo rationale for the
+follow-on py/ts project: ts should gain `cooldown`, `labels` and a `commit-message`
+prefix to reach the same policy shape; py should replace its hyphenated
+`github-actions` label with the underscored default `github_actions` (or define the
+hyphenated label in the repository), since a custom label that does not exist "is
+ignored".
+
+### Validation strategy
+
+Every check below is **proposed**. **None was executed**: the Rust template does not
+exist, and Dependabot's behavior can only be observed on a live GitHub repository with
+the configuration installed. The two things this report *did* execute are read-only
+retrievals — the endpoint queries and repository reads listed under `### Sources`.
+
+| # | Check | Command / observation | Expected result |
+|---|---|---|---|
+| 1 | The file is syntactically valid and both entries are live | Repository → **Insights → Dependency graph → Dependabot**; or `gh api repos/<o>/<r>/dependabot/alerts` for the adjacent surface | Two entries listed, each with a "Last checked" timestamp, no configuration-error banner |
+| 2 | One entry covers the whole workspace | Open the first `cargo` PR; `git show --stat` on its head commit | Only root `Cargo.toml` and `Cargo.lock` touched; no member manifest |
+| 3 | Grouping actually batches | Count open Dependabot PRs each Monday for four weeks | ≤ 2 routine PRs open at any time |
+| 4 | The commit contract holds | The F157 CI step on a Dependabot PR (`committed` with `--config committed.bot.toml`) | Exit 0; subject matches `^chore\(deps\): ` |
+| 5 | The 0.x case the ts shape would have mislabelled | Add a `0.x` dependency; wait for a `0.x → 0.(x+1)` release; inspect the grouped PR | The bump appears in the catch-all group's PR and is presented as an ordinary member of it, with no "minor/patch" claim anywhere in the title |
+| 6 | Cooldown is in force | Note a version published < 5 days ago on `GET https://crates.io/api/v1/crates/<name>/versions`; check the Monday PR | That version is absent until day 6 |
+| 7 | Manifest churn is avoided | A patch bump inside an existing caret range | `Cargo.lock` changes; `Cargo.toml` does not |
+| 8 | The MSRV guard still bites | Force a bump that raises the required Rust version (e.g. by lowering `rust-version` temporarily in a scratch branch) | The MSRV CI job fails on the grouped PR; the PR does not merge |
+| 9 | Labels land | The first PR of each ecosystem | `dependencies` + `rust`, and `dependencies` + `github_actions`, both labels present in the repository |
+
+Check 5 is the falsifying test for this report's central claim, and check 8 is the
+falsifying test for the MSRV coupling; if either fails, the grouping recommendation
+(member 2) is the part to revise.
+
+### Confidence & re-verify trigger
+
+**High confidence** on every claim read from the schema source or the implementation:
+that `cargo` supports `groups` and `cooldown` (including the per-level `semver-*-days`
+that `github-actions` lacks); that `prefix-development` and `groups.dependency-type` do
+not reach `cargo`; that Cargo's production check is a constant true, so `include:
+scope` can only emit `deps`; that `widen` is not an accepted Cargo strategy and
+`increase-if-necessary` is already the default; that `rust-toolchain` exists as an
+ecosystem and updates only numeric or dated channels; and that a 3-day cooldown now
+applies with no configuration. Each of these has both a documentation citation and,
+where the documentation is silent, an implementation citation.
+
+**Medium confidence** on three judgments. First, that a single catch-all group is the
+right batching for *this* template — it rests on GitHub's stated advice plus 4 of 11
+surveyed Cargo entries, and the alternative (a `[patch]` / `[minor, major]` split)
+becomes better if one weekly PR turns out to be too large to review. Second, on the
+label interaction: the "declared custom label must already exist" sentence and the
+"Dependabot creates default labels automatically" sentence were not reconciled against
+a live repository. Third, on the grouped-subject length arithmetic against F152's
+50-column cap, which was computed, not executed.
+
+**Explicitly unverified:** no part of this configuration was run. No Dependabot
+installation, no PR, no `committed` invocation, no template.
+
+**Re-verify triggers**, in priority order:
+1. R27 sets a numeric `rust-toolchain.toml` `channel` → add a `rust-toolchain` entry
+   (today's `channel = "stable"` gives that ecosystem nothing to update).
+2. `dependabot-core` implements issue #9681 (`cargo-compatible` /
+   `cargo-incompatible` update types) → reopen the grouping predicate.
+3. `dependabot-core` implements issue #5423 (`rust-version` awareness) → the MSRV CI
+   job stops being the sole guard and the documentation paragraph changes.
+4. R51 lands a Dockerfile or R44 a devcontainer → add that ecosystem entry.
+5. GitHub changes the platform default cooldown again (currently 3 days, announced
+   2026-07-14) or renames an ecosystem's default label.
+6. R11 settles `ci-job-structure` in a way that makes a required check depend on a
+   label → confirm `dependencies` is the label it keys on.
+
+### Sources
+
+**Pinned source repositories** (read through their pins, never from the working tree),
+both retrieved 2026-09-10:
+`git -C ~/c/py-launch-blueprint show b08bccfb:.github/dependabot.yml` — three
+ecosystems (`uv`, `github-actions`, `npm`), four named groups, `cooldown.default-days:
+5`, `labels`, `commit-message` with `prefix: chore`, `prefix-development: chore`,
+`include: scope`, `open-pull-requests-limit: 5`, `schedule.day: monday`.
+`git -C ~/c/ts-launch-blueprint show cb1cbcb2:.github/dependabot.yml` — two ecosystems
+(`github-actions`, `npm`), one `update-types: [minor, patch]` group each, weekly, no
+cooldown, no labels, no commit-message key. Claims attributed to py in this report come
+from the `b08bccfb` commit and claims attributed to ts from `cb1cbcb2`; no HEAD content
+of either repository was used.
+
+**Dependabot schema (maintainer specification)**, all retrieved 2026-09-10, read from
+the documentation source because the rendered page truncated under conversion:
+`GET https://api.github.com/repos/github/docs/contents/content/code-security/reference/supply-chain-security/dependabot-options-reference.md`
+(`Accept: application/vnd.github.raw`), rendered at
+`https://docs.github.com/en/code-security/reference/supply-chain-security/dependabot-options-reference`;
+`.../contents/data/reusables/dependabot/supported-package-managers.md`, rendered at
+`https://docs.github.com/en/code-security/dependabot/ecosystems-supported-by-dependabot/supported-ecosystems-and-repositories`;
+`.../contents/data/features/dependabot-option-cooldown.yml`,
+`.../dependabot-cooldown-default-days.yml`,
+`.../dependabot-rust-toolchain-support.yml`.
+
+**Dependabot implementation**, all retrieved 2026-09-10 via
+`GET https://raw.githubusercontent.com/dependabot/dependabot-core/main/<path>`:
+`cargo/lib/dependabot/cargo.rb`;
+`cargo/lib/dependabot/cargo/file_parser.rb`;
+`cargo/lib/dependabot/cargo/update_checker.rb`;
+`cargo/lib/dependabot/cargo/update_checker/requirements_updater.rb`;
+`github_actions/lib/dependabot/github_actions.rb`;
+`common/lib/dependabot/dependency.rb`;
+`common/lib/dependabot/pull_request_creator/labeler.rb`.
+Repository figures: `GET https://api.github.com/repos/dependabot/dependabot-core` —
+`stargazers_count: 5762`, `archived: false`, `pushed_at: 2026-09-10T14:55:37Z`,
+`license.spdx_id: MIT`; open issues
+`GET https://api.github.com/search/issues?q=repo:dependabot/dependabot-core+is:issue+is:open`
+— `total_count: 1217`. Individual issues:
+`GET https://api.github.com/repos/dependabot/dependabot-core/issues/5423` (open,
+created 2022-07-26, updated 2026-01-05, 7 comments, 7 reactions) and `/issues/9681`
+(open, created 2024-05-06, updated 2026-08-04, 2 comments). All retrieved 2026-09-10.
+
+**Rust project publications**, retrieved 2026-09-10:
+`https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html` (caret
+requirements; left-most non-zero component; `log = "^1.2.3"` equivalent to
+`log = "1.2.3"`);
+`https://doc.rust-lang.org/cargo/reference/resolver.html` (resolver `"3"`, Rust 1.84+,
+`resolver.incompatible-rust-versions` `allow` → `fallback`, edition `"2024"` defaults to
+resolver `"3"`).
+
+**GitHub publications**, retrieved 2026-09-10:
+`https://github.blog/changelog/2026-07-14-dependabot-version-updates-introduce-default-package-cooldown/`;
+`https://github.blog/security/supply-chain-security/tame-dependabot-group-your-updates-slow-the-cadence-keep-security-fast/`
+(dated 2026-07-29 in the fetched page).
+
+**Practice evidence**, retrieved 2026-09-10: `.github/dependabot.yml` at `HEAD` via
+`GET https://raw.githubusercontent.com/<o>/<r>/HEAD/.github/dependabot.yml` for
+`sharkdp/bat`, `helix-editor/helix`, `nushell/nushell`, `pola-rs/polars`,
+`servo/servo`, `tokio-rs/tokio`, `tokio-rs/axum`, `ratatui/ratatui`,
+`apache/datafusion`, `crossbeam-rs/crossbeam`, `cargo-bins/cargo-binstall`,
+`paritytech/polkadot-sdk`, `rust-lang/docs.rs`, `rust-lang/cargo-bisect-rustc`; stars,
+`archived` and `pushed_at` for each from `GET https://api.github.com/repos/<o>/<r>`
+(values in the `### Landscape` table). Renovate probes (HTTP status only) for
+`rust-lang/rust`, `clap-rs/clap`, `rustls/rustls`, `astral-sh/ruff`, `astral-sh/uv`,
+`serde-rs/serde`, `launchbadge/sqlx`, `hyperium/hyper`.
+
+**Programme documents**, read from the working tree at 2026-09-10:
+`docs/port/COMMONALITY.md:59-60` (F053, F054); `docs/port/DIVERGENCE-ANALYSIS.md:103`
+and `:257` (class A, `harmonize: partly`); `docs/port/PARAMETERS.md:12-14`;
+`docs/port/BASELINE-REVIEW.md` (no F053/F054 entry);
+`research/topics/38-commit-message-linter/DECISION.md`;
+`research/topics/42-dev-toolchain-provisioning/DECISION.md:18`.
+
+**Method notes.** Endpoints queried: `api.github.com/repos/<o>/<r>` (20 repositories,
+for stars/`archived`/`pushed_at`); `api.github.com/search/issues` (open-issue
+`total_count` for `dependabot/dependabot-core`); `api.github.com/repos/.../issues/<n>`
+(#5423, #9681); `api.github.com/repos/github/docs/contents/...` and
+`raw.githubusercontent.com/dependabot/dependabot-core/main/...` for specification and
+implementation text; `raw.githubusercontent.com/<o>/<r>/HEAD/.github/dependabot.{yml,yaml}`
+and the Renovate probe paths for practice evidence; `docs.github.com`,
+`doc.rust-lang.org` and `github.blog` for rendered documentation. Two retrieval
+failures are recorded rather than worked around: unauthenticated
+`api.github.com` returned **HTTP 403** ("API rate limit exceeded") for the docs-repo
+contents call, and `raw.githubusercontent.com/github/docs/main/...` returned an empty
+body for the options-reference path, so the specification was read through
+authenticated `gh api` at the path `content/code-security/reference/supply-chain-security/`
+(the rendered URL's path differs from the source path). One correction is recorded
+because it changed a claim: a summarizing fetch of the rendered
+supported-ecosystems page reported that Cargo does **not** support private registries;
+the documentation source shows the opposite — the Cargo row is
+`Version updates ✓ | Security updates ✓ | Private repositories ✓ | Private registries ✓
+| Vendoring ✗` — and the source is what this report cites. **Not verified:** no
+crates.io endpoint was queried, because this bundle has no crate members (the figure
+table's crate rows — 90-day downloads, all-time downloads, last release, RustSec
+advisories, reverse-dependency adopters — are `inapplicable` for every member and are
+marked so in each member's `Excluded by gate` field, together with fitness gates 2–6);
+issue-responsiveness (median days to first maintainer response over the 10 most
+recently opened issues) was **not computed** for `dependabot/dependabot-core`, since
+the template takes no dependency on that crate and its maintenance state is established
+instead by `archived: false` and a same-day `pushed_at`; and no part of the recommended
+configuration was executed, because Dependabot's behavior is observable only on a live
+repository that P03 has not yet created.
