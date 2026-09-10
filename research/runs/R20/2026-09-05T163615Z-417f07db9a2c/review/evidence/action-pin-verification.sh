@@ -160,38 +160,196 @@ gh api "advisories?ecosystem=actions&affects=anthropics/claude-code-action" --jq
 hr "done"
 
 # ---------------------------------------------------------------------------
-# Addenda 1-4, appended to the log by follow-up commands in the same session.
+# Addenda 1-4 were appended to the revision-1 log by follow-up commands in the
+# same session; they are folded back in here, with their original headings and
+# framing restored, so that a re-run emits every command and every
+# interpretation line the revision-1 log carries.
 # Addendum 1 corrects a false negative: git grep -E does not honour \s.
 # ---------------------------------------------------------------------------
 hr "ADDENDUM 1"
+echo "-- CORRECTION to section 2: git grep -E does not honour \\s, so that pattern was a false negative."
+echo "-- re-run with a POSIX class: SHA-pinned clauses at py HEAD ${PY_HEAD:0:8} --"
 git -C "$PY" grep -nE 'uses:[[:space:]]*[^[:space:]]+@[0-9a-f]{40}' "$PY_HEAD" -- .github/workflows/
+echo "-- same pattern at the py PIN ${PY_PIN:0:8} (expect no rows) --"
 git -C "$PY" grep -nE 'uses:[[:space:]]*[^[:space:]]+@[0-9a-f]{40}' "$PY_PIN" -- .github/workflows/ \
   || echo "(no rows: py is entirely ref-pinned at the pin)"
+echo
+echo "-- actions/dependency-review-action: bare major tags v4 / v5 --"
 gh api "repos/actions/dependency-review-action/git/matching-refs/tags/v4" --jq '.[].ref' 2>&1 | head
+echo "(matching-refs/tags/v5 returned only refs/tags/v5.0.0 in section 4: no bare v5 ref exists)"
+echo "-- py at its pin references dependency-review-action how? --"
 git -C "$PY" show "$PY_PIN:.github/workflows/dependency-review.yml" | grep -nE 'dependency-review-action'
+echo
+echo "-- OpenSSF Scorecard Pinned-Dependencies: does it distinguish GitHub-owned from third-party? --"
 curl -sS --max-time 40 https://raw.githubusercontent.com/ossf/scorecard/main/docs/checks.md > /tmp/r20chk/scorecard.md
+printf 'checks.md bytes: %s\n' "$(wc -c < /tmp/r20chk/scorecard.md)"
+grep -h '^## Pinned-Dependencies' /tmp/r20chk/scorecard.md
+echo
+echo "-- zizmor: is a per-file / per-line suppression available (needed for the F062 exemption)? --"
 curl -sS --max-time 40 https://raw.githubusercontent.com/zizmorcore/zizmor/main/docs/usage.md > /tmp/r20chk/usage.md
+printf 'usage.md bytes: %s\n' "$(wc -c < /tmp/r20chk/usage.md)"
 grep -nE 'zizmor: ignore|ignore\[|Ignoring|ignore rules' /tmp/r20chk/usage.md | head -20
+echo
+echo "-- zizmor unpinned-uses config grammar, verbatim --"
 sed -n '2229,2300p' /tmp/r20chk/audits.md
 
 hr "ADDENDUM 2"
+echo "-- OpenSSF Scorecard Pinned-Dependencies section, verbatim (awk in addendum 1 mis-matched the heading) --"
+grep -n '^## Pinned-Dependencies' /tmp/r20chk/scorecard.md
 start=$(grep -n '^## Pinned-Dependencies' /tmp/r20chk/scorecard.md | cut -d: -f1)
 end=$(awk -v s="$start" 'NR>s && /^## /{print NR; exit}' /tmp/r20chk/scorecard.md)
 sed -n "${start},$((end-1))p" /tmp/r20chk/scorecard.md
 grep -inE 'GitHub-owned|third.party' /tmp/r20chk/scorecard.md | awk -F: -v s="$start" -v e="$end" '$1>=s && $1<e' \
   || echo "(no official/third-party distinction anywhere in the Pinned-Dependencies section)"
+echo
+echo "-- zizmor path-scoped ignore rules in zizmor.yml (the only exemption form that preserves byte-identity of a vendor file) --"
 sed -n '880,935p' /tmp/r20chk/usage.md
 
 hr "ADDENDUM 3"
+echo "-- counts, py at the pin --"
 for f in $(git -C "$PY" ls-tree -r --name-only "$PY_PIN" .github/workflows/); do git -C "$PY" show "$PY_PIN:$f"; done \
  | grep -oE 'uses:[[:space:]]*[^[:space:]]+' | sed 's/uses:[[:space:]]*//' | grep -vE '^(actions|github)/' | sort > /tmp/r20chk/py-3p.txt
-echo "py third-party occurrences: $(wc -l < /tmp/r20chk/py-3p.txt); distinct values: $(sort -u /tmp/r20chk/py-3p.txt | wc -l); distinct repos: $(sed 's/@.*//' /tmp/r20chk/py-3p.txt | sort -u | wc -l); SHA-pinned: $(grep -cE '@[0-9a-f]{40}' /tmp/r20chk/py-3p.txt || true)"
+printf 'third-party uses: clauses (total occurrences): %s\n' "$(wc -l < /tmp/r20chk/py-3p.txt)"
+printf 'distinct third-party uses: values: %s\n' "$(sort -u /tmp/r20chk/py-3p.txt | wc -l)"
+sort -u /tmp/r20chk/py-3p.txt
+printf 'distinct third-party action repos: %s\n' "$(sed 's/@.*//' /tmp/r20chk/py-3p.txt | sort -u | wc -l)"
+printf 'SHA-pinned among them: %s\n' "$(grep -cE '@[0-9a-f]{40}' /tmp/r20chk/py-3p.txt || true)"
+echo
+echo "-- counts, ts at the pin (live clauses only; commented-out excluded) --"
 for f in $(git -C "$TS" ls-tree -r --name-only "$TS_PIN" .github/workflows/); do git -C "$TS" show "$TS_PIN:$f"; done \
  | grep -E '^[[:space:]]*-?[[:space:]]*uses:' | grep -oE 'uses:[[:space:]]*[^[:space:]]+' | sed 's/uses:[[:space:]]*//' \
  | grep -vE '^(actions|github)/' | sort > /tmp/r20chk/ts-3p.txt
-echo "ts live third-party clauses: $(wc -l < /tmp/r20chk/ts-3p.txt); SHA-pinned: $(grep -cE '@[0-9a-f]{40}' /tmp/r20chk/ts-3p.txt || true)"
+printf 'live third-party uses: clauses: %s\n' "$(wc -l < /tmp/r20chk/ts-3p.txt)"
+printf 'SHA-pinned among them: %s\n' "$(grep -cE '@[0-9a-f]{40}' /tmp/r20chk/ts-3p.txt || true)"
+echo "NOT SHA-pinned among them:"
 grep -vE '@[0-9a-f]{40}' /tmp/r20chk/ts-3p.txt || echo "(all SHA-pinned)"
+echo "commented-out uses: clauses at the ts pin:"
+for f in $(git -C "$TS" ls-tree -r --name-only "$TS_PIN" .github/workflows/); do
+  git -C "$TS" show "$TS_PIN:$f" | grep -nE '^[[:space:]]*#[[:space:]]*-?[[:space:]]*uses:' | sed "s|^|$f:|"
+done
+echo
+echo "-- is actions/dependency-review-action@v5 resolvable at all? (tag checked already; check branches) --"
+gh api "repos/actions/dependency-review-action/git/matching-refs/heads/v5" --jq 'length' 2>&1
+gh api "repos/actions/dependency-review-action/git/matching-refs/heads" --jq '.[].ref' 2>&1 | head -10
 
 hr "ADDENDUM 4"
+echo "-- which head matched the v5 prefix? (matching-refs is a PREFIX match, so length 1 is not proof of a bare v5 branch) --"
+gh api "repos/actions/dependency-review-action/git/matching-refs/heads/v5" --jq '.[] | {ref:.ref, sha:.object.sha}' 2>&1
+echo "-- exact ref lookups: tag v5, head v5 (404 = does not exist) --"
 gh api "repos/actions/dependency-review-action/git/ref/tags/v5" 2>&1 | head -3
 gh api "repos/actions/dependency-review-action/git/ref/heads/v5" 2>&1 | head -3
+
+# ---------------------------------------------------------------------------
+# Section 10, added for revision 2, answers the revision-1 audit's finding F1:
+# what does the declared `zizmor .github/` invocation actually enforce about
+# the version comment, and does the proposed comment-grammar check work?
+# Docs and test data are read at the PINNED tag v1.30.1, not at main.
+# Nothing is installed and no tree is scaffolded: the only thing executed is a
+# grep-based text check over sample `uses:` lines.
+# ---------------------------------------------------------------------------
+ZTAG=v1.30.1
+ZRAW="https://raw.githubusercontent.com/zizmorcore/zizmor/$ZTAG"
+
+hr "10. what zizmor enforces about the version comment (docs+test data at $ZTAG)"
+for d in usage audits configuration; do
+  curl -sS --max-time 40 "$ZRAW/docs/$d.md" > "/tmp/r20chk/z-$d.md"
+  printf '%s.md @ %s bytes: %s\n' "$d" "$ZTAG" "$(wc -c < /tmp/r20chk/z-$d.md)"
+done
+curl -sS --max-time 40 "$ZRAW/crates/zizmor/tests/integration/test-data/ref-version-mismatch.yml" \
+  > /tmp/r20chk/ref-version-mismatch.yml
+printf 'ref-version-mismatch.yml @ %s bytes: %s\n' "$ZTAG" "$(wc -c < /tmp/r20chk/ref-version-mismatch.yml)"
+
+echo
+echo "-- 10a. which persona is the default? (usage.md @ $ZTAG) --"
+grep -n 'persona' /tmp/r20chk/z-usage.md | sed -n '1,12p'
+sed -n '616,640p' /tmp/r20chk/z-usage.md
+
+echo
+echo "-- 10b. does unpinned-uses say anything about version comments? (audits.md @ $ZTAG) --"
+awk '/^## `unpinned-uses`/{f=1} f&&/^## /&&!/unpinned-uses/{exit} f' /tmp/r20chk/z-audits.md \
+  | grep -niE 'comment' || echo "(no occurrence of \"comment\" in the whole unpinned-uses section)"
+
+echo
+echo "-- 10c. ref-version-mismatch: what it detects and in which persona (audits.md @ $ZTAG) --"
+sed -n '1427,1455p' /tmp/r20chk/z-audits.md
+
+echo
+echo "-- 10d. the audit's own test data: which shapes are findings, and in which persona --"
+cat -n /tmp/r20chk/ref-version-mismatch.yml
+
+echo
+echo "-- 10e. is there a per-audit persona setting? (configuration.md @ $ZTAG settings list) --"
+grep -nE '^### `rules\.|^#### `rules\.|^## ' /tmp/r20chk/z-configuration.md
+grep -niE 'persona' /tmp/r20chk/z-configuration.md || echo "(configuration.md @ $ZTAG contains no per-audit persona setting)"
+
+echo
+echo "-- 10f. what --persona=pedantic costs: it is a global sensitivity switch --"
+sed -n '635,672p' /tmp/r20chk/z-usage.md
+
+hr "11. the proposed comment-grammar check, run against sample uses: lines"
+# The contract: every SHA-pinned `uses:` line in .github/workflows/ ends with a
+# trailing version comment. ERE, quoted verbatim in DECISION.md:
+GRAMMAR='@[0-9a-f]{40}[[:space:]]+#[[:space:]]v?[0-9]+(\.[0-9]+)*[[:space:]]*$'
+SHAPIN='uses:[[:space:]]*[^[:space:]]+@[0-9a-f]{40}'
+echo "grammar ERE: $GRAMMAR"
+echo "sha-pinned-line ERE: $SHAPIN"
+
+# check() reads candidate lines on stdin and mimics the proposed CI step:
+# print every SHA-pinned line lacking a conforming trailing comment, exit 1 if any.
+check() {
+  local offenders
+  offenders=$(grep -E "$SHAPIN" | grep -vE "$GRAMMAR" || true)
+  if [ -n "$offenders" ]; then printf '%s\n' "$offenders"; return 1; fi
+  return 0
+}
+
+echo
+echo "-- 11a. PASS case: EVERY SHA-pinned uses: line of ts at $TS_PIN --"
+echo "   (12 lines: the 11 third-party clauses plus the one SHA-pinned official clause,"
+echo "    actions/dependency-review-action at dependency-review.yml:66 — the check is"
+echo "    scoped to SHA-pinned clauses of any owner, not to the third-party subset.)"
+for f in $(git -C "$TS" ls-tree -r --name-only "$TS_PIN" .github/workflows/); do
+  git -C "$TS" show "$TS_PIN:$f" | grep -nE '^[[:space:]]*-?[[:space:]]*uses:' | sed "s|^|$f:|"
+done | grep -E "$SHAPIN" > /tmp/r20chk/ts-shapinned.txt
+printf 'SHA-pinned lines fed to the check: %s\n' "$(wc -l < /tmp/r20chk/ts-shapinned.txt)"
+cat /tmp/r20chk/ts-shapinned.txt
+check < /tmp/r20chk/ts-shapinned.txt && echo "check exit 0 (PASS as expected)" || echo "check exit 1 (UNEXPECTED)"
+
+echo
+echo "-- 11b. PASS case: py at HEAD $PY_HEAD, whose comments include a bare major (# v7) --"
+git -C "$PY" grep -nE "$SHAPIN" "$PY_HEAD" -- .github/workflows/ > /tmp/r20chk/py-shapinned.txt
+printf 'SHA-pinned lines fed to the check: %s\n' "$(wc -l < /tmp/r20chk/py-shapinned.txt)"
+check < /tmp/r20chk/py-shapinned.txt && echo "check exit 0 (PASS as expected)" || echo "check exit 1 (UNEXPECTED)"
+
+echo
+echo "-- 11c. FAIL cases: four synthetic lines, one per non-conforming shape --"
+cat > /tmp/r20chk/fail-cases.txt <<'EOF'
+      - uses: smorinlabs/contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1
+      - uses: smorinlabs/contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1 # pinned by hand
+      - uses: smorinlabs/contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1 #v1.3.9 no space
+      - uses: smorinlabs/contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1 # release 1.3.9
+EOF
+cat /tmp/r20chk/fail-cases.txt
+check < /tmp/r20chk/fail-cases.txt && echo "check exit 0 (UNEXPECTED)" || echo "check exit 1 (FAIL as expected; the four lines above are the report)"
+
+echo
+echo "-- 11d. shapes the grammar deliberately ACCEPTS (upstream tags are not all v-prefixed 3-component semver) --"
+cat > /tmp/r20chk/accept-cases.txt <<'EOF'
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+      - uses: canonical/charming-actions/check-libraries@1753e0803f70445132e92acd45c905aba6473225 # 2.7.0
+EOF
+cat /tmp/r20chk/accept-cases.txt
+check < /tmp/r20chk/accept-cases.txt && echo "check exit 0 (ACCEPT as expected)" || echo "check exit 1 (UNEXPECTED)"
+
+echo
+echo "-- 11e. the check is blind to whether the comment RESOLVES to the pinned commit --"
+cat > /tmp/r20chk/blind-case.txt <<'EOF'
+      - uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3.8.1
+EOF
+cat /tmp/r20chk/blind-case.txt
+check < /tmp/r20chk/blind-case.txt \
+  && echo "check exit 0 — grammar conforms, yet zizmor's own test data (line 25) marks this exact line a ref-version-mismatch finding: the two checks are complementary, not redundant" \
+  || echo "check exit 1 (UNEXPECTED)"
+
+hr "done (revision 2)"
