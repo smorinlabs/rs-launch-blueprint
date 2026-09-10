@@ -1,0 +1,224 @@
+# R25 revision 4 empirical-audit evidence
+
+Actor: `audit-codex-2026-09-05T164357Z-eec460755121-r4`
+Decision SHA-256 read: `5a744eb02d24894777e7d795a95e4f54defaf6f0afddb61ede654aa1254643d4`
+Cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R25/2026-09-05T164357Z-eec460755121`
+
+## Linux VM attempt
+
+```text
++ limactl shell ubuntu -- bash -lc 'source "$HOME/.cargo/env"; ...'
+time="2026-09-10T07:50:53-07:00" level=fatal msg="instance `ubuntu` is stopped, run `limactl start ubuntu` to start the instance"
++ limactl start ubuntu
+time="2026-09-10T07:51:05-07:00" level=fatal msg="unlinkat /Users/stevemorin/.lima/ubuntu/ha.stdout.log: operation not permitted"
+```
+
+`limactl` was callable, but the named VM could not start in this sandbox. The fresh, isolated macOS probe below is therefore the audit evidence.
+
+## Pinned-source retrieval
+
+```text
++ uname -srm
+Darwin 25.4.0 arm64
++ node --version
+v26.5.0
++ npm --version
+12.0.1
++ npm --prefix /private/tmp/r25-audit-r4-bump.fFEfH9/rp --cache /private/tmp/r25-audit-r4-bump.fFEfH9/npm-cache install --ignore-scripts --no-audit --no-fund release-please@17.11.2
+
+added 162 packages in 5s
++ curl -fsS https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/src/versioning-strategies/default.ts
+curl-exit=0 bytes=4223
++ curl -fsS https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/src/strategies/base.ts
+curl-exit=0 bytes=25805
++ curl -fsS https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/src/version.ts
+curl-exit=0 bytes=2751
++ curl -fsS https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/src/strategies/rust.ts
+curl-exit=0 bytes=5378
++ curl -fsS https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/src/manifest.ts
+curl-exit=0 bytes=62902
++ curl -fsS https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/docs/manifest-releaser.md
+curl-exit=0 bytes=25825
+```
+
+The six successful retrievals are the source spot-checks. The relevant exact excerpts follow.
+
+```ts
+// src/strategies/base.ts, lines 543-573
+protected async buildNewVersion(
+  conventionalCommits: ConventionalCommit[],
+  latestRelease?: Release
+): Promise<Version> {
+  if (this.releaseAs) {
+    return Version.parse(this.releaseAs);
+  }
+
+  const releaseAsCommit = conventionalCommits.find(conventionalCommit =>
+    conventionalCommit.notes.find(note => note.title === 'RELEASE AS')
+  );
+  if (releaseAsCommit) {
+    const note = releaseAsCommit.notes.find(
+      note => note.title === 'RELEASE AS'
+    );
+    if (note) {
+      return Version.parse(note.text);
+    }
+  }
+
+  if (latestRelease) {
+    return await this.versioningStrategy.bump(
+      latestRelease.tag.version,
+      conventionalCommits
+    );
+  }
+
+  return this.initialReleaseVersion();
+}
+
+// src/version.ts, lines 86-88
+get isPreMajor(): boolean {
+  return this.major < 1;
+}
+
+// src/strategies/rust.ts, lines 133-135
+protected initialReleaseVersion(): Version {
+  return Version.parse('0.1.0');
+}
+```
+
+```ts
+// src/versioning-strategies/default.ts, lines 70-104
+let breaking = 0;
+let features = 0;
+for (const commit of commits) {
+  const releaseAs = commit.notes.find(note => note.title === 'RELEASE AS');
+  if (releaseAs) {
+    return new CustomVersionUpdate(Version.parse(releaseAs.text).toString());
+  }
+  if (commit.breaking) {
+    breaking++;
+  } else if (commit.type === 'feat' || commit.type === 'feature') {
+    features++;
+  }
+}
+
+if (breaking > 0) {
+  if (version.isPreMajor && this.bumpMinorPreMajor) {
+    return new MinorVersionUpdate();
+  }
+  return new MajorVersionUpdate();
+} else if (features > 0) {
+  if (version.isPreMajor && this.bumpPatchForMinorPreMajor) {
+    return new PatchVersionUpdate();
+  }
+  return new MinorVersionUpdate();
+}
+return new PatchVersionUpdate();
+```
+
+```text
+// src/manifest.ts, lines 708-724
+// backfill latest release tags from manifest
+for (const path in this.repositoryConfig) {
+  const latestRelease = releasesByPath[path];
+  if (
+    !latestRelease &&
+    this.releasedVersions[path] &&
+    this.releasedVersions[path].toString() !== '0.0.0'
+  ) {
+    const version = this.releasedVersions[path];
+    ...
+    releasesByPath[path] = {
+
+// docs/manifest-releaser.md, lines 385-389
+At a minimum, a manifest file must exist at the tip of the `--target-branch`.
+It can be empty when release-please is run for the first time but it must exist.
+Manually editing the manifest is only appropriate in the bootstrap case outlined
+above. release-please will record a new version into the manifest file for each
+package it is configured to release.
+```
+
+## Direct pinned-package bump probe
+
+```text
++ node <isolated probe; DefaultVersioningStrategy and Version from release-please@17.11.2>
+release-please=17.11.2
+A both true | 0.1.0 | fix: | 0.1.1
+A both true | 0.1.0 | feat: | 0.1.1
+A both true | 0.1.0 | feat!: | 0.2.0
+A both true | 0.1.3 | fix: | 0.1.4
+A both true | 0.1.3 | feat: | 0.1.4
+A both true | 0.1.3 | feat!: | 0.2.0
+A both true | 1.0.0 | fix: | 1.0.1
+A both true | 1.0.0 | feat: | 1.1.0
+A both true | 1.0.0 | feat!: | 2.0.0
+C neither | 0.1.0 | fix: | 0.1.1
+C neither | 0.1.0 | feat: | 0.2.0
+C neither | 0.1.0 | feat!: | 1.0.0
+C neither | 0.1.3 | fix: | 0.1.4
+C neither | 0.1.3 | feat: | 0.2.0
+C neither | 0.1.3 | feat!: | 1.0.0
+C neither | 1.0.0 | fix: | 1.0.1
+C neither | 1.0.0 | feat: | 1.1.0
+C neither | 1.0.0 | feat!: | 2.0.0
+D minor only | 0.1.0 | fix: | 0.1.1
+D minor only | 0.1.0 | feat: | 0.2.0
+D minor only | 0.1.0 | feat!: | 0.2.0
+D minor only | 0.1.3 | fix: | 0.1.4
+D minor only | 0.1.3 | feat: | 0.2.0
+D minor only | 0.1.3 | feat!: | 0.2.0
+D minor only | 1.0.0 | fix: | 1.0.1
+D minor only | 1.0.0 | feat: | 1.1.0
+D minor only | 1.0.0 | feat!: | 2.0.0
+E patch only | 0.1.0 | fix: | 0.1.1
+E patch only | 0.1.0 | feat: | 0.1.1
+E patch only | 0.1.0 | feat!: | 1.0.0
+E patch only | 0.1.3 | fix: | 0.1.4
+E patch only | 0.1.3 | feat: | 0.1.4
+E patch only | 0.1.3 | feat!: | 1.0.0
+E patch only | 1.0.0 | fix: | 1.0.1
+E patch only | 1.0.0 | feat: | 1.1.0
+E patch only | 1.0.0 | feat!: | 2.0.0
+isPreMajor 0.1.3 | true
+isPreMajor 1.0.0 | false
+isPreMajor 1.0.0-beta.1 | false
+aggregate 0.1.3 | fix + feat | 0.1.4
+aggregate 0.1.3 | fix + feat! | 0.2.0
+aggregate 0.1.3 | feat + feat! | 0.2.0
+full-bump-probe-exit=0
+```
+
+The table matches every version cell in the decision's options table. The three aggregation controls match the stated strongest-present rule. The getter results match the two decision phrases that say the flags become inert at `1.0.0` and above; the implementation uses the major component, not a full SemVer comparison.
+
+## Release-As inverse control
+
+```text
++ node <isolated probe; DefaultVersioningStrategy from release-please@17.11.2>
+found Release-As: 0.7.0, forcing version
+release-please=17.11.2
+DefaultVersioningStrategy(0.1.0, breaking commit with Release-As: 0.7.0)=0.7.0
+release-as-control-exit=0
+```
+
+Together with the `BaseStrategy.buildNewVersion` source above, this is the inverse control for the empty-manifest claim: a `Release-As` commit is examined before the no-latest-release branch, and can select a version other than `0.1.0`.
+
+## Fixed-parameter byte comparison
+
+```text
++ awk <docs/port/PARAMETERS.md fixed rows> > expected-assumes.txt
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+- assumes license = MIT OR Apache-2.0
++ rg '^\\- assumes ' review/DECISION.md > actual-assumes.txt
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+- assumes license = MIT OR Apache-2.0
++ diff -u expected-assumes.txt actual-assumes.txt
+parameter-diff-exit=0
+```
+
+## Result
+
+The arithmetic, aggregation rule, `Version.isPreMajor` boundary phrases, and four assumed-parameter lines reproduce. The empty-manifest conclusion is correct only after excluding both the deprecated `release-as` configuration and a `Release-As` commit footer. `review/DECISION.md` makes that exclusion at lines 305-307, but repeats unconditional `0.1.0` outcomes elsewhere; see `review/audit-codex.md` for the required correction.
