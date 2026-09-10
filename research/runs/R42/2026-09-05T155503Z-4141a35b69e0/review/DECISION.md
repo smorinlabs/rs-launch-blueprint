@@ -1,4 +1,4 @@
-# R42 — dev-toolchain-provisioning (bundle, Deep) — DECISION (revision 4, 2026-09-10)
+# R42 — dev-toolchain-provisioning (bundle, Deep) — DECISION (revision 5, 2026-09-10)
 
 ## Decision
 
@@ -352,13 +352,18 @@ mechanism against a stub input.
 | 11 | **Cargo aliases as a further invocation form, and subcommand precedence** (revision 2) | in `alias/` (`.cargo/config.toml` defines `myver = "version"`, `demo = "version"`): `cargo myver`; `command -v cargo-myver`; `cargo myver` from a directory without that file; `cargo demo --flag 1` with the `cargo-demo` stub on `PATH`; `cargo version` with a `cargo-version` stub on `PATH`; `cargo demo --flag 1` with the stub on `PATH` but outside `alias/` | see Result | an alias **runs with no `cargo-myver` executable on `PATH`**: `cargo myver` → `cargo 1.94.0 (85eff7c80 2026-01-15)`, exit 0, while `command -v cargo-myver` exits **1** — so the parameter's presence test finds nothing for a name that works. Aliases are **directory-scoped**: the same `cargo myver` outside `alias/` exits **101**, `error: no such command: 'myver'`. Precedence, for the two collisions actually exercised: **a built-in beats a same-named external subcommand** — `cargo version` with the `cargo-version` stub on `PATH` printed Cargo's own version and the stub did not run — and **an alias beats a same-named external subcommand, with a warning** — `cargo demo` inside `alias/` ran the alias and emitted `warning: user-defined alias 'demo' is shadowing an external subcommand found at …/bin/cargo-demo … this was previously accepted but will become a hard error in the future; see https://github.com/rust-lang/cargo/issues/10049`; outside `alias/` the same `cargo demo --flag 1` dispatched to the stub, exit 0. **The built-in-versus-alias order was not exercised here** and is not asserted. Cargo's built-ins have no executable either: `command -v cargo-test cargo-build cargo-doc cargo-run` exits **1** while `cargo test --help` exits 0 | `evidence/alias-mechanism.log`, `evidence/invocation-sweep.log` |
 | 12 | **The presence test for the two acquisition channels, on real tools rather than stubs** (revision 2) | `ls -l ~/.cargo/bin` for the proxy set; `command -v cargo-machete`; `cargo machete --version`; `cargo audit --version`; `command -v cargo-nosuchplugin`; `cargo nosuchplugin`; `command -v taplo typos`; `taplo --version`; `typos --version`; `command -v gitleaks`; and, for a rustup-proxied **bare** name, `command -v rustfmt rust-analyzer` plus `rustfmt --version` and `rust-analyzer --version` in `neg/` and `pos/` | see Result | **crates.io class, `command -v` is meaningful**: `cargo-machete` and `cargo-audit` are ordinary executables (5977856 and 18907184 bytes, not symlinks); `command -v cargo-machete` exit 0 and `cargo machete --version` → `0.9.2`; `cargo audit --version` → `cargo-audit-audit 0.22.1`; the negative control `command -v cargo-nosuchplugin` exits 1 and `cargo nosuchplugin` exits 101. **Bare class**: `taplo --version` → `taplo 0.10.0`, `typos --version` → `typos-cli 1.32.0`, both resolved in `~/.cargo/bin`; `command -v gitleaks` exits 1, an uninstalled control. **The defect is not confined to `cargo-<sub>` names**: 13 entries in `~/.cargo/bin` are symlinks to `rustup` — `cargo`, `cargo-clippy`, `cargo-fmt`, `cargo-miri`, `clippy-driver`, `rls`, `rust-analyzer`, `rust-gdb`, `rust-gdbgui`, `rust-lldb`, `rustc`, `rustdoc`, `rustfmt` — so in `neg/` `command -v rustfmt rust-analyzer` exits 0 while `rustfmt --version` and `rust-analyzer --version` both exit 1, and in `pos/` both exit 0. This is why the parameter keys presence on acquisition rather than on the name's shape | `evidence/invocation-sweep.log`, `evidence/presence-test.log` |
 | 13 | **Cargo aliases in the four surveyed reference repositories** (revision 2) | `GET https://raw.githubusercontent.com/<repo>/HEAD/.cargo/config.toml` for the four; alias-name greps over each fetched `justfile`; `gh api repos/cargo-limit/cargo-limit/contents/src/bin` | 0 | `oxc` HTTP 200 with `[alias]` `ck`, `lint`, `codecov`, `coverage`, `benchmark`, `minsize`, `allocs`, `lint-timings`, `rule`, `lintgen`, invoked on 14 justfile lines (`:40`, `:51`, `:60`, `:64`, `:104`, `:108`, `:114`, `:119`, `:130`, `:298`, `:303`, `:307`, `:312`, `:314`); `biome` HTTP 200 with `[alias]` including `lint = "clippy --workspace …"`, `format = "fmt --all --verbose"` and `documentation`, invoked at `justfile:160`, `:234`, `:334`; `casey/just` and `cargo-bins/cargo-binstall` HTTP **404** — neither defines aliases, and `just`'s `cargo lclippy`/`lrun`/`lbuild`/`ltest` are `cargo-limit`'s binaries (`src/bin/cargo-lclippy.rs`, `cargo-lrun.rs`, `cargo-lbuild.rs`, `cargo-ltest.rs`), installed by its own `justfile:117` `cargo install cargo-limit`. Re-confirmed in the same fetch: **0** wrapper-prefix lines in all four `justfile`s | `evidence/reference-aliases.log` |
+| 14 | **The two figures the table asserted without a query** (revision 5; the correction the judgment audit asked for) | `curl -o /dev/null -w '%{http_code}' https://rustsec.org/packages/{rustup,time,atty}.html`; `GET https://crates.io/api/v1/crates/rustup`; `gh api repos/rust-lang/{rustup,cargo} --jq '{repo,license}'` | 0 | `rustup` **404** with the `time` and `atty` controls at **200**, so the RustSec cell is now a probed 404 rather than a figure carried from `raw/opus.md`; the crates.io crate named `rustup` exists but its only version `0.1.0` is **yanked** (`newest_version` `0.0.0`), which is why no crates.io licence for the toolchain manager exists to quote; GitHub `license.spdx_id` is `Apache-2.0` for `rust-lang/rustup` and for `rust-lang/cargo`. Run 2026-09-10T07:05:07Z | `evidence/rustup-figures.log` |
 
-**Figures, all retrieved 2026-09-10** (endpoints per the prompt's evidence table;
-open issues from `search/issues` `total_count`, never `open_issues_count`):
+**Figures, each retrieved 2026-09-10 from the endpoint its column names, except
+where the cell names another source** (endpoints per the prompt's evidence table;
+open issues from `search/issues` `total_count`, never `open_issues_count`). Two
+cells carried a value no log recorded until revision 5 queried them; both now
+name their query or their source, and the licence column names a source per row
+because four of its rows are not crates.io rows:
 
-| Candidate | 90-day / all-time downloads | Newest unyanked | Licence (crates.io) | `rust_version` | Stars | `archived` | `pushed_at` | Open issues | RustSec |
+| Candidate | 90-day / all-time downloads | Newest unyanked | Licence (source per row) | `rust_version` | Stars | `archived` | `pushed_at` | Open issues | RustSec |
 |---|---|---|---|---|---:|---|---|---:|---|
-| `cargo install --locked` | inapplicable — part of Cargo, not a separate crate | ships with the toolchain | Apache-2.0 OR MIT | n/a | n/a | n/a | n/a | n/a | inapplicable |
+| `cargo install --locked` | inapplicable — part of Cargo, not a separate crate | ships with the toolchain | `Apache-2.0` (GitHub `license.spdx_id` for `rust-lang/cargo`, check 14, 2026-09-10); the project is dual Apache-2.0/MIT per `raw/opus.md` (2026-09-05), which no query here confirms — GitHub's field holds one id | n/a | n/a | n/a | n/a | n/a | inapplicable |
 | `cargo-binstall` | 125152 / 3482994 | 1.23.0, 2026-09-05T16:59:01Z | **GPL-3.0-only** | 1.79.0 | 2864 | false | 2026-09-10T01:22:53Z | 93 | none (404) |
 | `cargo-quickinstall` | 7802 / 501029 | 0.3.53, 2026-07-12T05:43:44Z | MIT OR Apache-2.0 | none declared | — | — | — | — | not queried |
 | `ubi` | 83205 / 304322 | 0.12.0, 2026-08-31T03:45:16Z | MIT OR Apache-2.0 | 1.88 | 595 | false | 2026-09-07T21:12:11Z | 11 | none (404) |
@@ -367,8 +372,8 @@ open issues from `search/issues` `total_count`, never `open_issues_count`):
 | `just` | 511896 / 2540667 | 1.58.0, 2026-08-03T20:29:15Z | CC0-1.0 | 1.89.0 | 35716 | false | 2026-09-01T20:47:57Z | 171 | none (404) |
 | `cargo-run-bin` | 82261 / 293046 | 1.7.5, **2025-07-14T14:31:29Z** | MIT | 1.70.0 | 237 | false | **2025-12-19T02:30:12Z** | 7 | none (404) |
 | `cargo-make` | 246864 / 3670537 | 0.37.24, **2025-01-18T15:20:30Z** | Apache-2.0 | none declared | — | — | — | — | not queried |
-| `rustup` | inapplicable — distributed via `rustup-init`, not crates.io | n/a | Apache-2.0 OR MIT | n/a | 7034 | false | 2026-09-09T14:33:39Z | 392 | none (404) |
-| `taiki-e/install-action` | inapplicable — a GitHub Action, not a crate | n/a | Apache-2.0 | n/a | 537 | false | 2026-09-09T11:24:03Z | 15 | inapplicable |
+| `rustup` | inapplicable — distributed via `rustup-init`, not crates.io; the crates.io crate named `rustup` is a placeholder whose only version, `0.1.0`, is yanked (check 14) | n/a | `Apache-2.0` (GitHub `license.spdx_id` for `rust-lang/rustup`, check 6, 2026-09-10); dual Apache-2.0/MIT per `raw/opus.md` (2026-09-05), unconfirmed here | n/a | 7034 | false | 2026-09-09T14:33:39Z | 392 | none (404) — **probed for revision 5**, check 14, not by check 7 |
+| `taiki-e/install-action` | inapplicable — a GitHub Action, not a crate | n/a | `Apache-2.0` (GitHub `license.spdx_id`, check 6) | n/a | 537 | false | 2026-09-09T11:24:03Z | 15 | inapplicable |
 
 **Maintenance state by the prompt's rubric.** `cargo-binstall`, `ubi`, `mise`,
 `flox`, `just`, `rustup`, `taiki-e/install-action`: **active** (all pushed within
@@ -383,14 +388,19 @@ recorded them as unmeasurable.
 **Fitness gates, answered for the recommended stack.** Every candidate here is a
 developer tool executed as a **separate process**, linked into nothing, and the
 gates are answered in that light rather than silently skipped. Gate 1 (licence):
-`cargo install --locked` is `Apache-2.0 OR MIT`, `ubi` is `MIT OR Apache-2.0`,
-`just` is `CC0-1.0` — all clean under any reading; `cargo-binstall` is
+`cargo install --locked` ships inside Cargo, whose repository reports
+`Apache-2.0` (GitHub `license.spdx_id`, check 14) and which `raw/opus.md` records
+as dual Apache-2.0/MIT; `ubi` is `MIT OR Apache-2.0` and `just` is `CC0-1.0`,
+both from the registry (check 5) — all clean under any reading; `cargo-binstall` is
 `GPL-3.0-only` and is handled in `## Decision`. Gate 2 (MSRV): **inapplicable**
 for a prebuilt install, because nothing is compiled on the contributor's machine;
 for a source install the binding floor is the *development* channel from
 `rust-toolchain.toml`, not `msrv-policy`, which governs `rust-version` and the CI
-floor job only. Gate 3: no RustSec page for any candidate, verified against
-HTTP-200 controls; `unsafe` posture **not audited and not asserted** — a separate
+floor job only. Gate 3: **no RustSec page for any of the six candidates that were probed** —
+`cargo-binstall`, `ubi`, `mise`, `just`, `cargo-run-bin` (check 7) and `rustup`
+(check 14) — each a 404 verified against `time` and `atty` HTTP-200 controls in
+the same run; `cargo-quickinstall` and `cargo-make` were **not queried**, as
+their rows say, and nothing is asserted about them; `unsafe` posture **not audited and not asserted** — a separate
 process cannot reach the template's address space, and the residual risk is
 supply-chain, which the pinned `name@version` spec and `--locked` narrow but do
 not eliminate. Gate 4 (OS): `ubuntu-latest` and `macos-latest` are covered by
@@ -496,9 +506,10 @@ the restricted-`PATH` checks; the working-directory paragraph enumerates the
 revision-2 scratch files exactly; check 4's caveat is settled by the new check
 10; five checks (9–13) are added; the hazard note records what check 10 proves
 and what it does not. *`## Engines`* — this history; disagreement 6 (F2);
-unproven item 1 now credits the r1 auditor's Linux rerun and records that checks
-9–12 have no Linux leg, while items 2, 3 and 9 are narrowed to what the new
-checks leave open.
+unproven item 1 credited the r1 auditor's Linux rerun and recorded that checks
+9–12 had no Linux leg — true when revision 2 wrote it, false as soon as the r2
+and r3 audits reran check 9 and check 11 on Linux, and corrected in revision 5 —
+while items 2, 3 and 9 are narrowed to what the new checks leave open.
 Nothing in `review/` outside `DECISION.md` was edited; four evidence logs were
 added (`presence-test.log`, `alias-mechanism.log`, `invocation-sweep.log`,
 `reference-aliases.log`) and no existing log was modified.
@@ -600,6 +611,63 @@ alias answer, the recommendation, the survey, the licence question, the five
 adjudications, disagreement 6 and the unproven list all stand. The change is six
 hunks (`git diff -U0` against the committed revision 3), 62 lines added and 13
 removed, all of them wording.
+
+Revision 4 (sha256
+`7ad0e5dabe14d5004054cf7ee729f9dd82fdda9321d9086856eaaa8f99510aa4`) was
+**approved** by the empirical audit `review/audit-codex.r4.md` (actor
+`audit-codex-2026-09-05T155503Z-4141a35b69e0-r4`, model `gpt-5.6-terra`, family
+openai) **with no findings**. That audit reran nothing, because revision 4 was a
+wording-only round whose task prohibited it; it re-opened the two edited
+sentences and all eighteen rows of this table at their cited locations and
+confirmed each reads as the table says
+(`evidence/audit-dev-toolchain-provisioning-r4.log`).
+
+Revision 4 was **rejected** by the judgment audit `review/audit-fable.r4.md`
+(actor `audit-fable-2026-09-05T155503Z-4141a35b69e0-r4`, model `claude-opus-5`,
+family anthropic) on **two findings**, both sentences that had not caught up with
+the record. Before them, that audit recorded what is now closed and must not be
+re-litigated: **all three findings of `review/audit-fable.r1.md` are genuinely
+closed**, checked against the current text rather than against this history;
+revision 4's two scoping edits are landed, read at their locations; **the owned
+parameter is now safe for all six consuming items**, which it walked one by one;
+the presence axis's treatment of Cargo's built-in subcommands is not a finding;
+and the unproven list's coverage is not at issue apart from item 1's final
+sentence. Its **F1** (blocking): unproven item 1 ended "Checks 9–12 postdate that
+audit and have no Linux leg", which the live `BASELINE-REVIEW: F181` clause, both
+revision histories and sweep row 3 contradict — `audit-codex.r2.md` and
+`audit-codex.r3.md` reproduced check 9's matrix and check 11's probes on a Lima
+Ubuntu VM — and the item credited the r1 Linux rerun two sentences earlier, so it
+applied two standards to one question and denied the very VM revision 4's scoping
+sentence leans on. Its **F2** (minor): the figure table was headed "Figures, all
+retrieved 2026-09-10", but the `rustup` row's RustSec `none (404)` was never
+probed by check 7 and was carried unattributed from `raw/opus.md` at 2026-09-05,
+its `Apache-2.0 OR MIT` sat under a `Licence (crates.io)` header with no
+crates.io query, and fitness gate 3's "any candidate" inherited the overreach.
+
+**Revision 5** (this text; 2026-09-10, model `claude-opus-5`) closes both.
+**F1**: unproven item 1 is rewritten to state one standard — a rerun discharges
+the checks it names, whoever ran it — and then to apply it in both directions,
+crediting the r1 Linux rerun of checks 2–8, the r2 and r3 Linux reruns of check
+9's nine-command matrix and the r3 Linux rerun of check 11's precedence probes,
+while naming the two host-dependent checks that genuinely still have no Linux
+leg, 10 and 12, and separating the network reads that are owed none. **F2**: the
+two figures were **probed** rather than re-attributed, which is why this revision
+has an empirical check at all — new **check 14** records `rustsec.org` returning
+404 for `rustup` against the same `time`/`atty` 200 controls, the crates.io crate
+named `rustup` being a placeholder whose only version is yanked, and GitHub
+`license.spdx_id` `Apache-2.0` for `rust-lang/rustup` and `rust-lang/cargo`; the
+table heading, the licence column header and the `cargo install --locked`,
+`rustup` and `taiki-e/install-action` licence cells now name their source and
+date; and fitness gates 1 and 3 name the six probed candidates and say plainly
+that `cargo-quickinstall` and `cargo-make` were not queried. Every other place
+that credits or denies an audit rerun, or attributes a figure to a check, was
+re-opened and confirmed against the logs; the list is in the reply and none
+needed an edit. Nothing else changes — the recommendation, the survey, the
+licence question, the presence test and its matrix, the alias answer, the
+adjudications, the eighteen-row sweep and the other nine unproven items all
+stand. One file was added outside `DECISION.md`, as the probe required:
+`evidence/rustup-figures.log`. No existing evidence log was modified and no
+earlier check was rerun.
 
 **Disagreements, and the evidence that settled each.**
 
@@ -704,15 +772,28 @@ opus with a cited endpoint and retrieval date.
 **Unproven — what P03 must validate against the real template.** Each item names
 what would prove it.
 
-1. **Linux.** Every command in `## Empirical check`, in both revisions, ran on
-   macOS 26.4 / arm64 only. Proof: run checks 3, 4 and 8's equivalents, and
-   revision 2's checks 9–12, on `ubuntu-latest`. Partially discharged already for
-   the revision-1 checks, though not by this synthesizer: the archived empirical
-   audit `review/audit-codex.r1.md` reran checks 2, 3, 4, 5, 6, 7 and 8 on
-   Lima Ubuntu arm64 at `rustc`/`cargo` 1.98.1, reproduced every figure, and
-   reported that there `cargo` *is* the rustup proxy
-   (`evidence/audit-dev-toolchain-provisioning.log`). Checks 9–12 postdate that
-   audit and have no Linux leg.
+1. **Linux.** Every command this decision ran itself — revision 1's checks 1–8,
+   revision 2's checks 9–13 and revision 5's check 14 — ran on macOS 26.4 / arm64;
+   revisions 3 and 4 ran none. **One standard is applied to the archived audits
+   throughout this item: a rerun discharges the checks it names, whoever ran it,
+   and is credited here by name.** On that standard the Linux legs on record are:
+   checks 2, 3, 4, 5, 6, 7 and 8, rerun by `review/audit-codex.r1.md` on Lima
+   Ubuntu arm64 at `rustc`/`cargo` 1.98.1, reproducing every figure and reporting
+   that there `cargo` *is* the rustup proxy
+   (`evidence/audit-dev-toolchain-provisioning.log`); **check 9's full
+   nine-command matrix**, rerun against Linux-target fixtures by
+   `review/audit-codex.r2.md` and again by `review/audit-codex.r3.md`, both
+   matching all six cells (`evidence/audit-dev-toolchain-provisioning-r2.log`,
+   `…-r3.log`); and **check 11's precedence probes**, rerun on the same VM by
+   `review/audit-codex.r3.md`. Two host-dependent checks still have **no** Linux
+   leg, in this decision or in any audit: **check 10**, the one `cargo fmt
+   --version` repeated across three committed channels, and **check 12**, the
+   proxy-name, crates.io-plugin and bare-binary probes — every rerun of those was
+   on macOS. The host-dependent checks are 3, 4, 9, 10, 11 and 12; checks 2, 5, 6,
+   7, 8, 13 and 14 are network reads whose results cannot depend on the runner's
+   operating system, and check 1 only records the host, so no Linux leg is owed
+   for those — `audit-codex.r1.md` reran checks 2 and 5 through 8 regardless.
+   Proof: run checks 10 and 12 on `ubuntu-latest`.
 2. **Component resolution through the rustup proxy, on a machine with only one
    Rust installation.** Narrowed by revision 2's check 10 and no longer open in
    the form revision 1 stated it: with `PATH` restricted to
