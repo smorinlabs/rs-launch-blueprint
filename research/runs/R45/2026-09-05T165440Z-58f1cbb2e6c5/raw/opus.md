@@ -240,7 +240,7 @@ March 25 2026; cubic's `ultrareview` and reply-to-comment flows).
 
 **BASELINE-REVIEW.** One finding is ledger-shaped and is routed rather than acted on.
 
-BASELINE-REVIEW: F204 — a PR-template trigger block can only name bots the repository actually configures, so its content is determined by the bot set rather than independent of it — record F204 as content-dependent on F051/F052 (R18) instead of `standalone`, so that a later change to R18's bot set or to the owner's enablement decision re-opens F204 — evidence: py's block names `@coderabbitai`, `@greptile-apps` and `@cubic-dev-ai` (py `.github/pull_request_template.md:90-96` at pin `b08bccfb`), and R18's resolved decision configures none of the three, rejecting hosted third-party review apps (`research/topics/18-ai-assisted-review-workflows/DECISION.md:96`) and shipping both `claude-code-action` lanes inert (same file, `## Decision`). Affected items: R45, R18, and ledger row F204 (`docs/port/COMMONALITY.md:208`, currently annotated `standalone`).
+BASELINE-REVIEW: F204 — a PR-template trigger block can only name bots the repository actually configures, so its content is determined by the bot set rather than independent of it — record F204 as content-dependent on F051/F052 (R18) instead of `standalone`, so that a later change to R18's bot set or to the owner's enablement decision re-opens F204 — evidence: py's block names `@coderabbitai`, `@greptile-apps` and `@cubic-dev-ai` (py `.github/pull_request_template.md:90-97` at pin `b08bccfb`), and R18's resolved decision configures none of the three, rejecting hosted third-party review apps (`research/topics/18-ai-assisted-review-workflows/DECISION.md:96`) and shipping both `claude-code-action` lanes inert (same file, `## Decision`). Affected items: R45, R18, and ledger row F204 (`docs/port/COMMONALITY.md:208`, currently annotated `standalone`).
 
 ### Dominant choice
 
@@ -267,10 +267,12 @@ date of the most recent authoritative write-up.
   trigger reference, with inlining reserved for trigger phrases the template itself owns*) · a
   "Requesting another review" section in `CONTRIBUTING.md`, which GitHub links from the new-pull-request
   page (<https://docs.github.com/en/communities/setting-up-your-project-for-healthy-contributions/setting-guidelines-for-repository-contributors>)
-  · adopters: the Rust project (`@rustbot` shortcuts in the rustc-dev-guide and on
-  forge.rust-lang.org, with the PR template kept free of comment commands), ratatui (template is a
-  single line deferring to `CONTRIBUTING.md`), tokio and axum (templates link the contributors guide
-  in their opening comment) · most recent authoritative write-up:
+  · adopters: the Rust project is the one **verified** adopter of the full
+  pattern — `@rustbot` comment shortcuts documented in the rustc-dev-guide and on forge.rust-lang.org,
+  with the PR template kept free of comment commands. ratatui (template is a single line deferring to
+  `CONTRIBUTING.md`), tokio and axum (templates link the contributors guide in their opening comment)
+  are verified only for the template-defers-to-`CONTRIBUTING` half; their contributor guides were
+  **not** read for bot commands, so they are not claimed as adopters of the bot-command half · most recent authoritative write-up:
   <https://rustc-dev-guide.rust-lang.org/rustbot.html> and
   <https://forge.rust-lang.org/triagebot/shortcuts.html>, both live and maintained as of 2026-09-10.
 
@@ -281,12 +283,17 @@ date of the most recent authoritative write-up.
   `@coderabbitai summary` · most recent authoritative write-up:
   <https://raw.githubusercontent.com/rust-lang/rust/main/.github/pull_request_template.md> and
   <https://docs.coderabbit.ai/reference/review-commands>, both retrieved 2026-09-10. This is the rule
-  that governs what may remain in the template, and today it admits nothing, because
-  `claude-code-action` parses no description directive that a template would seed.
+  that governs what may remain in the template, and today it admits **nothing** — for a sharper reason
+  than absence. `claude-code-action` *does* read pull-request bodies: its `trigger_phrase` is "The
+  trigger phrase to look for in comments, **issue/PR bodies**, and issue titles"
+  (<https://raw.githubusercontent.com/anthropics/claude-code-action/main/docs/usage.md>). The one
+  description-parsed string the configured reviewer owns is therefore the one string that must be kept
+  *out* of the template, because a template mentioning `@claude` seeds the trigger phrase into every
+  pull-request body it creates.
 
 - **`pr-template-inlined-chatops-block`** · the PR template, as a fenced block of literal vendor
   commands with a copy-and-paste instruction · adopters: `py-launch-blueprint` at pin `b08bccfb`
-  (`.github/pull_request_template.md:90-96`), committed 2026-06-21; no adopter found among the twelve
+  (`.github/pull_request_template.md:90-97`), committed 2026-06-21; no adopter found among the twelve
   surveyed Rust projects · most recent authoritative write-up: none — no vendor documents its commands
   as PR-template content; CodeRabbit, Greptile and cubic all document them as comment usage
   (<https://docs.coderabbit.ai/reference/review-commands>, <https://www.greptile.com/docs/llms-full.txt>,
@@ -332,7 +339,7 @@ than omitting it:
 6. **Binary-size and compile-time cost** — `inapplicable`, and the analogue is exact rather than
    asserted: zero bytes of binary, zero added compile time, because no `cargo` invocation is involved.
    The only cost is the number of lines a contributor reads in a pull-request body, which the
-   recommendation reduces by roughly seven lines.
+   recommendation reduces by eight lines.
 
 ### Up-and-comers
 
@@ -397,10 +404,17 @@ reserved for trigger phrases the template itself owns*:
 
 1. **The PR template contains no `@`-mention of any review bot.** The template is a
    pull-request-description surface; comment ChatOps does not belong on it. The only strings that
-   would earn a place are bot directives parsed from the description, and `claude-code-action` — the
-   sole reviewer R18 configures — defines none, so today the correct number is zero. If a future
-   revision adopts a bot with a description-parsed directive, `pr-template-description-directives-only`
-   is the rule that admits it.
+   would earn a place are bot directives parsed from the description, and the sole reviewer R18
+   configures inverts that test rather than passing it: `claude-code-action` scans pull-request bodies
+   for its `trigger_phrase`, so putting `@claude` in the template would seed that phrase into every
+   pull-request body the template creates. **This is what makes the rule load-bearing rather than
+   tidy.** Under R18's current shape the exposure is latent, not live — the assistant lane's `on:`
+   block lists no `pull_request` event, and the review lane runs with `prompt:` set, which selects
+   automation mode and does not consult the trigger phrase (`DECISION.md:11-12`) — but adding
+   `pull_request` to `claude.yml` at any later date would make every new pull request summon the agent
+   by itself. `CONTRIBUTING.md` is not a surface the action scans, so naming `@claude` there is safe.
+   If a future revision adopts a bot with a genuinely description-parsed directive,
+   `pr-template-description-directives-only` is the rule that admits it.
 
 2. **`CONTRIBUTING.md` gains one short section, "Requesting another review",** stating in prose: that
    the automated review runs when a pull request is opened, marked ready, or reopened and **not on
@@ -412,7 +426,9 @@ reserved for trigger phrases the template itself owns*:
 
 3. **Inline `@claude` and nothing else, and only there.** This is the one string in the entire field
    whose value the template itself sets — `trigger_phrase` defaults to `@claude` in
-   `anthropics/claude-code-action` and R18's workflows spell it literally in their `if:` conditions —
+   `anthropics/claude-code-action`, and R18's **assistant** workflow spells it literally in its
+   four-clause `contains(…, '@claude')` condition (`DECISION.md:12`; the review lane's `if:` carries the
+   `vars.ENABLE_CLAUDE_REVIEW`, fork, bot and draft guards instead) —
    so the template can keep it true by its own action. Every other bot's syntax is linked, never
    inlined: name the bot and link its command reference.
 
@@ -446,7 +462,7 @@ recorded below as the primary re-verify trigger.
 
 Second runner-up, ranked below that one: **`pr-template-inlined-chatops-block`** — py's shape, copied
 with rs's bot list. It becomes correct only if rs both enables a lane and adopts a bot whose command
-the template can keep true; even then it costs seven lines in every pull-request body to save one
+the template can keep true; even then it costs eight lines in every pull-request body to save one
 click in the Reviewers menu.
 
 ### Tradeoffs
@@ -510,8 +526,8 @@ File-level changes in `rs-launch-blueprint`, stated against the py precedent tha
 ported. `rs-launch-blueprint` has no `.github/` tree today; P03 authors these files, so every entry
 below is a *do-not-create* or a *create* instruction rather than an edit.
 
-- **`.github/pull_request_template.md` — do not create the "Review Trigger" section.** The seven lines
-  at py `.github/pull_request_template.md:90-96` (heading, the HTML comment "Bots also auto-review on
+- **`.github/pull_request_template.md` — do not create the "Review Trigger" section.** The eight lines
+  at py `.github/pull_request_template.md:90-97` (heading, the HTML comment "Bots also auto-review on
   push; use this block to (re)request a review on demand.", and the fenced `text` block containing
   `@coderabbitai review`, `@greptile-apps review`, `@cubic-dev-ai review`) are not carried forward.
   Two independent reasons, either sufficient: the three bots are not configured by this template
@@ -605,13 +621,18 @@ on fenced-block and list contexts if `CONTRIBUTING.md` grows email addresses.
 as a result here:
 1. Wire the guard as a CI step on `ubuntu-latest` and assert exit `0` on a clean tree and exit `1`
    after deliberately inserting `@coderabbitai review` into the PR template.
-2. Open a pull request from a template-derived repository and assert the rendered pull-request body
+2. Assert the template cannot seed the trigger phrase: `! grep -qF '@claude'
+   .github/pull_request_template.md` must succeed, and likewise for any `trigger_phrase` value a later
+   revision configures. This is the check that keeps closed the latent self-summoning exposure
+   described in `### Recommendation` item 1, even if a later revision adds `pull_request` to
+   `claude.yml`. `CONTRIBUTING.md` is deliberately exempt: the action does not scan it.
+3. Open a pull request from a template-derived repository and assert the rendered pull-request body
    contains no `@` mention of any bot.
-3. With `vars.ENABLE_CLAUDE_ASSISTANT` set to `true`, post `@claude please re-review` from a
+4. With `vars.ENABLE_CLAUDE_ASSISTANT` set to `true`, post `@claude please re-review` from a
    collaborator account and assert a run is created; post the same from an account with no
    association and assert none is — this is R18's unproven row **U12**, referenced rather than
    duplicated, and it is R18's to close.
-4. Assert the `CONTRIBUTING.md` claim about triggers by reading `.github/workflows/claude-code-review.yml`
+5. Assert the `CONTRIBUTING.md` claim about triggers by reading `.github/workflows/claude-code-review.yml`
    and confirming its `types:` list still omits `synchronize`; if P03 restores `synchronize`, the
    section's first sentence is wrong and must shrink.
 
