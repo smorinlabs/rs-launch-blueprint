@@ -1,0 +1,26 @@
+# rs-launch-blueprint CodeQL config (advanced setup; THIS file is the CodeQL config).
+# NOTE: the repo's "default setup" (Settings > Code security > Code scanning)
+# must stay DISABLED, or the workflow's SARIF upload fails with a configuration
+# error. Applies to forks too.
+
+name: "rs-launch-blueprint codeql"
+
+# security-extended = the default code-scanning suite plus lower-precision
+# security queries. At codeql-bundle-v2.26.4 the Rust delta is exactly
+# rust/log-injection (CWE-117) and rust/access-after-lifetime-ended (CWE-825).
+queries:
+  - uses: security-extended
+
+# Scan shipped code only. Cargo integration tests, benches and cargo-fuzz
+# targets hold deliberately hostile inputs and unsafe fixtures; the `**/`
+# prefix reaches them in every workspace member, not only at the root.
+# This does NOT reach #[cfg(test)] unit tests inside src/ (the Rust extractor
+# enables cfg(test) by default), and it deliberately keeps examples/ in scope
+# (template users copy examples). docs/ and target/ are not listed: Markdown
+# is never extracted, a .rs file under docs/ is copy-able example code (and is
+# extracted), and target/ is git-ignored. An entry for an absent directory is
+# inert.
+paths-ignore:
+  - "**/tests/**"
+  - "**/benches/**"
+  - "**/fuzz/**"

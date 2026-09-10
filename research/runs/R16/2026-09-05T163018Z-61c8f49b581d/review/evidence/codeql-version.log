@@ -1,0 +1,31 @@
+# codeql version — 2026-09-09T07:21:07Z — host: macOS 26.4 arm64
+$ empirical/tools/codeql/codeql version --format=text
+CodeQL command-line toolchain release 2.26.4.
+Copyright (C) 2019-2026 GitHub, Inc.
+Unpacked in: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql
+   Analysis results depend critically on separately distributed query and
+   extractor modules. To list modules that are visible to the toolchain,
+   use 'codeql resolve packs' and 'codeql resolve languages'.
+exit=0
+
+$ empirical/tools/codeql/codeql resolve languages
+go (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/go)
+python (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/python)
+rust (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/rust)
+java (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/java)
+html (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/html)
+xml (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/xml)
+properties (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/properties)
+cpp (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/cpp)
+swift (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/swift)
+csv (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/csv)
+actions (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/actions)
+yaml (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/yaml)
+csharp (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/csharp)
+javascript (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/javascript)
+ruby (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/codeql/ruby)
+exit=0
+
+$ shasum -a 256 -c empirical/tools/codeql-bundle-osx64.tar.zst.checksum.txt
+codeql-bundle-osx64.tar.zst: OK
+exit=0

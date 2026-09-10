@@ -1,0 +1,55 @@
+# documentation cross-checks — retrieved 2026-09-09T07:33:06Z
+$ curl -sS https://raw.githubusercontent.com/github/codeql-action/v4.37.9/init/action.yml | grep -n -A3 -E '^  (queries|config-file|config):'
+90:  config-file:
+91-    description: Path of the config file to use
+92-    required: false
+93-  db-location:
+--
+96:  config:
+97-    description: Configuration passed as a YAML string in the same format as the config-file input. This takes precedence over the config-file input.
+98-    required: false
+99:  queries:
+100-    description: Comma-separated list of additional queries to run. By default, this overrides the same setting in a configuration file; prefix with "+" to use both sets of queries.
+101-    required: false
+102-  quality-queries:
+exit=0
+
+$ curl -sS https://raw.githubusercontent.com/github/codeql-action/v4.37.9/src/defaults.json
+{
+  "bundleVersion": "codeql-bundle-v2.26.4",
+  "cliVersion": "2.26.4",
+  "priorBundleVersion": "codeql-bundle-v2.26.3",
+  "priorCliVersion": "2.26.3"
+}
+
+exit=0
+
+$ curl -sS https://raw.githubusercontent.com/github/codeql-action/v4.37.0/src/defaults.json   (the tag py pins; the fixture workflow inherits it)
+{
+  "bundleVersion": "codeql-bundle-v2.26.0",
+  "cliVersion": "2.26.0",
+  "priorBundleVersion": "codeql-bundle-v2.25.6",
+  "priorCliVersion": "2.25.6"
+}
+
+exit=0
+
+$ WebFetch https://docs.github.com/en/code-security/code-scanning/creating-an-advanced-setup-for-code-scanning/customizing-your-advanced-setup-for-code-scanning — verbatim quotes returned:
+  "You can use this option when you run the CodeQL actions on an interpreted language (Python, Ruby, and JavaScript/TypeScript) or when you analyze a compiled language without building the code (currently supported for C/C++, C#, Java and Rust)."
+  security-extended: "Queries from the default suite, plus lower severity and precision queries"
+  "If you want to run the combined set of additional packs or queries, prefix the value of `packs` or `queries` in the workflow with the `+` symbol."
+
+# delta queries at the bundle behind the inherited pin (github/codeql-action@v4.37.0 -> codeql-bundle-v2.26.0) — retrieved 2026-09-09T07:51:01Z
+$ curl -sS https://raw.githubusercontent.com/github/codeql/codeql-cli/v2.26.0/rust/ql/src/queries/security/CWE-117/LogInjection.ql > /tmp/q.ql
+curl exit=0
+ * @problem.severity error
+ * @precision medium
+ * @id rust/log-injection
+$ curl -sS https://raw.githubusercontent.com/github/codeql/codeql-cli/v2.26.0/rust/ql/src/queries/security/CWE-825/AccessAfterLifetime.ql > /tmp/q.ql
+curl exit=0
+ * @problem.severity error
+ * @precision medium
+ * @id rust/access-after-lifetime-ended
+$ security-extended-selectors.yml sha256 at codeql-cli/v2.26.0 and codeql-cli/v2.26.4
+curl exit=0  b7aa198be7e5e8ab999591c2c9848e96d0ba8e5b9b5db702790f039ff6bcdb56  security-extended-selectors.yml@v2.26.0
+curl exit=0  b7aa198be7e5e8ab999591c2c9848e96d0ba8e5b9b5db702790f039ff6bcdb56  security-extended-selectors.yml@v2.26.4

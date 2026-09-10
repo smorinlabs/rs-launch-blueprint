@@ -1,0 +1,45 @@
+# Run C — recommended config at the MSRV floor (stable minus 2 = 1.96.0), workspace fixture — 2026-09-09T07:48:22Z — cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/fixture — macOS 26.4 arm64 — CodeQL 2.26.4
+$ export PATH="$HOME/.cargo/bin:$PATH" RUSTUP_TOOLCHAIN=1.96.0; command -v cargo; cargo --version; rustc --version
+/Users/stevemorin/.cargo/bin/cargo
+cargo 1.96.0 (30a34c682 2026-05-25)
+rustc 1.96.0 (ac68faa20 2026-05-25)
+$ cargo build --workspace --all-targets 2>&1 | tail -1
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.56s
+exit=0
+$ cargo test --workspace 2>&1 | grep -E '^test result'
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+exit=0
+
+$ codeql database create <W>/db-cfg-196 --language=rust --build-mode=none --source-root=. --codescanning-config=.github/codeql/codeql-config.yml --overwrite
+Successfully created database at /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/tools/.work/db-cfg-196.
+exit=0
+total .rs archived: 2433
+  toolchain source roots seen: toolchains/1.96.0-aarch64-apple-darwin 
+  fixture files:
+    crates/inner/src/lib.rs
+    docs/snippet.rs
+    examples/example.rs
+    src/lib.rs
+    src/main.rs
+
+$ codeql database analyze <W>/db-cfg-196 --format=sarif-latest --output=<W>/cfg-196.sarif --rerun
+CodeQL scanned 5 out of 5 Rust files in this invocation. Typically CodeQL is configured to analyze a single CodeQL language per invocation, so check other invocations to determine overall coverage information.
+| Total number of Rust files that were extracted with errors   |     0 |
+| Total number of Rust files that were extracted without error |     5 |
+exit=0
+$ python3 /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R16/2026-09-05T163018Z-61c8f49b581d/review/empirical/sarif-summary.py <W>/cfg-196.sarif | grep -E '^results|^  rust/[a-z-]+  '
+results: 7
+  rust/access-after-lifetime-ended  crates/inner/src/lib.rs:12
+  rust/access-after-lifetime-ended  docs/snippet.rs:12
+  rust/access-after-lifetime-ended  examples/example.rs:12
+  rust/access-after-lifetime-ended  src/lib.rs:14
+  rust/access-after-lifetime-ended  src/lib.rs:47
+  rust/access-invalid-pointer  src/lib.rs:25
+  rust/cleartext-logging  src/lib.rs:33
+exit=0
