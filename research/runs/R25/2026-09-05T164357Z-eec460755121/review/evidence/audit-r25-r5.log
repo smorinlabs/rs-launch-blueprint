@@ -1,0 +1,198 @@
+# R25 revision-5 empirical audit evidence
+
+Run date: 2026-09-10
+Working directory: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R25/2026-09-05T164357Z-eec460755121`
+Decision digest read: `bd589e40bd9f107c061bdc678489f8165644f5a0bef5794a38fc8d93b2fd0b4f`
+
+## Linux attempt
+
+```text
+limactl shell ubuntu -- bash -lc 'source "$HOME/.cargo/env" ...'
+fatal: instance `ubuntu` is stopped
+exit=1
+
+limactl start ubuntu
+info: Starting the instance `ubuntu`
+fatal: unlinkat /Users/stevemorin/.lima/ubuntu/ha.stdout.log: operation not permitted
+exit=1
+```
+
+`limactl` was callable, but this sandbox could not start the stopped instance. The substantive rerun therefore used macOS with isolated temporary npm inputs under `/private/tmp/r25-r5-audit.EAZgT9`.
+
+## macOS toolchain and decision identity
+
+```text
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+node v26.5.0
+npm 12.0.1
+Darwin arm64
+bd589e40bd9f107c061bdc678489f8165644f5a0bef5794a38fc8d93b2fd0b4f  review/DECISION.md
+```
+
+## Pinned source rerun
+
+Commands fetched `src/strategies/base.ts`, `src/commit.ts`, `src/manifest.ts`, `src/versioning-strategies/default.ts`, `src/bin/release-please.ts`, and `schemas/config.json` from `googleapis/release-please@v17.11.2`. The relevant complete checks printed:
+
+```text
+base.ts:543-574
+547 if (this.releaseAs) { return Version.parse(this.releaseAs); }
+554 const releaseAsCommit = conventionalCommits.find(... note.title === 'RELEASE AS');
+557 if (releaseAsCommit) { ... return Version.parse(note.text); }
+566 if (latestRelease) { return await this.versioningStrategy.bump(...); }
+573 return this.initialReleaseVersion();
+
+release-please.ts:288-294
+290 .option('release-as', {
+291   describe: 'override the semantically determined release version',
+292   type: 'string',
+
+manifest.ts:1398-1407,1440-1465
+1403 releaseAs: config['release-as'],
+1442 * @param {string} releaseAs Optional. Override release-as and use the given version
+1460 if (releaseAs) {
+1461   repositoryConfig[path].releaseAs = releaseAs;
+1462 }
+
+config.json:53-56
+"release-as": {
+  "description": "[DEPRECATED] Override the next version of this package. Consider using a `Release-As` commit instead.",
+  "type": "string"
+}
+
+commit.ts:258-295
+262 const semanticFooter = node.value.toLowerCase() === 'release-as';
+284 if (semanticFooter) {
+290   headerCommit.notes.push({
+291     title: 'RELEASE AS',
+292     text: releaseAs,
+293   });
+}
+
+default.ts:66-105
+74 const releaseAs = commit.notes.find(note => note.title === 'RELEASE AS');
+75 if (releaseAs) {
+78   logger.debug('found Release-As: <version>, forcing version');
+80   return new CustomVersionUpdate(Version.parse(releaseAs.text).toString());
+}
+91 if (breaking > 0) { ... }
+97 } else if (features > 0) { ... }
+104 return new PatchVersionUpdate();
+```
+
+This establishes two override paths, not two sources per path: `this.releaseAs` has the deprecated configuration key and the `--release-as` option as its two input sources; the `Release-As:` commit footer is one source for the separate commit-note path. The footer is checked again by `DefaultVersioningStrategy.determineReleaseType` before breaking and feature classification.
+
+## Citation spot checks
+
+```text
+200 https://doc.rust-lang.org/cargo/reference/semver.html
+200 https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
+200 https://semver.org/
+200 https://raw.githubusercontent.com/rust-lang/api-guidelines/master/src/necessities.md
+200 https://raw.githubusercontent.com/release-plz/release-plz/main/website/docs/config.md
+```
+
+## Direct strategy rerun
+
+`release-please@17.11.2` was installed with an isolated cache. The direct `DefaultVersioningStrategy` matrix and footer inverse control exited 0:
+
+```text
+release-please=17.11.2
+A|0.1.0|fix:|0.1.1
+A|0.1.0|feat:|0.1.1
+A|0.1.0|feat!:|0.2.0
+A|0.1.3|fix:|0.1.4
+A|0.1.3|feat:|0.1.4
+A|0.1.3|feat!:|0.2.0
+A|1.0.0|fix:|1.0.1
+A|1.0.0|feat:|1.1.0
+A|1.0.0|feat!:|2.0.0
+C|0.1.0|fix:|0.1.1
+C|0.1.0|feat:|0.2.0
+C|0.1.0|feat!:|1.0.0
+C|0.1.3|fix:|0.1.4
+C|0.1.3|feat:|0.2.0
+C|0.1.3|feat!:|1.0.0
+C|1.0.0|fix:|1.0.1
+C|1.0.0|feat:|1.1.0
+C|1.0.0|feat!:|2.0.0
+D|0.1.0|fix:|0.1.1
+D|0.1.0|feat:|0.2.0
+D|0.1.0|feat!:|0.2.0
+D|0.1.3|fix:|0.1.4
+D|0.1.3|feat:|0.2.0
+D|0.1.3|feat!:|0.2.0
+D|1.0.0|fix:|1.0.1
+D|1.0.0|feat:|1.1.0
+D|1.0.0|feat!:|2.0.0
+E|0.1.0|fix:|0.1.1
+E|0.1.0|feat:|0.1.1
+E|0.1.0|feat!:|1.0.0
+E|0.1.3|fix:|0.1.4
+E|0.1.3|feat:|0.1.4
+E|0.1.3|feat!:|1.0.0
+E|1.0.0|fix:|1.0.1
+E|1.0.0|feat:|1.1.0
+E|1.0.0|feat!:|2.0.0
+found Release-As: 0.7.0, forcing version
+footer|0.1.0|feat! Release-As: 0.7.0|0.7.0
+```
+
+The footer inverse control confirms that a direct-strategy assertion also needs the footer condition.
+
+## Prompt, ledger, and protected-region checks
+
+```text
+cargo new --lib --vcs none <scratch>/cargo-probe
+version = "0.1.0"
+edition = "2024"
+
+inputs/prompt.md:28
+... (feat commits bump the minor digit, not major; fix commits bump patch ...)
+
+docs/port/COMMONALITY.md:76
+... starts pre-1.0 (bump-minor-pre-major/bump-patch-for-minor-pre-major) or post-1.0 like py
+
+four assumed values: diff -u output empty; exit=0
+R5 diff hunks: old lines 25, 408, 681, 687
+protected-marker search in that diff: output empty
+```
+
+The binding prompt alone reverses the flag gloss. F070 names the flags but glosses neither. The R5 diff does not touch either pre-major boundary phrase, schema quotation, options-table row, TypeScript history-table row, or any `- assumes` line.
+
+## Independent outcome sweep
+
+I block-scanned the current decision for a version literal plus an outcome verb (`propose`, `release`, `produce`, `yield`, `return`, `bump`, `move`, `start`, `give`, `select`, or `force`). The current in-scope version-outcome blocks are:
+
+```text
+59-63    recommendation manifest cell (two assertions)
+70-77    BaseStrategy precedence
+157-165  per-commit bump summary
+211-217  A1-A4 acceptance outcomes
+253-269  strategy branch order
+341-347  architecture-1 commit-history function
+361-366  options-table no-override preamble
+376-385  generalised C/D/E outcomes
+392-406  initial-version ordering
+408-417  empty-manifest outcome
+419-432  seeded-manifest outcomes
+457-467  first Release PR outcome
+478-505  web-surface propagation example
+507-528  runner-up and graduation path
+530-540  graduation consequence
+632-641  empirical-check result rows
+661-683  revision-4 finding and confirmation
+685-692  mechanism dependency
+701-753  revision-5 sweep record
+782-804  revision-4 historical correction
+921-992  engine reconciliation and unproven boundary
+996-1039 unproven validation cases
+```
+
+Every present or proposed release-please outcome in that inventory is governed by an `override` condition. The no-marker candidates were reviewed and excluded as direct recommendations, source or schema quotations, observed Cargo or TypeScript history, the preamble-governed protected options table, historical-audit narration, or explicitly unproven work. No unconditioned outcome remains.
+
+Two material items remain correctly flagged as unproven rather than asserted: whether a surrounding pipeline allows an override to name an already released version (decision lines 425-429), and the end-to-end first Release PR with an empty manifest (lines 975-987).
+
+## Result
+
+The substantive macOS rerun exited 0. It supports the recommendation, the conditioned outcome sweep, both override paths, the footer's second check-site, the narrowed prompt-gloss claim, and the protected regions. It does not support decision lines 725-727, which say the two override paths have “their two sources apiece”: only the `releaseAs` path has two input sources.
