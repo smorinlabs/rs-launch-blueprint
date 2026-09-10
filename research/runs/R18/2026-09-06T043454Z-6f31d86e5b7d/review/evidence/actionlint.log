@@ -13,3 +13,24 @@ candidate-secrets-in-job-if-NEGATIVE.yml:14:9: context "secrets" is not allowed 
 14 |     if: secrets.CLAUDE_CODE_OAUTH_TOKEN != ''
    |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 exit: 1
+
+# ---- revision-3 addendum ---- 2026-09-10T06:29:17Z
+# Two new fixtures. The revision-1/2 fixtures above are unchanged and their
+# results above still describe them byte-for-byte.
+# candidate-claude-code-review.r3.yml adds `draft == false`.
+# candidate-claude.r3.yml adds the issue-#1068 author_association prefilter.
+# Working directory: research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence
+
+$ actionlint --version
+1.7.12
+installed by building from source
+built with go1.26.1 compiler for darwin/arm64
+exit: 0
+
+$ actionlint candidate-claude-code-review.r3.yml candidate-claude.r3.yml
+exit: 0
+
+# The clean exit above is the finding for revision 3: the author_association
+# prefilter that issue #1068 asks for, and the draft clause, are both
+# expressible in jobs.<job_id>.if — author_association arrives through the
+# `github` context, which check 1's context table lists as available there.
