@@ -1,4 +1,4 @@
-# R25 — Pre-1.0 semver bump strategy (pattern, Deep) — revision 2, 2026-09-10
+# R25 — Pre-1.0 semver bump strategy (pattern, Deep) — revision 3, 2026-09-10
 
 ## Decision
 
@@ -11,10 +11,13 @@ survive implementation, it is **revised against this recorded research**, not re
 from scratch; the executed evidence under `## Empirical check` is the baseline any revision argues
 against.
 
-**This is revision 2 (2026-09-10).** Revision 1 was rejected by an empirical audit on one claim —
-that the TypeScript source repository "first published v0.1.1" — which its cited evidence did not
-establish. The recommendation is unchanged; what changed is the precision of the supporting claim
-and a new registry check that settles it. The full diff is recorded at the end of `## Engines`.
+**This is revision 3 (2026-09-10).** Two prior revisions were rejected by empirical audit, both on
+precision rather than on the recommendation: revision 1 for claiming the TypeScript source
+repository "first published v0.1.1", revision 2 for saying release-please merges the release commit.
+The recommendation has never changed. What changed each time is the exactness of a supporting
+statement about who does what. Revision 3 also rewrites the four `- assumes` lines into the bare
+form the packaging validator compares byte-for-byte against `docs/port/PARAMETERS.md`. Both diffs
+are itemised at the top of `## Engines`.
 
 **Recommendation.** `rs-launch-blueprint` launches **pre-1.0 at `0.1.0`** with release-please's
 pre-major dampening fully enabled. Three artifacts, and one of them is deliberately empty:
@@ -26,16 +29,37 @@ pre-major dampening fully enabled. Three artifacts, and one of them is deliberat
 | `.release-please-manifest.json` | created **empty**: `{}` | So the **first version release-please releases is `0.1.0`**. A seeded `{".": "0.1.0"}` is read as an *already-released* version, and the first release would then be `0.1.1`. Derived from the tool's source; unproven until P03's first Release PR — see `## Engines`, unproven item 2 |
 
 **Vocabulary, used exactly and consistently from here on**, because the whole manifest argument
-turns on the distinction and revision 1 blurred it:
+turns on these distinctions and two earlier revisions blurred them. Each term is defined from
+release-please's own pinned documentation and source at `v17.11.2`, quoted rather than paraphrased,
+because this paragraph is where both earlier precision errors occurred.
 
-- a **release commit** is the `chore(release): …` commit release-please merges to the default branch;
-- a **tag** is the Git tag the release then carries;
-- a **registry publication** is a version actually served by crates.io (for rs) or npmjs.com (for ts).
+- a **Release PR** is the pull request release-please opens and keeps current. README: *"Rather than
+  continuously releasing what's landed to your default branch, release-please maintains Release
+  PRs"*, and *"These Release PRs are kept up-to-date as additional work is merged."* Its changes
+  include `Cargo.toml`, the changelog and `.release-please-manifest.json` —
+  `Manifest` pushes an update for `this.manifestPath` onto `releasePullRequest.updates` with
+  `createIfMissing: false` (`src/manifest.ts:785-792`), which is why that file must already exist,
+  empty, rather than be absent.
+- a **release commit** is that Release PR's content once it lands on the default branch. **The merge
+  is the repository's act, not release-please's** — README: *"When you're ready to tag a release,
+  simply merge the release PR. Both squash-merge and merge commits work with Release PRs."*
+- a **tag** is what release-please does *after* that merge. README, listing what happens *"When the
+  Release PR is merged"*: *"2. Tags the commit with the version number"*, *"3. Creates a GitHub
+  Release based on the tag"*. The tag's spelling follows `include-v-in-tag`, whose schema
+  description is *"When tagging a release, include `v` in the tag. Defaults to `true`."*
+- a **registry publication** is a version actually served by crates.io (for rs) or npmjs.com (for
+  ts). Release-please does not do this at all, and says so: *"It does not handle publication to
+  package managers or handle complex branch management."* Its own status-label convention concedes
+  the same boundary — `autorelease: published` *"means that a GitHub release has been published
+  based on the Release PR (release-please does not automatically add this tag, but we recommend it
+  as a convention for publication tooling)"*.
 
-They are three different events. Release-please decides the first two. Whether a publication follows
-is the publish workflow's business — ledger rows F074 (tag/version guard) and F075 (OIDC Trusted
-Publishing), both `COMMON → REUSE` and both outside R25. **No claim in this decision infers a
-registry publication from a release commit or a tag.**
+So the division of labour is: **release-please computes the version and prepares the release commit
+inside a Release PR; the repository merges that PR; release-please then tags the merged commit and
+creates a GitHub release; and something else entirely publishes to a registry** — here ledger rows
+F074 (tag/version guard) and F075 (OIDC Trusted Publishing), both `COMMON → REUSE` and both outside
+R25. **No claim in this decision infers a registry publication from a release commit or a tag, and
+none attributes the merge to release-please.**
 
 Tool under which those keys were read and exercised: **release-please `v17.11.2`**
 (`tag_name` from `GET https://api.github.com/repos/googleapis/release-please/releases/latest`, whose
@@ -293,15 +317,18 @@ configures the npmjs.com trusted publisher" (pinned clone `cb1cbcb`). Nothing ab
 is carried over to crates.io here.
 
 If `0.1.0` is to be the first version released, the manifest must be created empty
-(`echo "{}" > .release-please-manifest.json`, the maintainers' own bootstrap instruction) and
-`Cargo.toml` left at `0.1.0`; release-please then proposes `0.1.0`, writes `{".": "0.1.0"}` itself,
-and tags it in whatever form the repository's `include-v-in-tag` setting produces. Whether that
-release reaches crates.io is F075's business, not this item's, and P03 proves the released number at
-the first Release PR (`## Engines`, unproven item 2).
+(`echo "{}" > .release-please-manifest.json`, the maintainers' own bootstrap instruction — the file
+has to exist because the manifest updater runs with `createIfMissing: false`) and `Cargo.toml` left
+at `0.1.0`. Release-please then **opens a Release PR proposing `0.1.0`**, whose changes include
+writing `{".": "0.1.0"}` into the manifest; **the repository merges that PR**; and release-please
+then tags the merged commit, in whatever form `include-v-in-tag` produces, and creates a GitHub
+release. Whether that release reaches crates.io is F075's business, not this item's, and P03 proves
+the released number at the first Release PR (`## Engines`, unproven item 2).
 
 *Implementation note that travels with the empty manifest, flagged rather than decided here:* with
-no manifest entry, release-please collects **all** commits in the branch's history for the first
-changelog. The documented control is a top-level `"bootstrap-sha"` key, which py already uses
+no manifest entry, the first Release PR *"will collect all the commits (in the history of the
+default/configured branch) to parse out conventional commits for changelog generation"*
+(`docs/manifest-releaser.md`, v17.11.2). The documented control is a top-level `"bootstrap-sha"` key, which py already uses
 (`b08bccf`). Changelog scope is F066/R24 territory, not R25's; P03 should set it deliberately when
 it wires the first release.
 
@@ -319,9 +346,11 @@ it wires the first release.
   from `GET https://crates.io/api/v1/crates/<name>`, retrieved 2026-09-09), and R53, R55, R58, R67
   and R69 have not yet chosen them. A `1.0.0` launch would make a claim the guidelines say the crate
   is not entitled to make, on evidence that does not exist yet.
-- *CLI (installed binary).* Weakest constraint. `cargo install` resolves the newest version whatever
-  the digits are, and users read release notes rather than version arithmetic. Neither option harms
-  this shape. One point for `0.1.0`: in a single-version workspace the CLI's `--version` string and
+- *CLI (installed binary).* Weakest constraint. A binary's consumer does not write a version
+  requirement at all — `cargo install` takes an optional `--version <VERSION>` ("Specify a version to
+  install", `cargo install --help`, cargo 1.98.0), so pinning is opt-in rather than the caret band
+  the library case turns on — and users read release notes rather than version arithmetic. Neither
+  option harms this shape. One point for `0.1.0`: in a single-version workspace the CLI's `--version` string and
   the library's version are the same string, so the CLI should not be the surface making a stability
   promise on the library's behalf.
 - *Web service (optional feature-gated surface).* A feature-gated HTTP surface built on pre-1.0
@@ -383,7 +412,7 @@ any gate**. (1) *License* — inapplicable; no crate enters the tree. For comple
 inapplicable; a version string has no MSRV and does not constrain `rust-version`. (3) *RustSec /
 `unsafe`* — inapplicable to a version-number policy, which has no code. (4) *`ubuntu-latest,
 macos-latest`* — inapplicable as written, nothing is built; version arithmetic is platform
-independent and release-please runs on whichever GitHub-hosted runner the workflow picks. (5)
+independent and release-please runs wherever the workflow's `runs-on` puts it. (5)
 *Default features / async coupling* — inapplicable; the two flags are JSON booleans that default to
 `false` when absent. (6) *Binary size and compile time* — inapplicable and measurably zero: the
 decision changes only the `[package] version` string, which reaches the binary at most through the
@@ -395,19 +424,38 @@ re-verify: before P03 cuts the first release (run the end-to-end `release-please
 
 ## Parameters
 
-- owns: **none.** R25 owns no entry in `docs/port/PARAMETERS.md`; the binding prompt's
-  `## Couplings` `- owns:` line is empty and `research/CLAUDE.md`'s R25 row records `—` in the
-  `owns` column. This item's output is consumed as ledger row F070's content, not as a registry
-  parameter. Two raw reports invented owned parameters; that is corrected under `## Engines`.
-- assumes `msrv-policy` = `stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI` — owner-fixed (`docs/port/PARAMETERS.md`, 2026-09-02). Unaffected: the recommendation adds no crate and touches no `rust-version` key.
-- assumes `rust-edition` = `2024` — owner-fixed. Unaffected: the edition is independent of the version field. (`cargo new` on cargo 1.98.0 emitted `edition = "2024"`, executed 2026-09-09.)
-- assumes `license` = `MIT OR Apache-2.0` — owner-fixed. Unaffected: no dependency is introduced, so no license-compatibility question arises.
-- assumes `target-os-matrix` = `ubuntu-latest, macos-latest` — owner-fixed. Unaffected: version arithmetic is platform independent. The one *proposed* CI addition (`cargo-semver-checks`) would have to run on both runners; it was not executed on either here, and that is recorded as an evidence gap.
-- Assumed from the ledger rather than from `PARAMETERS.md`, per the prompt's `## Out of scope`:
-  release-please is the release tool and `Cargo.toml`'s `[package] version` is the version source of
-  truth (F063, F066, F073, all `COMMON → REUSE`).
-- The prompt's `## Couplings` lists no `consumes:` entries. **No `CONFLICT:` line is raised** — no
-  consumed parameter needs to change, and none of the four owner-fixed values is contradicted.
+- owns: none
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+- assumes license = MIT OR Apache-2.0
+
+Each `- assumes` line above carries the registry value bare and byte-identical to
+`docs/port/PARAMETERS.md`, with no backticks, citation or commentary on the line itself. The notes
+that used to sit on those lines are here instead, none of them lost.
+
+**Ownership.** R25 owns no entry in `docs/port/PARAMETERS.md`: the binding prompt's `## Couplings`
+`- owns:` line is empty and `research/CLAUDE.md`'s R25 row records `—` in the `owns` column. This
+item's output is consumed as ledger row F070's content, not as a registry parameter. Two raw reports
+invented owned parameters; that is corrected under `## Engines`.
+
+**Why each assumed parameter is unaffected.** All four are owner-fixed (`docs/port/PARAMETERS.md`,
+owner decisions of 2026-09-02).
+
+- `msrv-policy` — the recommendation adds no crate and touches no `rust-version` key.
+- `rust-edition` — the edition is independent of the version field. (`cargo new` on cargo 1.98.0
+  emitted `edition = "2024"`, executed 2026-09-09.)
+- `target-os-matrix` — version arithmetic is platform independent. The one *proposed* CI addition,
+  `cargo-semver-checks`, would have to run on both runners; it was not executed on either here, and
+  that is recorded as an evidence gap.
+- `license` — no dependency is introduced, so no license-compatibility question arises.
+
+**Assumed from the ledger rather than from the registry**, per the prompt's `## Out of scope`:
+release-please is the release tool and `Cargo.toml`'s `[package] version` is the version source of
+truth (F063, F066, F073, all `COMMON → REUSE`).
+
+**No `CONFLICT:` line is raised.** The prompt's `## Couplings` lists no `consumes:` entries, no
+consumed parameter needs to change, and none of the four owner-fixed values is contradicted.
 
 ## Empirical check
 
@@ -452,6 +500,55 @@ real scratch repository (it needs a GitHub token and a throwaway repository), an
 P03's work.
 
 ## Engines
+
+**Audit of revision 2, and what revision 3 changed.** Revision 2
+(sha256 `9dfb724a0c4a90b5cea05fbd387ddaa79da8428bf3aaffbd0f61180d6b256c14`) was **rejected** by
+`audit-codex-2026-09-05T164357Z-eec460755121-r2` (`review/audit-codex.r2.md`, model gpt-5.6-terra)
+on one finding, and **confirmed** on five.
+
+- *Rejected by the audit — the merge actor.* Revision 2's new vocabulary paragraph defined a release
+  commit as one *"release-please merges to the default branch"*. Release-please does not merge
+  anything. Its pinned README says it *"maintains Release PRs"* and instructs the reader: *"When
+  you're ready to tag a release, simply merge the release PR."* Only after that merge does
+  release-please act — *"2. Tags the commit with the version number"*, *"3. Creates a GitHub Release
+  based on the tag"*. The finding is correct, and it is the second consecutive precision error in
+  this same paragraph, so revision 3 rebuilt the paragraph rather than patching the sentence: every
+  term is now defined by a quotation from the pinned README, schema or source, and the division of
+  labour is stated explicitly (release-please proposes and tags; the repository merges; something
+  else publishes).
+- *Confirmed by the audit.* The registry finding and the corrected registry passages (findings 2 and
+  3); the empty-manifest recommendation as source-grounded at `v17.11.2` (finding 4); the binding
+  prompt's reversed flag gloss (finding 5); and R25's empty `owns`/`consumes` scope (finding 6). The
+  audit reran the checks in an isolated scratch area — Cargo checks on a Linux VM at `rustc`/`cargo`
+  1.98.1, the Node probe and the npm query on macOS — and reports that the substantive source,
+  arithmetic, Cargo and registry output matches this decision. All of that stands unchanged in
+  revision 3.
+
+**What revision 3 changed, and nothing else.** The recommendation (launch at `0.1.0`,
+`release-type: rust`, both flags `true`, empty manifest), the confirmed prompt correction and its
+evidence, the registry check and its finding that ts never published `0.1.0`, `0.1.1` or `0.1.2`,
+the two recorded-but-not-adopted `BASELINE-REVIEW:` lines, all seven checks and their logs, and the
+unproven list all stand as written. No evidence log was changed and no check was re-run. The edits
+are:
+
+1. the **vocabulary paragraph rebuilt** from the pinned README, schema and source, with the merge
+   attributed to the repository, tagging attributed to release-please, and publication attributed to
+   neither — plus a new *Release PR* term, since the release commit's content is prepared there;
+2. the sentence describing what happens after an empty manifest reworded to the same division of
+   labour, and extended with the source fact that makes the empty file necessary: the manifest
+   updater runs with `createIfMissing: false` (`src/manifest.ts:785-792`), so the file must exist
+   rather than be absent;
+3. one further tool-behaviour sentence corrected in the fitness gates: release-please "runs on
+   whichever GitHub-hosted runner the workflow picks" became "runs wherever the workflow's `runs-on`
+   puts it", because a self-hosted runner is equally possible and nothing in the sources says
+   otherwise;
+4. **the four `- assumes` lines rewritten into the bare form the packaging validator compares
+   byte-for-byte against `docs/port/PARAMETERS.md`** — no backticks around the parameter name or the
+   value, no citation and no commentary after the value. The values were copied out of the registry
+   table programmatically rather than retyped, and re-verified character by character after the
+   edit. The `- owns` line was checked for the same defect and reduced to `- owns: none`, which
+   carries no `= ` at all. Every note those lines used to carry is preserved in prose immediately
+   below the list; none was dropped.
 
 **Audit of revision 1, and what revision 2 changed.** Revision 1
 (sha256 `75d8edd839ae6ad7f69004a4e7947cd43c6d8af73414f81215f876a5a8dc7fc0`) was **rejected** by
