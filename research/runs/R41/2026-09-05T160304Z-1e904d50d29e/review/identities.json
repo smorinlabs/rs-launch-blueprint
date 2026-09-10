@@ -2,7 +2,7 @@
   "engine_reports": {
     "codex": {
       "actor": "research-codex-2026-09-05T160304Z-1e904d50d29e",
-      "model": "gpt-5.6-luna (r1, r3) with one revision pass under gpt-6-astra (r2); Codex CLI 0.153.2",
+      "model": "gpt-5.6-luna",
       "family": "openai",
       "file": "raw/codex.md"
     }
@@ -16,32 +16,34 @@
     }
   },
   "synthesis": {
-    "actor": "synth-fable-2026-09-05T160304Z-1e904d50d29e",
-    "model": "claude-fable-5-1",
+    "actor": "synth-opus-2026-09-05T160304Z-1e904d50d29e-r8",
+    "model": "claude-opus-5",
     "family": "anthropic"
   },
   "audits": {
     "empirical": {
-      "actor": "audit-codex-2026-09-05T160304Z-1e904d50d29e",
+      "actor": "audit-codex-2026-09-05T160304Z-1e904d50d29e-r8",
       "model": "gpt-5.6-terra",
       "family": "openai",
       "file": "review/audit-codex.md"
     },
     "judgment": {
-      "actor": "audit-fable-2026-09-05T160304Z-1e904d50d29e",
-      "model": "claude-fable-5-1",
+      "actor": "audit-fable-2026-09-05T160304Z-1e904d50d29e-r8",
+      "model": "claude-opus-5",
       "family": "anthropic",
       "file": "review/audit-fable.md"
     }
   },
   "empirical": {
     "argv": [
-      "bash",
-      "review/empirical/run-linux-leg.sh"
+      "shasum",
+      "-a",
+      "256",
+      "review/DECISION.md"
     ],
-    "cwd": "research/runs/R41/2026-09-05T160304Z-1e904d50d29e (driver copies review/empirical to a fresh temporary directory inside the Lima ubuntu VM)",
-    "toolchain": "Lima ubuntu VM: Ubuntu 25.10 aarch64, rustc 1.98.1 and 1.96.0 floor; host rustc 1.98.0 macOS 26.4 for the macOS log",
-    "output_log": "review/evidence/audit-lockfile-freshness-check.log",
+    "cwd": "research/runs/R41/2026-09-05T160304Z-1e904d50d29e. Revision 8 is a documentary revision and reruns nothing by design under the owner's 2026-09-10 research-only ruling; the empirical auditor's executed verification was hash reproduction, comparing the decision and its cited raw, sketch and evidence hashes against the committed Git history, recorded in the log below. The acceptance suites this decision cites were executed for revision 5 and rerun by the revision-5 empirical audit.",
+    "toolchain": "shasum and git over the committed history; macOS 26.4 arm64. No Cargo toolchain was exercised for this revision, as its ## Empirical check states.",
+    "output_log": "review/evidence/audit-lockfile-freshness-check-r8.log",
     "exit_code": 0
   }
 }

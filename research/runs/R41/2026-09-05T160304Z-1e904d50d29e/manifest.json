@@ -64,9 +64,18 @@
     },
     {
       "at": "2026-09-06T05:28:38Z",
-      "state": "succeeded",
+      "correction": "raw/codex.md revised after defective evidence checks: r1 gpt-5.6-luna (collected hash-named copy), r2 under gpt-6-astra (resume without -m), r3 gpt-5.6-luna with the Linux leg; the current raw/codex.md is r3; current sha256 edcb7e58848a4c074114ac7f7ba03cc4b9b4114ed51031129b311cde7c00504f; recorded by the controller",
       "provider": "codex",
-      "correction": "raw/codex.md revised after defective evidence checks: r1 gpt-5.6-luna (collected hash-named copy), r2 under gpt-6-astra (resume without -m), r3 gpt-5.6-luna with the Linux leg; the current raw/codex.md is r3; current sha256 edcb7e58848a4c074114ac7f7ba03cc4b9b4114ed51031129b311cde7c00504f; recorded by the controller"
+      "state": "succeeded"
+    },
+    {
+      "at": "2026-09-10T03:09:50Z",
+      "publication": {
+        "acceptance_sha256": "c48ae31ba2908879b7d502539433fa4192b87146a394aeb1837d019107c0b3d0",
+        "decision_sha256": "efc7614a4bcdb2b253a7537730daff0b44b3e9568da36b81324f1beb14f3f1ea",
+        "transaction": "153e8721e77c4eba8de60a8ecb0c2f6b"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -100,13 +109,18 @@
     }
   },
   "prompt_source": "research/topics/41-lockfile-freshness-check/prompts/lockfile-freshness-check.prompt.md",
+  "publication": {
+    "acceptance_sha256": "c48ae31ba2908879b7d502539433fa4192b87146a394aeb1837d019107c0b3d0",
+    "decision_sha256": "efc7614a4bcdb2b253a7537730daff0b44b3e9568da36b81324f1beb14f3f1ea",
+    "transaction": "153e8721e77c4eba8de60a8ecb0c2f6b"
+  },
   "remaining_budget": "no paid engine (Light tier)",
   "required_engines": [
     "codex"
   ],
   "run_id": "2026-09-05T160304Z-1e904d50d29e",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "light",
-  "updated_at": "2026-09-05T16:17:27Z"
+  "updated_at": "2026-09-10T03:09:50Z"
 }
