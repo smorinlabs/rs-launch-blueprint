@@ -1,0 +1,895 @@
+
+===== 0. toolchain and environment =====
+UTC now: 2026-09-10T15:23:30Z
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+OS: macOS 26.4 (arm64)
+gh version 2.98.0 (2026-08-20)
+current stable per channel manifest: version = "1.98.1 (48a229cea 2026-09-01)"
+curl: (56) Failure writing output to destination, passed 16357 returned 0
+manifest date: date = "2026-09-03"
+curl: (56) Failure writing output to destination, passed 16366 returned 0
+
+===== 1. py-launch-blueprint inventory AT THE PROGRAMME PIN (b08bccfb55d05f15e46a83b52c5660b1881d19f5) =====
+commit
+-- workflow files at the pin --
+.github/workflows/api-contract.yml
+.github/workflows/canary.yml
+.github/workflows/ci.yml
+.github/workflows/claude-code-review.yml
+.github/workflows/claude.yml
+.github/workflows/codeql.yml
+.github/workflows/commitlint.yml
+.github/workflows/dep-audit.yml
+.github/workflows/dependency-review.yml
+.github/workflows/difftree-pr-comment.yml
+.github/workflows/large-file-guard.yml
+.github/workflows/lint.yml
+.github/workflows/manual-pr-security-scan.yml
+.github/workflows/press-verify.yml
+.github/workflows/publish.yml
+.github/workflows/release-please.yml
+.github/workflows/secret-scan.yml
+.github/workflows/template-receipt-guard.yml
+.github/workflows/update-contributors.yml
+-- every uses: clause at the pin (file:line: clause) --
+.github/workflows/api-contract.yml:26:      - uses: actions/checkout@v7
+.github/workflows/api-contract.yml:44:        uses: oasdiff/oasdiff-action/breaking@v0.1.6
+.github/workflows/canary.yml:36:      - uses: actions/checkout@v7
+.github/workflows/canary.yml:39:        uses: astral-sh/setup-uv@v8.3.2
+.github/workflows/ci.yml:40:      - uses: actions/checkout@v7
+.github/workflows/ci.yml:85:      - uses: actions/checkout@v7
+.github/workflows/ci.yml:87:        uses: astral-sh/setup-uv@v8.3.2
+.github/workflows/ci.yml:104:      - uses: actions/checkout@v7
+.github/workflows/ci.yml:106:        uses: astral-sh/setup-uv@v8.3.2
+.github/workflows/ci.yml:126:      - uses: actions/checkout@v7
+.github/workflows/ci.yml:128:        uses: astral-sh/setup-uv@v8.3.2
+.github/workflows/ci.yml:158:      - uses: actions/checkout@v7
+.github/workflows/ci.yml:160:        uses: astral-sh/setup-uv@v8.3.2
+.github/workflows/ci.yml:193:        uses: codecov/codecov-action@v7.0.0
+.github/workflows/ci.yml:212:      - uses: actions/checkout@v7
+.github/workflows/ci.yml:214:        uses: astral-sh/setup-uv@v8.3.2
+.github/workflows/ci.yml:236:      - uses: actions/checkout@v7
+.github/workflows/ci.yml:238:        uses: astral-sh/setup-uv@v8.3.2
+.github/workflows/ci.yml:252:      - uses: actions/checkout@v7
+.github/workflows/ci.yml:254:        uses: extractions/setup-just@v4
+.github/workflows/claude-code-review.yml:40:        uses: actions/checkout@v7
+.github/workflows/claude-code-review.yml:46:        uses: anthropics/claude-code-action@v1.0.175
+.github/workflows/claude.yml:29:        uses: actions/checkout@v7
+.github/workflows/claude.yml:35:        uses: anthropics/claude-code-action@v1.0.175
+.github/workflows/codeql.yml:40:        uses: actions/github-script@v9
+.github/workflows/codeql.yml:57:      - uses: actions/checkout@v7
+.github/workflows/codeql.yml:60:        uses: github/codeql-action/init@v4.37.0
+.github/workflows/codeql.yml:66:        uses: github/codeql-action/analyze@v4.37.0
+.github/workflows/commitlint.yml:37:      - uses: actions/checkout@v7
+.github/workflows/commitlint.yml:45:        uses: wagoid/commitlint-github-action@v6.2.1
+.github/workflows/commitlint.yml:56:      - uses: actions/checkout@v7
+.github/workflows/commitlint.yml:61:        uses: wagoid/commitlint-github-action@v6.2.1
+.github/workflows/dep-audit.yml:33:      - uses: actions/checkout@v7
+.github/workflows/dep-audit.yml:36:        uses: astral-sh/setup-uv@v8.3.2
+.github/workflows/dep-audit.yml:59:      - uses: actions/checkout@v7
+.github/workflows/dep-audit.yml:62:        uses: astral-sh/setup-uv@v8.3.2
+.github/workflows/dependency-review.yml:53:        uses: actions/checkout@v7
+.github/workflows/dependency-review.yml:55:        uses: actions/dependency-review-action@v5
+.github/workflows/difftree-pr-comment.yml:48:      - uses: actions/checkout@v6
+.github/workflows/difftree-pr-comment.yml:63:      - uses: smorinlabs/difftree-action@v0
+.github/workflows/large-file-guard.yml:24:      - uses: actions/checkout@v7
+.github/workflows/lint.yml:39:      - uses: actions/checkout@v7
+.github/workflows/lint.yml:74:      - uses: actions/checkout@v7
+.github/workflows/lint.yml:78:        uses: rhysd/actionlint@v1.7.12
+.github/workflows/lint.yml:90:      - uses: actions/checkout@v7
+.github/workflows/lint.yml:92:        uses: astral-sh/setup-uv@v8.3.2
+.github/workflows/lint.yml:105:      - uses: actions/checkout@v7
+.github/workflows/lint.yml:107:        uses: astral-sh/setup-uv@v8.3.2
+.github/workflows/lint.yml:122:      - uses: actions/checkout@v7
+.github/workflows/lint.yml:124:        uses: astral-sh/setup-uv@v8.3.2
+.github/workflows/lint.yml:138:      - uses: actions/checkout@v7
+.github/workflows/lint.yml:141:        uses: editorconfig-checker/action-editorconfig-checker@v2.2.0
+.github/workflows/manual-pr-security-scan.yml:45:        uses: actions/checkout@v7
+.github/workflows/manual-pr-security-scan.yml:51:        uses: pyupio/safety-action@v1
+.github/workflows/manual-pr-security-scan.yml:57:        uses: actions/github-script@v9
+.github/workflows/press-verify.yml:27:      - uses: actions/checkout@v7
+.github/workflows/press-verify.yml:28:      - uses: astral-sh/setup-uv@v7
+.github/workflows/publish.yml:25:      - uses: actions/checkout@v7
+.github/workflows/publish.yml:56:        uses: astral-sh/setup-uv@v8.3.2
+.github/workflows/publish.yml:62:        uses: actions/upload-artifact@v7
+.github/workflows/publish.yml:78:        uses: actions/download-artifact@v8
+.github/workflows/publish.yml:83:        uses: astral-sh/setup-uv@v8.3.2
+.github/workflows/publish.yml:100:        uses: actions/download-artifact@v8
+.github/workflows/publish.yml:106:        uses: astral-sh/setup-uv@v8.3.2
+.github/workflows/release-please.yml:45:        uses: actions/create-github-app-token@v3
+.github/workflows/release-please.yml:51:        uses: googleapis/release-please-action@v5.0.0
+.github/workflows/secret-scan.yml:24:      - uses: actions/checkout@v7
+.github/workflows/secret-scan.yml:30:        uses: trufflesecurity/trufflehog@v3.95.9
+.github/workflows/template-receipt-guard.yml:21:      - uses: actions/checkout@v7
+.github/workflows/update-contributors.yml:22:        uses: actions/checkout@v7
+.github/workflows/update-contributors.yml:27:        uses: smorinlabs/contributors-please-action@v1.3.9
+-- classification at the pin: any 40-hex SHA pin? --
+(empty above = no SHA pin anywhere at the pin)
+-- publish-container.yml present at the pin? --
+0
+
+===== 2. py-launch-blueprint AT THE CLONE HEAD (c1216c6089f768ae0a3f3a465460d2d384f5fa44) — labelled, not the pin =====
+c1216c6089f768ae0a3f3a465460d2d384f5fa44
+pin IS an ancestor of HEAD
+-- SHA-pinned clauses at HEAD only --
+(none)
+-- every astral-sh/setup-uv shape at HEAD --
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/canary.yml:39:        uses: astral-sh/setup-uv@v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/ci.yml:87:        uses: astral-sh/setup-uv@v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/ci.yml:106:        uses: astral-sh/setup-uv@v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/ci.yml:128:        uses: astral-sh/setup-uv@v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/ci.yml:160:        uses: astral-sh/setup-uv@v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/ci.yml:214:        uses: astral-sh/setup-uv@v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/ci.yml:238:        uses: astral-sh/setup-uv@v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/dep-audit.yml:36:        uses: astral-sh/setup-uv@v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/dep-audit.yml:62:        uses: astral-sh/setup-uv@v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/lint.yml:92:        uses: astral-sh/setup-uv@v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/lint.yml:107:        uses: astral-sh/setup-uv@v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/lint.yml:124:        uses: astral-sh/setup-uv@v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/lint.yml:140:        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/press-verify.yml:28:      - uses: astral-sh/setup-uv@v7
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/publish-container.yml:24:        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/publish-container.yml:49:        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/publish-container.yml:76:        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/publish.yml:56:        uses: astral-sh/setup-uv@v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/publish.yml:83:        uses: astral-sh/setup-uv@v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/publish.yml:106:        uses: astral-sh/setup-uv@v8.3.2
+
+===== 3. ts-launch-blueprint inventory AT THE PROGRAMME PIN (cb1cbcb2e88b898e8c081b0abbfabc1630079c00) =====
+commit
+-- every uses: clause at the pin (including commented-out) --
+.github/workflows/ci.yml:55:        uses: actions/checkout@v7
+.github/workflows/ci.yml:64:        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+.github/workflows/ci.yml:69:        uses: actions/setup-node@v7
+.github/workflows/ci.yml:79:        uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4.0.0
+.github/workflows/ci.yml:115:      #   uses: codecov/codecov-action@v5
+.github/workflows/ci.yml:151:        uses: actions/checkout@v7
+.github/workflows/ci.yml:158:        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+.github/workflows/ci.yml:163:        uses: actions/setup-node@v7
+.github/workflows/ci.yml:170:        uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4.0.0
+.github/workflows/ci.yml:175:        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+.github/workflows/codeql.yml:58:        uses: actions/github-script@v9
+.github/workflows/codeql.yml:99:        uses: actions/checkout@v7
+.github/workflows/codeql.yml:106:        uses: github/codeql-action/init@v4
+.github/workflows/codeql.yml:134:        uses: github/codeql-action/analyze@v4
+.github/workflows/dependency-review.yml:55:        uses: actions/checkout@v7
+.github/workflows/dependency-review.yml:66:        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+.github/workflows/difftree-pr-comment.yml:48:      - uses: actions/checkout@v6
+.github/workflows/difftree-pr-comment.yml:63:      - uses: smorinlabs/difftree-action@v0
+.github/workflows/manual-pr-security-scan.yml:64:        uses: actions/checkout@v7
+.github/workflows/manual-pr-security-scan.yml:77:        uses: google/osv-scanner-action/osv-scanner-action@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
+.github/workflows/manual-pr-security-scan.yml:107:        uses: actions/github-script@v9
+.github/workflows/publish.yml:47:        uses: actions/checkout@v7
+.github/workflows/publish.yml:57:        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+.github/workflows/publish.yml:62:        uses: actions/setup-node@v7
+.github/workflows/publish.yml:71:        uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4.0.0
+.github/workflows/publish.yml:158:        uses: actions/checkout@v7
+.github/workflows/publish.yml:164:        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+.github/workflows/publish.yml:169:        uses: actions/setup-node@v7
+.github/workflows/release-please.yml:69:        uses: actions/create-github-app-token@v3
+.github/workflows/release-please.yml:77:        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+.github/workflows/update-contributors.yml:67:        uses: actions/checkout@v7
+.github/workflows/update-contributors.yml:74:        uses: smorinlabs/contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1 # v1.3.9
+-- third-party (non actions/, non github/) clauses NOT SHA-pinned, at the pin --
+.github/workflows/difftree-pr-comment.yml:63:      - uses: smorinlabs/difftree-action@v0
+-- official actions/* clauses that ARE SHA-pinned, at the pin --
+.github/workflows/dependency-review.yml:66:        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+-- zizmor config or workflow at the ts pin? --
+(no zizmor file at the ts pin)
+-- workflow comments citing zizmor audits at the ts pin --
+.github/workflows/ci.yml:57:          # No job here pushes; drop the persisted token (zizmor artipacked).
+.github/workflows/ci.yml:153:          # No push here; drop the persisted token (zizmor artipacked).
+.github/workflows/codeql.yml:101:          # No job here pushes; drop the persisted token (zizmor artipacked).
+.github/workflows/dependency-review.yml:57:          # No job here pushes; drop the persisted token (zizmor artipacked).
+.github/workflows/manual-pr-security-scan.yml:67:          # No job here pushes; drop the persisted token (zizmor artipacked).
+.github/workflows/publish.yml:51:          # No job here pushes; drop the persisted token (zizmor artipacked).
+
+===== 4. resolve what the pins actually refer to =====
+-- smorinlabs/contributors-please-action tag v1.3.9 -> commit? --
+{"ref":"refs/tags/v1.3.9","sha":"3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1","type":"commit"}
+{"ref":"refs/tags/v1","sha":"3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1"}
+{"ref":"refs/tags/v1.0.0","sha":"dff70306b6dd42d3f20c5ea1e4233cc11a2680f9"}
+{"ref":"refs/tags/v1.0.1","sha":"e0f091aa99daaa406a69dce6c5ffe3c364046ce0"}
+{"ref":"refs/tags/v1.0.2","sha":"efa9afd8a2b5123bc8bd729981085edb262e8bd6"}
+{"ref":"refs/tags/v1.0.3","sha":"4ad8d740c1b96e9f45aa5722bda4fe3730215a2f"}
+{"ref":"refs/tags/v1.0.4","sha":"f3f8aefd6ad4380a37a7cfd7b72f5ca77b79f6df"}
+{"ref":"refs/tags/v1.0.5","sha":"fca2a9265ac2998ec5c0fa87c8b261d759ba3fe7"}
+{"ref":"refs/tags/v1.0.6","sha":"1efdb9ebcdaa30853e68b6514423b55f3e80274a"}
+{"ref":"refs/tags/v1.1.0","sha":"81feee7f2c990ab061d84e93a7ae986aad95bca7"}
+{"ref":"refs/tags/v1.2.0","sha":"e939ee84d36da72dfd6b12a6a6c7fe6ed0ea43f4"}
+{"ref":"refs/tags/v1.3.0","sha":"438f44c7f94f0fe4a7f329f674c7e3231285309d"}
+{"ref":"refs/tags/v1.3.1","sha":"548b18b0c60f82c7c439192fb1de61c913faa553"}
+{"ref":"refs/tags/v1.3.2","sha":"add3b468cd73363fe3305cd1ea94b55c106a7ba3"}
+{"ref":"refs/tags/v1.3.3","sha":"a1476a445590ce58c88917a6a67804e747f9bf1e"}
+{"ref":"refs/tags/v1.3.4","sha":"46a954623a908a01a22005139a9ac6fbd38e4373"}
+{"ref":"refs/tags/v1.3.5","sha":"285534cdefcc01bf632be863ce3241166f51f22b"}
+{"ref":"refs/tags/v1.3.6","sha":"11e746a5874912e14726390ebc6e20182effd832"}
+{"ref":"refs/tags/v1.3.7","sha":"8b7000bb45cc6e292b90e017d2d326d85a432b9b"}
+{"ref":"refs/tags/v1.3.8","sha":"b4da58f8ae194537e52489487f435009154852a6"}
+{"ref":"refs/tags/v1.3.9","sha":"3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1"}
+-- ts pins contributors-please-action at which sha? --
+74:        uses: smorinlabs/contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1 # v1.3.9
+-- actions/dependency-review-action: does a v5 major tag exist TODAY? --
+refs/tags/v5.0.0
+-- ...and all its tags (first 40) --
+refs/tags/V4.3.0
+refs/tags/v1
+refs/tags/v1.0.0
+refs/tags/v1.0.1
+refs/tags/v1.0.2
+refs/tags/v2
+refs/tags/v2.0.0
+refs/tags/v2.0.1
+refs/tags/v2.0.2
+refs/tags/v2.0.3
+refs/tags/v2.0.4
+refs/tags/v2.1.0
+refs/tags/v2.2.0
+refs/tags/v2.3.0
+refs/tags/v2.4.0
+refs/tags/v2.4.1
+refs/tags/v2.5.0
+refs/tags/v2.5.1
+refs/tags/v3
+refs/tags/v3.0.0
+refs/tags/v3.0.1
+refs/tags/v3.0.2
+refs/tags/v3.0.3
+refs/tags/v3.0.4
+refs/tags/v3.0.5
+refs/tags/v3.0.6
+refs/tags/v3.0.7
+refs/tags/v3.0.8
+refs/tags/v3.1.0
+refs/tags/v3.1.1
+refs/tags/v3.1.2
+refs/tags/v3.1.3
+refs/tags/v3.1.4
+refs/tags/v3.1.5
+refs/tags/v4.0.0
+refs/tags/v4.1.0
+refs/tags/v4.1.1
+refs/tags/v4.1.2
+refs/tags/v4.1.3
+refs/tags/v4.2.3
+-- smorinlabs/difftree-action: does a v0 major tag exist? --
+{"ref":"refs/tags/v0","sha":"d898da365a982b08bae4bde7a9324615f51539ce"}
+{"ref":"refs/tags/v0.1.0","sha":"35c836c64982ab5f87e11a60073e781fb32af238"}
+{"ref":"refs/tags/v0.2.0","sha":"ac05b14ad160459b3e029f0b8092ddd3ddda980a"}
+{"ref":"refs/tags/v0.3.0","sha":"60925fc75472f3891d4b37bf5289cbffa37dfda3"}
+{"ref":"refs/tags/v0.4.0","sha":"8fbc74d75ecdec41890a944d2ddf504ea7ae5a2f"}
+{"ref":"refs/tags/v0.5.0","sha":"cf065be6a2abdf1e8f316e9b417ffb7ae0981ea2"}
+{"ref":"refs/tags/v0.5.1","sha":"cc6b8af9baeb1d198bfa024843672983deca73f9"}
+{"ref":"refs/tags/v0.6.0","sha":"0195d791f1b78bdd6ba86f5fb7c168d41ef3a725"}
+{"ref":"refs/tags/v0.6.1","sha":"598547dd8d3e0d272d1291d778bc22bdc30f1493"}
+{"ref":"refs/tags/v0.6.2","sha":"1d928b6ec3d46ff6deff89f1821cd7731b59cfb2"}
+{"ref":"refs/tags/v0.7.0","sha":"330d2a09b8fe11042699a50b0830eb70f03628c7"}
+{"ref":"refs/tags/v0.7.1","sha":"01914ec7b09dd1a857e09e72b5ad4c4e9a5fe5ad"}
+{"ref":"refs/tags/v0.7.2","sha":"d898da365a982b08bae4bde7a9324615f51539ce"}
+
+===== 5. F062 precondition: is the difftree workflow byte-identical to the vendor canonical file? =====
+vendor canonical bytes:     3771
+# Canonical consumer workflow for smorinlabs/difftree-action.
+#
+# Copy this file into your repository at:
+#   .github/workflows/difftree-pr-comment.yml
+#
+py at pin bytes:     3771
+ts at pin bytes:     3771
+-- diff py(pin) vs ts(pin) --
+IDENTICAL
+-- diff vendor canonical vs ts(pin) --
+IDENTICAL
+-- does the vendor publish a SHA-pinned variant of the example? --
+difftree-pr-comment.yml
+github-math-color-examples.md
+-- the uses: clauses inside the vendor canonical file --
+48:      - uses: actions/checkout@v6
+63:      - uses: smorinlabs/difftree-action@v0
+
+===== 6. zizmor: figures, gates, and the policy grammar claim =====
+recent_downloads(90d): 51298 | downloads(all): 238904 | max_stable_version: 1.30.1
+newest unyanked: 1.30.1 2026-09-09T05:17:41.468981Z license: MIT
+-- Cargo.toml rust-version / edition / license (main) --
+16:version = "1.30.1"
+17:edition = "2024"
+18:rust-version = "1.97.0"
+21:license = "MIT"
+-- repo standing --
+{"archived":false,"license":"MIT","pushed_at":"2026-09-09T05:46:42Z","stars":6474}
+140
+-- release assets (OS gate) --
+{"assets":["zizmor-aarch64-apple-darwin.tar.gz","zizmor-aarch64-unknown-linux-gnu.tar.gz","zizmor-x86_64-apple-darwin.tar.gz","zizmor-x86_64-pc-windows-msvc.zip","zizmor-x86_64-unknown-linux-gnu.tar.gz"],"published":"2026-09-09T05:34:10Z","tag":"v1.30.1"}
+-- RustSec: 404 must discriminate. zizmor (expect 404) vs a crate with a known advisory (expect 200) --
+rustsec zizmor:  404
+rustsec openssl: 200
+rustsec time:    200
+-- GitHub advisory DB, rust ecosystem, affects zizmor --
+0
+-- unpinned-uses policy grammar and the v1.20.0 default change, from maintainer docs --
+audits.md bytes:   107538
+1048:hash-pinned actions.
+1051:hash-pinned actions by consulting the claimant repository and confirming that
+1425:Switch to hash-pinned actions.
+1435:Detects `#!yaml uses:` clauses where a hash-pinned action's version comment
+1439:This can happen innocently when a user (or automation) updates a hash-pinned
+2153:    This audit does not flag actions that perform *interior* hash-pinning, e.g.
+2167:## `unpinned-uses`
+2198:By default, this audit applies a blanket hash-pinning policy:
+2203:    Starting with zizmor v1.20.0, the default policy for `unpinned-uses`
+2204:    is to require hash-pinning on *all* actions, not just third-party ones.
+2205:    The previous behavior (of allowing `actions/*` and similar to be ref-pinned)
+2212:[`unpinned-uses` - Configuration](#unpinned-uses-configuration) for details.
+2220:### Configuration { #unpinned-uses-configuration }
+2224:    `unpinned-uses` is configurable in `v1.6.0` and later.
+2226:If the default `unpinned-uses` rules isn't suitable for your use case,
+2229:#### `rules.unpinned-uses.config.policies`
+2233:The `rules.unpinned-uses.config.policies` object defines your `unpinned-uses`
+2245:* `hash-pin`: any `#!yaml uses:` clauses that match the associated pattern must be
+2247:* `ref-pin`: any `#!yaml uses:` clauses that match the associated pattern must be
+2255:        this is equivalent to `ref-pin`, as GitHub Actions does not permit
+2268:      unpinned-uses:
+2271:            actions/checkout: hash-pin
+2272:            actions/*: ref-pin
+2276:    be at least ref-pinned, but @actions/checkout in particular must be hash-pinned."
+2282:      unpinned-uses:
+2285:            "example/*": hash-pin
+2286:            "*": ref-pin
+2290:    be hash-pinned, and anything else must be at least ref-pinned."
+2296:    `#!yaml "*": hash-pin` rule is applied. Users can override this implicit rule
+2298:    `#!yaml "github/*": ref-pin` for actions under the @github organization.
+2305:    automatically hash-pin your workflows and actions.
+2308:    hash-pin your workflows and actions for you:
+2310:    - :simple-go: @suzuki-shunsuke/pinact: supports updating and hash-pinning
+2312:    - :simple-python: @davidism/gha-update: supports updating and hash-pinning
+2314:    - :simple-go: @stacklok/frizbee: supports hash-pinning (but not updating)
+2321:    Once your workflows and actions are hash-pinned, consider using
+2334:        ```yaml title="unpinned-uses.yml" hl_lines="8 12"
+2335:        name: unpinned-uses
+2339:          unpinned-uses:
+2354:        ```yaml title="unpinned-uses.yml" hl_lines="8 12"
+
+===== 7. Dependabot: comment idiom and the open comment-drift issues =====
+{"created_at":"2023-08-28T13:10:40Z","number":7912,"state":"open","title":"Version comment in SHA-pinned github actions is not updated if it's incorrect"}
+{"created_at":"2025-11-04T06:54:51Z","number":13466,"state":"closed","title":"Hash pinned actions are updated to latest commit instead of released version"}
+{"created_at":"2026-04-14T18:00:41Z","number":14716,"state":"open","title":"GitHub Actions: SHA-pinned actions updated to untagged branch HEAD commit when current SHA lacks a direct tag, leaving version comment stale"}
+
+===== 8. GitHub secure-use guidance: does the SHA recommendation carve out actions/*? =====
+secure-use bytes:   468756
+[full-length commit SHA] ... there is significant risk in sourcing actions from third-party repositories on GitHub. For information on some of the steps an attacker could take, see Secure use reference . You can help mitigate this risk by following these good practices: Pin actions to a full-length commit SHA Pinning an action to a full-length commit SHA is currently the only way to use an action as an immutable release. Pinning to a particular SHA helps mitigate the risk of a bad actor adding a backdoor to the action's repository, as they wo...
+---
+[full-length commit SHA] ... from third-party repositories on GitHub. For information on some of the steps an attacker could take, see Secure use reference . You can help mitigate this risk by following these good practices: Pin actions to a full-length commit SHA Pinning an action to a full-length commit SHA is currently the only way to use an action as an immutable release. Pinning to a particular SHA helps mitigate the risk of a bad actor adding a backdoor to the action's repository, as they would need to generate a SHA-1 collision for a v...
+---
+[full-length commit SHA] ...ctor adding a backdoor to the action's repository, as they would need to generate a SHA-1 collision for a valid Git object payload. When selecting a SHA, you should verify it is from the action's repository and not a repository fork. For an example of using a full-length commit SHA in a workflow, see Using pre-written building blocks in your workflow . GitHub offers policies at the repository and organization level to require actions to be pinned to a full-length commit SHA: To configure the policy at the repositor...
+---
+[full-length commit SHA] ...repository and not a repository fork. For an example of using a full-length commit SHA in a workflow, see Using pre-written building blocks in your workflow . GitHub offers policies at the repository and organization level to require actions to be pinned to a full-length commit SHA: To configure the policy at the repository level, see Managing GitHub Actions settings for a repository . To configure the policy at the organization level, see Disabling or limiting GitHub Actions for your organization . Audit the sourc...
+---
+[third-party] ... in PyPI OIDC in cloud providers OIDC with reusable workflows Deploy Configure and manage deployments Control deployments View deployment history Manage environments Review deployments Create custom protection rules Configure custom protection rules Deploy to third-party platforms Node.js to Azure App Service Python to Azure App Service Java to Azure App Service .NET to Azure App Service PHP to Azure App Service Docker to Azure App Service Azure Static Web App Azure Kubernetes Service Amazon Elastic Container Servi...
+---
+[third-party] ...roller Get started Troubleshoot Develop agentic workflows Secure use reference Security practices for writing workflows and using GitHub Actions features. Copy as Markdown In this article Writing workflows Mitigating the risks of untrusted code checkout Using third-party actions GitHub's security features Find information about security best practices when you are writing workflows and using GitHub Actions security features. Writing workflows Use secrets for sensitive information Because there are multiple ways a s...
+---
+[third-party] ...ion. GitHub provides workflow templates for code scanning. You can use these suggested workflows to construct your code scanning workflows, instead of starting from scratch. GitHub's workflow, the CodeQL analysis workflow, is powered by CodeQL. There are also third-party workflow templates available. For more information, see Code scanning and Configuring advanced setup for code scanning . Restricting permissions for tokens To help mitigate the risk of an exposed token, consider restricting the assigned permissions...
+---
+[third-party] ...g default setup for code scanning . OpenSSF Scorecards can help you identify potentially vulnerable workflows, along with other security risks when using GitHub Actions. See Using OpenSSF Scorecards to secure workflow dependencies later in this article. Using third-party actions The individual jobs in a workflow can interact with (and compromise) other jobs. For example, a job querying the environment variables used by a later job, writing files to a shared directory that a later job processes, or even more directl...
+---
+[third-party] ...a workflow can be very significant, as that compromised action would have access to all secrets configured on your repository, and may be able to use the GITHUB_TOKEN to write to the repository. Consequently, there is significant risk in sourcing actions from third-party repositories on GitHub. For information on some of the steps an attacker could take, see Secure use reference . You can help mitigate this risk by following these good practices: Pin actions to a full-length commit SHA Pinning an action to a full-l...
+---
+[third-party] ...the action was written by a team whose identity has been verified by GitHub. Note that there is risk to this approach even if you trust the author, because a tag can be moved or deleted if a bad actor gains access to the repository storing the action. Reusing third-party workflows The same principles described above for using third-party actions also apply to using third-party workflows. You can help mitigate the risks associated with reusing workflows by following the same good practices outlined above. For more i...
+---
+[third-party] ... GitHub. Note that there is risk to this approach even if you trust the author, because a tag can be moved or deleted if a bad actor gains access to the repository storing the action. Reusing third-party workflows The same principles described above for using third-party actions also apply to using third-party workflows. You can help mitigate the risks associated with reusing workflows by following the same good practices outlined above. For more information, see Reuse workflows . GitHub's security features GitHub ...
+---
+[third-party] ... approach even if you trust the author, because a tag can be moved or deleted if a bad actor gains access to the repository storing the action. Reusing third-party workflows The same principles described above for using third-party actions also apply to using third-party workflows. You can help mitigate the risks associated with reusing workflows by following the same good practices outlined above. For more information, see Reuse workflows . GitHub's security features GitHub provides many features to make your code...
+---
+[immutable release] ...b App Azure Kubernetes Service Amazon Elastic Container Service Google Kubernetes Engine Sign Xcode applications Create and publish actions Manage custom actions Create a CLI action Set exit codes Publish in GitHub Marketplace Release and maintain actions Use immutable releases Manage workflow runs Manually run a workflow Re-run workflows and jobs Cancel a workflow run Disable and enable workflows Skip workflow runs Delete a workflow run Download workflow artifacts Remove workflow artifacts Manage caches Approve ru...
+---
+[immutable release] ... steps an attacker could take, see Secure use reference . You can help mitigate this risk by following these good practices: Pin actions to a full-length commit SHA Pinning an action to a full-length commit SHA is currently the only way to use an action as an immutable release. Pinning to a particular SHA helps mitigate the risk of a bad actor adding a backdoor to the action's repository, as they would need to generate a SHA-1 collision for a valid Git object payload. When selecting a SHA, you should verify it is f...
+---
+[tag can be moved] ...creators. The ‘Verified creator’ badge on GitHub Marketplace is a useful signal, as it indicates that the action was written by a team whose identity has been verified by GitHub. Note that there is risk to this approach even if you trust the author, because a tag can be moved or deleted if a bad actor gains access to the repository storing the action. Reusing third-party workflows The same principles described above for using third-party actions also apply to using third-party workflows. You can help mitigate the r...
+---
+[Pinning an action] ...isk in sourcing actions from third-party repositories on GitHub. For information on some of the steps an attacker could take, see Secure use reference . You can help mitigate this risk by following these good practices: Pin actions to a full-length commit SHA Pinning an action to a full-length commit SHA is currently the only way to use an action as an immutable release. Pinning to a particular SHA helps mitigate the risk of a bad actor adding a backdoor to the action's repository, as they would need to generate a ...
+---
+
+===== 9. Opus lead 2 spot-check: advisories on anthropics/claude-code-action =====
+[{"cve":"CVE-2026-47751","ghsa":"GHSA-8q5r-mmjf-575q","published":"2026-05-20T18:00:24Z","summary":"Malicious MCP Server Configuration in PRs Enables Remote Code Execution and Secret Exfiltration"}]
+[{"cve":"CVE-2026-47751","ghsa":"GHSA-8q5r-mmjf-575q","published":"2026-06-10T19:33:48Z"}]
+
+===== done =====
+
+===== ADDENDUM 1 =====
+-- CORRECTION to section 2: git grep -E does not honour \s, so that pattern was a false negative.
+-- re-run with a POSIX class: SHA-pinned clauses at py HEAD c1216c60 --
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/lint.yml:140:        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/publish-container.yml:20:      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/publish-container.yml:24:        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/publish-container.yml:43:      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/publish-container.yml:49:        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/publish-container.yml:70:      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+c1216c6089f768ae0a3f3a465460d2d384f5fa44:.github/workflows/publish-container.yml:76:        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
+-- same pattern at the py PIN b08bccfb (expect no rows) --
+(no rows: py is entirely ref-pinned at the pin)
+
+-- actions/dependency-review-action: bare major tags v4 / v5 --
+refs/tags/v4.0.0
+refs/tags/v4.1.0
+refs/tags/v4.1.1
+refs/tags/v4.1.2
+refs/tags/v4.1.3
+refs/tags/v4.2.3
+refs/tags/v4.2.4
+refs/tags/v4.2.5
+refs/tags/v4.3.0
+refs/tags/v4.3.1
+(matching-refs/tags/v5 returned only refs/tags/v5.0.0 in section 4: no bare v5 ref exists)
+-- py at its pin references dependency-review-action how? --
+27:# Source repository: https://github.com/actions/dependency-review-action
+55:        uses: actions/dependency-review-action@v5
+56:        # Commonly enabled options, see https://github.com/actions/dependency-review-action#configuration-options for all available options.
+
+-- OpenSSF Scorecard Pinned-Dependencies: does it distinguish GitHub-owned from third-party? --
+checks.md bytes:    44967
+## Pinned-Dependencies 
+
+-- zizmor: is a per-file / per-line suppression available (needed for the F062 exemption)? --
+usage.md bytes:    36887
+819:## Ignoring results
+834:Findings can be ignored inline with `# zizmor: ignore[rulename]` comments.
+840:`# zizmor: ignore[artipacked,ref-confusion]`.
+845:run: | # zizmor: ignore[template-injection]
+852:run: | # zizmor: ignore[template-injection] i promise this is safe
+866:      echo "${{ github.event.issue.title }}" # zizmor: ignore[template-injection]
+873:    run: | # zizmor: ignore[template-injection]
+893:Concretely, this `zizmor.yml` configuration declares three ignore rules,
+931:more details on writing ignore rules.
+941:you may want to temporarily disable their ignore rules to get a more complete
+
+-- zizmor unpinned-uses config grammar, verbatim --
+#### `rules.unpinned-uses.config.policies`
+
+_Type_: `object`
+
+The `rules.unpinned-uses.config.policies` object defines your `unpinned-uses`
+policies.
+
+Each member is a `#!yaml pattern: policy` rule, where `pattern` describes which
+`#!yaml uses:` clauses to match and `policy` describes how to treat them.
+
+The `pattern` is a repository pattern; see
+[Configuration - Repository patterns](./configuration.md#repository-patterns)
+for details.
+
+The valid policies are:
+
+* `hash-pin`: any `#!yaml uses:` clauses that match the associated pattern must be
+  fully pinned by SHA reference.
+* `ref-pin`: any `#!yaml uses:` clauses that match the associated pattern must be
+  pinned either symbolic or SHA reference.
+* `any`: no pinning is required for any `#!yaml uses:` clauses that match the associated
+  pattern.
+
+    !!! tip
+
+        For repository `#!yaml uses` clauses like `#!yaml uses: actions/checkout@v4`
+        this is equivalent to `ref-pin`, as GitHub Actions does not permit
+        completely unpinned repository actions.
+
+If a `#!yaml uses:` clauses matches multiple rules, the most specific one is used
+regardless of definition order.
+
+!!! example
+
+    The following configuration contains two rules that could match
+    @actions/checkout, but the first one is more specific and therefore gets applied:
+
+    ```yaml title="zizmor.yml"
+    rules:
+      unpinned-uses:
+        config:
+          policies:
+            actions/checkout: hash-pin
+            actions/*: ref-pin
+    ```
+
+    In plain English, this policy set says "anything that `#!yaml uses: actions/*` must
+    be at least ref-pinned, but @actions/checkout in particular must be hash-pinned."
+
+!!! example
+
+    ```yaml title="zizmor.yml"
+    rules:
+      unpinned-uses:
+        config:
+          policies:
+            "example/*": hash-pin
+            "*": ref-pin
+    ```
+
+    In plain English, this policy set says "anything that `#!yaml uses: example/*` must
+    be hash-pinned, and anything else must be at least ref-pinned."
+
+
+!!! important
+
+    If a `#!yaml uses:` clause does not match any rules, then an implicit
+    `#!yaml "*": hash-pin` rule is applied. Users can override this implicit rule
+    by adding their own `*` rule or a more precise rule, e.g.
+    `#!yaml "github/*": ref-pin` for actions under the @github organization.
+
+### Remediation
+
+===== ADDENDUM 2 =====
+-- OpenSSF Scorecard Pinned-Dependencies section, verbatim (awk in addendum 1 mis-matched the heading) --
+471:## Pinned-Dependencies 
+## Pinned-Dependencies 
+
+Risk: `Medium` (possible compromised dependencies)
+
+This check tries to determine if the project pins dependencies used during its build and release process.
+A "pinned dependency" is a dependency that is explicitly set to a specific hash instead of
+allowing a mutable version or range of versions. It
+is currently limited to repositories hosted on GitHub, and does not support
+other source hosting repositories (i.e., Forges).
+
+The check works by looking for unpinned dependencies in Dockerfiles, shell scripts, and GitHub workflows
+which are used during the build and release process of a project.
+Special considerations for Go modules treat full semantic versions as pinned
+due to how the Go tool verifies downloaded content against the hashes when anyone first downloaded the module.
+
+Pinned dependencies reduce several security risks:
+
+  - They ensure that checking and deployment are all done with the same
+    software, reducing deployment risks, simplifying debugging, and enabling
+    reproducibility.
+  - They can help mitigate compromised dependencies from undermining the
+    security of the project (in the case where you've evaluated the pinned
+    dependency, you are confident it's not compromised, and a later version is
+    released that is compromised).
+  - They are one way to [counter dependency confusion (aka substitution) attacks](https://azure.microsoft.com/en-us/resources/3-ways-to-mitigate-risk-using-private-package-feeds/),
+    in which an application uses multiple feeds to acquire software packages (a
+    "hybrid configuration"), and attackers fool the user into using a malicious
+    package via a feed that was not expected for that package.
+
+However, pinning dependencies can inhibit software updates, either because of a
+security vulnerability or because the pinned version is compromised. Mitigate
+this risk by:
+
+  - using automated tools to notify applications when their dependencies are
+    outdated;
+  - quickly updating applications that do pin dependencies.
+
+For projects hosted on GitHub, you can learn more about
+dependencies using the [GitHub dependency graph](https://docs.github.com/en/code-security/supply-chain-security/understanding-your-software-supply-chain/about-the-dependency-graph).
+ 
+
+**Remediation steps**
+- If your project is producing an application, declare all your dependencies with specific versions in your package format file (e.g. `package.json` for npm, `requirements.txt` for python, `packages.config` for nuget). For C/C++, check in the code from a trusted source and add a `README` on the specific version used (and the archive SHA hashes).
+- If your project is producing an application and the package manager supports lock files (e.g. `package-lock.json` for npm), make sure to check these in the source code as well. These files maintain signatures for the entire dependency tree and saves from future exploitation in case the package is compromised.
+- For Dockerfiles used in building and releasing your project, pin dependencies by hash. See [Dockerfile](https://github.com/ossf/scorecard/blob/main/cron/internal/worker/Dockerfile) for example. If you are using a manifest list to support builds across multiple architectures, you can pin to the manifest list hash instead of a single image hash. You can use a tool like [crane](https://github.com/google/go-containerregistry/blob/main/cmd/crane/README.md) to obtain the hash of the manifest list like in this [example](https://github.com/ossf/scorecard/issues/1773#issuecomment-1076699039).
+- For GitHub workflows used in building and releasing your project, pin dependencies by hash. See [main.yaml](https://github.com/ossf/scorecard/blob/f55b86d6627cc3717e3a0395e03305e81b9a09be/.github/workflows/main.yml#L27) for example. To determine the permissions needed for your workflows, you may use [StepSecurity's online tool](https://app.stepsecurity.io/secureworkflow/) by ticking the "Pin actions to a full length commit SHA". You may also tick the "Restrict permissions for GITHUB_TOKEN" to fix issues found by the Token-Permissions check.
+- To help update your dependencies after pinning them, use tools such as those listed for the dependency update tool check.
+
+
+-- zizmor path-scoped ignore rules in zizmor.yml (the only exemption form that preserves byte-identity of a vendor file) --
+file is easier to maintain than one-off comments.
+
+Here's what a `zizmor.yml` file might look like:
+
+```yaml title="zizmor.yml"
+rules:
+  template-injection:
+    ignore:
+      - safe.yml
+      - somewhat-safe.yml:123
+      - one-exact-spot.yml:123:456
+```
+
+Concretely, this `zizmor.yml` configuration declares three ignore rules,
+all for the [`template-injection`](./audits.md#template-injection) audit:
+
+1. Ignore all findings in `safe.yml`, regardless of line/column location
+2. Ignore *any* findings in `somewhat-safe.yml` that occur on line 123
+3. Ignore *one* finding in `one-exact-spot.yml` that occurs on line 123, column 456
+
+More generally, the filename ignore syntax is `workflow.yml:line:col`, where
+`line` and `col` are both optional and 1-based (meaning `foo.yml:1:1`
+is the start of the file, not `foo.yml:0:0`).
+
+To pass a configuration to `zizmor`, you can either place `zizmor.yml`
+somewhere where `zizmor` [will discover it], or pass it explicitly via
+the `--config` argument. With `--config`, the file can be named anything:
+
+```bash
+zizmor --config my-zizmor-config.yml /dir/to/audit
+```
+
+!!! important
+
+    When using `--config`, only a single configuration file is used
+    (instead of potentially discovering multiple configuration files,
+    one per input source). As a result, using `--config` is
+    **generally not recommended** unless auditing a single input source
+    (file, directory, or remote repository).
+
+!!! tip
+
+    Starting with `v1.8.0`, you can use the `ZIZMOR_CONFIG` environment
+    variable to specify a configuration file.
+
+    `ZIZMOR_CONFIG=my-config.yml` is equivalent to
+    `--config my-config.yml`.
+
+[will discover it]: ./configuration.md#discovery
+
+See [Configuration: `rules.<id>.ignore`](./configuration.md#rules-id-ignore) for
+more details on writing ignore rules.
+
+### Disabling ignores
+
+!!! tip
+
+===== ADDENDUM 3 =====
+-- counts, py at the pin --
+third-party uses: clauses (total occurrences):       30
+distinct third-party uses: values:       14
+anthropics/claude-code-action@v1.0.175
+astral-sh/setup-uv@v7
+astral-sh/setup-uv@v8.3.2
+codecov/codecov-action@v7.0.0
+editorconfig-checker/action-editorconfig-checker@v2.2.0
+extractions/setup-just@v4
+googleapis/release-please-action@v5.0.0
+oasdiff/oasdiff-action/breaking@v0.1.6
+pyupio/safety-action@v1
+rhysd/actionlint@v1.7.12
+smorinlabs/contributors-please-action@v1.3.9
+smorinlabs/difftree-action@v0
+trufflesecurity/trufflehog@v3.95.9
+wagoid/commitlint-github-action@v6.2.1
+distinct third-party action repos:       13
+SHA-pinned among them: 0
+
+-- counts, ts at the pin (live clauses only; commented-out excluded) --
+live third-party uses: clauses:       12
+SHA-pinned among them: 11
+NOT SHA-pinned among them:
+smorinlabs/difftree-action@v0
+commented-out uses: clauses at the ts pin:
+.github/workflows/ci.yml:115:      #   uses: codecov/codecov-action@v5
+
+-- is actions/dependency-review-action@v5 resolvable at all? (tag checked already; check branches) --
+1
+refs/heads/WillDaSilva-main
+refs/heads/add-scanned-deps
+refs/heads/add-summary
+refs/heads/adding-enterprise-support
+refs/heads/adjust_summary_format
+refs/heads/ahmed3lmallah/adressing-CVE-2024-21538
+refs/heads/ahmed3lmallah/dependabot-updates
+refs/heads/ahmed3lmallah/prepare-for-4.5.0-release
+refs/heads/ahmed3lmallah/updating-dependencies
+refs/heads/allow-list-dependencies
+
+===== ADDENDUM 4 =====
+-- which head matched the v5 prefix? (matching-refs is a PREFIX match, so length 1 is not proof of a bare v5 branch) --
+{"ref":"refs/heads/v5","sha":"a1d282b36b6f3519aa1f3fc636f609c47dddb294"}
+-- exact ref lookups: tag v5, head v5 (404 = does not exist) --
+{"message":"Not Found","documentation_url":"https://docs.github.com/rest/git/refs#get-a-reference","status":"404"}gh: Not Found (HTTP 404)
+{"ref":"refs/heads/v5","node_id":"REF_kwDOHGTfwK1yZWZzL2hlYWRzL3Y1","url":"https://api.github.com/repos/actions/dependency-review-action/git/refs/heads/v5","object":{"sha":"a1d282b36b6f3519aa1f3fc636f609c47dddb294","type":"commit","url":"https://api.github.com/repos/actions/dependency-review-action/git/commits/a1d282b36b6f3519aa1f3fc636f609c47dddb294"}}
+===== 10. what zizmor enforces about the version comment (docs+test data at v1.30.1) =====
+usage.md @ v1.30.1 bytes:    36887
+audits.md @ v1.30.1 bytes:   107538
+configuration.md @ v1.30.1 bytes:     9249
+ref-version-mismatch.yml @ v1.30.1 bytes:     1345
+
+-- 10a. which persona is the default? (usage.md @ v1.30.1) --
+358:        "persona": "Regular"
+616:## Using personas
+620:    `--persona=...` is available in `v0.7.0` and later.
+622:`zizmor` comes with three pre-defined "personas," which dictate how
+625:* The _regular persona_: the user wants high-signal, low-noise, actionable
+626:  security findings. This persona is best for ordinary local use as well as use
+631:        This persona can be made explicit with `--persona=regular`,
+635:* The _pedantic persona_, enabled with `--persona=pedantic`: the user wants
+638:    This persona is ideal for finding things that are a good idea
+643:    For example, using the pedantic persona will flag the following
+670:        This persona can also be enabled with `--pedantic`, which is
+671:        an alias for `--persona=pedantic`.
+## Using personas
+
+!!! tip
+
+    `--persona=...` is available in `v0.7.0` and later.
+
+`zizmor` comes with three pre-defined "personas," which dictate how
+sensitive `zizmor`'s analyses are:
+
+* The _regular persona_: the user wants high-signal, low-noise, actionable
+  security findings. This persona is best for ordinary local use as well as use
+  in most CI/CD setups, which is why it's the default.
+
+    !!! note
+
+        This persona can be made explicit with `--persona=regular`,
+        although this is not required.
+
+
+* The _pedantic persona_, enabled with `--persona=pedantic`: the user wants
+  *code smells* in addition to regular, actionable security findings.
+
+    This persona is ideal for finding things that are a good idea
+    to clean up or resolve, but are likely not immediately actionable
+    security findings (or are actionable, but suggest a intentional
+
+-- 10b. does unpinned-uses say anything about version comments? (audits.md @ v1.30.1) --
+(no occurrence of "comment" in the whole unpinned-uses section)
+
+-- 10c. ref-version-mismatch: what it detects and in which persona (audits.md @ v1.30.1) --
+## `ref-version-mismatch`
+
+| Type     | Examples                | Introduced in | Works offline  | Auto-fixes available | Configurable |
+|----------|-------------------------|---------------|----------------|--------------------| ---------------|
+| Workflow, Action  | [ref-version-mismatch.yml] | v1.14.0       | ✅             | ⚠️                 | ❌  |
+
+[ref-version-mismatch.yml]: https://github.com/zizmorcore/zizmor/blob/main/crates/zizmor/tests/integration/test-data/ref-version-mismatch.yml
+
+Detects `#!yaml uses:` clauses where a hash-pinned action's version comment
+(used by tools like Dependabot) is mismatched with the pinned commit, or
+missing entirely.
+
+This can happen innocently when a user (or automation) updates a hash-pinned
+`#!yaml uses:` clause to a newer commit but forgets to update the associated
+version comment. It can also happen when an action is pinned directly to a
+commit hash without any version comment at all.
+
+When the comment is stale, tools like Dependabot may silently ignore it instead
+of refreshing it on subsequent updates, causing it to drift further out of
+date. When the comment is missing, humans lose an easy indication of which
+version is in use.
+
+Missing version comments are reported only with the pedantic persona. If a
+different inline comment is already present, zizmor reports the finding but
+does not rewrite that comment automatically.
+
+### Remediation
+
+Update or add the tag comment so that it matches the pinned commit. Tools like
+
+-- 10d. the audit's own test data: which shapes are findings, and in which persona --
+     1	name: Ref Version Mismatch Test
+     2	
+     3	on: [push]
+     4	
+     5	permissions: {}
+     6	
+     7	jobs:
+     8	  ref-version-mismatch:
+     9	    name: ref-version-mismatch
+    10	    runs-on: ubuntu-latest
+    11	    steps:
+    12	      # No finding, comment matches
+    13	      - uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3.8.2
+    14	
+    15	      # Pedantic finding: missing version comment
+    16	      - uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7
+    17	
+    18	      # Pedantic finding: non-version comment, no auto-fix
+    19	      - uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # some comment
+    20	
+    21	      # No finding, symbolic ref
+    22	      - uses: actions/setup-node@v3.8.2 # v3.8.2
+    23	
+    24	      # Finding: v3.8.1==5e21ff4d9bc1a8cf6de233a3057d20ec6b3fb69d, v3.8.2==1a4442cacd436585916779262731d5b162bc6ec7
+    25	      - uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3.8.1
+    26	
+    27	      # Finding, the comment does not resolve to a known tag
+    28	      - uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v300000.8.1
+    29	
+    30	      # No finding, the tag points to another tag that points to 9d47c6ad4b02e050fd481d890b2ea34778fd09d6
+    31	      - uses: Swatinem/rust-cache@9d47c6ad4b02e050fd481d890b2ea34778fd09d6 # v2.7.8
+    32	
+    33	      # No finding, comment matches (even without v prefix)
+    34	      - uses: canonical/charming-actions/check-libraries@1753e0803f70445132e92acd45c905aba6473225 # 2.7.0
+
+-- 10e. is there a per-audit persona setting? (configuration.md @ v1.30.1 settings list) --
+16:## Discovery
+94:## JSON Schema
+101:## Settings
+103:### `rules.<id>.disable` {#rules-id-disable}
+149:### `rules.<id>.ignore` {#rules-id-ignore}
+188:### `rules.<id>.config` {#rules-id-config}
+197:### `rules.<id>.remap` {#rules-id-remap}
+207:#### `rules.<id>.remap.severity` {#rules-id-remap-severity}
+222:## Patterns
+123:    1. Changing your [persona](./usage.md#using-personas) to a less sensitive
+124:       one. For example, consider removing `--persona=pedantic`
+125:       or `--persona=auditor` if you're using one of those.
+
+-- 10f. what --persona=pedantic costs: it is a global sensitivity switch --
+* The _pedantic persona_, enabled with `--persona=pedantic`: the user wants
+  *code smells* in addition to regular, actionable security findings.
+
+    This persona is ideal for finding things that are a good idea
+    to clean up or resolve, but are likely not immediately actionable
+    security findings (or are actionable, but suggest a intentional
+    security decision by the workflow/action author).
+
+    For example, using the pedantic persona will flag the following
+    with a `template-injection` finding, since it uses a template
+    expansion in a `#!yaml run:` block, even though the expansion
+    itself is not attacker-controllable:
+
+    ```yaml
+    run: |
+      echo "running with ${{ github.event_name }}"
+    ```
+
+    produces:
+
+    ```console
+    $ zizmor --pedantic example.yml
+     help[template-injection]: code injection via template expansion
+       --> crates/zizmor/tests/integration/test-data/neutral.yml:22:34
+       |
+    21 |       - run: |
+       |         --- this run block
+    22 |           echo "running with ${{ github.event_name }}"
+       |                                  ^^^^^^^^^^^^^^^^^ may expand into attacker-controllable code
+       |
+       = note: audit confidence → High
+    ```
+
+    !!! tip
+
+        This persona can also be enabled with `--pedantic`, which is
+        an alias for `--persona=pedantic`.
+
+
+===== 11. the proposed comment-grammar check, run against sample uses: lines =====
+grammar ERE: @[0-9a-f]{40}[[:space:]]+#[[:space:]]v?[0-9]+(\.[0-9]+)*[[:space:]]*$
+sha-pinned-line ERE: uses:[[:space:]]*[^[:space:]]+@[0-9a-f]{40}
+
+-- 11a. PASS case: EVERY SHA-pinned uses: line of ts at cb1cbcb2e88b898e8c081b0abbfabc1630079c00 --
+   (12 lines: the 11 third-party clauses plus the one SHA-pinned official clause,
+    actions/dependency-review-action at dependency-review.yml:66 — the check is
+    scoped to SHA-pinned clauses of any owner, not to the third-party subset.)
+SHA-pinned lines fed to the check:       12
+.github/workflows/ci.yml:64:        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+.github/workflows/ci.yml:79:        uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4.0.0
+.github/workflows/ci.yml:158:        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+.github/workflows/ci.yml:170:        uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4.0.0
+.github/workflows/ci.yml:175:        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+.github/workflows/dependency-review.yml:66:        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+.github/workflows/manual-pr-security-scan.yml:77:        uses: google/osv-scanner-action/osv-scanner-action@9a498708959aeaef5ef730655706c5a1df1edbc2 # v2.3.8
+.github/workflows/publish.yml:57:        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+.github/workflows/publish.yml:71:        uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4.0.0
+.github/workflows/publish.yml:164:        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+.github/workflows/release-please.yml:77:        uses: googleapis/release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 # v5.0.0
+.github/workflows/update-contributors.yml:74:        uses: smorinlabs/contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1 # v1.3.9
+check exit 0 (PASS as expected)
+
+-- 11b. PASS case: py at HEAD c1216c6089f768ae0a3f3a465460d2d384f5fa44, whose comments include a bare major (# v7) --
+SHA-pinned lines fed to the check:        7
+check exit 0 (PASS as expected)
+
+-- 11c. FAIL cases: four synthetic lines, one per non-conforming shape --
+      - uses: smorinlabs/contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1
+      - uses: smorinlabs/contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1 # pinned by hand
+      - uses: smorinlabs/contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1 #v1.3.9 no space
+      - uses: smorinlabs/contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1 # release 1.3.9
+      - uses: smorinlabs/contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1
+      - uses: smorinlabs/contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1 # pinned by hand
+      - uses: smorinlabs/contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1 #v1.3.9 no space
+      - uses: smorinlabs/contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1 # release 1.3.9
+check exit 1 (FAIL as expected; the four lines above are the report)
+
+-- 11d. shapes the grammar deliberately ACCEPTS (upstream tags are not all v-prefixed 3-component semver) --
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+      - uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+      - uses: canonical/charming-actions/check-libraries@1753e0803f70445132e92acd45c905aba6473225 # 2.7.0
+check exit 0 (ACCEPT as expected)
+
+-- 11e. the check is blind to whether the comment RESOLVES to the pinned commit --
+      - uses: actions/setup-node@1a4442cacd436585916779262731d5b162bc6ec7 # v3.8.1
+check exit 0 — grammar conforms, yet zizmor's own test data (line 25) marks this exact line a ref-version-mismatch finding: the two checks are complementary, not redundant
+
+===== done (revision 2) =====
