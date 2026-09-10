@@ -170,7 +170,13 @@ I am not challenging F283's `DIVERGENT` verdict, which correctly records today's
   makes `indicatif`'s internal check *inert*: when the call site says no, the target is
   already `hidden()` and `term.is_term()` is never consulted; when the call site says
   yes, R65's check has already returned true, so `indicatif`'s agreement is redundant
-  rather than authoritative. The two checks cannot disagree observably.
+  rather than authoritative. Stated precisely: **when the call site says no, the two
+  checks cannot disagree observably**, because `term()` is never reached. When the call
+  site says yes, `indicatif` may still additionally hide — `draw_target.rs:80` is
+  `if !term.is_term() || is_dumb()`, and `is_dumb()` fires when `TERM` is unset or
+  `dumb`, a condition R65's TTY check does not evaluate. That residual asymmetry is
+  benign (it can only suppress, never pollute stdout) but it must be named rather than
+  glossed, and it is why the validation commands below pin `TERM` explicitly.
 
 **The maintained reference implementation for design C.** `astral-sh/uv`,
 `crates/uv/src/printer.rs` (retrieved 2026-09-10,
@@ -274,10 +280,10 @@ terminal layer, and the template will already need terminal knowledge for R65.
 
 The candidate here passed all six gates (the per-candidate gate answers precede the
 figures below; popularity was not consulted to reach them). **Exactly one crate
-qualified, and the prompt is right that fewer is a finding.** Of the five rendering
-candidates surveyed, four fail a gate outright — three on an undeclared MSRV
-(`spinners`, `spinoff`, `spinach`) and one on the total absence of CI (`cliclack`) —
-and a fifth is category-wrong. For a category with 5,301 reverse dependencies that is
+qualified, and the prompt is right that fewer is a finding.** Six rendering candidates
+were surveyed: four fail a gate outright — three on an undeclared MSRV (`spinners`,
+`spinoff`, `spinach`) and one on the total absence of CI (`cliclack`) — a fifth
+(`throbber-widgets-tui`) is category-wrong, and `indicatif` is the sixth. For a category with 5,301 reverse dependencies that is
 strikingly thin, and it is itself the argument against treating the spinner-only bin as
 a live alternative: the bin exists, but nothing in it meets a template's baseline
 hygiene. The gate rule applied is uniform — an undeclared `rust-version` is a fail for
@@ -362,6 +368,35 @@ single maintainer.
 
 ### Excluded by gate
 
+- **`cliclack` 0.5.6 — excluded on gates 4 and 2.**
+  *Gate 4 (OS coverage)*: **the repository has no CI at all.**
+  `GET https://api.github.com/repos/fadeevab/cliclack/contents` lists exactly
+  `.gitignore`, `Cargo.toml`, `LICENSE`, `README.md`, `examples`, `media`, `src` — there
+  is **no `.github` directory**, and `GET .../contents/.github` and
+  `.../contents/.github/workflows` both return HTTP 404 (retrieved 2026-09-10). The gate
+  requires the crate to build and be tested on `ubuntu-latest` and `macos-latest`,
+  evidenced by a CI badge or a stated platform list; neither exists. Inferring the pass
+  from its `indicatif` dependency's CI would be testing someone else's crate. **Fail.**
+  *Gate 2 (MSRV)*: **no `rust-version` declared** on any version
+  (`GET https://crates.io/api/v1/crates/cliclack/versions`, `rust_version: None` for
+  0.5.6, 0.5.5 and 0.5.4, retrieved 2026-09-10). This is the same rule that excludes
+  `spinners`, `spinoff` and `spinach`, and it is applied to `cliclack` identically —
+  being built on a well-behaved dependency does not supply the declaration the policy
+  requires, and does not stop a patch release from raising the floor without a semver
+  signal. **Fail.**
+  *Gate 1*: `MIT` — pass. *Gate 3*: `https://rustsec.org/packages/cliclack.html` HTTP
+  404, no advisories; its direct dependency `once_cell` does have a page (HTTP 200) but
+  the advisory there is **RUSTSEC-2019-0017**, CVSS 7.5 HIGH, "Patched >=1.0.1"
+  (`https://rustsec.org/advisories/RUSTSEC-2019-0017.html`, retrieved 2026-09-10), and
+  `cliclack` requires `once_cell = "1.21"` — so it is a historical advisory, not an open
+  one, and gate 3 passes. *Gate 5*: `console`, `indicatif`, `once_cell`, `strsim`,
+  `textwrap`, `zeroize` (+`derive`); no async runtime — pass. *Gate 6*: materially
+  heavier than `indicatif` alone, including `zeroize`'s derive proc-macro — pass with
+  the cost noted.
+  It is nonetheless the **ranked runner-up**, because the condition under which it wins
+  is one where R61 has already accepted these costs for a different reason. Figures:
+  1,028,866/90d; 3,340,001 all-time; 366 stars; 0.5.6 released 2026-08-10;
+  `pushed_at 2026-08-10`; `archived: false`; 10 open issues; maintenance **active**.
 - **`spinners` 4.2.0 — excluded on gate 2, with two further defects.**
   *Gate 2 (MSRV)*: no `rust-version` declared on **any** published version
   (`GET https://crates.io/api/v1/crates/spinners/versions`, `rust_version: None` for
@@ -445,9 +480,12 @@ single maintainer.
   Rust port of the same Clack/`@clack/prompts` lineage the TypeScript side already draws
   from, so it would be a defensible aesthetic match. Its spinner is `indicatif`
   underneath (`indicatif = "0.18"` in its `Cargo.toml`, retrieved 2026-09-10), so
-  choosing it is choosing `indicatif` plus an opinionated prompt layer. **Watch it for
-  R61 (`interactive-prompts`), not for R63**: adopting it here would decide R61 by side
-  effect, which this item has no mandate to do. If R61 independently lands on
+  choosing it is choosing `indicatif` plus an opinionated prompt layer. It is listed
+  here as the bin's genuine riser even though it is **excluded by gates 4 and 2 above** —
+  an up-and-comer is a thing to watch, not a thing that has already qualified, and its
+  missing CI is precisely the kind of gap a fast-growing crate closes as it matures.
+  **Watch it for R61 (`interactive-prompts`), not for R63**: adopting it here would
+  decide R61 by side effect, which this item has no mandate to do. If R61 independently lands on
   `cliclack`, R63 should be revisited to drop the direct `indicatif` dependency in
   favour of `cliclack`'s re-export — that is the re-verify trigger below.
 - **`spinoff`** was the previous up-and-comer in this bin and has stalled (last release
@@ -537,8 +575,11 @@ demonstrates exactly this.
 
 ### Ranked runner-up
 
-**`cliclack` 0.5.6.** It wins **only if R61 (`interactive-prompts`) independently
-selects `cliclack` as the prompt library.** In that world the template already has
+**`cliclack` 0.5.6** — the crate excluded above on gates 4 and 2. It wins **only if
+R61 (`interactive-prompts`) independently selects `cliclack` as the prompt library and,
+in doing so, accepts a dependency with no CI and no declared MSRV.** Those two gate
+failures do not disappear when R61 owns the decision; they simply stop being R63's to
+weigh, because the crate is already in the graph. In that world the template already has
 `cliclack` in its CLI dependency graph, its spinner is `indicatif` underneath, and
 adding a *separate* direct `indicatif` dependency would mean two crates rendering to
 stderr with two notions of the active line — a real interleaving hazard when the ts flow
@@ -546,8 +587,9 @@ shows a spinner and then a checkbox prompt on the same stream (`src/commands/pro
 lines 129 and 145 at pin `cb1cbcb2`). Under that condition, take the spinner from
 `cliclack` and drop the direct `indicatif` line.
 
-It does **not** win otherwise. Adopting it for R63 alone would decide R61 by side effect,
-add five dependencies the spinner does not need, and accept an undeclared MSRV — for a
+It does **not** win otherwise, and on this item's own gates it does not win at all.
+Adopting it for R63 alone would decide R61 by side effect, add five dependencies the
+spinner does not need, and take on an untested MSRV and an untested build matrix — for a
 spinner that is `indicatif`'s anyway.
 
 Second runner-up, for completeness: the **hand-rolled spinner**, which wins only if a
@@ -557,10 +599,11 @@ constraint exists in `PARAMETERS.md`.
 ### Tradeoffs
 
 **Versus `cliclack`.** The pick gives up visual coherence with whatever R61 chooses and
-accepts the risk of a later consolidation. Accepted because R63 must not pre-empt R61's
-decision, and because the consolidation is cheap when it comes: both render through the
-same `indicatif` primitives, so it is a dependency-line change plus a call-site rename,
-not a re-architecture. The re-verify trigger below makes the check explicit rather than
+accepts the risk of a later consolidation. Accepted on two grounds: `cliclack` fails
+gates 4 and 2 on this item's own terms, and R63 must not pre-empt R61's decision. The
+consolidation is cheap if R61 later forces it: both render through the same `indicatif`
+primitives, so it is a dependency-line change plus a call-site rename, not a
+re-architecture. The re-verify trigger below makes the check explicit rather than
 leaving it to memory.
 
 **Versus a spinner-only crate (`spinners`).** The pick gives up a notionally smaller
@@ -617,7 +660,7 @@ builds the template.
 | File | Change |
 |---|---|
 | `crates/cli/Cargo.toml` (or the CLI member's manifest under whatever layout R02 lands) | Add `indicatif = "0.18"` under `[dependencies]`. Add `indicatif = { version = "0.18", features = ["in_memory"] }` under `[dev-dependencies]`. **No `indicatif` line in the library crate's or the web crate's manifest.** |
-| `Cargo.lock` | Six new entries: `indicatif`, `console`, `unit-prefix`, `portable-atomic`, `unicode-width`, plus `vt100` in the dev graph. `libc` is almost certainly already present. |
+| `Cargo.lock` | At least six new entries: `indicatif`, `console`, `unit-prefix`, `portable-atomic`, `unicode-width`, plus `vt100` and whatever subtree `vt100` brings, in the dev graph only. `libc` is almost certainly already present. |
 | CLI progress module — new, e.g. `crates/cli/src/progress.rs` | Holds the single gate predicate and the `ProgressDrawTarget` factory, shaped after `uv`'s `Printer`: one enum or struct folding *all* suppression reasons (not-a-TTY, `CI` set, `--quiet`, and later `--no-progress`) into one `fn target(&self) -> ProgressDrawTarget`. This is the file that must contain the *only* consumer of R65's TTY check for progress purposes. |
 | CLI command module wrapping the fetch (the `projects.ts:127-135` analogue) | Build the spinner from the factory, `enable_steady_tick(Duration::from_millis(100))`, run the fetch, `finish_and_clear()` on **both** the ok and err paths. In Rust the `finally` shape is either an explicit call on both arms of the `Result` match or a small guard type whose `Drop` clears — prefer the guard so a `?` early-return cannot leak a live spinner. |
 | CLI arg definitions (R60's surface) | `--quiet` (and, if the owner wants parity with `uv`, `--no-progress`) feed the same predicate; they are new suppression reasons, not new conditionals at the fetch. |
@@ -637,7 +680,10 @@ written against the template P03 will build so that they can be run unchanged th
    describes as the point of the whole rule — "JSON tests then assert stdout purity with
    no regex-stripping".
 2. **CI suppression with a real TTY on stderr (criterion 2).**
-   `script -q /dev/null env CI=true cargo run -p rs-launch-blueprint-cli -- projects 2>&1 >/dev/null | cat -v`
+   `script -q /dev/null env TERM=xterm CI=true cargo run -p rs-launch-blueprint-cli -- projects 2>&1 >/dev/null | cat -v`
+   — `TERM` must be pinned to a non-`dumb` value, because a CI runner often leaves it
+   unset and `indicatif`'s `is_dumb()` would then hide the spinner for the wrong reason,
+   making the test pass without exercising the gate.
    (on macOS; `script -qec '...' /dev/null` on Linux — the invocation differs between
    BSD and util-linux `script`, and the test harness must branch on the OS since the
    matrix is `ubuntu-latest, macos-latest`).
@@ -647,9 +693,10 @@ written against the template P03 will build so that they can be run unchanged th
    `ci === undefined || ci === ''` and is exactly where an `is_ci` substitution would
    diverge.
 3. **Non-TTY stderr suppression (criterion 3).**
-   `cargo run -p rs-launch-blueprint-cli -- projects 2>&1 >/dev/null | wc -c`
+   `env TERM=xterm cargo run -p rs-launch-blueprint-cli -- projects 2>&1 >/dev/null | wc -c`
    with `CI` unset. *Expected*: only the command's own diagnostics, no frame bytes.
-4. **Rendering when attended, and clean teardown (criterion 4).**
+4. **Rendering when attended, and clean teardown (criterion 4).** Run with `TERM=xterm`
+   set, for the `is_dumb()` reason given in check 2.
    A unit test in `crates/cli/src/progress.rs` (or `tests/`) building the bar against
    `ProgressDrawTarget::term_like(Box::new(InMemoryTerm::new(24, 80)))`, ticking it, then
    `finish_and_clear()`. *Expected*: `term.contents()` is non-empty mid-run and empty
@@ -689,7 +736,14 @@ an executed test against a 0-column pty. Check 4 above does not cover it; a futu
 implementer who wants certainty should add a `TermLike` fake reporting width 0.
 
 **Confidence: medium** on the runner-up ordering, because it is contingent on R61, which
-has not run.
+has not run. One judgement call is worth flagging for the reviewer: I treated an
+undeclared `rust-version` as a **gate-2 failure** rather than a finding, uniformly across
+`spinners`, `spinoff`, `spinach` and `cliclack`. That rule is what reduces the qualified
+shortlist to one crate. Under the looser reading — undeclared MSRV is a finding, not a
+fail — `spinners` would reach the shortlist, where its `EPIPE` panic
+(`src/lib.rs:119`, `.expect("IO Error")`) and its stdout-clean-but-legacy dependency set
+would still put it behind `indicatif`; the recommendation does not change, only the
+shortlist's length. `cliclack` would remain excluded either way, on gate 4.
 
 Re-verify when any of these occurs:
 
@@ -739,6 +793,9 @@ GitHub REST (`GET https://api.github.com/repos/<o>/<r>` and
 then `GET /repos/console-rs/indicatif/issues/<n>/comments` for issues 814, 810, 807, 802,
 798, 797, 793, 789, 778, 777. Unsafe posture from
 `GET https://api.github.com/search/code?q=unsafe+repo:console-rs/indicatif+path:src`.
+CI presence from `GET https://api.github.com/repos/fadeevab/cliclack/contents` (no
+`.github` entry) and `GET .../contents/.github` plus `.../contents/.github/workflows`
+(both HTTP 404).
 
 Source read at released tags (all retrieved 2026-09-10):
 `https://raw.githubusercontent.com/console-rs/indicatif/0.18.6/` — `Cargo.toml`,
@@ -759,9 +816,15 @@ Source read at released tags (all retrieved 2026-09-10):
 
 RustSec (`https://rustsec.org/packages/<name>.html`, retrieved 2026-09-10): `indicatif`,
 `console`, `spinners`, `spinoff`, `cliclack`, `spinach`, `is_ci`, `ci_info`,
-`lazy_static`, `maplit`, `strum`, `libc`, `vt100` — all **HTTP 404**; `once_cell` —
-HTTP 200. Control: `time`, `openssl`, `atty` — HTTP 200 with 4, 20 and 4 `RUSTSEC-`
-mentions.
+`lazy_static`, `maplit`, `strum`, `libc`, `vt100` — all **HTTP 404**, i.e. no advisory
+page and so no advisories. `once_cell` — **HTTP 200**, and the single advisory there is
+**RUSTSEC-2019-0017** ("Panic during initialization of `Lazy<T>` might trigger undefined
+behavior", CVSS 7.5 HIGH, reported 2019-09-01, `Patched >=1.0.1`, `Unaffected <0.2.5`;
+`https://rustsec.org/advisories/RUSTSEC-2019-0017.html`, retrieved 2026-09-10).
+`once_cell` reaches this survey only as a `cliclack` dependency at `"1.21"`, which is far
+above the patched floor, so it is **not an open advisory** for anything considered here
+and it does not touch the recommended dependency tree at all. Control for the 404
+reading: `time`, `openssl`, `atty` — HTTP 200 with 4, 20 and 4 `RUSTSEC-` mentions.
 
 **Method notes.** I queried `https://crates.io/api/v1/crates/<name>` and `/versions`
 (with a User-Agent header) for every download, release-date, licence and `rust_version`
@@ -792,6 +855,10 @@ proc-macro derives and of an async runtime) rather than as numbers, because no c
 exists in this repository to build and inventing a byte or second figure would breach
 the prompt's constraint. Likewise the 0-column behavior is established by reading
 `console`'s source, not by executing against a 0-column pty; that gap is named in
-`### Confidence & re-verify trigger`. I did not scaffold a crate, run `cargo`, or write
-any file other than this one, and I did not open, list or search for any other engine's
-output.
+`### Confidence & re-verify trigger`. **(4)** For `indicatif` issues #814 and #798 I
+recorded only what the comments endpoint shows — closed with zero comments — and did not
+read `closed_by`, so who closed them is unverified; it does not affect the median, which
+is computed over the 8 answered issues.
+
+I did not scaffold a crate, run `cargo`, or write any file other than this one, and I did
+not open, list or search for any other engine's output.

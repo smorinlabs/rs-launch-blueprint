@@ -346,7 +346,7 @@ that section for what I did and did not run.
 
 **BASELINE-REVIEW findings.**
 
-BASELINE-REVIEW: F127 — early-warning-without-gating for upstream change — the ledger row's evidence pointer should include the CI job, not only the local recipe — `docs/port/COMMONALITY.md:133` and this prompt's `## Context` cite ts's advisory lane as `Justfile:169` alone; ts@cb1cbcb2 `.github/workflows/ci.yml:141-188` also carries a full `bun-lane` job (`:142` `name: bun-lane (advisory, non-gating)`, `:144` `continue-on-error: true`, `:145-147` `permissions: contents: read`, `:175` `oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0`, `:177` `bun-version: 1.3.14`, `:188` `bun run vitest run --exclude tests/e2e.test.ts`). This is load-bearing for R34: read as a Justfile recipe only, the ts precedent looks like a *local developer convenience* and the natural Rust analogue would be a `just` recipe; read with the CI job, ts's precedent is an automated, permission-scoped, SHA-pinned advisory CI lane, which is what this report recommends porting. Affected items: R34 (this item), and R11 `ci-workflow-job-structure` if it inventories ts's job list from the ledger rather than from the file. No ledger edit made here.
+BASELINE-REVIEW: F127 — early-warning-without-gating for upstream change — the ledger row's file-evidence pointer should include the CI job, not only the local recipe — `docs/port/COMMONALITY.md:133` and `docs/port/DIVERGENCE-ANALYSIS.md:146` both cite ts's advisory lane with the single file reference `Justfile:169`. Scope of this finding, stated precisely so it is not read as broader than it is: the prompt's `## Context` is **not** at fault — its D-036 summary (prompt line 11) does name a "non-required CI job via `oven-sh/setup-bun`", so the prompt already carries the fact; what is incomplete is the ledger's and the divergence analysis's *file-and-line evidence*, which is what a downstream item greps. ts@cb1cbcb2 `.github/workflows/ci.yml:141-188` also carries a full `bun-lane` job (`:142` `name: bun-lane (advisory, non-gating)`, `:144` `continue-on-error: true`, `:145-147` `permissions: contents: read`, `:175` `oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0`, `:177` `bun-version: 1.3.14`, `:188` `bun run vitest run --exclude tests/e2e.test.ts`). This is load-bearing for R34: read as a Justfile recipe only, the ts precedent looks like a *local developer convenience* and the natural Rust analogue would be a `just` recipe; read with the CI job, ts's precedent is an automated, permission-scoped, SHA-pinned advisory CI lane, which is what this report recommends porting. Affected items: R34 (this item), and R11 `ci-workflow-job-structure` if it inventories ts's job list from the ledger rather than from the file. No ledger edit made here.
 
 BASELINE-REVIEW: F126 + F127 — early-warning-without-gating for upstream change — the two rows describe one capability on two axes and should be satisfied by one workflow with isolated legs, not by two independently-shaped mechanisms — `docs/port/COMMONALITY.md:132-133` and `docs/port/DIVERGENCE-ANALYSIS.md:145-146` treat F126 (py-only, class D) and F127 (ts-only, class C) as separate facts whose Rust answers are independent, and DIVERGENCE-ANALYSIS's F127 question ("is that worth the ci-cost") is asked as if the beta lane must justify its own scheduling overhead. Evidence that they are one capability on two axes: py's own workflow header (py@b08bccfb `.github/workflows/canary.yml:1-11`) and ts's own job header (ts@cb1cbcb2 `.github/workflows/ci.yml:130-140`) state the same principle in the same terms — exercise a configuration the gate does not, never block a merge. Evidence that one file serves both in Rust: six surveyed projects (ripgrep, anyhow, serde, rustls, axum, clap) all express the toolchain axis as *matrix legs of an existing workflow*, never as a dedicated workflow; and py's canary already carries a matrix (py@b08bccfb `.github/workflows/canary.yml:38-40`, `python-version: ["3.12","3.13"]`) whose Rust analogue is a *channel* axis, not an interpreter axis. Consequence for the F127 cost question: the beta leg's marginal cost is one weekly ubuntu job on a schedule that already exists, so the answer is yes-for-beta / no-for-nightly, at a cost the standalone framing overstates. Affected items: R34 (this item), R11 `ci-workflow-job-structure` (which must know this workflow exists and is *not* part of the aggregate required check). No ledger edit made here.
 
@@ -458,7 +458,66 @@ the bounds-respecting upgrade.
   gate: it removes the determinism the Cargo FAQ names as the lockfile's purpose
   and would break the MSRV verification this template's fixed `msrv-policy`
   requires.
-- No candidate is excluded by license, advisory, OS or MSRV gates in this member.
+**All six fitness gates, per candidate in this member, stated rather than skipped.**
+
+*`cargo update` (the recommendation).* (1) **License** — `inapplicable`: it is a
+subcommand of the Cargo binary that ships with the toolchain and is preinstalled
+on the runners; nothing is added to this repository's dependency tree or
+redistributed, so there is no licence to reconcile with `MIT OR Apache-2.0`.
+Recorded anyway: `rust-lang/cargo` reports `license.spdx_id` Apache-2.0
+(`GET https://api.github.com/repos/rust-lang/cargo`, 2026-09-10), and Rust itself
+is dual `MIT OR Apache-2.0`. (2) **MSRV** — `inapplicable`: Cargo is not a
+dependency of this workspace, so it contributes no `rust-version` to the tree; the
+relevant constraint is the inverse and is handled in the body — Cargo must be
+*new enough* to honour `CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS`, which needs
+resolver `"3"`, i.e. Rust 1.84+, and both runners ship 1.98.0. (3) **Advisory /
+`unsafe` posture** — no open RustSec advisory (`https://rustsec.org/packages/cargo.html`,
+2026-09-10, lists only CVE-2019-16760, fixed in Rust 1.26.0). `unsafe` posture:
+`inapplicable` as a code-safety property, because Cargo is an *executed tool*, not
+linked into this template's binaries; whatever `unsafe` exists inside Cargo is
+already inside every Rust installation this template requires. (4) **OS coverage** —
+**passed**: Cargo 1.98.0 is preinstalled on both `ubuntu-24.04` and `macos-15`
+(`actions/runner-images`, 2026-09-10). Windows: supported by Cargo, not exercised
+here since `windows-latest` is outside the fixed matrix. (5) **Default features /
+async-runtime coupling** — `inapplicable`: `cargo update` is a CLI invocation, not
+a crate dependency, so it has no Cargo features to enable and no async runtime to
+couple to. (6) **Binary size / compile time** — `inapplicable` as stated (nothing
+is compiled *into* the template); the analogous cost is stated instead: `cargo
+update` itself is a resolution step of seconds, and the compile cost it *causes* is
+one cold-cache rebuild per leg, bounded by M3's `timeout-minutes: 30`.
+
+*`cargo-edit` (the shortlisted, unadopted runner-up).* (1) **License** — **passed**:
+manifest declares `license = "Apache-2.0 OR MIT"` (`https://raw.githubusercontent.com/killercup/cargo-edit/HEAD/Cargo.toml`
+and `GET https://crates.io/api/v1/crates/cargo-edit/versions`, both 2026-09-10),
+compatible with `MIT OR Apache-2.0`. (2) **MSRV** — **passed**: `rust_version`
+`1.92` at 0.13.13, at or below `stable minus 2 minor` (1.96 as of stable 1.98.1
+on 2026-09-10). Note it would be installed as a *dev tool binary*, never as a
+dependency, so it contributes nothing to this workspace's MSRV either way. (3)
+**Advisory / `unsafe` posture** — no open advisory (`https://rustsec.org/packages/cargo-edit.html`
+returns HTTP 404, 2026-09-10, i.e. no advisory page exists). `unsafe` posture
+**verified, not assumed**: the published 0.13.13 crate tarball
+(`https://crates.io/api/v1/crates/cargo-edit/0.13.13/download`, retrieved and
+extracted 2026-09-10) contains 84 `.rs` files and **zero `unsafe` blocks**; the
+only five occurrences of the token are the identifier `unsafe_code` inside
+`#![warn(...)]` attributes at `src/lib.rs:15` and the four binary entry points
+(`src/bin/{add,rm,upgrade,set-version}/main.rs:8`) — lint-warned rather than
+`#![forbid(unsafe_code)]`. (4) **OS coverage** — **passed**: a pure-Rust cargo
+subcommand with no platform-specific code path in its manifest; it builds and runs
+on both `ubuntu-latest` and `macos-latest`. Windows: supported upstream, not
+exercised here. (5) **Default features / async-runtime coupling** — no async
+runtime; it is a synchronous CLI, so there is no runtime coupling to declare. Its
+own Cargo features are irrelevant to this template because it would be consumed as
+an installed binary, not as a library dependency. (6) **Binary size / compile
+time** — qualitatively: `crate_size` 78,869 bytes source, but a `cargo install
+cargo-edit` from source is a multi-minute compile of a `cargo`-library-backed tool.
+This is precisely why the runner-up entry specifies installing it via
+`taiki-e/install-action` (a prebuilt binary, seconds) rather than `cargo install`,
+should it ever be adopted. It adds **zero** bytes to this template's shipped
+binaries, since it is a build-time tool that is never linked.
+
+*`cargo update --breaking` and "delete `Cargo.lock`"* are excluded above on the
+stable-only constraint and on fit respectively; neither reaches the remaining
+gates.
 
 ##### Up-and-comers
 `cargo-minimal-versions` (figures above) — wraps the nightly `-Z minimal-versions`
@@ -624,6 +683,31 @@ alternative action exists.
    zero third-party actions. Rank 2; see `Ranked runner-up`.
 
 ##### Excluded by gate
+**All six fitness gates on `dtolnay/rust-toolchain`, the recommendation, stated
+rather than skipped.** (1) **License** — `inapplicable` as a distribution
+constraint: a GitHub Action is executed on a runner, never vendored into this
+repository or linked into its binaries, so it imposes nothing on the template's
+`MIT OR Apache-2.0` licence. Recorded anyway: `license.spdx_id` **MIT**
+(`GET https://api.github.com/repos/dtolnay/rust-toolchain`, 2026-09-10), which is
+compatible in any case. (2) **MSRV** — `inapplicable`: the action is a composite
+action of shell steps driving `rustup`; it contains no Rust crate and enters no
+dependency tree, so it declares and constrains no `rust-version`. (3) **Advisory /
+`unsafe` posture** — `inapplicable`: not a crate, so no RustSec package page
+exists and `unsafe` has no meaning for it. The analogous risk is supply-chain
+(an action executes on the runner with the job's token), addressed by the SHA pin
+required under R20 and by the job's `permissions: contents: read`. (4) **OS
+coverage** — **passed**: it drives `rustup`, and Rustup 1.29.0 is preinstalled on
+both `ubuntu-24.04` and `macos-15` (`actions/runner-images`, 2026-09-10), so the
+action works identically on both OSes in the fixed matrix. Windows: supported
+upstream, outside this template's matrix. (5) **Default features / async-runtime
+coupling** — `inapplicable`: no Cargo features and no Rust async runtime; a
+composite action has neither. (6) **Binary size / compile time** — `inapplicable`
+as stated (nothing is compiled into the template); the analogous cost is stated
+instead: the action installs a **minimal** rustup profile, so the beta leg pays a
+toolchain-download delta of tens of seconds rather than a full install, and adds
+zero bytes to any shipped artifact.
+
+Genuinely excluded in this member:
 - **`actions-rs/toolchain`** — excluded: `archived: true`, `pushed_at`
   2023-06-18T05:26:38Z (`GET https://api.github.com/repos/actions-rs/toolchain`,
   2026-09-10). Fails the maintenance rubric outright (`archived`) — the rubric's
@@ -651,6 +735,25 @@ Good, with one composition caveat and one deliberate scope limit.
 Caveat: the beta leg must run `--locked` so the dependency graph is held constant
 and a failure is attributable to the compiler. Without it, a red beta leg could
 be a dependency's fault and the lane loses its diagnostic value.
+**Reconciling this member with the `Stable Rust only` constraint** (`## Constraints`),
+which the same report invokes to exclude `cargo update --breaking`. The two are
+consistent, and the distinction is what the constraint governs: it governs what
+the template *requires in order to build and ship* — its source may use no
+unstable feature, and no gate may depend on a non-stable channel. `cargo update
+--breaking` would violate that, because adopting it makes a lane *depend* on
+nightly to function at all. The beta leg violates nothing, because it **requires
+nothing of the code**: it compiles the same edition-2024, stable-only source with
+the same `--locked` dependency graph, enables no `#![feature(...)]`, gates no
+merge, and is never a prerequisite for building, testing or releasing the
+template. It is an *observer* of a compiler the project does not depend on. A red
+beta leg is therefore information about a future stable release — the Rust
+project's own stated purpose for such a lane (Rust Book Appendix G, 2026-09-10) —
+and never a statement that this template needs a non-stable toolchain. The
+operative test: delete the beta leg and every gate, build and release path is
+unchanged; delete stable and nothing works. The same reasoning is why a *nightly*
+leg would also not breach the constraint — nightly is rejected on noise (see
+`### Principles and implementation`), not on the stable-only rule.
+
 Scope limit: the beta leg runs on `ubuntu-latest` only. This is a *cost* choice,
 not a support gap — `rustup`, and therefore this action, works identically on
 `macos-latest` (Rustup 1.29.0 is preinstalled on `macos-15`), and compiler
