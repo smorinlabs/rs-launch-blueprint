@@ -1,0 +1,381 @@
+# R25 empirical audit -- Linux VM independent rerun (2026-09-09)
+# cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R25/2026-09-05T164357Z-eec460755121
+# scratch: /tmp/r25-audit.BbBt0q
+
+## check 1 -- toolchain and OS
+$ rustc --version
+rustc 1.98.1 (48a229cea 2026-09-01)
+exit=0
+$ cargo --version
+cargo 1.98.1 (797e8a9bc 2026-08-05)
+exit=0
+$ sw_vers
+exit=127
+$ uname -sm
+Linux aarch64
+exit=0
+$ node --version
+exit=127
+$ npm --version
+exit=127
+
+## check 2 -- release-please v17.11.2 source, schema, and Rust strategy
+$ curl ... release-please/v17.11.2/schemas/config.json
+status=200
+exit=0
+$ curl ... release-please/v17.11.2/src/versioning-strategies/default.ts
+status=200
+exit=0
+$ curl ... release-please/v17.11.2/src/version.ts
+status=200
+exit=0
+$ curl ... release-please/v17.11.2/src/strategies/rust.ts
+status=200
+exit=0
+$ curl ... release-please/v17.11.2/src/strategies/base.ts
+status=200
+exit=0
+$ curl ... release-please/v17.11.2/src/strategies/node.ts
+status=200
+exit=0
+$ curl ... release-please/v17.11.2/src/strategies/python.ts
+status=200
+exit=0
+$ curl ... release-please/v17.11.2/src/manifest.ts
+status=200
+exit=0
+$ curl ... release-please/v17.11.2/docs/manifest-releaser.md
+status=200
+exit=0
+$ curl ... release-please/v17.11.2/README.md
+status=200
+exit=0
+$ curl ... release-please/v17.6.0/src/strategies/rust.ts
+status=200
+exit=0
+$ curl ... release-please-action/v5.0.0/package.json
+status=200
+exit=0
+"bump-minor-pre-major": {
+"bump-patch-for-minor-pre-major": {
+"bump-minor-pre-major": true,
+"bump-patch-for-minor-pre-major": true,
+89-    }
+90-
+91:    if (breaking > 0) {
+92-      if (version.isPreMajor && this.bumpMinorPreMajor) {
+93-        return new MinorVersionUpdate();
+94-      } else {
+95-        return new MajorVersionUpdate();
+96-      }
+97:    } else if (features > 0) {
+98-      if (version.isPreMajor && this.bumpPatchForMinorPreMajor) {
+99-        return new PatchVersionUpdate();
+100-      } else {
+101-        return new MinorVersionUpdate();
+102-      }
+103-    }
+104-    return new PatchVersionUpdate();
+105-  }
+106-
+107-  /**
+108-   * Given the current version of an artifact and a list of commits,
+109-   * return the next version.
+110-   *
+111-   * @param {Version} version The current version
+112-   * @param {ConventionalCommit[]} commits The list of commits to consider
+113-   * @returns {Version} The next version
+/tmp/r25-audit.BbBt0q/rp-src/src/strategies/rust.ts:133:  protected initialReleaseVersion(): Version {
+/tmp/r25-audit.BbBt0q/rp-src/src/strategies/rust.ts-134-    return Version.parse('0.1.0');
+/tmp/r25-audit.BbBt0q/rp-src/src/strategies/rust.ts-135-  }
+/tmp/r25-audit.BbBt0q/rp-src/src/strategies/rust.ts-136-
+--
+/tmp/r25-audit.BbBt0q/rp-src/rust-17.6.0.ts:133:  protected initialReleaseVersion(): Version {
+/tmp/r25-audit.BbBt0q/rp-src/rust-17.6.0.ts-134-    return Version.parse('0.1.0');
+/tmp/r25-audit.BbBt0q/rp-src/rust-17.6.0.ts-135-  }
+/tmp/r25-audit.BbBt0q/rp-src/rust-17.6.0.ts-136-
+138:    this.versioningStrategy =
+139-      options.versioningStrategy ||
+140-      new DefaultVersioningStrategy({logger: this.logger});
+141-    this.targetBranch = options.targetBranch;
+142-    this.repository = options.github.repository;
+21:    "release-please",
+22-    "action"
+--
+32:    "release-please": "^17.6.0"
+33-  },
+
+## check 4 -- Cargo initial version and resolver band
+$ cargo new --lib --vcs none probe-lib && cargo new --bin --vcs none probe-bin
+exit=0
+[package]
+name = "probe-lib"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+[package]
+name = "probe-bin"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+$ (cd /tmp/r25-audit.BbBt0q/resolve/a && cargo generate-lockfile)
+exit=101
+$ (cd /tmp/r25-audit.BbBt0q/resolve/b && cargo generate-lockfile)
+exit=101
+$ (cd /tmp/r25-audit.BbBt0q/resolve/c && cargo generate-lockfile)
+exit=101
+
+## check 5 -- authority citation spot-checks
+$ curl -sSL https://doc.rust-lang.org/cargo/reference/semver.html
+status=200
+exit=0
+$ curl -sSL https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
+status=200
+exit=0
+$ curl -sSL https://semver.org/
+status=200
+exit=0
+$ curl -sSL https://raw.githubusercontent.com/rust-lang/api-guidelines/master/src/necessities.md
+status=200
+exit=0
+$ curl -sSL https://raw.githubusercontent.com/release-plz/release-plz/main/website/docs/config.md
+status=200
+exit=0
+/tmp/r25-audit.BbBt0q/docs/cargo-semver:228:convention that only changes in the left-most non-zero component are
+/tmp/r25-audit.BbBt0q/docs/cargo-deps:213:Versions are considered compatible if their left-most non-zero major/minor/patch component is the same.
+367:          <li class="version version-1.0.0">
+368:            <a href="/spec/v1.0.0.html">1.0.0</a>
+5:## Public dependencies of a stable crate are stable (C-STABLE)
+10:Public dependencies are crates from which types are used in the public API of
+77:  - [`features_always_increment_minor`](#the-features_always_increment_minor-field)
+117:  - [`features_always_increment_minor`](#the-features_always_increment_minor-field-package-section)
+252:#### The `features_always_increment_minor` field
+
+## check 6 -- live figures and pinned source repositories
+$ curl -sS https://api.github.com/repos/googleapis/release-please/releases/latest
+status=200
+exit=0
+"tag_name":"v17.11.2"
+"published_at":"2026-08-24T21:20:30Z"
+$ curl -sS https://api.github.com/repos/googleapis/release-please
+status=200
+exit=0
+"pushed_at":"2026-09-03T18:49:38Z"
+"stargazers_count":7473
+"archived":false
+$ curl -sS https://api.github.com/repos/googleapis/release-please-action/releases/latest
+status=200
+exit=0
+"tag_name":"v5.0.0"
+"published_at":"2026-04-22T18:03:34Z"
+"total_count":7
+$ curl -sS https://api.github.com/search/issues?q=repo:googleapis/release-please+is:issue+is:open
+status=200
+exit=0
+"total_count":297
+"total_count":0
+"total_count":0
+"total_count":1
+"total_count":0
+"total_count":1
+"total_count":0
+"total_count":1
+$ curl -sS https://crates.io/api/v1/crates/axum
+status=200
+exit=0
+"downloads":461946996
+"recent_downloads":112813910
+"max_stable_version":"0.8.9"
+$ curl -sS https://crates.io/api/v1/crates/tracing
+status=200
+exit=0
+"downloads":834126366
+"recent_downloads":184984766
+"max_stable_version":"0.1.44"
+$ curl -sS https://crates.io/api/v1/crates/tower
+status=200
+exit=0
+"downloads":649418467
+"recent_downloads":166590898
+"max_stable_version":"0.5.3"
+$ curl -sS https://crates.io/api/v1/crates/config
+status=200
+exit=0
+"downloads":112009454
+"recent_downloads":17700610
+"max_stable_version":"0.15.25"
+$ curl -sS https://crates.io/api/v1/crates/serde
+status=200
+exit=0
+"downloads":1373386943
+"recent_downloads":297704333
+"max_stable_version":"1.0.229"
+$ curl -sS https://crates.io/api/v1/crates/tokio
+status=200
+exit=0
+"downloads":952090463
+"recent_downloads":218334421
+"max_stable_version":"1.53.1"
+$ git -C .../ts-launch-blueprint show cb1cbcb:release-please-config.json
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "node",
+  "include-v-in-tag": true,
+  "include-component-in-tag": false,
+  "bump-minor-pre-major": true,
+  "bump-patch-for-minor-pre-major": true,
+  "pull-request-title-pattern": "chore(release): publish v${version}",
+  "packages": {
+    ".": {
+exit=0
+$ git -C .../ts-launch-blueprint show 19ff9b5:.release-please-manifest.json
+{
+  ".": "0.1.0"
+}
+exit=0
+$ git -C .../ts-launch-blueprint log --oneline --all -- .release-please-manifest.json
+bdffd16 chore(release): publish v0.1.4
+0e6a3d7 chore(release): publish v0.1.3
+1ec682f chore(release): publish v0.1.2
+bdc7567 chore(release): publish v0.1.1
+19ff9b5 feat: add release-please + npm publish pipeline
+exit=0
+$ git -C .../py-launch-blueprint show b08bccf:release-please-config.json | grep -c pre-major
+0
+exit=1
+$ git -C .../py-launch-blueprint show 1bd0344:.release-please-manifest.json
+{
+  ".": "1.0.0"
+}
+exit=0
+
+# Linux VM rerun complete
+
+## check 4 retry -- Cargo initial version and resolver band (corrected auditor harness)
+$ cargo new --lib --vcs none probe-lib && cargo new --bin --vcs none probe-bin
+exit=0
+-- generated manifests --
+[package]
+name = "probe-lib"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+[package]
+name = "probe-bin"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+$ (cd /tmp/r25-audit-cargo.3tGBwT/resolve/a && cargo generate-lockfile)
+
+## check 4 final retry -- Cargo resolver (complete throwaway packages)
+$ (cd /tmp/r25-audit-cargo.pbTBQr/resolve/a && cargo generate-lockfile)
+exit=0
+name = "bitflags"
+version = "0.9.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "4efd02e230a02e18f92fc2735f44597385ed02ad8f831e7c1c1156ee5e1ab3a5"
+$ (cd /tmp/r25-audit-cargo.pbTBQr/resolve/b && cargo generate-lockfile)
+exit=0
+name = "bitflags"
+version = "1.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "bef38d45163c2f1dde094a7dfd33ccf595c92905c8f8f4fdc18d06fb1037718a"
+$ (cd /tmp/r25-audit-cargo.pbTBQr/resolve/c && cargo generate-lockfile)
+exit=0
+name = "axum"
+version = "0.7.9"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "edca88bc138befd0323b20752846e6587272d3b03b0343c8ea28a6f819e6e71f"
+# check 4 final retry complete
+
+## check 3 -- release-please@17.11.2 executed versioning probe (macOS; Linux VM has no node/npm)
+$ npm --prefix /private/tmp/r25-audit-probe.eoNTGb install release-please@17.11.2
+exit=1
+exit=1
+
+## check 3 retry -- release-please@17.11.2 executed versioning probe (repository-local cache avoided)
+$ npm_config_cache=/private/tmp/r25-audit-npm-cache.kpyJAn npm --prefix /private/tmp/r25-audit-probe.pNZvej install release-please@17.11.2
+
+added 162 packages in 5s
+
+32 packages are looking for funding
+  run `npm fund` for details
+exit=0
+release-please version: 17.11.2
+config | start | commit | next
+both true | 0.1.0 | fix: | 0.1.1
+both true | 0.1.0 | feat: | 0.1.1
+both true | 0.1.0 | feat!: | 0.2.0
+both true | 0.1.3 | fix: | 0.1.4
+both true | 0.1.3 | feat: | 0.1.4
+both true | 0.1.3 | feat!: | 0.2.0
+both true | 1.0.0 | fix: | 1.0.1
+both true | 1.0.0 | feat: | 1.1.0
+both true | 1.0.0 | feat!: | 2.0.0
+neither (defaults) | 0.1.0 | fix: | 0.1.1
+neither (defaults) | 0.1.0 | feat: | 0.2.0
+neither (defaults) | 0.1.0 | feat!: | 1.0.0
+neither (defaults) | 0.1.3 | fix: | 0.1.4
+neither (defaults) | 0.1.3 | feat: | 0.2.0
+neither (defaults) | 0.1.3 | feat!: | 1.0.0
+neither (defaults) | 1.0.0 | fix: | 1.0.1
+neither (defaults) | 1.0.0 | feat: | 1.1.0
+neither (defaults) | 1.0.0 | feat!: | 2.0.0
+minor-pre-major only | 0.1.0 | fix: | 0.1.1
+minor-pre-major only | 0.1.0 | feat: | 0.2.0
+minor-pre-major only | 0.1.0 | feat!: | 0.2.0
+minor-pre-major only | 0.1.3 | fix: | 0.1.4
+minor-pre-major only | 0.1.3 | feat: | 0.2.0
+minor-pre-major only | 0.1.3 | feat!: | 0.2.0
+minor-pre-major only | 1.0.0 | fix: | 1.0.1
+minor-pre-major only | 1.0.0 | feat: | 1.1.0
+minor-pre-major only | 1.0.0 | feat!: | 2.0.0
+patch-for-minor only | 0.1.0 | fix: | 0.1.1
+patch-for-minor only | 0.1.0 | feat: | 0.1.1
+patch-for-minor only | 0.1.0 | feat!: | 1.0.0
+patch-for-minor only | 0.1.3 | fix: | 0.1.4
+patch-for-minor only | 0.1.3 | feat: | 0.1.4
+patch-for-minor only | 0.1.3 | feat!: | 1.0.0
+patch-for-minor only | 1.0.0 | fix: | 1.0.1
+patch-for-minor only | 1.0.0 | feat: | 1.1.0
+patch-for-minor only | 1.0.0 | feat!: | 2.0.0
+exit=0
+
+## TypeScript manifest-history verification -- material finding
+$ git -C /Users/stevemorin/c/ts-launch-blueprint show 19ff9b5:.release-please-manifest.json
+{
+  ".": "0.1.0"
+}
+exit=0
+$ git -C /Users/stevemorin/c/ts-launch-blueprint show --format=fuller --stat bdc7567
+commit bdc7567c27291fc3dd823f1c48380ed763e76268
+Author:     release-please-smorinlabs[bot] <288834778+release-please-smorinlabs[bot]@users.noreply.github.com>
+AuthorDate: Tue Jul 21 14:47:06 2026 +0000
+Commit:     GitHub <noreply@github.com>
+CommitDate: Tue Jul 21 14:47:06 2026 +0000
+
+    chore(release): publish v0.1.1
+
+ .release-please-manifest.json |  2 +-
+ CHANGELOG.md                  | 95 +++++++++++++++++++++++++++++++++++++++++++
+ package.json                  |  2 +-
+ 3 files changed, 97 insertions(+), 2 deletions(-)
+exit=0
+$ git -C /Users/stevemorin/c/ts-launch-blueprint tag --contains bdc7567
+ts-launch-blueprint-v0.1.1
+v0.1.2
+v0.1.3
+exit=0
+$ npm view ts-launch-blueprint@0.1.1 version dist.tarball --json
+{
+  "error": {
+    "code": "E404",
+    "summary": "No match found for version 0.1.1",
+    "detail": "The requested resource 'ts-launch-blueprint@0.1.1' could not be found or you do not have permission to access it.\n\nNote that you can also install from a\ntarball, folder, http url, or git url."
+  }
+}
+exit=1
