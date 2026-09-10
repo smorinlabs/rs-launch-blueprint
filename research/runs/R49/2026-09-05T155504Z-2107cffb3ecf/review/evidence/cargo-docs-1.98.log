@@ -1,0 +1,587 @@
+# Cargo reference documentation read at the rust-1.98.0 tag of rust-lang/cargo
+retrieved: 2026-09-10T15:24:38Z
+installed toolchain: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+=== gh api repos/rust-lang/cargo/contents/src/doc/src/reference/manifest.md?ref=rust-1.98.0 ===
+bytes:    25478  sha256: 28e0aaa4907a85fd7c8bc45e68a6fb4bac997913edaff83500cd63ca608a215b
+=== gh api repos/rust-lang/cargo/contents/src/doc/src/reference/cargo-targets.md?ref=rust-1.98.0 ===
+bytes:    15513  sha256: 4115df65c915ae7143c219b13a928d6707fc317596d9013f7c3f9215668d48dd
+=== gh api repos/rust-lang/cargo/contents/src/doc/src/reference/environment-variables.md?ref=rust-1.98.0 ===
+bytes:    29272  sha256: 6f665b89e5a164da0526f22602105ba9dfb16928d76e028bf2fc4a30e0d37323
+=== gh api repos/rust-lang/cargo/contents/src/doc/src/reference/build-cache.md?ref=rust-1.98.0 ===
+bytes:     6333  sha256: 8866bcb97bdd2abf2f8177a010a2cea29a73743f4ab39306ca036a30bd5e00ad
+=== gh api repos/rust-lang/cargo/contents/src/doc/src/commands/cargo-package.md?ref=rust-1.98.0 ===
+bytes:    21051  sha256: 257f6fd4b6b885e42edb01149c6981da5117fde0226f10a0250c0ea74119399f
+=== gh api repos/rust-lang/cargo/contents/src/doc/src/commands/cargo-install.md?ref=rust-1.98.0 ===
+bytes:    24916  sha256: cdc70523e650b068b7fc3400cbcc7f9c84b01443ad46035d3c5138c7a2f60024
+
+############ CHECK A — include/exclude default semantics (manifest.md) ############
+
+############ CHECK A — include/exclude default semantics (manifest.md, lines 367-430) ############
+### The `exclude` and `include` fields
+
+The `exclude` and `include` fields can be used to explicitly specify which
+files are included when packaging a project to be [published][publishing],
+and certain kinds of change tracking (described below).
+The patterns specified in the `exclude` field identify a set of files that are
+not included, and the patterns in `include` specify files that are explicitly
+included.
+
+```toml
+[package]
+# ...
+exclude = ["/ci", "images/", ".*"]
+```
+
+```toml
+[package]
+# ...
+include = ["/src", "COPYRIGHT", "/examples", "!/examples/big_example"]
+```
+
+> **Note:** Run [`cargo package --list`][`cargo package`]
+> to verify which files will be included in the package.
+
+The default if neither field is specified is to include all files from the
+root of the package, except for the exclusions listed below.
+
+If `include` is not specified, then the following files will be excluded:
+
+* If the package is not in a git repository, all "hidden" files starting with
+  a dot will be skipped.
+* If the package is in a git repository, any files that are ignored by the
+  [gitignore] rules of the repository and global git configuration will be
+  skipped.
+
+If `include` is specified,
+gitignore rules of the repository and global git configuration are not applied.
+
+Regardless of whether `exclude` or `include` is specified, the following files
+are always excluded:
+
+* Any sub-packages will be skipped (any subdirectory that contains a
+  `Cargo.toml` file).
+* A directory named `target` in the root of the package will be skipped.
+
+The following files are always included:
+
+* The `Cargo.toml` file of the package itself is always included, it does not
+  need to be listed in `include`.
+* A minimized `Cargo.lock` is automatically included.
+  See [`cargo package`] for more information.
+* If a [`license-file`](#the-license-and-license-file-fields) is specified, it
+  is always included.
+
+The options are mutually exclusive; setting `include` will override an
+`exclude`. If you need to have exclusions to a set of `include` files, use the
+`!` operator described below.
+
+The patterns should be [gitignore]-style patterns. Briefly:
+
+- `foo` matches any file or directory with the name `foo` anywhere in the
+  package. This is equivalent to the pattern `**/foo`.
+- `/foo` matches any file or directory with the name `foo` only in the root of
+  the package.
+
+############ CHECK B — target auto-discovery, name/path defaults, required-features (cargo-targets.md) ############
+5-[binary](#binaries), [example](#examples), [test](#tests), and
+6-[benchmark](#benchmarks) targets. The list of targets can be configured in the
+7:`Cargo.toml` manifest, often [inferred automatically](#target-auto-discovery)
+8-by the [directory layout][package layout] of the source files.
+9-
+10-See [Configuring a target](#configuring-a-target) below for details on
+11-configuring the settings for a target.
+12-
+13-## Library
+14-
+15-The library target defines a "library" that can be used and linked by other
+16-libraries and executables. The filename defaults to `src/lib.rs`, and the name
+17-of the library defaults to the name of the package, with any dashes replaced
+18-with underscores. A package can have only one library. The settings for the
+19-library can be [customized] in the `[lib]` table in `Cargo.toml`.
+--
+201-dashes replaced with underscores. For the default binary (`src/main.rs`),
+202-it also defaults to the name of the package, with no replacement for dashes.
+203:For [auto discovered](#target-auto-discovery) targets, it defaults to the
+204-directory or file name.
+205-
+206-This is required for all targets except `[lib]`.
+207-
+208-### The `path` field
+209-
+210-The `path` field specifies where the source for the crate is located, relative
+211-to the `Cargo.toml` file.
+212-
+213:If not specified, the [inferred path](#target-auto-discovery) is used based on
+214-the target name.
+215-
+216-### The `test` field
+217-
+218-The `test` field indicates whether or not the target is tested by default by
+219-[`cargo test`]. The default is `true` for lib, bins, and tests.
+220-
+221-> **Note**: Examples are built by [`cargo test`] by default to ensure they
+222-> continue to compile, but they are not *tested* by default. Setting `test =
+223-> true` for an example will also build it as a test and run any
+224-> [`#[test]`][test-attribute] functions defined in the example.
+225-
+--
+314-> **Note:** This field is deprecated and will be removed in a future Edition
+315-
+316:## Target auto-discovery
+317-
+318-By default, Cargo automatically determines the targets to build based on the
+319-[layout of the files][package layout] on the filesystem. The target
+320-configuration tables, such as `[lib]`, `[[bin]]`, `[[test]]`, `[[bench]]`, or
+321-`[[example]]`, can be used to add additional targets that don't follow the
+322-standard directory layout.
+323-
+324-The automatic target discovery can be disabled so that only manually
+325:configured targets will be built. Setting the keys `autolib`, `autobins`, `autoexamples`,
+326-`autotests`, or `autobenches` to `false` in the `[package]` section will
+327:disable auto-discovery of the corresponding target type.
+328-
+329-```toml
+330-[package]
+331-# ...
+332-autolib = false
+333:autobins = false
+334-autoexamples = false
+335-autotests = false
+336-autobenches = false
+337-```
+338-
+339-Disabling automatic discovery should only be needed for specialized
+340-situations. For example, if you have a library where you want a *module* named
+341-`bin`, this would present a problem because Cargo would usually attempt to
+342-compile anything in the `bin` directory as an executable. Here is a sample
+343-layout of this scenario:
+344-
+345-```text
+--
+352-
+353-To prevent Cargo from inferring `src/bin/mod.rs` as an executable, set
+354:`autobins = false` in `Cargo.toml` to disable auto-discovery:
+355-
+356-```toml
+--- library target defaults ---
+13:## Library
+14-
+15-The library target defines a "library" that can be used and linked by other
+16-libraries and executables. The filename defaults to `src/lib.rs`, and the name
+17-of the library defaults to the name of the package, with any dashes replaced
+18-with underscores. A package can have only one library. The settings for the
+19-library can be [customized] in the `[lib]` table in `Cargo.toml`.
+20-
+21-```toml
+22-# Example of customizing the library in Cargo.toml.
+23-[lib]
+24-crate-type = ["cdylib"]
+25-bench = false
+--- binary target defaults ---
+28:## Binaries
+29-
+30-Binary targets are executable programs that can be run after being compiled.
+31-A binary's source can be `src/main.rs` and/or stored in the [`src/bin/`
+32-directory][package layout]. For `src/main.rs`, the default binary name is the
+33-package name. The settings for each binary can be [customized] in the`[[bin]]`
+34-tables in `Cargo.toml`.
+35-
+36-Binaries can use the public API of the package's library. They are also linked
+37-with the [`[dependencies]`][dependencies] defined in `Cargo.toml`.
+38-
+39-You can run individual binaries with the [`cargo run`] command with the `--bin
+40-<bin-name>` option. [`cargo install`] can be used to copy the executable to a
+41-common location.
+42-
+43-```toml
+44-# Example of customizing binaries in Cargo.toml.
+--- required-features ---
+--- required-features (grep) ---
+49-
+50-[[bin]]
+51-name = "frobnicator"
+52:required-features = ["frobnicate"]
+53-```
+54-
+55-## Examples
+56-
+57-Files located under the [`examples` directory][package layout] are example
+58-uses of the functionality provided by the library. When compiled, they are
+59-placed in the [`target/debug/examples` directory][build cache].
+60-
+61-Examples can use the public API of the package's library. They are also linked
+62-with the [`[dependencies]`][dependencies] and
+--
+188-proc-macro = false     # Set to `true` for a proc-macro library.
+189-harness = true         # Use libtest harness.
+190-crate-type = ["lib"]   # The crate types to generate.
+191:required-features = [] # Features required to build this target (N/A for lib).
+192-```
+193-
+194-### The `name` field
+195-
+196-The `name` field specifies the name of the target, which corresponds to the
+197-filename of the artifact that will be generated. For a library, this is the
+198-crate name that dependencies will use to reference it.
+199-
+200-For the library target, this defaults to the name of the package , with any
+201-dashes replaced with underscores. For the default binary (`src/main.rs`),
+--
+286-`staticlib`, and `proc-macro`. You can read more about the different crate
+287-types in the [Rust Reference Manual][crate types].
+288-
+289:### The `required-features` field
+290-
+291:The `required-features` field specifies which [features] the target needs in
+292-order to be built. If any of the required features are not enabled, the
+293-target will be skipped. This is only relevant for the `[[bin]]`, `[[bench]]`,
+294-`[[test]]`, and `[[example]]` sections, it has no effect on `[lib]`.
+295-
+296-```toml
+297-[features]
+298-# ...
+299-postgres = []
+300-sqlite = []
+301-tools = []
+302-
+303-[[bin]]
+304-name = "my-pg-tool"
+305:required-features = ["postgres", "tools"]
+306-```
+307-
+308-### The `edition` field
+309-
+310-The `edition` field defines the [Rust edition] the target will use. If not
+311-specified, it defaults to the [`edition` field][package-edition] for the
+312-`[package]`.
+313-
+314-> **Note:** This field is deprecated and will be removed in a future Edition
+315-
+
+############ CHECK C — CARGO_BIN_EXE_<name> and required-features caveat (environment-variables.md) ############
+258-  (Only set during compilation.) Cargo does not guarantee that this directory
+259-  is empty, and it is not cleaned between builds.
+260:* `CARGO_BIN_EXE_<name>` --- The absolute path to a binary target's executable.
+261-  This is only set when building an [integration test] or benchmark. This may
+262-  be used with the [`env` macro] to find the executable to run for testing
+263-  purposes. The `<name>` is the name of the binary target, exactly as-is. For
+264:  example, `CARGO_BIN_EXE_my-program` for a binary named `my-program`.
+265-  Binaries are automatically built when the test is built, unless the binary
+266-  has required features that are not enabled.
+267-* `CARGO_PRIMARY_PACKAGE` --- This environment variable will be set if the
+268-  package being built is primary. Primary packages are the ones the user
+269-  selected on the command-line, either with `-p` flags or the defaults based
+270-  on the current directory and the default workspace members.
+271-  This variable will not be set when building dependencies,
+272-  unless a dependency is also a workspace member that was also selected on the command-line.
+--
+444-```rust,ignore
+445-use std::env;
+446:let out_dir = env::var("CARGO_BIN_EXE_foo").unwrap();
+447-```
+448-
+449:* `CARGO_BIN_EXE_<name>` --- The absolute path to a binary target's executable.
+450-  This is only set when running an [integration test] or benchmark.
+451-  The `<name>` is the name of the binary target, exactly as-is. For
+452:  example, `CARGO_BIN_EXE_my-program` for a binary named `my-program`.
+453-  Binaries are automatically built when the test is built, unless the binary
+454-  has required features that are not enabled.
+455-
+456-## Environment variables Cargo sets for 3rd party subcommands
+457-
+458-Cargo exposes this environment variable to 3rd party subcommands
+459-(ie. programs named `cargo-foobar` placed in `$PATH`):
+460-
+
+############ CHECK D — target directory layout (build-cache.md) ############
+# Build cache
+
+Cargo stores the output of a build into the "target" and "build" directories. By default,
+both directories point to a directory named `target` in the root of your
+[*workspace*][def-workspace]. To change the location of the target-dir, you can set the
+`CARGO_TARGET_DIR` [environment variable], the [`build.target-dir`] config
+value, or the `--target-dir` command-line flag. To change the location of the build-dir, you can set the
+`CARGO_BUILD_BUILD_DIR` [environment variable] or the [`build.build-dir`] config value.
+
+Artifacts are split in two categories:
+* Final build artifacts
+  * Final build artifacts are output meant for end users of Cargo
+  * e.g. binaries for bin crates, output of `cargo doc`, Cargo `--timings` reports
+  * Stored in the target-dir
+* Intermediate build artifacts
+  * Intermediate build artifacts are internal to Cargo and the Rust compiler
+  * End users will generally not need to interact with intermediate build artifacts
+  * Stored in the Cargo build-dir
+
+The directory layout depends on whether or not you are using the `--target`
+flag to build for a specific platform. If `--target` is not specified, Cargo
+runs in a mode where it builds for the host architecture. The output goes into
+the root of the target directory, with each [profile] stored in a separate
+subdirectory:
+
+Directory | Description
+----------|------------
+<code style="white-space: nowrap">target/debug/</code> | Contains output for the `dev` profile.
+<code style="white-space: nowrap">target/release/</code> | Contains output for the `release` profile (with the `--release` option).
+<code style="white-space: nowrap">target/foo/</code> | Contains build output for the `foo` profile (with the `--profile=foo` option).
+
+For historical reasons, the `dev` and `test` profiles are stored in the
+`debug` directory, and the `release` and `bench` profiles are stored in the
+`release` directory. User-defined profiles are stored in a directory with the
+same name as the profile.
+
+When building for another target with `--target`, the output is placed in a
+directory with the name of the [target]:
+
+Directory | Example
+
+############ CHECK E — cargo package steps, --list, dirty-VCS guard (cargo-package.md) ############
+## DESCRIPTION
+
+This command will create a distributable, compressed `.crate` file with the
+source code of the package in the current directory. The resulting file will be
+stored in the `target/package` directory. This performs the following steps:
+
+1. Load and check the current workspace, performing some basic checks.
+    - Path dependencies are not allowed unless they have a version key. Cargo
+      will ignore the path key for dependencies in published packages.
+      `dev-dependencies` do not have this restriction.
+2. Create the compressed `.crate` file.
+    - The original `Cargo.toml` file is rewritten and normalized.
+    - `[patch]`, `[replace]`, and `[workspace]` sections are removed from the
+      manifest.
+    - `Cargo.lock` is always included. When missing, a new lock file will be
+      generated unless the `--exclude-lockfile` flag is used. [cargo-install(1)](cargo-install.html)
+      will use the packaged lock file if the `--locked` flag is used.
+    - A `.cargo_vcs_info.json` file is included that contains information
+      about the current VCS checkout hash if available, as well as a flag if the
+      worktree is dirty.
+    - Symlinks are flattened to their target files.
+    - Files and directories are included or excluded based on rules mentioned in
+      [the `[include]` and `[exclude]` fields](../reference/manifest.html#the-exclude-and-include-fields).
+
+3. Extract the `.crate` file and build it to verify it can build.
+    - This will rebuild your package from scratch to ensure that it can be
+      built from a pristine state. The `--no-verify` flag can be used to skip
+      this step.
+4. Check that build scripts did not modify any source files.
+
+The list of files included can be controlled with the `include` and `exclude`
+fields in the manifest.
+
+See [the reference](../reference/publishing.html) for more details about
+packaging and publishing.
+
+### .cargo_vcs_info.json format
+
+Will generate a `.cargo_vcs_info.json` in the following format
+
+```javascript
+{
+ "git": {
+   "sha1": "aac20b6e7e543e6dd4118b246c77225e3a3a1302",
+   "dirty": true
+ },
+ "path_in_vcs": ""
+}
+```
+
+`dirty` indicates that the Git worktree was dirty when the package
+was built.
+
+`path_in_vcs` will be set to a repo-relative path for packages
+in subdirectories of the version control repository.
+
+The compatibility of this file is maintained under the same policy
+as the JSON output of [cargo-metadata(1)](cargo-metadata.html).
+
+Note that this file provides a best-effort snapshot of the VCS information.
+However, the provenance of the package is not verified.
+There is no guarantee that the source code in the tarball matches the VCS information.
+
+## OPTIONS
+--- --allow-dirty / --list / --no-verify option text ---
+36:      built from a pristine state. The `--no-verify` flag can be used to skip
+37-      this step.
+38-4. Check that build scripts did not modify any source files.
+39-
+40-The list of files included can be controlled with the `include` and `exclude`
+41-fields in the manifest.
+42-
+--
+80:<dt class="option-term" id="option-cargo-package---list"><a class="option-anchor" href="#option-cargo-package---list"><code>--list</code></a></dt>
+81-<dd class="option-desc"><p>Print files included in a package without making one.</p>
+82-</dd>
+83-
+84-
+85:<dt class="option-term" id="option-cargo-package---no-verify"><a class="option-anchor" href="#option-cargo-package---no-verify"><code>--no-verify</code></a></dt>
+86-<dd class="option-desc"><p>Don’t verify the contents by building them.</p>
+87-</dd>
+88-
+89-
+90-<dt class="option-term" id="option-cargo-package---no-metadata"><a class="option-anchor" href="#option-cargo-package---no-metadata"><code>--no-metadata</code></a></dt>
+91-<dd class="option-desc"><p>Ignore warnings about a lack of human-usable metadata (such as the description
+--
+96:<dt class="option-term" id="option-cargo-package---allow-dirty"><a class="option-anchor" href="#option-cargo-package---allow-dirty"><code>--allow-dirty</code></a></dt>
+97-<dd class="option-desc"><p>Allow working directories with uncommitted VCS changes to be packaged.</p>
+98-</dd>
+99-
+100-
+101-<dt class="option-term" id="option-cargo-package---exclude-lockfile"><a class="option-anchor" href="#option-cargo-package---exclude-lockfile"><code>--exclude-lockfile</code></a></dt>
+102-<dd class="option-desc"><p>Don’t include the lock file when packaging.</p>
+--
+125:Currently, it only works with <code>--list</code> and affects the file listing format.
+126-This is unstable and requires <code>-Zunstable-options</code>.
+127-Valid output formats:</p>
+128-<ul>
+129-<li><code>human</code> (default): Display in a file-per-line format.</li>
+130-<li><code>json</code>: Emit machine-readable JSON information about each package.
+131-One package per JSON line (Newline delimited JSON).
+
+############ CHECK F — cargo install default binary selection (cargo-install.md) ############
+161-</dd>
+162-
+163-
+164:<dt class="option-term" id="option-cargo-install---bins"><a class="option-anchor" href="#option-cargo-install---bins"><code>--bins</code></a></dt>
+165-<dd class="option-desc"><p>Install all binaries. This is the default behavior.</p>
+166-</dd>
+167-
+168-
+169-<dt class="option-term" id="option-cargo-install---example"><a class="option-anchor" href="#option-cargo-install---example"><code>--example</code> <em>name</em>…</a></dt>
+170-<dd class="option-desc"><p>Install only the specified example.</p>
+171-</dd>
+172-
+
+############ CHECK G — the installed cargo 1.98.0's own effective help text ############
+--- cargo package --help
+Assemble the local package into a distributable tarball
+
+Usage: cargo package [OPTIONS]
+
+Options:
+      --index <INDEX>            Registry index URL to prepare the package for
+      --registry <REGISTRY>      Registry to prepare the package for
+  -l, --list                     Print files included in a package without making one
+      --no-verify                Don't verify the contents by building them
+      --no-metadata              Ignore warnings about a lack of human-usable metadata
+      --allow-dirty              Allow dirty working directories to be packaged
+      --exclude-lockfile         Don't include the lock file when packaging
+      --message-format <FMT>     Output representation (unstable) [possible values: human, json]
+  -v, --verbose...               Use verbose output (-vv very verbose/build.rs output)
+  -q, --quiet                    Do not print cargo log messages
+      --color <WHEN>             Coloring [possible values: auto, always, never]
+      --config <KEY=VALUE|PATH>  Override a configuration value
+  -Z <FLAG>                      Unstable (nightly-only) flags to Cargo, see 'cargo -Z help' for
+                                 details
+  -h, --help                     Print help
+
+Package Selection:
+  -p, --package [<SPEC>]  Package(s) to assemble
+      --workspace         Assemble all packages in the workspace
+      --exclude <SPEC>    Don't assemble specified packages
+
+Feature Selection:
+  -F, --features <FEATURES>  Space or comma separated list of features to activate
+      --all-features         Activate all available features
+      --no-default-features  Do not activate the `default` feature
+
+Compilation Options:
+      --target [<TRIPLE>]       Build for the target triple
+      --target-dir <DIRECTORY>  Directory for all generated artifacts
+  -j, --jobs <N>                Number of parallel jobs, defaults to # of CPUs.
+      --keep-going              Do not abort the build as soon as there is an error
+
+Manifest Options:
+  -m, --manifest-path <PATH>  Path to Cargo.toml
+      --locked                Assert that `Cargo.lock` will remain unchanged
+      --offline               Run without accessing the network
+      --frozen                Equivalent to specifying both --locked and --offline
+
+Run `cargo help package` for more detailed information.
+--- cargo install --help (binary-selection options)
+      --bin [<NAME>]      Install only the specified binary
+      --bins              Install all binaries
+      --example [<NAME>]  Install only the specified example
+
+############ CHECK H — does cargo package's dirty-VCS refusal count UNTRACKED files? (cargo source at rust-1.98.0) ############
+42-/// If *git*, and the source is *dirty* (e.g., has uncommitted changes),
+43-/// and `--allow-dirty` has not been passed,
+44-/// then `bail!` with an informative message.
+45-/// Otherwise, return the sha1 hash of the current *HEAD* commit,
+46-/// or `None` if no repo is found.
+47-#[tracing::instrument(skip_all)]
+48:pub fn check_repo_state(
+49-    p: &Package,
+50-    src_files: &[PathEntry],
+51-    ws: &Workspace<'_>,
+52-    opts: &PackageOpts<'_>,
+53-) -> CargoResult<Option<VcsInfo>> {
+54-    let gctx = ws.gctx();
+55-    let Ok(mut repo) = gix::discover(p.root()) else {
+56-        gctx.shell().verbose(|shell| {
+57-            shell.warn(format_args!(
+58-                "no (git) VCS found for `{}`",
+59-                p.root().display()
+60-            ))
+61-        })?;
+62-        // No Git repo found. Have to assume it is clean.
+63-        return Ok(None);
+64-    };
+65-
+66-    let Some(workdir) = repo.workdir() else {
+67-        debug!(
+68-            "no (git) workdir found for repo at `{}`",
+69-            repo.path().display()
+70-        );
+--
+260-            dirty,
+261-        }))
+262-    } else {
+263-        dirty_src_files.sort_unstable();
+264-        anyhow::bail!(
+265-            "{} files in the working directory contain changes that were \
+266:             not yet committed into git:\n\n{}\n\n\
+267-             to proceed despite this and include the uncommitted changes, pass the `--allow-dirty` flag",
+268-            dirty_src_files.len(),
+269-            dirty_src_files.join("\n")
+270-        )
+271-    }
+272-}
+273-
+274-/// Helper to collect dirty statuses for a single repo.
+275-/// `relative_package_root` is `Some` if the root is a sub-directory of the workdir.
+276-/// Writes dirty files outside `relative_package_root` into `dirty_files_outside_package_root`,
+277-/// and all *everything else* into `dirty_files`.
+278-#[must_use]
+279-fn collect_statuses(
+280-    repo: &gix::Repository,
+281-    workdir: &Path,
+282-    relative_package_root: Option<&Path>,
+283-    dirty_files: &mut Vec<PathBuf>,
+284-) -> CargoResult<()> {
+285-    let statuses = repo
+286-        .status(gix::progress::Discard)?
+287-        .dirwalk_options(configure_dirwalk)
+288-        .tree_index_track_renames(TrackRenames::Disabled)
+--- configure_dirwalk: which untracked/ignored entries the dirty walk emits ---
+444:fn configure_dirwalk(opts: Options) -> Options {
+445-    opts.emit_untracked(gix::dir::walk::EmissionMode::Matching)
+446-        // Also pick up ignored files or whole directories
+447-        // to specifically catch overzealously ignored source files.
+448-        // Later we will match these dirs by prefix, which is why collapsing
+449-        // them is desirable here.
+450-        .emit_ignored(Some(EmissionMode::CollapseDirectory))
+451-        .emit_tracked(false)
+452-        .recurse_repositories(false)
+453-        .symlinks_to_directories_are_ignored_like_directories(true)
+454-        .emit_empty_directories(false)
+455-}
+
+############ EXIT STATUS RECORD ############
+recorded: 2026-09-10T15:38:51Z
+representative single command for this item's empirical check, rerun here with its status captured:
+$ gh api "repos/rust-lang/cargo/contents/src/doc/src/reference/manifest.md?ref=rust-1.98.0" --jq .content
+exit status: 0
+$ cargo install --help
+exit status: 0
+all seven evidence logs in this run were produced by read-only commands; no command in this run wrote to a repository, scaffolded a crate, built, packaged or published anything.
