@@ -185,3 +185,100 @@ config (grouping keys):
 12:        update-types:
 16:  - package-ecosystem: "github-actions"
 8 most recent dependabot branches:
+2026-09-08T23:26:06Z	dependabot/cargo/rust-dependencies-e17f349573	build(deps): bump the rust-dependencies group across 1 directory with 23 updates
+2026-09-08T23:22:27Z	dependabot/github_actions/taiki-e/install-action-2.87.6	build(deps): bump taiki-e/install-action from 2.82.7 to 2.87.6
+2026-09-08T23:22:19Z	dependabot/github_actions/dtolnay/rust-toolchain-d1031067263f94b142dd6c0ce24c5eb9d02d52a0	build(deps): bump dtolnay/rust-toolchain from fa04a1451ff1842e2626ccb99004d0195b455a88 to d1031067263f94b142dd6c0ce24c5eb9d02d52a0
+2026-09-01T23:26:06Z	dependabot/cargo/rust-dependencies-7c39d54fce	build(deps): bump the rust-dependencies group across 1 directory with 22 updates
+2026-09-01T23:22:48Z	dependabot/github_actions/taiki-e/install-action-2.87.1	build(deps): bump taiki-e/install-action from 2.82.7 to 2.87.1
+2026-08-25T23:26:08Z	dependabot/cargo/rust-dependencies-2398bd80aa	build(deps): bump the rust-dependencies group across 1 directory with 21 updates
+2026-08-25T23:23:09Z	dependabot/github_actions/taiki-e/install-action-2.86.5	build(deps): bump taiki-e/install-action from 2.82.7 to 2.86.5
+2026-08-18T23:23:09Z	dependabot/github_actions/cachix/install-nix-action-31.11.1	build(deps): bump cachix/install-nix-action from 31.10.6 to 31.11.1
+--- servo/servo ---
+config (grouping keys):
+3:- package-ecosystem: cargo
+14:  cooldown:
+15:    default-days: 7
+17:  open-pull-requests-limit: 10
+21:  groups:
+23:      patterns:
+26:      patterns:
+36:      patterns:
+47:      patterns:
+53:      patterns:
+57:      patterns:
+60:      patterns:
+65:      patterns:
+69:      patterns:
+73:      patterns:
+78:      patterns:
+83:      patterns:
+87:      patterns:
+91:      patterns:
+102:      patterns:
+106:      patterns:
+125:    update-types: ["version-update:semver-minor", "version-update:semver-major"]
+8 most recent dependabot branches:
+2026-09-10T00:57:19Z	dependabot/cargo/zstd-safe-7.3.0	build: bump zstd-safe from 7.2.4 to 7.3.0
+2026-09-10T00:47:11Z	dependabot/cargo/aws-lc-rs-1.18.1	build: bump aws-lc-rs from 1.18.0 to 1.18.1
+2026-09-10T00:43:19Z	dependabot/cargo/crossbeam-utils-0.8.23	build: bump crossbeam-utils from 0.8.22 to 0.8.23
+2026-09-10T00:34:25Z	dependabot/cargo/cc-1.4.5	build: bump cc from 1.4.4 to 1.4.5
+2026-09-10T00:25:40Z	dependabot/cargo/crossbeam-epoch-0.9.21	build: bump crossbeam-epoch from 0.9.20 to 0.9.21
+2026-09-10T00:24:44Z	dependabot/cargo/ipnet-2.12.2	build: bump ipnet from 2.12.1 to 2.12.2
+2026-09-10T00:24:25Z	dependabot/cargo/redox_syscall-0.9.4	build: bump redox_syscall from 0.9.3 to 0.9.4
+2026-09-10T00:15:23Z	dependabot/cargo/gstreamer-related-8dde772678	build: bump the gstreamer-related group with 5 updates
+--- paritytech/polkadot-sdk ---
+config (grouping keys):
+4:  - package-ecosystem: github-actions
+9:    groups:
+11:        patterns:
+14:  - package-ecosystem: "cargo"
+19:    groups:
+22:        patterns:
+29:        update-types:
+8 most recent dependabot branches:
+2026-09-07T02:48:32Z	dependabot/github_actions/ci_dependencies-38aeb6d59a	Bump the ci_dependencies group across 1 directory with 21 updates
+2026-09-03T09:52:58Z	dependabot/github_actions/ci_dependencies-2dd9836970	Bump the ci_dependencies group across 1 directory with 20 updates
+--- ratatui/ratatui ---
+config (grouping keys):
+9:  - package-ecosystem: "cargo"
+15:    # updates are not delayed by cooldown.
+16:    cooldown:
+17:      default-days: 7
+19:    groups:
+21:        patterns: ["*"]
+23:    open-pull-requests-limit: 3
+28:    versioning-strategy: increase-if-necessary
+30:  - package-ecosystem: github-actions
+36:    cooldown:
+37:      default-days: 7
+39:    groups:
+41:        patterns: ["*"]
+42:    open-pull-requests-limit: 3
+8 most recent dependabot branches:
+2026-09-07T15:43:36Z	dependabot/cargo/duct-1.1.2	build(deps): bump duct from 1.1.1 to 1.1.2
+2026-09-07T15:43:26Z	dependabot/cargo/serde-1.0.229	build(deps): bump serde from 1.0.228 to 1.0.229
+2026-09-07T15:43:18Z	dependabot/github_actions/crate-ci/typos-1.50.1	build(deps): bump crate-ci/typos from 1.50.0 to 1.50.1
+2026-09-07T15:43:14Z	dependabot/cargo/trybuild-1.0.120	build(deps): bump trybuild from 1.0.115 to 1.0.120
+2026-09-07T15:43:05Z	dependabot/github_actions/taiki-e/install-action-2.87.5	build(deps): bump taiki-e/install-action from 2.84.0 to 2.87.5
+2026-09-07T15:42:57Z	dependabot/cargo/lru-0.18.4	build(deps): bump lru from 0.18.3 to 0.18.4
+2026-09-07T15:42:56Z	dependabot/github_actions/tombi-toml/setup-tombi-1.5.1	build(deps): bump tombi-toml/setup-tombi from 1.4.1 to 1.5.1
+2026-09-07T15:42:51Z	dependabot/github_actions/release-plz/action-0.5.132	build(deps): bump release-plz/action from 0.5.131 to 0.5.132
+
+===== 8. THE ANOMALY: ratatui — is the group inert, or is the whole entry inert? =====
+--- ratatui config history for the path ---
+c44497fa	2026-04-14T17:43:07Z	build(deps): tune Dependabot update policy (#2497)
+12f92911	2023-10-21T10:17:47Z	chore(github): create dependabot.yml (#575)
+--- config in force BEFORE the 2026-04-14 change ---
+version: 2
+updates:
+  - package-ecosystem: "cargo"
+    directory: "/" # Location of package manifests
+    schedule:
+      interval: "weekly"
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 10
+--- .github directory: is there a second dependabot file? ---
+dependabot.yml
