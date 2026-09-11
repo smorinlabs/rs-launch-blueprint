@@ -110,8 +110,8 @@ cargo package --list exit=0
 warning: manifest has no documentation, homepage or repository
   |
   = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
---- /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/expected-packed-files.txt	2026-09-10 08:22:45
-+++ /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/files.txt	2026-09-10 08:22:45
+--- /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/expected-packed-files.txt	2026-09-10 18:22:00
++++ /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/files.txt	2026-09-10 18:22:13
 @@ -3,6 +3,5 @@
  Cargo.toml
  Cargo.toml.orig
@@ -127,12 +127,12 @@ warning: manifest has no documentation, homepage or repository
   = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
    Packaging rsguard v0.1.0 (/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/probe)
 warning: ignoring binary `rsguard-serve` as `src/bin/rsguard-serve.rs` is not included in the published package
-    Packaged 7 files, 1.3KiB (965B compressed)
+    Packaged 7 files, 1.3KiB (967B compressed)
 SCOPED GREP MATCHED -> fail
 --- sub-check 3: packaged manifest target set
 [{"kind":["bin"],"name":"rsguard"},{"kind":["lib"],"name":"rsguard"}]
---- /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/expected-packaged-targets.json	2026-09-10 08:22:45
-+++ /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/targets.json	2026-09-10 08:22:45
+--- /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/expected-packaged-targets.json	2026-09-10 18:22:00
++++ /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/targets.json	2026-09-10 18:22:15
 @@ -1 +1 @@
 -[{"kind":["bin"],"name":"rsguard"},{"kind":["bin"],"name":"rsguard-serve"},{"kind":["lib"],"name":"rsguard"}]
 +[{"kind":["bin"],"name":"rsguard"},{"kind":["lib"],"name":"rsguard"}]
@@ -154,8 +154,8 @@ cargo package --list exit=0
 warning: manifest has no documentation, homepage or repository
   |
   = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
---- /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/expected-packed-files.txt	2026-09-10 08:22:45
-+++ /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/files.txt	2026-09-10 08:22:45
+--- /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/expected-packed-files.txt	2026-09-10 18:22:00
++++ /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/guardwork/files.txt	2026-09-10 18:22:21
 @@ -3,6 +3,11 @@
  Cargo.toml
  Cargo.toml.orig
@@ -231,13 +231,13 @@ to proceed despite this and include the uncommitted changes, pass the `--allow-d
 105:      - name: Install uv
 108:      - name: Publish to PyPI
 
-===== DONE =====
-
-===== PHASE 8 — addendum: stream separation on a clean tree =====
-target/ was tracked in the probe repo (no .gitignore), so the PHASE 6 re-run hit the dirty-tree error.
-Re-running after committing the packaging artifacts:
+===== PHASE 8 — stream separation on a clean tree =====
+target/ is tracked in the probe repo (no .gitignore), so PHASE 6's last sub-step hit the dirty-tree error.
+Committing the packaging artifacts, then re-running on a clean tree:
 (empty above = clean tree)
+PASS phase8/clean-tree-entries (0)
 exit=0
+PASS phase8/list-exit (0)
 --- stdout (first 6 lines):
 .cargo_vcs_info.json
 Cargo.lock
@@ -245,16 +245,22 @@ Cargo.toml
 Cargo.toml.orig
 README.md
 STRAY.txt
+PASS phase8/stdout-first-path (.cargo_vcs_info.json)
+PASS phase8/stdout-byte-sorted (0)
+PASS phase8/stdout-not-locale-sorted (1)
+PASS phase8/stdout-diagnostic-lines (0)
+PASS phase8/stdout-carries-stray (1)
 --- stderr:
 warning: manifest has no documentation, homepage or repository
   |
   = note: see https://doc.rust-lang.org/cargo/reference/manifest.html#package-metadata for more info
+PASS phase8/stderr-carries-warning (1)
+PASS phase8/stderr-carries-no-paths (0)
 
-===== END ADDENDUM =====
-
-===== PHASE 9 — addendum: Cargo.toml.orig byte-compare and publish-facing fields =====
+===== PHASE 9 — Cargo.toml.orig byte-compare and publish-facing field projection =====
 --- cmp source Cargo.toml vs archive Cargo.toml.orig:
 cmp exit=0
+PASS phase9/orig-byte-identical (0)
 --- normalized packaged Cargo.toml (whole file):
 # THIS FILE IS AUTOMATICALLY GENERATED BY CARGO
 #
@@ -345,19 +351,27 @@ path = "src/bin/rsguard-serve.rs"
   "version": "0.1.0"
 }
 metadata exit=0
+PASS phase9/projection-exit (0)
+PASS phase9/edition ("2024")
+PASS phase9/license ("MIT OR Apache-2.0")
+PASS phase9/readme ("README.md")
+PASS phase9/name ("rsguard")
+PASS phase9/version ("0.1.0")
+PASS phase9/target-count (3)
 
-===== END ADDENDUM 9 =====
-
-===== PHASE 10 — addendum: stale-artifact hazard when cargo package fails =====
-existing .crate on disk (from the last successful run):
--rw-r--r--@ 1 stevemorin  wheel  2594 Sep 10 08:22 target/package/rsguard-0.1.0.crate
+===== PHASE 10 — stale-archive hazard when cargo package fails =====
+a .crate from the last successful packaging run is on disk: target/package/rsguard-0.1.0.crate
+PASS phase10/prior-crate-present (1)
 now make the tree dirty so cargo package fails:
 cargo package exit=101
-
-to proceed despite this and include the uncommitted changes, pass the `--allow-dirty` flag
-the .crate from the PREVIOUS run is still present and would be extracted by an unguarded check:
--rw-r--r--@ 1 stevemorin  wheel  2594 Sep 10 08:22 target/package/rsguard-0.1.0.crate
+error: 1 files in the working directory contain changes that were not yet committed into git:
+PASS phase10/package-exit (101)
+PASS phase10/dirty-error-text (1)
+PASS phase10/stale-crate-survives-failure (yes)
+the .crate from the PREVIOUS run is still present, byte-identical, and an unguarded check would extract it:
 [{"kind":["bin"],"name":"rsguard"},{"kind":["bin"],"name":"rsguard-serve"},{"kind":["lib"],"name":"rsguard"}]
-(that target set describes the earlier package, not the current source tree)
+PASS phase10/stale-target-set ([{"kind":["bin"],"name":"rsguard"},{"kind":["bin"],"name":"rsguard-serve"},{"kind":["lib"],"name":"rsguard"}])
+(that target set was read from the earlier run's archive, not from the current source tree)
 
-===== END ADDENDUM 10 =====
+===== DONE =====
+failed assertions: 0

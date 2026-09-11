@@ -1,7 +1,20 @@
 #!/usr/bin/env bash
 # R26 packed-artifact-content-guard — synthesizer empirical check.
 # Verifies claims only. Publishes nothing; never invokes `cargo publish`.
+# Emits log phases 0-10. Every phase 8-10 assertion compares expected content,
+# not an exit code alone, and increments FAILS; the script exits with FAILS.
 set -u
+set -o pipefail
+
+FAILS=0
+assert_eq() { # assert_eq <label> <expected> <actual>
+  if [ "$2" = "$3" ]; then
+    printf 'PASS %s (%s)\n' "$1" "$3"
+  else
+    printf 'FAIL %s (expected %s, got %s)\n' "$1" "$2" "$3"
+    FAILS=$((FAILS + 1))
+  fi
+}
 
 SCRATCH="/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad"
 SHA=797e8a9bca276c1c9f9f738d2a20f484fa4eea9d
@@ -141,4 +154,88 @@ git -C ~/c/py-launch-blueprint show b08bccfb55d05f15e46a83b52c5660b1881d19f5:.gi
 git -C ~/c/py-launch-blueprint show b08bccfb55d05f15e46a83b52c5660b1881d19f5:.github/workflows/publish.yml \
   | grep -n "name:" | head -20
 
+hr "PHASE 8 — stream separation on a clean tree"
+echo "target/ is tracked in the probe repo (no .gitignore), so PHASE 6's last sub-step hit the dirty-tree error."
+echo "Committing the packaging artifacts, then re-running on a clean tree:"
+git add -A && git -c user.email=r26@probe -c user.name=r26 commit -qm pkgartifacts
+git status --porcelain; echo "(empty above = clean tree)"
+assert_eq "phase8/clean-tree-entries" 0 "$(git status --porcelain | wc -l | tr -d ' ')"
+cargo package -p "$PKG" --list --no-verify --offline > "$G/sep.out" 2> "$G/sep.err"
+sep_rc=$?
+echo "exit=$sep_rc"
+assert_eq "phase8/list-exit" 0 "$sep_rc"
+echo "--- stdout (first 6 lines):"
+head -6 "$G/sep.out"
+assert_eq "phase8/stdout-first-path" ".cargo_vcs_info.json" "$(head -1 "$G/sep.out")"
+# Cargo emits the list in byte order (C collation), not the host locale's collation:
+# `STRAY.txt` precedes `src/…`. A checked-in expectation must be compared the same way.
+assert_eq "phase8/stdout-byte-sorted" 0 "$(LC_ALL=C sort -c "$G/sep.out" >/dev/null 2>&1; echo $?)"
+assert_eq "phase8/stdout-not-locale-sorted" 1 "$(LC_ALL=en_US.UTF-8 sort -c "$G/sep.out" >/dev/null 2>&1; echo $?)"
+assert_eq "phase8/stdout-diagnostic-lines" 0 "$(grep -c 'warning:' "$G/sep.out")"
+assert_eq "phase8/stdout-carries-stray" 1 "$(grep -c '^STRAY\.txt$' "$G/sep.out")"
+echo "--- stderr:"
+cat "$G/sep.err"
+assert_eq "phase8/stderr-carries-warning" 1 \
+  "$(grep -c 'warning: manifest has no documentation, homepage or repository' "$G/sep.err")"
+assert_eq "phase8/stderr-carries-no-paths" 0 "$(grep -c '^src/' "$G/sep.err")"
+
+hr "PHASE 9 — Cargo.toml.orig byte-compare and publish-facing field projection"
+ORIG="$G/x/${PKG}-${VER}/Cargo.toml.orig"
+NORM="$G/x/${PKG}-${VER}/Cargo.toml"
+echo "--- cmp source Cargo.toml vs archive Cargo.toml.orig:"
+cmp "$W/Cargo.toml" "$ORIG"
+cmp_rc=$?
+echo "cmp exit=$cmp_rc"
+assert_eq "phase9/orig-byte-identical" 0 "$cmp_rc"
+echo "--- normalized packaged Cargo.toml (whole file):"
+cat "$NORM"
+echo "--- cargo metadata publish-facing projection (Codex field list) from the packaged manifest:"
+cargo metadata --no-deps --format-version 1 --offline --manifest-path "$NORM" \
+  | jq -S '.packages[0] | {name, version, description, license, license_file, repository,
+      homepage, documentation, readme, keywords, categories, rust_version, edition, links,
+      publish, default_run,
+      targets: [.targets[] | {name, kind, crate_types, required_features}]}' > "$G/proj.json"
+proj_rc=$?
+cat "$G/proj.json"
+echo "metadata exit=$proj_rc"
+assert_eq "phase9/projection-exit" 0 "$proj_rc"
+assert_eq "phase9/edition" '"2024"' "$(jq -c '.edition' "$G/proj.json")"
+assert_eq "phase9/license" '"MIT OR Apache-2.0"' "$(jq -c '.license' "$G/proj.json")"
+assert_eq "phase9/readme" '"README.md"' "$(jq -c '.readme' "$G/proj.json")"
+assert_eq "phase9/name" '"rsguard"' "$(jq -c '.name' "$G/proj.json")"
+assert_eq "phase9/version" '"0.1.0"' "$(jq -c '.version' "$G/proj.json")"
+assert_eq "phase9/target-count" 3 "$(jq -c '.targets | length' "$G/proj.json")"
+
+hr "PHASE 10 — stale-archive hazard when cargo package fails"
+CRATE="target/package/${PKG}-${VER}.crate"
+echo "a .crate from the last successful packaging run is on disk: $CRATE"
+assert_eq "phase10/prior-crate-present" 1 "$([ -f "$CRATE" ] && echo 1 || echo 0)"
+before_sha=$(shasum -a 256 "$CRATE" | awk '{print $1}')
+echo "now make the tree dirty so cargo package fails:"
+echo 'dirt' >> "$W/README.md"
+cargo package -p "$PKG" --no-verify --offline > "$G/stale.out" 2>&1
+stale_rc=$?
+echo "cargo package exit=$stale_rc"
+grep -m1 'files in the working directory contain changes' "$G/stale.out"
+assert_eq "phase10/package-exit" 101 "$stale_rc"
+assert_eq "phase10/dirty-error-text" 1 \
+  "$(grep -c 'files in the working directory contain changes that were not yet committed into git' "$G/stale.out")"
+after_sha=$(shasum -a 256 "$CRATE" | awk '{print $1}')
+assert_eq "phase10/stale-crate-survives-failure" "yes" \
+  "$([ "$before_sha" = "$after_sha" ] && echo yes || echo no)"
+echo "the .crate from the PREVIOUS run is still present, byte-identical, and an unguarded check would extract it:"
+rm -rf "$G/stale"; mkdir -p "$G/stale"
+tar -xzf "$CRATE" -C "$G/stale"
+cargo metadata --no-deps --format-version 1 --offline \
+  --manifest-path "$G/stale/${PKG}-${VER}/Cargo.toml" \
+  | jq -Sc '[.packages[0].targets[] | {name, kind}] | sort_by(.kind[0], .name)' > "$G/stale-targets.json"
+cat "$G/stale-targets.json"
+assert_eq "phase10/stale-target-set" \
+  '[{"kind":["bin"],"name":"rsguard"},{"kind":["bin"],"name":"rsguard-serve"},{"kind":["lib"],"name":"rsguard"}]' \
+  "$(cat "$G/stale-targets.json")"
+echo "(that target set was read from the earlier run's archive, not from the current source tree)"
+git checkout -q -- README.md
+
 hr "DONE"
+echo "failed assertions: $FAILS"
+exit "$FAILS"
