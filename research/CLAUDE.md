@@ -24,11 +24,11 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R18 | ai-assisted-review-workflows | bundle | py-only | DIVERGENT | — | [prompt](topics/18-ai-assisted-review-workflows/prompts/ai-assisted-review-workflows.prompt.md) | resolved |
 | R19 | dependabot-config-shape | bundle | different | DIVERGENT | — | [prompt](topics/19-dependabot-config-shape/prompts/dependabot-config-shape.prompt.md) | open |
 | R20 | third-party-action-pinning-policy | pattern | different | DIVERGENT | — | [prompt](topics/20-third-party-action-pinning-policy/prompts/third-party-action-pinning-policy.prompt.md) | resolved |
-| R21 | contributors-bot-credential-source | pattern | different | DIVERGENT | — | [prompt](topics/21-contributors-bot-credential-source/prompts/contributors-bot-credential-source.prompt.md) | open |
+| R21 | contributors-bot-credential-source | pattern | different | DIVERGENT | — | [prompt](topics/21-contributors-bot-credential-source/prompts/contributors-bot-credential-source.prompt.md) | resolved |
 | R22 | runtime-version-accessor | pattern | different | DIVERGENT | — | [prompt](topics/22-runtime-version-accessor/prompts/runtime-version-accessor.prompt.md) | open |
 | R23 | lockfile-version-sync | pattern | different | DIVERGENT | — | [prompt](topics/23-lockfile-version-sync/prompts/lockfile-version-sync.prompt.md) | resolved |
 | R24 | changelog-section-mapping | pattern | different | DIVERGENT | — | [prompt](topics/24-changelog-section-mapping/prompts/changelog-section-mapping.prompt.md) | open |
-| R25 | semver-bump-strategy | pattern | ts-only | DIVERGENT | — | [prompt](topics/25-semver-bump-strategy/prompts/semver-bump-strategy.prompt.md) | open |
+| R25 | semver-bump-strategy | pattern | ts-only | DIVERGENT | — | [prompt](topics/25-semver-bump-strategy/prompts/semver-bump-strategy.prompt.md) | resolved |
 | R26 | packed-artifact-content-guard | bundle | ts-only | DIVERGENT | — | [prompt](topics/26-packed-artifact-content-guard/prompts/packed-artifact-content-guard.prompt.md) | open |
 | R27 | formatter-config-surface | bundle | different | DIVERGENT | — | [prompt](topics/27-formatter-config-surface/prompts/formatter-config-surface.prompt.md) | open |
 | R28 | linter-and-editor-tooling | bundle | different | DIVERGENT | — | [prompt](topics/28-linter-and-editor-tooling/prompts/linter-and-editor-tooling.prompt.md) | open |
@@ -36,7 +36,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R30 | type-check-gate | bundle | different | DIVERGENT | — | [prompt](topics/30-type-check-gate/prompts/type-check-gate.prompt.md) | open |
 | R31 | standalone-security-analyzer | bundle | py-only | DIVERGENT | — | [prompt](topics/31-standalone-security-analyzer/prompts/standalone-security-analyzer.prompt.md) | open |
 | R32 | test-harness-and-execution | bundle | different | DIVERGENT | — | [prompt](topics/32-test-harness-and-execution/prompts/test-harness-and-execution.prompt.md) | open |
-| R33 | property-and-snapshot-testing | bundle | py-only | DIVERGENT | — | [prompt](topics/33-property-and-snapshot-testing/prompts/property-and-snapshot-testing.prompt.md) | open |
+| R33 | property-and-snapshot-testing | bundle | py-only | DIVERGENT | — | [prompt](topics/33-property-and-snapshot-testing/prompts/property-and-snapshot-testing.prompt.md) | resolved |
 | R34 | scheduled-freshness-lanes | bundle | py-only | DIVERGENT | — | [prompt](topics/34-scheduled-freshness-lanes/prompts/scheduled-freshness-lanes.prompt.md) | resolved |
 | R35 | coverage-tooling | bundle | different | DIVERGENT | — | [prompt](topics/35-coverage-tooling/prompts/coverage-tooling.prompt.md) | open |
 | R37 | hook-manager-distribution | bundle | different | DIVERGENT | — | [prompt](topics/37-hook-manager-distribution/prompts/hook-manager-distribution.prompt.md) | open |
@@ -45,7 +45,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R40 | auxiliary-hygiene-hooks | bundle | py-only | DIVERGENT | — | [prompt](topics/40-auxiliary-hygiene-hooks/prompts/auxiliary-hygiene-hooks.prompt.md) | open |
 | R41 | lockfile-freshness-check | pattern | py-only | DIVERGENT | — | [prompt](topics/41-lockfile-freshness-check/prompts/lockfile-freshness-check.prompt.md) | resolved |
 | R42 | dev-toolchain-provisioning | bundle | py-only | DIVERGENT | package-manager-invocation | [prompt](topics/42-dev-toolchain-provisioning/prompts/dev-toolchain-provisioning.prompt.md) | resolved |
-| R43 | ai-assistant-repo-furniture | bundle | ts-only | DIVERGENT | — | [prompt](topics/43-ai-assistant-repo-furniture/prompts/ai-assistant-repo-furniture.prompt.md) | open |
+| R43 | ai-assistant-repo-furniture | bundle | ts-only | DIVERGENT | — | [prompt](topics/43-ai-assistant-repo-furniture/prompts/ai-assistant-repo-furniture.prompt.md) | resolved |
 | R44 | devcontainer-environment | pattern | py-only | DIVERGENT | — | [prompt](topics/44-devcontainer-environment/prompts/devcontainer-environment.prompt.md) | open |
 | R45 | pr-comment-bot-trigger-block | pattern | py-only | DIVERGENT | — | [prompt](topics/45-pr-comment-bot-trigger-block/prompts/pr-comment-bot-trigger-block.prompt.md) | resolved |
 | R46 | per-file-license-header | pattern | different | DIVERGENT | — | [prompt](topics/46-per-file-license-header/prompts/per-file-license-header.prompt.md) | resolved |

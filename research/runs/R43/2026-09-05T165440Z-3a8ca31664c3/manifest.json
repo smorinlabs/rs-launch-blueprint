@@ -115,6 +115,15 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-11T19:48:48Z",
+      "publication": {
+        "acceptance_sha256": "b101c68e90b38f1ff364eae1ac9ad61ca6cc2654c0cdfa35d5d7245a2a480c02",
+        "decision_sha256": "b9c8303647a8098971ff9fec7116fba041c85f5db8a4c869960e9e18c89c8057",
+        "transaction": "1a319d8ee91f4c02b2d14e4b88bec89d"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -164,6 +173,11 @@
     }
   },
   "prompt_source": "research/topics/43-ai-assistant-repo-furniture/prompts/ai-assistant-repo-furniture.prompt.md",
+  "publication": {
+    "acceptance_sha256": "b101c68e90b38f1ff364eae1ac9ad61ca6cc2654c0cdfa35d5d7245a2a480c02",
+    "decision_sha256": "b9c8303647a8098971ff9fec7116fba041c85f5db8a4c869960e9e18c89c8057",
+    "transaction": "1a319d8ee91f4c02b2d14e4b88bec89d"
+  },
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
     "codex",
@@ -171,7 +185,7 @@
   ],
   "run_id": "2026-09-05T165440Z-3a8ca31664c3",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "focused",
-  "updated_at": "2026-09-10T15:12:43Z"
+  "updated_at": "2026-09-11T19:48:48Z"
 }

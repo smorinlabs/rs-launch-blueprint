@@ -169,6 +169,15 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-11T19:49:30Z",
+      "publication": {
+        "acceptance_sha256": "7605e8efdcbe58611b91ebb60666d31cb21c84b31b0b65c893451c99d11c53b9",
+        "decision_sha256": "978ec7075e1f33f9f186815ea2a2154a52ad52eb53b970aebe1a38ed69def4e8",
+        "transaction": "a59062215af74d42af2b8e0bd37a6ae9"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -234,6 +243,11 @@
     }
   },
   "prompt_source": "research/topics/25-semver-bump-strategy/prompts/semver-bump-strategy.prompt.md",
+  "publication": {
+    "acceptance_sha256": "7605e8efdcbe58611b91ebb60666d31cb21c84b31b0b65c893451c99d11c53b9",
+    "decision_sha256": "978ec7075e1f33f9f186815ea2a2154a52ad52eb53b970aebe1a38ed69def4e8",
+    "transaction": "a59062215af74d42af2b8e0bd37a6ae9"
+  },
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
     "codex",
@@ -242,7 +256,7 @@
   ],
   "run_id": "2026-09-05T164357Z-eec460755121",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "deep",
-  "updated_at": "2026-09-10T03:08:02Z"
+  "updated_at": "2026-09-11T19:49:30Z"
 }

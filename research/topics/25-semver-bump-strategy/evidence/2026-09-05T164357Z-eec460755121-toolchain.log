@@ -1,0 +1,23 @@
+# R25 synthesizer — toolchain and OS (executed 2026-09-09)
+# working directory: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R25/2026-09-05T164357Z-eec460755121  (repository worktree; read-only for this check)
+
+$ rustc --version
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+exit=0
+$ cargo --version
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+exit=0
+$ sw_vers
+ProductName:		macOS
+ProductVersion:		26.4
+BuildVersion:		25E246
+exit=0
+$ uname -sm
+Darwin arm64
+exit=0
+$ node --version
+v26.5.0
+exit=0
+$ npm --version
+12.0.1
+exit=0
