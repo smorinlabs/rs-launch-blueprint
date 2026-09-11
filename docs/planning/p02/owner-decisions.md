@@ -19,7 +19,7 @@ Status as of 2026-09-10. Fourteen items are published. The programme is
 | 2. R69 early admission | 19 items directly, 33 transitively | the largest dependency cluster stays idle |
 | 3. R66 paid providers | one item's evidence base | R66 decides on three reports instead of five |
 | 4. R18 residual acceptance | nothing in P02 | P03 ships two files that nothing may enable |
-| 5. Licence gate reach | three items now depend on it | P03 uses the slower install backend, and R33 and R81 stay conditional |
+| 5. Licence gate reach | one item, not three (corrected) | P03 uses the slower install backend |
 | 6. R25 prompt correction | nothing | a defective prompt stays on the record |
 | 7. Baseline-review questions | nothing yet; several are inputs to unadmitted items | later items research around them |
 | 8. Model substitution acknowledgment | nothing | an approval record stays incomplete |
@@ -194,27 +194,22 @@ one line of the recipe body and no invocation anywhere.
 - **(c) Leave it, and use the licence-clean prebuilt alternative if compile time
   proves unacceptable.** The decision names one.
 
-**This is no longer about one item, and the strict branch is worse than it
-looked.** R33, property-and-snapshot-testing, reached the same gate
-independently. Its first attempt named a substitute for the strict branch, and
-the audit found that substitute's own dependency carries the same single
-licence. Its revision then walked every candidate's required dependencies at
-pinned versions and found that the substitute fails, and so do both members it
-originally recommended, one on a single dependency and one on five. Only the
-property-testing half survives, and it is recorded as not disqualified rather
-than cleared.
+**CORRECTION, 2026-09-11: this reaches fewer items than I told you.** I
+reported that three items depend on this ruling and that the strict branch
+leaves no proven snapshot testing stack. R33's judgment auditor established that
+R33 does **not** depend on your ruling at all. Its recommended crates carry
+`Apache-2.0`, which is one arm of the fixed `license` value, so they pass on the
+registry's own wording without the contested never-linked argument. The
+no-stack outcome belongs to a **third, stricter reading** that no one has
+adopted, under which every dependency at every depth would have to carry the
+dual expression. That reading is not on the table unless you put it there.
 
-So under the strict reading the programme currently has **no proven snapshot
-testing stack at all**, and finding one would need a resolved-tree licence audit
-that no research item can perform, because it needs a workspace the research
-phase is forbidden to create. That is the real cost of the strict branch, and it
-was not visible when this entry was first written. Expect more
-items to reach this gate, because development tooling routinely carries licences
-the shipped artifact would not. R81 is the third, reached within the same day:
-the documentation generator it recommends carries a copyleft licence and it
-passes on the same build-time reasoning. Three independent items reaching one
-unmade ruling is the signal that the ruling is worth making rather than
-deferring.
+R81 is in the same position and its own audit will confirm or correct that. So
+the ruling's real reach is R42's install backend, which carries `GPL-3.0-only`
+and genuinely is excluded under the plain reading, plus any future item that
+recommends a copyleft tool. That is a narrower and more answerable question than
+the one I put to you, and I should have checked the licence values against the
+registry's own wording before widening it.
 
 **Recommendation: (b), with (c) as the escape hatch.** A programme-wide licence
 ruling made to speed up one install step is a large lever for a small gain, and
