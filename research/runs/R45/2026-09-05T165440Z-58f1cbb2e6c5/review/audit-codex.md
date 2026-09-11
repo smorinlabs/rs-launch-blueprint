@@ -1,34 +1,34 @@
-decision-sha256: 86e3c9a6a177660da4aee4715ecb3b10cd3c26e449bc50d2af1189aa0e75f497
-actor: audit-codex-2026-09-05T165440Z-58f1cbb2e6c5-r1
+decision-sha256: 1e7fe24926e11fa5b40bedb3c42f187af05e161e4bec0b7ad4ea548b0fae6816
+actor: audit-codex-2026-09-05T165440Z-58f1cbb2e6c5-r2
 model: gpt-5.6-terra
 family: openai
-verdict: reject
-unresolved-findings: saved-log-not-reproduced; empirical-check-write-scope-overstated
+verdict: approve
+unresolved-findings: none
 
 ## Rerun
 
-argv: `bash /private/tmp/r45-check-audit-codex-r1.sh > research/runs/R45/2026-09-05T165440Z-58f1cbb2e6c5/review/evidence/audit-r45-r1.log 2>&1`.
+argv: `bash research/runs/R45/2026-09-05T165440Z-58f1cbb2e6c5/review/evidence/r45-check.sh > research/runs/R45/2026-09-05T165440Z-58f1cbb2e6c5/review/evidence/audit-r45-r2.log 2>&1`; then the same script was run a second time to `/tmp/r45-audit-r2-second.log` for comparison.
 
 cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan`.
 
-The temporary script was extracted byte-for-byte from the `=== script source` section at the end of the decision-cited `review/evidence/r18-trigger-phrase-pin.log`. It exited 0 on macOS 26.4 arm64 with `rustc 1.98.0`, `cargo 1.98.0`, and `gh 2.98.0`. The complete rerun log is `review/evidence/audit-r45-r1.log`.
+toolchain: macOS 26.4 arm64; `rustc 1.98.0`; `cargo 1.98.0`; `gh 2.98.0`. `limactl` was available but its `ubuntu` instance was stopped; I did not start or alter it, so the rerun used the script's recorded macOS host. Both runs exited 0. The complete first-run output is `review/evidence/audit-r45-r2.log` (222 lines; sha256 `c3f5cc0687166999f4b54582de84063d3913f7479d577a2dc524fcc4f94d528f`).
 
-The observed C1--C8 sections match the decision-cited log after excluding its capture timestamp. The complete output does not match: the cited log has 214 lines and the rerun has 123. The cited log appends a 91-line `=== script source` section after `=== end of checks ===`; the recovered script ends after that marker and never emits its own source. Therefore the command recorded at `DECISION.md:87-89` does not produce the log that `DECISION.md:91` calls its full output.
+The output matches the decision's stated comparison rule. The two audit runs differ in exactly one line, line 2, the UTC `captured:` timestamp (`2026-09-11T02:13:05Z` versus `2026-09-11T02:13:08Z`). Their remaining 221 lines match. The emitted source block in the audit log is byte-identical to `review/evidence/r45-check.sh`, whose sha256 is `233789ea6c1d1531f1c6707b59f8f1f246b92dd8bfb291488a06a758bde3c0bc`.
 
 ## Findings
 
-1. **Reject — the saved script does not reproduce the evidence log cited as its output.** `DECISION.md:85-91` says the one shell command produces `review/evidence/r18-trigger-phrase-pin.log` and that the script source is reproduced at the end of that log. The direct rerun exits 0 and produces all eight checks, but its output ends at `=== end of checks ===`; it has no script-source block. The cited log's extra 91 lines are not produced by the recorded command. This is not a timestamp difference. The decision must either record the separate append operation and identify the script artifact and hash, or make the script emit that block and recapture the log before it can claim the command reproduces the cited log.
+1. **Pass — revision 2 fixes reproducibility.** The stored script emits its source after `=== end of checks ===`; no unrecorded append is needed. The script's two reruns both produced the complete 222-line self-contained shape claimed by the decision, with only the intentionally variable capture timestamp different.
 
-2. **Reject — the empirical-check write-scope statement is wider than its script.** `DECISION.md:85` says the script's only write is the evidence log. Its reproduced source redirects the pinned `action.yml` to `$SCRATCH/action-v1.0.220.yml`, `trigger.ts` to `$SCRATCH/trigger-v1.0.220.ts`, and the Greptile corpus or error to three more `$SCRATCH` paths. These are not repository or template writes, and no workflow or bot was invoked, but they are writes. The scope claim must be narrowed to “no source-repository or template writes” or enumerate the scratch artifacts.
+2. **Pass — no observation moved.** The committed revision-1 log from `eaf8fa91603c4eaff7ca93460338ac3b167e03c5`, revision 2's cited recapture, and this audit rerun have byte-identical 121-line regions from line 3 through `=== end of checks ===`. This includes C1 through C8; the new material is confined to the self-emitted source block.
 
-3. **Pass — the three inherited R18 facts and the latent-exposure refinement are supported at the cited revision and action pin.** R18 revision 5 names only the two `anthropics/claude-code-action` workflow files; its decision has `coderabbit` once in rejected alternative C, and no `greptile` or `cubic` occurrence. Its review lane is `pull_request: types: [opened, ready_for_review, reopened]`, omitting `synchronize`. At commit `19dda84776b3518d98b8798e591daee763049ed3`, `trigger.ts` returns `true` when `prompt` is nonempty before trigger matching, and otherwise reads `payload.pull_request.body` and title for a `pull_request` event. `context.ts` defines `isPullRequestEvent` as exactly `eventName === "pull_request"`; R18's assistant lane has no such event. Thus the body scan exists, but R18's prompt-bearing review lane bypasses it and its interactive assistant lane cannot enter its pull-request branch. The decision's “latent, not live” conclusion is supported for the stated R18 shape.
+3. **Pass — the narrowed write-scope claim is accurate.** The script creates exactly four intermediate scratch paths: `action-v1.0.220.yml`, `trigger-v1.0.220.ts`, `greptile-llms-full.txt`, and `greptile-err.txt`. The first two use shell output redirects, the corpus uses curl's `-o`, and `greptile-err.txt` is created unconditionally by curl's `2>` redirect. They are all beneath the private `mktemp -d` directory, removed by the `EXIT` trap. The only durable write is standard output redirected to the evidence log; the script performs no source-repository, template, workflow, bot, or repository write.
 
-4. **Pass — the branch claim is explicit and correctly bounded.** Both rows prescribe the same PR-template content: no Review Trigger section and no bot `@`-mention. The `CONTRIBUTING.md` content differs, but `DECISION.md:13-16` states that dependency plainly. The entire repository-content recommendation is branch-dependent; the PR-template disposition alone is invariant, so there is no unrecorded dependence to correct.
+4. **Pass — inherited claims are unchanged and still bounded.** The complete block beginning `The three R18-derived facts` and ending before `Architecture alternatives compared` is byte-identical to revision 1 (sha256 `c3383570fe1af34b70dc3b517484deaab7029b25da7cb52341bbd99b59a5debd` for both versions). That includes the approved latent-not-live refinement. The four `assumes` values match the corresponding `docs/port/PARAMETERS.md` table values byte-for-byte: `msrv-policy`, `rust-edition`, `target-os-matrix`, and `license`.
 
-5. **Pass — all four assumed fixed-parameter lines exactly match `docs/port/PARAMETERS.md`:** `msrv-policy`, `rust-edition`, `target-os-matrix`, and `license` match byte-for-byte in parameter name, separator, and value.
+5. **Pass — the Greptile count is corroborated without overclaiming.** Revision 1 C8, revision 2 C8, and the previous auditor's separately reported curl check each report 40 `@greptileai` occurrences and 0 `@greptile-apps` occurrences; the two script fetches also report the same 371153-byte corpus. The decision restricts the conclusion to the vendor documentation corpus. Its explicit exclusions correctly avoid asserting that `@greptile-apps review` fails, when the divergence began, or that the corpus is stable over time.
 
-I also completed curl content checks for the pinned action source, Rust's PR template, the rustc-dev-guide Rustbot page, Rust Forge triagebot shortcuts, GitHub's contributor-guidelines page, GitHub's pull-request-template page, and Greptile's documentation corpus. The latter still contains 40 `@greptileai` and 0 `@greptile-apps` occurrences; these source checks did not change either rejection finding.
+6. **Pass — citation availability spot-check.** Curl returned HTTP 200 for five cited sources: Rustbot, Rust Forge triagebot shortcuts, Rust's PR template, GitHub's contributor-guideline documentation, and GitHub's pull-request-template documentation.
 
 ## Assessment
 
-The decision's three load-bearing technical claims are correctly narrowed and independently supported. It nevertheless makes two reproducibility/scope claims more broadly than its evidence permits. The audit rejects revision 1 until the cited evidence log is made reproducible by the recorded command and the script's scratch writes are described accurately.
+Revision 2 resolves both rejection findings. The recorded script now produces the entire cited evidence shape, and the decision accurately enumerates all four ephemeral intermediate writes. Its inherited R18 facts, latent-not-live refinement, parameter assumptions, and carefully limited Greptile conclusion remain supported. Approve.

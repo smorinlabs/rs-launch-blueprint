@@ -1,0 +1,105 @@
+R25 revision-7 empirical audit
+actor: audit-codex-2026-09-05T164357Z-eec460755121-r7
+model: gpt-5.6-terra
+decision-sha256: 978ec7075e1f33f9f186815ea2a2154a52ad52eb53b970aebe1a38ed69def4e8
+revision-6-decision-sha256: 91ca2e8691aed687715dbec9cacdb90d59558445cc6a5bfa425bd1b4b0c7949e
+
+## Linux attempt
+
+argv:
+  limactl shell ubuntu -- bash -lc 'source "$HOME/.cargo/env"; cd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R25/2026-09-05T164357Z-eec460755121; for f in raw/doxa-openai.normalized.md raw/doxa-gemini.normalized.md raw/doxa-perplexity.normalized.md raw/codex.md raw/opus.md; do grep -n "BASELINE-REVIEW" "$f" | sed "s/^/#   /" | cut -c1-200; done'
+exit: 1
+output:
+  instance `ubuntu` is stopped, run `limactl start ubuntu` to start the instance
+
+The requested `limactl start ubuntu` then failed before the guest started:
+
+  unlinkat /Users/stevemorin/.lima/ubuntu/ha.stdout.log: operation not permitted
+
+`limactl` is callable at `/opt/homebrew/bin/limactl`, but the sandbox cannot start the instance because it lacks permission to mutate Lima's host state. The task directs a macOS-only rerun in this circumstance.
+
+## Recorded revision-7 pipeline rerun on macOS
+
+cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R25/2026-09-05T164357Z-eec460755121
+argv:
+  for f in raw/doxa-openai.normalized.md raw/doxa-gemini.normalized.md raw/doxa-perplexity.normalized.md raw/codex.md raw/opus.md; do grep -n 'BASELINE-REVIEW' "$f" | sed 's/^/#   /' | cut -c1-200; done
+exit: 0
+output:
+  cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R25/2026-09-05T164357Z-eec460755121
+  host: Darwin 25.4.0 arm64
+  rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+  cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+  --- raw/doxa-openai.normalized.md ---
+  #   82:**BASELINE-REVIEW: F070 — resolver-aligned impact tiers must be described using Release Please’s actual algorithm — retain the pre-1.0 dampening pattern for rs, but correct any wording that say
+  --- raw/doxa-gemini.normalized.md ---
+  #   29:**BASELINE-REVIEW: F066, F073 — Release tool orchestration — Replace `release-please` with `release-plz`**
+  #   53:However, the orchestrator tools evaluated as evidence to execute this pattern (`release-please` and `release-plz`) must be rigorously vetted against the parameters. If the owner accepts the `BA
+  #   75:The research definitively recommends that **`rs-launch-blueprint` must launch at a pre-1.0 version (`0.1.0`) with dampened version bumping semantics strictly enabled**. If the baseline is maint
+  #   99:*(Note: If the `BASELINE-REVIEW` proposing the shift to `release-plz` is formally accepted by the repository owner, the two `release_please_*` parameters are rendered obsolete and deprecated, a
+  --- raw/doxa-perplexity.normalized.md ---
+  #   71:> BASELINE-REVIEW: F070 — pre‑1.0 semver dampening — reclassify as a common architectural pattern for new library‑shaped blueprints — evidence: SemVer’s major version zero rules[11][12], Cargo’
+  --- raw/codex.md ---
+  #   26:No `BASELINE-REVIEW:` line is emitted: F070 is an open `DIVERGENT` decision, not a retained baseline being challenged.
+  --- raw/opus.md ---
+  #   124:**No `BASELINE-REVIEW:` finding is emitted.** F070 is `DIVERGENT`, not `COMMON → REUSE` or `ADOPT`, so it is not a baseline row; and the analysis above confirms rather than challenges the reco
+  #   192:**Web service (optional feature-gated surface).** F017's principle is that the web surface ships as an optional capability behind a Cargo feature (`docs/port/BASELINE-REVIEW.md`, F017, `retain
+  #   389:- `docs/port/BASELINE-REVIEW.md` — F014, F017, F019 rows consulted for agreement-level vocabulary and the web-as-optional-capability principle
+
+## Classification controls
+
+Exact colon-token counts (`grep -c 'BASELINE-REVIEW:'`):
+
+  raw/doxa-openai.normalized.md: 1
+  raw/doxa-gemini.normalized.md: 1
+  raw/doxa-perplexity.normalized.md: 1
+  raw/codex.md: 1
+  raw/opus.md: 1
+
+The three Doxa lines are emitted findings:
+
+  raw/doxa-openai.normalized.md:82: **BASELINE-REVIEW: F070 ...**
+  raw/doxa-gemini.normalized.md:29: **BASELINE-REVIEW: F066, F073 ...**
+  raw/doxa-perplexity.normalized.md:71: > BASELINE-REVIEW: F070 ...
+
+The other two colon-token lines are explicit negatives:
+
+  raw/codex.md:26: No `BASELINE-REVIEW:` line is emitted.
+  raw/opus.md:124: **No `BASELINE-REVIEW:` finding is emitted.**
+
+`raw/opus.md:192` and `raw/opus.md:389` name `docs/port/BASELINE-REVIEW.md` without the colon token, so they are not emitted findings. `raw/doxa-gemini.normalized.md` has other uncolonized mentions; its only colon-token finding is line 29.
+
+`review/DECISION.md` count locations now read `three` at lines 400, 925, and 968. The new empirical-check record also says `three` at lines 713-715. Engines items 4, 5, and 7 respectively label the gemini, openai, and perplexity findings; item 7 now cites `raw/doxa-perplexity.normalized.md:71`.
+
+## Revision-6 comparison
+
+argv:
+  git diff --no-ext-diff --unified=0 263ac5e HEAD -- review/DECISION.md
+result: 9 hunks, 91 insertions, 13 deletions; `git diff --check` exited 0.
+
+The nine hunks are all disclosed by revision 7:
+
+1. Revision-6 heading becomes revision 7.
+2. Revision-7 preamble records the three-source tally, missing item-7 label, mechanical sweep, and the separately disclosed F071 clarification.
+3. The decision's original count changes from `Two raw reports` to the three named raw locations.
+4. The implementation note adds the disclosed F071 ownership routing.
+5. `## Empirical check` records the static-file pipeline and its result.
+6. Revision-3 history changes `two recorded-but-not-adopted` to `three`.
+7. Revision-2 history changes `two recorded-but-not-adopted` to `three`.
+8. Engines item 7 gains doxa-perplexity's `BASELINE-REVIEW:` label and raw-file location.
+9. Unproven item 5 adds the disclosed F071 ownership routing.
+
+Protected-block comparison, each SHA-256 equal between the revision-6 blob and the current decision:
+
+  override-precedence: 83590c3ee6e897430ae1065e759039edfc5626a29727eba5eb2e136cb9c7244f
+  recommendation-table: b16c2f170c6b4147a7f6852f97ffad74970bd16eaf69cb3494767173d19b14e7
+  acceptance-criteria: b4adb6ea04be3e4856a8565a0b48336b86e7fbf101a24a35de08122905dc78a5
+  schema-quotations: 644027ef78288c91bb20c6ecbaa21a154747522450686c5b59457ffb7c26aeec
+  pre-major-boundary-phrases: 6359981ba6efc3bb596bce56bda923e0124d779be577661bf89c8c427a6a0675
+  source-repository-history: eae46cf3d90f0c9e4a3309a9f8d633d35aca85bd9036907276c145c626b42539
+  parameters-block: 8cead9744dfbe5d903d08adcece47ca5b1352081da93b808aff33223aa8df1e7
+
+The parameters block contains the unchanged `- owns: none` line. Its four `- assumes` lines match the four fixed rows in `docs/port/PARAMETERS.md` byte-for-byte. The F071 statement added in hunks 4 and 9 matches `docs/port/COMMONALITY.md:77`: `ADOPT`, no research item, and `mechanical: pin the commit release-please starts scanning from when first configured`.
+
+The changed-hunk scan found no newly added or altered computed version outcome. The only inserted `0.1.0` sentence says that the judgment auditor endorsed the recommendation; it does not assert an unconditioned tool result. All existing version outcomes and their `Override precedence` conditions are in unchanged blocks.
+
+verdict: approve

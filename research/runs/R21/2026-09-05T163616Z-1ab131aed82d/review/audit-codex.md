@@ -1,36 +1,41 @@
-decision-sha256: a3c225f8e1d188a3d85298c85d518f9bff9fabb2987f8db69718175dfd59d173
-actor: audit-codex-2026-09-05T163616Z-1ab131aed82d-r1
+decision-sha256: 66d566a55330e2417a2e5227bcac64e3312fc56280db09d7b74a13425aa346c1
+actor: audit-codex-2026-09-05T163616Z-1ab131aed82d-r2
 model: gpt-5.6-terra
 family: openai
-verdict: reject
-unresolved-findings: decision-cited evidence log is not reproduced by the saved script after timestamp normalization
+verdict: approve
+unresolved-findings: none
 
 ## Rerun
 
-- argv: `bash run-checks.sh`
+- argv: `LC_ALL=C bash run-checks.sh`; this is the decision's recorded `bash run-checks.sh` with the revision-2 collation explicitly selected.
 - cwd: `research/runs/R21/2026-09-05T163616Z-1ab131aed82d/review/empirical`
-- toolchain: the rerun log records `rustc 1.98.0`, `cargo 1.98.0`, `git 2.50.1`, `curl 8.7.1`, and `python3 3.14.7` on macOS. `limactl` was callable, but its `ubuntu` instance was stopped, so this deterministic read-only rerun used macOS rather than starting the VM.
-- exit code: `0`; the rerun reports `summary: PASS=27 FAIL=0` and `RESULT: PASS`.
-- log path: `review/evidence/audit-contributors-bot-credential-source-r1.log`
-- output match: no. Removing only the volatile `date:` line still leaves one difference from `review/evidence/contributors-bot-credential-source.log`: case 07 prints `GET /user/{account_id}` before the package endpoints in the cited log, but after them in the rerun. The script's sorted endpoint list therefore did not reproduce the cited complete output, even though all assertions pass.
+- toolchain: macOS Darwin 25.4.0 arm64, `rustc 1.98.0`, `cargo 1.98.0`, `git 2.50.1`, `curl 8.7.1`, and `python3 3.14.7`. `limactl` is callable, but its `ubuntu` instance is stopped; I did not start it for this read-only audit.
+- exit code: `0`; the saved rerun reports `summary: PASS=27 FAIL=0` and `RESULT: PASS`.
+- log path: `review/evidence/audit-contributors-bot-credential-source-r2.log` (sha256 `01caad623e34e486b36d30eaacaf015c823cb22b3782f0bb99e5671e52f93219`).
+- output matches the decision's historical revision-2 log: not byte-for-byte. Case 07 now reports `644053 bytes`, not `642032 bytes`, for the live GitHub Docs page. The endpoint set, all 27 assertions, and every other checked source result remain the same. `review/DECISION.md:175` expressly identifies a changed fetched byte count as substantive live-page drift that its normalizer must not erase.
 
 ## Findings
 
-### R21-A01 — decision-cited empirical log is not reproducible
+### No finding — the ordering difference is shell collation, not page reordering
 
-**Impact:** The decision's `## Empirical check` identifies `review/evidence/contributors-bot-credential-source.log` as the full output of `bash run-checks.sh`. The independently generated output is not that log after normalizing the timestamp. The cited artifact therefore cannot serve as a reproducible record of the command's output.
+The saved script's case-07 pipeline is `grep -oE ... | sort -u` at `review/empirical/run-checks.sh:148`. On macOS, the three relevant strings place `GET /user/{account_id}` before the package paths under `LC_ALL=en_US.UTF-8`, and after them under `LC_ALL=C`; the C result also matches the host's inherited `C.UTF-8` ordering. This proves the stated moving-line mechanism. The stopped Linux VM did not affect that result.
 
-**Evidence:** The saved script is unchanged at SHA-256 `3b8fd8ab6beec0e745ce2252d81fb2ca82343fd2531a8caa90850171419c6cc3`. It exited `0` and produced 27 passes in the audit log. A normalized diff moves only `GET /user/{account_id}` within the case-07 endpoint enumeration; it is nevertheless an output difference. The cited log has SHA-256 `76f2a4d4c3915de5c950b1073523b230550234f417c2833600f304f70363c362`; the rerun log has SHA-256 `164988714f542cb36814a6253d3bcd4ec2aa092d1a0eafbe7ef1cf2d789af6c2`.
+### No finding — the historical comparison claims reproduce exactly
 
-**Required correction:** Regenerate the evidence cited by the decision from the saved script and revise/re-sign the decision against that artifact. If the public documentation's rendered ordering is intentionally treated as volatile, preserve a stable source snapshot or a normalized comparison rule in the decision; do not identify a nonmatching historical output as the command's complete reproduced log.
+The decision's counted `diff` between `contributors-bot-credential-source.log` and `contributors-bot-credential-source.r2.log` reports four changed lines. They are the two UTC `date:` lines and one byte-identical endpoint line removed and inserted at its locale-dependent position. The decision's normalizer returns `0` for the revision-1 saved log versus the revision-2 rerun, and `0` for the revision-1 saved log versus the predecessor audit log. It returns `2` for this fresh audit log versus the revision-2 rerun: the old and new case-07 byte-count lines. That difference is correctly outside the normalizer's stated scope.
 
-### Verified, not a finding
+### No finding — the script, parameters, and carried corrections were not changed
 
-- The decision's correction to the inherited baseline-review clause (3) is accurate. An independent unauthenticated retrieval of `https://docs.github.com/en/actions/concepts/security/github_token` today states that a `GITHUB_TOKEN`-created or updated pull request creates `pull_request` workflow runs in an approval-required state and that a user with write access starts them by selecting **Approve workflows to run**. The decision does not overstate this as "never report".
-- The decision's correction to clause (4) is accurate. An independent unauthenticated retrieval of `https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/enabling-features-for-your-repository/managing-github-actions-settings-for-a-repository` scopes the restrictive default to a new repository in a personal account and says that a new organization repository inherits its organization setting.
-- The four `- assumes` values in `review/DECISION.md:113-116` equal the values in `docs/port/PARAMETERS.md:7-10` byte-for-byte: `msrv-policy`, `rust-edition`, `target-os-matrix`, and `license`.
-- The predicted `403` from bare `GET /user` remains correctly labelled `(Q1, predicted)`. The decision states that no credential, app registration or installation, pull request, or token-authenticated endpoint call was used, and it names the P03 observation that would prove the prediction. This is correct handling of an unproven claim.
+`review/empirical/run-checks.sh` has sha256 `3b8fd8ab6beec0e745ce2252d81fb2ca82343fd2531a8caa90850171419c6cc3` in revision 1, revision 2, and the working copy. Diffing revision-1 commit `b80e157` and revision-2 commit `2534ab7` changes only the revision title, the empirical-check text, and the case-07 table row, plus the inserted revision note. The four `assumes` lines are byte-identical between revisions and equal the `msrv-policy`, `rust-edition`, `target-os-matrix`, and `license` values in `inputs/PARAMETERS.md:7-10`. The eleven selected lines that carry the two baseline-review corrections are also byte-identical between revisions: their shared baseline line and annotation frame, clauses (3) and (4), B3, the O4 ground, the personal-account qualification, case rows 08 and 10, and disagreement rows 1 and 3.
+
+### No finding — the decision attributes only checks the saved script emits
+
+The fresh log contains exactly 27 `[ok]` labels. A one-to-one comparison against the 27 labels that support the decision's case table found no missing or extra labels, followed by the recorded passing summary and result. The four public GitHub Docs citations were fetched by that script without an Authorization header. A fifth unauthenticated curl spot-check of the cited `peter-evans/create-pull-request` concepts guide returned HTTP 200 and contains its stated PAT workaround and GitHub recommendation. Local pinned-source checks reproduce py's `CONTRIBUTORS_PLEASE_PAT` and ts's `GITHUB_TOKEN` workflow lines.
+
+### No finding — the predicted 403 remains a prediction
+
+The fresh case-11 output records that no credential or App was created, no App was registered or installed, no repository, branch, or pull request was created, no endpoint was called with a token, and the action was not run. `review/DECISION.md:45`, `:113`, `:192`, and `:214` consistently label the `GET /user` 403 mechanism as `(Q1, predicted)` or unproven and name the P03 check that would observe it. The carried-through baseline-review quotation is explicitly framed as unedited source material, and the decision separately states that its authenticated-run-history claim was not re-verified.
 
 ## Assessment
 
-The substantive recommendation is supported at the width of its evidence: the decision distinguishes documented behavior from an executed workflow, preserves the `403` as unproven, and accurately narrows both GitHub documentation claims. The 27 saved checks also pass in the independent rerun. Approval nevertheless requires a reproducible cited empirical artifact. R21-A01 requires a decision and evidence refresh before this revision can be accepted.
+Approve. Revision 2 fixes the rejected overbroad reproducibility claim with a tested, bounded comparison rule. It distinguishes historical equivalence caused by timestamp and collation from the fresh live-page byte-count change, which the decision already says is substantive rather than normalized noise. The recommendation does not rely on the unexecuted 403 prediction, and no claim tested here exceeds the evidence that the saved script or explicitly identified source provides.

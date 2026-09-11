@@ -1,34 +1,27 @@
-decision-sha256: 9275faef261e14e012d18e1bbc568ee9bac4713207e01ac7a7da2a6e812227ce
-actor: audit-codex-2026-09-05T164358Z-eae89906c763-r1
+decision-sha256: 1bf96b43e0198e07bccca2ca4ecf0d5a6a2afb939260d896b8eca4814757a068
+actor: audit-codex-2026-09-05T164358Z-eae89906c763-r2
 model: gpt-5.6-terra
 family: openai
-verdict: reject
-unresolved-findings: strict license fallback is not all-dependencies-dual; saved empirical check does not reproduce all cited checks
+verdict: approve
+unresolved-findings: none
 
 ## Rerun
 
-- argv: `bash review/empirical/r33-checks.sh`; cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R33/2026-09-05T164358Z-eae89906c763`; toolchain: `rustc 1.98.0`, `cargo 1.98.0`, macOS arm64; exit code: `0`; complete output: `review/evidence/audit-property-and-snapshot-testing-r1.log`.
-- I also ran the same saved script from the decision's declared repository cwd, with argv `bash research/runs/R33/2026-09-05T164358Z-eae89906c763/review/empirical/r33-checks.sh`; exit code: `0`. That makes check 12's relative ledger paths work, but does not repair check 11.
-- The rerun does not fully match the cited evidence log. The saved script ends after check 12. It does not contain the recorded follow-ups 9b, 11b, or 13. Check 11 still queries `TS_PORT_DECISIONS.md` at the TypeScript repository root, which does not exist at the pin; the correct path is `docs/port/TS_PORT_DECISIONS.md`. The run-directory invocation also cannot find the repository-relative `docs/port/` files in check 12. The script exits zero because it does not enable `set -e` or `pipefail`.
-- Linux rerun: `limactl` was callable, but its stopped `ubuntu` instance could not start from this sandbox: Lima was denied permission to unlink `/Users/stevemorin/.lima/ubuntu/ha.stdout.log`. The macOS reruns are complete in the evidence log.
-- Direct citation spot checks returned HTTP 200 for the crates.io records for `insta` 1.48.0, `cargo-insta` 1.48.0, and `snapbox` 1.2.2; `https://insta.rs/docs/quickstart/`; and the cited Clap `StyledStr` documentation.
+- argv: `bash review/empirical/r33-checks.sh`; cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R33/2026-09-05T164358Z-eae89906c763`; toolchain: `rustc 1.98.0`, `cargo 1.98.0`, macOS 26.4 arm64; exit code: `0`. Complete output: `review/evidence/audit-property-and-snapshot-testing-r2.log` (sha256 `a2ed227aa71e5d549f0fff7dc3ad5c1592b166b9ee6aad209c87889eaebf0dd3`). The script's final `failed assertions: 0` and its `exit "$fail"` make the observed exit status zero.
+- The re-run emits all 16 decision-attributed sections: checks 1--14 plus 9b and 11b. It emits 186 `STATUS OK`/`ASSERT OK` lines, no failure line, and ends with `failed assertions: 0`.
+- Output matches the saved log under the decision's two-tier rule. Tier 1: after excluding the 16 run timestamps and the six volatile check-4 counter lines, a unified diff is empty. Tier 2: all assertion/status verdicts are `OK`, the failure count is zero, and the script exits zero. The saved log is `review/evidence/property-and-snapshot-testing.log` (sha256 `33c4358489d43edf46b30e37f7a8f5ff465f99f22ea3058e99604d6d40115f6b`).
+- Linux VM attempt: `/opt/homebrew/bin/limactl` is callable, but `ubuntu` was stopped and `limactl start ubuntu` failed before execution because Lima could not unlink `/Users/stevemorin/.lima/ubuntu/ha.stdout.log` under the sandbox. The complete macOS re-run above is therefore the executed evidence.
 
 ## Findings
 
-### 1. Strict branch: `snapbox` is not an all-dependencies-dual substitute
+None.
 
-`review/DECISION.md:35-41` says that, under a strict rule requiring every dependency at every depth to carry the dual expression, `snapbox` 1.2.2 replaces `insta`. That claim is false under the rule it states. The published `snapbox` 1.2.2 manifest has an unconditional `[dependencies.normalize-line-endings] version = "0.3.0"` entry. Both `GET https://crates.io/api/v1/crates/normalize-line-endings/0.3.0` and its published `Cargo.toml` report `Apache-2.0`, not `MIT OR Apache-2.0`.
+The revised strict branch is correctly unresolved rather than settled. The re-run's check 14 disqualifies `snapbox` through `normalize-line-endings` 0.3.0 (`Apache-2.0`), `insta` through `similar` 2.7.0 (`Apache-2.0`), and `cargo-insta` through five non-dual first-level dependencies: `cargo_metadata`, `console`, `ignore`, `insta`, and `open`. It resolves each recorded requirement to the highest published unyanked non-prerelease version satisfying Cargo caret semantics; the displayed versions and licence expressions agree with the decision's table. Check 14 finds all six examined required `proptest` dependencies dual, but the decision explicitly limits that result to one non-unified, non-feature-complete level and says it does not clear `proptest`.
 
-This is independent of the unresolved R42 question. R42 does leave the separate-process developer-tool ruling open: its published decision says no owner ruling exists. The decision is also right that `insta` 1.48.0 and `cargo-insta` 1.48.0 are each Apache-2.0-only: the two crates.io records and each published package manifest agree. However, the decision promises a result under the strict branch and names `snapbox` as the clean result without checking its required dependency tree. The strict branch therefore has no proven snapshot stack. Revise it to leave that branch unresolved pending a resolved-tree licence audit, or select and prove a substitute that passes the stated rule.
+`review/DECISION.md:45-58` consequently states only that no candidate is proven for the strict branch and names no stack. Its required resolved-tree audit is concrete: define the dual-expression predicate, generate and inspect the real `Cargo.lock` including normal/build/dev and selected features, decide the rule's reach to development dependencies and installed tools, and choose declared metadata or shipped licence files as the source of truth. That is proportionate to the evidence; it does not claim that no compliant stack exists.
 
-### 2. The saved empirical check is not sufficient to reproduce the cited log
-
-`review/DECISION.md:154` calls `bash review/empirical/r33-checks.sh` the re-runnable check and attributes checks 1 through 13 to its evidence log. `review/empirical/r33-checks.sh:114-131` proves the saved script only emits checks 1 through 12. It neither records nor invokes follow-ups 9b, 11b, and 13. Its check 11 has the wrong TypeScript path, so it cannot itself substantiate the claimed silence of `docs/port/TS_PORT_DECISIONS.md`; its printed `grep exit=0` is the successful `head` pipeline status after `git show` fails.
-
-The corrected direct check at `cb1cbcb2e88b898e8c081b0abbfabc1630079c00` confirms the underlying TypeScript facts: `package.json` has Vitest and no `fast-check`; `pnpm-lock.yaml` resolves `@vitest/snapshot@4.1.10`; the capability-use search returns exit 1; and the correct `docs/port/TS_PORT_DECISIONS.md` has no matching rationale. Thus the decision's bounded conclusion, “portable, unadopted, unexplained,” is supported; “accidental” remains correctly labelled as an inference. The defect is reproducibility of the cited empirical check, not this conclusion.
+All four `assumes` lines exactly match `docs/port/PARAMETERS.md`: `msrv-policy`, `rust-edition`, `target-os-matrix`, and `license`. Against revision-1 blob `472bc4f9923ac309d2d9c7fc2f9971a8dc7a14f5` (decision sha256 `9275faef261e14e012d18e1bbc568ee9bac4713207e01ac7a7da2a6e812227ce`), the complete `## Parameters` section is byte-identical (both sha256 `6d0ee0f77f8f815ed484a4d59dc947e5b839505f87a2ca8bc1b3f8ef6cc41b5f`), as is the TypeScript conclusion paragraph beginning `Keeping the charter's three-way distinction` (both sha256 `dde1a9fb39eda21ae4befe716777794f07526b5e458b2274574bd8fa946ecf8f`).
 
 ## Assessment
 
-The four `assumes` values byte-match `docs/port/PARAMETERS.md`: `msrv-policy`, `rust-edition`, `target-os-matrix`, and `license`. The decision also correctly records the dependency-tree MSRV floor as unproven and names a resolved-lockfile test that would prove it; that is not a finding.
-
-Reject until the strict licence branch is made true or explicitly left unproven, and the saved empirical check is made capable of reproducing every cited check with failing subcommands propagated as failures.
+Revision 2 cures both revision-1 rejection grounds. The saved script now produces every check the decision attributes to it, propagates assertion failures, and independently re-runs cleanly. The decision's broader strict-licence consequence is framed as lack of proof, not lack of existence, and its stated next audit closes the remaining evidentiary gap. Approve.
