@@ -337,16 +337,17 @@ survives only as a fact you supply when answering that one.
 
 ## Two things you should know, which are not decisions
 
-**A gate reading was ruled on provisionally, and you can overturn it.** Two
-items applied the minimum-supported-Rust-version fitness gate differently: one
-excluded a candidate for not declaring a version, the other passed a candidate
-that does not declare one. The gate's text compares a version against a window,
-and the clauses about declaring the version and testing it in continuous
-integration belong to the template's own obligations rather than to every
-dependency. So the ruling is that an undeclared version is unproven rather than
-failed, weighed against the candidate but not excluding it. Both items' audits
-were asked to test the ruling, and if either argues the stricter reading, it is
-withdrawn.
+**A gate reading I ruled on was overturned by the auditors, which is the
+outcome the process is for.** Two items applied the minimum-supported-Rust-version
+fitness gate differently. I ruled provisionally that a candidate which declares
+no version is unproven rather than failed, weighed against it but not excluding,
+and put that ruling to both items' auditors. Both argued independently for the
+strict reading and they are right: the gate quotes the policy in full, and the
+instruction that follows says a failed gate excludes the candidate, so an
+unknown version is insufficient to clear a bar the prompt says must be cleared.
+The ruling is withdrawn. One item's exclusions stand; the other must switch to
+the runner-up it already recorded. No decision was published under the wrong
+reading.
 
 
 
