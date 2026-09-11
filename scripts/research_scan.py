@@ -138,6 +138,8 @@ def scan_run(run: Path) -> dict:
     # plus partial and failed ones, which a returning session must not overlook
     for engine, op in manifest["operations"].items():
         if op["state"] in {"submitting", "submitted", "running", "unknown", "partial", "failed"}:
+            # A failed or partial operation is NOT in flight. Reporting it as
+            # pending work made a dead R66 operation look live for two days.
             entry = {"state": op["state"], "operation_id": op.get("operation_id")}
             if engine == "doxa":
                 jobs = provider_jobs(run)
@@ -169,14 +171,22 @@ def next_action(status: str, run: dict | None) -> str:
         return "not admitted: run prepare"
     missing = [e for e in run["required_engines"] if run["engines"].get(e) != "succeeded"]
     if run["in_flight"]:
-        which = ", ".join(f"{k} ({v['state']})" for k, v in run["in_flight"].items())
+        dead = {"partial", "failed", "unknown"}
+        live = {k: v for k, v in run["in_flight"].items() if v["state"] not in dead}
+        stopped = {k: v for k, v in run["in_flight"].items() if v["state"] in dead}
+        parts = []
+        if live:
+            parts.append("collect in-flight: " + ", ".join(f"{k} ({v['state']})" for k, v in live.items()))
+        if stopped:
+            parts.append("STOPPED, needs a decision: " + ", ".join(f"{k} ({v['state']})" for k, v in stopped.items()))
+        which = "; ".join(parts)
         # Name the engines that have not reported at all as well. An item can be
         # short several engines while one of them is in flight, and reporting only
         # the in-flight one hides the rest: R66 was short both Opus and Doxa and
         # read as though it were waiting on Doxa alone.
         also = [e for e in missing if e not in run["in_flight"]]
         rest = f"; not started: {', '.join(also)}" if also else ""
-        return f"collect in-flight: {which}{rest}"
+        return f"{which}{rest}"
     if missing:
         return "research: " + ", ".join(missing)
     if run["decision"] is None:
