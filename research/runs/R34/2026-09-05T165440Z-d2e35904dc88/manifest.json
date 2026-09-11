@@ -115,6 +115,15 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-11T19:47:38Z",
+      "publication": {
+        "acceptance_sha256": "ea0dc7012daa75778ca30e66332a862b186cc88c85754335e7ba0e2fcc96eec9",
+        "decision_sha256": "14d3526106bb7e670fe648fe3bad9e858a92ddb196603fb49d9090bdc08fee4e",
+        "transaction": "0d8fe87a4e0041b9a15a324fc8b67164"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -164,6 +173,11 @@
     }
   },
   "prompt_source": "research/topics/34-scheduled-freshness-lanes/prompts/scheduled-freshness-lanes.prompt.md",
+  "publication": {
+    "acceptance_sha256": "ea0dc7012daa75778ca30e66332a862b186cc88c85754335e7ba0e2fcc96eec9",
+    "decision_sha256": "14d3526106bb7e670fe648fe3bad9e858a92ddb196603fb49d9090bdc08fee4e",
+    "transaction": "0d8fe87a4e0041b9a15a324fc8b67164"
+  },
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
     "codex",
@@ -171,7 +185,7 @@
   ],
   "run_id": "2026-09-05T165440Z-d2e35904dc88",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "focused",
-  "updated_at": "2026-09-10T15:15:48Z"
+  "updated_at": "2026-09-11T19:47:38Z"
 }

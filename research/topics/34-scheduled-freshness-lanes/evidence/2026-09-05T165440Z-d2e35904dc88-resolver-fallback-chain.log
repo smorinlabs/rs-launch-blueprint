@@ -1,0 +1,382 @@
++(eval):8> echo '=== R34 empirical check — verify raw-report claims; nothing is implemented ==='
+=== R34 empirical check — verify raw-report claims; nothing is implemented ===
++(eval):9> date -u +%Y-%m-%dT%H:%M:%SZ
++(eval):9> echo 'date: 2026-09-10T15:23:04Z'
+date: 2026-09-10T15:23:04Z
++(eval):10> echo
+
++(eval):11> echo '--- (a) toolchain and OS ---'
+--- (a) toolchain and OS ---
++(eval):12> echo '$ rustc --version; cargo --version'
+$ rustc --version; cargo --version
++(eval):13> rustc --version
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
++(eval):13> cargo --version
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
++(eval):14> echo '$ ~/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --version'
+$ ~/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --version
++(eval):15> /Users/stevemorin/.rustup/toolchains/stable-aarch64-apple-darwin/bin/rustc --version
+rustc 1.94.0 (4a4ef493e 2026-03-02)
++(eval):16> echo '$ sw_vers; uname -m'
+$ sw_vers; uname -m
++(eval):17> sw_vers
+ProductName:		macOS
+ProductVersion:		26.4
+BuildVersion:		25E246
++(eval):17> uname -m
+arm64
+
+--- (b) resolver chain in the toolchain's OWN shipped Cargo Book (rust-docs of rustup 'stable' = rustc 1.94.0) ---
+local doc root: /Users/stevemorin/.rustup/toolchains/stable-aarch64-apple-darwin/share/doc/rust/html/cargo/reference
+
+$ python3 -c "strip tags" resolver.html | grep -n -i -A4 "resolver.*version.*3\|incompatible-rust-versions"
+174-To support developing software with a minimum supported Rust version ,
+175-the resolver can take into account a dependency version’s compatibility with your Rust version.
+176:This is controlled by the config field resolver.incompatible-rust-versions .
+177-With the fallback setting, the resolver will prefer packages with a Rust version that is
+178-less than or equal to your own Rust version.
+179-For example, you are using Rust 1.85 to develop the following package:
+180-[package]
+181-name = "my-cli"
+182-rust-version = "1.62"
+--
+375-unification . See the features chapter for more
+376-details.
+377:"3" ( edition = "2024" default, requires Rust 1.84+): Change the default for resolver.incompatible-rust-versions from allow to fallback
+378-The resolver is a global option that affects the entire workspace. The
+379-resolver version in dependencies is ignored, only the value in the top-level
+380-package will be used. If using a virtual workspace , the version should be
+381-specified in the [workspace] table, for example:
+382-[workspace]
+383-members = ["member1", "member2"]
+
+$ resolver.html, the worked fallback example (lines 172-200 of the stripped text)
+bitflags 1.2.1 does not match this version requirement and so that entry in your Cargo.lock file is ignored and version 1.3.5 will now be used and recorded in your Cargo.lock file.
+Rust version
+To support developing software with a minimum supported Rust version ,
+the resolver can take into account a dependency version’s compatibility with your Rust version.
+This is controlled by the config field resolver.incompatible-rust-versions .
+With the fallback setting, the resolver will prefer packages with a Rust version that is
+less than or equal to your own Rust version.
+For example, you are using Rust 1.85 to develop the following package:
+[package]
+name = "my-cli"
+rust-version = "1.62"
+[dependencies]
+clap = "4.0" # resolves to 4.0.32
+The resolver would pick version 4.0.32 because it has a Rust version of 1.60.0.
+4.0.0 is not picked because it is a lower version number despite it also having a Rust version of 1.60.0.
+4.5.20 is not picked because it is incompatible with my-cli ’s Rust version of 1.62 despite having a much higher version and it has a Rust version of 1.74.0 which is compatible with your 1.85 toolchain.
+If a version requirement does not include a Rust version compatible dependency version,
+the resolver won’t error but will instead pick a version, even if its potentially suboptimal.
+For example, you change the dependency on clap :
+[package]
+name = "my-cli"
+rust-version = "1.62"
+[dependencies]
+clap = "4.2" # resolves to 4.5.20
+No version of clap matches that version requirement
+that is compatible with Rust version 1.62.
+The resolver will then pick an incompatible version, like 4.5.20 despite it having a Rust version of 1.74.
+When the resolver selects a dependency version of a package,
+it does not know all the workspace members that will eventually have a transitive dependency on that version
+
+$ config.html | grep -n -B3 -A12 "incompatible-rust-versions"
+135-[profile.<name>.package.<name>] # Override profile for a package.
+136-# Same keys for a normal profile (minus `panic`, `lto`, and `rpath`).
+137-[resolver]
+138:incompatible-rust-versions = "allow" # Specifies how resolver reacts to these
+139-[registries.<name>] # registries other than crates.io
+140-index = "…" # URL of the registry index
+141-token = "…" # authentication token for the registry
+142-credential-provider = "cargo:token" # The credential provider for this registry.
+143-[registries.crates-io]
+144-protocol = "sparse" # The protocol to use to access crates.io.
+145-[registry]
+146-default = "…" # name of the default registry
+147-token = "…" # authentication token for crates.io
+148-credential-provider = "cargo:token" # The credential provider for crates.io.
+149-global-credential-providers = ["cargo:token"] # The credential providers to use by default.
+150-[source.<name>] # source definition and replacement
+--
+809-See strip .
+810-[resolver]
+811-The [resolver] table overrides dependency resolution behavior for local development (e.g. excludes cargo install ).
+812:resolver.incompatible-rust-versions
+813-Type: string
+814-Default: See resolver docs
+815-Environment: CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS
+816-When resolving which version of a dependency to use, select how versions with incompatible package.rust-version s are treated.
+817-Values include:
+818-allow : treat rust-version -incompatible versions like any other version
+819-fallback : only consider rust-version -incompatible versions if no other version matched
+820-Can be overridden with
+821---ignore-rust-version CLI option
+822-Setting the dependency’s version requirement higher than any version with a compatible rust-version
+823-Specifying the version to cargo update with --precise
+824-See the resolver chapter for more details.
+
+$ grep for the environment-variable spelling in the shipped book
+/Users/stevemorin/.rustup/toolchains/stable-aarch64-apple-darwin/share/doc/rust/html/cargo/reference/../guide/continuous-integration.html
+/Users/stevemorin/.rustup/toolchains/stable-aarch64-apple-darwin/share/doc/rust/html/cargo/reference/../print.html
+/Users/stevemorin/.rustup/toolchains/stable-aarch64-apple-darwin/share/doc/rust/html/cargo/reference/../reference/config.html
+/Users/stevemorin/.rustup/toolchains/stable-aarch64-apple-darwin/share/doc/rust/html/cargo/reference/../searchindex-5326ac6c.js
+
+--- (b2) the Cargo Book's own 'Verifying Latest Dependencies' recipe, as shipped with rustc 1.94.0 ---
+117-Some potential solutions include:
+118-Not checking in the Cargo.lock
+119-Depending on PR velocity, many versions may go untested
+120-This comes at the cost of determinism
+121-Have a CI job verify the latest dependencies but mark it to “continue on failure”
+122-Depending on the CI service, failures might not be obvious
+123-Depending on PR velocity, may use more resources than necessary
+124-Have a scheduled CI job to verify latest dependencies
+125-A hosted CI service may disable scheduled jobs for repositories that
+126-haven’t been touched in a while, affecting passively maintained packages
+127-Depending on the CI service, notifications might not be routed to people
+128-who can act on the failure
+129-If not balanced with dependency publish rate, may not test enough versions
+130-or may do redundant testing
+131-Regularly update dependencies through PRs, like with Dependabot or RenovateBot
+132-Can isolate dependencies to their own PR or roll them up into a single PR
+133-Only uses the resources necessary
+134-Can configure the frequency to balance CI resources and coverage of dependency versions
+135-An example CI job to verify latest dependencies, using GitHub Actions:
+136-jobs:
+137-latest_deps:
+138-name: Latest Dependencies
+139-runs-on: ubuntu-latest
+140-continue-on-error: true
+141-env:
+142:CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS: allow
+143-steps:
+144-- uses: actions/checkout@v4
+145-- run: rustup update stable && rustup default stable
+146-- run: cargo update --verbose
+147-- run: cargo build --verbose
+148-- run: cargo test --verbose
+149-Notes:
+150:CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS is set to ensure the resolver doesn’t limit selected dependencies because of your project’s Rust version .
+151-For projects with higher risks of per-platform or per-Rust version failures,
+152-more combinations may want to be tested.
+153-Verifying rust-version
+154-When publishing packages that specify rust-version ,
+155-it is important to verify the correctness of that field.
+156-Some third-party tools that can help with this include:
+157-cargo-msrv
+158-cargo-hack
+159-An example of one way to do this, using GitHub Actions:
+160-jobs:
+161-msrv:
+162-runs-on: ubuntu-latest
+163-steps:
+164-- uses: actions/checkout@v4
+165-- uses: taiki-e/install-action@cargo-hack
+166-- run: cargo hack check --rust-version --workspace --all-targets --ignore-private
+167-This tries to balance thoroughness with turnaround time:
+168-A single platform is used as most projects are platform-agnostic, trusting platform-specific dependencies to verify their behavior.
+
+--- (c) live resolver probe: does edition 2024 + a declared rust-version floor change what cargo update resolves? ---
+fixture (2 files, scratchpad only, never built, nothing written into any repository):
+  /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r34-fixture/Cargo.toml
+[package]
+name = "r34-resolver-probe"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.62"
+
+[dependencies]
+clap = "4.0"
+
+$ cd fixture && cargo generate-lockfile   # default: no env override
+error: failed to parse manifest at `/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r34-fixture/Cargo.toml`
+
+Caused by:
+  rust-version 1.62 is incompatible with the version (1.85.0) required by the specified edition (2024)
+exit=101
+$ grep -A1 name = "clap" Cargo.lock
+ugrep: warning: Cargo.lock: No such file or directory
+
+$ CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS=allow cargo generate-lockfile
+error: failed to parse manifest at `/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r34-fixture/Cargo.toml`
+
+Caused by:
+  rust-version 1.62 is incompatible with the version (1.85.0) required by the specified edition (2024)
+exit=101
+$ grep -A1 name = "clap" Cargo.lock
+ugrep: warning: Cargo.lock: No such file or directory
+
+NOTE: the first attempt used the Cargo Book's own example floor (rust-version = 1.62) and cargo refused the
+manifest: 'rust-version 1.62 is incompatible with the version (1.85.0) required by the specified edition (2024)'.
+That is itself a finding: under rust-edition = 2024 the declared floor can never be below 1.85, which bounds how
+far the fallback resolver can hold a dependency back. Retrying at the lowest floor edition 2024 permits.
+
+revised fixture:
+[package]
+name = "r34-resolver-probe"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.85"
+
+[dependencies]
+icu_locale_core = "2"
+(latest icu_locale_core 2.3.0 declares rust_version 1.88 — https://index.crates.io/ic/u_/icu_locale_core, 2026-09-10)
+
+$ cargo generate-lockfile        # default resolver behaviour under edition 2024 (= fallback)
+    Updating crates.io index
+     Locking 9 packages to latest Rust 1.85 compatible versions
+      Adding icu_locale_core v2.1.1 (available: v2.3.0, requires Rust 1.88)
+exit=0
+name = "icu_locale_core"
+version = "2.1.1"
+
+$ CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS=allow cargo generate-lockfile
+    Updating crates.io index
+     Locking 9 packages to latest compatible versions
+exit=0
+name = "icu_locale_core"
+version = "2.3.0"
+
+--- (d) is the built-in bound-rewriter stable? ---
+$ cargo update --breaking
+error: the `--breaking` flag is unstable, and only available on the nightly channel of Cargo, but this is the `stable` channel
+See https://doc.rust-lang.org/book/appendix-07-nightly-rust.html for more information about Rust release channels.
+See https://github.com/rust-lang/cargo/issues/12425 for more information about the `--breaking` flag.
+exit=101
+
+--- (e) source repositories, read through the programme pins ---
+$ git -C ~/c/py-launch-blueprint show b08bccfb...:.github/workflows/canary.yml | cat -n
+     1	# WL-012 - scheduled "canary" run: the FULL suite (incl. the slow/live markers
+     2	# the per-PR run also exercises) against a FRESHLY-RESOLVED dependency graph.
+     3	#
+     4	# Why separate from ci.yml: every other job pins to uv.lock (WL-002) so PRs are
+     5	# reproducible. This one deliberately drops the lock and re-resolves to the
+     6	# newest allowed versions (`uv sync --upgrade`), so an upstream breaking change
+     7	# in a transitive dep (a new pydantic/click/requests release) surfaces in a
+     8	# calm scheduled run we can triage — not inside an unrelated feature PR weeks
+     9	# later. It NEVER gates a PR (schedule + manual dispatch only), so a red canary
+    10	# is a signal, not a blocker.
+    11	
+    12	name: canary
+    13	
+    14	on:
+    15	  schedule:
+    16	    - cron: '0 6 * * 2'  # weekly, Tuesday 06:00 UTC (offset from dep-audit's Monday)
+    17	  workflow_dispatch:
+    18	
+    19	permissions: {}
+    20	
+    21	concurrency:
+    22	  group: canary
+    23	  cancel-in-progress: true
+    24	
+    25	jobs:
+    26	  canary:
+    27	    name: canary (py${{ matrix.python-version }}, latest deps)
+    28	    runs-on: ${{ vars.RUNNER_UBUNTU || 'ubuntu-latest' }}
+    29	    permissions:
+    30	      contents: read
+    31	    strategy:
+    32	      fail-fast: false  # report both Python legs even if one breaks
+    33	      matrix:
+    34	        python-version: ["3.12", "3.13"]
+    35	    steps:
+    36	      - uses: actions/checkout@v7
+    37	
+    38	      - name: Install uv
+    39	        uses: astral-sh/setup-uv@v8.3.2
+    40	        with:
+    41	          python-version: ${{ matrix.python-version }}
+    42	
+    43	      - name: Re-resolve to the latest allowed dependency versions
+    44	        # --upgrade ignores the committed uv.lock pins and picks the newest
+    45	        # versions satisfying pyproject constraints. This is the whole point of
+    46	        # the canary; do NOT add --locked here.
+    47	        run: uv sync --upgrade --group dev --extra web
+    48	
+    49	      - name: Run the full suite (incl. slow + live markers)
+    50	        # `-m ""` clears the default slow/live exclusion; `-n auto` parallelises.
+    51	        # No coverage upload — the canary is about dependency health, not %.
+    52	        run: uv run --no-sync pytest -m "" -n auto
+
+$ ... | grep -c "timeout-minutes"   (Opus: py has none — a gap this port closes)
+0
+$ ... | grep -ci "issue"            (Opus: py files no issue on failure)
+0
+
+--- (e2) BASELINE-REVIEW 1, verified against the ts pin: does an advisory CI job exist? ---
+$ git -C ~/c/ts-launch-blueprint show cb1cbcb2...:.github/workflows/ci.yml | grep -n "bun-lane\|continue-on-error\|setup-bun\|bun-version\|bun run vitest"
+130:  # ADVISORY, NON-GATING Bun dev/test lane (D-036). `continue-on-error: true`
+136:  # the runner is Vitest driven by `bun run vitest` (never bare `bun test`,
+141:  bun-lane:
+142:    name: bun-lane (advisory, non-gating)
+144:    continue-on-error: true
+175:        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+177:          bun-version: 1.3.14
+188:        run: bun run vitest run --exclude tests/e2e.test.ts
+
+$ git -C ~/c/ts-launch-blueprint show cb1cbcb2...:Justfile | sed -n "160,170p"
+test-bun:
+    #!/usr/bin/env sh
+    if ! command -v bun >/dev/null 2>&1; then
+        printf "{{YELLOW}}bun is not installed{{NC}} (optional dev/test lane, advisory-only, D-036).\n"
+        printf "Install:   {{BLUE}}curl -fsSL https://bun.sh/install | bash{{NC}}  or  {{BLUE}}brew install oven-sh/bun/bun{{NC}}\n"
+        printf "Then run:  {{BLUE}}just test-bun{{NC}}\n"
+        printf "Do NOT run 'bun install' (keeps the lockfile pnpm-only); this lane drives Vitest under Bun, never bare 'bun test'.\n"
+        exit 0
+    fi
+    bun run vitest run --exclude tests/e2e.test.ts
+
+
+--- (e3) what the ledger actually cites for F126/F127 (working-tree programme documents) ---
+132:| F126 | scheduled dependency-freshness canary run | testing-coverage | py-only | DIVERGENT | R34 | bundle; whether Rust runs a scheduled test pass against upgraded dependencies to catch breakage early — decides F127 |
+133:| F127 | advisory alternate JS runtime test lane | testing-coverage | ts-only | DIVERGENT | R34 | bundle; Rust's analogue would be a non-blocking alternate-toolchain (e.g. nightly) test lane |
+...
+145:| R34 | F126 | `.github/workflows/canary.yml:16,47` — weekly cron, `uv sync --upgrade` then test | absent; no `canary.yml` or equivalent scheduled workflow | no recorded reason; inferred: a portable CI pattern (schedule + dependency-upgrade + test) that ts simply never added | D | add a weekly `cargo update` + `car
+146:| R34 | F127 | absent | `Justfile:169` — `bun run vitest run --exclude tests/e2e.test.ts`, advisory/non-gating (D-036) | D-036: user-selected optional Bun dev/test lane, scoped to advisory-only because Bun tracks ~1 Node major behind the `engines.node` floor | C | Rust has no competing-runtime concept; the closest 
+
+--- (f) spot-check of two raw-report figures on the day of synthesis (2026-09-10) ---
+$ gh api repos/dtolnay/rust-toolchain --jq "{archived,pushed_at,license:.license.spdx_id,stars:.stargazers_count}"
+{"archived":false,"license":"MIT","pushed_at":"2026-09-03T15:22:58Z","stars":1574}
+$ gh api repos/actions-rs/toolchain --jq "{archived,pushed_at}"
+{"archived":true,"pushed_at":"2023-06-18T05:26:38Z"}
+$ curl -s https://static.rust-lang.org/dist/channel-rust-beta.toml | grep -m2 -A2 "\[pkg.rustc\]"
+[pkg.rustc]
+version = "1.99.0-beta.4 (948ec4e1e 2026-09-04)"
+git_commit_hash = "948ec4e1ece42db1ff64386caee94d04f6941682"
+$ curl -s https://static.rust-lang.org/dist/channel-rust-stable.toml | grep -m1 -A2 "\[pkg.rustc\]"
+[pkg.rustc]
+version = "1.98.1 (48a229cea 2026-09-01)"
+git_commit_hash = "48a229ceaefd4985c50990b14116b6d856af0985"
+
+=== end of empirical check ===
+
+--- (g) engine disagreement: is 'cargo update --workspace' (raw/codex) the freshness step, or a narrowing flag? ---
+$ cargo update --help | sed -n "/Package Selection/,+3p"
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+Package Selection:
+  -w, --workspace  Only update the workspace packages
+  [SPEC]...        Package to update
+
+
+reset the fixture lockfile to the fallback-resolved graph (icu_locale_core 2.1.1), then compare the two commands
+     Locking 9 packages to latest Rust 1.85 compatible versions
+      Adding icu_locale_core v2.1.1 (available: v2.3.0, requires Rust 1.88)
+name = "icu_locale_core"
+version = "2.1.1"
+
+$ CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS=allow cargo update --workspace --dry-run   # raw/codex step
+     Locking 0 packages to latest compatible versions
+note: pass `--verbose` to see 1 unchanged dependencies behind latest
+warning: not updating lockfile due to dry run
+exit=0
+
+$ CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS=allow cargo update --verbose --dry-run     # raw/opus + Cargo Book step
+    Updating crates.io index
+     Locking 1 package to latest compatible version
+    Updating icu_locale_core v2.1.1 -> v2.3.0
+note: to see how you depend on a package, run `cargo tree --invert <dep>@<ver>`
+warning: not updating lockfile due to dry run
+exit=0
+
+=== end of empirical check (g) ===

@@ -37,7 +37,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R31 | standalone-security-analyzer | bundle | py-only | DIVERGENT | — | [prompt](topics/31-standalone-security-analyzer/prompts/standalone-security-analyzer.prompt.md) | open |
 | R32 | test-harness-and-execution | bundle | different | DIVERGENT | — | [prompt](topics/32-test-harness-and-execution/prompts/test-harness-and-execution.prompt.md) | open |
 | R33 | property-and-snapshot-testing | bundle | py-only | DIVERGENT | — | [prompt](topics/33-property-and-snapshot-testing/prompts/property-and-snapshot-testing.prompt.md) | open |
-| R34 | scheduled-freshness-lanes | bundle | py-only | DIVERGENT | — | [prompt](topics/34-scheduled-freshness-lanes/prompts/scheduled-freshness-lanes.prompt.md) | open |
+| R34 | scheduled-freshness-lanes | bundle | py-only | DIVERGENT | — | [prompt](topics/34-scheduled-freshness-lanes/prompts/scheduled-freshness-lanes.prompt.md) | resolved |
 | R35 | coverage-tooling | bundle | different | DIVERGENT | — | [prompt](topics/35-coverage-tooling/prompts/coverage-tooling.prompt.md) | open |
 | R37 | hook-manager-distribution | bundle | different | DIVERGENT | — | [prompt](topics/37-hook-manager-distribution/prompts/hook-manager-distribution.prompt.md) | open |
 | R38 | commit-message-linter | crate | same | COMMON → SUBSTITUTE | commit-message-convention | [prompt](topics/38-commit-message-linter/prompts/commit-message-linter.prompt.md) | resolved |

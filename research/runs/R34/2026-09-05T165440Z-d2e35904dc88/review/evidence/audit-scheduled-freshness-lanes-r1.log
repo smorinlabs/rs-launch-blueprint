@@ -1,0 +1,361 @@
+R34 empirical-audit reproduction r1
+utc=2026-09-10T23:48:16Z
+host=macOS fallback; Lima ubuntu start failed before probe: unlinkat ~/.lima/ubuntu/ha.stdout.log: operation not permitted
+cwd=/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R34/2026-09-05T165440Z-d2e35904dc88
+fixture=/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R34/2026-09-05T165440Z-d2e35904dc88/.r34-audit (two authored files: Cargo.toml, src/lib.rs)
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+
+== (1) shipped Cargo documentation: edition 2024 resolver default and override ==
+resolver-doc=/Users/stevemorin/.rustup/toolchains/stable-aarch64-apple-darwin/share/doc/rust/html/cargo/reference/resolver.html
+597-unification</a>. See the <a href="features.html#feature-resolver-version-2">features chapter</a> for more
+598-details.</li>
+599:<li><code>"3"</code> (<a href="manifest.html#the-edition-field"><code>edition = "2024"</code></a> default, requires Rust 1.84+): Change the default for <a href="config.html#resolverincompatible-rust-versions"><code>resolver.incompatible-rust-versions</code></a> from <code>allow</code> to <code>fallback</code></li>
+600-</ul>
+601-<p>The resolver is a global option that affects the entire workspace. The
+config-doc=/Users/stevemorin/.rustup/toolchains/stable-aarch64-apple-darwin/share/doc/rust/html/cargo/reference/config.html
+1171-<li>Type: string</li>
+1172-<li>Default: See <a href="resolver.html#resolver-versions"><code>resolver</code></a> docs</li>
+1173:<li>Environment: <code>CARGO_RESOLVER_INCOMPATIBLE_RUST_VERSIONS</code></li>
+1174-</ul>
+1175-<p>When resolving which version of a dependency to use, select how versions with incompatible <code>package.rust-version</code>s are treated.
+
+== (2) executed resolver probe ==
+    Updating crates.io index
+     Locking 9 packages to latest Rust 1.85 compatible versions
+      Adding icu_locale_core v2.1.1 (available: v2.3.0, requires Rust 1.88)
+exit.default_generate_lockfile=0
+name = "icu_locale_core"
+version = "2.1.1"
+    Updating crates.io index
+     Locking 9 packages to latest compatible versions
+exit.allow_generate_lockfile=0
+name = "icu_locale_core"
+version = "2.3.0"
+
+== (3) stable runner-up rejection ==
+error: the `--breaking` flag is unstable, and only available on the nightly channel of Cargo, but this is the `stable` channel
+See https://doc.rust-lang.org/book/appendix-07-nightly-rust.html for more information about Rust release channels.
+See https://github.com/rust-lang/cargo/issues/12425 for more information about the `--breaking` flag.
+exit.cargo_update_breaking=101
+
+== (4) workspace narrowing check from fallback lockfile ==
+     Locking 0 packages to latest compatible versions
+note: pass `--verbose` to see 1 unchanged dependencies behind latest
+warning: not updating lockfile due to dry run
+exit.workspace_dry_run=0
+    Updating crates.io index
+warning: failed to save last-use data
+This may prevent cargo from accurately tracking what is being used in its global cache. This information is used for automatically removing unused data in the cache.
+
+attempt to write a readonly database
+
+Caused by:
+  Error code 8: attempt to write a readonly database
+     Locking 1 package to latest compatible version
+    Updating icu_locale_core v2.1.1 -> v2.3.0
+note: to see how you depend on a package, run `cargo tree --invert <dep>@<ver>`
+warning: not updating lockfile due to dry run
+exit.plain_dry_run=0
+
+== (5) source pins ==
+    14	on:
+    15	  schedule:
+    16	    - cron: '0 6 * * 2'  # weekly, Tuesday 06:00 UTC (offset from dep-audit's Monday)
+    17	  workflow_dispatch:
+    18	
+    19	permissions: {}
+    20	
+    21	concurrency:
+    22	  group: canary
+    23	  cancel-in-progress: true
+    24	
+    25	jobs:
+    26	  canary:
+    27	    name: canary (py${{ matrix.python-version }}, latest deps)
+    28	    runs-on: ${{ vars.RUNNER_UBUNTU || 'ubuntu-latest' }}
+    29	    permissions:
+    30	      contents: read
+    31	    strategy:
+    32	      fail-fast: false  # report both Python legs even if one breaks
+    33	      matrix:
+    34	        python-version: ["3.12", "3.13"]
+    35	    steps:
+    36	      - uses: actions/checkout@v7
+    37	
+    38	      - name: Install uv
+    39	        uses: astral-sh/setup-uv@v8.3.2
+    40	        with:
+    41	          python-version: ${{ matrix.python-version }}
+    42	
+    43	      - name: Re-resolve to the latest allowed dependency versions
+    44	        # --upgrade ignores the committed uv.lock pins and picks the newest
+    45	        # versions satisfying pyproject constraints. This is the whole point of
+    46	        # the canary; do NOT add --locked here.
+    47	        run: uv sync --upgrade --group dev --extra web
+    48	
+    49	      - name: Run the full suite (incl. slow + live markers)
+    50	        # `-m ""` clears the default slow/live exclusion; `-n auto` parallelises.
+    51	        # No coverage upload — the canary is about dependency health, not %.
+    52	        run: uv run --no-sync pytest -m "" -n auto
+   130	  # ADVISORY, NON-GATING Bun dev/test lane (D-036). `continue-on-error: true`
+   131	  # means this job can never block a PR or push: Bun tracks Node v23 parity —
+   132	  # one major behind this template's engines.node >=24 floor — so it is a
+   133	  # forward-compatibility signal, not a required gate. Three hard rules mirror
+   134	  # the local `just test-bun` recipe: installs stay pnpm-only (never
+   135	  # `bun install`, which would fork a bun.lock and drift from pnpm-lock.yaml);
+   136	  # the runner is Vitest driven by `bun run vitest` (never bare `bun test`,
+   137	  # which invokes Bun's own runner); tests/e2e.test.ts is excluded because it
+   138	  # spawns process.execPath to assert the published Node signal contract
+   139	  # (SIGINT->130/SIGTERM->143), which under Bun would exercise Bun's signal
+   140	  # emulation instead. The published package + engines are unchanged.
+   141	  bun-lane:
+   142	    name: bun-lane (advisory, non-gating)
+   143	    runs-on: ubuntu-latest
+   144	    continue-on-error: true
+   145	    permissions:
+   146	      # Read-only checkout; nothing here writes.
+   147	      contents: read
+   148	
+   149	    steps:
+   150	      - name: Checkout repository
+   151	        uses: actions/checkout@v7
+   152	        with:
+   153	          # No push here; drop the persisted token (zizmor artipacked).
+   154	          persist-credentials: false
+   155	
+   156	      # pnpm on PATH before setup-node so cache:'pnpm' finds the store (D-035).
+   157	      - name: Install pnpm
+   158	        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+   159	        with:
+   160	          version: 10.34.3
+   161	
+   162	      - name: Set up Node.js
+   163	        uses: actions/setup-node@v7
+   164	        with:
+   165	          node-version-file: .nvmrc
+   166	          cache: 'pnpm'
+   167	
+   168	      # Third-party action → full-SHA pin + version comment (D-022(9)).
+   169	      - name: Install just
+   170	        uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4.0.0
+   171	
+   172	      # Third-party action → full-SHA pin + version comment (D-022(9)); pinned
+   173	      # to the exact Bun release this lane is verified against (D-036).
+   174	      - name: Install Bun
+   175	        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+   176	        with:
+   177	          bun-version: 1.3.14
+   178	
+   179	      # Installs stay pnpm-only — never `bun install` (would fork a bun.lock).
+   180	      - name: Install dependencies
+   181	        run: pnpm install --frozen-lockfile
+   182	
+   183	      - name: Build (Node)
+   184	        run: just build
+   185	
+   186	      # Vitest is the runner (never bare `bun test`); e2e stays Node-only.
+   187	      - name: Test under Bun (non-e2e tiers)
+   188	        run: bun run vitest run --exclude tests/e2e.test.ts
+
+== (6) parameter assumptions: byte-for-byte values ==
+assumption_count=4
+msrv-policy: MATCH; expected=b'stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI'; actual=b'stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI'
+rust-edition: MATCH; expected=b'2024'; actual=b'2024'
+target-os-matrix: MATCH; expected=b'ubuntu-latest, macos-latest'; actual=b'ubuntu-latest, macos-latest'
+license: MATCH; expected=b'MIT OR Apache-2.0'; actual=b'MIT OR Apache-2.0'
+exit.parameter_byte_checks=0
+
+== (7) saved executable check script inventory ==
+result=no saved R34 empirical-check script in this run directory; resolver-fallback-chain.log is recorded output, not executable source
+
+== (8) five cited URLs reached with curl ==
+url=https://doc.rust-lang.org/cargo/reference/resolver.html http=200 bytes=60651 exit=0
+url=https://doc.rust-lang.org/cargo/reference/config.html http=200 bytes=103191 exit=0
+url=https://doc.rust-lang.org/cargo/commands/cargo-update.html http=200 bytes=36032 exit=0
+url=https://doc.rust-lang.org/cargo/guide/continuous-integration.html http=200 bytes=33624 exit=0
+url=https://rust-lang.github.io/rustup/concepts/toolchains.html http=200 bytes=26651 exit=0
+
+== expected-outcome summary ==
+default_exit=0 allow_exit=0 breaking_exit=101 workspace_exit=0 plain_exit=0 parameter_exit=0
+expected_outcomes=PASS
+grading litemap v0.8.3 -> v0.8.2
+ Downgrading syn v3.0.5 -> v2.0.119
+ Downgrading tinystr v0.8.4 -> v0.8.3
+ Downgrading writeable v0.6.4 -> v0.6.3
+note: to see how you depend on a package, run `cargo tree --invert <dep>@<ver>`
+warning: not updating lockfile due to dry run
+exit.plain_dry_run_recovery=0
+
+== recovery continuation: fresh online plain-update check from fallback lockfile ==
+    Updating crates.io index
+warning: failed to save last-use data
+This may prevent cargo from accurately tracking what is being used in its global cache. This information is used for automatically removing unused data in the cache.
+
+attempt to write a readonly database
+
+Caused by:
+  Error code 8: attempt to write a readonly database
+     Locking 1 package to latest compatible version
+    Updating icu_locale_core v2.1.1 -> v2.3.0
+note: to see how you depend on a package, run `cargo tree --invert <dep>@<ver>`
+warning: not updating lockfile due to dry run
+exit.plain_dry_run_online=0
+
+== (5) source pins (recovery capture) ==
+    14	on:
+    15	  schedule:
+    16	    - cron: '0 6 * * 2'  # weekly, Tuesday 06:00 UTC (offset from dep-audit's Monday)
+    17	  workflow_dispatch:
+    18	
+    19	permissions: {}
+    20	
+    21	concurrency:
+    22	  group: canary
+    23	  cancel-in-progress: true
+    24	
+    25	jobs:
+    26	  canary:
+    27	    name: canary (py${{ matrix.python-version }}, latest deps)
+    28	    runs-on: ${{ vars.RUNNER_UBUNTU || 'ubuntu-latest' }}
+    29	    permissions:
+    30	      contents: read
+    31	    strategy:
+    32	      fail-fast: false  # report both Python legs even if one breaks
+    33	      matrix:
+    34	        python-version: ["3.12", "3.13"]
+    35	    steps:
+    36	      - uses: actions/checkout@v7
+    37	
+    38	      - name: Install uv
+    39	        uses: astral-sh/setup-uv@v8.3.2
+    40	        with:
+    41	          python-version: ${{ matrix.python-version }}
+    42	
+    43	      - name: Re-resolve to the latest allowed dependency versions
+    44	        # --upgrade ignores the committed uv.lock pins and picks the newest
+    45	        # versions satisfying pyproject constraints. This is the whole point of
+    46	        # the canary; do NOT add --locked here.
+    47	        run: uv sync --upgrade --group dev --extra web
+    48	
+    49	      - name: Run the full suite (incl. slow + live markers)
+    50	        # `-m ""` clears the default slow/live exclusion; `-n auto` parallelises.
+    51	        # No coverage upload — the canary is about dependency health, not %.
+    52	        run: uv run --no-sync pytest -m "" -n auto
+   130	  # ADVISORY, NON-GATING Bun dev/test lane (D-036). `continue-on-error: true`
+   131	  # means this job can never block a PR or push: Bun tracks Node v23 parity —
+   132	  # one major behind this template's engines.node >=24 floor — so it is a
+   133	  # forward-compatibility signal, not a required gate. Three hard rules mirror
+   134	  # the local `just test-bun` recipe: installs stay pnpm-only (never
+   135	  # `bun install`, which would fork a bun.lock and drift from pnpm-lock.yaml);
+   136	  # the runner is Vitest driven by `bun run vitest` (never bare `bun test`,
+   137	  # which invokes Bun's own runner); tests/e2e.test.ts is excluded because it
+   138	  # spawns process.execPath to assert the published Node signal contract
+   139	  # (SIGINT->130/SIGTERM->143), which under Bun would exercise Bun's signal
+   140	  # emulation instead. The published package + engines are unchanged.
+   141	  bun-lane:
+   142	    name: bun-lane (advisory, non-gating)
+   143	    runs-on: ubuntu-latest
+   144	    continue-on-error: true
+   145	    permissions:
+   146	      # Read-only checkout; nothing here writes.
+   147	      contents: read
+   148	
+   149	    steps:
+   150	      - name: Checkout repository
+   151	        uses: actions/checkout@v7
+   152	        with:
+   153	          # No push here; drop the persisted token (zizmor artipacked).
+   154	          persist-credentials: false
+   155	
+   156	      # pnpm on PATH before setup-node so cache:'pnpm' finds the store (D-035).
+   157	      - name: Install pnpm
+   158	        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+   159	        with:
+   160	          version: 10.34.3
+   161	
+   162	      - name: Set up Node.js
+   163	        uses: actions/setup-node@v7
+   164	        with:
+   165	          node-version-file: .nvmrc
+   166	          cache: 'pnpm'
+   167	
+   168	      # Third-party action → full-SHA pin + version comment (D-022(9)).
+   169	      - name: Install just
+   170	        uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4.0.0
+   171	
+   172	      # Third-party action → full-SHA pin + version comment (D-022(9)); pinned
+   173	      # to the exact Bun release this lane is verified against (D-036).
+   174	      - name: Install Bun
+   175	        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+   176	        with:
+   177	          bun-version: 1.3.14
+   178	
+   179	      # Installs stay pnpm-only — never `bun install` (would fork a bun.lock).
+   180	      - name: Install dependencies
+   181	        run: pnpm install --frozen-lockfile
+   182	
+   183	      - name: Build (Node)
+   184	        run: just build
+   185	
+   186	      # Vitest is the runner (never bare `bun test`); e2e stays Node-only.
+   187	      - name: Test under Bun (non-e2e tiers)
+   188	        run: bun run vitest run --exclude tests/e2e.test.ts
+
+== (6) parameter assumptions: byte-for-byte values ==
+assumption_count=4
+msrv-policy: MATCH; expected=b'stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI'; actual=b'stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI'
+rust-edition: MATCH; expected=b'2024'; actual=b'2024'
+target-os-matrix: MATCH; expected=b'ubuntu-latest, macos-latest'; actual=b'ubuntu-latest, macos-latest'
+license: MATCH; expected=b'MIT OR Apache-2.0'; actual=b'MIT OR Apache-2.0'
+exit.parameter_byte_checks=0
+
+== (7) saved executable check script inventory ==
+result=no saved R34 empirical-check script in this run directory; resolver-fallback-chain.log is recorded output, not executable source
+
+== (8) five cited URLs reached with curl ==
+zsh:42: nice(5) failed: operation not permitted
+zsh:43: nice(5) failed: operation not permitted
+zsh:44: nice(5) failed: operation not permitted
+zsh:45: nice(5) failed: operation not permitted
+zsh:46: nice(5) failed: operation not permitted
+url=https://rust-lang.github.io/rustup/concepts/toolchains.html http=200 bytes=26651 exit=0
+url=https://doc.rust-lang.org/cargo/reference/resolver.html http=200 bytes=60651 exit=0
+url=https://doc.rust-lang.org/cargo/reference/config.html http=200 bytes=103191 exit=0
+curl: (28) Operation timed out after 20003 milliseconds with 32324 out of 36032 bytes received
+url=https://doc.rust-lang.org/cargo/commands/cargo-update.html http=200 bytes=32324 exit=28
+curl: (28) Operation timed out after 20005 milliseconds with 32320 out of 33624 bytes received
+url=https://doc.rust-lang.org/cargo/guide/continuous-integration.html http=200 bytes=32320 exit=28
+exit.curl_spot_checks=0
+
+== expected-outcome summary ==
+default_exit=0 allow_exit=0 breaking_exit=101 workspace_exit=0 plain_exit_online=0 parameter_exit=0
+expected_outcomes=PASS
+
+== (8b) two replacement citation spot-checks after slow documentation bodies timed out ==
+url=https://raw.githubusercontent.com/smorinlabs/py-launch-blueprint/b08bccfb55d05f15e46a83b52c5660b1881d19f5/.github/workflows/canary.yml http=200 bytes=1968 exit=0
+curl: (56) The requested URL returned error: 404
+url=https://raw.githubusercontent.com/smorinlabs/ts-launch-blueprint/cb1cbcb2e88b898e8c081b0abbfabc1630079c00/.github/workflows/ci.yml http=404 bytes=0 exit=56
+
+== (8c) fifth successful citation spot-check ==
+url=https://index.crates.io/ic/u_/icu_locale_core http=200 bytes=15041 exit=0
+
+== (2b) narrowing check: only the higher-floor dependency differs ==
+    Updating crates.io index
+     Locking 9 packages to latest compatible versions
+exit.allow_generate_for_diff=0
+--- /private/tmp/r34-audit-default.lock	2026-09-10 16:51:58
++++ Cargo.lock	2026-09-10 16:52:04
+@@ -15,9 +15,9 @@
+ 
+ [[package]]
+ name = "icu_locale_core"
+-version = "2.1.1"
++version = "2.3.0"
+ source = "registry+https://github.com/rust-lang/crates.io-index"
+-checksum = "edba7861004dd3714265b4db54a3c390e880ab658fec5f7db895fae2046b5bb6"
++checksum = "d56e28588da92eee5c3201a6eff33fabdd49b62269c8938d4ff050ce4d900deb"
+ dependencies = [
+  "displaydoc",
+  "litemap",
+reading=the two generated lockfiles differ only at icu_locale_core, so the other eight of Cargo reported nine locked packages remain available under fallback.

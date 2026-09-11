@@ -1,0 +1,5 @@
+[Audit](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R34/2026-09-05T165440Z-d2e35904dc88/review/audit-codex.md): `a3705e210e91540d7f46b79bd0262e1e372a2711800b86305fe66814575cab41`  
+Verdict: approve; unresolved findings: none.  
+Rerun outcomes: resolver default/override `0/0`; `--breaking` `101`; workspace/plain freshness checks `0/0`.  
+[Evidence log](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R34/2026-09-05T165440Z-d2e35904dc88/review/evidence/audit-scheduled-freshness-lanes-r1.log): `627d7191312fac28fc69cf7cf51a6e55a9b7c6be58ba55109b302aa772bcdec2`.  
+Lima could not start due sandbox host permissions, so the permitted macOS fallback reproduced the probe.
