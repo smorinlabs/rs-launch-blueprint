@@ -1,4 +1,60 @@
-# R63 — progress-spinner — DECISION
+# R63 — progress-spinner — decision (revision 2, 2026-09-12)
+
+Item R63 (`progress-spinner`, kind `crate`, Focused tier, owns no parameter). Run
+`research/runs/R63/2026-09-05T183003Z-44e034fc1d72`. Revision 2 rewrites revision 1
+(sha256 `a56ff2ed50059c93b4874c77b236c2cb67130462bceb7ed7b0adcfc1bbfbb069`) in place. There
+is no `## Supersedes` section because no revision of this decision has been published;
+R63's index row is still `open`.
+
+**Revision 2 answers the single finding of the empirical audit `review/audit-codex.r1.md`**
+(actor `audit-codex-2026-09-05T183003Z-44e034fc1d72-r1`, model `gpt-5.6-terra`, family
+openai, audit sha256 `1e4b6e32c6b4e52fd8817f5d8649316e4e9c11f23a1ed92e4b998bb877f99206`,
+verdict reject). The finding was a reproducibility mismatch, not a wrong conclusion: the
+saved script defined the checks the decision called sections 12-18 inside an uninvoked
+`supplements()` function whose call site was commented out, so the auditor's rerun emitted
+sections 0-11 and `DONE` only and could not reproduce seven sections the decision
+attributed to it. **No design choice changes in revision 2.** The recommendation,
+the rejected alternatives, the fitness-gate outcomes, the exclusions, the runner-up
+condition and the acceptance criteria are revision 1's.
+
+What revision 2 changed, and nothing else:
+
+1. **The archived check is now one script that emits every section it is credited with.**
+   Sections 12-18 are inline code in `review/evidence/r63-spinner-claims.sh`, in the same
+   order and under the same titles the cited log carries. One run emits sections 0-18 and
+   the `DONE` summary; `set -o pipefail` is on; every fetch writes a file before anything
+   reads it; each claim is asserted on the content it expects; the run ends
+   `checks: N pass / M fail` and exits non-zero on any failure. The log was regenerated
+   from that script and the rerun was diffed against it before the sentences describing it
+   were written. Revision 1's script and log are archived unmodified beside the new ones as
+   `r63-spinner-claims.r1.sh` and `r63-spinner-claims.r1.log`.
+2. **Two numbers that the regenerated log contradicts were corrected.** The count of
+   environment variables `is_ci` 1.2.0 presence-checks besides `CI` is **35**, not the 33
+   revision 1 stated in three places; the empirical check now enumerates all 35 names, and
+   revision 1's own log already contained the full `src/lib.rs` that shows them. The
+   auditor's own summary of this artifact said "then checks additional provider variables"
+   without a count, so the corrected figure does not disturb anything the audit confirmed.
+   The `indicatif` 0.18.6 default-feature list is asserted as a parsed **value**, because
+   the published manifest writes the array across four lines and revision 1 quoted it in
+   its inline form; the value is unchanged.
+3. **Time-varying figures were re-quoted from the regenerated log at its own date,**
+   2026-09-12, and the three-way drift between the Codex raw (2026-09-05), the Opus raw and
+   revision 1 (2026-09-10) and this log (2026-09-12) is stated under `## Engines`. Every
+   pinned-source citation was re-read on 2026-09-12 and is unchanged, so those citations
+   keep their 2026-09-10 retrieval dates. Which dates sit where is **not** uniform across
+   the document, and `## Engines` item 5 states it exactly, including the two 2026-09-10
+   citations this check does not cover at all.
+
+**What the audit confirmed is preserved verbatim, and revision 2 does not reopen it.** The
+environment-gate adjudication — in which both raw reports proposed a wrong predicate in
+opposite directions and this decision adopted a third form matching the inherited contract
+— stands as written, as does the qualification that the zero-column claim is source read at
+pinned versions rather than observed behaviour, as do the four fixed parameter lines. The
+audit also recorded that it disagreed with the controller's provisional relaxed reading of
+fitness gate 2 and that this decision's strict reading was correct. That provisional
+controller reading was **withdrawn on 2026-09-11** after two auditors argued for the strict
+reading, so this decision's gate-2 exclusions stand exactly as recorded and revision 2
+changes none of them.
 
 ## Decision
 
@@ -121,12 +177,12 @@ not from a branch: `is_ci` 1.2.0 (`static.crates.io/crates/is_ci/is_ci-1.2.0.cra
 
     let ci_var = std::env::var("CI");
     ci_var == Ok("true".into()) || ci_var == Ok("1".into()) || ci_var == Ok("woodpecker".into())
-        || check("CI_NAME") || check("GITHUB_ACTION") || check("GITLAB_CI") || … (33 further vars)
+        || check("CI_NAME") || check("GITHUB_ACTION") || check("GITLAB_CI") || … (32 further, 35 in all)
 
 with `fn check(name: &str) -> bool { std::env::var(name).is_ok() }`. Its predicate
 requires `CI` to **equal** one of three literal values, where the inherited contract
 suppresses on **any non-empty** value. The divergence runs in both directions: under
-`CI=yes` the inherited contract suppresses and `is_ci` (absent any of its other 33
+`CI=yes` the inherited contract suppresses and `is_ci` (absent any of its other 35
 variables) does not; with `CI` unset but `GITHUB_ACTION` set, `is_ci` reports CI and the
 inherited contract does not. `ci_info` 0.14.15 answers a different question again — which
 provider is running. The Opus report's distinction therefore **holds**, and it is recorded
@@ -320,16 +376,27 @@ no `cargo build`, `cargo test` or `cargo audit` was run, and no terminal was dri
 
 **Working directory.** `/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r63`
 (downloaded `.crate` artifacts unpacked under `./src`). The two pinned repositories were
-read in place with `git -C … show <pin>:<path>`; neither working tree was consulted.
+read in place with `git -C … show <pin>:<path>`; neither working tree was consulted, and
+their default locations are `$HOME/c/ts-launch-blueprint` and
+`$HOME/c/py-launch-blueprint`. **All three paths are overridable**, which matters because
+the scratch path above is macOS-specific and a Linux rerun cannot create it: pass
+`R63_WORK` for the scratch directory and `TS_REPO` / `PY_REPO` for the checkouts. Section 0
+records the host, so a rerun on another machine declares which host it ran on rather than
+appearing to reproduce this one; those lines carry the `HOST:` prefix.
 
-**Command.** A single script, `verify.sh`, run as
-`bash verify.sh > <run-dir>/review/evidence/r63-spinner-claims.log 2>&1`. **Exit status
-0.** Its sections:
+**Command.** A single script, `review/evidence/r63-spinner-claims.sh`, run from the run
+directory `research/runs/R63/2026-09-05T183003Z-44e034fc1d72` as
+
+    bash review/evidence/r63-spinner-claims.sh \
+      > review/evidence/r63-spinner-claims.log 2>&1
+
+**Exit status 0**, ending `checks: 168 pass / 0 fail` and
+`RESULT: PASS`. Its nineteen sections, every one of them emitted by that one run:
 
     0  toolchain, host, current stable channel version
     1  ts pin cb1cbcb2…: projects.ts:120-140, adapters.ts:25-72, package.json, TS_PORT_DECISIONS.md
     2  py pin b08bccfb…: git grep for any progress indicator; pyproject.toml
-    3  is_ci: newest unyanked version from crates.io; full src/lib.rs of the published 1.2.0 artifact
+    3  is_ci: newest unyanked version from crates.io; full src/lib.rs of the published 1.2.0 artifact, and every variable it presence-checks
     4  indicatif 0.18.6 published artifact: Cargo.toml, new_spinner, stderr()/hidden()/term(), in_memory, unsafe
     5  console 0.16.6 published artifact: terminal_size, Term::size, DEFAULT_WIDTH
     6  indicatif CI matrix at git tag 0.18.6
@@ -337,18 +404,86 @@ read in place with `git -C … show <pin>:<path>`; neither working tree was cons
     8  GitHub repo figures; open issues via the mandated search total_count
     9  RustSec pages for 11 crates plus the time/openssl/atty control
     10 excluded-candidate claims at published versions (spinoff, spinners, cliclack)
-    11 MSRV arithmetic across the recommended tree
-    12-18 supplements: spinoff default stream, spinners default stream, the missing
-          zero-width regression test, the divide-by-width site and its cfg guard,
-          whether indicatif reads any environment variable, the doc comments on
-          enable_steady_tick / finish_and_clear / is_hidden, and the two candidates
-          only the Codex raw surveyed (prodash, spinner)
+    11 MSRV arithmetic across the recommended tree, and the floor against the tree maximum
+    12 spinoff's default stream, spinners' default Stream variant, and the zero-width regression test in the published artifact, at the git tag and on main
+    13 the width path at 0.18.6: TermLike, its one division by a width value, prodash's published rust-version
+    14 the divide-by-width site at 0.18.6 and the cfg attribute guarding it
+    15 the default-feature width path at 0.18.6 and whether it divides at all
+    16 whether indicatif 0.18.6 reads any environment variable, and where the TERM read lives
+    17 enable_steady_tick, finish_and_clear and is_hidden at 0.18.6, with their doc comments
+    18 the two candidates only the Codex raw surveyed: prodash's manifest, CI matrix, features and advisory page, and spinner's license and archived state
+    DONE  the pass/fail summary and the process exit status
 
-Sections 0-11 are the script's first pass. Sections 12-18 were run as follow-up commands
-after reading that pass, once it was clear which claims it had not resolved; their text is
-appended to the saved script under `# PART 2` so the whole check is re-runnable. The
-script is saved beside its output at
-`review/evidence/r63-spinner-claims.sh`.
+**How the script is built so that it can fail, which revision 1's could not.** Revision 1
+ran sections 12-18 by hand and archived them inside an uninvoked `supplements()` function,
+so a rerun emitted thirteen section headers where the decision cited twenty; the empirical
+audit `review/audit-codex.r1.md` rejected the decision on exactly that. In revision 2 every
+section is inline code in the one script. `set -o pipefail` is set, and every `curl`,
+`git show` and `gh api` writes a file that a later command reads, so the pipeline failure
+that produced this programme's original `git show <bad path> | head` defect — a failing
+command masked by a succeeding one — cannot occur here: a failed fetch is reported as
+`FAIL <label>: curl exit N` and the assertions that depend on it then fail too. **Every
+claim is asserted on the content it expects**, not on an exit code: `chk` compares a value
+to the value this decision records, `lit` requires a literal string in a named file, `nolit`
+requires its absence, `cnt` asserts a match count so that an absence is asserted as "zero
+matches" rather than as "grep exited 1", and `code` asserts an HTTP status. Where revision 1
+read a grep's exit code, the script still prints that exit code as raw observation and adds
+the content assertion beside it, so the sentences below that say "grep exit 1" remain
+literally true of the log and are no longer the whole of the evidence for their claim. The
+run ends with `checks: N pass / M fail` and exits 1 if any assertion failed.
+
+**The check is falsifiable, and here is the run that proves it.** Two expectations in the
+first draft of revision 2's script failed against the live artifacts and are what produced
+the two corrections listed in the revision preamble. Beyond that, a recorded negative
+control run with the ts checkout pointed at a path that does not exist is archived at
+`review/evidence/r63-spinner-claims-negative-control.log`: it ends
+`checks: 155 pass / 13 fail`, `RESULT: FAIL`, and exits 1, with the four `git show`
+failures and the nine content assertions that depend on them each named. Reproduce it with
+
+    R63_WORK=<a fresh scratch dir> TS_REPO=/nonexistent-repo \
+      bash review/evidence/r63-spinner-claims.sh
+
+**Reproducibility, stated after rerunning and diffing rather than before.** The cited log
+was generated by the script above; the script was then run a second time and that rerun was
+diffed against the cited log. The log is **not** byte-for-byte reproducible, and it cannot
+be: it reads live registry, GitHub and documentation endpoints whose figures move. So every
+time-varying line carries the literal prefix `VOLATILE: ` and every host-specific line the
+prefix `HOST: `, and the comparison rule across them is mechanical:
+
+    diff <(grep -vE '^(VOLATILE|HOST): ' a.log) \
+         <(grep -vE '^(VOLATILE|HOST): ' b.log)
+
+Under that rule both reruns were **identical to the cited log, with no differing line**. In
+the raw undiffed comparison each rerun — one 31 seconds after the cited log, one 7 minutes
+38 seconds after it — differed from it in exactly one line, the `VOLATILE: date:` stamp,
+because no registry or GitHub figure happened to move inside either window. That is a
+property of the window, not a guarantee: a rerun days later will differ in the `VOLATILE:`
+download, star, `pushed_at` and open-issue lines, and under the rule above that is expected
+rather than a mismatch. 101 of the log's 1045 lines carry one of the two prefixes. What is **not** volatile, and what a rerun must therefore
+reproduce exactly, is every reading of a pinned crate artifact, a pinned git blob or a git
+tag, and every one of the 168 PASS assertion lines; a moved figure that would change a gate
+outcome is caught rather than tolerated, because the newest-unyanked version and declared
+`rust-version` of each candidate are asserted against the values this decision records and
+a mismatch fails the run with "registry moved — re-verify due".
+
+Revision 1's script and log are archived unmodified as
+`review/evidence/r63-spinner-claims.r1.sh` (sha256
+`19b2d62a98a383c67a3b23ef6d299cc6730268e15bfc32fb35c653d21b040cf3`) and
+`review/evidence/r63-spinner-claims.r1.log` (sha256
+`1efbfb8a518bba0940058a1201507e8fbc6648af496366ced4637ab497df8329`), and the r1 auditor's
+own rerun remains at `review/evidence/audit-r63-spinner-r1.log`.
+
+**Pinned sources re-read on 2026-09-12 and unchanged.** Every citation in this decision to
+a pinned crate artifact (`is_ci` 1.2.0, `indicatif` 0.18.6, `console` 0.16.6, `spinoff`
+0.8.0, `spinners` 4.2.0, `prodash` 31.0.0), to the `indicatif` 0.18.6 git tag, or to a blob
+at the ts pin `cb1cbcb2…` or the py pin `b08bccfb…` was re-read by the regenerated log on
+2026-09-12 and asserted to carry the same text. Those citations therefore keep their
+2026-09-10 retrieval dates, which is when the reading they support was first taken. The live
+registry and GitHub figures are re-quoted at 2026-09-12 below; the live facts inside the
+`## Decision` tables keep their 2026-09-10 dates and were re-asserted unchanged rather than
+re-quoted. The two citations this check does not cover at all — the `astral-sh/uv`
+`printer.rs` read on a moving branch and the two in-repository ledger reads — are named
+under `## Engines`, item 5.
 
 **Observed output — the findings that bear on the decision.**
 
@@ -359,7 +494,7 @@ script is saved beside its output at
   Any non-empty `CI` suppresses; an empty `CI` does not.
 - **`is_ci`'s predicate is value-equality, at a pinned version.** `is_ci` 1.2.0 (newest
   unyanked, published 2024-02-04, license ISC, `rust_version: None`) requires
-  `CI == "true" | "1" | "woodpecker"`, or any of 33 other named variables to be set. The
+  `CI == "true" | "1" | "woodpecker"`, or any of 35 other named variables to be set. The
   distinction the Opus raw draws therefore **holds**; it is recorded as a named reason in
   `## Decision`.
 - **`indicatif` 0.18.6, from the published artifact:** `license = "MIT"`,
@@ -383,35 +518,44 @@ script is saved beside its output at
 - **The Codex raw's zero-width regression test is not in the recommended version.**
   `draw_to_term_narrower_than_its_content` is absent from the published 0.18.6 artifact
   (grep exit 1 over every shipped file) and absent from `src/draw_target.rs` at git tag
-  0.18.6 (grep exit 1); it is present on the moving `main` branch at line 880, which is
-  the URL the Codex raw cited. Recorded in `## Engines`.
+  0.18.6 (grep exit 1); each absence is additionally asserted as a zero match count. It
+  is present on the moving `main` branch, at line 880 when that branch was read on
+  2026-09-12, which is the URL the Codex raw cited. Recorded in `## Engines`.
 - **The divide-by-width site is compiled out under default features.**
   `draw_target.rs:702` `(unwrapped_width as f64 / width as f64).ceil()` sits under
   `#[cfg(not(feature = "unicode-width"))]`; the default-feature path is the
   per-character loop at `draw_target.rs:667-695`, which has no division.
 - **CI matrix at tag 0.18.6:** `os: [ubuntu-latest, macos-latest, windows-latest]`,
   `rust: [stable]`, plus a `toolchain: "1.85"` job.
-- **Registry figures, retrieved 2026-09-10** (`GET https://crates.io/api/v1/crates/<name>`,
-  `crate.recent_downloads` / `crate.downloads`): `indicatif` 47,129,967 / 214,311,835;
-  `console` 79,354,377 / 343,168,320; `prodash` 12,704,416 / 53,398,738; `is_ci`
-  11,828,364 / 53,229,641; `cliclack` 1,028,866 / 3,340,001; `ci_info` 760,129 /
-  6,343,793; `spinners` 658,553 / 7,123,963; `throbber-widgets-tui` 204,074 / 886,095;
-  `spinoff` 100,724 / 737,459; `spinach` 1,539 / 46,010. Newest unyanked versions and
-  declared MSRVs: `indicatif` 0.18.6, 2026-07-01, MIT, `1.85`; `prodash` 31.0.0,
-  2026-01-08, MIT, `1.74`; `spinners` 4.2.0, `spinoff` 0.8.0, `cliclack` 0.5.6 and
-  `spinach` 3.2.0 all `rust_version: None`.
-- **GitHub, retrieved 2026-09-10:** `console-rs/indicatif` 5,212 stars, not archived,
-  `pushed_at 2026-09-07T15:20:41Z`, **80** open issues by the mandated
-  `search/issues` `total_count` (against 97 from `open_issues_count`, which counts pull
-  requests). `fadeevab/cliclack` 366 stars; `FGRibreau/spinners` 602;
+- **Registry figures, retrieved 2026-09-12** and re-quoted from the regenerated log
+  (`GET https://crates.io/api/v1/crates/<name>`, `crate.recent_downloads` /
+  `crate.downloads`): `indicatif` 47,933,805 / 215,677,764; `console` 80,670,316 /
+  345,406,499; `prodash` 12,886,331 / 53,745,381; `is_ci` 12,070,556 / 53,618,506;
+  `cliclack` 1,050,733 / 3,370,549; `ci_info` 768,740 / 6,362,771; `spinners` 667,982 /
+  7,142,166; `throbber-widgets-tui` 206,705 / 891,138; `spinoff` 102,741 / 740,480;
+  `spinach` 1,533 / 46,033. These are the download counters that move between runs; they
+  decide no gate, and they carry the `VOLATILE:` prefix in the log for exactly that
+  reason. Newest unyanked versions and declared MSRVs — which **do** decide gate 2, are
+  asserted rather than merely recorded, and are unchanged from revision 1: `indicatif`
+  0.18.6, 2026-07-01, MIT, `1.85`; `prodash` 31.0.0, 2026-01-08, MIT, `1.74`; `spinners`
+  4.2.0, `spinoff` 0.8.0, `cliclack` 0.5.6 and `spinach` 3.2.0 all `rust_version: None`.
+- **GitHub, retrieved 2026-09-12:** `console-rs/indicatif` 5,211 stars, not archived,
+  `pushed_at 2026-09-10T15:39:00Z`, **79** open issues by the mandated
+  `search/issues` `total_count` (against 94 from `open_issues_count`, which counts pull
+  requests). `fadeevab/cliclack` 367 stars; `FGRibreau/spinners` 602;
   `ad4mx/spinoff` 576, `pushed_at 2025-01-16`; `GitoxideLabs/prodash` 399; `zkat/is_ci` 15.
-  `fadeevab/cliclack`'s repository contents are `.gitignore, Cargo.toml, LICENSE,
-  README.md, examples, media, src` — no `.github`, and `contents/.github/workflows`
-  returns HTTP 404.
-- **RustSec, retrieved 2026-09-10:** HTTP 404 for `indicatif`, `console`, `unicode-width`,
+  Two days after revision 1 the star and issue counters moved by one to three — 5,212 to
+  5,211, 80 open issues to 79, 366 to 367 — and `pushed_at` advanced; none of it changes a
+  gate or the maintenance verdict, which rests on `archived: false` (asserted) and the
+  release date. `fadeevab/cliclack`'s repository contents are `.gitignore, Cargo.toml,
+  LICENSE, README.md, examples, media, src` — no `.github` (asserted absent), and
+  `contents/.github/workflows` returns HTTP 404 (asserted).
+- **RustSec, retrieved 2026-09-12:** HTTP 404 for `indicatif`, `console`, `unicode-width`,
   `portable-atomic`, `unit-prefix`, `libc`, `is_ci`, `ci_info`, `spinners`, `spinoff`,
   `cliclack`. Control: `time` 200 (4 `RUSTSEC-` mentions), `openssl` 200 (20), `atty` 200
-  (4). The control establishes that 404 is "no advisory page", not an endpoint failure.
+  (4). Each status is asserted against its expected value, so a 200 where the decision
+  expects 404 fails the run. The control establishes that 404 is "no advisory page", not an
+  endpoint failure.
 - **The two candidates only the Codex raw surveyed, verified independently.** `prodash`:
   published 31.0.0 declares `license = "MIT"` and `rust-version = "1.74"`, RustSec HTTP
   404, `default = ["progress-tree"]`; its CI workflow has three `ubuntu-latest` jobs and
@@ -423,10 +567,12 @@ script is saved beside its output at
 - **py pin `b08bccfb`:** the progress-indicator grep returns no matches (exit 1);
   `pyproject.toml` declares `rich>=13.0.0`.
 
-**One noise line in the log.** Section 0 records `curl: (56) Failure writing output to
-destination` after the stable-version line. That is `curl` writing into a pipe closed by
-`grep -m1`; the version string it needed was already read. No other command reported an
-error.
+**No error line remains in the log.** Revision 1's section 0 recorded
+`curl: (56) Failure writing output to destination`, which was `curl` writing into a pipe
+closed by `grep -m1`. Under `set -o pipefail` that would now fail the pipeline, so every
+fetch writes a file before anything reads it and the message is gone: the regenerated log
+contains no `curl:` error, no `FAIL` line and no non-zero command status other than the
+grep exit codes that are printed deliberately as the raw form of an asserted absence.
 
 **Full output:**
 `research/runs/R63/2026-09-05T183003Z-44e034fc1d72/review/evidence/r63-spinner-claims.log`
@@ -466,7 +612,8 @@ call-site-owned gating, and on excluding `spinoff` (stdout default) and `spinner
    repository, failing gate 1. **Codex's `prodash` figure `rust-version = "1.85"` is the
    same main-versus-pinned defect as item 2, not an invented number**: the moving `main`
    manifest does declare `1.85`, while the published 31.0.0 artifact declares `1.74` (both
-   read 2026-09-10). Neither value changes a gate outcome, since both sit below the 1.96
+   read 2026-09-10 and both re-read 2026-09-12, unchanged; both readings are asserted, so a
+   change on either side fails the check). Neither value changes a gate outcome, since both sit below the 1.96
    floor — but the pattern is worth naming twice, because the two occurrences share one
    cause: citing a branch for a property of a released version.
 4. **What HTTP 404 from RustSec means.** Codex recorded the 404s as evidence that
@@ -474,19 +621,64 @@ call-site-owned gating, and on excluding `spinoff` (stdout default) and `spinner
    advisories. **Settled in Opus's favour** by re-running that control here: `time`,
    `openssl` and `atty` return HTTP 200 with advisory content, so 404 reads as "no
    advisory page". `cargo audit` in P03's CI remains worth having, but gate 3 is met.
-5. **Figure drift.** The two raws' download and star figures differ by their retrieval
-   dates (2026-09-05 versus 2026-09-10). This review's re-query on 2026-09-10 matches
-   Opus's figures exactly; the Codex figures are not wrong, only five days older. All
-   figures quoted in `## Decision` and `## Empirical check` carry the 2026-09-10 date.
+5. **Figure drift, now three-way.** Three sets of download, star and open-issue figures
+   exist for this item, and they differ only by when they were taken: the Codex raw's
+   (2026-09-05), the Opus raw's and revision 1's (2026-09-10), and revision 2's
+   regenerated log (2026-09-12). Revision 1's re-query on 2026-09-10 matched Opus's
+   figures exactly. Revision 2's re-query on 2026-09-12 moved them again — `indicatif`
+   47,129,967 to 47,933,805 recent downloads, 5,212 to 5,211 stars, 80 to 79 open issues,
+   `cliclack` 366 to 367 stars — and **none of the movements changes a gate outcome, a
+   candidate's rank or the recommendation**. No set is wrong; each is its own date. The
+   rule for comparing across them, which is why the log prefixes these lines `VOLATILE:`:
+   a counter that moves is not a mismatch, whereas a newest-unyanked version, a declared
+   `rust-version`, an `archived` flag or an HTTP status that moves is, and each of those is
+   asserted against the value this decision records. Where the dates sit is worth stating
+   exactly, because the rule is not uniform across the document. The `## Empirical check`
+   bullets re-quote every live registry and GitHub figure at **2026-09-12**. The
+   `## Decision` fitness-gate and exclusions tables, and the `## Empirical check` toolchain
+   paragraph, deliberately keep **2026-09-10**: they are preserved verbatim from revision 1,
+   and every live fact in them — each RustSec HTTP status, each `archived` flag, the
+   `contents/.github/workflows` 404, the CI-matrix shape at tag 0.18.6, `prodash`'s CI
+   matrix on `main`, each newest-unyanked version and declared `rust-version`, and the
+   current stable channel `1.98.1` — was re-asserted unchanged by the 2026-09-12 log rather
+   than merely carried forward. Readings of pinned crate artifacts, pinned git blobs and the
+   0.18.6 git tag likewise keep 2026-09-10, the date the reading they support was first
+   taken, and were re-read unchanged on 2026-09-12. **Two 2026-09-10 citations are neither
+   re-quoted nor re-asserted, and are named here rather than covered by the sentence
+   above**: the `astral-sh/uv` `crates/uv/src/printer.rs` reference implementation, read on
+   a moving branch, which this decision already tells P03 to re-read at a tag; and the
+   in-repository ledger reads of `docs/port/COMMONALITY.md:287` and
+   `docs/port/areas/cli-framework-ux.md:27`, which are files in this repository rather than
+   external sources and which the empirical check does not query.
+6. **Decision revision history.** **Revision 1** (sha256
+   `a56ff2ed50059c93b4874c77b236c2cb67130462bceb7ed7b0adcfc1bbfbb069`, 2026-09-10,
+   synthesizer `claude-opus-5`): rejected by the empirical audit `review/audit-codex.r1.md`
+   (actor `audit-codex-2026-09-05T183003Z-44e034fc1d72-r1`, `gpt-5.6-terra`, family openai,
+   audit sha256 `1e4b6e32c6b4e52fd8817f5d8649316e4e9c11f23a1ed92e4b998bb877f99206`) on one
+   finding: the saved script held sections 12-18 in an uninvoked `supplements()` function,
+   so the auditor's rerun (`review/evidence/audit-r63-spinner-r1.log`) emitted thirteen
+   section headers where the decision cited twenty. The same audit verified the
+   environment-gate adjudication, the strict gate-2 reading, the zero-column
+   qualification, the four byte-exact `assumes` lines and six cited network endpoints.
+   **Revision 2** (2026-09-12) integrates sections 12-18 into the script as code, adds
+   `set -o pipefail`, replaces exit-code evidence with content assertions, regenerates the
+   cited log, reruns and diffs it, records a negative control, corrects the `is_ci`
+   variable count from 33 to 35 in the three places it appeared, asserts the
+   default-feature list as a parsed value, and re-quotes the live figures at 2026-09-12.
+   **No design choice, gate outcome, exclusion or acceptance criterion changed.**
 
 **Uncertainty.** The evidence here is registry queries, GitHub API queries, and source
 read from published crate artifacts and from two pinned git trees. **No Rust code was
 compiled and no terminal was driven**, so every behavioral claim about the recommended
 design is a reading of source rather than an observation of behaviour, and is qualified as
-such wherever it appears. Codex's figures were not re-queried at their own retrieval date
-(2026-09-05); where the two raws differ numerically this decision quotes the 2026-09-10
-values, which this review re-queried and which match the Opus raw. The Opus raw's issue
-responsiveness median is carried forward unconfirmed (see below).
+such wherever it appears. Revision 2 did not change this: the negative control and the
+pass/fail summary are shell and `curl` output, not compiled Rust, and the auditor's own
+`CI=""` Rust probe is deliberately **not** adopted into this check, because running it
+would falsify the sentence above. Codex's figures were not re-queried at their own
+retrieval date (2026-09-05); where the two raws differ numerically this decision quotes the
+2026-09-12 values for live figures and the 2026-09-10 values for pinned-source readings,
+both re-taken by revision 2's log. The Opus raw's issue responsiveness median is carried
+forward unconfirmed (see below).
 
 **Unproven claims, carried forward for P03 to prove in the real template.**
 
@@ -507,7 +699,8 @@ responsiveness median is carried forward unconfirmed (see below).
 - **`indicatif` issue responsiveness.** Opus measured a median of 0.13 days to first
   maintainer response across 8 of the 10 most recently opened issues, with 2 closed
   unanswered and every response from the same `MEMBER`. This review re-verified the
-  open-issue count (80) but did not re-walk the per-issue comment endpoints, so the
+  open-issue count (80 on 2026-09-10, 79 on 2026-09-12) but did not re-walk the per-issue
+  comment endpoints, so the
   responsiveness median is carried from the Opus raw rather than independently confirmed.
   The maintenance verdict **active** rests on the release date, `pushed_at` and
   `archived: false`, all re-verified here.

@@ -1,13 +1,18 @@
 
 ===== 0. TOOLCHAIN AND HOST =====
-rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
-cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
-os: macOS 26.4 (arm64)
-date: 2026-09-10T15:19:13Z
-current stable channel version: version = "1.98.1 (48a229cea 2026-09-01)"
-curl: (56) Failure writing output to destination, passed 16357 returned 0
+PASS  rustc reports a version
+HOST: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+PASS  cargo reports a version
+HOST: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+HOST: os: macOS 26.4 (arm64)
+VOLATILE: date: 2026-09-12T19:28:45Z
+PASS  stable channel manifest (fetched, non-empty body)
+PASS  stable channel manifest has a [pkg.rust] table
+PASS  current stable channel version parsed
+VOLATILE: current stable channel version: 1.98.1 (48a229cea 2026-09-01)
 
 ===== 1. INHERITED CONTRACT AT THE ts PIN (gate predicate) =====
+PASS  ts:src/commands/projects.ts @ pin (read at pin, 204 lines)
 --- ts:src/commands/projects.ts lines 120-140 @ cb1cbcb2e88b898e8c081b0abbfabc1630079c00
          1	    token,
          2	    fetchImpl: deps.fetchImpl,
@@ -30,6 +35,10 @@ curl: (56) Failure writing output to destination, passed 16357 returned 0
         19	  // moved from stdout to stderr per D-018(4)).
         20	  if (projects.length === 0) {
         21	    deps.stderr(`${colors.warn('No projects found.')}\n`);
+PASS  ts pin: CI is read from the environment map
+PASS  ts pin: suppression predicate verbatim
+PASS  ts pin: the factory is invoked only when enabled
+PASS  ts:src/lib/adapters.ts @ pin (read at pin, 71 lines)
 --- ts:src/lib/adapters.ts lines 25-72 @ cb1cbcb2e88b898e8c081b0abbfabc1630079c00 (SpinnerFactory + D-033 guard)
          1	/** Clipboard seam (pyperclip.copy parity). */
          2	export type ClipboardWriter = (text: string) => Promise<void>;
@@ -78,22 +87,36 @@ curl: (56) Failure writing output to destination, passed 16357 returned 0
         45	    },
         46	  };
         47	};
+PASS  ts pin: D-033 zero-column guard present
+PASS  ts pin: D-033 comment names the divide-by-width cause
+PASS  ts pin: the caller owns the gating
+PASS  ts:package.json @ pin (read at pin, 75 lines)
 --- ts:package.json spinner dependency @ cb1cbcb2e88b898e8c081b0abbfabc1630079c00
 45:    "yocto-spinner": "^1.2.2",
+PASS  ts pin: yocto-spinner is the shipped spinner
+PASS  ts:docs/port/TS_PORT_DECISIONS.md @ pin (read at pin, 429 lines)
 --- ts:docs/port/TS_PORT_DECISIONS.md D-016(5) / D-033 lines @ cb1cbcb2e88b898e8c081b0abbfabc1630079c00
 165:  5. [Replace Python-specific tool with TypeScript equivalent] Spinner/progress during network fetch (rich.Progress replacement) → yocto-spinner on stderr (its default), additionally gated on process.stderr.isTTY and CI env
 174:  5. Stderr-by-default satisfies cli-standards R7.1 (progress=diagnostics) and fixes the source wart where progress text polluted stdout; chosen over ora to avoid a chalk+picocolors double color stack. [https://github.com/sindresorhus/yocto-spinner (stderr default, 1.2.1 2026-07-06); https://github.com/sindresorhus/ora (stderr default but chalk dep)]
 356:- Decision: (1) styleText, wrapped in src/lib/colors.ts. Supersedes D-016(3); D-016's yocto-spinner rationale re-grounded on zero-dep consistency rather than avoiding a picocolors double-stack; T06's runtime-dep list drops to 5.
 398:- Decision: (1) Exit 130 on prompt interrupt/stdin-close, clean message, no leaked library internals — a deliberate, documented deviation from the source's swallow-to-0. Same rework also: implements D-018(4)'s outstanding machine-mode error envelope ({"error":{code,message}} single JSON object on stderr when --format json) and a --json alias for --format json; records parity rows for the added 30s request timeout and the positive---limit tightening; guards the spinner against 0-column TTYs.
+PASS  ts pin: stderr-by-default rule stated as progress=diagnostics
+PASS  ts pin: the stdout-pollution wart it repairs
 
 ===== 2. py PIN — IS THERE ANY PROGRESS INDICATOR? =====
 --- git grep over *.py *.toml @ b08bccfb55d05f15e46a83b52c5660b1881d19f5
-exit=1 (1 = no matches)
+grep exit=1 (1 = no matches)
+PASS  py pin: progress-indicator matches == 0
+PASS  py:pyproject.toml @ pin (read at pin, 352 lines)
 --- py:pyproject.toml rich dependency @ b08bccfb55d05f15e46a83b52c5660b1881d19f5
 48:  "rich>=13.0.0",
+PASS  py pin: rich>=13.0.0 is declared
 
 ===== 3. is_ci PREDICATE AT A PINNED VERSION =====
-newest unyanked: 1.2.0 2024-02-04T02:57:53.234697Z license: ISC rust_version: None
+PASS  is_ci versions endpoint (fetched, non-empty body)
+PASS  is_ci newest unyanked version == 1.2.0
+VOLATILE: newest unyanked: 1.2.0 2024-02-04T02:57:53.234697Z license: ISC rust_version: None
+PASS  is_ci 1.2.0 published artifact (fetched, non-empty body)
 --- is_ci-1.2.0/src/lib.rs (published artifact, not a branch)
      1	use std::sync::atomic::{AtomicBool, Ordering};
      2	use std::sync::Once;
@@ -165,8 +188,17 @@ newest unyanked: 1.2.0 2024-02-04T02:57:53.234697Z license: ISC rust_version: No
     68	fn check(name: &str) -> bool {
     69	    std::env::var(name).is_ok()
     70	}
+PASS  is_ci 1.2.0: CI compared by value equality
+PASS  is_ci 1.2.0: the literal "1"
+PASS  is_ci 1.2.0: the literal "woodpecker"
+PASS  is_ci 1.2.0: check() is presence-only
+PASS  is_ci 1.2.0 does NOT test CI for emptiness
+is_ci 1.2.0 distinct presence-checked variables besides CI: 35
+APPVEYOR bamboo.buildKey BITBUCKET_DEPLOYMENT BITRISE_IO BUDDY_WORKSPACE_ID BUILDER_OUTPUT BUILDKITE CI_NAME CIRCLECI CIRRUS_CI CODEBUILD_SRC_DIR DRONE DSARI GERRIT_PROJECT GITHUB_ACTION GITLAB_CI GITLAB_DEPLOYMENT GO_PIPELINE_NAME HUDSON_URL JENKINS_URL MAGNUM NETLIFY NEVERCODE NOW_BUILDER NOW_GITHUB_DEPLOYMENT RENDER SAIL_CI SEMAPHORE SHIPPABLE STRIDER SYSTEM_TEAMFOUNDATIONCOLLECTIONURI TASKCLUSTER_ROOT_URL TDDIUM TRAVIS WERCKER 
+PASS  is_ci 1.2.0 distinct presence-checked variables besides CI == 35
 
 ===== 4. indicatif 0.18.6 — PUBLISHED ARTIFACT (license, MSRV, edition, stderr default) =====
+PASS  indicatif 0.18.6 published artifact (fetched, non-empty body)
 --- indicatif-0.18.6/Cargo.toml [package] head
 # THIS FILE IS AUTOMATICALLY GENERATED BY CARGO
 #
@@ -208,6 +240,9 @@ repository = "https://github.com/console-rs/indicatif"
 [package.metadata.docs.rs]
 all-features = true
 rustdoc-args = [
+PASS  indicatif 0.18.6 rust-version
+PASS  indicatif 0.18.6 edition
+PASS  indicatif 0.18.6 license
 --- default features
 45:[features]
 46-default = [
@@ -216,6 +251,8 @@ rustdoc-args = [
 49-]
 50-futures = ["dep:futures-core"]
 51-improved_unicode = [
+indicatif 0.18.6 default feature list = ['unicode-width', 'wasmbind']
+PASS  indicatif 0.18.6 default features are exactly ["unicode-width", "wasmbind"]
 --- optional async deps
 48-    "wasmbind",
 49-]
@@ -257,6 +294,9 @@ rustdoc-args = [
 199-version = "0.10"
 200-
 201:[dev-dependencies.tokio]
+PASS  indicatif 0.18.6: tokio is optional
+PASS  indicatif 0.18.6: futures-core is optional
+PASS  indicatif 0.18.6: rayon is optional
 --- ProgressBar::new_spinner draw target
 144-        self
 145-    }
@@ -273,6 +313,8 @@ rustdoc-args = [
 156-    /// Overrides the stored style
 157-    ///
 158-    /// This does not redraw the bar. Call [`ProgressBar::tick()`] to force it.
+PASS  new_spinner defaults to the stderr draw target
+PASS  new_spinner doc says it draws to stderr
 --- ProgressDrawTarget::stderr / hidden / term
 37-    pub fn stdout() -> Self {
 38-        Self::term(Term::buffered_stdout(), 20)
@@ -319,17 +361,27 @@ rustdoc-args = [
 85-                term,
 86-                last_line_count: VisualLines::default(),
 87-                rate_limiter: RateLimiter::new(refresh_rate),
+PASS  stderr() is documented as the default draw target
+PASS  term() performs its own terminal test (why design D is rejected)
+PASS  hidden() exists as a first-class render-nothing value
 --- in_memory feature / InMemoryTerm
 55:in_memory = ["vt100"]
 14:pub struct InMemoryTerm {
 32:    pub fn contents(&self) -> String {
 57:    pub fn contents_formatted(&self) -> Vec<u8> {
 105:impl TermLike for InMemoryTerm {
+PASS  in_memory feature is declared
+PASS  InMemoryTerm implements TermLike
+PASS  InMemoryTerm::contents exists for assertions without a pty
 --- zero-width handling inside indicatif (codex claim: regression test at width 0)
+PASS  indicatif 0.18.6 zero-width regression test in src/ (match count) == 0
+PASS  indicatif 0.18.6 explicit width==0 guard in src/ (match count) == 0
 --- unsafe count in indicatif src
 no file contains 'unsafe'
+PASS  indicatif 0.18.6 occurrences of unsafe in src/ (match count) == 0
 
 ===== 5. console 0.16.6 — ZERO-COLUMN FALLBACK (source read, NOT an executed pty test) =====
+PASS  console 0.16.6 published artifact (fetched, non-empty body)
 18:pub(crate) const DEFAULT_WIDTH: u16 = 80;
 47-        Err(io::Error::last_os_error())
 48-    } else {
@@ -366,8 +418,14 @@ no file contains 'unsafe'
 13:edition = "2021"
 14:rust-version = "1.71"
 42:license = "MIT"
+PASS  console 0.16.6 DEFAULT_WIDTH is 80
+PASS  console 0.16.6 terminal_size requires positive dimensions
+PASS  console 0.16.6 Term::size falls back to (24, DEFAULT_WIDTH)
+PASS  console 0.16.6 rust-version
+PASS  console 0.16.6 license
 
 ===== 6. indicatif CI MATRIX AT TAG 0.18.6 =====
+PASS  indicatif rust.yml at tag 0.18.6 (fetched, non-empty body)
 17:        os: [ubuntu-latest, macos-latest, windows-latest]
 18:        rust: [stable]
 22:          - os: ubuntu-latest
@@ -381,55 +439,99 @@ no file contains 'unsafe'
 43:          toolchain: ${{ matrix.rust }}
 67:          toolchain: "1.85"
 76:          toolchain: stable
+PASS  indicatif CI matrix covers the required OS set
+PASS  indicatif CI has an MSRV job pinned to 1.85
+PASS  indicatif CI tests the stable channel
 
 ===== 7. REGISTRY FIGURES (crates.io), retrieved now =====
-indicatif              recent_downloads=47129967     downloads=214311835    max_stable=0.18.6
-console                recent_downloads=79354377     downloads=343168320    max_stable=0.16.6
-spinners               recent_downloads=658553       downloads=7123963      max_stable=4.2.0
-spinoff                recent_downloads=100724       downloads=737459       max_stable=0.8.0
-cliclack               recent_downloads=1028866      downloads=3340001      max_stable=0.5.6
-spinach                recent_downloads=1539         downloads=46010        max_stable=3.2.0
-throbber-widgets-tui   recent_downloads=204074       downloads=886095       max_stable=0.11.1
-is_ci                  recent_downloads=11828364     downloads=53229641     max_stable=1.2.0
-ci_info                recent_downloads=760129       downloads=6343793      max_stable=0.14.15
-prodash                recent_downloads=12704416     downloads=53398738     max_stable=31.0.0
+PASS  crates.io crate record indicatif (fetched, non-empty body)
+VOLATILE: indicatif              recent_downloads=47933805     downloads=215677764    max_stable=0.18.6
+PASS  crates.io crate record console (fetched, non-empty body)
+VOLATILE: console                recent_downloads=80670316     downloads=345406499    max_stable=0.16.6
+PASS  crates.io crate record spinners (fetched, non-empty body)
+VOLATILE: spinners               recent_downloads=667982       downloads=7142166      max_stable=4.2.0
+PASS  crates.io crate record spinoff (fetched, non-empty body)
+VOLATILE: spinoff                recent_downloads=102741       downloads=740480       max_stable=0.8.0
+PASS  crates.io crate record cliclack (fetched, non-empty body)
+VOLATILE: cliclack               recent_downloads=1050733      downloads=3370549      max_stable=0.5.6
+PASS  crates.io crate record spinach (fetched, non-empty body)
+VOLATILE: spinach                recent_downloads=1533         downloads=46033        max_stable=3.2.0
+PASS  crates.io crate record throbber-widgets-tui (fetched, non-empty body)
+VOLATILE: throbber-widgets-tui   recent_downloads=206705       downloads=891138       max_stable=0.11.1
+PASS  crates.io crate record is_ci (fetched, non-empty body)
+VOLATILE: is_ci                  recent_downloads=12070556     downloads=53618506     max_stable=1.2.0
+PASS  crates.io crate record ci_info (fetched, non-empty body)
+VOLATILE: ci_info                recent_downloads=768740       downloads=6362771      max_stable=0.14.15
+PASS  crates.io crate record prodash (fetched, non-empty body)
+VOLATILE: prodash                recent_downloads=12886331     downloads=53745381     max_stable=31.0.0
 --- newest unyanked version + rust_version per candidate
-indicatif              num=0.18.6   created_at=2026-07-01T13:45:24.733589Z license=MIT                    rust_version=1.85
-spinners               num=4.2.0    created_at=2026-03-04T08:55:22.292054Z license=MIT                    rust_version=None
-spinoff                num=0.8.0    created_at=2023-08-04T13:07:51.375358Z license=MIT                    rust_version=None
-cliclack               num=0.5.6    created_at=2026-08-10T16:50:04.124778Z license=MIT                    rust_version=None
-spinach                num=3.2.0    created_at=2025-12-05T08:47:39.950565Z license=MIT                    rust_version=None
-prodash                num=31.0.0   created_at=2026-01-08T09:34:00.679547Z license=MIT                    rust_version=1.74
+PASS  crates.io versions indicatif (fetched, non-empty body)
+VOLATILE: indicatif              num=0.18.6   created_at=2026-07-01T13:45:24.733589Z license=MIT                    rust_version=1.85
+PASS  indicatif newest unyanked version:rust_version (registry moved if this fails) == 0.18.6:1.85
+PASS  crates.io versions spinners (fetched, non-empty body)
+VOLATILE: spinners               num=4.2.0    created_at=2026-03-04T08:55:22.292054Z license=MIT                    rust_version=None
+PASS  spinners newest unyanked version:rust_version (registry moved if this fails) == 4.2.0:None
+PASS  crates.io versions spinoff (fetched, non-empty body)
+VOLATILE: spinoff                num=0.8.0    created_at=2023-08-04T13:07:51.375358Z license=MIT                    rust_version=None
+PASS  spinoff newest unyanked version:rust_version (registry moved if this fails) == 0.8.0:None
+PASS  crates.io versions cliclack (fetched, non-empty body)
+VOLATILE: cliclack               num=0.5.6    created_at=2026-08-10T16:50:04.124778Z license=MIT                    rust_version=None
+PASS  cliclack newest unyanked version:rust_version (registry moved if this fails) == 0.5.6:None
+PASS  crates.io versions spinach (fetched, non-empty body)
+VOLATILE: spinach                num=3.2.0    created_at=2025-12-05T08:47:39.950565Z license=MIT                    rust_version=None
+PASS  spinach newest unyanked version:rust_version (registry moved if this fails) == 3.2.0:None
+PASS  crates.io versions prodash (fetched, non-empty body)
+VOLATILE: prodash                num=31.0.0   created_at=2026-01-08T09:34:00.679547Z license=MIT                    rust_version=1.74
+PASS  prodash newest unyanked version:rust_version (registry moved if this fails) == 31.0.0:1.74
 
 ===== 8. GITHUB REPO FIGURES + OPEN ISSUES (mandated total_count, not open_issues_count) =====
-console-rs/indicatif stars=5212 archived=false pushed_at=2026-09-07T15:20:41Z open_issues_count(incl PRs)=97
-fadeevab/cliclack stars=366 archived=false pushed_at=2026-08-10T16:49:59Z open_issues_count(incl PRs)=10
-FGRibreau/spinners stars=602 archived=false pushed_at=2026-05-02T20:47:14Z open_issues_count(incl PRs)=10
-ad4mx/spinoff stars=576 archived=false pushed_at=2025-01-16T13:44:39Z open_issues_count(incl PRs)=2
-GitoxideLabs/prodash stars=399 archived=false pushed_at=2026-09-01T18:32:49Z open_issues_count(incl PRs)=4
-zkat/is_ci stars=15 archived=false pushed_at=2024-02-04T02:57:58Z open_issues_count(incl PRs)=1
-console-rs/indicatif open issues (search total_count) = 80
+PASS  gh repo record console-rs/indicatif (gh api ok)
+VOLATILE: console-rs/indicatif stars=5211 archived=false pushed_at=2026-09-10T15:39:00Z open_issues_count(incl PRs)=94
+PASS  gh repo record fadeevab/cliclack (gh api ok)
+VOLATILE: fadeevab/cliclack stars=367 archived=false pushed_at=2026-08-10T16:49:59Z open_issues_count(incl PRs)=10
+PASS  gh repo record FGRibreau/spinners (gh api ok)
+VOLATILE: FGRibreau/spinners stars=602 archived=false pushed_at=2026-05-02T20:47:14Z open_issues_count(incl PRs)=10
+PASS  gh repo record ad4mx/spinoff (gh api ok)
+VOLATILE: ad4mx/spinoff stars=576 archived=false pushed_at=2025-01-16T13:44:39Z open_issues_count(incl PRs)=2
+PASS  gh repo record GitoxideLabs/prodash (gh api ok)
+VOLATILE: GitoxideLabs/prodash stars=399 archived=false pushed_at=2026-09-01T18:32:49Z open_issues_count(incl PRs)=4
+PASS  gh repo record zkat/is_ci (gh api ok)
+VOLATILE: zkat/is_ci stars=15 archived=false pushed_at=2024-02-04T02:57:58Z open_issues_count(incl PRs)=1
+PASS  console-rs/indicatif is not archived (maintenance rubric)
+PASS  ad4mx/spinoff is not archived
+PASS  gh open-issue search for console-rs/indicatif (gh api ok)
+VOLATILE: console-rs/indicatif open issues (search total_count) = 79
+PASS  open-issue total_count is a number (value on the VOLATILE line above)
 
 ===== 9. RUSTSEC PAGES + 404-MEANS-CLEAN CONTROL =====
-indicatif            404
-console              404
-unicode-width        404
-portable-atomic      404
-unit-prefix          404
-libc                 404
-is_ci                404
-ci_info              404
-spinners             404
-spinoff              404
-cliclack             404
+PASS  rustsec indicatif (404 expected = no advisory page) HTTP == 404
+PASS  rustsec console (404 expected = no advisory page) HTTP == 404
+PASS  rustsec unicode-width (404 expected = no advisory page) HTTP == 404
+PASS  rustsec portable-atomic (404 expected = no advisory page) HTTP == 404
+PASS  rustsec unit-prefix (404 expected = no advisory page) HTTP == 404
+PASS  rustsec libc (404 expected = no advisory page) HTTP == 404
+PASS  rustsec is_ci (404 expected = no advisory page) HTTP == 404
+PASS  rustsec ci_info (404 expected = no advisory page) HTTP == 404
+PASS  rustsec spinners (404 expected = no advisory page) HTTP == 404
+PASS  rustsec spinoff (404 expected = no advisory page) HTTP == 404
+PASS  rustsec cliclack (404 expected = no advisory page) HTTP == 404
 --- control: crates known to have advisories must return 200 with RUSTSEC- content
-time                 200  RUSTSEC- mentions=4
-openssl              200  RUSTSEC- mentions=20
-atty                 200  RUSTSEC- mentions=4
+PASS  rustsec control time HTTP == 200
+VOLATILE: time                 RUSTSEC- mentions=4
+PASS  rustsec control time names at least one RUSTSEC- advisory
+PASS  rustsec control openssl HTTP == 200
+VOLATILE: openssl              RUSTSEC- mentions=20
+PASS  rustsec control openssl names at least one RUSTSEC- advisory
+PASS  rustsec control atty HTTP == 200
+VOLATILE: atty                 RUSTSEC- mentions=4
+PASS  rustsec control atty names at least one RUSTSEC- advisory
 
 ===== 10. EXCLUDED-CANDIDATE CLAIMS AT PUBLISHED VERSIONS =====
+PASS  spinoff 0.8.0 published artifact (fetched, non-empty body)
 --- spinoff 0.8.0: default stream (opus claim: stdout)
 spinoff 0.8.0 Cargo.toml: NO rust-version key
+PASS  spinoff 0.8.0 declares no rust-version (gate 2)
+PASS  spinners 4.2.0 published artifact (fetched, non-empty body)
 --- spinners 4.2.0: EPIPE panic claim + default stream + rust-version
 119:                stream.write(&frame, &message, start_time, stop_time).expect("IO Error");
 232:        self.stream.stop(Some(&msg), None).expect("IO Error");
@@ -439,28 +541,45 @@ spinners 4.2.0 Cargo.toml: NO rust-version key
 52:[dependencies.lazy_static]
 55:[dependencies.maplit]
 58:[dependencies.strum]
+PASS  spinners 4.2.0 render loop panics on a write error
+PASS  spinners 4.2.0 declares no rust-version (gate 2)
 --- cliclack: rust_version across recent versions + CI presence
-0.5.6 rust_version= None license= MIT
-0.5.5 rust_version= None license= MIT
-0.5.4 rust_version= None license= MIT
-0.5.3 rust_version= None license= MIT
+VOLATILE: 0.5.6 rust_version= None license= MIT
+VOLATILE: 0.5.5 rust_version= None license= MIT
+VOLATILE: 0.5.4 rust_version= None license= MIT
+VOLATILE: 0.5.3 rust_version= None license= MIT
+PASS  cliclack: the four most recent versions all declare rust_version None
+PASS  gh cliclack repository contents (gh api ok)
 .gitignore, Cargo.toml, LICENSE, README.md, examples, media, src
+PASS  cliclack repository root has no .github directory (gate 4)
 {"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/contents#get-repository-content","status":"404"}gh: Not Found (HTTP 404)
+cliclack .github/workflows: gh-exit=1 (non-zero is the expected 404)
+PASS  cliclack .github/workflows returns the expected 404
 
 ===== 11. MSRV ARITHMETIC CHECK =====
 policy floor = stable minus 2 minor versions; recommended tree maxima:
-indicatif          newest=0.18.6 rust_version=1.85 license=MIT
-console            newest=0.16.6 rust_version=1.71 license=MIT
-unicode-width      newest=0.2.2 rust_version=1.66 license=MIT OR Apache-2.0
-portable-atomic    newest=1.15.0 rust_version=1.34 license=Apache-2.0 OR MIT
-unit-prefix        newest=0.5.2 rust_version=1.31.0 license=MIT
-
-===== DONE =====
+PASS  crates.io versions indicatif (fetched, non-empty body)
+VOLATILE: indicatif          newest=0.18.6 rust_version=1.85 license=MIT
+PASS  indicatif declared rust-version (gate 2 arithmetic) == 1.85
+PASS  crates.io versions console (fetched, non-empty body)
+VOLATILE: console            newest=0.16.6 rust_version=1.71 license=MIT
+PASS  console declared rust-version (gate 2 arithmetic) == 1.71
+PASS  crates.io versions unicode-width (fetched, non-empty body)
+VOLATILE: unicode-width      newest=0.2.2 rust_version=1.66 license=MIT OR Apache-2.0
+PASS  unicode-width declared rust-version (gate 2 arithmetic) == 1.66
+PASS  crates.io versions portable-atomic (fetched, non-empty body)
+VOLATILE: portable-atomic    newest=1.15.0 rust_version=1.34 license=Apache-2.0 OR MIT
+PASS  portable-atomic declared rust-version (gate 2 arithmetic) == 1.34
+PASS  crates.io versions unit-prefix (fetched, non-empty body)
+VOLATILE: unit-prefix        newest=0.5.2 rust_version=1.31.0 license=MIT
+PASS  unit-prefix declared rust-version (gate 2 arithmetic) == 1.31.0
+VOLATILE: stable=1.98.1 (48a229cea 2026-09-01) -> policy floor=1.96; recommended tree maximum declared rust-version=1.85
+PASS  the policy floor is at or above the tree maximum 1.85 (gate 2 passes)
 
 ===== 12. SUPPLEMENT: CLAIMS NOT RESOLVED BY THE FIRST PASS =====
 --- spinoff 0.8.0 default stream (published artifact src/lib.rs)
 137:    * This function outputs to the `stdout` stream. If you want to use a different stream, use the [`Spinner::new_with_stream`] function.
---- spinoff 0.8.0: Spinner::new construction path
+PASS  spinoff 0.8.0 documents stdout as its ordinary stream (section 10's grep missed it: the doc line brackets stdout in backticks)
 --- spinners 4.2.0 default Stream variant
 use std::{io::{Write, stdout, stderr, Result}, time::Instant};
 #[cfg(feature = "osc-progress")]
@@ -492,73 +611,82 @@ impl Stream {
 
     /// Writes the message without duration
     fn print_message(
-
+spinners 4.2.0 #[default] variant = Stderr
+PASS  spinners 4.2.0 defaults to Stderr (so it is excluded on gate 2 and the panic path, not on its stream)
 --- codex claim: indicatif regression test 'draw_to_term_narrower_than_its_content'
 search in the PUBLISHED 0.18.6 artifact (all files):
 grep exit=1 (1 = not present in the published artifact)
+PASS  0.18.6 published artifact: zero-width regression test (match count) == 0
 files shipped in indicatif-0.18.6:
-indicatif-0.18.6/.cargo_vcs_info.json
-indicatif-0.18.6/.github/dependabot.yml
-indicatif-0.18.6/.github/workflows/rust.yml
-indicatif-0.18.6/.gitignore
-indicatif-0.18.6/Cargo.lock
-indicatif-0.18.6/Cargo.toml
-indicatif-0.18.6/Cargo.toml.orig
-indicatif-0.18.6/deny.toml
-indicatif-0.18.6/examples/cargo.rs
-indicatif-0.18.6/examples/cargowrap.rs
-indicatif-0.18.6/examples/download-continued.rs
-indicatif-0.18.6/examples/download-speed.rs
-indicatif-0.18.6/examples/download.rs
-indicatif-0.18.6/examples/fastbar.rs
-indicatif-0.18.6/examples/finebars.rs
-indicatif-0.18.6/examples/iterator.rs
-indicatif-0.18.6/examples/log.rs
-indicatif-0.18.6/examples/long-spinner.rs
-indicatif-0.18.6/examples/morebars.rs
-indicatif-0.18.6/examples/multi-tree-ext.rs
-indicatif-0.18.6/examples/multi-tree.rs
-indicatif-0.18.6/examples/multi.rs
-indicatif-0.18.6/examples/single.rs
-indicatif-0.18.6/examples/tokio.rs
-indicatif-0.18.6/examples/yarnish.rs
-indicatif-0.18.6/LICENSE
-indicatif-0.18.6/README.md
-indicatif-0.18.6/src/draw_target.rs
-indicatif-0.18.6/src/format.rs
-indicatif-0.18.6/src/in_memory.rs
-indicatif-0.18.6/src/iter.rs
-indicatif-0.18.6/src/lib.rs
-indicatif-0.18.6/src/multi.rs
-indicatif-0.18.6/src/progress_bar.rs
-indicatif-0.18.6/src/rayon.rs
-indicatif-0.18.6/src/state.rs
-indicatif-0.18.6/src/style.rs
-indicatif-0.18.6/src/term_like.rs
-indicatif-0.18.6/tests/multi-autodrop.rs
-indicatif-0.18.6/tests/render.rs
+src/indicatif-0.18.6/.cargo_vcs_info.json
+src/indicatif-0.18.6/.github/dependabot.yml
+src/indicatif-0.18.6/.github/workflows/rust.yml
+src/indicatif-0.18.6/.gitignore
+src/indicatif-0.18.6/Cargo.lock
+src/indicatif-0.18.6/Cargo.toml
+src/indicatif-0.18.6/Cargo.toml.orig
+src/indicatif-0.18.6/deny.toml
+src/indicatif-0.18.6/examples/cargo.rs
+src/indicatif-0.18.6/examples/cargowrap.rs
+src/indicatif-0.18.6/examples/download-continued.rs
+src/indicatif-0.18.6/examples/download-speed.rs
+src/indicatif-0.18.6/examples/download.rs
+src/indicatif-0.18.6/examples/fastbar.rs
+src/indicatif-0.18.6/examples/finebars.rs
+src/indicatif-0.18.6/examples/iterator.rs
+src/indicatif-0.18.6/examples/log.rs
+src/indicatif-0.18.6/examples/long-spinner.rs
+src/indicatif-0.18.6/examples/morebars.rs
+src/indicatif-0.18.6/examples/multi-tree-ext.rs
+src/indicatif-0.18.6/examples/multi-tree.rs
+src/indicatif-0.18.6/examples/multi.rs
+src/indicatif-0.18.6/examples/single.rs
+src/indicatif-0.18.6/examples/tokio.rs
+src/indicatif-0.18.6/examples/yarnish.rs
+src/indicatif-0.18.6/LICENSE
+src/indicatif-0.18.6/README.md
+src/indicatif-0.18.6/src/draw_target.rs
+src/indicatif-0.18.6/src/format.rs
+src/indicatif-0.18.6/src/in_memory.rs
+src/indicatif-0.18.6/src/iter.rs
+src/indicatif-0.18.6/src/lib.rs
+src/indicatif-0.18.6/src/multi.rs
+src/indicatif-0.18.6/src/progress_bar.rs
+src/indicatif-0.18.6/src/rayon.rs
+src/indicatif-0.18.6/src/state.rs
+src/indicatif-0.18.6/src/style.rs
+src/indicatif-0.18.6/src/term_like.rs
+src/indicatif-0.18.6/tests/multi-autodrop.rs
+src/indicatif-0.18.6/tests/render.rs
 search at the 0.18.6 GIT TAG (draw_target.rs):
+PASS  indicatif draw_target.rs at tag 0.18.6 (fetched, non-empty body)
 grep exit=1 (1 = not at tag 0.18.6 either)
+PASS  0.18.6 git tag: zero-width regression test (match count) == 0
+PASS  the tag blob is the right file (sanity: it defines ProgressDrawTarget)
 search on the moving main branch (what the codex report read):
-880:    fn draw_to_term_narrower_than_its_content() {
-881-        // The last visual row can be wider than the terminal: zero columns, or a
-882-        // two-column character with one column left.
-883-        #[derive(Debug)]
-884-        struct NarrowTerm {
-885-            width: u16,
-886-            written: Mutex<Vec<String>>,
-887-        }
-888-
-889-        impl TermLike for NarrowTerm {
-890-            fn width(&self) -> u16 {
-891-                self.width
-892-            }
-893-            fn height(&self) -> u16 {
-894-                10
-895-            }
-896-            fn move_cursor_up(&self, _: usize) -> std::io::Result<()> {
-grep exit=0
+PASS  indicatif draw_target.rs on main (moving branch) (fetched, non-empty body)
+VOLATILE: 880:    fn draw_to_term_narrower_than_its_content() {
+VOLATILE: 881-        // The last visual row can be wider than the terminal: zero columns, or a
+VOLATILE: 882-        // two-column character with one column left.
+VOLATILE: 883-        #[derive(Debug)]
+VOLATILE: 884-        struct NarrowTerm {
+VOLATILE: 885-            width: u16,
+VOLATILE: 886-            written: Mutex<Vec<String>>,
+VOLATILE: 887-        }
+VOLATILE: 888-
+VOLATILE: 889-        impl TermLike for NarrowTerm {
+VOLATILE: 890-            fn width(&self) -> u16 {
+VOLATILE: 891-                self.width
+VOLATILE: 892-            }
+VOLATILE: 893-            fn height(&self) -> u16 {
+VOLATILE: 894-                10
+VOLATILE: 895-            }
+VOLATILE: 896-            fn move_cursor_up(&self, _: usize) -> std::io::Result<()> {
+VOLATILE: grep exit=0
+PASS  the zero-width regression test exists on main (the branch the codex raw cited)
+PASS  the main-branch test builds a NarrowTerm fake
 --- indicatif 0.18.6: any explicit zero-width guard in its own source?
+PASS  0.18.6 explicit zero-width guard (match count) == 0
 --- console 0.16.6 terminal_size: the positive-dimension test (opus claim, line ~66)
 pub(crate) fn terminal_size(out: &Term) -> Option<(u16, u16)> {
     if !is_a_terminal(out) {
@@ -588,15 +716,17 @@ enum Input<T> {
 impl Input<BufReader<fs::File>> {
     fn buffered() -> io::Result<Self> {
         Ok(match Input::unbuffered()? {
+PASS  console 0.16.6: a zero column count yields None, not a zero width
 
 ===== 13. SUPPLEMENT 2: THE WIDTH PATH AT 0.18.6 =====
 --- console 0.16.6: impl TermLike-equivalent width source for Term
-src/indicatif-0.18.6/src/in_memory.rs:106:    fn width(&self) -> u16 {
 src/indicatif-0.18.6/src/draw_target.rs:156:    pub(crate) fn width(&self) -> Option<u16> {
 src/indicatif-0.18.6/src/draw_target.rs:375:    pub(crate) fn width(&self) -> Option<u16> {
+src/indicatif-0.18.6/src/in_memory.rs:106:    fn width(&self) -> u16 {
 src/indicatif-0.18.6/src/term_like.rs:13:    fn width(&self) -> u16;
 src/indicatif-0.18.6/src/term_like.rs:39:impl TermLike for Term {
 src/indicatif-0.18.6/src/term_like.rs:40:    fn width(&self) -> u16 {
+PASS  indicatif 0.18.6 implements TermLike for console::Term
 --- indicatif 0.18.6 term_like.rs (how width reaches the draw code)
 use std::fmt::Debug;
 use std::io;
@@ -638,25 +768,6 @@ pub trait TermLike: Debug + Send + Sync {
 
 impl TermLike for Term {
     fn width(&self) -> u16 {
---- indicatif 0.18.6: divisions by a width value (the ts flood hazard analogue)
-src/indicatif-0.18.6/src/draw_target.rs:702:        let terminal_len = (unwrapped_width as f64 / width as f64).ceil() as usize;
---- indicatif 0.18.6 draw_target.rs: where width() is consumed
-src/indicatif-0.18.6/src/draw_target.rs:159:            TargetKind::Multi { ref state, .. } => state.read().unwrap().draw_target.width(),
-src/indicatif-0.18.6/src/draw_target.rs:160:            TargetKind::TermLike { ref inner, .. } => Some(inner.width()),
-src/indicatif-0.18.6/src/draw_target.rs:378:            Self::Multi { state, .. } => state.draw_target.width(),
-src/indicatif-0.18.6/src/draw_target.rs:379:            Self::TermLike { term_like, .. } => Some(term_like.width()),
-src/indicatif-0.18.6/src/draw_target.rs:539:        let term_width = term.width() as usize;
-src/indicatif-0.18.6/src/draw_target.rs:701:        let unwrapped_width = self.console_width();
-src/indicatif-0.18.6/src/state.rs:153:        let width = self.draw_target.width();
-src/indicatif-0.18.6/src/state.rs:203:        let width = drawable.width();
-src/indicatif-0.18.6/src/style.rs:757:            let c_width = c.width().unwrap_or(0);
---- prodash 31.0.0 declared rust-version (codex asserted 1.85)
-prodash newest unyanked 31.0.0 rust_version= 1.74 license= MIT
-
-===== 14. SUPPLEMENT 3: THE DIVIDE-BY-WIDTH SITE AT 0.18.6 =====
---- indicatif 0.18.6 src/term_like.rs impl TermLike for Term (width source)
-impl TermLike for Term {
-    fn width(&self) -> u16 {
         self.size().1
     }
 
@@ -667,72 +778,106 @@ impl TermLike for Term {
     fn move_cursor_up(&self, n: usize) -> io::Result<()> {
         self.move_cursor_up(n)
     }
+PASS  TermLike::width is the trait method the draw target consumes
+--- indicatif 0.18.6: divisions by a width value (the ts flood hazard analogue)
+src/indicatif-0.18.6/src/draw_target.rs:702:        let terminal_len = (unwrapped_width as f64 / width as f64).ceil() as usize;
+PASS  0.18.6 divisions by a width value in src/ (match count) == 1
+--- indicatif 0.18.6 draw_target.rs: where width() is consumed
+src/indicatif-0.18.6/src/draw_target.rs:159:            TargetKind::Multi { ref state, .. } => state.read().unwrap().draw_target.width(),
+src/indicatif-0.18.6/src/draw_target.rs:160:            TargetKind::TermLike { ref inner, .. } => Some(inner.width()),
+src/indicatif-0.18.6/src/draw_target.rs:378:            Self::Multi { state, .. } => state.draw_target.width(),
+src/indicatif-0.18.6/src/draw_target.rs:379:            Self::TermLike { term_like, .. } => Some(term_like.width()),
+src/indicatif-0.18.6/src/draw_target.rs:539:        let term_width = term.width() as usize;
+src/indicatif-0.18.6/src/draw_target.rs:701:        let unwrapped_width = self.console_width();
+src/indicatif-0.18.6/src/multi.rs:360:        let width = self.draw_target.width().map(usize::from);
+src/indicatif-0.18.6/src/multi.rs:398:        let width = match self.draw_target.width() {
+src/indicatif-0.18.6/src/state.rs:153:        let width = self.draw_target.width();
+src/indicatif-0.18.6/src/state.rs:203:        let width = drawable.width();
+src/indicatif-0.18.6/src/style.rs:757:            let c_width = c.width().unwrap_or(0);
+--- prodash 31.0.0 declared rust-version (codex asserted 1.85)
+VOLATILE: prodash newest unyanked 31.0.0 rust_version= 1.74 license= MIT
+
+===== 14. SUPPLEMENT 3: THE DIVIDE-BY-WIDTH SITE AT 0.18.6 =====
+--- indicatif 0.18.6 src/term_like.rs impl TermLike for Term (width source)
+39:impl TermLike for Term {
+40-    fn width(&self) -> u16 {
+41-        self.size().1
+42-    }
+43-
+44-    fn height(&self) -> u16 {
+45-        self.size().0
+46-    }
+47-
+48-    fn move_cursor_up(&self, n: usize) -> io::Result<()> {
+49-        self.move_cursor_up(n)
+50-    }
+51-
+PASS  Term's width is console::Term::size().1
 --- indicatif 0.18.6 src/draw_target.rs around the division (line 690-720)
-685	if column > width {
-686	num_lines += 1;
-687	column = ch_width;
-688	}
-689	}
-690	}
-691	Metrics {
-692	height: num_lines.into(),
-693	last_line_width: column,
-694	}
-695	}
-696	    12	
-697	#[cfg(not(feature = "unicode-width"))]
-698	fn wrapped_metrics(&self, width: usize) -> Metrics {
-699	// Calculate real length based on terminal width
-700	// This take in account linewrap from terminal
-701	let unwrapped_width = self.console_width();
-702	let terminal_len = (unwrapped_width as f64 / width as f64).ceil() as usize;
-703	    19	
-704	// If the line is effectively empty (for example when it consists
-705	// solely of ANSI color code sequences, count it the same as a
-706	// new line. If the line is measured to be len = 0, we will
-707	// subtract with overflow later.
-708	let height = usize::max(terminal_len, 1);
-709	Metrics {
-710	height: height.into(),
-711	last_line_width: unwrapped_width - width * (height - 1),
-712	}
-713	}
-714	    30	
-715	#[cfg(not(feature = "unicode-width"))]
-716	fn console_width(&self) -> usize {
-717	console::measure_text_width(self.as_ref())
-718	}
+690	        }
+691	        Metrics {
+692	            height: num_lines.into(),
+693	            last_line_width: column,
+694	        }
+695	    }
+696	
+697	    #[cfg(not(feature = "unicode-width"))]
+698	    fn wrapped_metrics(&self, width: usize) -> Metrics {
+699	        // Calculate real length based on terminal width
+700	        // This take in account linewrap from terminal
+701	        let unwrapped_width = self.console_width();
+702	        let terminal_len = (unwrapped_width as f64 / width as f64).ceil() as usize;
+703	
+704	        // If the line is effectively empty (for example when it consists
+705	        // solely of ANSI color code sequences, count it the same as a
+706	        // new line. If the line is measured to be len = 0, we will
+707	        // subtract with overflow later.
+708	        let height = usize::max(terminal_len, 1);
+709	        Metrics {
+710	            height: height.into(),
+711	            last_line_width: unwrapped_width - width * (height - 1),
+712	        }
+713	    }
+714	
+715	    #[cfg(not(feature = "unicode-width"))]
+716	    fn console_width(&self) -> usize {
+717	        console::measure_text_width(self.as_ref())
+718	    }
 719	}
-720	    36	
-721	impl AsRef<str> for LineType {
-722	fn as_ref(&self) -> &str {
-723	match self {
-724	LineType::Text(s) | LineType::Bar(s) => s,
-725	LineType::Empty => "",
+720	
+division at 1-based line 702 guarded by #[cfg(not(feature = "unicode-width"))]
+PASS  the only division by width sits under #[cfg(not(feature = "unicode-width"))]
 --- and the same region at the moving main branch, for comparison
-696-
-697-    #[cfg(not(feature = "unicode-width"))]
-698-    fn wrapped_metrics(&self, width: usize) -> Metrics {
-699-        // Calculate real length based on terminal width
-700-        // This take in account linewrap from terminal
-701-        let unwrapped_width = self.console_width();
-702:        let terminal_len = (unwrapped_width as f64 / width as f64).ceil() as usize;
-703-
-704-        // If the line is effectively empty (for example when it consists
-705-        // solely of ANSI color code sequences, count it the same as a
-706-        // new line. If the line is measured to be len = 0, we will
-707-        // subtract with overflow later.
-708:        let height = usize::max(terminal_len, 1);
-709-        Metrics {
-710-            height: height.into(),
-711-            last_line_width: unwrapped_width - width * (height - 1),
-712-        }
-713-    }
-714-
-715-    #[cfg(not(feature = "unicode-width"))]
-716-    fn console_width(&self) -> usize {
-717-        console::measure_text_width(self.as_ref())
-718-    }
+VOLATILE: 697:    #[cfg(not(feature = "unicode-width"))]
+VOLATILE: 698-    fn wrapped_metrics(&self, width: usize) -> Metrics {
+VOLATILE: 699-        // Calculate real length based on terminal width
+VOLATILE: 700-        // This take in account linewrap from terminal
+VOLATILE: 701-        let unwrapped_width = self.console_width();
+VOLATILE: 702-        let terminal_len = (unwrapped_width as f64 / width as f64).ceil() as usize;
+VOLATILE: 703-
+VOLATILE: 704-        // If the line is effectively empty (for example when it consists
+VOLATILE: 705-        // solely of ANSI color code sequences, count it the same as a
+VOLATILE: 706-        // new line. If the line is measured to be len = 0, we will
+VOLATILE: 707-        // subtract with overflow later.
+VOLATILE: 708-        let height = usize::max(terminal_len, 1);
+VOLATILE: 709-        Metrics {
+VOLATILE: 710-            height: height.into(),
+VOLATILE: 711-            last_line_width: unwrapped_width - width * (height - 1),
+VOLATILE: 712-        }
+VOLATILE: 713-    }
+VOLATILE: 714-
+VOLATILE: 715:    #[cfg(not(feature = "unicode-width"))]
+VOLATILE: 716-    fn console_width(&self) -> usize {
+VOLATILE: 717-        console::measure_text_width(self.as_ref())
+VOLATILE: 718-    }
+VOLATILE: 719-}
+VOLATILE: 720-
+VOLATILE: 721-impl AsRef<str> for LineType {
+VOLATILE: 722-    fn as_ref(&self) -> &str {
+VOLATILE: 723-        match self {
+VOLATILE: 724-            LineType::Text(s) | LineType::Bar(s) => s,
+VOLATILE: 725-            LineType::Empty => "",
+VOLATILE: 726-        }
 
 ===== 15. SUPPLEMENT 4: THE DEFAULT-FEATURE WIDTH PATH AT 0.18.6 =====
 default features are ["unicode-width", "wasmbind"], so the cfg(feature="unicode-width") arm is the one compiled:
@@ -782,15 +927,23 @@ default features are ["unicode-width", "wasmbind"], so the cfg(feature="unicode-
 698	    fn wrapped_metrics(&self, width: usize) -> Metrics {
 699	        // Calculate real length based on terminal width
 700	        // This take in account linewrap from terminal
+default-feature wrapped_metrics starts at 1-based line 667
+per-character loop present: True
+division present in the default-feature arm: False
+PASS  the default-feature width path is a per-character loop and contains no division
 
 ===== 16. SUPPLEMENT 5: DOES indicatif 0.18.6 READ ANY ENVIRONMENT VARIABLE? =====
 --- env access in indicatif-0.18.6/src
 grep exit=1 (1 = no env access anywhere in indicatif src)
+PASS  indicatif 0.18.6 env accesses in src/ (match count) == 0
 --- the string CI as a variable name in indicatif src
 grep exit=1 (1 = indicatif never reads CI)
+PASS  indicatif 0.18.6 occurrences of the literal "CI" in src/ (match count) == 0
 --- is_dumb(): where the TERM read actually lives (console 0.16.6)
 src/console-0.16.6/src/term.rs:579:pub fn is_dumb() -> bool {
 src/console-0.16.6/src/term.rs:586:    match env::var("TERM") {
+PASS  is_dumb() lives in console 0.16.6
+PASS  is_dumb() reads TERM
 
 ===== 17. SUPPLEMENT 6: enable_steady_tick AND finish_and_clear AT 0.18.6 =====
 167-    /// Sets the tab width (default: 8). All tabs will be expanded to this many spaces.
@@ -835,19 +988,33 @@ src/console-0.16.6/src/term.rs:586:    match env::var("TERM") {
 256-    /// Indicates that the progress bar finished
 257-    pub fn is_finished(&self) -> bool {
 258-        self.state().state.is_finished()
+PASS  enable_steady_tick exists and takes a Duration
+PASS  enable_steady_tick doc: spawns a background thread to tick
+PASS  enable_steady_tick doc: advances bars that are very slow by themselves
+PASS  finish_and_clear exists (the cleared-on-both-paths criterion)
+PASS  is_hidden exists (a suppressed path is observable)
 
 ===== 18. SUPPLEMENT 7: THE TWO CANDIDATES ONLY THE CODEX RAW SURVEYED =====
 --- prodash: rust-version on the MOVING main branch vs the PUBLISHED 31.0.0 artifact
-main Cargo.toml: rust-version = "1.85"
+PASS  prodash Cargo.toml on main (moving branch) (fetched, non-empty body)
+VOLATILE: main Cargo.toml: rust-version = "1.85"
+PASS  prodash 31.0.0 published artifact (fetched, non-empty body)
 published 31.0.0 Cargo.toml: rust-version = "1.74"
 license = "MIT"
+PASS  prodash 31.0.0 published rust-version is 1.74 (not the 1.85 the codex raw read off main)
+PASS  prodash 31.0.0 license is MIT (gate 1 passes)
+PASS  prodash main declares 1.85, which is where the codex figure came from
 --- prodash CI matrix (gate 4: macOS required)
-19:    runs-on: ubuntu-latest
-49:    runs-on: ubuntu-latest
-65:    runs-on: ubuntu-latest
-87:  build-and-test-on-windows:
-88:    runs-on: windows-latest
-94:      shell: bash  # Use `bash` even on Windows, for `set -e` behavior.
+PASS  prodash ci.yml on main (moving branch) (fetched, non-empty body)
+VOLATILE: 19:    runs-on: ubuntu-latest
+VOLATILE: 49:    runs-on: ubuntu-latest
+VOLATILE: 65:    runs-on: ubuntu-latest
+VOLATILE: 87:  build-and-test-on-windows:
+VOLATILE: 88:    runs-on: windows-latest
+VOLATILE: 94:      shell: bash  # Use `bash` even on Windows, for `set -e` behavior.
+VOLATILE: prodash CI jobs: ubuntu-latest=3 windows-latest=1 macos-mentions=0
+PASS  prodash CI macOS mentions (gate 4 fails at 0) == 0
+PASS  prodash CI does run on ubuntu-latest, so the file was read
 --- prodash default features (gate 5)
 38:[features]
 39-default = ["progress-tree"]
@@ -862,8 +1029,17 @@ license = "MIT"
 48-    "unicode-width",
 49-]
 50-render-line-autoconfigure = ["is-terminal"]
+PASS  prodash 31.0.0 default features
 --- prodash RustSec
-404
+PASS  rustsec prodash (404 expected = no advisory page) HTTP == 404
 --- spinner (TheNeikos): license and archived state (codex excluded it on both)
-newest unyanked: 0.5.0 2019-11-04T10:14:59.523701Z license: LGPL-3.0 rust_version: None
-TheNeikos/spinner archived=true stars=10 pushed_at=2020-04-20T19:13:44Z
+PASS  crates.io versions spinner (fetched, non-empty body)
+VOLATILE: newest unyanked: 0.5.0 2019-11-04T10:14:59.523701Z license: LGPL-3.0 rust_version: None
+PASS  spinner newest unyanked version:license (gate 1 fails on LGPL-3.0) == 0.5.0:LGPL-3.0
+PASS  gh repo record TheNeikos/spinner (gh api ok)
+VOLATILE: TheNeikos/spinner archived=true stars=10 pushed_at=2020-04-20T19:13:44Z
+PASS  TheNeikos/spinner is archived (maintenance rubric)
+
+===== DONE =====
+checks: 168 pass / 0 fail
+RESULT: PASS — every asserted claim held at the pinned versions and recorded endpoints.
