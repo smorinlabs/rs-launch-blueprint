@@ -1,0 +1,82 @@
+{
+  "actor": "controller-opus-5",
+  "authorization_ref": "OWNER-2026-09-12-Q3A",
+  "created_at": "2026-09-12T20:40:04Z",
+  "events": [
+    {
+      "actor": "controller-opus-5",
+      "at": "2026-09-12T20:40:04Z",
+      "state": "ready"
+    },
+    {
+      "actor": "research-doxa-2026-09-12T204004Z-d02022bf6f42",
+      "at": "2026-09-12T20:40:39Z",
+      "operation": {
+        "actor": "research-doxa-2026-09-12T204004Z-d02022bf6f42",
+        "at": "2026-09-12T20:40:39Z",
+        "model": "all_deep_research (openai gpt-5.6-sol reasoning_effort max, perplexity sonar-deep-research, gemini deep-research-preview-04-2026)",
+        "provider": "doxa",
+        "request_id": "be604bc130444c4e87f3aed819165240",
+        "state": "submitting"
+      },
+      "provider": "doxa",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-doxa-2026-09-12T204004Z-d02022bf6f42",
+      "at": "2026-09-12T20:40:46Z",
+      "operation": {
+        "actor": "research-doxa-2026-09-12T204004Z-d02022bf6f42",
+        "actual_model": "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026",
+        "actual_provider": "doxa-research 3.3.0 via scripts/doxa_no_retry.py; openai job resp_0f35fca190a9affa006aa5b8cacd4487d0a558b2710e1fa9af running; perplexity job fd682459-916c-423b-84b3-6c8e275a8b2a running; gemini job v1_Chd6TGlsYXB1UEQ5aWR6N0lQbFpHOS1BaxIXekxpbGFwdVBEOWlkejdJUGxaRzktQWs running",
+        "at": "2026-09-12T20:40:39Z",
+        "model": "all_deep_research (openai gpt-5.6-sol reasoning_effort max, perplexity sonar-deep-research, gemini deep-research-preview-04-2026)",
+        "operation_id": "research-20260912-134041-a1150ec8a7594fa0",
+        "provider": "doxa",
+        "request_id": "be604bc130444c4e87f3aed819165240",
+        "returned_at": "2026-09-12T20:40:46Z",
+        "state": "submitted"
+      },
+      "provider": "doxa",
+      "state": "submitted"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "ac892cb5dc2aa4605b968e9fcc67110c324a36b241996c6bb057f046877c5aa3",
+    "parameters_semantic": "9ab00ca6a5f316a058d743e4bf9b711ccb2c47a5a2ed7f39b7eafa0fcb13377e",
+    "parameters_semantic_file": "53ce162e1b844b2810c92eb62cdda8d1561d56347a374e213291e9256f63b8fc",
+    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+    "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+    "prerequisites": "97bb8c4cd666f9d36af827027ec4287c61b96fadfe6132fefe6dcec83e5aa945",
+    "prompt": "8654e010c4f7ae48b1612d56d3ef22a487c7491baa32599c06e62e4f7a2e1a65",
+    "registry": "d9d836cbff547bfbf46510105ad743a5c60f69d6b597c292c0c2be9b26ce1d26"
+  },
+  "item": "R69",
+  "model": "claude-opus-5",
+  "operations": {
+    "doxa": {
+      "actor": "research-doxa-2026-09-12T204004Z-d02022bf6f42",
+      "actual_model": "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026",
+      "actual_provider": "doxa-research 3.3.0 via scripts/doxa_no_retry.py; openai job resp_0f35fca190a9affa006aa5b8cacd4487d0a558b2710e1fa9af running; perplexity job fd682459-916c-423b-84b3-6c8e275a8b2a running; gemini job v1_Chd6TGlsYXB1UEQ5aWR6N0lQbFpHOS1BaxIXekxpbGFwdVBEOWlkejdJUGxaRzktQWs running",
+      "at": "2026-09-12T20:40:39Z",
+      "model": "all_deep_research (openai gpt-5.6-sol reasoning_effort max, perplexity sonar-deep-research, gemini deep-research-preview-04-2026)",
+      "operation_id": "research-20260912-134041-a1150ec8a7594fa0",
+      "provider": "doxa",
+      "request_id": "be604bc130444c4e87f3aed819165240",
+      "returned_at": "2026-09-12T20:40:46Z",
+      "state": "submitted"
+    }
+  },
+  "prompt_source": "research/topics/69-web-framework-stack/prompts/web-framework-stack.prompt.md",
+  "remaining_budget": "one all_deep_research operation under the USD 300 blanket ceiling; owner answered Q3.A on 2026-09-12 admitting R69 alone",
+  "required_engines": [
+    "codex",
+    "opus",
+    "doxa"
+  ],
+  "run_id": "2026-09-12T204004Z-d02022bf6f42",
+  "schema_version": 1,
+  "state": "submitted",
+  "tier": "deep",
+  "updated_at": "2026-09-12T20:40:46Z"
+}
