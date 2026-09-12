@@ -794,6 +794,16 @@
       ],
       "evidence_checks": [],
       "acceptance_after": []
+    },
+    "R86": {
+      "tier": "deep",
+      "engines": [
+        "codex",
+        "opus",
+        "doxa"
+      ],
+      "evidence_checks": [],
+      "acceptance_after": []
     }
   }
 }
