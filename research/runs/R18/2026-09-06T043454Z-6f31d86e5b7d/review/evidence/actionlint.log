@@ -165,3 +165,72 @@ mutant2.yml:171:70: property "credentail" is not defined in object type {credent
 exit=1   # 1 = the linter catching a wiring typo this decision could not
 
 # END of revision-6 second addendum
+
+# ---- revision-6 addendum, third capture: the JA-06 correction ----
+# captured: 2026-09-12T20:09:07Z
+# cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence
+# Nothing above this line was altered. This block exists because the two r5
+# fixtures were CHANGED again after the second capture: each gained ONE
+# comment entry in its 'WHAT AN ADOPTER ACCEPTS BY INSTALLING A CREDENTIAL'
+# header block, recording that a repository whose credential predates the
+# files gets the lane live with no act of acceptance and nothing printed.
+# No YAML key, expression, permission, trigger or pin was touched; the change
+# is entirely inside the leading comment header, above the 'name:' key.
+
+$ actionlint --version
+1.7.12
+installed by building from source
+built with go1.26.1 compiler for darwin/arm64
+exit=0
+
+# R6-8 — the fixtures as they now stand, re-linted because the bytes the
+#        second capture linted are no longer the bytes on disk.
+$ actionlint candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+exit=0   # 0 = clean, no diagnostics printed
+
+# R6-9 — the regions this correction must not have touched, re-checked
+#        directly rather than assumed.
+$ grep -c "^ *uses: anthropics/claude-code-action@v1.0.220$" candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+candidate-claude-code-review.r5.yml:1
+candidate-claude.r5.yml:1
+exit=0
+$ grep -c "outputs.credential != " candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+candidate-claude-code-review.r5.yml:0
+candidate-claude.r5.yml:0
+exit=1   # two printed zeros with grep -c exit 1 IS the zero-match result
+$ for f in ...r5.yml; do sed -n '/^name: /,$p' $f | grep -c "type != 'Bot'"; done
+  candidate-claude-code-review.r5.yml    2
+  candidate-claude.r5.yml                5
+exit=0   # review lane 2, assistant lane 5 — unchanged by this correction
+
+# R6-10 — THE FINDING ITSELF, executed rather than only read. The preflight's
+#         detecting step is extracted verbatim from the review-lane fixture
+#         and run twice under a bash that mimics the runner: once with no
+#         credential in the environment, once with ANTHROPIC_API_KEY already
+#         present as it would be in a repository that installed it for an
+#         unrelated purpose. GITHUB_OUTPUT and GITHUB_STEP_SUMMARY are
+#         separate empty files per case, so both are measured, not inferred.
+$ python3 -c 'extract the detect step body from candidate-claude-code-review.r5.yml' > detect-step.sh
+exit=0
+$ diff <(sed -n '136,160p' candidate-claude-code-review.r5.yml | cut -c11-) detect-step.sh
+exit=0   # 0 = the extracted script IS the fixture's step body, lines 136-160
+$ ( none ) bash detect-step.sh
+exit=0
+  GITHUB_OUTPUT      : credential=none
+  stdout             : ::notice title=Claude review not configured::No Claude credential is set, so the review job is skipped. This is not an error.
+  ::notice lines     : 1
+  step-summary bytes : 544
+$ ( preexisting-static ) bash detect-step.sh
+exit=0
+  GITHUB_OUTPUT      : credential=static
+  stdout             : Claude credential shape detected: static
+  ::notice lines     : 0
+  step-summary bytes : 0
+# READING: with no credential the step publishes credential=none, prints one
+# ::notice and writes a 544-byte step summary. With a pre-existing
+# ANTHROPIC_API_KEY it publishes credential=static, prints ZERO ::notice
+# lines and writes ZERO bytes of step summary — and each real job's gate,
+# "== 'static' || == 'federation'", is TRUE on that output. That is JA-06:
+# both lanes go live, nothing is printed, and no act of acceptance is taken.
+
+# END of revision-6 third addendum

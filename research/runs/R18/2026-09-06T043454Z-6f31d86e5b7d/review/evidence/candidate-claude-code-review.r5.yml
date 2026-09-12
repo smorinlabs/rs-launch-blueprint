@@ -76,6 +76,12 @@
 # WHAT AN ADOPTER ACCEPTS BY INSTALLING A CREDENTIAL. Under this design there is
 # no flag to set, so installing a credential is itself the act of acceptance,
 # and it is taken by whoever installs it:
+#   AND IF THE CREDENTIAL IS ALREADY THERE, NOBODY ACCEPTS ANYTHING: a
+#   repository that already holds ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN
+#   as a secret for any other purpose gets this lane live on the next
+#   qualifying event with no act of acceptance taken and nothing printed — the
+#   notice below fires only when NO credential is found — so everything listed
+#   here is accepted by default rather than by choice.
 #   1. Enabling this lane on a PUBLIC repository accepts a residual that no
 #      configuration in this file removes. A pull-request diff written by a
 #      write-access author is trusted-author content that routinely quotes
