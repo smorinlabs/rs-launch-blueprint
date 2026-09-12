@@ -414,7 +414,7 @@ features: {'application': ['bugreport', 'build-assets', 'minimal-application'], 
 {"open_issues_total_count":310}
 
 --- jj-vcs/jj ---
-{"archived":false,"license":"Apache-2.0","pushed_at":"2026-09-12T19:22:55Z","stars":31543}
+{"archived":false,"license":"Apache-2.0","pushed_at":"2026-09-12T19:37:49Z","stars":31543}
 {"open_issues_total_count":810}
 
 --- AMythicDev/minus ---
@@ -839,7 +839,7 @@ license           registry=[MIT OR Apache-2.0]
 
 
 ========== 13. done ==========
-2026-09-12T19:27:10Z
+2026-09-12T19:39:40Z
 
 
 ========== 14. appendix: platform-conditional code in the two tokenizers, and the exact unsafe site on shlex::split ==========
@@ -1075,4 +1075,4 @@ S98 PASS shlex bytes.rs has no platform-conditional code
 S99 PASS the strict gate-2 reading is recorded in the execution ledger
 
 assertions: 103   failures: 0
-retrieved: 2026-09-12T19:27:10Z
+retrieved: 2026-09-12T19:39:40Z
