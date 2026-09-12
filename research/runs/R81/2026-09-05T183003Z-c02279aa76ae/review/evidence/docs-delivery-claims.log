@@ -17,6 +17,8 @@ PASS  crates.io query exit                                       0
 PASS  mdbook 0.5.4 is MPL-2.0                                    present
 PASS  cobalt-bin is MIT (permissive Rust SSG)                    present
 PASS  mdbook-mermaid is MPL-2.0                                  present
+PASS  mdbook-admonish 1.20.0 is MIT                              present
+PASS  mdbook-alerts 0.8.0 is MIT                                 present
 PASS  zola registry entry is a yanked placeholder                present
 
 === check 3 — GitHub repository licence and archived flag ===
@@ -30,11 +32,17 @@ actions/deploy-pages               MIT archived=false
 PASS  rust-lang/mdBook licence                                   MPL-2.0
 PASS  rust-lang/mdBook archived                                  false
 PASS  getzola/zola licence                                       EUPL-1.2
+PASS  getzola/zola archived                                      false
+PASS  rs-mdbook-alerts licence                                   MIT
 PASS  rs-mdbook-alerts archived                                  true
+PASS  mdbook-mermaid repo licence                                MPL-2.0
 PASS  mdbook-mermaid archived                                    false
 PASS  actions/configure-pages licence                            MIT
+PASS  actions/configure-pages archived                           false
 PASS  actions/upload-pages-artifact licence                      MIT
+PASS  actions/upload-pages-artifact archived                     false
 PASS  actions/deploy-pages licence                               MIT
+PASS  actions/deploy-pages archived                              false
 
 === check 4 — RustSec ===
 PASS  rustsec.org/packages/mdbook.html                           200
@@ -90,9 +98,15 @@ PASS  goals: mdbook installed and run                            present
 PASS  goals: configure-pages present                             1
 PASS  goals: upload-pages-artifact                               1
 PASS  goals: deploy-pages present                                1
+PASS  spotifyd: configure-pages present                          1
+PASS  spotifyd: upload-pages-artifact                            1
 PASS  spotifyd: deploy-pages present                             1
+PASS  spotifyd: mdbook installed and run                         present
 goals action pins: actions/configure-pages@v5 actions/deploy-pages@v4 actions/upload-pages-artifact@v3 
 spotifyd action pins: actions/configure-pages@v3 actions/deploy-pages@v4 actions/upload-pages-artifact@v3 
+PASS  goals pins (sorted)                                        actions/configure-pages@v5 actions/deploy-pages@v4 actions/upload-pages-artifact@v3
+PASS  spotifyd pins (sorted)                                     actions/configure-pages@v3 actions/deploy-pages@v4 actions/upload-pages-artifact@v3
+PASS  no adopter pins configure-pages@v6                         0
 PASS  goals pinned run 34280395920 conclusion                    success
 PASS  goals pinned run event                                     push
 PASS  goals Pages build_type                                     workflow
@@ -102,7 +116,7 @@ PASS  published site responds                                    200
 === check 8 — licence walk over the resolved dependency tree of mdbook = "=0.5.4" ===
 lock registry packages: 218 ; snapshot entries: 218 ; mode: snapshot+sample
 ASSERT lock_matches_snapshot=True
-ASSERT sample_12_matches_snapshot=True
+ASSERT sample_16_matches_snapshot=True
  120  MIT OR Apache-2.0
   49  MIT
    8  MPL-2.0
@@ -127,8 +141,19 @@ non-permissive-only (GPL/AGPL/EUPL/SSPL with no permissive arm): none
 query errors: none
 packages with no declared licence: none
 noteworthy: font-awesome-as-a-crate 0.3.1=CC-BY-4.0 AND MIT ; r-efi 6.0.0=MIT OR Apache-2.0 OR LGPL-2.1-or-later
+conjunctive (AND) expressions (4):
+      elasticlunr-rs 3.1.0 = (MIT OR Apache-2.0) AND MIT
+      font-awesome-as-a-crate 0.3.1 = CC-BY-4.0 AND MIT
+      matchit 0.8.4 = MIT AND BSD-3-Clause
+      unicode-ident 1.0.24 = (MIT OR Apache-2.0) AND Unicode-3.0
+ASSERT conjunctive_set_is_exactly_the_four_recorded=True
+LGPL-mentioning expressions (2): r-efi 5.3.0 = MIT OR Apache-2.0 OR LGPL-2.1-or-later; r-efi 6.0.0 = MIT OR Apache-2.0 OR LGPL-2.1-or-later
+ASSERT lgpl_only_as_a_disjunctive_arm_of_r_efi=True
+legacy slash-syntax disjunctions (8): fnv 1.0.7 = Apache-2.0 / MIT; ident_case 1.0.1 = MIT/Apache-2.0; pathdiff 0.2.3 = MIT/Apache-2.0; same-file 1.0.6 = Unlicense/MIT; serde_urlencoded 0.7.1 = MIT/Apache-2.0; siphasher 1.0.3 = MIT/Apache-2.0; version_check 0.9.5 = MIT/Apache-2.0; walkdir 2.5.0 = Unlicense/MIT
 ASSERT mpl_are_exactly_the_mdbook_family=True
-ASSERT no_strong_copyleft_in_tree=True
+ASSERT no_reciprocal_licence_stronger_than_mpl2_in_tree=True
+partition: 218 total = 8 MPL-2.0 + 4 conjunctive + 2 r-efi-LGPL-disjunction + 8 legacy-slash + 196 single-or-disjunctive-permissive
+ASSERT partition_is_218_8_4_2_8_196=True
 PASS  licence walk exit                                          0
 
 === check 9 — MPL-2.0 is file-level (Mozilla FAQ) ===
@@ -142,6 +167,55 @@ PASS  MPL FAQ file-level copyleft sentence                       present
    - assumes target-os-matrix = ubuntu-latest, macos-latest
    - assumes license = MIT OR Apache-2.0
 PASS  parameter round-trip diff                                  empty
+
+=== check 11 — mdBook v0.5.4 release assets (GET /repos/rust-lang/mdBook/releases/tags/v0.5.4) ===
+PASS  release asset query exit                                   0
+   mdbook-v0.5.4-aarch64-apple-darwin.tar.gz
+   mdbook-v0.5.4-aarch64-unknown-linux-musl.tar.gz
+   mdbook-v0.5.4-x86_64-apple-darwin.tar.gz
+   mdbook-v0.5.4-x86_64-pc-windows-msvc.zip
+   mdbook-v0.5.4-x86_64-unknown-linux-gnu.tar.gz
+   mdbook-v0.5.4-x86_64-unknown-linux-musl.tar.gz
+PASS  asset count                                                6
+PASS  asset present: mdbook-v0.5.4-aarch64-apple-darwin.tar.gz   present
+PASS  asset present: mdbook-v0.5.4-aarch64-unknown-linux-musl.tar.gz present
+PASS  asset present: mdbook-v0.5.4-x86_64-apple-darwin.tar.gz    present
+PASS  asset present: mdbook-v0.5.4-x86_64-pc-windows-msvc.zip    present
+PASS  asset present: mdbook-v0.5.4-x86_64-unknown-linux-gnu.tar.gz present
+PASS  asset present: mdbook-v0.5.4-x86_64-unknown-linux-musl.tar.gz present
+PASS  NO aarch64-unknown-linux-gnu asset                         0
+PASS  ubuntu-latest (x86_64 Linux glibc) asset count             1
+PASS  macos-latest (aarch64 macOS) asset count                   1
+
+=== check 12 — revision-2 diff against the revision-1 blob ===
+PASS  revision-1 blob read exit                                  0
+PASS  revision-1 blob sha256                                     204949689ccc0c3190c2479ca80d5c18f9fd9753931cffcf78706190d75ff21d
+PASS  revision-1 blob is non-empty                               yes
+PASS  region byte-identical to revision 1: engine report lines          3 lines
+PASS  region byte-identical to revision 1: disagreements 2, 3 and 4     27 lines
+PASS  region byte-identical to revision 1: unproven entries 1-5         38 lines
+PASS  region byte-identical to revision 1: what P03 must validate       10 lines
+PASS  region byte-identical to revision 1: baseline-review F357 line    1 lines
+PASS  region byte-identical to revision 1: principles and implementation 119 lines
+PASS  F3 region updated and carries the delta reference: Disagreement 1 closing sentence
+PASS  F3 region updated and carries the delta reference: baseline-review F358 line
+PASS  preserved verbatim: no adopter of the exact Pages-action majors is claimed
+PASS  preserved verbatim: no local renderer matches the host's dialect
+PASS  preserved verbatim: identical rendering rests on inspection
+whole-file unified-diff hunks: 11
+      @@ -1,4 +1,22 @@
+      @@ -31,10 +49,17 @@
+      @@ -68,23 +93,50 @@
+      @@ -128,7 +180,7 @@
+      @@ -270,10 +322,25 @@
+      @@ -295,7 +362,9 @@
+      @@ -318,10 +387,15 @@
+      @@ -334,15 +408,39 @@
+      @@ -353,17 +451,23 @@
+      @@ -391,7 +495,10 @@
+      @@ -468,7 +575,37 @@
+ASSERT hunk_count_is_11=True
+PASS  revision-2 untouched-region diff                           0
 
 === result ===
 failed assertions: 0

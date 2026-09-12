@@ -334,6 +334,93 @@ assert "ubuntu-latest (x86_64 Linux glibc) asset count" "1" \
 assert "macos-latest (aarch64 macOS) asset count" "1" \
   "$(grep -c 'aarch64-apple-darwin' "$SNAP/.mdbook-v0.5.4-assets.txt")"
 
+# ---------------------------------------------------------------- check 12
+# Revision 2 answers four audit findings. This check proves mechanically which
+# parts of revision 1 it did NOT touch, by diffing the current DECISION.md
+# against the revision-1 git blob and asserting that each region the audit did
+# not challenge is byte-identical. The blob id is stable across later commits.
+hdr "check 12 — revision-2 diff against the revision-1 blob"
+R1BLOB=f098d011723244c43e9673ce9633ce562829681d
+git -C "$REPO_ROOT" cat-file blob "$R1BLOB" > "$SNAP/.decision-r1.md"
+assert "revision-1 blob read exit" "0" "$?"
+assert "revision-1 blob sha256" "204949689ccc0c3190c2479ca80d5c18f9fd9753931cffcf78706190d75ff21d" \
+  "$(shasum -a 256 "$SNAP/.decision-r1.md" | awk '{print $1}')"
+assert "revision-1 blob is non-empty" "yes" \
+  "$([ -s "$SNAP/.decision-r1.md" ] && echo yes || echo no)"
+python3 - "$SNAP/.decision-r1.md" "$EV/../DECISION.md" <<'PY'
+import sys
+r1=open(sys.argv[1]).read().splitlines(True); r2=open(sys.argv[2]).read().splitlines(True)
+def region(lines,start,ends):
+    i=[k for k,l in enumerate(lines) if l.startswith(start)]
+    if not i: return None
+    i=i[0]
+    for k in range(i+1,len(lines)):
+        if any(lines[k].startswith(e) for e in ends): return lines[i:k]
+    return None
+# Regions the audit did not challenge: asserted byte-identical to revision 1.
+REGIONS=[
+ ("engine report lines",        "- **codex** `raw/codex-",                      ["**Disagreement 1"]),
+ ("disagreements 2, 3 and 4",   "**Disagreement 2 — Zola's standing.**",        ["**Unproven, with what would prove it.**"]),
+ ("unproven entries 1-5",       "**Unproven, with what would prove it.**",      ["**What P03 must validate.**"]),
+ ("what P03 must validate",     "**What P03 must validate.**",                  ["**Revision history.**","**Uncertainty.**"]),
+ ("baseline-review F357 line",  "BASELINE-REVIEW: F357",                        ["","BASELINE-REVIEW: F358"]),
+ ("principles and implementation", "### Principles and implementation",         ["re-verify:"]),
+]
+bad=0
+for name,start,ends in REGIONS:
+    a,b=region(r1,start,ends),region(r2,start,ends)
+    if a is None or b is None:
+        print("FAIL  region marker not found: %-34s r1=%s r2=%s"%(name,a is not None,b is not None)); bad+=1
+    elif a==b:
+        print("PASS  region byte-identical to revision 1: %-28s %d lines"%(name,len(a)))
+    else:
+        print("FAIL  region CHANGED: %s"%name); bad+=1
+        for l in a:
+            if l not in b: print("        r1-only: %s"%l.rstrip()[:120])
+# The two places in Engines and the baseline-review lines that finding F3 DOES
+# change: asserted to have changed, and to carry the branch-A delta reference.
+CHANGED_BY_F3=[
+ ("Disagreement 1 closing sentence", "**Disagreement 1 — ship a generator",
+  ["**Disagreement 2"], "the complete branch-A delta enumerated in `## Decision`"),
+ ("baseline-review F358 line",       "BASELINE-REVIEW: F358",
+  ["","### Principles"], "the complete branch-A delta as enumerated above"),
+]
+for name,start,ends,frag in CHANGED_BY_F3:
+    a,b=region(r1,start,ends),region(r2,start,ends)
+    if a is None or b is None:
+        print("FAIL  F3 region marker not found: %s"%name); bad+=1; continue
+    if a==b:
+        print("FAIL  F3 region NOT updated (still revision-1 text): %s"%name); bad+=1
+    elif frag in "".join(b):
+        print("PASS  F3 region updated and carries the delta reference: %s"%name)
+    else:
+        print("FAIL  F3 region changed but lacks the delta reference: %s"%name); bad+=1
+# Two sentences the audit explicitly said to preserve, asserted as literal text.
+PRESERVE=[
+ ("no adopter of the exact Pages-action majors is claimed",
+  "not the `v6.0.0`/`v5.0.0`/`v5.0.1`\n   majors `opus` recommends"),
+ ("no local renderer matches the host's dialect",
+  "no local renderer reproducing GitHub's exact Markdown semantics\n   was identified"),
+ ("identical rendering rests on inspection",
+  "**Identical rendering on both surfaces is inspected, not verified.**"),
+]
+whole="".join(r2)
+for name,frag in PRESERVE:
+    if frag in whole: print("PASS  preserved verbatim: %s"%name)
+    else: print("FAIL  preserved text MISSING: %s"%name); bad+=1
+import difflib
+hunks=[l for l in difflib.unified_diff(r1,r2,n=3) if l.startswith('@@')]
+print("whole-file unified-diff hunks: %d"%len(hunks))
+for h in hunks: print("      %s"%h.strip())
+# Every hunk must be one of the locations revision 2 set out to edit. The count is
+# gated so a later stray edit cannot slip in as an unremarked change.
+EXPECTED_HUNKS=11
+if len(hunks)==EXPECTED_HUNKS: print("ASSERT hunk_count_is_%d=True"%EXPECTED_HUNKS)
+else: print("ASSERT hunk_count_is_%d=False actual=%d"%(EXPECTED_HUNKS,len(hunks))); bad+=1
+sys.exit(1 if bad else 0)
+PY
+assert "revision-2 untouched-region diff" "0" "$?"
+
 hdr "result"
 say "failed assertions: $FAILS"
 rm -f "$SNAP"/.norm.py "$SNAP"/.cratelic.py
