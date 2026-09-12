@@ -1,0 +1,5 @@
+`raw/codex.md`
+`sha256 6f1d03df7be0ab3afc4c1fc2bed545d0ad0ab55f30b138c10750346e7f9e21fd`
+H3 fields written: 10
+BASELINE-REVIEW: F331 — emitted in report.
+Unverified: resolved-tree MSRV, RustSec counts, platform CI, issue responsiveness, watchexec MSRV, and proposed integration/benchmark checks.
