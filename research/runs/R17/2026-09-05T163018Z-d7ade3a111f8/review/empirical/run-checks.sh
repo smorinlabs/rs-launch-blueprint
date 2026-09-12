@@ -20,6 +20,9 @@ PY_REPO="${PY_REPO:-$HOME/c/py-launch-blueprint}"
 TS_REPO="${TS_REPO:-$HOME/c/ts-launch-blueprint}"
 TH_TAG=v3.95.9            # the TruffleHog action tag py pins
 KF_TAG=v2.2.0             # the Kingfisher release under test
+GHDOCS_PIN=078b5832caa5cde591c2babb389ef447a0ef66eb   # github/docs, resolved from main 2026-09-12;
+                          # pinned because assertions 10h-10i read it, and a docs reorg on a moving
+                          # ref would turn them into failures rather than a printed drift
 KF_DIR="${KF_DIR:-${TMPDIR:-/tmp}/r17-kingfisher}"
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/r17-work.XXXXXX")"
 trap 'rm -rf "$WORK"' EXIT
@@ -309,9 +312,10 @@ IN_SET=$(printf '%s\n' "$BADFLAG_EXIT" "$BADPATH_EXIT" | grep -c -E '^(0|200|205
 assert 10g-neither-tool-error-code-is-in-the-documented-set 0 "$IN_SET"
 # Why an implementer handles the code by hand at all: GitHub's default shell for a
 # run: step is bash -e, so an uncaptured 200 aborts the step before any handler runs.
-# Fetched from a moving ref (github/docs@main); the assertions read the two literal
+# Read at the pinned github/docs commit, and the assertions read the two literal
 # command strings, never the surrounding prose or table layout.
-curl -sSL --max-time 60 "https://raw.githubusercontent.com/github/docs/main/data/reusables/actions/supported-shells.md" -o "$WORK/gh-shells.md"
+curl -sSL --max-time 60 "https://raw.githubusercontent.com/github/docs/$GHDOCS_PIN/data/reusables/actions/supported-shells.md" -o "$WORK/gh-shells.md"
+echo "   github/docs at $GHDOCS_PIN, supported-shells.md sha256: $(shasum -a 256 < "$WORK/gh-shells.md")"
 GH_DEFAULT_SHELL=$(grep -c -- '`bash -e {0}`' "$WORK/gh-shells.md")
 assert 10h-github-default-run-shell-is-bash-dash-e 1 "$GH_DEFAULT_SHELL"
 GH_BASH_SHELL=$(grep -c -- '`bash --noprofile --norc -eo pipefail {0}`' "$WORK/gh-shells.md")
