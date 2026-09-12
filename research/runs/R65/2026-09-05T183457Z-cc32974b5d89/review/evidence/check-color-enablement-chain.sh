@@ -101,7 +101,9 @@ else
 fi
 for t in clap-rs/clap:v4.6.6 rust-lang/cargo:0.99.0 BurntSushi/ripgrep:15.2.0 \
          console-rs/console:0.16.6 owo-colors/owo-colors:v4.4.0 eyre-rs/eyre:color-eyre-v0.6.5 \
-         BurntSushi/termcolor:1.4.1 polyfill-rs/is_terminal_polyfill:v1.70.2; do
+         BurntSushi/termcolor:1.4.1 polyfill-rs/is_terminal_polyfill:v1.70.2 \
+         rust-cli/anstyle:anstream-v1.0.0 rust-cli/anstyle:anstyle-query-v1.1.5 \
+         rust-cli/anstyle:colorchoice-v1.0.5 rust-cli/anstyle:v1.0.14; do
   r=${t%%:*}; g=${t##*:}
   n=$(tags "$r" | grep -cx "$g")
   assert_n "tag exists: $r@$g" 1 "$n"
@@ -203,7 +205,8 @@ echo "        config file at all; that tier is application-owned by construction
 echo
 
 # --------------------------------------------------------------------------
-echo "## 4. The maintainer statement that the FORCE_COLOR omission is deliberate"
+echo "## 4. The on-the-record statement that the FORCE_COLOR omission is deliberate, and"
+echo "     exactly what the saved JSON establishes about who made it"
 ISSUE="$EVID/anstyle-issue-192.json"
 COMMENTS="$EVID/anstyle-issue-192-comments.json"
 curl -sS -f -H "User-Agent: $UA" https://api.github.com/repos/rust-cli/anstyle/issues/192 -o "$ISSUE" \
@@ -218,16 +221,47 @@ assert "the quoted sentence is present in a comment body" 'epage' "$(printf '%s'
 assert "its author's association with the repo" 'COLLABORATOR' "$(printf '%s' "$CMT" | jq -r '.author_association')"
 assert "comment timestamp cited by the raw" '2024-06-04T02:23:48Z' "$(printf '%s' "$CMT" | jq -r '.created_at')"
 printf 'INFO  issue #192 state (VOLATILE — see note): %s\n' "$(jq -r '.state' "$ISSUE")"
+# The role the decision attributes to that commenter, established from a first-party
+# registry endpoint rather than inferred from author_association. Ownership is VOLATILE.
+OWNERS="$EVID/crates-io-anstyle-query-owners.json"
+curl -sS -f -H "User-Agent: $UA" https://crates.io/api/v1/crates/anstyle-query/owners -o "$OWNERS" \
+  || bad "could not fetch crates.io owners of anstyle-query"
+assert "the commenter is a crates.io OWNER of anstyle-query itself (VOLATILE: ownership can change)" \
+  'epage' "$(jq -r '[.users[] | select(.kind=="user") | .login] | join(",")' "$OWNERS" 2>/dev/null)"
+printf 'INFO  crates.io owners of anstyle-query: %s\n' \
+  "$(jq -r '[.users[] | "\(.login)(\(.kind))"] | join(" ")' "$OWNERS" 2>/dev/null)"
+# The same endpoint for clap does NOT name that commenter; the decision therefore claims
+# no clap or cargo maintainer role for him.
+CL_OWNERS="$EVID/crates-io-clap-owners.json"
+sleep 3
+curl -sS -f -H "User-Agent: $UA" https://crates.io/api/v1/crates/clap/owners -o "$CL_OWNERS" \
+  || bad "could not fetch crates.io owners of clap"
+assert_n "crates.io individual owners of clap that are 'epage' (0 — no clap-maintainer claim is made)" 0 \
+  "$(jq -r '[.users[] | select(.kind=="user") | .login] | map(select(.=="epage")) | length' "$CL_OWNERS" 2>/dev/null)"
+printf 'INFO  crates.io owners of clap: %s\n' \
+  "$(jq -r '[.users[] | "\(.login)(\(.kind))"] | join(" ")' "$CL_OWNERS" 2>/dev/null)"
 echo
 
 # --------------------------------------------------------------------------
-echo "## 5. The standards the chain is built on (live pages; snapshotted alongside this log)"
-NOC=$(curl -sS -f https://no-color.org/ | sed -e 's/<[^>]*>//g' | tr '\n' ' ' | tr -s ' ')
-FOC=$(curl -sS -f https://force-color.org/ | sed -e 's/<[^>]*>//g' | tr '\n' ' ' | tr -s ' ')
-BIX=$(curl -sS -f https://bixense.com/clicolors/ | sed -e 's/<[^>]*>//g' | tr '\n' ' ' | tr -s ' ')
-printf '%s' "$NOC" > "$EVID/snapshot-no-color.org.txt"
-printf '%s' "$FOC" > "$EVID/snapshot-force-color.org.txt"
-printf '%s' "$BIX" > "$EVID/snapshot-bixense-clicolors.txt"
+echo "## 5. The standards the chain is built on — READ FROM THE COMMITTED SNAPSHOTS, not live"
+echo "     These three pages are unversioned and editable in place, so the decision's"
+echo "     quotations are asserted against the snapshot files committed in this evidence"
+echo "     directory. This section performs NO network fetch and never overwrites a snapshot."
+echo "     Live re-verification is a separate, opt-in step: R65_REFRESH_SNAPSHOTS=1 writes"
+echo "     <snapshot>-live.txt beside each snapshot, diffs it, and prints an INFO line."
+SNAP_NOC="$EVID/snapshot-no-color.org.txt"
+SNAP_FOC="$EVID/snapshot-force-color.org.txt"
+SNAP_BIX="$EVID/snapshot-bixense-clicolors.txt"
+for s in "$SNAP_NOC" "$SNAP_FOC" "$SNAP_BIX"; do
+  if [ -s "$s" ]; then
+    ok "snapshot read: $(basename "$s")  sha256=$(shasum -a 256 "$s" | cut -d' ' -f1)"
+  else
+    bad "snapshot missing or empty: $s"
+  fi
+done
+NOC=$(cat "$SNAP_NOC" 2>/dev/null)
+FOC=$(cat "$SNAP_FOC" 2>/dev/null)
+BIX=$(cat "$SNAP_BIX" 2>/dev/null)
 assert "no-color.org: NO_COLOR counts when present and non-empty" \
   'when present and not an empty string (regardless of its value), prevents the addition of ANSI color' "$NOC"
 assert "no-color.org FAQ: config files and CLI arguments override NO_COLOR" \
@@ -237,6 +271,29 @@ assert "force-color.org: FORCE_COLOR counts on mere presence (regardless of valu
 assert "bixense CLICOLOR standard now marks itself deprecated" 'This standard is deprecated' "$BIX"
 assert "bixense tells implementers to treat FORCE_COLOR as an alias for CLICOLOR_FORCE" \
   'treat FORCE_COLOR as an alias for CLICOLOR_FORCE' "$BIX"
+# Opt-in live re-verification. Adds no assertion, so the pass/fail inventory of this
+# script is the same with and without it; it only reports drift for the re-verify trigger.
+refresh_one() {  # refresh_one <url> <snapshot-path>
+  local url="$1" snap="$2" live="${2%.txt}-live.txt"
+  if curl -sS -f "$url" | sed -e 's/<[^>]*>//g' | tr '\n' ' ' | tr -s ' ' > "$live"; then
+    if diff -q "$snap" "$live" >/dev/null 2>&1; then
+      printf 'INFO  live %s still matches %s\n' "$url" "$(basename "$snap")"
+    else
+      printf 'INFO  live %s DIFFERS from %s — re-verify the quotations (see %s)\n' \
+        "$url" "$(basename "$snap")" "$(basename "$live")"
+    fi
+  else
+    printf 'INFO  live %s could not be fetched; the snapshot above is unaffected\n' "$url"
+  fi
+}
+if [ "${R65_REFRESH_SNAPSHOTS:-0}" = "1" ]; then
+  echo "     R65_REFRESH_SNAPSHOTS=1 — live re-verification (not the source of any claim):"
+  refresh_one https://no-color.org/ "$SNAP_NOC"
+  refresh_one https://force-color.org/ "$SNAP_FOC"
+  refresh_one https://bixense.com/clicolors/ "$SNAP_BIX"
+else
+  echo "     live re-verification not requested (set R65_REFRESH_SNAPSHOTS=1 to run it)"
+fi
 echo
 
 # --------------------------------------------------------------------------
@@ -416,6 +473,12 @@ ln_at "py context.py R5.5 docstring"        "$PY_CTX"  189 'R5.5 precedence: --n
 ln_at "py context.py NO_COLOR branch"       "$PY_CTX"  192 'if os.environ.get("NO_COLOR"):'
 ln_at "py context.py config fall-through"   "$PY_CTX"  194 'return config_color'
 ln_at "ts colors.ts FORCE_COLOR=0 carve-out" "$TS_COL"  35 "forceColor !== '0'"
+ln_at "anstream AutoStream::new takes the resolved choice" "$AS_AUTO" 62 'pub fn new(raw: S, choice: ColorChoice) -> Self {'
+ln_at "anstream new() delegates Auto to auto(raw)"         "$AS_AUTO" 65 'ColorChoice::Auto => Self::auto(raw),'
+ln_at "anstream auto() is where the stream handle enters"  "$AS_AUTO" 78 'let choice = Self::choice(&raw);'
+ln_at "anstream always_ansi() touches the handle (to enable ANSI, not to decide colour)" "$AS_AUTO" 95 'if raw.is_terminal() {'
+ln_at "anstream always() touches the handle (to pick the wincon writer, not to decide colour)" "$AS_AUTO" 113 'let use_wincon = raw.is_terminal()'
+ln_at "anstream choice() consults the colorchoice global first" "$AS_AUTO" 199 'let choice = ColorChoice::global();'
 ln_at "anstream no_color tier"              "$AS_AUTO" 205 'anstyle_query::no_color()'
 ln_at "anstream clicolor_force tier"        "$AS_AUTO" 207 'anstyle_query::clicolor_force()'
 ln_at "anstream per-stream TTY tier"        "$AS_AUTO" 211 'raw.is_terminal()'

@@ -1,4 +1,20 @@
-# R65 — color-enablement-chain — DECISION
+# R65 — color-enablement-chain — DECISION (revision 2, 2026-09-12)
+
+**Revision note.** Revision 2 rewrites revision 1 (sha256
+`0582a7c58e78fe4a1ba3a9b01c321f6664eca7089c4f87a80972c593eb83e3af`) in place. No revision of
+this decision has been published, so there is no `## Supersedes`. It answers the five findings
+of the revision-1 audit (`review/audit-codex.md`, actor
+`audit-codex-2026-09-05T183457Z-cc32974b5d89-r1`, model `gpt-5.6-terra`, family openai, verdict
+reject): F1 the cited log was not the output of the current saved script (the script had grown
+16 assertions after the log was saved, and the section count was misstated); F2 the three
+unversioned standards pages were asserted live rather than from the snapshots saved beside the
+log; F3 the resolver's input list contradicted the resolver signature in the same document; F4
+the `BASELINE-REVIEW` line counted `clap`, an argument-parsing library, as a third surveyed
+command-line flag; F5 the saved issue JSON did not establish the `clap`-and-`cargo`-maintainer
+role attributed to the quoted commenter. Everything the audit did not challenge is carried
+through unchanged, including the argument of `### Principles and implementation` for the
+template owning tiers 1–4, the `BASELINE-REVIEW: F286` proposal, and the four `- assumes`
+lines.
 
 ## Decision
 
@@ -34,10 +50,25 @@ template's; tiers 5–7 are `anstream`'s and are reached by returning
 | 6 | `CLICOLOR=0` | never | `anstream` |
 | 7 | *this stream's own* `is_terminal()` and (`TERM` supports colour, or `CLICOLOR` enabled, or `CI` set) | always, else never | `anstream` |
 
-The resolver's inputs are exactly four: the parsed flag value, the config value, an
-injected environment source, and — only for tiers 5–7, and only inside `AutoStream` —
-each stream's own handle. **This decision describes the resolution order and its inputs;
-it writes no code.** The function body, its types and its module placement are P03's.
+**The resolver's inputs are exactly three**, matching its signature in the table above: the
+parsed flag value, the config value, and an injected environment source. No stream handle is
+among them. The handle enters one tier lower, inside `anstream`, and only when the resolver
+returns `Auto`: `AutoStream::new(raw, choice)` (`crates/anstream/src/auto.rs:62` at tag
+`anstream-v1.0.0`) dispatches `ColorChoice::Auto` to `Self::auto(raw)` (`:65`), which calls
+`Self::choice(&raw)` (`:78`) — the only point at which the stream handle can affect *whether
+colour is emitted*. That function consults `ColorChoice::global()` first (`:199`, the
+`colorchoice` process global this template never writes, so it is `Auto` and the chain
+continues), then the `anstyle-query` environment probes, then `raw.is_terminal()` (`:211`).
+Two other constructors also read the handle, and both are compiled on this template's
+`target-os-matrix`: `always_ansi()` at `:95` (to call `enable_ansi_colors()`) and `always()`
+at `:113` (to choose the `wincon` writer, inside an `if cfg!(windows)` whose branches both
+compile because `cfg!` yields a `bool`). Neither decides *whether* colour is emitted — that is
+already settled when they run — only *how* the already-chosen colour reaches the stream. So
+the *chain* has four kinds of input and the *resolver* has three;
+tiers 5–7 are the ones that consume the fourth, and they are not
+the template's code. Every line number in this paragraph is asserted by the check script's
+§10 ledger. **This decision describes the resolution order and its inputs; it writes no
+code.** The function body, its types and its module placement are P03's.
 
 **F288 — force-on.** Both `FORCE_COLOR` (tier 4, template-owned) and `CLICOLOR_FORCE`
 (tier 5, free from `anstream`) force colour on, and `NO_COLOR` beats both.
@@ -73,11 +104,32 @@ here; it is carried forward with the `BASELINE-REVIEW:` line below.
 principle both source repositories implement is: *the user, not the program, decides whether
 ANSI colour appears, and the program resolves that decision once, from an ordered set of
 increasingly specific inputs, before any styled byte is written.* Its sources are the two
-informal web standards — `https://no-color.org/` and `https://force-color.org/`, both
-retrieved 2026-09-10 — and the source repos' own recorded decisions: py's `R5.5`, in the
+informal web standards — `https://no-color.org/` and `https://force-color.org/` — and the
+source repos' own recorded decisions: py's `R5.5`, in the
 docstring at `src/py_launch_blueprint/cli/context.py:189` at pin `b08bccfb`, and ts's
 `D-018(2)`/`D-038` in `docs/port/TS_PORT_DECISIONS.md`. **Agreement is required at the level
 of capability and observable behaviour, not at the level of variable names or libraries.**
+
+**Which copy of the three unversioned standards pages this decision reads, and why it
+matters.** `no-color.org`, `force-color.org` and `bixense.com/clicolors` publish no version,
+tag or date: their text can change under a citation without any signal. Every quotation from
+them below is therefore read from a snapshot saved in this run's evidence directory, not from
+the live page — the snapshot is the evidence, and the check script asserts against the file
+and performs no fetch in that section:
+
+| Page | Snapshot read | sha256 of the bytes asserted |
+|---|---|---|
+| `https://no-color.org/` | `review/evidence/snapshot-no-color.org.txt` | `4ce0cfb7f8c79fcf35cb86993863a739df8b8dd0fa49c2f02c4f39eed8db8992` |
+| `https://force-color.org/` | `review/evidence/snapshot-force-color.org.txt` | `829aee8030f526ae6d684dc9e855c540d60ac1e7cd8084b1a54949d5e055ebe1` |
+| `https://bixense.com/clicolors/` | `review/evidence/snapshot-bixense-clicolors.txt` | `d1872728a3c3442d5bcd90e0fc285ee49db000e13221334240e2703aced321f4` |
+
+All three were retrieved 2026-09-10T16:10:03Z, stripped of HTML tags and whitespace-collapsed by
+the same pipeline that now reads them back, and committed in `7f4c85e`. Re-reading the live
+pages is a *re-verification* step, not the source of any claim here: it is opt-in
+(`R65_REFRESH_SNAPSHOTS=1`), it writes `snapshot-<page>-live.txt` beside each snapshot and
+diffs the two, and it never overwrites a snapshot. Below, "(snapshot)" marks a quotation
+asserted against these files. What this costs: a quotation is only as current as
+2026-09-10T16:10:03Z, which is why a change to any of the three pages is a `re-verify` trigger.
 
 | Must agree across py, ts, rs | May justifiably vary by ecosystem |
 |---|---|
@@ -137,15 +189,26 @@ candidates read (verified, `## Empirical check` §3). Concretely:
 
 - `anstyle-query` 1.1.5 contains **zero** occurrences of `FORCE_COLOR` (`grep -c` = 0 over
   its whole `src/lib.rs` at tag `anstyle-query-v1.1.5`). It ships probes, not a policy.
-- The omission is **deliberate, and its maintainer says so on the record.** `rust-cli/anstyle`
-  issue #192, "Supporting FORCE_COLOR as an alias to CLICOLOR_FORCE", opened 2024-06-02 and
-  still open: `epage` (`author_association: COLLABORATOR`, a `clap` and `cargo` maintainer)
-  wrote on 2024-06-04T02:23:48Z — *"When I was weighing what to build-in, I was less
-  interested in how wide spread something is about how consistently its expected to be
-  implemented. People can always build their own thing on top but I didn't feel like
-  arbitrating between parties arguing over 3 different implementations."* Title, opening date,
-  author, association, comment timestamp and the quoted sentence were all verified against the
-  GitHub API and snapshotted (`review/evidence/anstyle-issue-192*.json`).
+- The omission is **deliberate, and an owner of the crate that omits it says so on the
+  record.** `rust-cli/anstyle` issue #192, "Supporting FORCE_COLOR as an alias to
+  CLICOLOR_FORCE", opened 2024-06-02 and still open: `epage` wrote on 2024-06-04T02:23:48Z —
+  *"When I was weighing what to build-in, I was less interested in how wide spread something
+  is about how consistently its expected to be implemented. People can always build their own
+  thing on top but I didn't feel like arbitrating between parties arguing over 3 different
+  implementations."* Exactly two things are claimed about who said it, and each has its own
+  source: the saved issue-comment JSON records `author_association: COLLABORATOR` on
+  `rust-cli/anstyle` (`review/evidence/anstyle-issue-192-comments.json`), and the crates.io
+  owners endpoint for the crate in question lists `epage` as an individual owner of
+  `anstyle-query` itself (`GET https://crates.io/api/v1/crates/anstyle-query/owners`,
+  retrieved 2026-09-12, snapshotted as
+  `review/evidence/crates-io-anstyle-query-owners.json`). So the statement comes from someone
+  who owns the crate whose omission is at issue — which is what the argument needs. **No
+  `clap` or `cargo` maintainer role is claimed:** the same endpoint for `clap` lists
+  `kbknapp` and two teams and does not name `epage` individually
+  (`review/evidence/crates-io-clap-owners.json`), and no first-party source for `cargo` team
+  membership was read here. Crate ownership is mutable, so it is listed as a volatile input
+  below. Title, opening date, comment author, association, comment timestamp, the quoted
+  sentence and the ownership line are each asserted by the check script (§4).
 - `supports-color` 3.0.2 is the **only** candidate that reads `FORCE_COLOR` natively, and it
   evaluates it **above** `NO_COLOR` (`let force_color = env_force_color();` at line 91
   precedes `env_no_color()` at line 94, verified at tag `v3.0.2`). That inverts
@@ -158,9 +221,10 @@ candidates read (verified, `## Empirical check` §3). Concretely:
 - `termcolor` 1.4.1 accepts an explicit `ColorChoice` and reads `NO_COLOR` and `TERM`, but
   contains **zero** occurrences of `FORCE_COLOR` and of `CLICOLOR`: it has no force tier at all.
 
-So the template writing its own resolver is not a preference; it is what the ecosystem's own
-maintainers expect callers to do. This is a claim about the seven candidates read at their
-tags, not about every crate on crates.io.
+So the template writing its own resolver is not a preference; it is what an owner of the crate
+that omits the tier says, on the record, that callers should do. This is a claim about the
+seven candidates read at their tags and about one recorded statement by one crate owner, not
+about every crate on crates.io and not about the Rust ecosystem's maintainers generally.
 
 **Where the recommended chain departs from py, and why.** py resolves
 `--no-color > NO_COLOR > config`: at pin `b08bccfb`, `context.py` returns `"never"` on
@@ -168,7 +232,7 @@ tags, not about every crate on crates.io.
 `NO_COLOR=1` exported globally therefore cannot re-enable colour for that one program in its
 own config file. `no-color.org`'s FAQ states the opposite intent — *"User-level configuration
 files and per-instance command-line arguments should override the NO_COLOR environment
-variable"* (verified) — and `cargo` implements the opposite: at tag `0.99.0`,
+variable"* (snapshot `snapshot-no-color.org.txt`) — and `cargo` implements the opposite: at tag `0.99.0`,
 `src/cargo/util/context/mod.rs:1209` reads `let color = color.or_else(|| term.color.as_deref());`
 (the `--color` flag, else the `[term] color` config key) and hands the result to
 `set_color_choice`, whose `Auto` then defers to the environment-and-TTY chain. This decision
@@ -178,25 +242,27 @@ recorded rationale for a follow-on py change; no py file and no ledger row is ed
 
 **Where the recommended chain departs from `force-color.org`, and why.** That standard says
 `FORCE_COLOR` counts when *"present and not an empty string (regardless of its value)"*
-(verified), and its own example applies it after argument and config parsing — i.e. the
+(snapshot `snapshot-force-color.org.txt`), and its own example applies it after argument and
+config parsing — i.e. the
 variable would beat an explicit `--no-color`. Two departures are taken deliberately: the
 per-invocation flag wins (both source repos, CPython, `anstream` and `cargo` agree, and
-`no-color.org`'s FAQ states the general rule), and `FORCE_COLOR="0"` falls through rather than
+`no-color.org`'s FAQ states the general rule in the snapshot cited above), and `FORCE_COLOR="0"` falls through rather than
 forcing, following the ts port (`src/lib/colors.ts:35` at pin `cb1cbcb2`: `forceColor !== '0'`,
 verified) and `supports-color`'s `"false" => 0` mapping.
 
 **Why `FORCE_COLOR` is kept at all, given `anstream` supplies `CLICOLOR_FORCE` for free.**
 F288's capability is satisfied by `CLICOLOR_FORCE` alone, so F288 as recorded is preserved
 literally and needs no baseline review. The *spelling* is widened because
-`https://bixense.com/clicolors/` — the standard `anstyle-query` actually implements — now
-opens with *"Note: This standard is deprecated… Software that already supports this standard
-should treat FORCE_COLOR as an alias for CLICOLOR_FORCE"* (verified), CPython reads
+`https://bixense.com/clicolors/` — the standard `anstyle-query` actually implements — opened
+with *"Note: This standard is deprecated… Software that already supports this standard
+should treat FORCE_COLOR as an alias for CLICOLOR_FORCE"* when it was snapshotted
+(snapshot `snapshot-bixense-clicolors.txt`), CPython reads
 `FORCE_COLOR`, and the ts port already does.
 
 **BASELINE-REVIEW.** One inherited row is challenged, on capability grounds, and is carried
 through unresolved as the prompt requires. The ledger is not edited.
 
-BASELINE-REVIEW: F286 — the user must be able to state colour policy per invocation in both directions — keep the inherited boolean `--no-color` and add a tri-state `--color <auto|always|never>` alongside it, with `--no-color` defined as an alias for `--color=never` and an explicit conflict when both are given with opposite senses; affected items are F286 (row wording), R60 (`cli-parsing-framework`, which defines the global flag block) and R66 (`output-format-surface`, which shares that block) — evidence: a boolean flag can only turn colour off, so a user piping into `less -R` or writing a CI log has no per-invocation way to turn it on and must fall back to an environment variable, while all three surveyed reference implementations take a *value* rather than a boolean: `cargo`, the Rust project's own CLI, parses `--color` as exactly `always | never | auto` at `crates/cargo-util-terminal/src/shell.rs:573-576` in tag 0.99.0; `clap`, the argument parser the Opus raw records at 226,398,266 90-day downloads (`GET https://crates.io/api/v1/crates/clap`, retrieved 2026-09-10), ships `pub enum ColorChoice { Auto, Always, Never }` at `clap_builder/src/util/color.rs:6,27,42,57` in tag v4.6.6; and `ripgrep`, which the same raw records at 68,148 GitHub stars (`GET https://api.github.com/repos/BurntSushi/ripgrep`, retrieved 2026-09-10), declares `--color` with metavariable `WHEN` at `crates/core/flags/defs.rs:698-701` in tag 15.2.0 and accepts **four** values, `never | auto | always | ansi`, not three — every one of those file:line citations re-read at its tag and asserted by this decision's check script, and `anstream::ColorChoice` is itself tri-state, so a boolean-only surface discards a state the chosen stack already models; cost of declining: the force-on path exists only through `FORCE_COLOR`/`CLICOLOR_FORCE`, discoverable only from documentation.
+BASELINE-REVIEW: F286 — the user must be able to state colour policy per invocation in both directions — keep the inherited boolean `--no-color` and add a tri-state `--color <auto|always|never>` alongside it, with `--no-color` defined as an alias for `--color=never` and an explicit conflict when both are given with opposite senses; affected items are F286 (row wording), R60 (`cli-parsing-framework`, which defines the global flag block) and R66 (`output-format-surface`, which shares that block) — evidence: a boolean flag can only turn colour off, so a user piping into `less -R` or writing a CI log has no per-invocation way to turn it on and must fall back to an environment variable, while both of the surveyed command-line tools take a *value* rather than a boolean, and the parser the template would use already models the same choice as a tri-state type in its API: `cargo`, the Rust project's own CLI, parses `--color` as exactly `always | never | auto` at `crates/cargo-util-terminal/src/shell.rs:573-576` in tag 0.99.0; `ripgrep`, which the Opus raw records at 68,148 GitHub stars (`GET https://api.github.com/repos/BurntSushi/ripgrep`, retrieved 2026-09-10), declares `--color` with metavariable `WHEN` at `crates/core/flags/defs.rs:698-701` in tag 15.2.0 and accepts **four** values, `never | auto | always | ansi`, not three; and `clap` — an argument-parsing *library*, not a CLI, so it has no `--color` flag of its own and none was surveyed or is claimed here — ships the library enum `clap_builder::util::color::ColorChoice`, `pub enum ColorChoice { Auto, Always, Never }`, at `clap_builder/src/util/color.rs:6,27,42,57` in tag v4.6.6, which is evidence that the parser R60 is most likely to select already carries the tri-state form as an API model, not evidence of a third observed command-line shape (the Opus raw records `clap` at 226,398,266 90-day downloads, `GET https://crates.io/api/v1/crates/clap`, retrieved 2026-09-10) — every one of those file:line citations re-read at its tag and asserted by this decision's check script, and `anstream::ColorChoice` is itself tri-state, so a boolean-only surface discards a state the chosen stack already models; cost of declining: the force-on path exists only through `FORCE_COLOR`/`CLICOLOR_FORCE`, discoverable only from documentation.
 
 **Reference implementations.** `rust-lang/cargo` at tag `0.99.0` is the closest maintained
 reference for the whole design: it declares `anstream = "1.0.0"` and `anstyle = "1.0.14"`
@@ -239,7 +305,10 @@ re-verify: before P03 implements the colour gate, or earlier on any of — `rust
 issue #192 closing (built-in `FORCE_COLOR` would let the template drop tier 4); an `anstream`
 2.0 or `anstyle` 2.0; `clap` changing the `anstyle` major it depends on; a new RustSec
 advisory against any member; `no-color.org`, `force-color.org` or `bixense.com/clicolors`
-changing their current text; R63 selecting `indicatif`/`console`, which activates the
+changing the text this decision quotes from their snapshots (run the check script with
+`R65_REFRESH_SNAPSHOTS=1` to detect it); the `anstyle-query` crates.io ownership line
+changing, which is what attributes the recorded statement quoted above; R63 selecting
+`indicatif`/`console`, which activates the
 second-detection-stack caveat; R60 selecting a non-`clap` parser.
 
 ## Parameters
@@ -280,7 +349,7 @@ cd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R65/2026-09-05
 bash review/evidence/check-color-enablement-chain.sh
 ```
 
-**Exit status:** `0` (all 146 assertions passed). The run takes a few minutes: crates.io
+**Exit status:** `0` (all 177 assertions passed, 0 failed). The run takes a few minutes: crates.io
 rate-limits a burst of requests, so each crate's `/versions` document is fetched once per
 run, paced, retried with exponential backoff, and snapshotted into
 `review/evidence/crates-io-<crate>-versions.json`. **A registry endpoint that cannot be
@@ -291,7 +360,9 @@ retrieved fails the check loudly; it is never silently treated as a pass.**
 The script **verifies claims and implements nothing**: it scaffolds no crate, writes no
 resolver, and creates no template file. It starts with `set -o pipefail`, and every check
 asserts on expected *content* — a substring or an exact count — rather than on an exit code,
-counting passes and failures and returning non-zero if any failed. Its nine sections:
+counting passes and failures and returning non-zero if any failed. It prints **eleven**
+sections, `## 0` through `## 10`: section 0 is the toolchain block quoted above, and sections
+1–10 are these:
 
 1. **Pinned source repositories**, read only through `git show <pin>:<path>` — py
    `b08bccfb55d05f15e46a83b52c5660b1881d19f5`, ts `cb1cbcb2e88b898e8c081b0abbfabc1630079c00`.
@@ -303,43 +374,63 @@ counting passes and failures and returning non-zero if any failed. Its nine sect
 2. **Tag re-reads.** Every source the Opus raw disclosed as read from a default branch is
    re-read at an immutable tag: `clap-rs/clap@v4.6.6`, `rust-lang/cargo@0.99.0`,
    `BurntSushi/ripgrep@15.2.0`, `console-rs/console@0.16.6`, `owo-colors/owo-colors@v4.4.0`,
-   `eyre-rs/eyre@color-eyre-v0.6.5`, `BurntSushi/termcolor@1.4.1`, plus
-   `zkat/supports-color@v3.0.2`. Each tag's existence is asserted before it is read.
+   `eyre-rs/eyre@color-eyre-v0.6.5`, `BurntSushi/termcolor@1.4.1`,
+   `zkat/supports-color@v3.0.2`, `polyfill-rs/is_terminal_polyfill@v1.70.2`, plus the four
+   `rust-cli/anstyle` tags the stack itself is read at — `anstream-v1.0.0`,
+   `anstyle-query-v1.1.5`, `colorchoice-v1.0.5` and `v1.0.14`. That is thirteen tags, and
+   each one's existence is asserted before any file is read from it.
 3. **The core claim.** The tier audit over the seven candidates described in
    `### Principles and implementation`, including the `grep -c FORCE_COLOR` = 0 result for
-   `anstyle-query`, `anstream`'s `fn choice()` printed verbatim, and a line-order assertion
+   `anstyle-query`, `anstream`'s `fn choice()` printed verbatim, a line-order assertion
    that `no_color()` (line 205) precedes `clicolor_force()` (207) precedes `raw.is_terminal()`
-   (211).
-4. **Issue #192**, fetched from the GitHub API, snapshotted, and asserted from the snapshot.
-5. **The three standards pages**, fetched live, snapshotted alongside the log, and asserted on
-   the exact sentences quoted in this decision.
+   (211), and a sweep asserting zero occurrences of `env::args` in each candidate read — the
+   evidence for "no crate parses this application's argv".
+4. **Issue #192**, fetched from the GitHub API, snapshotted, and asserted from the snapshot;
+   plus the crates.io owners endpoints for `anstyle-query` and `clap`, snapshotted, which fix
+   exactly what is and is not claimed about the quoted commenter's role.
+5. **The three standards pages**, read from the committed snapshots named in
+   `### Principles and implementation` and asserted on the exact sentences quoted in this
+   decision. This section performs no network fetch and overwrites no snapshot; each
+   snapshot's sha256 is printed in the log beside the assertion that read it. Live
+   re-verification is opt-in (`R65_REFRESH_SNAPSHOTS=1`), writes `*-live.txt` files and diffs
+   them, and adds no assertion — so the pass inventory is identical with and without it.
 6. **Fitness gates**: crates.io per-version metadata (`license`, `rust_version`, `edition`,
    `created_at`, newest non-yanked `num`), the `anstream` manifest's default and `test`
-   features, the `anstyle` workspace `rust-version`, `is_terminal_polyfill`'s delegation to
-   `std`, the CI matrix, and the RustSec pages for `anstream`, `anstyle` and `atty`.
+   features, its full `[dependencies]` list printed and asserted entry by entry, its
+   Windows-only `anstyle-wincon` target dependency, the `anstyle` workspace `rust-version`,
+   `is_terminal_polyfill`'s delegation to `std`, `anstyle-query`'s `unsafe` being confined to
+   its `#[cfg(windows)]` module, the CI matrix, and the RustSec pages for `anstream`,
+   `anstyle` and `atty`.
 7. **First-party practice at tags**: cargo's and clap's declared versions, cargo's two
    per-stream `AutoStream::new` constructions, its `AutoStream::never` test seam, its zero
    `write_global` calls, and its flag-above-config line.
-8. **BASELINE-REVIEW F286 evidence**: the flag shapes of cargo, clap and ripgrep at their tags.
+8. **BASELINE-REVIEW F286 evidence**: the `--color` flag shapes of the two surveyed CLIs,
+   cargo and ripgrep, and `clap`'s library `ColorChoice` enum, each at its tag.
 9. **Parameters**: the four `- assumes` lines are *generated* by `awk` from
    `docs/port/PARAMETERS.md` into `review/evidence/params-generated.txt` and `diff`ed against
    the lines in this file; the diff must be empty.
-10. **Line-number ledger**: every `file:line` citation appearing in this decision — 35 of
-    them, across the two source pins and eight upstream tags — is re-read at that exact line
+10. **Line-number ledger**: every `file:line` citation appearing in this decision — 41 of
+    them, across the two source pins and nine upstream tags — is re-read at that exact line
     number and asserted to carry the expected text. This is what makes the sentence "every
     line number cited here is a tag or pin offset" a claim an auditor can rerun rather than a
     claim to be taken on trust.
 
-**Reproducibility, stated exactly.** The script was run twice in succession and the two logs
-were diffed; they are byte-for-byte identical, and the saved log is the output of that second
-run. Reruns stay byte-identical **while five live inputs hold their current values**, and a
-rerun that differs is evidence one of them moved, not that the log was mis-saved:
+**Reproducibility, stated exactly.** The cited log was regenerated from the script as it now
+stands — this is what the revision-1 audit's F1 found wrong, the script having grown 16
+assertions after the previous log was saved. The script was then run twice in succession on
+2026-09-12 and the two logs were diffed with `diff -u`: the diff is empty, they are
+byte-for-byte identical, and the saved log is the output of the second run. Reruns stay
+byte-identical **while the five live inputs in the table below hold their current values**,
+and a rerun that differs is evidence one of them moved, not that the log was mis-saved. The
+three standards pages are no longer among them: since §5 reads the committed snapshots, their
+contribution to the log is three fixed sha256 values.
 
 | Volatile input | Current value | Where it is pinned for comparison |
 |---|---|---|
 | `rust-cli/anstyle` issue #192 state | `open` (printed as an `INFO` line, not asserted) | `review/evidence/anstyle-issue-192.json` |
-| the three standards pages' text | as quoted above | `review/evidence/snapshot-no-color.org.txt`, `snapshot-force-color.org.txt`, `snapshot-bixense-clicolors.txt` |
+| crates.io individual owners of `anstyle-query` / of `clap` | `epage` / `kbknapp` (asserted: `epage` present for `anstyle-query`, absent for `clap`) | `review/evidence/crates-io-anstyle-query-owners.json`, `review/evidence/crates-io-clap-owners.json` |
 | newest non-yanked version of `anstream`, `anstyle`, `anstyle-query`, `colorchoice` | `1.0.0`, `1.0.14`, `1.1.5`, `1.0.5` | asserted, each marked `VOLATILE` in the log; the fetched documents are snapshotted as `review/evidence/crates-io-<crate>-versions.json` |
+| the RustSec advisory lists for `anstream`, `anstyle`, `atty` | `RUSTSEC-2024-0404` / none (HTTP 404) / `RUSTSEC-2021-0145`, `RUSTSEC-2024-0375` | read live from `rustsec.org` and printed; a new advisory against any of the three changes the log and is a `re-verify` trigger |
 | `zkat/supports-color` tag count | 15 | the assertion needs only `v3.0.2` to exist |
 
 Everything else the log prints comes from immutable sources: git tags, `git show` at a commit
@@ -347,6 +438,34 @@ pin, and crates.io per-version fields for versions already published. **No downl
 no `pushed_at` value is printed**, because those move daily; the adoption and responsiveness
 figures cited in the raws are carried with the raws' own retrieval dates (Codex 2026-09-05,
 Opus 2026-09-10) and are not re-asserted here.
+
+**Provenance of every source this decision reads, and what the weak ones cost.** Three
+classes, and nothing sits outside them:
+
+1. **Immutable, and all crate and repository source is here.** Both source repos at commit
+   pins, and every upstream file at a release tag — thirteen distinct tags, each asserted to
+   exist before any file is read from it; nine of the thirteen also carry `file:line`
+   citations and so appear in the §10 ledger.
+   **No crate source in this decision is read from a default branch.** The
+   one raw report that disclosed such a read (the Opus raw on `zkat/supports-color`, "has no
+   release tags, so its source was read from `main`") was refuted: the repository publishes 15
+   tags including `v3.0.2`, and the claim was re-verified there. Cost: none, beyond the line
+   numbers that had to be re-derived at tags (see `## Engines`).
+2. **Unversioned but snapshotted, and read from the snapshot.** The three standards pages.
+   Cost: the quotations are current as of 2026-09-10T16:10:03Z and no later, which is why a
+   change to any of the three is a `re-verify` trigger and why the opt-in live re-read exists.
+3. **Unversioned and read live, with no snapshot possible for the value asserted.** The
+   RustSec advisory pages and the crates.io "newest non-yanked version" and owners lookups —
+   each of these is a *current-state* question whose answer would be meaningless frozen. Cost:
+   what the log records for them is true as of that run (2026-09-12) and can be falsified by
+   upstream action at any time. They are the rows of the volatile table above, whose third
+   column says for each row whether the log asserts the value or only prints it.
+
+   One version-resolution gap is worth naming inside class 1: `is_terminal_polyfill` is read
+   at tag `v1.70.2`, while `anstream` 1.0.0 declares `is_terminal_polyfill = "1.48"` and so
+   resolves to whatever 1.x is current when a lockfile is written. The delegation-to-`std`
+   claim is therefore established for `v1.70.2`, not for every version Cargo might resolve;
+   P03's lockfile settles which one the template actually gets.
 
 **What the check does not establish.** It does not run any Rust code, because the template
 does not exist. Acceptance criteria 1–10 are therefore **proposed, not executed**; so are the
@@ -368,7 +487,8 @@ misdirected line, are settled here.
 **Disagreement 1 — the config tier.** Codex recommends **no** `color` config key in the
 initial schema, to avoid "an untested fourth input"; Opus recommends naming the key and
 placing an explicit `always`/`never` **above** `NO_COLOR`. Settled for Opus, on two pieces of
-evidence both verified by the check: `no-color.org`'s FAQ states that user-level configuration
+evidence both verified by the check: `no-color.org`'s FAQ — read from
+`review/evidence/snapshot-no-color.org.txt`, not from the live page — states that user-level configuration
 files and per-instance command-line arguments *should* override `NO_COLOR`, and `cargo` 0.99.0
 implements exactly that (`let color = color.or_else(|| term.color.as_deref());`). Codex offers
 no counter-evidence, only a preference for fewer inputs. Two consequences are recorded rather
@@ -426,10 +546,13 @@ at `lib.rs:41` over `AtomicChoice(AtomicUsize)` at `:44`, not "`AtomicUsize` at 
 Every line number cited in this decision is a tag offset, verified by the check.
 
 **One raw claim corrected in the BASELINE-REVIEW evidence.** The Opus raw's F286 line asserts
-that "every first-party Rust CLI exposes the tri-state form". Verified at tags, cargo and clap
-are exactly tri-state, but `ripgrep` 15.2.0's `--color` accepts **four** values
-(`never | auto | always | ansi`). The carried-through line states what the three tools actually
-do — all take a value rather than a boolean — rather than the stronger claim.
+that "every first-party Rust CLI exposes the tri-state form". Verified at tags, `cargo`'s
+`--color` flag is exactly tri-state and `clap`'s library enum has exactly three variants, but
+`ripgrep` 15.2.0's `--color` accepts **four** values (`never | auto | always | ansi`). A second
+correction, from the revision-1 audit's F4: of the three, only `cargo` and `ripgrep` are CLIs
+with a surveyed `--color` flag — `clap` is the argument parser, and what was read is its
+public API. The carried-through line therefore claims exactly that: the two surveyed CLIs take
+a value rather than a boolean, and the parser's own enum is tri-state.
 
 **Where evidence is incomplete, and what P03 must validate.** Every item below is unproven
 here because no Rust template exists to run it against; none is treated as established.

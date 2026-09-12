@@ -33,6 +33,11 @@ PASS  tag exists: console-rs/console@0.16.6  [count=1]
 PASS  tag exists: owo-colors/owo-colors@v4.4.0  [count=1]
 PASS  tag exists: eyre-rs/eyre@color-eyre-v0.6.5  [count=1]
 PASS  tag exists: BurntSushi/termcolor@1.4.1  [count=1]
+PASS  tag exists: polyfill-rs/is_terminal_polyfill@v1.70.2  [count=1]
+PASS  tag exists: rust-cli/anstyle@anstream-v1.0.0  [count=1]
+PASS  tag exists: rust-cli/anstyle@anstyle-query-v1.1.5  [count=1]
+PASS  tag exists: rust-cli/anstyle@colorchoice-v1.0.5  [count=1]
+PASS  tag exists: rust-cli/anstyle@v1.0.14  [count=1]
 
 ## 3. CORE CLAIM — does any candidate ship the flag + config + environment tiers?
      Read at pinned tags. 'override input' = an explicit choice the application can hand in.
@@ -101,6 +106,12 @@ PASS  console 0.16.6 utils.rs: occurrences of FORCE_COLOR (bare)  [count=0]
 PASS  owo-colors 4.4.0 keeps its override in a process global  [matched: pub(crate) struct Override(AtomicU8);]
 PASS  owo-colors 4.4.0 global setter  [matched: pub fn set_override(enabled: bool) {]
 PASS  owo-colors 4.4.0 delegates env detection to supports-color (inheriting its inverted order)  [matched: supports-color]
+     No candidate parses argv (std::env::args occurrences, each at its tag):
+PASS    anstream: occurrences of env::args  [count=0]
+PASS    colorchoice: occurrences of env::args  [count=0]
+PASS    termcolor: occurrences of env::args  [count=0]
+PASS    console-utils: occurrences of env::args  [count=0]
+PASS    owo-colors-overrides: occurrences of env::args  [count=0]
 
      SUMMARY of the tier audit (each read at the tag above):
        crate            argv/config tier   override input          FORCE_COLOR   NO_COLOR above force
@@ -114,20 +125,34 @@ PASS  owo-colors 4.4.0 delegates env detection to supports-color (inheriting its
      => No candidate composes flag+config+env. No crate parses this application's argv or
         config file at all; that tier is application-owned by construction.
 
-## 4. The maintainer statement that the FORCE_COLOR omission is deliberate
+## 4. The on-the-record statement that the FORCE_COLOR omission is deliberate, and
+     exactly what the saved JSON establishes about who made it
 PASS  issue #192 title  [matched: Supporting FORCE_COLOR as an alias to CLICOLOR_FORCE]
 PASS  issue #192 opened  [matched: 2024-06-02]
 PASS  the quoted sentence is present in a comment body  [matched: epage]
 PASS  its author's association with the repo  [matched: COLLABORATOR]
 PASS  comment timestamp cited by the raw  [matched: 2024-06-04T02:23:48Z]
 INFO  issue #192 state (VOLATILE — see note): open
+PASS  the commenter is a crates.io OWNER of anstyle-query itself (VOLATILE: ownership can change)  [matched: epage]
+INFO  crates.io owners of anstyle-query: epage(user) github:rust-cli:maintainers(team)
+PASS  crates.io individual owners of clap that are 'epage' (0 — no clap-maintainer claim is made)  [count=0]
+INFO  crates.io owners of clap: kbknapp(user) github:rust-cli:maintainers(team) github:clap-rs:admins(team)
 
-## 5. The standards the chain is built on (live pages; snapshotted alongside this log)
+## 5. The standards the chain is built on — READ FROM THE COMMITTED SNAPSHOTS, not live
+     These three pages are unversioned and editable in place, so the decision's
+     quotations are asserted against the snapshot files committed in this evidence
+     directory. This section performs NO network fetch and never overwrites a snapshot.
+     Live re-verification is a separate, opt-in step: R65_REFRESH_SNAPSHOTS=1 writes
+     <snapshot>-live.txt beside each snapshot, diffs it, and prints an INFO line.
+PASS  snapshot read: snapshot-no-color.org.txt  sha256=4ce0cfb7f8c79fcf35cb86993863a739df8b8dd0fa49c2f02c4f39eed8db8992
+PASS  snapshot read: snapshot-force-color.org.txt  sha256=829aee8030f526ae6d684dc9e855c540d60ac1e7cd8084b1a54949d5e055ebe1
+PASS  snapshot read: snapshot-bixense-clicolors.txt  sha256=d1872728a3c3442d5bcd90e0fc285ee49db000e13221334240e2703aced321f4
 PASS  no-color.org: NO_COLOR counts when present and non-empty  [matched: when present and not an empty string (regardless of its value), prevents the addition of ANSI color]
 PASS  no-color.org FAQ: config files and CLI arguments override NO_COLOR  [matched: User-level configuration files and per-instance command-line arguments should override the NO_COLOR environment variable]
 PASS  force-color.org: FORCE_COLOR counts on mere presence (regardless of value)  [matched: present and not an empty string (regardless of its value), it should force the addition of ANSI color]
 PASS  bixense CLICOLOR standard now marks itself deprecated  [matched: This standard is deprecated]
 PASS  bixense tells implementers to treat FORCE_COLOR as an alias for CLICOLOR_FORCE  [matched: treat FORCE_COLOR as an alias for CLICOLOR_FORCE]
+     live re-verification not requested (set R65_REFRESH_SNAPSHOTS=1 to run it)
 
 ## 6. Fitness gates — registry metadata (immutable per published version) and advisories
       anstream        num=1.0.0 created=2026-02-11T13:23:11.167553Z license=MIT OR Apache-2.0 rust_version=1.66.0 edition=2021
@@ -154,6 +179,25 @@ PASS  anstream bottoms out on is_terminal_polyfill, not atty/is-terminal  [match
 PASS  anstream manifest: async runtime dependencies (tokio/async-std/futures)  [count=0]
 PASS  anstyle workspace rust-version  [matched: rust-version = "1.66.0"]
 PASS  is_terminal_polyfill delegates to std::io::IsTerminal (adds no detection logic)  [matched: std::io::IsTerminal::is_terminal]
+PASS  anstyle-query's Win32 module is gated behind #[cfg(windows)]  [matched: #[cfg(windows)]]
+PASS  anstyle-query's Win32 module is where its unsafe lives  [matched: mod windows_console {]
+PASS  anstyle-query src/lib.rs: occurrences of unsafe (none outside the windows module)  [count=0]
+     anstream [dependencies] at tag anstream-v1.0.0 (gate 6, dependency footprint):
+       [dependencies]
+       anstyle = { version = "1.0.0", path = "../anstyle" }
+       anstyle-parse = { version = "1.0.0", path = "../anstyle-parse" }
+       colorchoice = { version = "1.0.0", path = "../colorchoice" }
+       anstyle-query = { version = "1.0.0", path = "../anstyle-query", optional = true }
+       utf8parse = "0.2.2"
+       is_terminal_polyfill = "1.48"
+       
+PASS  anstream [dependencies] includes anstyle  [matched: anstyle = ]
+PASS  anstream [dependencies] includes anstyle-parse  [matched: anstyle-parse = ]
+PASS  anstream [dependencies] includes colorchoice  [matched: colorchoice = ]
+PASS  anstream [dependencies] includes anstyle-query  [matched: anstyle-query = ]
+PASS  anstream [dependencies] includes utf8parse  [matched: utf8parse = ]
+PASS  anstream [dependencies] includes is_terminal_polyfill  [matched: is_terminal_polyfill = ]
+PASS  anstream's Windows console adapter is a windows-only target dependency  [matched: anstyle-wincon = { version = "3.0.5", path = "../anstyle-wincon", optional = true }]
 PASS  gate 4 anstyle CI covers ubuntu-latest and macos-latest  [matched: ubuntu-latest]
 PASS  gate 4 anstyle CI covers macos-latest  [matched: macos-latest]
       rustsec anstream advisories: RUSTSEC-2024-0404 
@@ -218,6 +262,12 @@ PASS  py context.py R5.5 docstring (line 189)  [matched: R5.5 precedence: --no-c
 PASS  py context.py NO_COLOR branch (line 192)  [matched: if os.environ.get("NO_COLOR"):]
 PASS  py context.py config fall-through (line 194)  [matched: return config_color]
 PASS  ts colors.ts FORCE_COLOR=0 carve-out (line 35)  [matched: forceColor !== '0']
+PASS  anstream AutoStream::new takes the resolved choice (line 62)  [matched: pub fn new(raw: S, choice: ColorChoice) -> Self {]
+PASS  anstream new() delegates Auto to auto(raw) (line 65)  [matched: ColorChoice::Auto => Self::auto(raw),]
+PASS  anstream auto() is where the stream handle enters (line 78)  [matched: let choice = Self::choice(&raw);]
+PASS  anstream always_ansi() touches the handle (to enable ANSI, not to decide colour) (line 95)  [matched: if raw.is_terminal() {]
+PASS  anstream always() touches the handle (to pick the wincon writer, not to decide colour) (line 113)  [matched: let use_wincon = raw.is_terminal()]
+PASS  anstream choice() consults the colorchoice global first (line 199)  [matched: let choice = ColorChoice::global();]
 PASS  anstream no_color tier (line 205)  [matched: anstyle_query::no_color()]
 PASS  anstream clicolor_force tier (line 207)  [matched: anstyle_query::clicolor_force()]
 PASS  anstream per-stream TTY tier (line 211)  [matched: raw.is_terminal()]
@@ -251,5 +301,5 @@ PASS  ripgrep --color metavariable WHEN (line 701)  [matched: Some("WHEN")]
 PASS  color-eyre depends on owo-colors (workspace-inherited) (line 25)  [matched: owo-colors = { workspace = true }]
 
 ==============================================================
-TOTAL: 146 passed, 0 failed
+TOTAL: 177 passed, 0 failed
 ==============================================================
