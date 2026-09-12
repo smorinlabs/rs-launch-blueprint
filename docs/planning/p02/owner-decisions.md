@@ -18,7 +18,7 @@ Status as of 2026-09-10. Fourteen items are published. The programme is
 | 1. Wave 0 review gate | all 52 unadmitted items | the programme stops when Wave 0 finishes |
 | 2. R69 early admission | 19 items directly, 33 transitively | the largest dependency cluster stays idle |
 | 3. R66 paid providers | one item's evidence base | R66 decides on three reports instead of five |
-| 4. R18 residual acceptance | nothing in P02 | P03 ships two files that nothing may enable |
+| 4. R18 residual acceptance | ANSWERED 2026-09-12 | R18 reopens for a revision; one fact still needed |
 | 5. Licence gate reach | one item, not three (corrected) | P03 uses the slower install backend |
 | 6. R25 prompt correction | nothing | a defective prompt stays on the record |
 | 7. Baseline-review questions | nothing yet; several are inputs to unadmitted items | later items research around them |
@@ -119,50 +119,35 @@ require it.
 **Response that settles it.** "Re-run Perplexity and Gemini for R66" or "accept
 one provider".
 
-## 4. R18's residual risk
+## 4. R18's residual risk -- ANSWERED 2026-09-12, and it changed the design
 
-**What is being asked.** Whether you accept a named, bounded, unremovable
-security exposure. R18 is published and its recommendation is deliberately
-conditional on your answer.
+You did not answer this as posed; you gave direction that dissolves it. Recorded
+as an owner amendment to published R18.
 
-**Evidence, quoted from the published decision.** The exposure is a
+**What you decided.** Both Claude workflows ship with the template by default.
+They run whenever the credential they need is present, with no enable variable
+at all. When the credential is absent they do not run, do not error, and print
+that the key needs setting. Anyone who does not want them deletes the files.
+Both lanes must reject bots. The author-trust test stays the association check
+already specified; you considered a real write-permission check and chose
+association as the more accurate test.
 
-> residual prompt-injection exposure of a **write-capable assistant lane on a
-> public repository, reachable from text an OWNER, MEMBER or COLLABORATOR
-> writes** — because a trusted author routinely quotes untrusted content
-> (pasting an issue body, a fork pull request's diff, a stack trace) into a
-> comment, and neither the prefilter nor any action-side check distinguishes a
-> trusted author's own words from untrusted text that author pasted.
+**Why that answers the residual question.** The question was whether you accept
+the exposure in order to switch a lane on. Under your design there is no switch.
+A lane runs when a credential exists, so installing the credential *is* the act
+of acceptance, and it is taken by whoever installs it, including every adopter
+for their own repository. There is no separate flag for you to set here.
 
-The decision states the exposure is bounded by six named controls and
+**What it costs.** R18 must be reopened for a revision carrying a supersedes
+section, which the approved spec permits for a reversal. That revision changes
+the gate, adds bot exclusion to the assistant lane, and reruns both audits.
 
-> **not eliminated**. Whether a bounded, unremovable exposure on a write-capable
-> lane is acceptable is an owner risk judgement, not an engineering-fitness one,
-> and this decision does not have that judgement on record.
-
-It also records that the review lane cannot be assumed safer: the token scope it
-receives is chosen server-side and is not readable from any source the research
-could reach, so the decision instructs treating it as write-capable until proven
-otherwise.
-
-**Options.**
-
-- **(a) Accept.** P03 may enable the workflows, subject to proving two named
-  unproven behaviours first. Consequence: you own the residual.
-- **(b) Withhold.** The two workflow files are deleted and a documented opt-in
-  recipe ships instead. Consequence: adopters who want the capability wire it
-  themselves, and the residual becomes theirs.
-- **(c) Say nothing.** The files ship inert. Functionally identical to (b) today,
-  because nothing runs either way, but it leaves the question live in P03.
-
-**Recommendation: (b) for the template, with (a) available for this repository
-alone if you want the capability here.** The template is copied by people who
-will not read the fixture headers. The residual is acceptable to own on a
-repository you watch; it is harder to justify shipping into repositories you do
-not.
-
-**Response that settles it.** "Accept the R18 residual", "withhold it", or
-"withhold for the template, accept for this repository".
+**Still outstanding, and it is a fact not a decision.** Whether you have admin
+access to an Anthropic organisation. Federation uses three repository variables,
+which a job condition can read directly. An API key or token is a secret, which
+a job condition cannot read at all, and that is the case requiring the preflight
+job you chose. Your instruction reads as the secret path. The revision cannot be
+written correctly without the answer.
 
 ## 5. The licence gate's reach
 
