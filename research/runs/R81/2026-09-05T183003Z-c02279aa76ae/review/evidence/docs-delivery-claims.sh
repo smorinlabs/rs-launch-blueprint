@@ -76,6 +76,8 @@ st=$?; cat "$SNAP/.crates.txt"; assert "crates.io query exit" "0" "$st"
 assert_has "mdbook 0.5.4 is MPL-2.0"            "$SNAP/.crates.txt" "mdbook             newest_unyanked=0.5.4     license=MPL-2.0   rust_version=1.88.0"
 assert_has "cobalt-bin is MIT (permissive Rust SSG)" "$SNAP/.crates.txt" "cobalt-bin         newest_unyanked=0.20.4    license=MIT"
 assert_has "mdbook-mermaid is MPL-2.0"          "$SNAP/.crates.txt" "mdbook-mermaid     newest_unyanked=0.17.1    license=MPL-2.0"
+assert_has "mdbook-admonish 1.20.0 is MIT"      "$SNAP/.crates.txt" "mdbook-admonish    newest_unyanked=1.20.0    license=MIT"
+assert_has "mdbook-alerts 0.8.0 is MIT"         "$SNAP/.crates.txt" "mdbook-alerts      newest_unyanked=0.8.0     license=MIT"
 assert_has "zola registry entry is a yanked placeholder" "$SNAP/.crates.txt" "zola               NO_UNYANKED total_versions=1 newest=0.1.1 yanked=True"
 
 # ---------------------------------------------------------------- check 3
@@ -88,10 +90,14 @@ done
 assert "rust-lang/mdBook licence"     "MPL-2.0"  "$(gh api repos/rust-lang/mdBook --jq '.license.spdx_id')"
 assert "rust-lang/mdBook archived"    "false"    "$(gh api repos/rust-lang/mdBook --jq '.archived')"
 assert "getzola/zola licence"         "EUPL-1.2" "$(gh api repos/getzola/zola --jq '.license.spdx_id')"
+assert "getzola/zola archived"        "false"    "$(gh api repos/getzola/zola --jq '.archived')"
+assert "rs-mdbook-alerts licence"     "MIT"      "$(gh api repos/lambdalisue/rs-mdbook-alerts --jq '.license.spdx_id')"
 assert "rs-mdbook-alerts archived"    "true"     "$(gh api repos/lambdalisue/rs-mdbook-alerts --jq '.archived')"
+assert "mdbook-mermaid repo licence"  "MPL-2.0"  "$(gh api repos/badboy/mdbook-mermaid --jq '.license.spdx_id')"
 assert "mdbook-mermaid archived"      "false"    "$(gh api repos/badboy/mdbook-mermaid --jq '.archived')"
 for a in configure-pages upload-pages-artifact deploy-pages; do
   assert "actions/$a licence" "MIT" "$(gh api "repos/actions/$a" --jq '.license.spdx_id')"
+  assert "actions/$a archived" "false" "$(gh api "repos/actions/$a" --jq '.archived')"
 done
 
 # ---------------------------------------------------------------- check 4
@@ -162,9 +168,19 @@ assert_has "goals: mdbook installed and run"   "$SNAP/goals-mdbook.yml" 'cargo i
 assert "goals: configure-pages present"     "1" "$(grep -c 'actions/configure-pages@' "$SNAP/goals-mdbook.yml")"
 assert "goals: upload-pages-artifact"       "1" "$(grep -c 'actions/upload-pages-artifact@' "$SNAP/goals-mdbook.yml")"
 assert "goals: deploy-pages present"        "1" "$(grep -c 'actions/deploy-pages@' "$SNAP/goals-mdbook.yml")"
+assert "spotifyd: configure-pages present"  "1" "$(grep -c 'actions/configure-pages@' "$SNAP/spotifyd-docs.yml")"
+assert "spotifyd: upload-pages-artifact"    "1" "$(grep -c 'actions/upload-pages-artifact@' "$SNAP/spotifyd-docs.yml")"
 assert "spotifyd: deploy-pages present"     "1" "$(grep -c 'actions/deploy-pages@' "$SNAP/spotifyd-docs.yml")"
+assert_has "spotifyd: mdbook installed and run" "$SNAP/spotifyd-docs.yml" 'cargo install --version ${MDBOOK_VERSION} mdbook'
 say "goals action pins: $(grep -oE 'actions/(configure-pages|upload-pages-artifact|deploy-pages)@v[0-9]+' "$SNAP/goals-mdbook.yml" | sort | tr '\n' ' ')"
 say "spotifyd action pins: $(grep -oE 'actions/(configure-pages|upload-pages-artifact|deploy-pages)@v[0-9]+' "$SNAP/spotifyd-docs.yml" | sort | tr '\n' ' ')"
+# The decision says the adopters' pinned majors differ from the ones opus recommends
+# (v6.0.0/v5.0.0/v5.0.1). Assert the pins, so that claim is failure-gated too.
+assert "goals pins (sorted)" "actions/configure-pages@v5 actions/deploy-pages@v4 actions/upload-pages-artifact@v3" \
+  "$(grep -oE 'actions/(configure-pages|upload-pages-artifact|deploy-pages)@v[0-9]+' "$SNAP/goals-mdbook.yml" | sort | tr '\n' ' ' | sed 's/ *$//')"
+assert "spotifyd pins (sorted)" "actions/configure-pages@v3 actions/deploy-pages@v4 actions/upload-pages-artifact@v3" \
+  "$(grep -oE 'actions/(configure-pages|upload-pages-artifact|deploy-pages)@v[0-9]+' "$SNAP/spotifyd-docs.yml" | sort | tr '\n' ' ' | sed 's/ *$//')"
+assert "no adopter pins configure-pages@v6" "0" "$(grep -c 'actions/configure-pages@v6' "$SNAP/goals-mdbook.yml" "$SNAP/spotifyd-docs.yml" | awk -F: '{s+=$2} END{print s}')"
 assert "goals pinned run 34280395920 conclusion" "success" "$(gh api repos/rust-lang/goals/actions/runs/34280395920 --jq '.conclusion')"
 assert "goals pinned run event"                  "push"    "$(gh api repos/rust-lang/goals/actions/runs/34280395920 --jq '.event')"
 assert "goals Pages build_type"                  "workflow" "$(gh api repos/rust-lang/goals/pages --jq '.build_type')"
@@ -177,7 +193,10 @@ assert "published site responds" "200" "$(curl -sS -o /dev/null -w '%{http_code}
 # 2026-09-10 and its result is the committed snapshot
 # evidence/mdbook-0.5.4-licences.json. crates.io rate-limits a 218-request sweep,
 # so by default this check recomputes the summary from that snapshot and
-# re-queries a fixed 12-package sample live, asserting each matches the snapshot.
+# re-queries a fixed 16-package sample live, asserting each matches the snapshot.
+# The sample covers every package this decision names: the eight mdbook* crates,
+# all four packages whose declared expression is conjunctive (AND), r-efi, and two
+# ordinary dependencies as controls.
 # Pass --full-walk to re-query all 218 (expect HTTP 429 unless well spaced).
 hdr "check 8 — licence walk over the resolved dependency tree of mdbook = \"=0.5.4\""
 python3 - "$UA" "$EV/mdbook-0.5.4-Cargo.lock" "$EV/mdbook-0.5.4-licences.json" "${1:-}" <<'PY'
@@ -201,11 +220,13 @@ def live(n,v):
             time.sleep(20*(attempt+1))
 sample=[("mdbook","0.5.4"),("mdbook-core","0.5.4"),("mdbook-driver","0.5.4"),("mdbook-html","0.5.4"),
         ("mdbook-markdown","0.5.4"),("mdbook-preprocessor","0.5.4"),("mdbook-renderer","0.5.4"),
-        ("mdbook-summary","0.5.4"),("font-awesome-as-a-crate","0.3.1"),("r-efi","6.0.0"),
+        ("mdbook-summary","0.5.4"),("font-awesome-as-a-crate","0.3.1"),("r-efi","5.3.0"),("r-efi","6.0.0"),
+        ("elasticlunr-rs","3.1.0"),("matchit","0.8.4"),("unicode-ident","1.0.24"),
         ("pulldown-cmark","0.13.4"),("handlebars","6.4.4")]
 full = mode=="--full-walk"
 print("lock registry packages: %d ; snapshot entries: %d ; mode: %s"%(len(pkgs),len(cache),"full-walk" if full else "snapshot+sample"))
-print("ASSERT lock_matches_snapshot=%s"%(sorted("%s %s"%p for p in pkgs)==sorted(cache)))
+lock_matches = sorted("%s %s"%p for p in pkgs)==sorted(cache)
+print("ASSERT lock_matches_snapshot=%s"%lock_matches)
 out={}
 for n,v in pkgs:
     k="%s %s"%(n,v)
@@ -229,9 +250,40 @@ print("non-permissive-only (GPL/AGPL/EUPL/SSPL with no permissive arm): %s"%(str
 print("query errors: %s"%(errs or "none"))
 print("packages with no declared licence: %s"%(nolic or "none"))
 print("noteworthy: font-awesome-as-a-crate 0.3.1=%s ; r-efi 6.0.0=%s"%(out.get(("font-awesome-as-a-crate","0.3.1")),out.get(("r-efi","6.0.0"))))
-print("ASSERT mpl_are_exactly_the_mdbook_family=%s"%(mpl==sorted(["mdbook","mdbook-core","mdbook-driver","mdbook-html","mdbook-markdown","mdbook-preprocessor","mdbook-renderer","mdbook-summary"])))
-print("ASSERT no_strong_copyleft_in_tree=%s"%(not strong))
-sys.exit(1 if (bad or strong or errs or nolic) else 0)
+# A conjunctive (AND) expression is not a permissive disjunction: every named
+# licence's conditions apply together. Enumerate them rather than summarising them
+# away, and fail if the set is not exactly the four the decision records.
+conj=sorted("%s %s = %s"%(n,v,l) for (n,v),l in out.items() if l and ' AND ' in l)
+print("conjunctive (AND) expressions (%d):"%len(conj))
+for e in conj: print("      %s"%e)
+expected_conj=sorted([
+  "elasticlunr-rs 3.1.0 = (MIT OR Apache-2.0) AND MIT",
+  "font-awesome-as-a-crate 0.3.1 = CC-BY-4.0 AND MIT",
+  "matchit 0.8.4 = MIT AND BSD-3-Clause",
+  "unicode-ident 1.0.24 = (MIT OR Apache-2.0) AND Unicode-3.0"])
+conj_ok = conj==expected_conj
+print("ASSERT conjunctive_set_is_exactly_the_four_recorded=%s"%conj_ok)
+# The LGPL arm in the tree is disjunctive, so a permissive arm is selectable.
+lgpl=sorted("%s %s = %s"%(n,v,l) for (n,v),l in out.items() if l and 'LGPL' in l)
+print("LGPL-mentioning expressions (%d): %s"%(len(lgpl),"; ".join(lgpl) or "none"))
+lgpl_ok = lgpl==sorted(["r-efi 5.3.0 = MIT OR Apache-2.0 OR LGPL-2.1-or-later",
+                        "r-efi 6.0.0 = MIT OR Apache-2.0 OR LGPL-2.1-or-later"])
+print("ASSERT lgpl_only_as_a_disjunctive_arm_of_r_efi=%s"%lgpl_ok)
+# Cargo's pre-SPDX slash form is a disjunction, counted separately so the
+# permissive total is not inflated by treating it as a single licence.
+slash=sorted("%s %s = %s"%(n,v,l) for (n,v),l in out.items() if l and '/' in l)
+print("legacy slash-syntax disjunctions (%d): %s"%(len(slash),"; ".join(slash) or "none"))
+mpl_ok = mpl==sorted(["mdbook","mdbook-core","mdbook-driver","mdbook-html","mdbook-markdown","mdbook-preprocessor","mdbook-renderer","mdbook-summary"])
+print("ASSERT mpl_are_exactly_the_mdbook_family=%s"%mpl_ok)
+print("ASSERT no_reciprocal_licence_stronger_than_mpl2_in_tree=%s"%(not strong))
+# Arithmetic the decision's paragraph states, asserted rather than asserted in prose.
+n_perm = len(out)-len(mpl)-len(conj)-len(lgpl)-len(slash)
+print("partition: %d total = %d MPL-2.0 + %d conjunctive + %d r-efi-LGPL-disjunction + %d legacy-slash + %d single-or-disjunctive-permissive"
+      %(len(out),len(mpl),len(conj),len(lgpl),len(slash),n_perm))
+part_ok = (len(out),len(mpl),len(conj),len(lgpl),len(slash),n_perm)==(218,8,4,2,8,196)
+print("ASSERT partition_is_218_8_4_2_8_196=%s"%part_ok)
+sys.exit(1 if (bad or strong or errs or nolic or not lock_matches or not mpl_ok
+               or not conj_ok or not lgpl_ok or not part_ok) else 0)
 PY
 assert "licence walk exit" "0" "$?"
 
@@ -255,6 +307,32 @@ if diff -u "$SNAP/.params-registry.txt" "$SNAP/.params-decision.txt" > "$SNAP/.p
 else
   cat "$SNAP/.params.diff"; assert "parameter round-trip diff" "empty" "non-empty"
 fi
+
+# ---------------------------------------------------------------- check 11
+# The decision's target-os-matrix paragraph claims mdBook 0.5.4 ships prebuilt
+# binaries for the matrix platforms. Map every asset rather than summarising the
+# set, because "Linux and macOS, both x86_64 and aarch64" is true of the release
+# only if aarch64 Linux is read as musl: there is no aarch64-unknown-linux-gnu asset.
+hdr "check 11 — mdBook v0.5.4 release assets (GET /repos/rust-lang/mdBook/releases/tags/v0.5.4)"
+gh api repos/rust-lang/mdBook/releases/tags/v0.5.4 --jq '.assets[].name' | sort > "$SNAP/.mdbook-v0.5.4-assets.txt"
+assert "release asset query exit" "0" "$?"
+sed 's/^/   /' "$SNAP/.mdbook-v0.5.4-assets.txt"
+assert "asset count" "6" "$(wc -l < "$SNAP/.mdbook-v0.5.4-assets.txt" | tr -d ' ')"
+for a in mdbook-v0.5.4-aarch64-apple-darwin.tar.gz \
+         mdbook-v0.5.4-aarch64-unknown-linux-musl.tar.gz \
+         mdbook-v0.5.4-x86_64-apple-darwin.tar.gz \
+         mdbook-v0.5.4-x86_64-pc-windows-msvc.zip \
+         mdbook-v0.5.4-x86_64-unknown-linux-gnu.tar.gz \
+         mdbook-v0.5.4-x86_64-unknown-linux-musl.tar.gz; do
+  assert_has "asset present: $a" "$SNAP/.mdbook-v0.5.4-assets.txt" "$a"
+done
+assert "NO aarch64-unknown-linux-gnu asset" "0" \
+  "$(grep -c 'aarch64-unknown-linux-gnu' "$SNAP/.mdbook-v0.5.4-assets.txt")"
+# The matrix runners this template targets, mapped to the asset each would download.
+assert "ubuntu-latest (x86_64 Linux glibc) asset count" "1" \
+  "$(grep -c 'x86_64-unknown-linux-gnu' "$SNAP/.mdbook-v0.5.4-assets.txt")"
+assert "macos-latest (aarch64 macOS) asset count" "1" \
+  "$(grep -c 'aarch64-apple-darwin' "$SNAP/.mdbook-v0.5.4-assets.txt")"
 
 hdr "result"
 say "failed assertions: $FAILS"
