@@ -1,5 +1,5 @@
 # R49 check L — conditions under which Cargo.lock is included in a package
-retrieved: 2026-09-12T19:16:32Z
+retrieved: 2026-09-12T19:22:07Z
 installed: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
 installed: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
 
@@ -34,6 +34,9 @@ ASSERT ok   cargo-package.md documents what the flag does
 === cargo package --help (installed) ===
 12:      --exclude-lockfile         Don't include the lock file when packaging
 ASSERT ok   installed cargo offers --exclude-lockfile with no -Z gate
+=== cargo publish --help (installed) — the flag must be absent ===
+lines mentioning exclude-lockfile: 0
+ASSERT ok   cargo publish offers no --exclude-lockfile flag
 
 === src/bin/cargo/commands/package.rs@rust-1.98.0 ===
 bytes: 3227  sha256: 0fb645dbf70ab1cb6d6b6e1b8c47db71de5094790dea7c19b93885cc3dfde995
@@ -60,5 +63,18 @@ ASSERT ok   an absent lockfile is generated rather than omitted
 bytes: 34469  sha256: e0e8cc5d89ab35ffa5acff4c3a8a4a5c53aa9091c68827000f40a7682b6dbd12
 171:            include_lockfile: true,
 ASSERT ok   the publish path hardcodes inclusion, so it has no override
+
+=== whole-source enumeration of include_lockfile @rust-1.98.0 ===
+src/bin/cargo/commands/package.rs:89:            include_lockfile: !args.flag("exclude-lockfile"),
+src/cargo/ops/cargo_package/mod.rs:263:        && opts.include_lockfile
+src/cargo/ops/cargo_package/mod.rs:281:    let needs_local_reg = deps.has_dependencies() && (opts.include_lockfile || opts.verify);
+src/cargo/ops/cargo_package/mod.rs:492:    build_ar_list(ws, pkg, src_files, vcs_info, opts.include_lockfile)
+src/cargo/ops/cargo_package/mod.rs:502:    include_lockfile: bool,
+src/cargo/ops/cargo_package/mod.rs:559:    if include_lockfile {
+src/cargo/ops/cargo_package/mod.rs:85:    pub include_lockfile: bool,
+src/cargo/ops/registry/publish.rs:171:            include_lockfile: true,
+ASSERT ok   exactly three source files mention include_lockfile
+assignment sites: src/bin/cargo/commands/package.rs:89 src/cargo/ops/registry/publish.rs:171 
+ASSERT ok   include_lockfile is assigned in exactly two places
 
 RESULT all assertions passed

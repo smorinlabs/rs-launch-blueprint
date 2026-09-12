@@ -5,11 +5,18 @@
 by `review/audit-codex.r1.md` (actor `audit-codex-2026-09-05T155504Z-2107cffb3ecf-r1`,
 model `gpt-5.6-terra`) on one unresolved finding: *"owned parameter overstates
 Cargo.lock inclusion as unconditional"*. This revision narrows that claim to the
-conditions the toolchain documents and implements, in the owned parameter value
-and in the four supporting lines that carried the same overstatement — the
-`## Decision` table row 5, acceptance criterion AC3, and checks A and 4 — and
-adds check L, which establishes the conditions from `rust-lang/cargo` at the
-`rust-1.98.0` tag and from the installed `cargo 1.98.0`. Every finding the audit
+conditions the toolchain documents and implements. A search for every line
+mentioning `Cargo.lock`, a lockfile, or an unconditional-inclusion verb returned
+five carrying the claim, and all five are edited: the owned parameter value, the
+`## Decision` table row 5, acceptance criterion AC3, and checks A and 4. The
+revision adds check L, which establishes the conditions from `rust-lang/cargo` at
+the `rust-1.98.0` tag and from the installed `cargo 1.98.0`. Two further edits
+were made and are the only other changes to the document: this paragraph and the
+title's revision number, and one sentence of the `## Empirical check` preamble,
+which said no `cargo package` or `cargo publish` "was run" while checks 8 and L
+print those subcommands' `--help` — it now says no such invocation did any
+packaging or publishing work, which is what the checks support. Every finding the
+audit
 confirmed is carried unchanged: the re-measured `dist` responsiveness figures,
 the refinement that `[workspace.metadata.dist]` is deprecated but still
 supported so a second configuration file is a direction of travel rather than a
@@ -474,10 +481,11 @@ the condition; `--list` prints the file list without making a package; and
 **Check L — the conditions on lockfile inclusion, stated once in full here.**
 Script `review/evidence/check-lockfile-inclusion.sh`, log
 `review/evidence/lockfile-inclusion-conditions.log`, run from the repository
-root; 10 content assertions, `RESULT all assertions passed`, exit status 0. It
+root; 13 content assertions, `RESULT all assertions passed`, exit status 0. It
 reads documentation and source at the `rust-1.98.0` tag and prints the installed
-`cargo 1.98.0`'s own help; it scaffolds, builds and publishes nothing, and runs
-no `cargo package` or `cargo publish` (not even a dry run). **Observed:**
+`cargo 1.98.0`'s own help; it scaffolds, builds and publishes nothing, and does
+no packaging or publishing work — the only `cargo package`/`cargo publish`
+invocations are `--help` printings, and no dry run was performed. **Observed:**
 
 1. *Automatic with respect to the manifest.* `reference/manifest.md` lists *"A
    minimized `Cargo.lock` is automatically included"* under *"The following files
@@ -502,8 +510,20 @@ no `cargo package` or `cargo publish` (not even a dry run). **Observed:**
    entry is added either way and `build_lock` produces the contents.
 5. *The publish path has no override.*
    `src/cargo/ops/registry/publish.rs:171` constructs `PackageOpts` with
-   `include_lockfile: true` hardcoded, and `cargo publish` exposes no
-   `--exclude-lockfile` flag.
+   `include_lockfile: true` hardcoded, and the installed `cargo publish --help`
+   prints no line containing `exclude-lockfile` (0 matching lines, asserted as an
+   absence).
+6. *That override is the only one — checked exhaustively, not by sampling.* The
+   word "only" is an exhaustive claim, so the script downloads the whole tag
+   tarball (`gh api repos/rust-lang/cargo/tarball/rust-1.98.0`) and searches
+   every `.rs` file in it. `include_lockfile` appears in exactly three files —
+   `src/cargo/ops/cargo_package/mod.rs` (the `PackageOpts` field at `:85`, the
+   `build_ar_list` parameter at `:502`, and three reads at `:263`, `:281`,
+   `:492`), `src/bin/cargo/commands/package.rs` and
+   `src/cargo/ops/registry/publish.rs` — and it is *assigned* in exactly two
+   places, `commands/package.rs:89` and `ops/registry/publish.rs:171`, the two
+   quoted above. Both the file set and the assignment-site set are asserted as
+   exact string equality, so a fourth file or a third assignment fails the check.
 
 **Observed outcome:** the correct width is *automatic under manifest selection,
 generated when absent, and omitted only by `cargo package --exclude-lockfile`* —
@@ -512,11 +532,16 @@ lines asserted. The owned parameter now carries that qualification in full; the
 `## Decision` table row, AC3 and check 4 carry it by reference to this check.
 **Reproducibility:** the script was re-run against the cited log immediately
 before this sentence was written; the two outputs differ on exactly one line, the
-`retrieved:` timestamp in the header, every other byte identical. The documentation
-and source bytes are addressed by tag and by recorded SHA-256, so they cannot
-drift under a re-run without the digest assertion failing. A negative control was
-run — one asserted string altered — and the script exited 1 with
-`ASSERT FAIL`, so the check can fail.
+`retrieved:` timestamp in the header, every other byte identical. The two
+documentation pages are addressed by tag *and* by recorded SHA-256, so they
+cannot drift under a re-run without the digest assertion failing; the four source
+files and the tarball are addressed by tag and their digests or derived line
+lists are printed into the log, so drift would show as a log diff. **Three
+negative controls were run**, each on a copy of the script: an asserted
+documentation string altered, the expected assignment-site set altered, and the
+`cargo publish` absence assertion pointed at the one help text that does contain
+`--exclude-lockfile`. All three exited 1 with `ASSERT FAIL`, so this check can
+fail in both directions — a missing string and an unexpectedly present one.
 
 **Check D — where artifacts land.** `build-cache.md` at the tag: *"By default,
 both directories point to a directory named `target` in the root of your

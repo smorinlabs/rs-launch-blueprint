@@ -21,6 +21,24 @@ need() { # need <label> <file> <pattern>
   fi
 }
 
+need_absent() { # need_absent <label> <file> <pattern>
+  if grep -qF -- "$3" "$2"; then
+    printf 'ASSERT FAIL %s (unexpectedly present: %s)\n' "$1" "$3"
+    fail=1
+  else
+    printf 'ASSERT ok   %s\n' "$1"
+  fi
+}
+
+need_eq() { # need_eq <label> <expected> <actual>
+  if [ "$2" = "$3" ]; then
+    printf 'ASSERT ok   %s\n' "$1"
+  else
+    printf 'ASSERT FAIL %s\n  expected: %s\n  actual:   %s\n' "$1" "$2" "$3"
+    fail=1
+  fi
+}
+
 fetch() { # fetch <repo-path> <outfile> <expected-sha256-or-->
   if ! gh api "repos/rust-lang/cargo/contents/$1?ref=$tag" --jq '.content' \
       | base64 -d > "$2"; then
@@ -80,6 +98,17 @@ else
   echo 'HELP FAIL cargo package --help'
   fail=1
 fi
+
+echo '=== cargo publish --help (installed) — the flag must be absent ==='
+if cargo publish --help > "$tmp/publish-help.txt" 2>&1; then
+  printf 'lines mentioning exclude-lockfile: %s\n' \
+    "$(grep -c -- 'exclude-lockfile' "$tmp/publish-help.txt" || true)"
+  need_absent 'cargo publish offers no --exclude-lockfile flag' \
+    "$tmp/publish-help.txt" '--exclude-lockfile'
+else
+  echo 'HELP FAIL cargo publish --help'
+  fail=1
+fi
 echo
 
 # --- 4. source: where the condition lives -----------------------------------
@@ -107,6 +136,33 @@ if [ -s "$tmp/publish.rs" ]; then
   grep -n -- 'include_lockfile' "$tmp/publish.rs"
   need 'the publish path hardcodes inclusion, so it has no override' \
     "$tmp/publish.rs" 'include_lockfile: true,'
+fi
+echo
+
+# --- 5. enumerate every site in the whole source, not just the two read ------
+# "omitted only by cargo package --exclude-lockfile" is an exhaustive claim, so
+# it is checked exhaustively: every .rs file in the tag tarball is searched.
+echo '=== whole-source enumeration of include_lockfile @rust-1.98.0 ==='
+if gh api "repos/rust-lang/cargo/tarball/$tag" > "$tmp/cargo.tar.gz" \
+   && mkdir -p "$tmp/tree" \
+   && tar xzf "$tmp/cargo.tar.gz" -C "$tmp/tree" --strip-components=1; then
+  rs_hits="$(cd "$tmp/tree" && grep -rn 'include_lockfile' --include='*.rs' . \
+    | sed 's|^\./||' | LC_ALL=C sort)"
+  printf '%s\n' "$rs_hits"
+  files="$(printf '%s\n' "$rs_hits" | cut -d: -f1 | LC_ALL=C sort -u | tr '\n' ' ')"
+  need_eq 'exactly three source files mention include_lockfile' \
+    'src/bin/cargo/commands/package.rs src/cargo/ops/cargo_package/mod.rs src/cargo/ops/registry/publish.rs ' \
+    "$files"
+  # Assignment sites only: drop the two `include_lockfile: bool` declarations.
+  assigns="$(printf '%s\n' "$rs_hits" | grep 'include_lockfile: ' | grep -v ': bool' \
+    | sed 's/^\([^:]*:[0-9]*\):.*/\1/' | tr '\n' ' ')"
+  printf 'assignment sites: %s\n' "$assigns"
+  need_eq 'include_lockfile is assigned in exactly two places' \
+    'src/bin/cargo/commands/package.rs:89 src/cargo/ops/registry/publish.rs:171 ' \
+    "$assigns"
+else
+  echo 'TARBALL FAIL repos/rust-lang/cargo/tarball'
+  fail=1
 fi
 echo
 
