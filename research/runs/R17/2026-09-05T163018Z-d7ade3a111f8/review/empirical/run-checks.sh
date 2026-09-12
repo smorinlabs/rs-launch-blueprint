@@ -118,7 +118,11 @@ curl -sSL --max-time 60 "https://raw.githubusercontent.com/mongodb/kingfisher/$K
   | grep -nE 'runs-on' | head -6
 echo "-- documented exit codes and the --only-valid alias:"
 curl -sSL --max-time 60 "https://raw.githubusercontent.com/mongodb/kingfisher/$KF_TAG/docs/USAGE.md" -o "$WORK/USAGE.md"
-sed -n '/^## Exit Codes/,/^$/p;' "$WORK/USAGE.md" | head -12
+echo "   docs/USAGE.md at $KF_TAG, sha256: $(shasum -a 256 < "$WORK/USAGE.md")"
+# The whole "## Exit Codes" section, not just its heading: the previous range
+# expression stopped at the blank line that immediately follows the heading, so the
+# table never reached the log. Section 10 asserts on what this prints.
+awk '/^## Exit Codes/{f=1} f&&/^## /&&!/^## Exit Codes/{exit} f' "$WORK/USAGE.md" | head -12
 grep -n -m2 -- '--only-valid` is a compatibility alias' "$WORK/USAGE.md"
 
 say "06 crates.io trap — 'kingfisher' on crates.io is an unrelated project"
@@ -273,11 +277,55 @@ B_FIND=$(grep -cE '^ \|Findings\.+: 1$' "$WORK/fixB.pretty")
 assert 09b-exactly-one-history-finding 1 "$B_FIND"
 cd "$WORK" || exit 1
 
-say "10 not executed, and why"
+say "10 the documented exit-code set, and the codes outside it"
+# The gate rule this decision states is an allow-list, so two things have to be
+# executed rather than asserted: that the documented set is exactly what the decision
+# names, and that codes outside it are reachable — which is what makes a gate written
+# as "fail on 205" fail open when the scanner never scanned.
+KF_CODES=$(awk '/^## Exit Codes/{f=1} f&&/^## /&&!/^## Exit Codes/{exit} f' "$WORK/USAGE.md" \
+  | awk -F'|' '/^\| *[0-9]+ *\|/{gsub(/[[:space:]]/,"",$2); printf "%s%s", (n++?" ":""), $2} END{print ""}')
+echo "-- documented exit codes, in table order: [$KF_CODES]"
+assert 10a-documented-exit-code-set-is-exactly-0-200-205 "0 200 205" "$KF_CODES"
+# The other three places the tool could document exit behaviour, checked so the set
+# above can be called "the documented set" and not "one table's contents".
+KF_HELP_EXIT=$("$KF_DIR/kingfisher" --help 2>&1 | grep -c -i 'exit')
+assert 10b-top-level-help-documents-no-exit-code 0 "$KF_HELP_EXIT"
+KF_SCANHELP_EXIT=$("$KF_DIR/kingfisher" scan --help 2>&1 | grep -c -i 'exit')
+assert 10c-scan-help-documents-no-exit-code 0 "$KF_SCANHELP_EXIT"
+curl -sSL --max-time 60 "https://raw.githubusercontent.com/mongodb/kingfisher/$KF_TAG/README.md" -o "$WORK/KF-README.md"
+KF_README_EXIT=$(grep -c -i 'exit' "$WORK/KF-README.md")
+assert 10d-readme-documents-no-exit-code 0 "$KF_README_EXIT"
+# Two reachable tool-error codes. No pipe on the invocation: a pipeline reports its
+# last command's status, and these assertions are about the scanner's status.
+"$KF_DIR/kingfisher" --definitely-not-a-real-flag > "$WORK/badflag.out" 2>&1
+BADFLAG_EXIT=$?
+echo "-- rejected flag, first line: $(head -1 "$WORK/badflag.out")"
+assert 10e-rejected-flag-exits-2 2 "$BADFLAG_EXIT"
+"$KF_DIR/kingfisher" scan no-such-scan-target --no-update-check > "$WORK/badpath.out" 2>&1
+BADPATH_EXIT=$?
+echo "-- unreadable scan target, last line: $(tail -1 "$WORK/badpath.out")"
+assert 10f-unreadable-target-exits-1 1 "$BADPATH_EXIT"
+IN_SET=$(printf '%s\n' "$BADFLAG_EXIT" "$BADPATH_EXIT" | grep -c -E '^(0|200|205)$')
+assert 10g-neither-tool-error-code-is-in-the-documented-set 0 "$IN_SET"
+# Why an implementer handles the code by hand at all: GitHub's default shell for a
+# run: step is bash -e, so an uncaptured 200 aborts the step before any handler runs.
+# Fetched from a moving ref (github/docs@main); the assertions read the two literal
+# command strings, never the surrounding prose or table layout.
+curl -sSL --max-time 60 "https://raw.githubusercontent.com/github/docs/main/data/reusables/actions/supported-shells.md" -o "$WORK/gh-shells.md"
+GH_DEFAULT_SHELL=$(grep -c -- '`bash -e {0}`' "$WORK/gh-shells.md")
+assert 10h-github-default-run-shell-is-bash-dash-e 1 "$GH_DEFAULT_SHELL"
+GH_BASH_SHELL=$(grep -c -- '`bash --noprofile --norc -eo pipefail {0}`' "$WORK/gh-shells.md")
+assert 10i-explicit-shell-bash-also-sets-errexit 1 "$GH_BASH_SHELL"
+
+say "11 not executed, and why"
 cat <<'NOTE'
 - Kingfisher exit code 205 ("validated findings discovered") was NOT exercised: proving it needs a
   genuinely live third-party credential, which this research will not create. 205 rests on
   docs/USAGE.md's exit-code table only. P03 must prove it with a throwaway live credential.
+- No workflow step was run, so the gate itself is NOT executed here. Section 10 proves the set the
+  gate must allow-list and proves two codes outside it, but whether a real scan step fails when the
+  scanner cannot run is P03's acceptance check 5 (replace the binary with `false`, or pass a
+  rejected flag, and assert the job fails).
 - TruffleHog's CLI was NOT downloaded or run. Its exit-183-on-verified behaviour, its 700+
   actively-verifying detector count, and whether `--since-commit` with an empty value consumes the
   following `--branch` flag are all documented-not-executed here.
