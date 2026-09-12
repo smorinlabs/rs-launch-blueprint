@@ -363,8 +363,16 @@ a value that must change.
 **Toolchain and host.** `rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)`;
 `cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)`; `gh 2.98.0`;
 `Darwin 25.4.0 arm64`, macOS 26.4. All retrieval timestamps are UTC. Revision 2's
-run was on this same host on 2026-09-12; checks 1–10 reproduced their revision-1
-values unchanged, and checks 11 and 12 are new in revision 2.
+run was on this same host on 2026-09-12; checks 11 and 12 are new in revision 2,
+and **checks 1–10 reproduced their revision-1 values unchanged**. That last
+statement is verified rather than asserted, and by hand after the log was written
+rather than inside the script, so it is not one of the 100 gated checks: all
+**52** `PASS` lines of revision 1's log — taken from
+`review/evidence/audit-docs-delivery-model-r1.log`, the revision-1 auditor's
+byte-identical rerun of it — appear verbatim in revision 2's log
+(`while IFS= read -r l; do grep -Fqx -- "$l" evidence/docs-delivery-claims.log ||
+echo "MISSING: $l"; done < <(grep '^PASS' evidence/audit-docs-delivery-model-r1.log)`
+printed nothing; 52 lines checked, 0 missing).
 
 **Working directory and what was written.** The check script is
 `review/evidence/docs-delivery-claims.sh` and runs from the run directory
@@ -411,12 +419,13 @@ already created outside the repository.
 `set -o pipefail` is set at the top of the script, and **every fact this decision
 cites from a check is failure-gated on its expected content, not on an exit code
 alone**; the script exits non-zero if any gate fails. As run for revision 2, it
-made **100 failure-gated checks: 92 lines reporting `PASS`** (77 from the shell's
-own `assert`/`assert_has` helpers and 15 from check 12's region comparison, whose
-failure path sets the exit status that the shell assertion
-`revision-2 untouched-region diff` reads) **plus 8 gated `ASSERT <name>=True`
-lines** (7 inside check 8's licence walk and 1 in check 12), each feeding its
-block's exit status. **0 `FAIL` lines; 0 failed assertions; exit status 0.**
+made **100 failure-gated checks: 92 lines reporting `PASS`** — 81 from the shell's
+own `assert`/`assert_has` helpers (four of those 81 are in check 12) and 11
+printed by check 12's Python region comparison, whose failure path sets the exit
+status that the shell assertion `revision-2 untouched-region diff` reads —
+**plus 8 gated `ASSERT <name>=True` lines** (7 inside check 8's licence walk and 1
+in check 12), each feeding its block's exit status. **0 `FAIL` lines; 0 failed
+assertions; exit status 0.**
 
 **The distinction between a gate and recorded output, stated because revision 1
 got it wrong.** Revision 1 claimed that every check asserted on its content. That
@@ -467,7 +476,15 @@ against the committed log; both diffs were empty, so **the log is the complete
 output of the script, reproducible byte-for-byte on this host**. Two comparison rules an auditor needs.
 First, the check-1 banner names this host's `rustc`, `cargo`, `gh` and OS
 versions and will differ on another machine; nothing else in the log is
-host-dependent. Second, checks 2–12 are assertion-shaped on purpose — they print
+host-dependent. **Second, check 12 reads the repository's own git history** —
+`git -C <repo root> cat-file blob f098d011723244c43e9673ce9633ce562829681d` — and
+therefore requires `$REPO_ROOT` to be a git checkout (a clone or a worktree)
+whose object database contains that blob. **A rerun from a plain file copy of the
+tree, with no `.git`, cannot run check 12**: the blob read fails, check 12 reports
+`FAIL`, and the script exits 1. That is a precondition of the check, not a
+regression; revision 1's auditor reran from exactly such a copy, so an auditor
+who repeats that arrangement must either clone or copy the `.git` directory with
+it. Checks 1–11 are unaffected and do not read git. Third, checks 2–12 are assertion-shaped on purpose — they print
 `PASS`/`FAIL` and stable fields (licence strings, `yanked`, `archived`, a pinned
 run's `conclusion`, a pinned blob's grep counts, tag-stripped documentation
 substrings) and deliberately carry **no** volatile counter: no `stargazers_count`,

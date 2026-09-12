@@ -339,6 +339,12 @@ assert "macos-latest (aarch64 macOS) asset count" "1" \
 # parts of revision 1 it did NOT touch, by diffing the current DECISION.md
 # against the revision-1 git blob and asserting that each region the audit did
 # not challenge is byte-identical. The blob id is stable across later commits.
+#
+# PRECONDITION: this check reads the repository's own git history, so $REPO_ROOT
+# must be a git checkout (clone or worktree) whose object database contains blob
+# f098d011723244c43e9673ce9633ce562829681d. A rerun from a plain file copy of the
+# tree with no .git cannot run it: the blob read fails, this check reports FAIL,
+# and the script exits 1. Checks 1-11 do not read git and are unaffected.
 hdr "check 12 — revision-2 diff against the revision-1 blob"
 R1BLOB=f098d011723244c43e9673ce9633ce562829681d
 git -C "$REPO_ROOT" cat-file blob "$R1BLOB" > "$SNAP/.decision-r1.md"
@@ -423,6 +429,6 @@ assert "revision-2 untouched-region diff" "0" "$?"
 
 hdr "result"
 say "failed assertions: $FAILS"
-rm -f "$SNAP"/.norm.py "$SNAP"/.cratelic.py
+rm -f "$SNAP"/.norm.py "$SNAP"/.cratelic.py "$SNAP"/.decision-r1.md
 [ "$FAILS" -eq 0 ] || exit 1
 exit 0
