@@ -1,0 +1,209 @@
+# captured: 2026-09-12T18:56:04Z
+# cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence
+# revision-5 DECISION.md blob, extracted with git show: /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/rev5.md
+$ shasum -a 256 /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/rev5.md
+b45a17a342bfa49689c3571e71c14ab55c2fa64e0f9337032876739babdae205  /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/rev5.md
+exit=0   # must read b45a17a342bfa49689c3571e71c14ab55c2fa64e0f9337032876739babdae205
+
+############ P1 — the pinned action version, both lanes. The comparison is
+############      anchored on the step's own 'uses:' line, because both r5
+############      headers also mention the pin in prose.
+$ diff <(grep -o '^ *uses: anthropics/claude-code-action@.*' candidate-claude-code-review.r4.yml) <(grep -o '^ *uses: anthropics/claude-code-action@.*' candidate-claude-code-review.r5.yml)
+exit=0   # 0 = identical (review lane)
+$ diff <(grep -o '^ *uses: anthropics/claude-code-action@.*' candidate-claude.r4.yml) <(grep -o '^ *uses: anthropics/claude-code-action@.*' candidate-claude.r5.yml)
+exit=0   # 0 = identical (assistant lane)
+$ grep -c '^ *uses: anthropics/claude-code-action@v1.0.220$' candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+candidate-claude-code-review.r5.yml:1
+candidate-claude.r5.yml:1
+exit=0   # exactly one pinned step per lane
+
+############ P2 — the on: trigger blocks, both lanes
+$ diff <(sed -n '/^on:/,/^jobs:/p' candidate-claude-code-review.r4.yml) <(sed -n '/^on:/,/^jobs:/p' candidate-claude-code-review.r5.yml)
+exit=0   # 0 = identical (claude-code-review)
+$ diff <(sed -n '/^on:/,/^jobs:/p' candidate-claude.r4.yml) <(sed -n '/^on:/,/^jobs:/p' candidate-claude.r5.yml)
+exit=0   # 0 = identical (claude)
+
+############ P3 — the real jobs' permission blocks. The preflight's
+############      'permissions: {}' is a new block on a new job, and it is
+############      excluded from the comparison by anchoring on the real
+############      job's own multi-line 'permissions:' key.
+$ diff <(sed -n '/^    permissions:$/,/^    steps:$/p' candidate-claude-code-review.r4.yml) <(sed -n '/^    permissions:$/,/^    steps:$/p' candidate-claude-code-review.r5.yml)
+exit=0   # 0 = identical (claude-code-review)
+$ diff <(sed -n '/^    permissions:$/,/^    steps:$/p' candidate-claude.r4.yml) <(sed -n '/^    permissions:$/,/^    steps:$/p' candidate-claude.r5.yml)
+exit=0   # 0 = identical (claude)
+
+############ P4 — the four fixed parameter lines in DECISION.md, compared
+############      as text. They sit lower in the file because revision 6
+############      added prose above them, so the line numbers move and the
+############      bytes must not. Both facts are shown.
+############      The comparison reads the CURRENT ENTRY only, i.e.
+############      everything before the first '## Supersedes' line, because
+############      the preserved revision-5 entry beneath it carries its own
+############      copy of the same four lines. A whole-file grep therefore
+############      finds eight, and that is the preservation working rather
+############      than a change; both counts are printed.
+$ python3 -c 'split $NEW at the first \n## Supersedes' > current-entry.tmp; exit=0
+$ diff <(grep '^- assumes ' $OLD) <(grep '^- assumes ' current-entry.tmp)
+exit=0   # 0 = the four lines are byte-for-byte identical
+$ grep -c '^- assumes ' $OLD current-entry.tmp $NEW
+/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/rev5.md:4
+current-entry.tmp:4
+/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/DECISION.md:8
+exit=0   # 4 in revision 5, 4 in revision 6's current entry, 8 in the whole
+#            revision-6 file — the extra four are revision 5's own, preserved
+#            verbatim under ## Supersedes.
+$ grep -n '^- assumes ' $NEW
+209:- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+210:- assumes rust-edition = 2024
+211:- assumes target-os-matrix = ubuntu-latest, macos-latest
+212:- assumes license = MIT OR Apache-2.0
+617:- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+618:- assumes rust-edition = 2024
+619:- assumes target-os-matrix = ubuntu-latest, macos-latest
+620:- assumes license = MIT OR Apache-2.0
+exit=0
+
+############ P5 — the residual analysis in DECISION.md: three spans, each
+############      extracted by its own opening and closing anchor text
+############      rather than by line number, so a span that moved is
+############      still compared.
+# span A — the runner-up's third condition, the trusted-author residual and
+#          the disclosure quotation: "the owner declines the residual prompt-injection exposure" … "it is an owner risk decision, not an engineering-fitness one."
+exit=0   # 0 = identical (span A)
+# span B — fact (3), the residual binding both lanes: "3. **The residual is not removable by configuration, and it binds both lanes.**" … "**Treat the review lane as write-capable until U17 says otherwise, rather than assuming it is not.**"
+exit=0   # 0 = identical (span B)
+# span C — fact (4), the pre-token window: "4. **The pre-token window is real.**" … "its runtime effect is **U12**, unproven."
+exit=0   # 0 = identical (span C)
+# Byte counts of the three spans, so an auditor can see they are not empty:
+$ for span in A B C; do extract $NEW <anchors> | wc -c; done
+    1133
+    1302
+     328
+exit=0
+
+############ P6 — the review lane's prompt: input and the assistant lane's
+############      additional_permissions input, anchored on the indented
+############      input line because the r5 header also quotes the prompt.
+$ diff <(grep -o '^ *prompt: .*' candidate-claude-code-review.r4.yml) <(grep -o '^ *prompt: .*' candidate-claude-code-review.r5.yml)
+exit=0   # 0 = the prompt input is byte-for-byte identical
+$ grep -c '^ *prompt:' candidate-claude.r4.yml candidate-claude.r5.yml
+candidate-claude.r4.yml:0
+candidate-claude.r5.yml:0
+exit=1   # two printed zeros with grep -c exit 1 IS the zero-match result:
+#            the assistant lane still passes NO prompt input, which is what
+#            selects interactive @claude mode.
+$ diff <(grep -A1 'additional_permissions:' candidate-claude.r4.yml) <(grep -A1 'additional_permissions:' candidate-claude.r5.yml)
+exit=0   # 0 = identical
+
+############ P7 — the two prior fixtures are untouched: revision 6 added
+############      files and never rewrote one.
+$ git -C /Users/stevemorin/c/rs-launch-blueprint-p02-plan status --porcelain research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/
+ M research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/DECISION.md
+ M research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence/actionlint.log
+?? research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence/candidate-claude-code-review.r5.yml
+?? research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence/candidate-claude.r5.yml
+?? research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence/needs-and-credential-shapes.log
+?? research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence/protected-regions-r6.log
+exit=0
+
+############ P9 — every claim revision 6 makes about an EARLIER revision is
+############      read from that revision's own bytes in git, never from
+############      memory. Five commits touch this file; each is checked out
+############      to a scratch copy and grepped for the exact string the
+############      claim attributes to it. A printed 0 with grep -c exit 1 is
+############      the zero-match result and is as much a finding as a 1.
+$ git -C $REPO log --format='%h %ad %s' --date=short -- $DPATH
+18fbc64 2026-09-10 feat(research): R18 revision 5, parameter lines corrected before auditing
+42bc35e 2026-09-10 feat(research): R18 decision revision 4, shipping and enabling separated
+21265a1 2026-09-09 feat(research): R18 decision revision 3, the security case argued rather than asserted
+376c247 2026-09-09 feat(research): R18 decision revision 2, exits stated per command
+89d1d59 2026-09-09 feat(research): draft the R18 AI-assisted-review-workflows decision
+exit=0   # five commits: revisions 1, 2, 3, 4, 5 in order, newest first
+$ for c in 89d1d59 376c247 21265a1 42bc35e 18fbc64; do git show $c:$DPATH > r18rev-$c.md; done; exit=0
+$ grep -c 'reviewed R01 only' r18rev-{rev1..rev5}.md
+  89d1d59  1
+  376c247  1
+  21265a1  1
+  42bc35e  2
+  18fbc64  2
+  exit of the last grep=0
+$ grep -c 'whether the capability is enabled at all' r18rev-{rev1..rev5}.md
+  89d1d59  1
+  376c247  1
+  21265a1  1
+  42bc35e  1
+  18fbc64  1
+  exit of the last grep=0
+$ grep -c 'vars`-gated flag is adopted' r18rev-{rev1..rev5}.md
+  89d1d59  1
+  376c247  1
+  21265a1  1
+  42bc35e  1
+  18fbc64  1
+  exit of the last grep=0
+$ grep -c 'gated on a variable it does not itself set' r18rev-{rev1..rev5}.md
+  89d1d59  0
+  376c247  1
+  21265a1  1
+  42bc35e  1
+  18fbc64  1
+  exit of the last grep=0
+$ grep -c 'Answered by the enable flag on the origin repository' r18rev-{rev1..rev5}.md
+  89d1d59  0
+  376c247  0
+  21265a1  1
+  42bc35e  1
+  18fbc64  1
+  exit of the last grep=0
+$ grep -c 'the only actor-trust control that acts before the job is scheduled' r18rev-{rev1..rev5}.md
+  89d1d59  0
+  376c247  0
+  21265a1  0
+  42bc35e  2
+  18fbc64  2
+  exit of the last grep=0
+$ grep -c 'enable flag protects a \*\*downstream fork\*\*' r18rev-{rev1..rev5}.md
+  89d1d59  0
+  376c247  0
+  21265a1  1
+  42bc35e  1
+  18fbc64  1
+  exit of the last grep=0
+
+# The two fixture facts clause (b) and the enable-variable removal turn on,
+# read from the fixtures themselves rather than from any revision's prose.
+# Both counts are taken over the YAML BODY ONLY — from the 'name:' key
+# onward — because the r5 headers discuss both subjects in comments, and a
+# whole-file count would score those comments as configuration.
+$ for f in <the eight lane fixtures>; do sed -n '/^name: /,' $f | grep -c "type != 'Bot'"; done
+  candidate-claude.yml                   0
+  candidate-claude.r3.yml                0
+  candidate-claude.r4.yml                0
+  candidate-claude.r5.yml                5
+  candidate-claude-code-review.yml       2
+  candidate-claude-code-review.r3.yml    2
+  candidate-claude-code-review.r4.yml    2
+  candidate-claude-code-review.r5.yml    2
+exit of the last grep=0   # assistant lane: 0 at revisions 1-5, 5 at revision 6
+#                            (one sender check plus four per-event author
+#                            checks). Review lane: 2 at every revision.
+$ for f in <the same eight>; do sed -n '/^name: /,$p' $f | grep -c "vars.ENABLE_CLAUDE_[A-Z]* == 'true'"; done
+  candidate-claude.yml                   1
+  candidate-claude.r3.yml                1
+  candidate-claude.r4.yml                1
+  candidate-claude.r5.yml                0
+  candidate-claude-code-review.yml       1
+  candidate-claude-code-review.r3.yml    1
+  candidate-claude-code-review.r4.yml    1
+  candidate-claude-code-review.r5.yml    0
+exit of the last grep=1   # 1 for each of the six pre-revision-6 fixtures,
+#                            0 for both r5 fixtures. A printed 0 with exit 1
+#                            IS the zero-match result.
+
+############ P8 — negative assertion: this repository has no workflows tree,
+############      so nothing revision 6 wrote can be loaded by GitHub Actions.
+$ ls -d /Users/stevemorin/c/rs-launch-blueprint-p02-plan/.github/workflows
+ls: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/.github/workflows: No such file or directory
+exit=1   # non-zero = the directory does not exist, which is the finding
+
+# END

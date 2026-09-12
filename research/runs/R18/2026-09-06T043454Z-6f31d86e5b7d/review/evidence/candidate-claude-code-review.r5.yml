@@ -1,0 +1,207 @@
+# LINT FIXTURE ONLY — not a shipped workflow. Revision 5 of the review-lane
+# candidate (revision 6 of review/DECISION.md). P02 is research; P03 builds the
+# template. This file exists so `actionlint` can decide whether the revision-6
+# configuration in review/DECISION.md is syntactically valid. It deliberately
+# lives under research/runs/.../review/evidence/, never under .github/workflows/,
+# so GitHub Actions never loads it. The revision-2, revision-3 and revision-4
+# fixtures (candidate-claude-code-review.yml, .r3.yml, .r4.yml) are left
+# byte-for-byte as they were linted and audited.
+#
+# CHANGE FROM REVISION 4 — the owner's direction of 2026-09-12. There is no
+# enable variable. `vars.ENABLE_CLAUDE_REVIEW` is removed entirely. Both
+# workflow files ship with the template by default; a lane runs when the
+# credential it needs is present, and when the credential is absent it does not
+# run, does not error, and prints which key needs setting. Anyone who does not
+# want the lane deletes the file.
+#
+# WHY A PREFLIGHT JOB — and it is the only shape the platform allows. A
+# job-level `if:` may read only the `github`, `needs`, `vars` and `inputs`
+# contexts; `secrets` is not among them, and `actionlint` rejects a `secrets`
+# reference there (candidate-secrets-in-job-if-NEGATIVE.yml, exit 1). `secrets`
+# IS available in `jobs.<job_id>.env`. So a credential that is a secret can only
+# reach a job condition by being read into an environment value in one job and
+# published as that job's output, which a second job gates on through `needs`.
+# That is this file: `credential-preflight` reads both credential shapes,
+# prints the skip reason when neither is set, and publishes the literal
+# `static`, `federation` or `none`; `claude-review` runs only when it is not
+# `none`. GitHub documents the skip propagation — "If a job fails or is skipped,
+# all jobs that need it are skipped unless the jobs use a conditional expression
+# that causes the job to continue" (workflow-syntax `jobs.<job_id>.needs`,
+# needs-and-credential-shapes.log) — and this file uses no such expression, so a
+# skipped preflight skips the review job. That is a documented platform
+# behaviour, not an observed one: proving it on a real unconfigured clone is an
+# acceptance criterion for P03 (B4), on owner instruction.
+#
+# WHY THE TRIGGER GUARDS SIT ON THE PREFLIGHT. The preflight is always-run only
+# in the sense that it is not gated on credential presence, because it cannot
+# be. It still carries the fork, draft and bot guards, because a preflight with
+# no guards would spin a runner for every qualifying event and would falsify
+# this decision's own claim that no runner minutes are spent on an event the
+# guards reject.
+#
+# TWO CREDENTIAL SHAPES, AND THE PRECEDENCE BETWEEN THEM, read in source at
+# v1.0.220 (needs-and-credential-shapes.log):
+#   * Static credential — repository secret ANTHROPIC_API_KEY or
+#     CLAUDE_CODE_OAUTH_TOKEN. Setup cost: one Console API key, or one
+#     `claude setup-token` run for a Pro/Max subscription. No Anthropic
+#     organization admin rights needed.
+#   * Workload identity federation — repository variables. The action's own
+#     predicate needs two of them: `isWorkloadIdentityConfigured()` at
+#     base-action/src/workload-identity.ts:44-48 returns true for
+#     ANTHROPIC_FEDERATION_RULE_ID && ANTHROPIC_ORGANIZATION_ID. The third,
+#     ANTHROPIC_SERVICE_ACCOUNT_ID, is optional (action.yml:79-81). Setup cost:
+#     admin access to an Anthropic organization — register an issuer, create a
+#     service account, create a federation rule (docs/setup.md) — plus the
+#     behaviour change that `classify_inline_comments` is skipped under
+#     federation.
+#   * Precedence, read in source rather than only in docs: setupWorkloadIdentity()
+#     at workload-identity.ts:128-135 returns `undefined` and emits
+#     core.warning("Workload identity federation inputs are set alongside
+#     anthropic_api_key or claude_code_oauth_token. The API key/OAuth token
+#     takes precedence, so federation will not be used.") — matching
+#     docs/setup.md's own warning. An adopter sets exactly one shape.
+#   * Empty is absent. Every credential read in that file is
+#     `process.env.X?.trim()`, and action.yml:335-337 maps an empty input
+#     through `||` to an empty env value, so passing an unset secret as an empty
+#     string is indistinguishable from not passing it. That is why the action
+#     step below can carry all five inputs at once.
+#
+# UNCHANGED FROM REVISION 4 and deliberately so: the pinned action version
+# anthropics/claude-code-action@v1.0.220, the `on:` trigger list, the
+# claude-review permission block, and the template-local `/review-pr` prompt
+# that replaced the run-time plugin-marketplace fetch. The preflight's
+# `permissions: {}` is a new block on a new job, not a change to an existing
+# one.
+#
+# WHAT AN ADOPTER ACCEPTS BY INSTALLING A CREDENTIAL. Under this design there is
+# no flag to set, so installing a credential is itself the act of acceptance,
+# and it is taken by whoever installs it:
+#   1. Enabling this lane on a PUBLIC repository accepts a residual that no
+#      configuration in this file removes. A pull-request diff written by a
+#      write-access author is trusted-author content that routinely quotes
+#      untrusted text; nothing here distinguishes the two.
+#   2. Once this job starts, src/entrypoints/prepare.ts:37 calls
+#      setupGitHubToken(), which exchanges the workflow's OIDC token for a
+#      Claude GitHub App installation token at
+#      https://api.anthropic.com/api/github/github-app-token-exchange
+#      (src/github/token.ts:121) BEFORE checkWritePermissions runs at :44 and
+#      before checkHumanActor runs in either mode. Job-level `if:` is the only
+#      control that acts before that.
+#   3. CLAUDE_CODE_SUBPROCESS_ENV_SCRUB is INACTIVE here: action.yml:301 emits
+#      it only when allowed_non_write_users is non-empty, which this
+#      configuration deliberately leaves at "".
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, ready_for_review, reopened]
+
+jobs:
+  credential-preflight:
+    # Not gated on credential presence — a job-level `if:` cannot read
+    # `secrets`. It does carry every trigger guard, so an event the guards
+    # reject starts nothing at all.
+    #
+    # `draft == false` (revision 3): without it, a pull request opened as a
+    # draft and later marked ready fires `opened` and then `ready_for_review`,
+    # i.e. two paid agent sessions for one pull request. Reasoned from the
+    # documented pull_request activity-type set; no run executed — U11.
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository
+      && github.event.pull_request.draft == false
+      && github.event.pull_request.user.type != 'Bot'
+      && github.event.sender.type != 'Bot'
+    runs-on: ubuntu-latest
+    permissions: {}
+    outputs:
+      credential: ${{ steps.detect.outputs.credential }}
+    env:
+      # `secrets` is available in jobs.<job_id>.env and nowhere a job condition
+      # can read. This block is the whole reason the preflight exists.
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+      CLAUDE_CODE_OAUTH_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+      ANTHROPIC_FEDERATION_RULE_ID: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+      ANTHROPIC_ORGANIZATION_ID: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+    steps:
+      - name: Detect which Claude credential shape is configured
+        id: detect
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ -n "${ANTHROPIC_API_KEY:-}" ] || [ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
+            shape=static
+          elif [ -n "${ANTHROPIC_FEDERATION_RULE_ID:-}" ] && [ -n "${ANTHROPIC_ORGANIZATION_ID:-}" ]; then
+            shape=federation
+          else
+            shape=none
+          fi
+          echo "credential=${shape}" >> "${GITHUB_OUTPUT}"
+          if [ "${shape}" = none ]; then
+            echo "::notice title=Claude review not configured::No Claude credential is set, so the review job is skipped. This is not an error."
+            {
+              echo "### Claude review skipped — no credential configured"
+              echo
+              echo "The review job did not run because no Claude credential is set."
+              echo "Set **one** of the two shapes, not both:"
+              echo
+              echo "- Static credential: repository secret \`ANTHROPIC_API_KEY\`, or \`CLAUDE_CODE_OAUTH_TOKEN\` from \`claude setup-token\`."
+              echo "- Workload identity federation: repository variables \`ANTHROPIC_FEDERATION_RULE_ID\` and \`ANTHROPIC_ORGANIZATION_ID\` (and optionally \`ANTHROPIC_SERVICE_ACCOUNT_ID\`)."
+              echo
+              echo "If you do not want AI review on this repository, delete \`.github/workflows/claude-code-review.yml\`."
+            } >> "${GITHUB_STEP_SUMMARY}"
+          else
+            echo "Claude credential shape detected: ${shape}"
+          fi
+
+  claude-review:
+    needs: credential-preflight
+    # The preflight's output is a literal string, never a secret-derived value,
+    # so it survives as a job output.
+    #
+    # WHY THE PREDICATE IS POSITIVE RATHER THAN `!= 'none'`. If the preflight is
+    # SKIPPED — which is what a rejected trigger, fork, draft or bot guard does
+    # to it — then needs.credential-preflight.outputs.credential is the EMPTY
+    # STRING, and `'' != 'none'` evaluates TRUE. A negative predicate would
+    # therefore rest entirely on the platform's skip-propagation rule to keep
+    # this job from running. That rule is documented and this file relies on it
+    # anyway (a skipped dependency skips its dependents), but the gate itself
+    # should not depend on it: `== 'static' || == 'federation'` is false on an
+    # empty output as well as on 'none', so the condition means what the owner
+    # asked for — the job runs when a credential is present.
+    if: >-
+      needs.credential-preflight.outputs.credential == 'static'
+      || needs.credential-preflight.outputs.credential == 'federation'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+      id-token: write
+    steps:
+      # NOTE (recorded, not fixed here): on a `pull_request` event GITHUB_REF is
+      # `refs/pull/<n>/merge` and `actions/checkout` uses GITHUB_REF by default,
+      # so this checks out the MERGE branch — which contains pull-request head
+      # content — into the workspace root. The action's own docs/security.md at
+      # v1.0.220 annotates the same pattern as "no `ref:` → base branch", which
+      # is wrong for this event. The fork guard on the preflight bounds the
+      # exposure to branches pushed by a write-access author. See U13.
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code Review
+        uses: anthropics/claude-code-action@v1.0.220
+        with:
+          # Both shapes are passed. An unset secret or variable arrives as an
+          # empty string, which the action treats as absent
+          # (workload-identity.ts, `?.trim()`); a static credential takes
+          # precedence over federation when both are set.
+          anthropic_api_key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          anthropic_federation_rule_id: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+          anthropic_organization_id: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+          anthropic_service_account_id: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+          # Resolves from the template's own .claude/commands/review-pr.md,
+          # which P03 must author. No marketplace, no run-time plugin fetch.
+          prompt: '/review-pr REPO: ${{ github.repository }} PR_NUMBER: ${{ github.event.pull_request.number }}'
