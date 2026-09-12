@@ -1,0 +1,137 @@
+=== C0. negative control: prove this harness can fail ===
+--- the next two failures are deliberate ---
+FAIL  C0a control (expected FAIL)
+      wanted: ABSENT-SUBSTRING
+      got: present text
+BUG        C0b control (expected BUG: a substring absent from revision 1 proves nothing) — the substring matched nothing in revision 1; the check proves nothing
+PASS  C0 both harness paths detect a mismatch
+--- controls accounted for; counters reset ---
+=== C1. recover the revision-1 blob and confirm it is the rejected draft ===
+revision-1 blob 5ae06c378ee71a8d6b16eb394862806284c72ca5 sha256: d35d4f5a681b1d6572b80533393963bb55a435a71ca59fcca21d10b4c461bd6c
+PASS  C1 the blob is the draft the audit rejected
+=== C2. what the audit did NOT challenge is byte-identical ===
+-- the recommended crate and feature set --
+PRESERVED  clap 4.6.6 pin and its four features (1 revision-1 line(s) still verbatim)
+PRESERVED  clap_complete 4.6.9 pin (2 revision-1 line(s) still verbatim)
+PRESERVED  strsim 0.11.1, transitive only (1 revision-1 line(s) still verbatim)
+PRESERVED  the dependency-free build.rs mechanism (1 revision-1 line(s) still verbatim)
+PRESERVED  clap_complete default features and clap floor (1 revision-1 line(s) still verbatim)
+-- the lockfile generation and advisory audit that both exited zero --
+PRESERVED  lockfile generation, 28 packages (1 revision-1 line(s) still verbatim)
+PRESERVED  the lockfile command itself (1 revision-1 line(s) still verbatim)
+PRESERVED  advisory audit, exit 0 (1 revision-1 line(s) still verbatim)
+-- the four fixed parameter lines --
+PRESERVED  assumes msrv-policy (1 revision-1 line(s) still verbatim)
+PRESERVED  assumes rust-edition (1 revision-1 line(s) still verbatim)
+PRESERVED  assumes target-os-matrix (1 revision-1 line(s) still verbatim)
+PRESERVED  assumes license (1 revision-1 line(s) still verbatim)
+-- OV-01's argument and its three options --
+PRESERVED  OV-01 Argument's R4.6 quotation (1 revision-1 line(s) still verbatim)
+PRESERVED  OV-01 option b, conforming (1 revision-1 line(s) still verbatim)
+PRESERVED  OV-01 option c, conforming (1 revision-1 line(s) still verbatim)
+PRESERVED  OV-01 owner-ruling sentence (1 revision-1 line(s) still verbatim)
+-- the compared alternatives and the fitness gates --
+PRESERVED  architecture A (1 revision-1 line(s) still verbatim)
+PRESERVED  architecture E (1 revision-1 line(s) still verbatim)
+PRESERVED  clap fitness-gate row (1 revision-1 line(s) still verbatim)
+PRESERVED  the just composition evidence (1 revision-1 line(s) still verbatim)
+=== C3. the four assumes lines match the registry byte-for-byte ===
+PASS  C3 msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI matches docs/port/PARAMETERS.md
+PASS  C3 rust-edition = 2024 matches docs/port/PARAMETERS.md
+PASS  C3 target-os-matrix = ubuntu-latest, macos-latest matches docs/port/PARAMETERS.md
+PASS  C3 license = MIT OR Apache-2.0 matches docs/port/PARAMETERS.md
+=== C4. structural invariants ===
+H2 count: 4
+PASS  C4a exactly four H2 sections
+H2s: ## Decision ## Parameters ## Empirical check ## Engines 
+PASS  C4b they are Decision, Parameters, Empirical check, Engines in order
+PASS  C4c no ## Supersedes section
+OV-01 mentions: 8
+PASS  C4d OV-01 is named (this decision's only override)
+OVERRIDE (OV-02..OV-09) declarations: 0
+PASS  C4e no second override was declared
+OVERRIDE (OV-01) declarations: 3
+PASS  C4e2 OV-01 is declared as an override
+'requested, not granted' occurrences (the status line, plus the revision narrative citing it): 2
+PASS  C4f the waiver-not-granted wording is present
+OV-01 status line: **Waiver status, as of 2026-09-12: requested, not granted.** The owner has not
+PASS  C4f2 OV-01 carries a dated, explicit not-granted status line
+PASS  C4f3 OV-01 says the owner has not answered the waiver request
+PASS  C4f4 OV-01 names option (b) as a conforming alternative
+PASS  C4f5 OV-01 names option (c) as a conforming alternative
+PASS  C4f6 OV-01 states that only the owner can record the waiver and no record exists
+PASS  C4f7 OV-01 states its Argument
+PASS  C4f8 OV-01 states its Options
+-- affirmative owner-approval claims (each must be absent) --
+  the owner has granted              0
+  the owner granted                  0
+  owner has approved                 0
+  owner approved                     0
+  waiver (is|was|has been) granted   0
+  waiver granted                     0
+  owner waiver record exists         0
+  approved by the owner              0
+total affirmative owner-approval claims: 0
+PASS  C4g no claim that the owner granted the waiver
+PASS  C4h the title records revision 2
+=== C5. no crate was scaffolded and no command surface was written ===
+Rust/Cargo files changed under research/runs/R60/2026-09-05T183002Z-09f93cfc507c: 0
+PASS  C5a no .rs, Cargo.toml or Cargo.lock added or modified in this run
+--- this revision's change set ---
+ M research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/DECISION.md
+?? research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/evidence/r60-concurrent-branch-state-r2.txt
+?? research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/evidence/r60-preservation-diff-r2.log
+?? research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/evidence/r60-preservation-diff-r2.sh
+?? research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/evidence/r60-standard-pin-r2.log
+?? research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/evidence/r60-standard-pin-r2.sh
+paths changed by this revision: 6
+PASS  C5b this revision touched exactly 6 paths (DECISION.md + 2 scripts + 2 logs + 1 sidecar)
+PASS  C5c DECISION.md is modified, so the revision landed
+--- concurrent work by OTHER items: reported, NOT staged ---
+written to evidence/r60-concurrent-branch-state-r2.txt (volatile by nature, excluded from this log)
+=== C6. every line that differs from revision 1, enumerated ===
+lines changed/removed from revision 1: 38
+lines added by revision 2: 368
+PASS  C6 the diff is non-empty, so the revision actually landed
+--- full list of revision-1 lines replaced or removed ---
+< # R60 — CLI parsing framework (bundle, Deep) — revision 1, 2026-09-10
+< their exact versions, reads of the org CLI Design Standard, reads of the two
+< source repositories through their pins, and one MSRV-aware dependency
+< resolution — not on a working command-line interface, which does not exist yet.
+< | F265 | command surface shape | noun-verb subcommand groups as nested `Subcommand` enums; **no default business command** |
+< read 2026-09-10.
+< | P2 | A command path reads noun then verb | **standard, one value for all three repos** — R1.1 `(MUST, Standard profile)` (`:124`), org-locked (`:70` row 1) 
+< | P3 | `-V`/`--version` exists and reports the tool's version | **capability + standard** — ledger F266 `COMMON → REUSE`; R4.1 `(MUST)` required global core (
+< | P4 | A setting exposed in more than one place uses one deterministic name, and env exposure is curated | **standard** — R3.8 `(MUST)` (`:220`), R5.4 `(MUST)
+< cited by file and line with its retrieval date, and a `MUST` marked org-locked
+< in the design-principles table at `:70` is binding, not advisory. The ts port
+< Two consequences follow, and they are different in kind:
+<   no resource at all". This template ships two resource groups (`projects`,
+<   (`:586`). F265 is therefore settled by the standard, not by a preference
+<   between the two ports. The ecosystem evidence agrees rather than conflicts, so
+<   no override is filed.
+<   (OV-01) below.
+<    shorter form" (`:229-230`). A suggestion that *names* `projects` after a typo
+<    is the conformant behavior; silently *accepting* `project` is not.
+< | AC1 | `<tool> projects list --json` and `<tool> --json projects list` both parse, and the flag is declared exactly once (R4.5) |
+< | AC5 | `<TOOL>_OUTPUT=json <tool> projects list` honors the env var; a global option deliberately left out of the curated set is **not** readable from `<TOOL
+< | AC6 | `<tool> project list` (singular, unknown) exits `2`, prints a suggestion naming `projects` on stderr, keeps stdout byte-empty, and does **not** execut
+< `(SHOULD)`.**
+< re-verify: 2027-03-10, or earlier on any of — clap releasing a 5.x line; the `clap_complete` `unstable-dynamic` completion path stabilizing; a RustSec advisor
+< **Full output: `review/evidence/r60-cli-parsing-verification.log`** (1,142
+< | 10 | the two source repositories, through their pins | `git -C ~/c/py-launch-blueprint show b08bccfb…:<path>`; `git -C ~/c/ts-launch-blueprint show cb1cbcb2
+< `cargo audit` on the resulting lockfile → **exit 0**.
+< **What this run does not establish**, stated so it is not read as more: it did
+< not build or run any CLI; it did not execute any acceptance criterion; it ran no
+< benchmark; it ran nothing on `ubuntu-latest`; and it did not audit any crate's
+< `unsafe` usage. Each of those is carried to `## Engines`.
+< default-command shape for F265; all three choose `global = true` on a flattened
+< 2026-09-10), org-locked at `:70` row 7, and already treated as binding by the
+< cites the standard by file, line and retrieval date as R67 did. The practical
+< effect is confined: it makes F265 a `MUST` rather than a preference, it decides
+< F269, and it turns F267 into a recorded override — every other row lands where
+< all three engines already put it.
+< | U5 | Every acceptance criterion AC1–AC8. None was executed: no Rust CLI exists. | P03's integration tests |
+
+CHECKS RUN: 45   FAILURES: 0
+RESULT: all checks passed

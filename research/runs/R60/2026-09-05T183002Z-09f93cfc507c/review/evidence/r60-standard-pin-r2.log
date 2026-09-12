@@ -1,0 +1,191 @@
+=== C0. negative control: prove this harness can actually fail ===
+--- the next FAIL line is deliberate; it proves a mismatch is detected ---
+FAIL  C0 control (expected to FAIL)
+      wanted substring: THIS-SUBSTRING-IS-ABSENT
+      got: the pinned standard
+PASS  C0 harness detected the mismatch and incremented its counter
+--- control accounted for; counters reset, real checks follow ---
+=== C1. the pinned commit is the last one that touched the standard ===
+fb30a591c267a7ec1130ba4cda679eaee494b9d7 2026-06-28 docs: resolve PR #1 review findings (v1.4.14)
+PASS  C1 last commit touching cli-design-standard.md is fb30a591c267a7ec1130ba4cda679eaee494b9d7
+=== C1b. the pin holds against origin/main, not just this clone ===
+origin/main's newest commit touching cli-design-standard.md: fb30a591c267a7ec1130ba4cda679eaee494b9d7
+PASS  C1b1 the pinned commit is origin/main's newest for this file
+is fb30a591c267a7ec1130ba4cda679eaee494b9d7 reachable from origin/main? reachable
+PASS  C1b2 the pinned commit is published, so the recipe works from a fresh clone
+origin/main's blob for the file: f9de0437baece3383e73ca2c5f48b7ab399b51c7
+PASS  C1b3 origin/main's blob is the pinned blob
+=== C2. the pinned blob object id resolves from that commit ===
+f9de0437baece3383e73ca2c5f48b7ab399b51c7
+PASS  C2 blob id is f9de0437baece3383e73ca2c5f48b7ab399b51c7
+=== C3. the pinned blob's sha256 — the content hash a future reader compares ===
+9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f  -
+PASS  C3 blob sha256 is 9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f
+=== C4. the working-tree file read on 2026-09-10 is that same content ===
+9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f  /Users/stevemorin/c/cli-standards/cli-design-standard.md
+PASS  C4 working-tree sha256 equals the pinned blob's
+=== C5. the blob declares Version 1.4.14, Last updated 2026-06-28 ===
+# The CLI Design Standard
+
+**A reusable, normative standard for designing command-line interfaces.**
+
+| | |
+|---|---|
+| **Version** | 1.4.14 |
+| **Status** | Active — canonical |
+| **Last updated** | 2026-06-28 |
+| **Applies to** | All new CLIs, any language |
+
+> **Conformance language.** The key words **MUST**, **MUST NOT**, **SHOULD**, **SHOULD NOT**, and **MAY** are used as defined in RFC 2119. **MUST**-level rules are required for conformance; **SHOULD**-level rules are strong defaults that may be waived only with a documented reason; **MAY**-level rules are permitted options.
+PASS  C5a header declares Version 1.4.14
+PASS  C5b header declares Last updated 2026-06-28
+PASS  C5c status is Active — canonical
+=== C6. R1.3 at lines 133-137 of the pinned blob, and it is a MUST ===
+**R1.3 — Noun number. (MUST)**
+Resource nouns **MUST** be **singular** in their canonical form. The plural form **MAY** be accepted as an undocumented alias but **MUST NOT** appear in help or docs. The verb already carries cardinality, so `list` returning many is not a reason to pluralize.
+✅ `acme widget list` (canonical) · `acme widgets list` (silent alias)
+❌ documenting `acme widgets list` as the primary form
+PASS  C6a R1.3 heading at :133 is a MUST
+PASS  C6b canonical form MUST be singular
+PASS  C6c plural MAY be an undocumented alias and MUST NOT appear in help or docs
+PASS  C6d the standard rejects 'list returns many' as a reason to pluralize
+PASS  C6e the standard's own non-conformant example is a documented plural
+=== C7. R1.3 is org-locked: Decision Log row 5 is at line 67, not 70 ===
+| 5 | Noun number | Singular canonical; plural accepted as undocumented alias | Reads with verbs; models gh | org-locked |
+PASS  C7a line 67 is row 5, Noun number, org-locked
+PASS  C7b row 5 is marked org-locked
+=== C8. the Decision Log rows this decision cites — row N is at line 62+N ===
+| 1 | Command ordering | Noun-verb default (`acme project create`); verb-first only under Appendix A criteria | Scales to many resources; models gh/kubectl | org-locked |
+PASS  C8a row 1 Command ordering is at :63 (the decision said :70)
+| 3 | `-v` meaning | `-v`/`--verbose` = verbose; `--version` with `-V` short alias | Verbose is hot path; matches cargo/clig.dev | org-locked |
+PASS  C8b row 3 -v meaning is at :65 (the decision said :70)
+| 7 | Env var prefix | `TOOL_*` uppercase, deterministic mapping, curated subset | Predictable; majority convention | org-locked |
+PASS  C8c row 7 Env var prefix is at :69 (the decision said :70)
+| 8 | Exit codes | `0/1/2/130/143` + semantic `3`/`4`/`5`; reject sysexits.h | Useful signal without BSD baggage; `4` from gh | org-locked |
+PASS  C8d line 70 is row 8 Exit codes — R67's row, which is why :70 was copied in error
+| # | Axis | Decision | Basis | Source |
+PASS  C8e the Decision Log table header is at :61
+=== C9. the conformance checklist names R1.3 (Appendix C) ===
+133:**R1.3 — Noun number. (MUST)**
+177:New nouns **SHOULD** name the domain object as the user thinks of it, singular (R1.3), kebab-cased (R1.4). Avoid abbreviations unless they are industry-standard.
+635:- [ ] R1.1 Noun-verb (or Appendix A criteria met) · R1.3 singular nouns · R1.4 kebab-case · R1.6 unambiguous aliases · R2.1 canonical verbs (`view`/`describe`, not `get` for resources)
+PASS  C9a R1.3 appears at :133 and in the checklist at :635
+PASS  C9b the checklist item is 'R1.3 singular nouns'
+PASS  C9c R2.2 cross-references R1.3 for singular naming
+=== C10. every other standard line this decision cites, at the pinned blob ===
+50: A CLI **conforms** when it satisfies every **MUST** rule and documents any waived **SHOULD** in a stable repository conformance note. A SHOULD waiver **MUST** name the rule ID, describe the deviation, explain the rationale, and record the owner/date or equivalent review record. Two conformance profiles exist:
+PASS  C10 line 50
+124: **R1.1 — Noun-verb ordering. (MUST, Standard profile)**
+PASS  C10 line 124
+129: **R1.2 — Nesting depth. (SHOULD)**
+PASS  C10 line 129
+146: **R1.6 — Aliases. (MAY / MUST NOT)**
+PASS  C10 line 146
+229: **R3.10 — No prefix abbreviation. (MUST)**
+PASS  C10 line 229
+270: **R4.5 — Global vs command-local flags. (SHOULD)**
+PASS  C10 line 270
+275: **R4.6 — Version output format. (SHOULD)**
+PASS  C10 line 275
+321: **R5.4 — Environment variables. (MUST)**
+PASS  C10 line 321
+579: 1. The tool has a **small, fixed** set of commands (roughly ≤ 7) that act on a **single implicit resource** or no resource at all.
+PASS  C10 line 579
+586: ❌ verb-first misuse: a platform tool managing `projects`, `deploys`, `tokens`, and `users` — that **MUST** use noun-verb.
+PASS  C10 line 586
+=== C11. R1.6 permits the hidden plural alias R1.3 allows ===
+**R1.6 — Aliases. (MAY / MUST NOT)**
+Built-in short aliases for common verbs and nouns **MAY** be provided (e.g., `ls` for `list`, `rm` for `delete`). Aliases **MUST NOT** be ambiguous, **MUST NOT** shadow a different real command, and **SHOULD** be listed in help. User-defined aliases, if supported, **MUST NOT** override built-in commands.
+✅ `acme widget ls` ≡ `acme widget list`
+❌ an alias `acme rm` that sometimes means `remove` and sometimes `rmdir`
+PASS  C11a R1.6 says aliases MAY be provided
+PASS  C11b an alias MUST NOT shadow a different real command
+=== C12. the standard repo is a published remote a future reader can resolve ===
+https://github.com/smorinlabs/cli-standards.git
+PASS  C12 origin is smorinlabs/cli-standards
+=== C13. both source ports DOCUMENT the plural noun — what R1.3 changes ===
+py projects.py:37: @click.group(name="projects", cls=SuggestingGroup)
+PASS  C13a py declares a help-visible click group named projects
+py commands/__init__.py: 26:COMMAND_GROUPS = [projects_group, config_group]
+PASS  C13b py registers projects_group and config_group
+ts router.ts: 234:  const projects = program.commands.find((command) => command.name() === 'projects');
+PASS  C13c ts registers a command literally named projects
+=== C14. the R60 revision-1 blob, for the preservation diff ===
+5ae06c378ee71a8d6b16eb394862806284c72ca5
+PASS  C14a revision-1 blob id is 5ae06c378ee71a8d6b16eb394862806284c72ca5
+d35d4f5a681b1d6572b80533393963bb55a435a71ca59fcca21d10b4c461bd6c  -
+PASS  C14b revision-1 blob sha256 is the one the audit rejected
+=== C15. R67 records NO version pin for the same standard ===
+R67 DECISION.md occurrences of '1.4.14': 0
+PASS  C15a R67 body names no standard version 1.4.14
+R67 standard citations carrying a version/commit/hash: 0
+PASS  C15b R67's standard citations carry no version, commit or hash
+R67 lines citing cli-design-standard.md: 2
+PASS  C15c R67 does cite the standard (2 lines: :78 and :464) — the absence above is a real gap, not a missing file
+R67 evidence files mentioning '1.4.14': 2
+PASS  C15d exactly 2 R67 evidence files mention 1.4.14
+R67 r4 audit log:6: Standard read: `/Users/stevemorin/c/cli-standards/cli-design-standard.md`, version 1.4.14.
+PASS  C15e R67's revision-4 auditor recorded the standard as version 1.4.14
+the other file's mentions (the standard's own changelog row 54, quoted): 1
+PASS  C15f the second mention is a single quoted changelog line, not a pin
+=== C16. ts declares the plural noun in commands/projects.ts, not router.ts ===
+ts commands/projects.ts:70:     .command('projects', { isDefault: true })
+PASS  C16 ts declares .command('projects', { isDefault: true }) at :70
+=== C17. the clap 4.6.6 APIs the new acceptance criteria name actually exist ===
+7b48fea5a88e9ae728a2dcbedbfc0e730f7d60da42e1cb049a83c9fb8b789889  /private/tmp/r60-r2-verify/clap_builder-4.6.6.crate
+PASS  C17a the unpacked tarball's sha256 matches crates.io's recorded checksum
+command.rs:3932:     pub fn get_subcommands(&self) -> impl Iterator<Item = &Command> {
+PASS  C17 Command::get_subcommands at command.rs:3932
+command.rs:3756:     pub fn get_name(&self) -> &str {
+PASS  C17 Command::get_name at command.rs:3756
+command.rs:4242:     pub fn is_hide_set(&self) -> bool {
+PASS  C17 Command::is_hide_set at command.rs:4242
+command.rs:1037:     pub fn render_long_help(&mut self) -> StyledStr {
+PASS  C17 Command::render_long_help at command.rs:1037
+command.rs:3847:     pub fn get_visible_aliases(&self) -> impl Iterator<Item = &str> + '_ {
+PASS  C17 Command::get_visible_aliases at command.rs:3847
+command.rs:3874:     pub fn get_all_aliases(&self) -> impl Iterator<Item = &str> + '_ {
+PASS  C17 Command::get_all_aliases at command.rs:3874
+command.rs:2691:     pub fn alias(mut self, name: impl IntoResettable<Str>) -> Self {
+PASS  C17 Command::alias at command.rs:2691
+command.rs:2893:     pub fn visible_alias(mut self, name: impl IntoResettable<Str>) -> Self {
+PASS  C17 Command::visible_alias at command.rs:2893
+    /// **NOTE:** Aliases defined with this method are *hidden* from the help
+    /// message. If you're looking for aliases that will be displayed in the help
+    /// message, see [`Command::visible_alias`].
+PASS  C17b Command::alias is documented as HIDDEN from help
+    /// **NOTE:** The alias defined with this method is *visible* from the help
+    /// message and displayed as if it were just another regular subcommand. If
+    /// looking for an alias that will not be displayed in the help message, see
+    /// [`Command::alias`].
+PASS  C17c Command::visible_alias is documented as VISIBLE in help
+=== C18. clap_derive 4.6.4 forwards #[command(alias = ...)] to Command::alias ===
+d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061  /private/tmp/r60-r2-verify/clap_derive-4.6.4.crate
+PASS  C18a the tarball's sha256 matches crates.io's recorded checksum
+        } else {
+            if name == "short" || name == "long" {
+                self.is_positional = false;
+            }
+            match kind {
+                AttrKind::Group => self.group_methods.push(Method::new(name, arg)),
+                _ => self.methods.push(Method::new(name, arg)),
+            };
+        }
+PASS  C18b a non-special attribute name is pushed as a Method verbatim
+impl ToTokens for Method {
+    fn to_tokens(&self, ts: &mut TokenStream) {
+        let Method { name, args } = self;
+
+        let tokens = quote!( .#name(#args) );
+
+        tokens.to_tokens(ts);
+    }
+}
+PASS  C18c a Method renders as a builder call .<name>(<args>)
+occurrences of 'alias' in clap_derive's attribute table (attr.rs): 0
+PASS  C18d 'alias' is not a magic attribute name, so it forwards verbatim
+MagicAttrName::Alias variants: 0
+PASS  C18e there is no MagicAttrName::Alias variant
+
+CHECKS RUN: 66   FAILURES: 0
+RESULT: all checks passed
