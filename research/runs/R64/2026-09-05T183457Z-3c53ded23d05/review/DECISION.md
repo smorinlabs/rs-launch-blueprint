@@ -2,7 +2,7 @@
 
 **Revision note.** Revision 2 rewrites revision 1 (sha256 `920ea3e6d9f4a7ea494ac3f1f958d6682bfb053953450a36364e4b0fc32b9d92`) in place. It answers both findings of the revision-1 empirical audit (`review/audit-codex.md`, archived as `review/audit-codex.r1.md`; actor `audit-codex-2026-09-05T183457Z-3c53ded23d05-r1`, model `gpt-5.6-terra`, family openai, verdict **reject**).
 
-**Finding 1 — the check the decision named was not retained.** Revision 1 said one `verify.sh` produced `review/evidence/r64-pager-claims.log` and that a follow-up invocation appended section 14. No such script was in the run, so an auditor could neither rerun the cited command nor tie that log to it: the log was an output artifact with no reproducible provenance. The script is now retained as `review/evidence/verify.sh` (sha256 `aa90cdc9feba9fae760f2d952fd63a24116ff37e516f8ad3a621d16fe6daaa48`). It runs under `set -o pipefail`, asserts on the **content** it expected through 103 named assertions rather than on any exit code, counts failures, and exits with that count, so it is a check capable of failing. Revision 1's log is preserved unedited as `review/evidence/r64-pager-claims.r1.log` (sha256 `71793a41f6683b395af72b7a40142205e6c827e45e38fe02ebf913961c2c568a`), and the cited log is regenerated from the retained script. `## Empirical check` records the rerun, both diffs and the comparison rule.
+**Finding 1 — the check the decision named was not retained.** Revision 1 said one `verify.sh` produced `review/evidence/r64-pager-claims.log` and that a follow-up invocation appended section 14. No such script was in the run, so an auditor could neither rerun the cited command nor tie that log to it: the log was an output artifact with no reproducible provenance. The script is now retained as `review/evidence/verify.sh` (sha256 `aa90cdc9feba9fae760f2d952fd63a24116ff37e516f8ad3a621d16fe6daaa48`). It runs under `set -o pipefail`, makes 103 named assertions, counts its failures and exits with that count, so it is a check capable of failing. Every claim the decision rests on is asserted on the **content** expected rather than on an exit code *alone*: eleven assertions do compare an HTTP status or a command's exit status, and each of those is paired with a content assertion on the same artifact, so a 200 that returned the wrong page still fails. Revision 1's log is preserved unedited as `review/evidence/r64-pager-claims.r1.log` (sha256 `71793a41f6683b395af72b7a40142205e6c827e45e38fe02ebf913961c2c568a`), and the cited log is regenerated from the retained script. `## Empirical check` records the rerun, both diffs and the comparison rule.
 
 **Finding 2 — the recommendation changes, and the gate reading is what moved it.** The tokenizer is now **`shlex = "2.0"`**, not `shell-words = "1.1"`. No new evidence about either crate arrived; a rule changed. Revision 1 was written while the controller's **provisional** reading of fitness gate 2 stood — that a candidate declaring no `rust-version` is *gate-2 unproven*, a weakness to weigh rather than an exclusion. **That ruling was withdrawn on 2026-09-11**, after this item's auditor and R63's auditor independently argued for the strict reading and the controller accepted their argument over their own (`docs/planning/p02/execution-ledger.md`, "RULING WITHDRAWN: fitness gate 2 is read strictly"; quoted in the evidence log, section 15). Under the strict reading gate 2 is a **bar the candidate must clear**, quoting `msrv-policy` in full — declaration in `Cargo.toml` *and* CI testing — and an unknown effective version is not evidence of incompatibility but is insufficient evidence to pass. `shell-words` 1.1.1 declares no `rust-version` and has no CI at all, so it cannot clear the bar and moves to *Excluded by gate*. `shlex` 2.0.1 declares `rust-version = "1.46.0"` and ships an MSRV job that installs toolchain 1.46, so it clears both halves. **The practice evidence that favoured `shell-words` is not withdrawn — it is outranked**, because the prompt answers every fitness gate "per candidate **before** popularity is weighed" and lists a failed gate as an exclusion. The choice is re-argued from the evidence that survives under `### Principles and implementation`; what changes for the template is stated there and in the file-level shape, and it is two lines of code plus one error-handling consequence.
 
@@ -377,7 +377,7 @@ v0.26.1 (`Cargo.toml`, `src/pager.rs`, `src/output.rs`) — 60,432 stars, `archi
 `pushed_at 2026-09-04T19:10:30Z`; `delta` 0.19.2 (`Cargo.toml`, `src/env.rs`,
 `src/utils/bat/output.rs`) — 32,162 stars, `pushed_at 2026-09-12T19:18:44Z`; `jj` v0.45.1
 (`cli/src/ui.rs`, `cli/src/config/misc.toml`, `docs/config.md`) — 31,543 stars,
-`pushed_at 2026-09-12T19:22:55Z`; `git` v2.51.0 (`pager.c`, `Makefile`) as the reference the
+`pushed_at 2026-09-12T19:37:49Z`; `git` v2.51.0 (`pager.c`, `Makefile`) as the reference the
 convention descends from. All GitHub figures via `gh api repos/<o>/<r>`, and open-issue
 counts via the mandated `search/issues … total_count` endpoint, not `open_issues_count`. The
 tag reads are pinned and therefore stable; the star and `pushed_at` figures are live and move,
@@ -534,10 +534,13 @@ match), `assert_absent` (a pattern must **not** match) — or by `assert_eq`, wh
 values and prints both when they differ. There are **103** such assertions, each printed
 inline with its identifier (`S00`…`S99`, plus the four `S95-<param>` parameter comparisons) and
 listed again in the new section 16. That the script is capable of failing is not asserted but
-observed: its first run reported three failures — a grep pattern that did not emit py's height
-gate, and two `LV=` captures the pseudo-terminal had prefixed so an anchored match missed
-them. Both were defects in the check, both were fixed, and a script written to pass would have
-reported neither.
+observed, and the observation is retained as `review/evidence/verify-first-run.log` (sha256
+`7f38f69faa75263ae552b3cae83b4da02dcd57a52827944e6032240e20fc7eba`): its **first** run reported
+three failures and exited `3` — a grep pattern that did not emit py's height gate (`S08`), and
+two `LV=` captures the pseudo-terminal had prefixed so an anchored match missed them (`S27`,
+`S29`). All three were defects in the **check**, not in any finding; all three were fixed by
+changing the check, so that log is the output of an earlier script and is labelled as such in
+its own header. A script written to pass would have reported none of them.
 
 Greps whose expected result is "no match" still print their exit status and the expected value
 on the following line, so an expected `1` is never mistaken for a failure; the difference from
@@ -567,7 +570,9 @@ this decision still resolves; sections 15 and 16 are new. Sections:
     11  whether `less` is present on the CI runners
     12  this repository: ledger rows, owner direction, divergence rows, the couplings block, and
         the four fixed parameters compared byte-for-byte with the registry
-    13  the first-pass timestamp, kept in revision 1's position so later citations still resolve
+    13  a mid-script `date -u` marker, revision 1's "done" line, kept in its original position
+        between 12 and 14 so that every later section keeps its number; this revision runs one
+        pass, so nothing ends here
     14  platform-conditional code in the two tokenizers; the exact unsafe site on shlex::split
     15  NEW: gate 2 under the strict reading — each candidate's declared rust-version from two
         independent sources, the CI half read at the 2.0.1 release artifact, the floor the
@@ -582,15 +587,29 @@ path, and the two outputs diffed before this paragraph was written. **The rerun 
 the cited log in exactly two lines, and both are timestamps** — section 13's `date -u` marker
 and the closing `retrieved:` line. Everything else is byte-identical, the pseudo-terminal
 captures and every registry and GitHub figure included, because the two runs are minutes apart.
-**The comparison rule, for a reader rerunning this across days rather than minutes:** two
-classes of line are live and will differ — (a) those two timestamps, and (b) every figure taken
-from a live endpoint, namely `crate.recent_downloads`, `crate.downloads`, `"stars"`,
-`"pushed_at"` and `open_issues_total_count`. A difference **anywhere else** is drift to
-investigate, not noise to absorb: the pinned reads (py and ts at their commit pins;
-`bat`/`delta`/`jj`/`git` at their tags; both crates from their immutable published artifacts),
-the RustSec statuses and the advisory's own TOML, the runner-image match counts, this
-repository's greps and all 103 assertion lines must reproduce byte-for-byte — and each of them
-did, across both runs here.
+**The comparison rule, for a reader rerunning this across days rather than minutes.** Three
+classes of line, and only the third needs judgement.
+
+(a) **Expected to differ, always:** the two timestamps above.
+(b) **Expected to differ, and fast:** every figure taken from a live endpoint — namely
+`crate.recent_downloads`, `crate.downloads`, `"stars"`, `"pushed_at"` and
+`open_issues_total_count`. `pushed_at` on an active repository moves within minutes; it moved
+for `jj` inside this session.
+(c) **Expected stable, but not pinned, so a difference is a source change to assess rather
+than noise to absorb or drift to fear:** the pages this check reads at a moving reference —
+`packages.ubuntu.com/noble/less`, whose `Package: less (…)` line carries a package version that
+any Ubuntu security update changes; the two `actions/runner-images` READMEs and
+`toolsets/toolset-2404.json`, all read at `main`; `shell-words`' repository tree, read at
+`master`; and the `RUSTSEC-` mention counts on the rustsec.org package pages, which depend on
+that site's page layout as well as on its advisories. Each of these is covered by an assertion
+that states what the check actually needs from it (`S46`, `S88`-`S93`, `S52`-`S54`), so the rule
+is: if the assertion still passes, the difference is informational; if it fails, the source has
+changed materially and the claim that rests on it must be re-argued, not patched.
+
+A difference **anywhere else** is drift to investigate. The pinned reads — py and ts at their
+commit pins, `bat`/`delta`/`jj`/`git` at their tags, both crates from their immutable published
+artifacts — plus the advisory's own TOML, this repository's own greps and all 103 assertion
+lines must reproduce **byte-for-byte**, and each of them did across both runs here.
 
 **What revision 1's log is, and what this script is not.** Revision 1's log is retained
 unedited as `review/evidence/r64-pager-claims.r1.log`. The retained script is a
@@ -675,7 +694,10 @@ this decision resolves against either log.
   `pushed_at 2025-12-10T20:50:02Z`, **3** open issues by `search/issues` `total_count`;
   `comex/rust-shlex` 157 stars, `archived: false`, `pushed_at 2026-06-12T19:38:35Z`,
   **4** open issues; `sharkdp/bat` 60,432 / 331; `dandavison/delta` 32,162 / 310;
-  `jj-vcs/jj` 31,543 / 810; `AMythicDev/minus` 372 / 10.
+  `jj-vcs/jj` 31,543 / 810; `AMythicDev/minus` 372 / 10. `jj`'s `pushed_at` moved twice inside
+  this revision's own working session, which is why the figure quoted above and under
+  *Reference implementations* is the one in the **cited** log rather than in an earlier run of
+  the same script: an active repository's `pushed_at` is the fastest-moving figure here.
 - **`shell-words` has no CI at all; `shlex` 2.0.1 ships its CI inside the published crate, and
   that CI has no macOS.** `shell-words`' full repository tree is `.gitignore, Cargo.toml,
   LICENSE-APACHE, LICENSE-MIT, README.md, rustfmt.toml, src, src/lib.rs` — no `.github`, so
@@ -753,13 +775,14 @@ stub-pager paragraph (25 lines); the four `- assumes` lines (4 lines); the two O
 pseudo-terminal bullets (10 lines); the `less`-on-the-runners empirical bullet (9 lines); and
 the matching unproven item under `## Engines` (12 lines). **All six are byte-identical, 133
 lines with zero differing lines.** The whole-file diff against that blob is 17 unified hunks,
-147 lines removed and 354 added.
+147 lines removed and 377 added.
 
-**Retained artifacts, all three under
+**Retained artifacts, all four under
 `research/runs/R64/2026-09-05T183457Z-3c53ded23d05/review/evidence/`:** `verify.sh`, the check
 itself; `r64-pager-claims.log`, its full output and the log every citation above points at;
-and `r64-pager-claims.r1.log`, revision 1's output kept unedited so the reconstruction diff
-described above can be reproduced.
+`r64-pager-claims.r1.log`, revision 1's output kept unedited so the reconstruction diff
+described above can be reproduced; and `verify-first-run.log`, the earlier script's failing
+run, kept as the evidence that these assertions can fail.
 
 ## Engines
 
