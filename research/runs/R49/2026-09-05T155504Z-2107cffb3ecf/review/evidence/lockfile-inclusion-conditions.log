@@ -1,0 +1,64 @@
+# R49 check L — conditions under which Cargo.lock is included in a package
+retrieved: 2026-09-12T19:16:32Z
+installed: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+installed: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+
+=== src/doc/src/reference/manifest.md@rust-1.98.0 ===
+bytes: 25478  sha256: 28e0aaa4907a85fd7c8bc45e68a6fb4bac997913edaff83500cd63ca608a215b
+The following files are always included:
+
+* The `Cargo.toml` file of the package itself is always included, it does not
+  need to be listed in `include`.
+* A minimized `Cargo.lock` is automatically included.
+  See [`cargo package`] for more information.
+* If a [`license-file`](#the-license-and-license-file-fields) is specified, it
+  is always included.
+
+The options are mutually exclusive; setting `include` will override an
+ASSERT ok   manifest.md says the lockfile is automatically included
+ASSERT ok   manifest.md scopes that list to include/exclude
+
+=== src/doc/src/commands/cargo-package.md@rust-1.98.0 ===
+bytes: 21051  sha256: 257f6fd4b6b885e42edb01149c6981da5117fde0226f10a0250c0ea74119399f
+24:    - `Cargo.lock` is always included. When missing, a new lock file will be
+25-      generated unless the `--exclude-lockfile` flag is used. [cargo-install(1)](cargo-install.html)
+26-      will use the packaged lock file if the `--locked` flag is used.
+101:<dt class="option-term" id="option-cargo-package---exclude-lockfile"><a class="option-anchor" href="#option-cargo-package---exclude-lockfile"><code>--exclude-lockfile</code></a></dt>
+102-<dd class="option-desc"><p>Don’t include the lock file when packaging.</p>
+103-<p>This flag is not for general use.
+104-Some tools may expect a lock file to be present (e.g. <code>cargo install --locked</code>).
+105-Consider other options before using this.</p>
+ASSERT ok   cargo-package.md names --exclude-lockfile as the override
+ASSERT ok   cargo-package.md documents what the flag does
+
+=== cargo package --help (installed) ===
+12:      --exclude-lockfile         Don't include the lock file when packaging
+ASSERT ok   installed cargo offers --exclude-lockfile with no -Z gate
+
+=== src/bin/cargo/commands/package.rs@rust-1.98.0 ===
+bytes: 3227  sha256: 0fb645dbf70ab1cb6d6b6e1b8c47db71de5094790dea7c19b93885cc3dfde995
+89:            include_lockfile: !args.flag("exclude-lockfile"),
+ASSERT ok   cargo package maps the flag to include_lockfile
+=== src/cargo/ops/cargo_package/mod.rs@rust-1.98.0 ===
+bytes: 46165  sha256: f5d50597973fdba1815ada7b3502ced329dc90eaf0e74c8242bae5ec4493b6ca
+513:            "Cargo.lock" => continue,
+559:    if include_lockfile {
+560-        let lockfile_path = ws.lock_root().as_path_unlocked().join(LOCKFILE_NAME);
+561-        let lockfile_path = lockfile_path.exists().then_some(lockfile_path);
+562-        let rel_str = "Cargo.lock";
+563-        result
+564-            .entry(UncasedAscii::new(rel_str))
+565-            .or_insert_with(Vec::new)
+566-            .push(ArchiveFile {
+567-                rel_path: PathBuf::from(rel_str),
+568-                rel_str: rel_str.to_string(),
+569-                contents: FileContents::Generated(GeneratedFile::Lockfile(lockfile_path)),
+ASSERT ok   an on-disk Cargo.lock is dropped from the source file list
+ASSERT ok   the archive entry is added only when include_lockfile is set
+ASSERT ok   an absent lockfile is generated rather than omitted
+=== src/cargo/ops/registry/publish.rs@rust-1.98.0 ===
+bytes: 34469  sha256: e0e8cc5d89ab35ffa5acff4c3a8a4a5c53aa9091c68827000f40a7682b6dbd12
+171:            include_lockfile: true,
+ASSERT ok   the publish path hardcodes inclusion, so it has no override
+
+RESULT all assertions passed

@@ -1,4 +1,21 @@
-# R49 — build-target-declaration (crate, Deep) — DECISION (revision 1, 2026-09-10)
+# R49 — build-target-declaration (crate, Deep) — DECISION (revision 2, 2026-09-12)
+
+**What changed in revision 2, and nothing else changed.** Revision 1 (sha256
+`b7adf7d8f8ff380cdb25b40ff331d6b83291b2f7ea75a42407684ce2919cbcf9`) was rejected
+by `review/audit-codex.r1.md` (actor `audit-codex-2026-09-05T155504Z-2107cffb3ecf-r1`,
+model `gpt-5.6-terra`) on one unresolved finding: *"owned parameter overstates
+Cargo.lock inclusion as unconditional"*. This revision narrows that claim to the
+conditions the toolchain documents and implements, in the owned parameter value
+and in the four supporting lines that carried the same overstatement — the
+`## Decision` table row 5, acceptance criterion AC3, and checks A and 4 — and
+adds check L, which establishes the conditions from `rust-lang/cargo` at the
+`rust-1.98.0` tag and from the installed `cargo 1.98.0`. Every finding the audit
+confirmed is carried unchanged: the re-measured `dist` responsiveness figures,
+the refinement that `[workspace.metadata.dist]` is deprecated but still
+supported so a second configuration file is a direction of travel rather than a
+present requirement, the narrowed F218 baseline-review line about the packaging
+default and the dirty-tree guard, and the recorded medium confidence on the
+allow-list choice against a 7:2 practice majority.
 
 ## Decision
 
@@ -26,7 +43,7 @@ range.
 | 2 | Library target | Exactly one, declared explicitly as `[lib]`, `path = "src/lib.rs"`, crate name `rs_launch_blueprint` (Cargo's default: the package name with dashes replaced by underscores). This is the crate downstream users depend on, and the crate R01's port trait and R67's `thiserror` error catalog live in. `doctest` is **not** set here — that value is R82's (`docs-correctness-gate`). | **F213** |
 | 3 | Binary target | Exactly one, declared explicitly as `[[bin]]`, `path = "src/main.rs"`, `name = "rs-launch-blueprint"` — the same string as the package name. Plus `autobins = false`, so no `src/bin/*.rs` file can become a second published command without a manifest edit. `default-run` stays unset while there is one binary. | **F213**, **F216** |
 | 4 | Console-script / bin entry | The `[[bin]]` `name` field, and nothing else. Rust has no entry-point abstraction to declare: `cargo build` emits a native executable whose filename **is** `name`, with no wrapper script to generate and no shebang to preserve. This confirms F217 (`OMIT`) rather than adding to it. | **F216** |
-| 5 | Packaged-file scope | An explicit `[package] include` allow-list — `["/src", "/README.md", "/LICENSE-MIT", "/LICENSE-APACHE", "/CHANGELOG.md"]` — reviewed whenever a file that must ship is added. Not `exclude`; the two fields are mutually exclusive. `Cargo.toml`, a minimized `Cargo.lock` and any `license-file` are included by Cargo regardless. | **F218** |
+| 5 | Packaged-file scope | An explicit `[package] include` allow-list — `["/src", "/README.md", "/LICENSE-MIT", "/LICENSE-APACHE", "/CHANGELOG.md"]` — reviewed whenever a file that must ship is added. Not `exclude`; the two fields are mutually exclusive. `Cargo.toml` and any `license-file` are included by Cargo whatever `include` or `exclude` says. A minimized `Cargo.lock` is outside that selection too — `cargo package` adds it, generating one when none is on disk — but it is not unconditional: `cargo package --exclude-lockfile` omits it, and `cargo publish` has no such flag. Stated in full in `## Empirical check`, check L. | **F218** |
 | 6 | Distribution name vs. binary name | **They match.** `cargo install rs-launch-blueprint` installs the command `rs-launch-blueprint`; no `uvx --from` analogue and no `--bin` flag is needed. Divergence is idiomatic in Rust and costs no install-time flag, so a fork that wants a short command changes one `name =` line. | **F219** |
 
 **Ledger rows settled** (the verdict strings remain the controller's to set, per
@@ -281,7 +298,9 @@ to run them against, and this run did not create one.
   of kind `lib` and exactly one of kind `bin`, and the bin's `name` equals the
   value recorded in `build-tool-output-shape`.
 - AC2 — `cargo build --release` produces `target/release/rs-launch-blueprint`.
-- AC3 — `cargo package --list` prints `Cargo.toml`, `Cargo.lock`, `src/**`,
+- AC3 — `cargo package --list`, invoked with no `--exclude-lockfile` (check L —
+  that flag is the one thing that drops the lockfile, and neither this check nor
+  the release lane passes it), prints `Cargo.toml`, `Cargo.lock`, `src/**`,
   `README.md` and the two license files, **and** prints no path under `.github/`,
   `docs/` or `research/`. Written as two assertions because a positive-only check
   passes trivially.
@@ -309,7 +328,7 @@ re-verify: 2027-03-10, or any earlier event listed immediately above
 
 ## Parameters
 
-- owns build-tool-output-shape = no build backend or bundler crate; Cargo's own manifest is the entire declaration surface. Artifacts land in Cargo's default workspace-root target/ directory - target/debug/ for the dev and test profiles, target/release/ for release and bench, target/<name>/ for a user-defined profile, gaining a target/<triple>/<profile>/ level whenever --target is passed - relocatable by CARGO_TARGET_DIR, build.target-dir or --target-dir. Library target: exactly one, declared explicitly as [lib] with path src/lib.rs and Cargo's default crate name rs_launch_blueprint (the package name with dashes replaced by underscores); doctest is not set here and is R82's. Binary target: exactly one, declared explicitly as [[bin]] with path src/main.rs and name rs-launch-blueprint, matching the package name, so cargo install rs-launch-blueprint installs the command rs-launch-blueprint and integration tests resolve it through CARGO_BIN_EXE_rs-launch-blueprint; autobins = false so no src/bin/*.rs file becomes a second published command without a manifest edit; default-run unset while there is one binary; no build.rs and no build-orchestration crate. Packaged-file scope: an explicit [package] include allow-list - /src, /README.md, /LICENSE-MIT, /LICENSE-APACHE, /CHANGELOG.md - never exclude, the two being mutually exclusive, and Cargo.toml, a minimized Cargo.lock and any license-file being included regardless. The optional web surface adds no target here: it is a Cargo feature per F017, and whether it also gets a second [[bin]] carrying required-features is R69's
+- owns build-tool-output-shape = no build backend or bundler crate; Cargo's own manifest is the entire declaration surface. Artifacts land in Cargo's default workspace-root target/ directory - target/debug/ for the dev and test profiles, target/release/ for release and bench, target/<name>/ for a user-defined profile, gaining a target/<triple>/<profile>/ level whenever --target is passed - relocatable by CARGO_TARGET_DIR, build.target-dir or --target-dir. Library target: exactly one, declared explicitly as [lib] with path src/lib.rs and Cargo's default crate name rs_launch_blueprint (the package name with dashes replaced by underscores); doctest is not set here and is R82's. Binary target: exactly one, declared explicitly as [[bin]] with path src/main.rs and name rs-launch-blueprint, matching the package name, so cargo install rs-launch-blueprint installs the command rs-launch-blueprint and integration tests resolve it through CARGO_BIN_EXE_rs-launch-blueprint; autobins = false so no src/bin/*.rs file becomes a second published command without a manifest edit; default-run unset while there is one binary; no build.rs and no build-orchestration crate. Packaged-file scope: an explicit [package] include allow-list - /src, /README.md, /LICENSE-MIT, /LICENSE-APACHE, /CHANGELOG.md - never exclude, the two being mutually exclusive; Cargo.toml and any license-file are included whatever include or exclude says, and a minimized Cargo.lock is likewise outside include/exclude selection - cargo package adds it, generating one when none is on disk - but not unconditionally: cargo package --exclude-lockfile omits it, an override cargo publish has no flag for and this template never passes. The optional web surface adds no target here: it is a Cargo feature per F017, and whether it also gets a second [[bin]] carrying required-features is R69's
 - assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
 - assumes rust-edition = 2024
 - assumes target-os-matrix = ubuntu-latest, macos-latest
@@ -359,8 +378,10 @@ retrieval timestamp in this decision and in every evidence log is UTC.**
 reads in check 5, which address the pinned source repositories through
 `git -C ~/c/py-launch-blueprint` and `git -C ~/c/ts-launch-blueprint` and touch
 no working tree. **Nothing was scaffolded, built or published**: no `Cargo.toml`
-was written, no crate was created, no `cargo build`, `cargo package` or
-`cargo publish` was run. The checks read the toolchain's own documentation and
+was written, no crate was created, and no `cargo build`, `cargo package` or
+`cargo publish` did any work — the only invocations of those subcommands were
+`--help` printings in checks 8 and L, and no dry run of any kind was
+performed. The checks read the toolchain's own documentation and
 source at the tag matching the installed toolchain, printed the installed
 `cargo`'s effective help, and queried the registry and the GitHub API.
 
@@ -401,8 +422,11 @@ exclusions are hidden dotfiles when **not** in a git repository, gitignored file
 when in one, sub-packages, and a root `target` directory. Also verified there:
 *"If `include` is specified, gitignore rules of the repository and global git
 configuration are not applied"*; *"The options are mutually exclusive; setting
-`include` will override an `exclude`"*; and that `Cargo.toml`, a minimized
-`Cargo.lock` and any `license-file` are always included. **Observed outcome:** the
+`include` will override an `exclude`"*; and, under the heading *"The
+following files are always included"*, that `Cargo.toml` and any `license-file`
+are always included and that *"A minimized `Cargo.lock` is automatically
+included"* — a sentence that speaks only to `include`/`exclude` selection, and
+whose command-line limit is check L. **Observed outcome:** the
 ledger's "(default: git-tracked files only)" is not what the toolchain
 documents — an untracked, non-ignored file is inside the default set.
 
@@ -441,9 +465,58 @@ R32's input, not used to decide R69.
 `cargo-package.md` at the tag, step 3: *"Extract the `.crate` file and build it to
 verify it can build. This will rebuild your package from scratch to ensure that
 it can be built from a pristine state. The `--no-verify` flag can be used to skip
-this step."* Also verified: `Cargo.lock` is always included, `--list` prints the
-file list without making a package, and `--allow-dirty` exists to override the
-dirty-tree refusal.
+this step."* Also verified, in that page's step 2: *"`Cargo.lock` is always
+included. When missing, a new lock file will be generated unless the
+`--exclude-lockfile` flag is used."* — quoted with its second sentence, which is
+the condition; `--list` prints the file list without making a package; and
+`--allow-dirty` exists to override the dirty-tree refusal.
+
+**Check L — the conditions on lockfile inclusion, stated once in full here.**
+Script `review/evidence/check-lockfile-inclusion.sh`, log
+`review/evidence/lockfile-inclusion-conditions.log`, run from the repository
+root; 10 content assertions, `RESULT all assertions passed`, exit status 0. It
+reads documentation and source at the `rust-1.98.0` tag and prints the installed
+`cargo 1.98.0`'s own help; it scaffolds, builds and publishes nothing, and runs
+no `cargo package` or `cargo publish` (not even a dry run). **Observed:**
+
+1. *Automatic with respect to the manifest.* `reference/manifest.md` lists *"A
+   minimized `Cargo.lock` is automatically included"* under *"The following files
+   are always included"*, a list the page itself scopes to *"Regardless of
+   whether `exclude` or `include` is specified"*. So no `include` allow-list and
+   no `exclude` deny-list can drop it — which is the claim this decision needs,
+   since the allow-list is what it selects.
+2. *Not unconditional at the command line.* `commands/cargo-package.md` documents
+   `--exclude-lockfile` as *"Don't include the lock file when packaging"*, adding
+   *"This flag is not for general use."*; the installed cargo prints
+   `--exclude-lockfile         Don't include the lock file when packaging` in
+   `cargo package --help`, with no `-Z` gate, so the override is stable and
+   available in 1.98.0.
+3. *Where the condition lives in the source.*
+   `src/bin/cargo/commands/package.rs:89` sets
+   `include_lockfile: !args.flag("exclude-lockfile")`;
+   `src/cargo/ops/cargo_package/mod.rs:513` drops any on-disk `Cargo.lock` from
+   the source file list (`"Cargo.lock" => continue`) and `:559` re-adds it as a
+   generated archive entry only `if include_lockfile`.
+4. *An absent lockfile is generated, not omitted.* Same block, `:561`:
+   `let lockfile_path = lockfile_path.exists().then_some(lockfile_path);` — the
+   entry is added either way and `build_lock` produces the contents.
+5. *The publish path has no override.*
+   `src/cargo/ops/registry/publish.rs:171` constructs `PackageOpts` with
+   `include_lockfile: true` hardcoded, and `cargo publish` exposes no
+   `--exclude-lockfile` flag.
+
+**Observed outcome:** the correct width is *automatic under manifest selection,
+generated when absent, and omitted only by `cargo package --exclude-lockfile`* —
+not "included regardless", which revision 1's owned value and four supporting
+lines asserted. The owned parameter now carries that qualification in full; the
+`## Decision` table row, AC3 and check 4 carry it by reference to this check.
+**Reproducibility:** the script was re-run against the cited log immediately
+before this sentence was written; the two outputs differ on exactly one line, the
+`retrieved:` timestamp in the header, every other byte identical. The documentation
+and source bytes are addressed by tag and by recorded SHA-256, so they cannot
+drift under a re-run without the digest assertion failing. A negative control was
+run — one asserted string altered — and the script exited 1 with
+`ASSERT FAIL`, so the check can fail.
 
 **Check D — where artifacts land.** `build-cache.md` at the tag: *"By default,
 both directories point to a directory named `target` in the root of your
