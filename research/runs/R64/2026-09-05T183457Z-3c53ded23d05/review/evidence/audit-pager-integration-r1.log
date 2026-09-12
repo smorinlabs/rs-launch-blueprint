@@ -1,0 +1,99 @@
+R64 empirical audit reproduction
+actor: audit-codex-2026-09-05T183457Z-3c53ded23d05-r1
+date: 2026-09-10
+cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R64/2026-09-05T183457Z-3c53ded23d05
+
+== Recorded check availability ==
+The decision records `bash verify.sh > <run-dir>/review/evidence/r64-pager-claims.log 2>&1`.
+`rg --files . | rg '(^|/)(verify|check|.*pager.*)\\.sh$'` produced no output.
+The existing `review/evidence/r64-pager-claims.log` has headings for sections 0 through 14,
+including all sections attributed by `DECISION.md`: 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12,
+and 14. It is an output artifact, not a retained executable check. The exact recorded check
+therefore could not be rerun or shown to be the producer of that output.
+
+== Linux availability ==
+argv: limactl shell ubuntu -- bash -lc 'source "$HOME/.cargo/env" 2>/dev/null || true; ...'
+result: /opt/homebrew/bin/limactl is callable, but Lima reported `instance `ubuntu` is stopped`.
+No Linux observation was substituted for an observed result. The macOS reproductions below are
+therefore macOS-only.
+
+== macOS host ==
+ProductName: macOS
+ProductVersion: 26.4
+BuildVersion: 25E246
+architecture: arm64
+less: less 668 (POSIX regular expressions)
+git: git version 2.50.1 (Apple Git-155)
+
+== Pseudo-terminal reproduction: ANSI display ==
+argv: env -u LESS script -q /dev/null sh -c 'printf "A\\033[31mRED\\033[0m B\\n" | less -F'
+exit: 0
+capture rendered by cat -v: ^D^H^H^M^M^[[K^GA^[[7mESC^[[27m[31mRED^[[7mESC^[[27m[0m B^M
+reading: bare `less -F` renders the escape byte as reverse-video `ESC` followed by literal
+`[31m`; it does not pass SGR colour through.
+
+argv: env -u LESS script -q /dev/null sh -c 'printf "A\\033[31mRED\\033[0m B\\n" | less -FR'
+exit: 0
+capture rendered by cat -v: ^D^H^H^M^M^[[K^GA^[[31mRED^[[0m B^[[m^M
+reading: `-R` passes the ANSI SGR bytes through.
+
+argv: LESS=FRX script -q /dev/null sh -c 'printf "A\\033[31mRED\\033[0m B\\n" | less'
+exit: 0
+capture rendered by cat -v: ^D^H^H^[[?1h^[=^MA^[[31mRED^[[0m B^[[m^M
+reading: a bare `less` receives the same ANSI-display effect from injected `LESS=FRX`.
+
+== Pseudo-terminal reproduction: Git pager-child environment ==
+argv: env -i PATH="$PATH" HOME="$HOME" TERM=xterm-256color LANG=C script -q /dev/null sh -c "git -c core.pager='env | grep -E \\"^(LESS|LV)=\\"' log -1"
+exit: 0
+child environment:
+LV=-c
+LESS=FRX
+
+argv: env -i PATH="$PATH" HOME="$HOME" TERM=xterm-256color LANG=C LESS=Q LV=Z script -q /dev/null sh -c "git -c core.pager='env | grep -E \\"^(LESS|LV)=\\"' log -1"
+exit: 0
+child environment:
+LV=Z
+LESS=Q
+reading: Git injects `LESS=FRX` and `LV=-c` when absent, and preserves parent values when set.
+
+== Qualification of BASELINE-REVIEW F284 ==
+`less(1)` defines `-F` as `--quit-if-one-screen`, so it supplies only the display outcome for
+the resolved pager when that pager is `less`, or implements compatible `-F` semantics. It does
+not reproduce py's `output.py:187` height gate, which writes short output directly and creates
+no child. A different resolved pager such as `more` is still invoked by the proposed design.
+The decision's qualification is accurate and not over-cautious.
+
+== Hosted-runner pager presence ==
+The decision has no sentence that assumes `less` is installed on `ubuntu-latest` or
+`macos-latest`. It consistently describes runner presence as unproven and specifies the
+`ErrorKind::NotFound` fall-through plus stub-pager tests. This audit observed `/usr/bin/less`
+only on macOS. The stopped Linux VM did not provide contrary evidence.
+
+== Parameter comparison ==
+All four `assumes` lines in `review/DECISION.md` match `docs/port/PARAMETERS.md` byte-for-byte:
+msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+rust-edition = 2024
+target-os-matrix = ubuntu-latest, macos-latest
+license = MIT OR Apache-2.0
+
+== R63 MSRV-gate comparison ==
+R63 treats missing `rust-version` as a gate-2 failure: it excludes `spinners`, `spinoff`,
+`spinach`, and `cliclack` for that reason. R64 calls the same reading a conditional that would
+select `shlex`, while provisionally selecting `shell-words` despite its missing declaration.
+The two decisions therefore do not currently apply gate 2 the same way.
+
+The strict reading is correct. The fixed `msrv-policy` explicitly requires the MSRV to be
+declared as `rust-version` in `Cargo.toml` and tested in CI, and prompt fitness gate 2 applies
+that complete policy to the candidate crate and dependency tree. A missing declaration is not
+proof of an incompatible compiler version, but it fails the declared evidence requirement of
+the gate. Under the strict policy `shell-words` is excluded and the recorded runner-up
+`shlex = "2.0"` must be selected. The provisional UNPROVEN-not-failed ruling should be
+withdrawn rather than silently changing R63's gate.
+
+== Citation spot checks ==
+https://static.rust-lang.org/dist/channel-rust-stable.toml: HTTP 200; `[pkg.rustc]` reports 1.98.1.
+https://static.crates.io/crates/shell-words/shell-words-1.1.1.crate: HTTP 200.
+https://raw.githubusercontent.com/git/git/v2.51.0/pager.c: HTTP 200; lines 120-131 contain `if (!getenv(argv[i]))`.
+https://rustsec.org/packages/shell-words.html: HTTP 404.
+https://packages.ubuntu.com/noble/less: HTTP 200; `Package: less (590-2ubuntu2.1 and others)`.
+https://raw.githubusercontent.com/actions/runner-images/main/images/ubuntu/toolsets/toolset-2404.json: HTTP 200.

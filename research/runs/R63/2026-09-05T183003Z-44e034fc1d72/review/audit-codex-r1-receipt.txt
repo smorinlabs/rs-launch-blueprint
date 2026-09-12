@@ -1,0 +1,7 @@
+[Audit](review/audit-codex.md) — SHA-256 `1e4b6e…f99206`; verdict: reject.
+
+Rerun exit: 0. [Evidence log](review/evidence/audit-r63-spinner-r1.log).
+
+Finding: saved script omits cited sections 12–18.
+
+I agree with the strict MSRV reading; undeclared `rust-version` fails gate 2.

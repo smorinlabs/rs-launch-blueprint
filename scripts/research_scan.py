@@ -156,6 +156,7 @@ def scan_run(run: Path) -> dict:
         }
         info["parameter_mismatches"] = parameter_mismatches(decision, registry_values(ROOT))
         info["has_identities"] = (review / "identities.json").is_file()
+        info["published_sha"] = published_decision_sha(manifest["item"], ROOT)
         for kind, name in (("empirical", "audit-codex.md"), ("judgment", "audit-fable.md")):
             a = audit_of(review / name)
             if a:
@@ -164,8 +165,26 @@ def scan_run(run: Path) -> dict:
     return info
 
 
+def published_decision_sha(item: str, root: Path) -> str | None:
+    """sha256 of the published copy of an item's decision, if one exists."""
+    hits = sorted((root / "research/topics").glob(f"*/DECISION.md"))
+    for path in hits:
+        head = path.read_text()[:200]
+        if head.lstrip().startswith(f"# {item} ") or f"# {item} " in head:
+            return sha256(path)
+    return None
+
+
 def next_action(status: str, run: dict | None) -> str:
     if status == "resolved":
+        # A resolved index row is not proof the work is finished. An item
+        # reopened for a revision keeps its resolved row until the revision
+        # republishes, so comparing the run's decision with the published copy
+        # is the only way to see it. R18 read as "done" for a whole session
+        # while an unpublished revision 6 sat in its run.
+        if run and run.get("decision") and run.get("published_sha"):
+            if run["decision"]["sha256"] != run["published_sha"]:
+                return f"REOPENED: run is at revision {run['decision']['revision']}, published copy differs"
         return "done"
     if run is None:
         return "not admitted: run prepare"
