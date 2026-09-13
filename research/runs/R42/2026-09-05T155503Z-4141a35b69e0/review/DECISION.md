@@ -55,7 +55,8 @@ invocation half of revision 6's sentence holds: `cargo-binstall`'s executable is
 named `cargo-binstall`, so the owned parameter's own rule invokes it as
 `cargo binstall`, and no `Justfile` recipe line and no lefthook job line changes.
 The parameter is **obeyed, not amended**. The one-line half is too narrow, in
-three respects check 15 observed directly rather than inferred:
+three respects — the first a property of the invocation, the second and third
+observed directly in check 15 rather than inferred:
 
 - **The backend must itself be acquired.** `cargo binstall` requires a
   `cargo-binstall` executable on `PATH`; `cargo install` ships inside the
@@ -64,7 +65,8 @@ three respects check 15 observed directly rather than inferred:
   crates.io half of the owned parameter's presence rule, and the bootstrap
   acquires it before the generic recipe can run. `biomejs/biome` already has
   exactly this shape — `install-tools` is `cargo install cargo-binstall` followed
-  by two `cargo binstall` lines (check 8). Whether P03 bootstraps it by compiling
+  by two `cargo binstall` lines (the LOW answer below; log
+  `evidence/reference-impls.log`). Whether P03 bootstraps it by compiling
   it once or from a release artifact is not decided here.
 - **`--locked` does not mean for `binstall` what it means for `cargo install`.**
   At tag `v1.23.0` the flag's own documentation reads "This option will be passed
@@ -89,7 +91,7 @@ body will meet them. `--no-confirm` (short `-y`) is documented at
 what a non-interactive recipe needs. And `cargo-binstall` 1.23.0 states in its own
 long help that "Some crate installation strategies may collect anonymized usage
 statistics by default" and names `--disable-telemetry` as the opt-out
-(`args.rs:28-35`, check 15). **The recipe body recommended above is the command
+(`args.rs:29-35`, check 15). **The recipe body recommended above is the command
 the superseded entry named and the owner's ruling authorised; it does not carry
 `--disable-telemetry`.** Whether the template adds it is a P03 choice this
 decision records rather than makes, because adding it would go beyond the
