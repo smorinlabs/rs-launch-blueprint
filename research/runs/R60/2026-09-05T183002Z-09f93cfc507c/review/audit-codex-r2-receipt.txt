@@ -1,0 +1,5 @@
+Audit: [review/audit-codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/audit-codex.md)  
+Audit SHA-256: `ee3db45c42c66e32e2e7502c8d426afc11796ba5ef92ddf551da1289ececf578`  
+Verdict: **reject**  
+Rerun: standard-pin `1`; preservation `2`; [log](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/evidence/audit-cli-parsing-framework-r2.log)  
+Finding: all substantive rule, pin, alias, R67, OV-01, and preservation checks pass, but both saved scripts fail after revision 2 was committed, contradicting their byte-for-byte reproducibility claim.

@@ -1,34 +1,32 @@
-decision-sha256: bcdf35c07904369a66eb3771a4ee61f91ff65e77bdfc1c724386737301f9c118
-actor: audit-codex-2026-09-06T043454Z-33c81db94a3b-r2
+decision-sha256: ec37d000455e786370406944a42db27b7bd4b3e62ad73c970a93e88058e30ad9
+actor: audit-codex-2026-09-06T043454Z-33c81db94a3b-r3
 model: gpt-5.6-terra
 family: openai
 verdict: reject
-unresolved-findings: F1 empirical-check rerun-and-diff record contradicts its cited log
+unresolved-findings: F1 section 5f is an unasserted live issue read, not a pinned read; the Empirical check miscounts and misclassifies the fail-open sections
 
 ## Rerun
 
-argv: `bash <recovered r19-check.sh>`; cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan`; toolchain: Darwin 25.4.0 arm64, rustc/cargo 1.98.0, gh 2.98.0, Python 3. The script was recovered byte-for-byte from the cited log's `===== SCRIPT SOURCE` section and exited 0 with `failed assertions: 0`. Complete output: `review/evidence/audit-dependabot-config-shape-r2.log` (sha256 `35ceef99e26d98bcf9f775dd8947849c7022cb7daef043c766088e08bd274e47`).
+argv: recovered `bash /private/tmp/r19-check-r3.sh`, whose SHA-256 is `ce8e720463cca485e8dcf6a4027c695236f8ceb32247c299b5ec440b32a7bd23`; cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan`; toolchain: Darwin 25.4.0 arm64, Rust 1.98.0, Cargo 1.98.0, GitHub CLI 2.98.0, and Python 3. The Linux VM could not start because Lima was denied access to `~/.lima/ubuntu/ha.stdout.log`; both reruns therefore used macOS.
 
-The specified Linux replay was unavailable: `limactl` was callable, but `ubuntu` was stopped and `limactl start ubuntu` was denied access to `~/.lima/ubuntu/ha.stdout.log` by this sandbox. I therefore used the permitted macOS fallback.
+Both full outputs are in `review/evidence/audit-dependabot-config-shape-r3.log`. Run 1 started at `2026-09-12T19:45:11Z`; run 2 started at `2026-09-12T19:45:41Z`. Each has 929 lines, exit code 0, and `failed assertions: 0`. Their diff has exactly nine numeric diff lines: the run timestamp and the eight `LIVE` retrieval timestamps. No content line differs.
 
-The replay reads the stated literal inputs and resolves each to itself: dependabot-core `1abafc5ca0900334fd970832e9ef43f2afc78233` and github/docs `dd75c5f38a14d1c07c3982beddb471a605b142f7`. It therefore fixes revision 1's moving-`main` defect. Its diff does not, however, match the decision's account: see F1.
+The published four-part comparison is accurate. The r2/r3 `SCRIPT SOURCE` bodies diff cleanly. The selected immutable sections have 285 lines on each side and diff cleanly. Sections 2b and 5f produce exactly two transport hunks. The published r3/r3-repeat logs differ on nine timestamp lines. The audit log records the commands' outcomes.
 
 ## Findings
 
-### F1 — the asserted rerun/diff record is false for the cited artifact
+### F1 — the new fail-open count is still wrong
 
-`review/DECISION.md:172` says the cited revision-2 log was run at `2026-09-10T23:19:26Z`; the cited `review/evidence/dependabot-config-shape.r2.log:3` instead records `2026-09-10T23:52:29Z`. More importantly, `review/DECISION.md:187` says the two runs differed only in the run timestamp, eight live retrieval timestamps, and the live drift-check SHA, with every pinned section byte-for-byte identical. That is not true of the cited log and this replay. The cited log's section 2b has a TLS timeout and `NOTE  npm production check not found`; the replay read the named pinned file and reports its non-trivial production check. The cited log's section 5f has a TLS timeout for issue #5423; the replay reads the issue JSON. These are pinned-read sections, not listed live sections.
+`review/DECISION.md` says sections 2b and 5f both read pinned immutable sources, and then counts 5f, 12, and 15 as unasserted pinned-source sections. The recovered script does not support that classification. Section 2b obtains `npm_and_yarn.rb` through `DBC`, which uses `ref=$DBC_SHA`, but its failed-content branch calls `note`, not `fail`. Section 5f is the bare live call `gh api repos/dependabot/dependabot-core/issues/5423 ...`; it has neither `DBC`, `DOCS`, nor a pin reference, and no assertion. Sections 12 and 15 are the two unasserted pin reads: local `git show <pin>` pipelines and `SPM=$(DOCS ...ref=$DOCS_SHA)` respectively. `set -uo pipefail` omits `-e`, so all four paths can emit an error and continue.
 
-The discrepancy does not undo the real repair: both named pins replay correctly, and the two newly successful reads support rather than contradict the decision's underlying claims. It does make the decision's recorded timestamp, line count, and ten-line-diff assertion false. Revise `## Empirical check` to describe the artifact actually cited, including these transport differences, or replace the cited log with the recorded rerun it describes.
+The underlying general defect is therefore correctly identified: a failed read can be converted to a note or can have its non-zero status ignored. The decision must state the accurate classification before acceptance: one pinned read with a note fallback (2b), two unasserted pinned reads (12 and 15), and one unasserted live read (5f). Calling the 5f TLS hunk a pinned transport read is false.
 
 ### Checks that passed
 
-The re-argument is sound at its stated strength. Five direct `curl` checks confirmed the Cargo constant-true production predicate; the Cargo classifier; its pinned `0.1.0 -> 0.2.0 == major` spec; the Cargo group-update predicate; and issue #9681's request for additional `cargo-compatible`/`cargo-incompatible` values. Thus `[minor, patch]` excludes, rather than admits, the pre-1.0 transition. The decision no longer relies on the rejected mechanism.
+The revision-2 blob is `bcdf35c07904369a66eb3771a4ee61f91ff65e77bdfc1c724386737301f9c118`. Its `## Parameters` section, including all four `assumes` lines, and its `## Engines` section are byte-identical to revision 3. Among 47 non-separator Markdown table rows, only the two revised prose-citation rows (2/2b/2c and 5f) differ; the other 45 rows are byte-identical. The decision body changes only those two citations, revision metadata, and the documented empirical-check rewrite.
 
-The catch-all recommendation has surviving evidence: GitHub's wildcard-first guidance, observed catch-all configurations and group branches, and the documented individual-PR fallback for unmatched dependencies. Its volume claim is explicitly an expectation, not a measured fact; A3/A4/A10 name the required P03 observations. That is appropriate for this proposal-phase decision. Alternative D is decided, not merely mentioned: if A3/A10 show one weekly mixed PR is unreviewable, D is the recorded successor.
-
-The unchanged production predicate remains supported by the pinned `cargo.rb`. The ratatui anomaly remains correctly bounded: the rerun independently reconstructs five open Cargo PRs at the historical observation time, reproduces one sub-seven-day non-security update, and does not claim a cause. The four `assumes` lines match `docs/port/PARAMETERS.md` byte-for-byte after removing the Markdown list/table framing.
+The DataFusion explanation is correct. The current page-one Dependabot query returns no rows, while the page-two query returns both cited group branches: `dependabot/cargo/main/all-other-cargo-deps-03ff8603f0` and `dependabot/cargo/main/arrow-parquet-a49d07efbf`.
 
 ## Assessment
 
-Reject revision 2 only for F1. Its corrected grouping analysis, literal-pin replay mechanism, explicit fourth-alternative decision, unchanged production finding, bounded anomaly, and parameter assumptions are acceptable. The empirical-check provenance claim must accurately describe the cited log before this decision can be accepted.
+Reject revision 3 only for F1. Its provenance repair, script identity, rerun record, transport-hunk comparison, timestamp comparison, revision-2 preservation boundaries, and DataFusion paging correction all reproduce. The decision must correct the pinned-versus-live classification and resulting count of unasserted reads.

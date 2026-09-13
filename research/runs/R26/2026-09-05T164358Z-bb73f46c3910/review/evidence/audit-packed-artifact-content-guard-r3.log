@@ -1,0 +1,183 @@
+
+===== PHASE A — preconditions =====
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+Darwin arm64
+ProductName:		macOS ProductVersion:		26.4 BuildVersion:		25E246 
+check script:   review/evidence/r26-check.sh  sha256 7517d02c486a0aecf09c5f18e4a708b616178be62e080fe5029ea7fd298fe6c0
+cited log:      review/evidence/packed-artifact-guard.log  sha256 efa6fbe759f34f047a3e17eb77a4368aeec936715b30e380e1ce9eda7cbba9d3
+base SCRATCH:   /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad
+ambient locale: LANG=en_US.UTF-8 LC_ALL=C.UTF-8 LC_COLLATE=unset
+PASS pre/pinned-input-present:toml_mod.rs (1)
+PASS pre/pinned-input-copied-to-alt:toml_mod.rs (1)
+PASS pre/pinned-input-present:pkg_mod.rs (1)
+PASS pre/pinned-input-copied-to-alt:pkg_mod.rs (1)
+PASS pre/pinned-input-present:book-CHANGELOG.md (1)
+PASS pre/pinned-input-copied-to-alt:book-CHANGELOG.md (1)
+PASS pre/cited/line-count (377)
+PASS pre/cited/pass-lines (22)
+PASS pre/cited/fail-lines (0)
+PASS pre/cited/failed-assertions-line (1)
+PASS pre/cited/pass-block-identical (same)
+
+===== PHASE B — five reruns of the archived check =====
+run 1 (as archived, ambient locale)
+PASS run1/exit (0)
+run 2 (as archived, ambient locale, immediately after run 1)
+PASS run2/exit (0)
+run 3 (SCRATCH repointed to <work>/alt-scratch)
+PASS run3/exit (0)
+run 4 (as archived, LC_ALL=C)
+PASS run4/exit (0)
+run 5 (SCRATCH repointed AND LC_ALL=C — the revision-2 auditor's environment)
+PASS run5/exit (0)
+PASS run1/line-count (377)
+PASS run1/pass-lines (22)
+PASS run1/fail-lines (0)
+PASS run1/failed-assertions-line (1)
+PASS run1/pass-block-identical (same)
+PASS run2/line-count (377)
+PASS run2/pass-lines (22)
+PASS run2/fail-lines (0)
+PASS run2/failed-assertions-line (1)
+PASS run2/pass-block-identical (same)
+PASS run3/line-count (377)
+PASS run3/pass-lines (22)
+PASS run3/fail-lines (0)
+PASS run3/failed-assertions-line (1)
+PASS run3/pass-block-identical (same)
+PASS run4/line-count (377)
+PASS run4/pass-lines (22)
+PASS run4/fail-lines (0)
+PASS run4/failed-assertions-line (1)
+PASS run4/pass-block-identical (same)
+PASS run5/line-count (377)
+PASS run5/pass-lines (22)
+PASS run5/fail-lines (0)
+PASS run5/failed-assertions-line (1)
+PASS run5/pass-block-identical (same)
+
+===== PHASE C — recover revision 1's cited log and the archived audit reruns =====
+PASS phaseC/r1-cited-recovered (363)
+PASS phaseC/audit-r2-present (377)
+PASS phaseC/audit-r1-present (234)
+PASS phaseC/audit-r2/line-count (377)
+PASS phaseC/audit-r2/pass-lines (22)
+PASS phaseC/audit-r2/fail-lines (0)
+PASS phaseC/audit-r2/failed-assertions-line (1)
+PASS phaseC/audit-r2/pass-block-identical (same)
+
+===== PHASE D — classify every differing line against the cited log =====
+--- cited-vs-run1
+C1-diff-header lines=113,114,134,135,157,158
+C2-compressed-size lines=89,130
+C3-packaging-path lines=
+C4-listing-collation lines=62,63
+classified=10 unclassified=0 violations=0 classes=C1-diff-header,C2-compressed-size,C4-listing-collation
+PASS cited-vs-run1/unclassified (0)
+PASS cited-vs-run1/outside-candidate-lines (0)
+--- run1-vs-run2
+C1-diff-header lines=113,114,134,135,157,158
+C2-compressed-size lines=89
+C3-packaging-path lines=
+C4-listing-collation lines=
+classified=7 unclassified=0 violations=0 classes=C1-diff-header,C2-compressed-size
+PASS run1-vs-run2/unclassified (0)
+PASS run1-vs-run2/outside-candidate-lines (0)
+--- cited-vs-run3-altscratch
+C1-diff-header lines=113,114,134,135,157,158
+C2-compressed-size lines=130
+C3-packaging-path lines=88,128,177
+C4-listing-collation lines=62,63
+classified=12 unclassified=0 violations=0 classes=C1-diff-header,C2-compressed-size,C3-packaging-path,C4-listing-collation
+PASS cited-vs-run3-altscratch/unclassified (0)
+PASS cited-vs-run3-altscratch/outside-candidate-lines (0)
+--- cited-vs-run4-clocale
+C1-diff-header lines=113,114,134,135,157,158
+C2-compressed-size lines=130
+C3-packaging-path lines=
+C4-listing-collation lines=62,63
+classified=9 unclassified=0 violations=0 classes=C1-diff-header,C2-compressed-size,C4-listing-collation
+PASS cited-vs-run4-clocale/unclassified (0)
+PASS cited-vs-run4-clocale/outside-candidate-lines (0)
+--- cited-vs-run5-altscratch-clocale
+C1-diff-header lines=113,114,134,135,157,158
+C2-compressed-size lines=130
+C3-packaging-path lines=88,128,177
+C4-listing-collation lines=62,63
+classified=12 unclassified=0 violations=0 classes=C1-diff-header,C2-compressed-size,C3-packaging-path,C4-listing-collation
+PASS cited-vs-run5-altscratch-clocale/unclassified (0)
+PASS cited-vs-run5-altscratch-clocale/outside-candidate-lines (0)
+--- cited-vs-audit-r2-rerun
+C1-diff-header lines=113,114,134,135,157,158
+C2-compressed-size lines=89,130
+C3-packaging-path lines=88,128,177
+C4-listing-collation lines=62,63
+classified=13 unclassified=0 violations=0 classes=C1-diff-header,C2-compressed-size,C3-packaging-path,C4-listing-collation
+PASS cited-vs-audit-r2-rerun/unclassified (0)
+PASS cited-vs-audit-r2-rerun/outside-candidate-lines (0)
+--- phases 0-7 only (first 233 lines), against the revision-1 logs:
+--- cited-vs-r1-cited-phases0to7
+C1-diff-header lines=113,114,134,135,157,158
+C2-compressed-size lines=130
+C3-packaging-path lines=
+C4-listing-collation lines=
+classified=7 unclassified=0 violations=0 classes=C1-diff-header,C2-compressed-size
+PASS cited-vs-r1-cited-phases0to7/unclassified (0)
+PASS cited-vs-r1-cited-phases0to7/outside-candidate-lines (0)
+--- cited-vs-audit-r1-phases0to7
+C1-diff-header lines=113,114,134,135,157,158
+C2-compressed-size lines=89,130
+C3-packaging-path lines=88,128,177
+C4-listing-collation lines=62,63
+classified=13 unclassified=0 violations=0 classes=C1-diff-header,C2-compressed-size,C3-packaging-path,C4-listing-collation
+PASS cited-vs-audit-r1-phases0to7/unclassified (0)
+PASS cited-vs-audit-r1-phases0to7/outside-candidate-lines (0)
+
+===== PHASE E — the rule is not vacuous: each class was actually observed =====
+C1-diff-header
+C2-compressed-size
+C3-packaging-path
+C4-listing-collation
+PASS coverage/C1-diff-header (1)
+PASS coverage/C2-compressed-size (1)
+PASS coverage/C3-packaging-path (1)
+PASS coverage/C4-listing-collation (1)
+
+===== PHASE E2 — the observed spread of the C2 compressed-size class =====
+The three 'Packaged' lines of each log, at cited-log lines 89, 130 and 178.
+Their compressed sizes are what class C2 admits; the rest of each line is fixed.
+packed-artifact-guard.log          1005B 967B 2.5KiB 
+audit-packed-artifact-content-guard-r1.log 1004B 964B 2.5KiB 
+audit-packed-artifact-content-guard-r2.log 1006B 964B 2.5KiB 
+run1.log                           1006B 963B 2.5KiB 
+run2.log                           1005B 963B 2.5KiB 
+run3.log                           1005B 964B 2.5KiB 
+run4.log                           1005B 964B 2.5KiB 
+run5.log                           1005B 965B 2.5KiB 
+PASS spread/cited-line-89-is-C2-shaped (1)
+PASS spread/cited-line-130-is-C2-shaped (1)
+PASS spread/cited-line-178-is-C2-shaped (1)
+
+===== PHASE F — negative control: the classifier does catch a real difference =====
+PASS negctl/mutation-applied (1)
+C1-diff-header lines=
+C2-compressed-size lines=
+C3-packaging-path lines=
+C4-listing-collation lines=
+UNCLASSIFIED line 355: 'PASS phase9/edition ("2024")' -> 'PASS phase9/edition ("2023")'
+classified=0 unclassified=1 violations=0 classes=
+PASS negctl/unclassified (1)
+PASS negctl/pass-block-differs (differs)
+--- second negative control: a class-shaped difference at a line the rule does not allow
+C3-packaging-path lines=60 OUTSIDE-CANDIDATES=60
+classified=1 unclassified=0 violations=1 classes=C3-packaging-path
+PASS negctl2/unclassified (0)
+PASS negctl2/outside-candidate-lines (1)
+
+===== PHASE G — publish safety =====
+PASS safety/no-publish-invocation-in-check (0)
+PASS safety/no-publish-invocation-in-compare (0)
+
+===== DONE =====
+failed assertions: 0

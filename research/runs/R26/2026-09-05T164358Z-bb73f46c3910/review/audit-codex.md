@@ -1,35 +1,34 @@
-decision-sha256: f9f85f7b31694ed30bb44232eed6207f217d2e92716f4d59266687c6bab12496
-actor: audit-codex-2026-09-05T164358Z-bb73f46c3910-r2
+decision-sha256: 013fe4c3fc992d7e3755822cd08fe134cafebf83ecff509000b3a98780e8e7f3
+actor: audit-codex-2026-09-05T164358Z-bb73f46c3910-r3
 model: gpt-5.6-terra
 family: openai
-verdict: reject
-unresolved-findings: the claimed cross-run comparison rule excludes observed non-header differences, so the decision's reproducibility statement must be corrected
+verdict: approve
+unresolved-findings: none
 
 ## Rerun
 
-- argv: `sed "s|^SCRATCH=.*|SCRATCH=\"/private/tmp/r26-audit-r2.YBagDR/scratch\"|" review/evidence/r26-check.sh | bash`, an audit-owned streamed copy with only `SCRATCH`, the script's host-specific temporary-work directory, repointed.
+- argv: `bash review/evidence/r26-crossrun-compare.sh`. This archived comparison check invokes the unchanged `review/evidence/r26-check.sh` five times: twice with its recorded environment, once with `SCRATCH` repointed, once with `LC_ALL=C`, and once with both changes.
 - cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R26/2026-09-05T164358Z-bb73f46c3910`.
-- toolchain: `cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)`; `rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)`; macOS 26.4 arm64.
-- exit code: 0. The complete 377-line output is `review/evidence/audit-packed-artifact-content-guard-r2.log`; it has 22 `PASS` lines, no `FAIL` line, and ends `failed assertions: 0`.
-- output comparison: an immediate second 377-line run also exited 0 with 22 passes and no failures, but it does **not** satisfy the comparison rule at `review/DECISION.md:74`. Its diff against `review/evidence/packed-artifact-guard.log` contains an unsorted phase-2 directory listing change and Cargo `Packaging rsguard … (<absolute probe path>)` changes, in addition to the allowed diff-header and compressed-byte changes.
-- assertion negative control: changing only phase 8's expected byte-sort result from `0` to `1` in a temporary streamed copy produced `FAIL phase8/stdout-byte-sorted (expected 1, got 0)`, one failure, and exit code 1. This confirms that `FAILS`, the script's failure counter, controls the exit status.
-- publish safety: no publish command, including a dry run, was invoked. The archived script was inspected before execution; its string matches are not command invocations.
-- Linux: `/opt/homebrew/bin/limactl` is callable, but `ubuntu` is stopped. `limactl shell ubuntu -- bash -lc '…'` reported that it must be started. I did not start it, so this audit has no Linux result.
+- toolchain and host: `cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)` and `rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)` on macOS arm64. These are the preconditions claimed by the decision.
+- exit code: 0. The complete 183-line output is `review/evidence/audit-packed-artifact-content-guard-r3.log`, SHA-256 `ba32a9b20cc34c0f54a3a8d4549006a1144dd30b3a41711edb785b8c0f197c1`. It has 79 `PASS` lines, no `FAIL` line, and ends `failed assertions: 0`.
+- output comparison: the result matches the decision's stated outcome. All eight comparisons report `unclassified=0 violations=0`; each of C1 through C4 was observed. The two negative controls report, respectively, `unclassified=1` and `violations=1`, and the comparison check asserts both results.
+- publish safety: no publish command was invoked. The comparison's own phase G reports zero `cargo publish` invocations in both archived scripts.
+- Linux: `/opt/homebrew/bin/limactl` was callable, but `ubuntu` was stopped. Starting that named VM failed because this sandbox cannot unlink `/Users/stevemorin/.lima/ubuntu/ha.stdout.log`. No Linux check ran. This does not contradict the decision because it expressly records every result as macOS arm64 and names Linux as P03 work.
 
 ## Findings
 
-1. **Reject — the decision's cross-run reproducibility statement is false.** `review/DECISION.md:74` says that exactly two kinds of line vary: `diff -u` header lines and parenthesized compressed-byte counts. The immediate second-run diff instead also changed phase 2's unsorted `ls -1` output from `src` then `STRAY.txt` to `STRAY.txt` then `src`, and changed Cargo's ordinary `Packaging rsguard v0.1.0 (<absolute probe path>)` lines. Neither is a diff header or a compressed-byte count. The decision must correct its exact-difference claim and comparison rule before acceptance. The underlying guard outcomes remain reproducible.
+1. **Confirmed — revision 3 reproduces and classifies the two difference classes that revision 2 excluded.** The audit log's `cited-vs-audit-r2-rerun` comparison classifies C1 at lines 113, 114, 134, 135, 157, and 158; C2 at 89 and 130; C3 at 88, 128, and 177; and C4 at 62 and 63. It leaves zero unclassified lines and zero violations. The repointed-scratch plus `LC_ALL=C` rerun independently exercises all four classes with the same result.
 
-2. **Confirmed — phases 8 through 10 are now archived executable checks.** `review/evidence/r26-check.sh:6-17` enables `pipefail` and defines `assert_eq`; lines 157-237 implement phases 8-10; lines 239-241 report and exit the `FAILS` counter. The normal replay completed every phase and exited 0. The negative control demonstrates an assertion can increment that counter and make the process fail.
+2. **Confirmed — all eight stated comparisons conform.** The six full-log comparisons and two phases-0-to-7 comparisons each pass both classifier assertions. The audit-owned execution includes both archived audit rerun logs and recovers the revision-1 cited log from commit `1b42a99`, as the decision states.
 
-3. **Confirmed — the byte-order finding is real and reaches P03's constraints.** The rerun records `LC_ALL=C sort -c` success and `LC_ALL=en_US.UTF-8 sort -c` failure at log lines 249-250. `review/DECISION.md:132` consequently requires `ci/expected-packed-files.txt` to be written and compared in byte order. This is the claimed implementation-phase constraint.
+3. **Confirmed — the classifier rejects both kinds of invalid difference.** Changing `PASS phase9/edition ("2024")` to `PASS phase9/edition ("2023")` reports `unclassified=1`. Placing a C3-shaped packaging-path change at line 60 reports `violations=1` because line 60 is outside C3's allowed candidates. The test script makes both nonzero results assertions, and it still exits 0 because the expected negative-control results occurred.
 
-4. **Confirmed — earlier phase line positions are preserved.** The cited log and this rerun place phase headings 0-7 at lines 2, 10, 58, 65, 104, 146, 193, and 207, respectively; phase 8 begins at line 234 in both. Therefore existing citations into the prior output still land, although the phase-2 listing's content is not stable.
+4. **Confirmed — the original empirical check and cited log are byte-identical to revision 2.** `git diff` from revision-2 commit `46febbb8500513be74bb3acc563f78655943489f` to revision-3 commit `c5602538ff39d6750cdd603b5059da2aff94e6b2` is empty for `review/evidence/r26-check.sh` and `review/evidence/packed-artifact-guard.log`. Their current SHA-256 values are, respectively, `7517d02c486a0aecf09c5f18e4a708b616178be62e080fe5029ea7fd298fe6c0` and `efa6fbe759f34f047a3e17eb77a4368aeec936715b30e380e1ce9eda7cbba9d3`.
 
-5. **Confirmed — the revision-1 preserved material is byte-identical where claimed.** I recovered the revision-1 decision blob from `review/audit-codex-r1-transcript.txt`; its SHA-256 is the recorded `7befd2f99bc093c1fd5a4f5915cb3cd86f3cc3f73a2a7e3273ddbd529b07b8aa`. Its pinned-source paragraph, observable acceptance criteria, four `assumes` lines, macOS-only statement, and disagreement paragraphs 1-4 are byte-identical to revision 2. Each `assumes` value also matches the corresponding value in `docs/port/PARAMETERS.md` byte-for-byte.
+5. **Confirmed — the substantive evidence retained from revision 2 is unchanged.** The revision diff leaves byte-identical the pinned `prepare_target_for_publish` claim at the installed Cargo pin, the forty-character token `797e8a9bca276c1c9f9f738d2a20f484fa4eea9d`, the healthy guard, faults A and B, the obsolete `src/workspace/parser/mod.rs` citation correction, the macOS-only platform statement, and the four `- assumes` lines at decision lines 61–64. Five cited Cargo endpoints were also fetched successfully: the pinned prune source, include/exclude source, changelog, package-command documentation, and commit API record.
 
-6. **Confirmed — five cited source endpoints were reachable.** The three pinned Cargo source files, the pinned Python publish workflow, and Cargo's package-command documentation each returned HTTP 200 by `curl`.
+6. **Confirmed with accounting clarification — seven existing decision lines were replaced.** The revision-2-to-revision-3 `DECISION.md` diff is `30` added and `7` removed lines. The wider commit adds 655 lines because it creates `r26-crossrun-compare.sh` and its two archived 183-line logs. Therefore “only seven lines changed” is accurate only for the seven pre-existing decision lines replaced, not for the full commit.
 
 ## Assessment
 
-Revision 2 repairs the revision-1 reproducibility defect: every cited phase is now in the archived script, all 22 normal assertions pass, and the byte-order discovery is both reproducible and carried into P03. The decision nevertheless makes a new, precise empirical claim about the only permitted cross-run differences. The immediate second run refutes that claim. Because the recorded comparison rule is part of the decision's reproducibility evidence and must change before acceptance, the empirical verdict is reject. The guard recommendation itself is not rejected by this finding; its reproducibility description needs correction.
+Revision 3 directly repairs revision 2's rejected rule. Its archived classifier accepts the observed cross-run differences only at the four named classes and line numbers, accepts both prior audit reruns and the recovered revision-1 log, and detects both negative controls. The original empirical check and log, including all prior line citations, remain unchanged. The decision claims no Linux result, and the unavailable VM adds no contrary evidence. Approve.

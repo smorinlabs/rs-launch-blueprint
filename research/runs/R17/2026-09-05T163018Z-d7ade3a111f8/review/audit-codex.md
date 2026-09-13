@@ -1,42 +1,46 @@
-decision-sha256: e2c3d588eaf1a098027b4c9ced4fa01ef1341fd27ef4cfdfa012bfc44a8321ec
-actor: audit-codex-2026-09-05T163018Z-d7ade3a111f8-r2
+decision-sha256: 7e4e27e6d26577a6c1180cff7efea7bf9d755cdb247023aafd7a4b1f622eab19
+actor: audit-codex-2026-09-05T163018Z-d7ade3a111f8-r3
 model: gpt-5.6-terra
 family: openai
-verdict: approve
-unresolved-findings: none
+verdict: reject
+unresolved-findings: F1: the revision's byte-preservation claim is false for named approved content; the Part 2 recommendation, ranked runner-up, and validity-filter finding differ from revision 2
 
 ## Rerun
 
-argv: `bash /private/tmp/r17-audit-r2-direct-gh.*/run-checks.sh`, an unmodified copy of `review/empirical/run-checks.sh` (sha256 `c2fb2c62a64256a0d68ff868bfd4f5d6f7ba3896e7894c5fadf2071b751fa73d`), launched with `PATH=/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin` and `XDG_CACHE_HOME` set to a mode-`0500` outer directory. The direct Homebrew `gh` binary is necessary because the normal `gh` resolution is a `mise` shim; the check's deliberate `env -i` unauthenticated control otherwise fails in that shim before it invokes GitHub CLI.
+argv: `PATH=/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin XDG_CACHE_HOME=<mode-0500 temporary directory> bash /private/tmp/r17-audit-r3.*/run-checks.sh`, where the script was an unmodified copy of `review/empirical/run-checks.sh` with sha256 `4471f964f2936fc6e41b7885d85f87c793e6d8a5af3ca43135777b49171a1163`.
 
 cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R17/2026-09-05T163018Z-d7ade3a111f8`.
 
-toolchain: macOS arm64; `rustc 1.98.0`; `cargo 1.98.0`; `gh 2.98.0`; `curl 8.7.1`. The supplied Linux VM could not be started: `limactl start ubuntu` was denied while unlinking `/Users/stevemorin/.lima/ubuntu/ha.stdout.log`. The recorded check specifically downloads and executes the macOS arm64 binary, so this macOS rerun is the applicable execution.
+toolchain: macOS arm64; `gh 2.98.0`; `curl 8.7.1`; the script's own section 00 records `rustc` and `cargo`. I attempted the supplied Linux VM first. `limactl` was callable, but `limactl start ubuntu` failed before boot with `unlinkat /Users/stevemorin/.lima/ubuntu/ha.stdout.log: operation not permitted`; the recorded script downloads and executes the macOS arm64 release, so this macOS run is the applicable rerun.
 
-exit code: `0`. The complete rerun in `review/evidence/audit-secret-scanning-ci-workflow-r2.log` ends `summary: PASS=27 FAIL=0 SKIP=0` and `RESULT: PASS`; its 27 assertion lines match the decision's comparison rule. A preliminary run through the normal `mise` shim reached `PASS=26 FAIL=1` only because the no-auth control did not reach `gh`, not because the repaired provenance command failed.
+exit code: `0`.
 
-log path: `review/evidence/audit-secret-scanning-ci-workflow-r2.log`.
+log path: `review/evidence/audit-secret-scanning-ci-workflow-r3.log` (280 lines, sha256 `9b49450d01ae793446e8f3610169474fb9260e3517ad7a56a86d6984c27350b1`).
 
-output matches the decision: yes, for the direct-`gh` controlled rerun. Assertion `07a` succeeds while `07f` reproduces exit `1` and `no valid Sigstore verifiers could be initialized` when the script's trusted-root cache is unwritable; `07g` separately reproduces unauthenticated exit `4`. This verifies the stated specific diagnosis rather than an environmental explanation in general.
+output matches the decision: the empirical execution does. It ends `summary: PASS=36 FAIL=0 SKIP=0` and `RESULT: PASS`, exactly as the decision specifies. All 27 revision-2 `RESULT` labels remain, with the nine new `10a` through `10i` labels. The document's separate claim that named already-approved prose is byte-identical does not match the diff; that is F1.
 
 ## Findings
 
-### Confirmed — cache diagnosis and repair
+### Confirmed — the fail-open evidence is reachable and the repaired rule is complete
 
-The outer cache is non-writable in the passing rerun, but the first provenance invocation redirects `XDG_CACHE_HOME` to its writable `$WORK/gh-cache` and passes. The identical invocation with `$WORK/ro-cache` at mode `0500` fails before artifact verification with the expected verifier-initialization message. The separate no-auth control reaches `gh`, exits `4`, and prints the login instruction. These controls establish the claimed cache-specific failure mode and distinguish it from missing authentication.
+Section 10 of the independent rerun extracted the whole documented table from `docs/USAGE.md` at `v2.2.0`, including its digest `28cbe0cabac3c4f0ad69ed25d882ca33bae3ed699cce1a1d7d2df4634d0a0b84`. It asserted the only documented codes are `0`, `200`, and `205`. The top-level rejected-flag probe exited `2`; the missing scan-target probe exited `1`; and `10g` proved neither is in the documented set. The pinned `github/docs` source also made `10h` and `10i` pass: the default `run:` shell is `bash -e {0}`, while explicit `shell: bash` includes `-e` and `pipefail`.
 
-### Confirmed — provenance scope and flag semantics
+The full gate rule appears once at `review/DECISION.md:23`. Its later references in essential behavior 3, acceptance criterion 1, the per-principle paragraph, migration implications, the section-08 finding, and the P03 test list consistently preserve the same allow-list: `0` and `200` pass, `205` fails, and every undocumented exit fails as a tool error. Acceptance criterion 5 explicitly requires both a replaced scanner and a rejected flag to fail the job. The ranked runner-up explicitly says its allow-list must be re-derived from its own pin rather than inherit Kingfisher's values.
 
-`gh attestation verify --help` states that `--repo` or `--owner` is the minimum identity constraint, and that workflow identity is more precise when `--signer-workflow` or `--cert-identity` is supplied. It also documents `--deny-self-hosted-runners` separately. The decision accurately limits the executed command to repository identity and records `buildSignerURI` and `runnerEnvironment` as certificate observations; P03 is correctly required to add `--signer-workflow` or `--cert-identity`. No GitHub Actions runner was exercised.
+### Confirmed — the prior table-capture defect is repaired
 
-### Confirmed — unchanged decision content
+The rerun log prints the heading, blank line, header, separator, and all three table rows, not only the heading. The file digest is printed immediately before that table. This closes the revision-2 `sed` range defect.
 
-Against revision-1 blob `84d321b23200b91447ea6c1fe367fce5ee524aa0` (decision sha256 `6c0a240e6d12f34c106a44d6e7f5cdf02fe4b1825f048226d96297b618b9e18`), the Part 2 recommendation, F050 ledger row, `BASELINE-REVIEW: F050` line, equal-base-and-head narrowing, validity-filter exit-code finding, and all four `assumes` lines are byte-identical. Acceptance checks 1 through 3 and the gate rule are also byte-identical; revision 2 only qualifies the separate provenance-on-runner requirement.
+### Confirmed — citation and secret-shape checks
 
-### Confirmed — source and log checks
+Six representative cited endpoints returned HTTP `200`: GitHub's secret-scanning documentation, TruffleHog `v3.95.9` `action.yml`, MongoDB Kingfisher's repository API, Kingfisher `v2.2.0` `docs/USAGE.md`, the Gitleaks Action README, and the crates.io Kingfisher API with the recorded User-Agent. The decision's ten secret-shape patterns each returned zero matches against this audit log. No secret-shaped value was added by this audit.
 
-Six cited endpoints returned HTTP `200` by `curl`: GitHub Docs secret-scanning guidance, TruffleHog `v3.95.9` `action.yml`, the crates.io Kingfisher endpoint, the unrelated `mongrov/kingfisher` repository, MongoDB Kingfisher releases, and MongoDB Kingfisher's repository API endpoint. Ten credential-shaped patterns returned zero matches against the evidence log; matched values were never printed during this audit.
+### F1 — reject: the stated byte-preservation claim is false
+
+`review/DECISION.md:9` says that the recommendation and validity-filter finding "stand as revision 2 wrote them." A direct diff against revision-2 decision sha256 `e2c3d588eaf1a098027b4c9ced4fa01ef1341fd27ef4cfdfa012bfc44a8321ec` shows the Part 2 recommendation line is not byte-identical, the ranked-runner-up line is not byte-identical, and the section-08 validity-filter finding line is not byte-identical. Each now includes necessary allow-list wording. In contrast, the Part 1 recommendation, F050 table row, `BASELINE-REVIEW: F050` line, equal-base-and-head narrowing, provenance diagnosis, and all four `assumes` lines are byte-identical.
+
+This does not undermine the gate repair. It does make the revision's preservation assurance inaccurate, including the requested confirmation of both recommendations and the validity-filter finding. Correct the revision note to distinguish unchanged tool-selection conclusions from changed wording, or enumerate only byte-identical anchors. No further scanner evidence is needed.
 
 ## Assessment
 
-Approve revision 2. Its evidence now proves the developer-machine provenance claim under the condition that rejected revision 1, proves the two stated prerequisite failures as distinct controls, and limits the unexecuted CI-runner claim to P03. The `mise`-shim first-attempt result is a local command-resolution wrinkle documented above; it does not change the decision, and the direct GitHub CLI rerun reproduces the recorded pass set.
+Reject revision 3 on F1 only. The fail-open defect is actually repaired: documented successful outcomes are allow-listed, two reachable unexpected outcomes are proven, the shell behavior is pinned and reproduced, and P03 has a concrete fail-the-job acceptance test. The decision must accurately describe what the diff preserved before it can be accepted.
