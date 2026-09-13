@@ -33,7 +33,12 @@ revision number, and the removal of bold emphasis from the `GPL-3.0-only` cell i
 check 6's table, where the bold marked a gate failure that no longer exists — the
 measured value itself is unchanged, being a transcription of
 `review/evidence/registry-figures.log`. No evidence script, log or empirical
-check was altered or re-run, and this revision makes no new empirical claim. The
+check was altered, and this revision makes no new empirical claim; the one
+execution this revision performed was a rerunnability confirmation —
+`review/evidence/check-lockfile-inclusion.sh` was re-run from the run directory
+after the revision commit and its output matches
+`review/evidence/lockfile-inclusion-conditions.log` line-for-line except the
+`retrieved:` timestamp, which is the same variance revision 2's audit recorded. The
 repository's own `license` field, its `LICENSE-MIT` + `LICENSE-APACHE` pair and
 the `include` allow-list entries naming them are untouched: the ruling covers
 dependencies and tools, not this repository's own declared licence.
