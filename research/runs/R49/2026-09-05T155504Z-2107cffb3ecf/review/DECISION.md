@@ -28,8 +28,8 @@ scope regardless") and which sits in this decision's own voice in
 this item's prompt places out of scope in those words. No raw report excluded
 `cargo-binstall` on a licence ground, so no engine position is disturbed and
 `## Engines` is unchanged. Every `- owns` and `- assumes` line is byte-identical
-to revision 2. Two presentational edits are the only other changes: the title's
-revision number, and the removal of bold emphasis from the `GPL-3.0-only` cell in
+to revision 2. Besides this paragraph itself, two presentational edits are the
+only other changes: the title's revision number, and the removal of bold emphasis from the `GPL-3.0-only` cell in
 check 6's table, where the bold marked a gate failure that no longer exists — the
 measured value itself is unchanged, being a transcription of
 `review/evidence/registry-figures.log`. No evidence script, log or empirical
@@ -197,9 +197,8 @@ this template does not consume. Stars and repository state do exist for
 not by omission** — it is the substance of the F212 baseline-review line above.
 
 **The six fitness gates, answered for the recommendation before any popularity
-figure was weighed.** (1) *License* — `inapplicable — owner ruling 2026-09-12
-(Q7.B): licence compatibility is not evaluated for any dependency or tool`. The
-row is stated rather than omitted because this item's binding prompt still lists
+figure was weighed.** (1) *License* — `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool`.
+The row is stated rather than omitted because this item's binding prompt still lists
 the gate and directs that an inapplicable metric carry its reason. The underlying
 fact is unchanged and is kept here as a fact rather than as a gate verdict: this
 recommendation adds no dependency, so nothing enters the tree's license set at
@@ -232,9 +231,11 @@ item's own prompt places out of scope in those words — *"crates.io-only vs.
 `cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall`
 metadata; R68 (`release-binary-artifacts`) owns F214"* (`inputs/prompt.md`,
 `## Out of scope`). Gate 1 is `inapplicable` to it for the reason given above, so
-no licence ground is carried; revision 3 removed one that earlier revisions had
-stated alongside this scope ground, which they already called sufficient on its
-own. Its registry `license` value is still recorded in check 6 as measured
+no licence ground is carried; revision 3 removed one that revisions 1 and 2 had
+stated alongside this scope ground, which both already called sufficient on its
+own — the clause *"out of scope regardless"* is byte-identical in revision 1
+(sha256 `b7adf7d8f8ff380cdb25b40ff331d6b83291b2f7ea75a42407684ce2919cbcf9`) and
+in revision 2. Its registry `license` value is still recorded in check 6 as measured
 metadata.
 `cross` **fails gate 4**: it runs the build inside Docker or Podman, which the
 GitHub-hosted macOS image does not ship (measured by `raw/opus…` against the
