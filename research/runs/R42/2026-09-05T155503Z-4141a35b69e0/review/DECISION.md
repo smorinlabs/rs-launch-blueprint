@@ -468,13 +468,13 @@ and in every evidence log are UTC**; the local date of the run is 2026-09-09
 **The host for revision 7's check 15.** The same machine, unchanged: `Darwin
 25.4.0 arm64`, macOS 26.4, `cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)` on
 the default `PATH`. The check was first captured at `2026-09-13T06:50:57Z` and
-the log records the third execution of the script, run in the window
-`2026-09-13T07:00Z`-`07:02Z`, the first after a `cargo-shear@1.13.1` spec was
-added so that the prebuilt path is exercised rather than asserted. By the UTC
-rule stated immediately above those stamps are local `2026-09-12 23:50` and
-`2026-09-13 00:00`-`00:02`; the revision is dated **2026-09-12**, the date of the
-owner ruling and of the work, and the later run crosses local midnight by about
-two minutes. **Check 15 is host-dependent and says so**: its log
+the log records a later execution, run in the window `2026-09-13T07:10Z`-`07:12Z`
+once a `cargo-shear@1.13.1` spec had been added so that the prebuilt path is
+exercised rather than asserted. By the UTC rule stated immediately above those
+stamps are local `2026-09-12 23:50` and `2026-09-13 00:10`-`00:12`; the revision
+is dated **2026-09-12**, the date of the owner ruling and of the work, and the
+recorded run crosses local midnight by about ten minutes. The script prints no
+timestamp of its own, so both stamps are the session's rather than the log's. **Check 15 is host-dependent and says so**: its log
 enumerates, line by line, what reproduces byte-for-byte here (everything but
 three wall-clock timings), what any other host must still match (the exit
 statuses, the `cargo binstall -V` line, the crates.io block, the `args.rs`
