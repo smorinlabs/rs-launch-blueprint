@@ -1,236 +1,275 @@
-decision-sha256: ca5a731081e51ab5d0eea91dd9f4ef8a456855df026354ed1f8146bea77f6d7f
-actor: audit-fable-2026-09-05T155503Z-4141a35b69e0-r6
+decision-sha256: fd09fa1c682c049be39bfb841c0a57b1c6fff557ce5a16f0ba828dc4ceecabd1
+actor: audit-fable-2026-09-05T155503Z-4141a35b69e0-r7
 model: claude-opus-5
 family: anthropic
-verdict: approve
-unresolved-findings: none
+verdict: reject
+unresolved-findings: J1 — fitness gate 5's answer was deleted by this revision, leaving the gate unanswered and the sentence ungrammatical, and the revision's own "exhaustive" twenty-one-location edit list does not name it; J2 — fitness gate 3 still credits `--locked` with narrowing the recommended backend's supply-chain risk, which check 15 limits to the compile fallback, and the prebuilt path's integrity posture is neither examined, nor recorded as unproven, nor put to the owner
 
 ## Principle and agreement level
 
-Unchanged from revision 5 and still correct, and I established that mechanically
-rather than by re-derivation. `git diff 27556ab 2b8e2ce -- …/review/DECISION.md`
-touches exactly five regions: the title's revision label, the five declaration
-lines in `## Parameters`, three new paragraphs immediately after that list, and
-two additions to the revision history (the revision-5 approval record and the
-revision-6 entry). `### Principles and implementation`, the architecture
-comparison, the five answers, the fourteen checks, the figure table, the fitness
-gates, the six disagreements and the ten unproven items are byte-identical to the
-text both revision-5 audits approved. That revision-5 text hashes to
-`189bb6e3ee4cd786ebfc9b677f780213733fd3a599821c993e17639818a4c677`, which I
-computed from the committed blob and which is the hash carried in the header of
-the revision-5 judgment audit this file replaces.
+The shared requirement is stated at the right level and is unchanged from
+revision 6: *a contributor runs one command, learns exactly which development
+tools are missing, receives the exact command that installs each one, and every
+repeatable task then invokes those tools by a single stable name that does not
+depend on how they were installed.* The agreement level is named as
+**architectural pattern plus policy** — a discover-report-remediate loop and a
+stable invocation vocabulary — and explicitly not a capability and not a specific
+tool. What must agree (one presence-check command; one remediation string per
+missing tool; one invocation form per tool class; exactly one authoritative
+location for the declared tool set) is separated from what may vary (the
+acquisition backend, the number of tools, which tools are chosen, whether the
+residue slot is ever occupied).
 
-So the shared requirement stands as stated — *one command reports exactly which
-dev tools are missing with the exact remediation for each, and every repeatable
-task then invokes those tools by a single stable name that does not depend on how
-they were installed* — at agreement level **architectural pattern plus policy**,
-with the must-agree / may-vary split intact and no `OVERRIDE` owed.
+That separation is load-bearing for this revision and it holds. The backend is
+named in the "may vary" list, so substituting `cargo binstall` for
+`cargo install` is a change inside the space the principle already permits. The
+owned parameter is **obeyed rather than amended**: `cargo-binstall`'s executable
+is named `cargo-binstall`, so the parameter's own `cargo-<sub>` → `cargo <sub>`
+rule invokes it as `cargo binstall` with no new rule, and its presence test is
+the crates.io-class `command -v cargo-binstall` the parameter already prescribes.
+I verified the parameter's value is byte-identical to the live registry (below),
+so the claim that the substitution needed no parameter change is true rather than
+asserted.
+
+The native-design justification survives the ruling intact and is argued
+structurally, not by preference: py's per-tool installer layer exists because
+`uv` installs Python distributions and cannot reach `taplo`, `gitleaks`,
+`actionlint` or `yamlfmt`, whereas the Rust equivalents are themselves crates and
+rustup reaches `rustfmt` and `clippy` by definition. The per-tool layer is
+therefore dropped for a stated mechanical reason rather than because ts dropped
+it. Recording fitness gate 1 as struck under the owner's Q7.B ruling is correct
+and I raise no finding on it; the repository's own `license = MIT OR Apache-2.0`
+is correctly described as unaffected in reach-versus-value terms.
 
 ## Design and evidence
 
-**Why the raw reports were not re-read.** The role contract has me read every
-raw report; the owner narrowed this seat on 2026-09-10 to the packaging
-correction. I checked that the narrowing is sound rather than assuming it:
-`git diff --stat 27556ab HEAD -- …/raw …/inputs …/review/evidence` reports two
-added files and nothing else — `evidence/audit-dev-toolchain-provisioning-r5.log`
-and `…-r6.log`, the two audits' own logs. No raw report, no `inputs/prompt.md`,
-and no evidence log the decision cites has changed since the revision-5 pair
-approved them. Revision 6 also reran no check and cites no new evidence, so there
-is no new claim for a raw report to support.
+**Architecture alternatives were genuinely compared, and the comparison is
+licence-independent.** Five architectures are tabulated with grounds. The
+hermetic-environment row is the test of whether the ruling was allowed to
+rewrite conclusions it does not reach: `flox`'s GPL-2.0 is correctly demoted from
+a ground to a recorded figure, and the row's two surviving grounds — a Nix
+installation imposed on every downstream consumer, and an environment prefix on
+every recipe and hook line — are both independent of any licence and were already
+the load-bearing ones. That is the right handling. The provisioner rejection
+rests on a re-measured survey (0 of 17 carrying `mise.toml`/`.mise.toml`/
+`.tool-versions`/`.flox`, 5 of 17 carrying `flake.nix`, 9 of 17 carrying
+`rust-toolchain.toml`), not on repository agreement — and the decision explicitly
+records that three of five engines wanted `mise` and were overruled by
+measurement, quoting openai's own concession against its own position.
 
-**(1) The five declaration lines, compared character by character with
-`docs/port/PARAMETERS.md`.** I parsed the registry table the way
-`scripts/research_package.py` does — split the row on `|`, strip each cell, take
-the `value` column — and compared with the text the declaration regex
-`^- (owns|assumes)\s+([a-z0-9-]+)\s*=\s*(.+?)\s*$` extracts from the decision:
+**The three corrections this audit was asked to press hardest on.** I judge two
+of the three fully honest and the third honest in `## Decision` but unpropagated.
 
-| line | registry cell | comparison |
-|---|---|---|
-| `- assumes msrv-policy` | `stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI` | equal |
-| `- assumes rust-edition` | `2024` | equal |
-| `- assumes target-os-matrix` | `ubuntu-latest, macos-latest` | equal |
-| `- assumes license` | `MIT OR Apache-2.0` | equal |
-| `- owns package-manager-invocation` | `—` (unpublished placeholder) | not comparable before publication; projection checked below |
+1. **`--locked` binds only the `cargo install` fallback.** Stated correctly and
+   without hedging in three places: layer 2's table row ("downloads a prebuilt
+   artifact where one exists for the target and otherwise runs
+   `cargo install --locked` itself"), the dedicated bullet quoting
+   `args.rs:346-350` verbatim, and unproven item 4 ("the `--locked` pass-through
+   to the compile fallback"). The mechanical claim is quoted from source at an
+   immutable tag and the fallback was observed, not inferred. **But one passage
+   does still credit `--locked` beyond its reach — fitness gate 3 — and that is
+   finding J2.**
+2. **`cargo-binstall` must itself join the tool table.** Owned, not
+   re-described. The decision writes "The one-line half is too narrow, in three
+   respects", layer 2's row carries the reason inline ("`cargo-binstall` is
+   itself a declared tool, because `cargo binstall` needs it on `PATH` where
+   `cargo install` needs nothing"), the revision-history entry says the check
+   "surfaced a cost the 'one line' phrasing hid", and the `## Supersedes` block
+   lists it as one of the reversals. It also declines to decide how P03
+   bootstraps it, which is correct for a research phase, and cites `biomejs/biome`
+   as a maintained project with exactly that shape. No softening.
+3. **Prebuilt availability is per tool and per target.** Scoped exactly to what
+   was observed and no wider. `cargo-shear@1.13.1` resolving an artifact and
+   `taplo-cli@0.10.0` falling through to source on the same target are both
+   quoted from the run, the benefit is stated as "an upper bound each selected
+   tool either earns or does not", the worst case is named as revision 6's
+   recommendation exactly, and "**How large the saving is was not measured**" is
+   stated in bold with unproven item 5 asking for the measurement. A reader does
+   understand that some tools will compile from source. This is the strongest
+   part of the revision.
 
-All four fixed values are byte-equal, not merely equivalent: no backticks, no
-citation, no trailing commentary, no trailing whitespace, and no non-ASCII
-character in any of the five lines. Exactly five lines in the whole file match
-the declaration regex, all inside `## Parameters`, and that section contains no
-code fence, so `_outside_fences` in `scripts/research_validation.py` sees all
-five and nothing else. The three new paragraphs sit in the same section and start
-with prose, so none of them is parsed as a declaration.
+**Does the recommendation still follow?** Conditionally — and the condition is
+finding J2. The licence ground for preferring the slower first-party backend is
+genuinely gone, the owner's ruling is wider than the condition revision 6 named,
+and the substitution is therefore authorised. What does not follow as written is
+the recommendation's *integrity* posture. Revision 6's backend was
+`cargo install --locked` against the crates.io registry, where `--locked` pinned
+the transitive graph and the registry supplied the trust anchor; revision 7's fast
+path fetches a release artifact from GitHub, and the decision's own check 15
+establishes that `--locked` reaches none of that. The decision states that
+mechanical fact in `## Decision` and then never carries it to the one place where
+the consequence bites. `evidence/binstall-backend.log:176-179` — the only prebuilt
+resolution the run captured — prints `WARN The package cargo-shear v1.13.1
+(aarch64-apple-darwin) has been downloaded from github.com` and nothing else: no
+signature, checksum or verification line. So what secures the fast path is not
+merely unstated, it is **unexamined**, and the decision contains no occurrence of
+"trust", no mention of a GitHub release artifact's verification, and no unproven
+item asking for it. The owner ruled on licence; the owner was not asked to accept
+a different integrity posture, and this decision absorbs that tradeoff silently.
+The recommendation follows once gate 3 is rewritten to scope `--locked` to the
+compile fallback and the prebuilt path's integrity is either examined and cited or
+recorded as unproven with what would prove it.
 
-The owned line cannot be compared with the registry before publication, because
-the registry still carries the `—` placeholder every unpublished `researched` row
-carries. What I checked instead is the projection that publication performs. I
-applied `publish_values` (`scripts/research_package.py:182`–`:206`) in memory:
-its three guards pass (`"|" not in value`, non-empty, not `—`), the projected row
-still has five cells, and re-parsing the projected registry the way
-`scripts/research_validation.py:766` re-parses it returns the declaration
-byte-for-byte. The published cell and the decision line will therefore agree
-under the post-publication validator, which is the check that would otherwise
-fail later.
+**Claims are matched to their evidence elsewhere.** The decision does not
+implement its own recommendation and is not faulted for declining to: "**This
+example was not built**", "Nothing recommended was implemented", and check 15's
+own scope statement ("That verifies the command and its flags; it does not build
+the `install-tool` recipe, the tool table or anything else") are all explicit. Ten
+unproven items each name what would prove them. Prescriptions are repeatedly
+stated at the strength of their evidence — the `command -v` failure for rustup
+components is prescribed "for this template on the strength of that recorded
+failure, not asserted as a property every rustup installation has", and the alias
+shadowing is demoted to "the third and lesser reason" because Cargo warns rather
+than failing silently. Host dependence is enumerated line by line in the evidence
+log's rerun rule. The UTC-versus-local date question raised by a
+`2026-09-13T06:50Z` stamp on a decision dated 2026-09-12 is explained in the text
+and is not a defect.
 
-**Is the owned value a rule rather than an argument?** Yes. It is 667 characters,
-one sentence, containing no backtick, asterisk, underscore, bracket, pipe or
-citation, and it states only what a consuming item must do. The revision-5 line
-it replaces was a multi-paragraph argument carrying bold, backticks, an alias
-rationale, a `check 11` citation and a scope disclaimer — none of which a registry
-cell can hold, and all of which now sits in prose. The value is imperative
-throughout: what to invoke as `cargo <sub>`, what to invoke bare, what to write
-unchanged, what never to write, and how to test presence in each of the two
-acquisition channels.
-
-**(2) Nothing substantive was lost in the move.** I extracted the whole
-`## Parameters` section from the committed revision 5 and from revision 6 and
-compared their token multisets after stripping markdown emphasis. Nothing at all
-is gained or lost except these fourteen tokens, every one of which I traced to
-its rewrite:
-
-- `docs/port/PARAMETERS.md` ×4 and `fixed` ×2 — the four `(fixed,
-  docs/port/PARAMETERS.md)` citations on the `- assumes` lines. Deliberately
-  dropped; they are the defect. The path appears once in the new format note, and
-  the registry itself is the definitional source for a value the line must now
-  equal exactly.
-- `Every`/`runs` → "means every recommended component must run on both runners";
-  `Gate` → "fitness gate 1"; `How` → the axis heading; `Used`/`here` → "is used
-  only to establish"; `differently` → `differently.`; `required.` → `required`
-  followed by the new gate-4 clause; `listed`/`unproven.` → "is unproven item 7".
-  Each is a rephrase in place, and three of them are strictly more precise than
-  the text they replace (the licence pointer now names item 7 by number, and the
-  target-matrix note now records that the OS question was verified on macOS/arm64
-  only).
-- `restated` → `stated`, in "the argument is stated to match". One word inside
-  the moved alias rationale; the sentence's meaning is unchanged.
-
-The two notes the task names both survive, and I read them at their new
-locations. **`docs/port/PARAMETERS.md` target matrix**: "`target-os-matrix` means
-every recommended component must run on both runners, which each does; **Windows
-support is noted where it exists and is not required**, and gate 4 records that
-this decision verified the OS question on macOS/arm64 only." **Licence gate
-pointer**: "`license` is applied as fitness gate 1 to every candidate; the
-`cargo-binstall` finding is recorded in `## Decision` as a finding rather than a
-ruling, and **the owner ruling it needs — whether gate 1 reaches separate-process
-developer tools — is unproven item 7**." Sweep rows 1, 2 and 5 of the revision-3
-table cite `## Parameters` as the location of the phrases they adjudicate; those
-phrases moved within that section, not out of it, and I re-read all three at
-their new coordinates — they read as the table says.
-
-**(3) The rest of the decision is unchanged from revision 5.** Established by the
-diff above rather than by the decision's account of itself. The two history
-additions are accurate: revision 5 was approved by both audits with no findings,
-and the revision-6 entry describes the edit that the diff shows.
-
-**(4) Is the owned parameter safe for its six consumers?** The registry cell will
-carry text those six items have never seen, so I re-derived this against the new
-value rather than relying on the revision-4 walk, which was against different
-text. The property most at risk in compressing an argument to a rule is the
-independence of the two axes, and it survives, because each axis names its own
-key: invocation is keyed on the executable's **name**, presence on how the tool
-was **acquired**. The case that would break a merged rule is a rustup component
-whose executable is not named `cargo-<sub>` — `rustfmt` or `rust-analyzer`
-invoked bare. Under the bare value, axis (i) sends it to "a bare executable
-resolved on PATH", because its name is not `cargo-<sub>`; axis (ii) sends it to
-"the active toolchain's component state via rustup component list --installed for
-a tool rustup installs, never command -v for a rustup component". Both clauses
-fire independently and give the right answer, which is exactly the failure check
-12 recorded (`command -v rustfmt rust-analyzer` exit 0 in `neg/` while both
-`--version` calls exit 1). Spot-checking the six by their likely picks: R27
-(`cargo fmt` as a component, `taplo` bare from crates.io), R28 (`cargo clippy`,
-and "define no Cargo alias in the template" answers the `cargo lint` question
-that was finding F3 of the first round), R29 (`yamlfmt`/`taplo` bare), R32
-(`cargo test` under "write Cargo's own built-in subcommands as they are", `cargo
-nextest` under the `cargo-<sub>` rule), R37 (lefthook, a release-acquired bare
-binary, and the value names lefthook jobs explicitly), R40 (`gitleaks`,
-`actionlint` bare). Every one is answered on both axes by the bare value alone,
-with no recourse to the prose.
-
-What the bare value does **not** carry, and should not: the remediation strings
-(`just install-tool <name>@<version>`, `rustup component add <component>`), which
-belong to F181 and the acceptance criteria; the alias carve-out for a **consuming
-repository**, which is scoped by "in the template" and does not reach the six
-consuming research items, all of which are template items; and the evidence and
-scope disclaimers, which are now prose. None of the six needs any of it to apply
-the rule.
+**The audit-codex rerun is consistent with the decision.** Round 7 (family
+openai) approved with no findings, replayed check 15 with only `CARGO_HOME`
+redirected, and independently confirms all three corrections. Its one divergent
+branch — `cargo-machete` resolving instead of short-circuiting — is exactly the
+host-state difference the decision's rerun rule declares in advance. Its remark
+that the live owned-value cell is a `—` placeholder describes the frozen
+`inputs/PARAMETERS.md`; I compared against live `docs/port/PARAMETERS.md` instead
+and all five lines match byte for byte, so the two audits do not actually
+disagree.
 
 ## Completeness
 
-Every required field is present and correct after the edit. The `## Parameters`
-section declares one `owns` line for the item's single owned parameter and four
-`- assumes` lines for exactly the four `fixed` registry rows, which is the set
-`research_validation.py` expects. The explicit "No `CONFLICT:` line" statement,
-its justification and both `BASELINE-REVIEW:` lines are untouched and remain in
-the runbook's four-field form. `re-verify: 2027-03-10` and its six earlier events
-are untouched. The status paragraph still opens the decision, still says P02 is
-research only and that P03 builds and proves the template, and still disclaims
-owner acceptance. The ten unproven items stand unedited, item 7 among them, which
-is what the licence prose now points at by number.
+Verified by diff and byte-comparison rather than accepted:
 
-The empirical audit of this revision (`review/audit-codex.md`, actor
-`audit-codex-2026-09-05T155503Z-4141a35b69e0-r6`, gpt-5.6-terra, openai) approves
-with no findings and is consistent with the decision: it reran no check because
-revision 6 records none, it reports the four fixed comparisons and the owned-value
-projection I reproduced independently above, and it reaches the same revision-5
-hash. Nothing in it conflicts with anything I found.
+- **`## Supersedes` payload.** Extracted everything after "The complete
+  revision-6 entry follows, preserved verbatim." and hashed it:
+  `ca5a731081e51ab5d0eea91dd9f4ef8a456855df026354ed1f8146bea77f6d7f`, identical to
+  `research/topics/42-dev-toolchain-provisioning/DECISION.md`. **Byte-identical,
+  confirmed.** The H2 itself is spec-permitted for reversals (spec lines 475 and
+  516). It sits last, and `re-verify:` remains the final line of `## Decision`.
+- **Owned parameter and all four `- assumes` lines.** Parsed each and compared to
+  the live registry table in `docs/port/PARAMETERS.md`:
+  `package-manager-invocation` (667 chars), `msrv-policy` (118),
+  `rust-edition` (4), `target-os-matrix` (27), `license` (17) — **all five
+  MATCH byte for byte.** The format note explaining revision 5's backtick refusal
+  is accurate and the lines carry a value and nothing else.
+- **Acceptance criteria (A)–(E).** Extracted from both revisions and compared:
+  1177 bytes each, **identical**. Each is backend-agnostic; none names an
+  installer, so the substitution genuinely leaves them untouched.
+- **Fitness gates.** Gate 1 struck with the ruling and its reason — correct, not
+  a finding. Gates 2, 4 and 6 answered and correctly rescoped for the two-path
+  backend. Gate 3 answered but **overstated** — finding J2. Gate 5 **unanswered**
+  — finding J1.
+- **`BASELINE-REVIEW:` lines.** Two, both well-formed with feature ID, principle,
+  proposed change, evidence and `Affected:` — F181 (retain `just check-deps`,
+  test presence by acquisition channel) and F179 (retain the two-layer split,
+  record `make` as a consistency choice with a measured cost). Neither silently
+  changes another item or the ledger.
+- **`CONFLICT:` lines.** None owed and the absence is justified: `- consumes:` is
+  empty, no raw report raised one, and the R27 `channel` overlap is correctly
+  recorded as a coordination note rather than a conflict.
+- **Source dates.** Every figure carries its endpoint and retrieval date;
+  revision 7's re-query is dated and attributed to check 15.
+- **Privacy check.** Check 15's User-Agent is
+  `rs-launch-blueprint-research (+https://github.com/smorinlabs/rs-launch-blueprint)` —
+  repository URL only, no personal contact address, as the log states at
+  `binstall-backend.log:13-14`. I scanned every file in the run directory for
+  email-shaped strings: **no new evidence artifact contains a personal address**,
+  and the only occurrence anywhere in the run is a `git log` author line inside
+  the frozen `review/audit-codex-r6-transcript.txt`. See observation O1 — the
+  decision makes no disclosure about that residue, and none is required of it.
 
 ## Findings
 
-None.
+**J1 — fitness gate 5 is no longer answered, and the revision's own exhaustive
+edit list does not account for the change.** At line 611 the decision reads:
 
-Two things were checked and deliberately not raised, recorded here so the next
-seat need not re-litigate them.
+> Gate 5 (default features, async coupling with R05's execution model can occur.
 
-**(a) "Every word those five lines previously carried is preserved in prose".**
-Read literally this is slightly wide: the four `(fixed,
-docs/port/PARAMETERS.md)` citations are gone, and one word changed
-(`restated` → `stated`). It is not a finding, for two reasons. The format note
-two paragraphs earlier states plainly that the lines now carry "no backticks, no
-citation, no commentary", so the same section says what was removed and why; and
-its companion claim — "Everything those lines used to say is below, unchanged in
-substance" — is accurate, which my token comparison confirms. This programme's
-three earlier rejections were for absolute characterisations of *recorded
-evidence*; this is editorial self-description, disambiguated in place, with no
-information lost that the registry does not already carry.
+The preserved revision-6 bytes at line 1698 read:
 
-**(b) The owned value's `<sub>`, `<executable>` and `<tool>` placeholders enter a
-markdown table cell unquoted.** The `http-transport-injection-seam` row already
-carries `Arc<T>` and `ProjectsService<P: ProjectsPort>` the same way, so this
-matches established registry practice; the value contains no `|`, which is the
-character that would actually break the row.
+> Gate 5 (default features, async coupling): **inapplicable** — nothing is
+> linked, so no feature unification or coupling with R05's execution model can
+> occur.
+
+A word-level diff of the fitness-gate paragraph shows a bare DELETE of
+`coupling): **inapplicable** — nothing is linked, so no feature unification or`
+with nothing inserted in its place. The verdict, the reason and the closing
+parenthesis are all gone. This is a revision-7 regression, not a pre-existing
+defect: the published revision 6 carries the complete sentence. The prompt's
+tier-execution guidance is explicit — "Apply every fitness gate above. If a
+metric is inapplicable to this item kind, state `inapplicable` and the reason in
+the answer; **do not omit it silently**" — and the decision now does exactly
+that. The second half of the finding is worse than the typo: the revision-history
+entry asserts "**Twenty-one locations** make up this revision, and this list is
+exhaustive", naming "(14) fitness gates 1 and 2" and "(15) fitness gate 6" as the
+only gate edits. Gate 5 also changed. The decision's own bytes falsify its own
+completeness claim, which is the kind of assertion a reader is invited to rely on
+when checking that a reversal stayed inside its authorised scope. Fix: restore
+gate 5's `inapplicable` verdict and its reason, and correct the edit list to
+account for every location that in fact moved.
+
+**J2 — fitness gate 3 still credits `--locked` with an integrity contribution the
+revision's own check refutes, and the prebuilt path's integrity posture is
+unexamined, unrecorded and never put to the owner.** Gate 3 reads, carried
+forward from revision 6 untouched:
+
+> the residual risk is supply-chain, which the pinned `name@version` spec and
+> `--locked` narrow but do not eliminate.
+
+That sentence was true when the recipe body was `cargo install --locked`. Under
+revision 7's body it is overstated, and the decision itself is what establishes
+this: check 15 reads `args.rs:346-350` at tag `v1.23.0` and concludes `--locked`
+"constrains the **compile fallback** and says nothing about a prebuilt download,
+which resolves no lockfile at all." The prebuilt download is the path the entire
+substitution exists to reach. So the one place in the decision where `--locked` is
+credited with a *security* property is the one place the correction did not
+propagate — and it sits between two clauses the revision claims it did edit
+(locations 14 and 15 are gates 1, 2 and 6). This is a claim asserted beyond what
+the evidence shows, not a claim recorded as unproven.
+
+The gap behind the sentence is the substantive half. `evidence/binstall-backend.log:176-179`
+captures the run's only prebuilt resolution and prints
+`WARN The package cargo-shear v1.13.1 (aarch64-apple-darwin) has been downloaded
+from github.com` followed by `Dry-run: Not proceeding to install fetched
+binaries` — no signature, checksum or verification output of any kind. Nothing in
+this decision examines what `cargo-binstall` verifies before placing a GitHub
+release artifact on a contributor's `PATH`; the words "trust" and "signature" do
+not appear in revision 7 at all, and no unproven item asks for it. Revision 6
+called `cargo install --locked` "the price paid for the licence-clean backend";
+revision 7 deletes that clause and books the benefit without booking the cost.
+The owner's ruling of 2026-09-12 covers licence and nothing else, so the weaker
+integrity guarantee on the fast path is a tradeoff the owner has not been asked
+to accept. Fix, in three parts: rewrite gate 3 to scope `--locked` to the compile
+fallback and say what does and does not narrow the prebuilt path; either cite what
+`cargo-binstall` 1.23.0 verifies for a release artifact or add an unproven item
+naming that as unexamined with what would prove it; and surface the integrity
+delta as an owner decision rather than absorbing it, since the ruling that
+authorised the substitution did not reach it.
 
 ## Assessment
 
-Approve. Revision 6 does exactly what it says and nothing else, and it fixes a
-defect that would have blocked publication for a reason no research audit
-examines. The four fixed values are byte-equal to the registry, the owned value
-is a single bare imperative rule that projects into the registry and round-trips
-back byte-for-byte, both load-bearing notes survive the move at their new
-locations with two of them sharpened, and the token comparison shows the moved
-prose lost nothing else.
+**Reject**, on two findings, neither of which touches the research, the
+architecture comparison or the owner's ruling.
 
-**The decision is ready to publish, and the owned parameter is safe for its six
-consumers to apply.** Five substantive revisions preceded this one and every
-finding raised across them is closed against the current text: the presence-test
-class rule (round 1, F1) is live in both the `BASELINE-REVIEW: F181` line and the
-owned value's second clause; the omitted disagreement (F2) is disagreement 6; the
-alias silence (F3) is answered in the value itself and in the prose; the
-shadowing wording, the unlanded sweep rows, the audit-credit standard and the two
-unattributed figures are all closed in revisions 3 through 5 and unedited here.
+This is a careful revision and it is candid about the things it was most tempted
+to soften. All three of the corrections that contradict revision 6's own
+prediction are made in the open: the "one line" claim is retracted in terms and
+the reason named, the per-tool/per-target scoping is stated as a bound rather than
+a benefit with both observed outcomes quoted, and `--locked`'s narrow reach is
+quoted from source at an immutable tag. Gate 1's striking is recorded correctly
+with the ruling's own wording, licence-independent grounds are preserved where
+they were already load-bearing, and the `## Supersedes` payload, the five
+parameter lines and acceptance criteria (A)–(E) are all byte-identical where the
+decision says they are. The empirical audit's approval is consistent with all of
+that.
 
-**One publication prerequisite is outstanding, and it is the controller's, not a
-defect in the decision.** `review/identities.json` still records the revision-5
-identities: `audits.empirical.actor` reads
-`audit-codex-2026-09-05T155503Z-4141a35b69e0-r5` and `audits.judgment.actor` reads
-`audit-fable-2026-09-05T155503Z-4141a35b69e0-r5`, while the two audit files at
-those recorded paths now carry the `-r6` actors.
-`scripts/research_package.py:297`–`:299` requires the `actor`, `model` and
-`family` fields of each audit file to equal the recorded identity, so packaging
-will refuse the bundle with "empirical audit records actor … not the recorded
-identity" until both are refreshed. The `model` and `family` values already agree
-in both cases, and the judgment identity's model — `claude-opus-5` — is mine, so
-only the two actor strings need to change. `synthesis.actor` likewise still reads
-`synth-opus-…-r5`; that one blocks nothing, but it misattributes the revision-6
-synthesis. I did not edit that file: it is not mine to write, and any edit to it
-does not unbind these audits, so it can be corrected without another round. This
-is the same class of mechanical, publication-only defect that cost the revision-6
-round, which is why it is flagged here rather than left to the packager.
+The two findings are both failures of *propagation* rather than of research.
+J1 destroyed a required gate answer as collateral of an adjacent edit and then
+asserted an exhaustive edit list that does not contain it. J2 is the more
+consequential: the decision proves that `--locked` does not bind the prebuilt
+path and then leaves standing the one sentence that relies on `--locked` binding
+it, while the integrity mechanism that actually governs the fast path goes
+unexamined and the resulting tradeoff is absorbed rather than surfaced. Both are
+narrow, mechanical repairs — restore one sentence, rewrite one sentence, add one
+unproven item, and put the integrity delta to the owner. Once gate 3 is scoped to
+what check 15 showed and the prebuilt path's integrity is either cited or booked
+as unproven, the recommendation follows and the item is ready to publish.
