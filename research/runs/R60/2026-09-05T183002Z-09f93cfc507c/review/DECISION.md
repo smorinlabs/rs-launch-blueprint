@@ -698,8 +698,12 @@ directory and the results do not depend on where the checkout lives.
 | `r60-snapshot-provenance-r3.sh` | `r60-snapshot-provenance-r3.log` | exit `0`, `CHECKS RUN: 14   FAILURES: 0   UNREACHABLE: 0   UNVERIFIABLE-HERE: 2` |
 
 **Nothing was implemented**: no crate was scaffolded, no command surface,
-`build.rs`, `completion` command or test was written, and no script writes any
-file anywhere — all three emit only to stdout.
+`build.rs`, `completion` command or test was written, and **no script writes
+anything into this repository or this run directory**. The two offline scripts
+create no file at all and emit only to stdout. The provenance script emits only
+to stdout as well, but it does download into a directory of its own from
+`mktemp -d`, which it removes on exit through a `trap`; that directory is where
+the re-fetched tarballs and files are hashed.
 
 **The revision-2 scripts and logs are retained and are not evidence for this
 revision.** `r60-standard-pin-r2.sh`, `r60-preservation-diff-r2.sh`, their two
