@@ -1,0 +1,38 @@
+R01 revision 3 — licence-repair assertions
+decision   research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/DECISION.md
+published  research/topics/01-ports-and-adapters-seam/DECISION.md
+
+check  1  PASS  supersedes-bytes-verbatim              published revision-2 bytes present after the Supersedes heading
+check  2  PASS  supersedes-heading-once                1 heading line
+check  3  PASS  current-h2-sequence                    ## Decision|## Parameters|## Empirical check|## Engines|
+check  4  PASS  current-entry-dated                    # 2026-09-13 — R01 ports-and-adapters-seam — decision (revision 3)
+check  5  PASS  owns-line-byte-identical               http-transport-injection-seam unchanged (803 bytes)
+check  6  PASS  assumes-lines-byte-identical           4 lines unchanged: msrv-policy, rust-edition, target-os-matrix, license
+check  7  detail (void phrases, repaired text)
+  gate-list              ok   absent
+  table-header           ok   absent
+  serde-clause           ok   absent
+  compatibility          ok   absent
+  validation-strategy    ok   absent
+  check-3-claim          ok   absent
+  check-3-heading        ok   absent
+  check-3-finding        ok   absent
+  patent-grant-clause    ok   quoted once and struck
+check  7  PASS  void-phrases-struck                    9 of 9 phrases repaired
+check  8  PASS  gate-1-recorded-inapplicable           gate row present with the ruling verbatim
+check  9  PASS  resolved-pins-criterion-recorded       permissive-licence criterion marked inapplicable in check 3
+check 10  PASS  independent-grounds-present            test-case, faux and nject each keep two stated grounds
+check 11  PASS  checks-1-to-4-logs-unchanged           4 logs match their recorded sha256
+check 12  detail (same phrases, superseded revision-2 text)
+  gate-list              ok   present 1x
+  table-header           ok   present 1x
+  serde-clause           ok   present 1x
+  compatibility          ok   present 1x
+  validation-strategy    ok   present 1x
+  check-3-claim          ok   present 1x
+  check-3-heading        ok   present 1x
+  check-3-finding        ok   present 1x
+  patent-grant-clause    ok   present 1x
+check 12  PASS  negative-control-phrases-found         all 9 phrases found in revision 2, as expected
+
+checks=12 failures=0
