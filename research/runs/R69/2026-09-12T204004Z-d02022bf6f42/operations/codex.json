@@ -1,8 +1,16 @@
 {
   "actor": "research-codex-2026-09-12T204004Z-d02022bf6f42",
+  "actual_model": "gpt-5.6-terra",
+  "actual_provider": "codex-cli-0.154.0",
   "at": "2026-09-12T20:41:38Z",
+  "collected_at": "2026-09-13T07:26:51Z",
   "model": "gpt-5.6-terra",
+  "operation_id": "01a0975a-b108-7e63-8f6d-38af0343856d",
   "provider": "codex",
+  "raw": "research/runs/R69/2026-09-12T204004Z-d02022bf6f42/raw/codex-6f1d03df7be0ab3afc4c1fc2bed545d0ad0ab55f30b138c10750346e7f9e21fd.md",
+  "raw_sha256": "6f1d03df7be0ab3afc4c1fc2bed545d0ad0ab55f30b138c10750346e7f9e21fd",
+  "reason": "codex exec exited 0 at 2026-09-12T20:47Z; the report has been on disk since then and the operation record was left at 'submitting', so the scan reported a finished engine as in flight for 24h. Receipt sha256 verified against the file on disk: match. Shape checked: 10 H3 fields, exactly the bundle template's required headings in order. Worker reports BASELINE-REVIEW F331 and names six unverified figures (resolved-tree MSRV, RustSec counts, platform CI, issue responsiveness, watchexec MSRV, proposed integration/benchmark checks) for the synthesist to verify or record as unproven.",
   "request_id": "2fda588cb15a4244a32ce2b769513df6",
-  "state": "submitting"
+  "returned_at": "2026-09-13T07:26:51Z",
+  "state": "succeeded"
 }
