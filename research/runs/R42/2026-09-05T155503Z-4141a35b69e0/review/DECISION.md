@@ -1,4 +1,4 @@
-# 2026-09-12 — R42 — dev-toolchain-provisioning (bundle, Deep) — DECISION (revision 7)
+# 2026-09-13 — R42 — dev-toolchain-provisioning (bundle, Deep) — DECISION (revision 8)
 
 ## Decision
 
@@ -24,7 +24,7 @@ No owner acceptance of the recommendation itself is claimed or implied.
 | # | Layer | Decision | Settles |
 |---|---|---|---|
 | 1 | Rust toolchain and its components | Commit `rust-toolchain.toml` with `profile = "minimal"` and `components = ["rustfmt", "clippy"]`. The `channel` **value** is R27's through F103/F190 and is not set here. No `install-rustfmt`/`install-clippy` recipe is ever written. | — (evidence for F190/F103) |
-| 2 | crates.io-published dev tools | One **generic** `install-tool <spec>` recipe over a single declared tool table in the `Justfile`, whose body is `cargo binstall --locked --no-confirm <name>@<version>` — `cargo-binstall` 1.23.0, which downloads a prebuilt artifact where one exists for the target and otherwise runs `cargo install --locked` itself. Not one recipe per tool, and no per-tool shell script. `cargo-binstall` is itself a declared tool, because `cargo binstall` needs it on `PATH` where `cargo install` needs nothing — see the backend paragraph below. | **F183** |
+| 2 | crates.io-published dev tools | One **generic** `install-tool <spec>` recipe over a single declared tool table in the `Justfile`, whose body is `cargo binstall --locked --no-confirm <name>@<version>` — `cargo-binstall` 1.23.0, which downloads a prebuilt artifact where one exists for the target and otherwise runs `cargo install --locked` itself. Not one recipe per tool, and no per-tool shell script. `cargo-binstall` is itself a declared tool, because `cargo binstall` needs it on `PATH` where `cargo install` needs nothing — see the backend paragraph below. The prebuilt path carries a **weaker integrity guarantee** than the compile fallback it replaces, which the integrity comparison below puts to the owner as a tradeoff to accept or reject. | **F183** |
 | 3 | Declarative provisioner manifest | **None.** No `mise.toml`, no `.mise.toml`, no `.tool-versions`, no `.flox/env/manifest.toml`, and no `flake.nix`. The declared tool set has exactly one authoritative location, so the manual-sync obligation py records in `mise.toml:1` never exists. | **F187, F188, F189** |
 | 4 | Non-crates.io tools (the residue) | Name **`ubi` 0.12.0** (`MIT OR Apache-2.0`) as the single sanctioned backend, reached through a second spec form on the *same* generic recipe, and ship **zero** such tools in the default tool table. Standing rule for consuming items: prefer a crates.io-published tool; a release-only tool must justify itself. | — (reserves the slot for R37/R39/R40) |
 | 5 | Invocation and presence surface | The rules in `## Parameters`, on two independent axes. *Invocation*, keyed on the executable's **name**: `cargo <sub>` when the executable is `cargo-<sub>`; a bare `<tool>` on `PATH` otherwise; Cargo's own built-in subcommands written as they are; **no wrapper prefix anywhere** and **no Cargo alias in the template**. *Presence*, keyed on how the tool was **acquired**: rustup components are tested against the toolchain's component state, everything installed from crates.io or a release with `command -v`. | the owned parameter |
@@ -80,7 +80,9 @@ observed directly in check 15 rather than inferred:
   no lockfile at all. That it does reach the fallback was observed:
   `cargo binstall --locked --no-confirm --dry-run taplo-cli@0.10.0` printed
   `Dry-run: running /opt/homebrew/bin/cargo install taplo-cli --version 0.10.0
-  --locked --root /Users/stevemorin/.cargo`.
+  --locked --root /Users/stevemorin/.cargo`. **What does govern the prebuilt
+  path is a different mechanism entirely**, and revision 8 establishes it at
+  check 16 — see the integrity comparison below.
 - **"Faster" is per tool and per target, not a property of the backend.** One run
   of check 15 produced both outcomes, which is why this is stated as a bound
   rather than a benefit. `cargo-shear@1.13.1` resolved a prebuilt artifact —
@@ -93,6 +95,84 @@ observed directly in check 15 rather than inferred:
   either earns or does not, and the worst case per tool is revision 6's
   recommendation exactly. **How large the saving is was not measured** — nothing
   here timed either path — and unproven item 5 asks for that measurement.
+
+**The integrity posture changes with the backend, the owner has not been asked
+about that, and this paragraph is the ask.** The ruling of 2026-09-12 is about
+licence and reaches nothing else; it authorises the substitution and revision 8
+does not reverse it. But the backend it authorises verifies the bytes it places
+on a contributor's `PATH` differently from the backend it replaces, and revision
+7 booked the speed benefit without recording that difference. **Revision 8
+establishes the mechanism rather than guessing at it**, at new **check 16**
+(`evidence/binstall-signing.log`), which reads `cargo-binstall` 1.23.0's
+signature policy in the source at the immutable tag `v1.23.0` and then exercises
+it with a negative and a **positive** control. What it found:
+
+- **Signature verification on a crate's own GitHub release is opt-in by the
+  crate, not by the installer.** The maintainers say so in their own
+  documentation — "This feature requires adding to the Cargo.toml metadata: no
+  autodiscovery here!" (`SIGNING.md:6`, log `:220`) — and the code matches:
+  with the default policy and no `[package.metadata.binstall.signing]` stanza the
+  fetcher takes `SignatureVerifier::Noop` (`gh_crate_meta.rs:301-306`, log
+  `:188-194`). The documented default is "verify signatures if they are
+  available, but to allow unsigned packages as well" (`args.rs:408-411`, log
+  `:165-171`).
+- **Neither tool check 15 exercised opts in.** In their published `Cargo.toml`
+  files, fetched from `static.crates.io`, `cargo-shear@1.13.1` and
+  `taplo-cli@0.10.0` are both `signing: ABSENT` (log `:294`, `:298`).
+  Consequently the recommended recipe body, run unchanged against
+  `cargo-shear@1.13.1`, resolved the artifact and printed **zero**
+  `Verified signature` lines (log `:325`). The mechanism is not broken and the
+  check is not vacuous: the positive control `cargo-binstall@1.23.0`, which does
+  publish a minisign key, printed exactly one — `Verified signature for package
+  'cargo-binstall': gh=cargo-bins/cargo-binstall git=b874e25e… ts=…
+  run=33978884356` (log `:302`, `:340`, `:346`).
+- **The second prebuilt fetcher behaves differently and did not apply here.**
+  `QuickInstall` artifacts are always checked against a minisign key compiled
+  into `cargo-binstall` itself (`quickinstall.rs:22`, log `:233`), so that path
+  is signature-verified by default. It resolved nothing in either check: its
+  asset 404s for both specs, and the `WARN` line that did print names
+  `github.com` with no `third-party source ` prefix, which by
+  `resolution.rs:125-127` (log `:279-281`) identifies the crate's own release,
+  the opt-in path.
+- **A fail-closed flag exists, and what it does was observed rather than
+  predicted.** `--only-signed` (`args.rs:408-413`) run against the unsigned
+  `cargo-shear@1.13.1` did **not** error. Every prebuilt fetcher refused it —
+  `No signature present` from `github.com`, a 404 on QuickInstall's `.sig` — and
+  the run fell through to `Dry-run: running … cargo install cargo-shear --version
+  1.13.1 --locked`, exiting 0 (log `:328-336`). So the flag degrades a tool to
+  revision 6's backend rather than failing the recipe.
+
+| | Revision 6's backend (`cargo install --locked`) | The authorised backend (`cargo binstall --locked --no-confirm`) |
+|---|---|---|
+| Where the bytes come from | the crates.io registry, for every tool | the crate's own GitHub release **where an artifact resolves**; otherwise identical to the left column |
+| Verified before use | not established in this decision — see unproven item 11 | **nothing**, unless the crate publishes a signing key; neither of the two tools probed does |
+| What `--locked` binds | the resolved dependency graph of every install | the compile fallback only; inert on a prebuilt download (check 15) |
+| Bytes executed on the contributor's machine | compiled locally from fetched source | a foreign prebuilt executable |
+| Scope of the change | — | per tool and per target: a tool with no artifact for the target is unaffected |
+
+**This is a tradeoff to accept or reject, not a defect to fix here.** Three
+options, with their consequences, recorded rather than chosen — the same
+discipline this decision applies to `--disable-telemetry`, because adding a flag
+to the recipe body goes beyond the substitution the ruling authorised:
+
+1. **Accept the recipe body as recommended.** Fast where an artifact exists;
+   unsigned and unchecksummed on exactly that path for any tool that does not
+   publish a key. No further work.
+2. **Add `--only-signed` to the recipe body.** Per tool, the prebuilt path is
+   taken only when the artifact is signed and verifies; otherwise the tool
+   silently compiles from source — observed at check 16, step 7b. Cost: the
+   speed benefit is lost for every tool that does not publish a key, which is
+   both tools probed here, so on this evidence the recipe would behave close to
+   revision 6's for the current candidates.
+3. **Require, per tool, that the declared tool table records whether its
+   artifact is signed**, and let a tool with no key be a deliberate entry rather
+   than an invisible one. Cost: one column of manual upkeep on the table F183
+   exists to keep small.
+
+**What is asked of the owner:** choose 1, 2 or 3, or direct otherwise. The
+recommendation in the table above is unchanged either way — the licence ground
+for preferring the slower backend is genuinely gone — and this decision does not
+substitute an integrity ground for it on its own initiative.
 
 Two other flags of the same version are recorded because a reader of the recipe
 body will meet them. `--no-confirm` (short `-y`) is documented at
@@ -243,7 +323,7 @@ installed `cargo-<sub>` executable.
 | **Toolchain file + package-manager acquisition** (selected) | `rust-toolchain.toml` supplies the compiler-adjacent tools; crates.io supplies the rest through one generic recipe; tools are invoked by name | Matches the re-measured field (9/17 carry the toolchain file, 0/17 carry a provisioner manifest); collapses py's five installer recipes and two shell scripts into one recipe; preserves the single-authoritative-list principle |
 | **Polyglot version manager** (`mise`, `asdf`) | one manifest pins tool versions across languages | The problem it solves is a Python + Node + CLI mix — py's problem, not this template's. Measured adoption in the surveyed Rust field is **0 of 17**. Adopted *alongside* native installs it reproduces F189's unenforced sync obligation; adopted *instead of* them it forces `mise exec --` into every recipe and hook line, breaking essential behavior (3) |
 | **Hermetic environment** (Nix flake, `flox`, `devenv`, `devbox`) | one manifest describes compiler, tools and system libraries; a shell command enters the environment | Strongest reproducibility and the only declarative option with real Rust-field adoption (5/17 carry `flake.nix`). Rejected for a **template** on two grounds that are independent of any licence and that stand unchanged after the 2026-09-12 ruling: it imposes a Nix installation on every downstream consumer, and it puts an environment prefix on every recipe and hook line. `flox` additionally is not published on crates.io at all. Its GPL-2.0 declaration (`GET https://api.github.com/repos/flox/flox`, `license.spdx_id`, retrieved 2026-09-10) is retained as a **figure only** — since the ruling strikes gate 1 it is no longer a ground for rejecting anything, and it was never the load-bearing one here |
-| **Per-tool installer recipes with pinned URL + SHA-256** (codex's shape) | one recipe per external tool owning its version, URL, checksum and OS artifact mapping | The right **provenance** boundary, and retained inside the generic recipe as the pinned `name@version` spec. Rejected as a *per-tool* structure: it reproduces exactly the maintenance surface F183 exists to remove, for a residue this decision measures as empty by default |
+| **Per-tool installer recipes with pinned URL + SHA-256** (codex's shape) | one recipe per external tool owning its version, URL, checksum and OS artifact mapping | The right **provenance** boundary. Rejected as a *per-tool* structure: it reproduces exactly the maintenance surface F183 exists to remove, for a residue this decision measures as empty by default. **What the generic recipe retains of it is the pinned `name@version` spec and nothing more** — that fixes which version is requested, not which bytes arrive, and check 16 shows the difference is real on the prebuilt path. Revision 7 wrote that the spec "preserves" codex's concern; revision 8 does not repeat that, because codex's shape carried a checksum and this one does not |
 | **In-repo Rust automation** (`xtask/`, `cargo-make`) | provisioning and tasks are compiled Rust in the repo | Real (2/17 use `xtask`), and the parameter survives it intact, so it is the ranked runner-up for the *task surface*. Not selected: it adds a build step before any check can run on a cold clone, and it does not itself acquire foreign binaries. `cargo-make` is separately **at-risk** (last release 0.37.24, 2025-01-18; retrieved 2026-09-10) |
 
 **Why the shared pattern survives in Rust for the loop and dies for the per-tool
@@ -356,7 +436,12 @@ above, and "`cargo-binstall` relicenses", which can no longer change anything
 because no candidate is evaluated on its licence. The RustSec trigger names
 `cargo-binstall` because it is now an adopted component of the stack, alongside
 the two the list already watched; that is the existing trigger applied to the
-newly adopted tool, not a new kind of trigger.
+newly adopted tool, not a new kind of trigger. **Revision 8 adds two events**:
+the owner rules on the integrity tradeoff put in `## Decision` — options 2 and 3
+each change the recipe body or the tool table, so a ruling either way is a
+change to this decision; and any tool the template actually declares begins or
+ceases to publish a `[package.metadata.binstall.signing]` key, which moves that
+tool between the verified and unverified prebuilt paths without any change here.
 
 re-verify: 2027-03-10, or any earlier event listed immediately above
 
@@ -483,6 +568,22 @@ while `taplo-cli` does not), and the seven lines that carry this host's or this
 target's state and will differ elsewhere — including the `cargo-machete`
 short-circuit, which exists only because this host already carries that tool.
 
+**The host for revision 8's check 16.** The same machine again, unchanged, on the
+default `PATH`. The check was run twice in the window `2026-09-13T08:05Z`-`08:12Z`,
+local `2026-09-13 01:05`-`01:12` by the UTC rule above; the log records the first
+run and the second was run only to establish the rerun rule. **The two runs
+differed in exactly four lines** — the scratch directory's absolute path and the
+three `INFO Done in <elapsed>` wall-clock timings — and in nothing else, which is
+the rerun rule the log states for this host. For another host the log names what
+must still match: every exit status, every sha256 of a file fetched at the
+immutable tag `v1.23.0` and every excerpt quoted from those files, the three
+`PRESENT`/`ABSENT` signing verdicts (crates.io versions are immutable), the two
+`Verified signature` counts (0 for the unsigned spec, 1 for the positive control)
+and the fall-through to `cargo install` under `--only-signed`. Check 16 also
+re-observes a figure check 15 recorded: `ls ~/.cargo/bin | sort` still hashes to
+`01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed`, so this
+host's tool set has not moved between the two checks.
+
 **A second toolchain, for the revision-2 checks 9–12.** Those checks run with
 `PATH` restricted to `$HOME/.cargo/bin:/usr/bin:/bin`, which removes the Homebrew
 Rust that shadowed rustup's proxies in revision 1. Under that `PATH`,
@@ -522,6 +623,16 @@ of the script only and was never copied into `$CARGO_HOME/bin`; every
 `cargo binstall` call in the script carries `--dry-run`; and the script hashes
 `ls ~/.cargo/bin | sort` before and after, obtaining
 `01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed` both times.
+**Check 16 (revision 8) has the same property and demonstrates it the same way.**
+It ran from the run directory and used a fresh `…/scratchpad/r42r8run`, which
+holds exactly: five source files fetched at tag `v1.23.0` (`args.rs`,
+`gh_crate_meta.rs`, `quickinstall.rs`, `resolution.rs`, `SIGNING.md`), three
+`.crate` archives fetched from `static.crates.io` and the `Cargo.toml` extracted
+from each, the `cargo-binstall-aarch64-apple-darwin.zip` for that tag and the
+single executable unzipped from it, and four captured command outputs. That
+executable was again put on `PATH` for the duration of the script only, every
+`cargo binstall` call carries `--dry-run`, and the `~/.cargo/bin` listing hashes
+identically before and after.
 
 **Nothing recommended was implemented.** No template, workspace, `Justfile`,
 `check-deps` recipe, `install-tool` recipe, `lefthook.yml` or acceptance script
@@ -533,7 +644,14 @@ because it is the first check in this item that runs a third-party binary:
 `v1.23.0` release artifact from a scratch directory with `--dry-run` on every
 call. That verifies the command and its flags; it does not build the
 `install-tool` recipe, the tool table or anything else the recommendation
-describes, and what it leaves unproven is unproven items 4 and 5.
+describes, and what it leaves unproven is unproven items 4 and 5. **Check 16
+(revision 8) runs the same third-party binary under the same rule** — the
+published `v1.23.0` release artifact from a scratch directory, `--dry-run` on
+every call — and adds reads of five source files at the same immutable tag and of
+three published `Cargo.toml` files from `static.crates.io`. It establishes what
+`cargo-binstall` verifies before a prebuilt artifact would be placed; it installs
+nothing, so it observes no post-install step, and what it leaves unproven is
+unproven item 11.
 
 | # | Check | Command | Exit | Result | Log |
 |---|---|---|---:|---|---|
@@ -552,6 +670,7 @@ describes, and what it leaves unproven is unproven items 4 and 5.
 | 13 | **Cargo aliases in the four surveyed reference repositories** (revision 2) | `GET https://raw.githubusercontent.com/<repo>/HEAD/.cargo/config.toml` for the four; alias-name greps over each fetched `justfile`; `gh api repos/cargo-limit/cargo-limit/contents/src/bin` | 0 | `oxc` HTTP 200 with `[alias]` `ck`, `lint`, `codecov`, `coverage`, `benchmark`, `minsize`, `allocs`, `lint-timings`, `rule`, `lintgen`, invoked on 14 justfile lines (`:40`, `:51`, `:60`, `:64`, `:104`, `:108`, `:114`, `:119`, `:130`, `:298`, `:303`, `:307`, `:312`, `:314`); `biome` HTTP 200 with `[alias]` including `lint = "clippy --workspace …"`, `format = "fmt --all --verbose"` and `documentation`, invoked at `justfile:160`, `:234`, `:334`; `casey/just` and `cargo-bins/cargo-binstall` HTTP **404** — neither defines aliases, and `just`'s `cargo lclippy`/`lrun`/`lbuild`/`ltest` are `cargo-limit`'s binaries (`src/bin/cargo-lclippy.rs`, `cargo-lrun.rs`, `cargo-lbuild.rs`, `cargo-ltest.rs`), installed by its own `justfile:117` `cargo install cargo-limit`. Re-confirmed in the same fetch: **0** wrapper-prefix lines in all four `justfile`s | `evidence/reference-aliases.log` |
 | 14 | **The two figures the table asserted without a query** (revision 5; the correction the judgment audit asked for) | `curl -o /dev/null -w '%{http_code}' https://rustsec.org/packages/{rustup,time,atty}.html`; `GET https://crates.io/api/v1/crates/rustup`; `gh api repos/rust-lang/{rustup,cargo} --jq '{repo,license}'` | 0 | `rustup` **404** with the `time` and `atty` controls at **200**, so the RustSec cell is now a probed 404 rather than a figure carried from `raw/opus.md`; the crates.io crate named `rustup` exists but its only version `0.1.0` is **yanked** (`newest_version` `0.0.0`), which is why no crates.io licence for the toolchain manager exists to quote; GitHub `license.spdx_id` is `Apache-2.0` for `rust-lang/rustup` and for `rust-lang/cargo`. Run 2026-09-10T07:05:07Z | `evidence/rustup-figures.log` |
 | 15 | **The backend the 2026-09-12 owner ruling authorises: is it current, do its flags mean what the recipe body needs, and does the command run as written?** (revision 7) | `GET https://crates.io/api/v1/crates/cargo-binstall`; `GET https://raw.githubusercontent.com/cargo-bins/cargo-binstall/v1.23.0/crates/bin/src/args.rs` plus greps for `no_confirm`, `locked`, `crate[@version]`, `dry_run` and `disable-telemetry`; then, with the unzipped `v1.23.0` release binary on `PATH` in a scratch directory, `cargo binstall -V`, `cargo binstall --locked --no-confirm --dry-run` for `taplo-cli@0.10.0`, `cargo-machete@0.9.2` and `cargo-shear@1.13.1`, and a failing control `rs-launch-blueprint-no-such-crate@9.9.9`; `~/.cargo/bin` listing hashed before and after | 0 / 0 / 0 / 0 / 0 / **76** | **Current**: newest unyanked is `1.23.0`, `2026-09-05T16:59:01.959145Z`, `yanked False`, `license GPL-3.0-only`, `rust_version 1.79.0`. **Flags, read at the immutable tag** (`args.rs` sha256 `4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783`): `no_confirm` at `:255-262`, short `-y`, "Disable interactive mode / confirmation prompts"; `locked` at `:346-350`, "This option will be passed through to all `cargo-install` invocations"; the positional is `crate[@version]` at `:44`; `dry_run` at `:251-253`; the telemetry opt-out `--disable-telemetry` at `:29-35`. **Runs as written**, `cargo binstall -V` → `1.23.0`, the `cargo <sub>` dispatch resolving the scratch `cargo-binstall`, with **all three outcomes of the backend observed in one run**: `cargo-shear@1.13.1` **resolved a prebuilt artifact** (`has been downloaded from github.com`, then `Dry-run: Not proceeding to install fetched binaries`); `taplo-cli@0.10.0` found **none** for `aarch64-apple-darwin`, warned `will be installed from source (with cargo)` and printed `Dry-run: running /opt/homebrew/bin/cargo install taplo-cli --version 0.10.0 --locked --root /Users/stevemorin/.cargo`; `cargo-machete@0.9.2` short-circuited with `already installed, use --force to override`, an outcome that exists only because this host carries it. The control exited **76** with `crate is not found`, so this check can fail. **Nothing installed**: the `~/.cargo/bin` listing hashes identically before and after. **Neither path was timed.** The log states the rerun rule for this host and for another | `evidence/binstall-backend.log` |
+| 16 | **What verifies a prebuilt artifact before it would reach `PATH`, now that check 15 has shown `--locked` does not?** (revision 8) | `GET https://raw.githubusercontent.com/cargo-bins/cargo-binstall/v1.23.0/` for `crates/bin/src/args.rs`, `crates/binstalk-fetchers/src/gh_crate_meta.rs`, `crates/binstalk-fetchers/src/quickinstall.rs`, `crates/binstalk/src/ops/resolve/resolution.rs` and `SIGNING.md`, each hashed and grepped for the signature-policy code; `GET https://static.crates.io/crates/<n>/<n>-<v>.crate` for `cargo-shear@1.13.1`, `taplo-cli@0.10.0` and `cargo-binstall@1.23.0`, each unpacked and its `Cargo.toml` tested for `[package.metadata.binstall.signing]`; then, with the unzipped `v1.23.0` release binary on `PATH` in a fresh scratch directory, `cargo binstall --locked --no-confirm --dry-run cargo-shear@1.13.1` (7a), the same spec with `--only-signed` (7b), `--only-signed cargo-binstall@1.23.0` as a **positive control** (7c) and `rs-launch-blueprint-no-such-crate@9.9.9` as a negative control (7d); `~/.cargo/bin` listing hashed before and after | 0 / 0 / 0 / **76** | **Signing is opt-in by the crate.** `SIGNING.md:6` — "This feature requires adding to the Cargo.toml metadata: no autodiscovery here!"; `args.rs:408-411` documents the default as "verify signatures if they are available, but to allow unsigned packages as well"; `gh_crate_meta.rs:301-306` takes `SignatureVerifier::Noop` for `(IfPresent, None)` and returns `FetchError::MissingSignature` only for `(Require, None)`. **Neither probed tool opts in**: `cargo-shear@1.13.1` and `taplo-cli@0.10.0` are `signing: ABSENT`, `cargo-binstall@1.23.0` is `signing: PRESENT` (`algorithm = "minisign"`). **7a**: the recommended recipe body resolved `cargo-shear v1.13.1 (aarch64-apple-darwin) has been downloaded from github.com` with **`Verified signature` occurrences: 0**. **7c, the positive control**: **occurrences: 1** — `Verified signature for package 'cargo-binstall': gh=cargo-bins/cargo-binstall git=b874e25e… ts=2026-09-05T16:59:07.371Z run=33978884356` — so the verification path works and 7a's zero is the crate's absence of a key, not a broken check. **7b**: `--only-signed` did **not** fail; every prebuilt fetcher refused (`No signature present` from `github.com`; a 404 on QuickInstall's `.sig`) and the run fell through to `Dry-run: running … cargo install cargo-shear --version 1.13.1 --locked`, exit 0. **The other fetcher did not apply**: `QuickInstall` pins its own key in `quickinstall.rs:22` and is always verified, but it resolved nothing here, and `resolution.rs:125-127` shows the `WARN` line prints `third-party source ` only for it — its absence identifies the crate's own release. The control exited **76**, so this check can fail. **Nothing installed**: the `~/.cargo/bin` listing hashes identically before and after, to the same value check 15 recorded. **Nothing was timed and nothing was installed, so no post-install verification was observed.** The log states the rerun rule for this host and for another | `evidence/binstall-signing.log` |
 
 **Figures, each retrieved 2026-09-10 from the endpoint its column names, except
 where the cell names another source** (endpoints per the prompt's evidence table;
@@ -599,16 +718,40 @@ where the backend falls through to a source build, which check 15 observed for
 from `rust-toolchain.toml`, not `msrv-policy`, which governs `rust-version` and
 the CI floor job only. `cargo-binstall` itself declares `rust_version` `1.79.0`
 (check 15), which binds only a bootstrap that compiles it rather than fetching
-its release artifact. Gate 3: **no RustSec page for any of the six candidates that were probed** —
+its release artifact. Gate 3 (RustSec advisories, `unsafe` posture): **no RustSec page for any of the six candidates that were probed** —
 `cargo-binstall`, `ubi`, `mise`, `just`, `cargo-run-bin` (check 7) and `rustup`
 (check 14) — each a 404 verified against `time` and `atty` HTTP-200 controls in
 the same run; `cargo-quickinstall` and `cargo-make` were **not queried**, as
 their rows say, and nothing is asserted about them; `unsafe` posture **not audited and not asserted** — a separate
 process cannot reach the template's address space, and the residual risk is
-supply-chain, which the pinned `name@version` spec and `--locked` narrow but do
-not eliminate. Gate 4 (OS): `ubuntu-latest` and `macos-latest` are covered by
+supply-chain. **What narrows that residual risk is different on each of the
+backend's two paths, and revision 7 carried forward a sentence that credited
+`--locked` on both.** On the **compile fallback** the pinned `name@version` spec
+fixes the version, `--locked` requires the published `Cargo.lock`
+(`args.rs:346-350`, check 15), and the source is fetched from the crates.io
+registry; those narrow it and do not eliminate it, which is what revision 6 said
+and what still holds for that path. On the **prebuilt path** `--locked` reaches
+nothing at all, because no lockfile is resolved; what governs it instead is
+`cargo-binstall`'s signature policy, which check 16 reads in the source and
+exercises. In the default policy a GitHub-release artifact is verified **only if
+the crate itself publishes a minisign public key in
+`[package.metadata.binstall.signing]`** — "This feature requires adding to the
+Cargo.toml metadata: no autodiscovery here!" (`SIGNING.md:6`,
+`evidence/binstall-signing.log:220`) — and where it does not, the fetcher takes
+`SignatureVerifier::Noop` and the bytes are accepted unverified
+(`gh_crate_meta.rs:301-306`, `evidence/binstall-signing.log:188-194`). Neither
+spec check 15 exercised publishes one: `cargo-shear@1.13.1` and
+`taplo-cli@0.10.0` are both `signing: ABSENT` in their published `Cargo.toml`
+(`evidence/binstall-signing.log:294`, `:298`), and the recommended recipe body run
+against `cargo-shear@1.13.1` printed **zero** `Verified signature` lines
+(`evidence/binstall-signing.log:325`). No checksum is compared either. So on the
+prebuilt path the residual supply-chain risk is narrowed by **transport security
+and the pinned version alone**; the integrity comparison in `## Decision` puts
+that change to the owner, and unproven item 11 records what this decision did not
+establish about it. Gate 4 (OS): `ubuntu-latest` and `macos-latest` are covered by
 rustup, Cargo and `ubi`; **verified on macOS/arm64 only in this decision** —
 Linux is unproven here and listed below. Gate 5 (default features, async
+coupling): **inapplicable** — nothing is linked, so no feature unification or
 coupling with R05's execution model can occur. Gate 6 (binary size, compile
 time): **zero on both for the template's artifact**, since no dependency is
 added; for the contributor, the cost is a download per tool **wherever a prebuilt
@@ -993,6 +1136,83 @@ does not adopt". That was true of revisions 3 to 6 and stands as the historical
 record it is. The current text adopts `cargo-binstall` on the owner's ruling,
 which is wider than opus's mere-aggregation argument and does not rest on it.
 
+**Revision 8** (this text; 2026-09-13, model `claude-opus-5`) answers the two
+findings of the round-7 judgment audit. It changes no recommendation, no
+parameter, no acceptance criterion and no survey figure.
+
+**Revision 7's own edit list was not exhaustive, and this is the plain statement
+of that.** That entry asserts "**Twenty-one locations** make up this revision, and
+this list is exhaustive", naming fitness gates 1 and 2 at (14) and gate 6 at (15)
+as the only gate edits. **A twenty-second location moved and is not in the
+list**: fitness gate 5. The span `coupling): **inapplicable** — nothing is linked,
+so no feature unification or` was deleted from the middle of its sentence,
+leaving the gate with no verdict, no reason and an ungrammatical remainder — the
+silent omission the prompt's tier-execution guidance forbids in terms. The
+deleted bytes were recovered from the preserved revision-6 text in
+`## Supersedes` and restored exactly. **Revision 7's list is left as written**,
+because it is the historical record of what that revision believed; this
+paragraph is the correction, and the lesson it carries is that an edit list built
+from a keyword sweep does not detect damage to a passage the sweep's keys never
+matched.
+
+**All six fitness gates were then re-enumerated mechanically rather than by
+reading**, by matching `Gate [1-6] (` across the current text and checking each
+hit for a verdict and a closing parenthesis. All six are present, answered and
+grammatical: gate 1 `inapplicable`, struck by the owner ruling; gate 2
+`inapplicable` where a prebuilt artifact is found, and the development channel
+where it is not; gate 3 answered, and rewritten by this revision (below); gate 4
+answered, `verified on macOS/arm64 only`; gate 5 `inapplicable`, restored by this
+revision; gate 6 answered, zero for the artifact and a per-tool cost for the
+contributor.
+
+**What moved on the second finding.** Gate 3 credited the residual supply-chain
+risk to "the pinned `name@version` spec and `--locked`" — a sentence carried
+forward unchanged from revision 6, where the recipe body was
+`cargo install --locked` and it was true. Revision 7 proved at check 15 that
+`--locked` binds only the compile fallback and then left that sentence standing,
+so the one place the decision credited `--locked` with a security property was
+the one place its own correction did not reach. Revision 8 scopes gate 3 to the
+two paths separately. It does **not** stop there, because the audit's substantive
+point was that nothing in this item had examined what secures the prebuilt path
+at all. New **check 16** examines it: `cargo-binstall` verifies a crate's own
+GitHub-release artifact only where the crate publishes a minisign key, neither
+tool check 15 exercised does, the recommended recipe body accordingly printed
+zero `Verified signature` lines, and a positive control proves the verification
+path works where a key exists. The consequence is written into `## Decision` as
+an **integrity comparison put to the owner**, with three options and their costs,
+because the ruling of 2026-09-12 was about licence and reaches nothing else.
+**The recommendation is not reversed**: the licence ground for preferring the
+slower backend is genuinely gone, the substitution stays, and the owner is asked
+to accept or reject the integrity tradeoff rather than having it absorbed.
+
+**Every location was found by search before any edit, and re-searched after.**
+The keys were `Gate [1-6]`, `--locked`, `supply.chain`, `residual`, `trust`,
+`signature`, `signing`, `checksum`, `provenance` and `integrity`, each restricted
+to the text above `## Supersedes`. **Ten locations** make up this revision and
+this list is exhaustive: (1) the title line, now dated 2026-09-13 and numbered 8;
+(2) layer 2's table row, which now names the weaker prebuilt guarantee and points
+at the comparison; (3) the `--locked` bullet, which now says where the answer for
+the prebuilt path is; (4) the new integrity-comparison block in `## Decision`;
+(5) the architecture table's per-tool-recipe row, where "retained inside the
+generic recipe as the pinned `name@version` spec" is corrected — codex's shape
+carried a checksum and this one does not; (6) the re-verify events; (7) three
+paragraphs of `## Empirical check` (the check-16 host, the working directory, and
+the nothing-was-implemented paragraph) plus the new check-16 row; (8) fitness
+gate 3, rewritten — and given the parenthetical label the other five already
+carry, so that a future sweep matching `Gate [1-6] (` finds all six rather than
+five — and fitness gate 5, restored; (9) disagreement 5, where the
+same provenance overreach appears and where doxa/openai's checksum argument is
+now credited; (10) new unproven item 11, this revision-history entry and the
+`## Supersedes` framing. **What did not change**, each re-read rather than
+assumed: the recommendation and all five layers; the owned parameter's value and
+all four `- assumes` lines, byte for byte; acceptance criteria (A) to (E), byte
+for byte; the 17-repository survey; the presence test and its matrix; the alias
+answer; the five earlier adjudications; the eighteen-row sweep; checks 1 to 15
+and every evidence log they cite, none of which was rerun or modified; and the
+`## Supersedes` payload, which is byte-identical to the published revision 6 and
+was not reflowed. One file was added, as the new check required:
+`evidence/binstall-signing.log`.
+
 **Disagreements, and the evidence that settled each.**
 
 1. **Adopt a declarative provisioner manifest, or not?** codex and opus say no;
@@ -1044,8 +1264,17 @@ which is wider than opus's mere-aggregation argument and does not rest on it.
    for the generic recipe by the two maintained reference implementations that
    provision tools at all — `oxc`'s `init` and `biome`'s `install-tools` are each
    a single bootstrap recipe listing every tool, with no per-tool recipe
-   (`evidence/reference-impls.log`, 2026-09-10). codex's provenance concern is
-   preserved inside the generic recipe as the pinned `name@version` spec.
+   (`evidence/reference-impls.log`, 2026-09-10). **codex's provenance concern is
+   not carried across, and revision 8 stops saying that it is.** codex's shape
+   pinned a URL and a SHA-256; the generic recipe pins `name@version` only, and
+   check 16 shows that on the prebuilt path nothing verifies the bytes unless the
+   crate publishes a signing key. The concern is recorded here as live and put to
+   the owner in `## Decision`, not answered by the spec. doxa/openai's `mise`
+   proposal, rejected at disagreement 1 on measured adoption, made the same point
+   from the other direction: it argued for a committed `mise.lock` recording
+   "exact resolution and checksums where supported"
+   (`raw/doxa-openai.normalized.md:348`). Both engines wanted an integrity anchor
+   this stack does not have.
 6. **How is presence tested — an ambient `PATH` search, or declared state?**
    Recorded in revision 2; revision 1 omitted it although it emitted a
    `BASELINE-REVIEW:` line settling it. Two of the five engines opposed the
@@ -1196,12 +1425,35 @@ what would prove it.
     decision; `raw/opus.md` additionally records `jdx/mise` and `flox/flox` as
     unmeasurable by the prescribed method. Proof: sample the 10 most recently
     opened issues per repository at re-verify time.
+11. **What actually secures the prebuilt path, beyond the mechanism.** Check 16
+    settles the mechanism — signing is opt-in per crate, the two probed tools do
+    not opt in, `--only-signed` degrades a tool to a source build rather than
+    failing — but three things it does not settle. (a) **Coverage**: the tool set
+    this template will really declare is R27's, R28's, R29's, R32's, R37's,
+    R39's and R40's to choose, and how many of those crates publish a
+    `[package.metadata.binstall.signing]` key was not measured; two out of two
+    probed here do not, which is a sample, not a rate. (b) **What the compile
+    fallback verifies**: this decision states that the fallback fetches from the
+    crates.io registry and that `--locked` pins the graph, and it does **not**
+    assert that Cargo compares a registry-recorded checksum of the `.crate`
+    archive — no check here tested that, so the integrity table's left column
+    says "not established in this decision" rather than claiming a guarantee.
+    (c) **Anything after download**: every call carried `--dry-run`, so no
+    artifact was written and no post-install verification was observed. Proof:
+    for (a), once the tool table exists, test each declared crate's published
+    `Cargo.toml` for the signing stanza and record the count; for (b), install one
+    crate with `cargo install --locked` against a tampered local registry mirror,
+    or read Cargo's registry download path and cite it; for (c), run the recipe
+    without `--dry-run` on a CI runner for each operating system in
+    `target-os-matrix` and capture the full output.
 
 ## Supersedes
 
 **Revision 6, published 2026-09-10, sha256 `ca5a731081e51ab5d0eea91dd9f4ef8a456855df026354ed1f8146bea77f6d7f`, superseded 2026-09-12 by owner ruling.** This section exists because revision 7 **reverses part of a published decision**: revision 6 chose `cargo install --locked` as the install layer's recipe body on the ground that `cargo-binstall`'s `GPL-3.0-only` declaration left fitness gate 1 unresolved, and the owner has now struck fitness gate 1 for every tool and library the template uses. The approved spec permits a `## Supersedes` H2 for exactly that case. It is the only H2 beyond `## Decision`, `## Parameters`, `## Empirical check` and `## Engines`, and it sits last so those four stay in order before it, with `re-verify:` still the final line of `## Decision`.
 
 **What revision 7 reversed**, in one line each: the recipe body becomes `cargo binstall --locked --no-confirm <name>@<version>` at `cargo-binstall` 1.23.0; `cargo-binstall` joins the declared tool table, because the backend must itself be on `PATH`; the `cargo-quickinstall` licence-clean prebuilt fallback is **gone**, having no licence ground left to stand on; the re-verify trigger watching for `cargo-binstall` to relicense is **gone**, for the same reason; unproven item 7, which held the owner ruling open, is **resolved in its slot**; and fitness gate 1 is struck wherever this decision answered it. What revision 7 did **not** change — the owned parameter's value, the four `- assumes` lines, acceptance criteria (A) to (E), the other four layers, the 17-repository survey, the presence test and its matrix, the alias answer, the five earlier adjudications, the eighteen-row sweep and checks 1 to 14 — is established by diff against the bytes preserved below.
+
+**Revision 8 (2026-09-13) does not reverse anything and did not touch this section's payload.** It restores fitness gate 5, whose answer revision 7 deleted — the restored bytes were read out of the preserved text below and are identical to it — rewrites fitness gate 3 to scope `--locked` to the compile fallback, adds check 16 establishing what verifies a prebuilt artifact, and puts the resulting integrity tradeoff to the owner in `## Decision`. The preserved revision-6 bytes below are unchanged and unreflowed; the backend substitution revision 7 made on the owner's ruling stands.
 
 The complete revision-6 entry follows, preserved verbatim.
 
