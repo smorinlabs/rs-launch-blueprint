@@ -1,14 +1,37 @@
 # R42 revision 7 — check 15: the fast prebuilt backend the owner ruling of 2026-09-12 authorises.
-# Run 2026-09-13T06:50:57Z. Working directory: the run directory. Scratch directory: <scratch>/r42r7,
+# Run 2026-09-13T07:01Z, which is 2026-09-13 00:01 America/Los_Angeles. The first capture of this
+# check ran at 2026-09-13T06:50:57Z, local 2026-09-12 23:50; the run recorded below is the third,
+# taken after a `cargo-shear@1.13.1` spec was added so that the prebuilt path is exercised and not
+# merely asserted. Working directory: the run directory. Scratch directory: <scratch>/r42r7,
 # outside the repository. Nothing was installed: the release asset is unzipped into the scratch
 # directory and put on PATH for the duration of the script only, every binstall call carries
 # --dry-run, and the listing of ~/.cargo/bin is hashed before and after to show it did not change.
 #
 # The script below is the complete check. It runs under `set -o pipefail`, tests every command's
-# status separately rather than trusting a pipeline, and carries a negative control that fails.
-# Rerun rule: this log reproduces byte-for-byte except the two `INFO Done in <elapsed>` lines,
-# which are wall-clock timings. A second run in the same session differed in exactly those two lines.
-# `crate.newest_version` is the one live field that can move if cargo-bins publishes again.
+# status separately rather than trusting a pipeline, and carries a negative control that fails
+# (exit 76), so the check can fail.
+#
+# RERUN RULE, stated for both cases, because the audits of this item rerun on a second machine.
+# (a) On THIS host: byte-for-byte, except the three `INFO Done in <elapsed>` lines, which are
+#     wall-clock timings. Two consecutive runs differed in exactly those three lines.
+# (b) On ANY OTHER host: what must match are the exit statuses and pipestatuses (0, 0, 0, 0, 0
+#     and 76 for the control), the `cargo binstall -V` line (1.23.0), the crates.io block, the
+#     `args.rs` sha256 and every grep excerpt from it — the tag is immutable — and the fact that
+#     `cargo-shear@1.13.1` resolves a prebuilt artifact while `taplo-cli@0.10.0` does not.
+#     These lines carry host or target state and WILL differ:
+#       1. `command -v cargo-binstall -> …` — the scratch directory's absolute path.
+#       2. `Dry-run: running /opt/homebrew/bin/cargo install … --root /Users/stevemorin/.cargo`
+#          — the resolved cargo executable and $CARGO_HOME.
+#       3. `- cargo-shear => /Users/stevemorin/.cargo/bin/cargo-shear` — $CARGO_HOME.
+#       4. the two `~/.cargo/bin listing sha256` lines — this host's installed tool set. They must
+#          equal EACH OTHER on any host; their value is meaningless across hosts.
+#       5. the `cargo-machete v0.9.2 is already installed` line — that outcome exists only because
+#          this host carries the tool (check 12). On a clean runner that spec resolves instead, so
+#          the already-installed short-circuit is NOT reproducible elsewhere by this script.
+#       6. the asset name `cargo-binstall-aarch64-apple-darwin.zip` and the downloaded binary's
+#          sha256 `5e17743f…` — Darwin/arm64 only. A Linux rerun must fetch the matching asset and
+#          will hash differently; the target triples inside the taplo-cli 404 URLs move with it.
+#       7. `crate.newest_version` — the one live field, which moves if cargo-bins publishes again.
 #
 # ---8<--- check15.sh ---8<---
 # #!/bin/bash
@@ -62,6 +85,9 @@
 # echo "cargo binstall (taplo-cli) pipestatus=${PIPESTATUS[0]}"
 # cargo binstall --locked --no-confirm --dry-run cargo-machete@0.9.2 2>&1 | sed 's/^/  /'
 # echo "cargo binstall (cargo-machete) pipestatus=${PIPESTATUS[0]}"
+# echo "# a spec this host does not carry, to exercise the prebuilt path:"
+# cargo binstall --locked --no-confirm --dry-run cargo-shear@1.13.1 2>&1 | sed 's/^/  /'
+# echo "cargo binstall (cargo-shear) pipestatus=${PIPESTATUS[0]}"
 # echo "# negative control: a spec that cannot resolve must fail, so the check can fail"
 # cargo binstall --locked --no-confirm --dry-run rs-launch-blueprint-no-such-crate@9.9.9 2>&1 | tail -3 | sed 's/^/  /'
 # echo "cargo binstall (negative control) pipestatus=${PIPESTATUS[0]}"
@@ -139,11 +165,19 @@ cargo binstall -V exit=0
   cargo-binstall:  WARN resolve: Error while downloading and extracting from fetcher QuickInstall: Failed to download from remote: could not GET https://github.com/cargo-bins/cargo-quickinstall/releases/download/taplo-cli-0.10.0/taplo-cli-0.10.0-x86_64-apple-darwin.tar.gz: HTTP status client error (404 Not Found) for url (https://github.com/cargo-bins/cargo-quickinstall/releases/download/taplo-cli-0.10.0/taplo-cli-0.10.0-x86_64-apple-darwin.tar.gz)
   cargo-binstall:  WARN The package taplo-cli v0.10.0 will be installed from source (with cargo)
   cargo-binstall:  INFO Dry-run: running `/opt/homebrew/bin/cargo install taplo-cli --version 0.10.0 --locked --root /Users/stevemorin/.cargo`
-  cargo-binstall:  INFO Done in 2.874244542s
+  cargo-binstall:  INFO Done in 3.98512375s
 cargo binstall (taplo-cli) pipestatus=0
   cargo-binstall:  INFO cargo-machete v0.9.2 is already installed, use --force to override
-  cargo-binstall:  INFO Done in 791.125µs
+  cargo-binstall:  INFO Done in 737µs
 cargo binstall (cargo-machete) pipestatus=0
+# a spec this host does not carry, to exercise the prebuilt path:
+  cargo-binstall:  INFO resolve: Resolving package: 'cargo-shear@=1.13.1'
+  cargo-binstall:  WARN The package cargo-shear v1.13.1 (aarch64-apple-darwin) has been downloaded from github.com
+  cargo-binstall:  INFO This will install the following binaries:
+  cargo-binstall:  INFO   - cargo-shear => /Users/stevemorin/.cargo/bin/cargo-shear
+  cargo-binstall:  INFO Dry-run: Not proceeding to install fetched binaries
+  cargo-binstall:  INFO Done in 2.658407625s
+cargo binstall (cargo-shear) pipestatus=0
 # negative control: a spec that cannot resolve must fail, so the check can fail
     │ crate is not found
     ╰─▶ rs-launch-blueprint-no-such-crate is not found

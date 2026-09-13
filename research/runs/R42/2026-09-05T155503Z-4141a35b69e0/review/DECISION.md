@@ -35,7 +35,11 @@ crates compiled into the shipped artifact included, and that the fixed
 `license = MIT OR Apache-2.0` governs only this repository's own source code. The
 owner was shown the distinction between a separate-process tool and a linked
 crate and chose the wider rule knowingly. Fitness gate 1 is therefore struck from
-every candidate evaluation in this item. Revisions 1 to 6 recorded
+every candidate evaluation in this item. The ruling is recorded outside this file
+as well, in the controller's log at `docs/planning/p02/execution-ledger.md:495`
+(the ruling, superseding the question this item raised) and `:505` (its extension
+to crates compiled into the shipped artifact, with the distinction the owner was
+shown). Revisions 1 to 6 recorded
 `cargo-binstall`'s `GPL-3.0-only` declaration as a finding, declined the
 mere-aggregation argument `raw/opus.md` made for it because no owner ruling
 existed, chose first-party `cargo install --locked` as the backend that is clean
@@ -77,13 +81,18 @@ observed directly in check 15 rather than inferred:
   `cargo binstall --locked --no-confirm --dry-run taplo-cli@0.10.0` printed
   `Dry-run: running /opt/homebrew/bin/cargo install taplo-cli --version 0.10.0
   --locked --root /Users/stevemorin/.cargo`.
-- **"Faster" is per tool and per target, not a property of the backend.** In that
-  same run `taplo-cli@0.10.0` had **no** prebuilt artifact for
-  `aarch64-apple-darwin`: `cargo-binstall` warned `The package taplo-cli v0.10.0
-  will be installed from source (with cargo)` and fell through to `cargo install`.
-  So the saving is an upper bound each selected tool either earns or does not, and
-  the worst case per tool is revision 6's recommendation exactly. Unproven item 5
-  is rewritten to ask for the measurement.
+- **"Faster" is per tool and per target, not a property of the backend.** One run
+  of check 15 produced both outcomes, which is why this is stated as a bound
+  rather than a benefit. `cargo-shear@1.13.1` resolved a prebuilt artifact —
+  `The package cargo-shear v1.13.1 (aarch64-apple-darwin) has been downloaded from
+  github.com`, followed by `Dry-run: Not proceeding to install fetched binaries` —
+  so the fast path is real and was exercised, not assumed. `taplo-cli@0.10.0` had
+  **no** prebuilt artifact for the same target: `cargo-binstall` warned `The
+  package taplo-cli v0.10.0 will be installed from source (with cargo)` and fell
+  through to `cargo install`. So the saving is an upper bound each selected tool
+  either earns or does not, and the worst case per tool is revision 6's
+  recommendation exactly. **How large the saving is was not measured** — nothing
+  here timed either path — and unproven item 5 asks for that measurement.
 
 Two other flags of the same version are recorded because a reader of the recipe
 body will meet them. `--no-confirm` (short `-y`) is documented at
@@ -458,9 +467,20 @@ and in every evidence log are UTC**; the local date of the run is 2026-09-09
 
 **The host for revision 7's check 15.** The same machine, unchanged: `Darwin
 25.4.0 arm64`, macOS 26.4, `cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)` on
-the default `PATH`. Check 15 recorded `2026-09-13T06:50:57Z`, which by the UTC
-rule stated immediately above is the local date **2026-09-12** — the date of the
-owner ruling and of this revision.
+the default `PATH`. The check was first captured at `2026-09-13T06:50:57Z` and
+the log records the third capture, at `2026-09-13T07:01Z`, taken after a
+`cargo-shear@1.13.1` spec was added so that the prebuilt path is exercised rather
+than asserted. By the UTC rule stated immediately above those stamps are local
+`2026-09-12 23:50` and `2026-09-13 00:01`; the revision is dated **2026-09-12**,
+the date of the owner ruling and of the work, and the second stamp crosses local
+midnight by eleven minutes. **Check 15 is host-dependent and says so**: its log
+enumerates, line by line, what reproduces byte-for-byte here (everything but
+three wall-clock timings), what any other host must still match (the exit
+statuses, the `cargo binstall -V` line, the crates.io block, the `args.rs`
+sha256 and its excerpts, and that `cargo-shear` resolves a prebuilt artifact
+while `taplo-cli` does not), and the seven lines that carry this host's or this
+target's state and will differ elsewhere — including the `cargo-machete`
+short-circuit, which exists only because this host already carries that tool.
 
 **A second toolchain, for the revision-2 checks 9–12.** Those checks run with
 `PATH` restricted to `$HOME/.cargo/bin:/usr/bin:/bin`, which removes the Homebrew
@@ -530,7 +550,7 @@ describes, and what it leaves unproven is unproven items 4 and 5.
 | 12 | **The presence test for the two acquisition channels, on real tools rather than stubs** (revision 2) | `ls -l ~/.cargo/bin` for the proxy set; `command -v cargo-machete`; `cargo machete --version`; `cargo audit --version`; `command -v cargo-nosuchplugin`; `cargo nosuchplugin`; `command -v taplo typos`; `taplo --version`; `typos --version`; `command -v gitleaks`; and, for a rustup-proxied **bare** name, `command -v rustfmt rust-analyzer` plus `rustfmt --version` and `rust-analyzer --version` in `neg/` and `pos/` | see Result | **crates.io class, `command -v` is meaningful**: `cargo-machete` and `cargo-audit` are ordinary executables (5977856 and 18907184 bytes, not symlinks); `command -v cargo-machete` exit 0 and `cargo machete --version` → `0.9.2`; `cargo audit --version` → `cargo-audit-audit 0.22.1`; the negative control `command -v cargo-nosuchplugin` exits 1 and `cargo nosuchplugin` exits 101. **Bare class**: `taplo --version` → `taplo 0.10.0`, `typos --version` → `typos-cli 1.32.0`, both resolved in `~/.cargo/bin`; `command -v gitleaks` exits 1, an uninstalled control. **The defect is not confined to `cargo-<sub>` names**: 13 entries in `~/.cargo/bin` are symlinks to `rustup` — `cargo`, `cargo-clippy`, `cargo-fmt`, `cargo-miri`, `clippy-driver`, `rls`, `rust-analyzer`, `rust-gdb`, `rust-gdbgui`, `rust-lldb`, `rustc`, `rustdoc`, `rustfmt` — so in `neg/` `command -v rustfmt rust-analyzer` exits 0 while `rustfmt --version` and `rust-analyzer --version` both exit 1, and in `pos/` both exit 0. This is why the parameter keys presence on acquisition rather than on the name's shape | `evidence/invocation-sweep.log`, `evidence/presence-test.log` |
 | 13 | **Cargo aliases in the four surveyed reference repositories** (revision 2) | `GET https://raw.githubusercontent.com/<repo>/HEAD/.cargo/config.toml` for the four; alias-name greps over each fetched `justfile`; `gh api repos/cargo-limit/cargo-limit/contents/src/bin` | 0 | `oxc` HTTP 200 with `[alias]` `ck`, `lint`, `codecov`, `coverage`, `benchmark`, `minsize`, `allocs`, `lint-timings`, `rule`, `lintgen`, invoked on 14 justfile lines (`:40`, `:51`, `:60`, `:64`, `:104`, `:108`, `:114`, `:119`, `:130`, `:298`, `:303`, `:307`, `:312`, `:314`); `biome` HTTP 200 with `[alias]` including `lint = "clippy --workspace …"`, `format = "fmt --all --verbose"` and `documentation`, invoked at `justfile:160`, `:234`, `:334`; `casey/just` and `cargo-bins/cargo-binstall` HTTP **404** — neither defines aliases, and `just`'s `cargo lclippy`/`lrun`/`lbuild`/`ltest` are `cargo-limit`'s binaries (`src/bin/cargo-lclippy.rs`, `cargo-lrun.rs`, `cargo-lbuild.rs`, `cargo-ltest.rs`), installed by its own `justfile:117` `cargo install cargo-limit`. Re-confirmed in the same fetch: **0** wrapper-prefix lines in all four `justfile`s | `evidence/reference-aliases.log` |
 | 14 | **The two figures the table asserted without a query** (revision 5; the correction the judgment audit asked for) | `curl -o /dev/null -w '%{http_code}' https://rustsec.org/packages/{rustup,time,atty}.html`; `GET https://crates.io/api/v1/crates/rustup`; `gh api repos/rust-lang/{rustup,cargo} --jq '{repo,license}'` | 0 | `rustup` **404** with the `time` and `atty` controls at **200**, so the RustSec cell is now a probed 404 rather than a figure carried from `raw/opus.md`; the crates.io crate named `rustup` exists but its only version `0.1.0` is **yanked** (`newest_version` `0.0.0`), which is why no crates.io licence for the toolchain manager exists to quote; GitHub `license.spdx_id` is `Apache-2.0` for `rust-lang/rustup` and for `rust-lang/cargo`. Run 2026-09-10T07:05:07Z | `evidence/rustup-figures.log` |
-| 15 | **The backend the 2026-09-12 owner ruling authorises: is it current, do its flags mean what the recipe body needs, and does the command run as written?** (revision 7) | `GET https://crates.io/api/v1/crates/cargo-binstall`; `GET https://raw.githubusercontent.com/cargo-bins/cargo-binstall/v1.23.0/crates/bin/src/args.rs` plus greps for `no_confirm`, `locked`, `crate[@version]`, `dry_run` and `disable-telemetry`; then, with the unzipped `v1.23.0` release binary on `PATH` in a scratch directory, `cargo binstall -V`, `cargo binstall --locked --no-confirm --dry-run taplo-cli@0.10.0`, the same for `cargo-machete@0.9.2`, and a failing control `rs-launch-blueprint-no-such-crate@9.9.9`; `~/.cargo/bin` listing hashed before and after | 0 / 0 / 0 / 0 / **76** | **Current**: newest unyanked is `1.23.0`, `2026-09-05T16:59:01.959145Z`, `yanked False`, `license GPL-3.0-only`, `rust_version 1.79.0`. **Flags, read at the immutable tag** (`args.rs` sha256 `4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783`): `no_confirm` at `:255-262`, short `-y`, "Disable interactive mode / confirmation prompts"; `locked` at `:346-350`, "This option will be passed through to all `cargo-install` invocations"; the positional is `crate[@version]` at `:44`; `dry_run` at `:251-253`; the telemetry opt-out `--disable-telemetry` at `:28-35`. **Runs as written**: `cargo binstall -V` → `1.23.0`; the `cargo <sub>` dispatch resolved the scratch `cargo-binstall`; `taplo-cli@0.10.0` **found no prebuilt artifact for `aarch64-apple-darwin`**, warned `The package taplo-cli v0.10.0 will be installed from source (with cargo)` and printed `Dry-run: running /opt/homebrew/bin/cargo install taplo-cli --version 0.10.0 --locked --root /Users/stevemorin/.cargo`; `cargo-machete@0.9.2` short-circuited with `already installed, use --force to override`; the control exited **76** with `crate is not found`, so this check can fail. **Nothing installed**: the `~/.cargo/bin` listing hashes identically before and after | `evidence/binstall-backend.log` |
+| 15 | **The backend the 2026-09-12 owner ruling authorises: is it current, do its flags mean what the recipe body needs, and does the command run as written?** (revision 7) | `GET https://crates.io/api/v1/crates/cargo-binstall`; `GET https://raw.githubusercontent.com/cargo-bins/cargo-binstall/v1.23.0/crates/bin/src/args.rs` plus greps for `no_confirm`, `locked`, `crate[@version]`, `dry_run` and `disable-telemetry`; then, with the unzipped `v1.23.0` release binary on `PATH` in a scratch directory, `cargo binstall -V`, `cargo binstall --locked --no-confirm --dry-run` for `taplo-cli@0.10.0`, `cargo-machete@0.9.2` and `cargo-shear@1.13.1`, and a failing control `rs-launch-blueprint-no-such-crate@9.9.9`; `~/.cargo/bin` listing hashed before and after | 0 / 0 / 0 / 0 / 0 / **76** | **Current**: newest unyanked is `1.23.0`, `2026-09-05T16:59:01.959145Z`, `yanked False`, `license GPL-3.0-only`, `rust_version 1.79.0`. **Flags, read at the immutable tag** (`args.rs` sha256 `4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783`): `no_confirm` at `:255-262`, short `-y`, "Disable interactive mode / confirmation prompts"; `locked` at `:346-350`, "This option will be passed through to all `cargo-install` invocations"; the positional is `crate[@version]` at `:44`; `dry_run` at `:251-253`; the telemetry opt-out `--disable-telemetry` at `:29-35`. **Runs as written**, `cargo binstall -V` → `1.23.0`, the `cargo <sub>` dispatch resolving the scratch `cargo-binstall`, with **all three outcomes of the backend observed in one run**: `cargo-shear@1.13.1` **resolved a prebuilt artifact** (`has been downloaded from github.com`, then `Dry-run: Not proceeding to install fetched binaries`); `taplo-cli@0.10.0` found **none** for `aarch64-apple-darwin`, warned `will be installed from source (with cargo)` and printed `Dry-run: running /opt/homebrew/bin/cargo install taplo-cli --version 0.10.0 --locked --root /Users/stevemorin/.cargo`; `cargo-machete@0.9.2` short-circuited with `already installed, use --force to override`, an outcome that exists only because this host carries it. The control exited **76** with `crate is not found`, so this check can fail. **Nothing installed**: the `~/.cargo/bin` listing hashes identically before and after. **Neither path was timed.** The log states the rerun rule for this host and for another | `evidence/binstall-backend.log` |
 
 **Figures, each retrieved 2026-09-10 from the endpoint its column names, except
 where the cell names another source** (endpoints per the prompt's evidence table;
@@ -592,10 +612,11 @@ coupling with R05's execution model can occur. Gate 6 (binary size, compile
 time): **zero on both for the template's artifact**, since no dependency is
 added; for the contributor, the cost is a download per tool **wherever a prebuilt
 artifact exists for that tool and target**, and one source compile per tool
-wherever it does not. Check 15 observed both outcomes in a single run, so the
-saving is real, is bounded per tool, and is **not** a property of the backend —
-which is why unproven item 5 now asks for the measurement rather than asserting
-the direction.
+wherever it does not. Check 15 observed both outcomes in a single run —
+`cargo-shear@1.13.1` resolved a prebuilt artifact, `taplo-cli@0.10.0` fell
+through to a source build — so the fast path exists and is **not** a property of
+the backend but of each tool and target. **Neither path was timed here**, which
+is why unproven item 5 asks for the measurement rather than asserting a size.
 
 **An observed hazard, recorded because it is evidence for the invocation rule,
 and what revision 2's checks make of it.** Under the default `PATH` on this host
@@ -899,50 +920,77 @@ licence check for any tool or library the template uses**, crates compiled into
 the shipped artifact included, and that the fixed `license = MIT OR Apache-2.0`
 governs only this repository's own source code; the owner was shown the
 distinction between separate-process tools and linked crates and chose the wider
-rule knowingly. Fitness gate 1 is struck from every candidate evaluation in this
-item. **What moved:** the install layer's recipe body, from
+rule knowingly (`docs/planning/p02/execution-ledger.md:495` and `:505`). Fitness
+gate 1 is struck from every candidate evaluation in this item.
+
+**What moved:** the install layer's recipe body, from
 `cargo install --locked <name>@<version>` to
 `cargo binstall --locked --no-confirm <name>@<version>` at `cargo-binstall`
 1.23.0 — the substitution revisions 1 to 6 had already described, declined for
-want of a ruling, and named as a one-line change. Revision 7 makes it and, at
-new **check 15**, verifies it rather than copying it: the backend is still the
-newest unyanked release with its licence and `rust_version` unchanged; the two
-flags are read in the source at the immutable tag `v1.23.0`; and the command is
-executed as written from a scratch directory, with `--dry-run` appended so
-nothing is installed and with a failing control so the check can fail. That
-execution also corrected the recommendation's own wording in two places the old
-text overstated: `--locked` reaches only the compile fallback, and the prebuilt
-path is per tool and per target rather than a property of the backend —
-`taplo-cli@0.10.0` had no artifact for this target and fell through to
-`cargo install`. **Three passages went as moot**: the `cargo-quickinstall`
-licence-clean prebuilt fallback, the re-verify trigger watching for
-`cargo-binstall` to relicense, and unproven item 7, which held the ruling open and
-is now restated as resolved in its own slot so that the cross-references to it
-still land. **Eleven further locations were restated** rather than removed, found
-by searching this file for `binstall`, `quickinstall`, `licen[cs]e`, `GPL`,
-`gate 1`, `aggregation`, `R01 only`, `cargo install`, `prebuilt`, `compile`,
-`source build` and `owner rul` before any edit was made and re-searched
-afterwards: the status paragraph's "the owner has reviewed R01 only"; layer 2's
-table row; the licence-finding block, replaced by the backend paragraph and its
-three costs; the hermetic-environment row, where GPL-2.0 is demoted from a ground
-to a figure and the two independent grounds are stated as the ones that carry it;
-the LOW answer, where `biome`'s `cargo install cargo-binstall` line becomes
-bootstrap evidence; the earlier re-verify list; the `license` paragraph in
-`## Parameters`; the `cargo-binstall` figure row; fitness gates 1, 2 and 6;
-disagreement 4; and unproven items 4 and 5. **What did not change**: the owned
-parameter's value and all four `- assumes` lines, byte for byte; acceptance
-criteria (A) to (E), each re-read and each backend-agnostic — none names an
-installer; the five layers other than layer 2's recipe body; the 17-repository
-survey; the presence test and its six-cell matrix; the alias answer; the five
-earlier adjudications and disagreement 6; the eighteen-row sweep; checks 1 to 14
-and every existing evidence log, none of which was rerun or modified. One file
-was added, as the new check required: `evidence/binstall-backend.log`. **One
-stale cross-reference is recorded rather than edited**: sweep row 17 above, in
-revision 3's table, calls mere aggregation "a reading this decision explicitly
-does not adopt". That was true of revisions 3 to 6 and is left standing as the
-historical record it is; the current text adopts `cargo-binstall` on the owner's
-ruling, which is wider than opus's mere-aggregation argument and does not rest on
-it.
+want of a ruling, and called a one-line change. Revision 7 makes it and, at new
+**check 15**, verifies it rather than copying it out of the old text: the backend
+is still the newest unyanked release with its licence and `rust_version`
+unchanged; `--locked`, `--no-confirm`, the `crate[@version]` positional,
+`--dry-run` and `--disable-telemetry` are read in the source at the immutable tag
+`v1.23.0`; and the command is executed as written from a scratch directory, with
+`--dry-run` on every call so nothing is installed, a before-and-after hash of
+`~/.cargo/bin` to show it, and a failing control so the check can fail. **That
+execution corrected the recommendation's own wording in two places**, both of
+which the old text stated more strongly than its evidence: `--locked` reaches
+only the compile fallback, not a prebuilt download; and the prebuilt path is per
+tool and per target rather than a property of the backend — `cargo-shear@1.13.1`
+resolved an artifact, `taplo-cli@0.10.0` found none and fell through to
+`cargo install`. It also surfaced a cost the "one line" phrasing hid: the backend
+must itself be on `PATH`, so the declared tool table gains `cargo-binstall` and
+the bootstrap acquires it.
+
+**Three passages went as moot**, each named in the reply and each gone or
+restated rather than quietly softened: the `cargo-quickinstall` licence-clean
+prebuilt fallback, which had no ground left once licence stopped being a
+criterion; the re-verify trigger watching for `cargo-binstall` to relicense, for
+the same reason; and unproven item 7, which held the ruling open and is now
+restated **in its own slot** as resolved, so that the references to "item 7" at
+`## Parameters` and in revision 6's history still land.
+
+**Every location was found by search before any edit, and re-searched after.**
+The keys were `binstall`, `quickinstall`, `licen[cs]e`, `GPL`, `gate 1`,
+`aggregation`, `R01 only`, `cargo install`, `prebuilt`, `compile`, `source
+build`, `source compile`, `already present` and `owner rul`. **Twenty-one
+locations** make up this revision, and this list is exhaustive: (1) the title
+line, now dated; (2) the status paragraph, where "the owner has reviewed R01
+only" becomes the owner-direction paragraph; (3) layer 2's table row; (4) the
+licence-finding block, replaced by the backend paragraph, the three costs, the
+two further flags and the three consequences; (5) the hermetic-environment row,
+where `flox`'s GPL-2.0 is demoted from a ground to a figure and the two
+licence-independent grounds are stated as the ones that carry it; (6) the LOW
+answer, where `biome`'s `cargo install cargo-binstall` line becomes bootstrap
+evidence; (7) the earlier re-verify list; (8) the `license` paragraph in
+`## Parameters`; (9) a new host paragraph for check 15 in `## Empirical check`;
+(10) the working-directory and nothing-installed paragraph; (11) the "nothing
+recommended was implemented" paragraph, which now says that check 15 runs a
+third-party binary and what that does not prove; (12) the new check-15 row;
+(13) the `cargo-binstall` figure row; (14) fitness gates 1 and 2; (15) fitness
+gate 6; (16) disagreement 4; (17) unproven item 4; (18) unproven item 5;
+(19) unproven item 7; (20) this revision-history entry; and (21) the new
+`## Supersedes` section. Items 4, 7 and 19 carry the three moot passages.
+
+**What did not change**, each re-read rather than assumed: the owned parameter's
+value and all four `- assumes` lines, byte for byte — `cargo binstall` is an
+invocation of a crates.io-installed `cargo-<sub>` plugin, which is the form the
+parameter already prescribes, so the parameter is obeyed and not amended;
+acceptance criteria (A) to (E), byte for byte, each re-read and each
+backend-agnostic — none of the five names an installer; the four layers other
+than layer 2's recipe body; the 17-repository survey; the presence test and its
+six-cell matrix; the alias answer; the five earlier adjudications and
+disagreement 6; the eighteen-row sweep; and checks 1 to 14 with every evidence
+log they cite, none of which was rerun or modified. One file was added, as the
+new check required: `evidence/binstall-backend.log`.
+
+**One stale cross-reference is recorded rather than edited**: sweep row 17 above,
+in revision 3's table, calls mere aggregation "a reading this decision explicitly
+does not adopt". That was true of revisions 3 to 6 and stands as the historical
+record it is. The current text adopts `cargo-binstall` on the owner's ruling,
+which is wider than opus's mere-aggregation argument and does not rest on it.
 
 **Disagreements, and the evidence that settled each.**
 
@@ -1109,14 +1157,16 @@ what would prove it.
    `PATH` before the recipe can run. Proof: run both on a CI runner, on each
    operating system in `target-os-matrix`.
 5. **How much the prebuilt backend actually saves.** Revision 7 reverses the
-   trade revision 6 made and asserts the benefit **qualitatively only**. Check 15
-   shows it is not uniform: in one run `cargo-machete@0.9.2` short-circuited as
-   already installed while `taplo-cli@0.10.0` found no prebuilt artifact for
-   `aarch64-apple-darwin` and fell through to a source build, which is revision
-   6's cost exactly. Proof: time a cold run of the generic recipe over the
-   actually selected tool set on both runners, record per tool whether a prebuilt
-   artifact was found, and compare against `cargo install --locked` of the same
-   set, with the tool set, versions and runner class stated.
+   trade revision 6 made and asserts the benefit **qualitatively only; nothing in
+   check 15 was timed**. What check 15 does establish is that the benefit is not
+   uniform: in one run `cargo-shear@1.13.1` resolved a prebuilt artifact,
+   `taplo-cli@0.10.0` found none for `aarch64-apple-darwin` and fell through to a
+   source build — revision 6's cost exactly — and `cargo-machete@0.9.2`
+   short-circuited as already installed. Proof: time a cold run of the generic
+   recipe over the actually selected tool set on both runners, record per tool
+   whether a prebuilt artifact was found, and compare against
+   `cargo install --locked` of the same set, with the tool set, versions and
+   runner class stated.
 6. **Layer 4 (`ubi`) has never been exercised.** It has zero occupants by default
    and no maintained project was found composing it with the other four layers.
    Note the evidence *against* it that `raw/opus.md` surfaced and this decision
