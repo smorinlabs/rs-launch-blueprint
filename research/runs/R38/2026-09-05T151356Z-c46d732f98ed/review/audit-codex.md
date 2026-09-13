@@ -1,58 +1,62 @@
-decision-sha256: 97da7f169f26fce8f9b43c3d6c2eb0971b991f45b0d00ae2a91c5ddc3cbe4437
-actor: audit-codex-2026-09-05T151356Z-c46d732f98ed-r5
+decision-sha256: 389fbbc01283fa0ee481b81ea11e6caa03e3ff6b9bddd70a4f7c75ac70ded292
+actor: audit-codex-2026-09-05T151356Z-c46d732f98ed-r6
 model: gpt-5.6-terra
 family: openai
-verdict: approve
-unresolved-findings: none
+verdict: reject
+unresolved-findings: The claimed byte-for-byte rerun comparison omits the C23 absolute fixture-path difference
 
 ## Rerun
 
-I copied `review/empirical/` to the fresh fixture
-`/private/tmp/r38-audit-r5.vF6gLr`, excluding all provisioned `tools/`
-directories, scratch repositories, audit work, and the fixture test target.
-`bash run-checks.sh` provisioned `committed 1.1.11` in that copy and exited 0:
-`PASS=35 FAIL=0 RECORD=5`. The macOS arm64 leg used `rustc` and `cargo`
-1.98.0 with Git 2.50.1.
+I copied `review/empirical/` twice to fresh directories under `/private/tmp`,
+excluding provisioned binaries and generated work. On macOS arm64 with `rustc`
+and `cargo` 1.98.0 and Git 2.50.1, `bash run-checks.sh` from the fresh fixture
+exited 0 with `PASS=35 FAIL=0 RECORD=5`. Its complete output is
+`review/evidence/audit-r6-acceptance.log`.
 
-`CARGO_HOME=/private/tmp/r38-audit-cargo-home-r5.2rfQui bash audit-deps.sh`
-ran in the same fixture with a fresh advisory database. It exited 0 after
-loading 1,242 advisories and scanning 181 locked dependencies. It found the
-documented three `unsound` warnings and no vulnerabilities; the source
-reachability greps remained zero for the affected API names, `downcast`, and
-`unsafe`.
+From a separate fresh fixture, the revision-6 command
+`bash conventional-commits-linter-eval/evaluate.sh` exited 0 with
+`PASS=55 FAIL=0 CONTRACT_VIOLATIONS=3`. Its complete output is
+`review/evidence/audit-commit-message-linter-r6.log`. It reproduces C04 and
+C08 as candidate exit 0 versus `committed` control exit 1, the one-header-only
+length option and zero body/footer options, `--type` limited to `any` or
+`angular`, no declared `rust-version`, Linux-musl-only release assets, and no
+macOS CI job. It also reproduces selected-tool C22/C23: `FEAT` exits 0 and
+`WIBBLE` exits 1 under the declared `allowed_types`.
 
-The available Linux command, `limactl shell ubuntu -- bash -lc 'source
-"$HOME/.cargo/env"; bash …/review/empirical/linux-leg.sh'`, provisioned a
-separate binary in `/tmp/r38-linux-r4` and exited 0. Ubuntu 25.10 aarch64 used
-`rustc` and `cargo` 1.98.1 with Git 2.51.0 and reproduced
-`PASS=35 FAIL=0 RECORD=5`. A fresh `cargo-commitlint 2.1.0` install and its
-supplementary comparison also exited 0; cases 05 and 07 rejected the URL lines
-at the 72-column limit as the decision states.
+`review/evidence/audit-r6-selected-discovery.log` separately proves the
+selected tool discovers the enclosing Git repository configuration rather than
+the current nested-directory configuration: root config exits 0, conflicting
+nested config exits 1 when explicit, and no-config execution from the nested
+directory exits 0. `review/evidence/audit-r6-supersedes.log` confirms the
+embedded revision-5 bytes exactly match the published decision, SHA-256
+`97da7f169f26fce8f9b43c3d6c2eb0971b991f45b0d00ae2a91c5ddc3cbe4437`.
 
-Complete command output, including six `curl` citation spot checks and raw
-report integrity checks, is in
-`review/evidence/audit-commit-message-linter-r5.log`. The output matches the
-decision's empirical claims.
+The behavioral and gate assertions match the decision. Its stated
+byte-comparison claim does not: the independent diff is in
+`review/evidence/audit-r6-evaluation-stable.diff`.
 
 ## Findings
 
-None. Revision 5 corrects the only revision-4 finding: both references to the
-approving revision-3 audits now name the existing archived files
-`review/audit-codex.r3.md` and `review/audit-fable.r3.md`. Both files approve
-the recorded revision-3 hash `2fc432d4384bf492c03b7276fab4458c8cc52d734ef73e60f68d1ebc378e9c99`.
+1. The revision-six reproducibility statement is too strong. It says the
+cited evaluation and an immediate rerun differ only at the timestamp, then
+lists three other predictable volatile categories and says every other line is
+byte-for-byte reproducible. In the fresh-copy rerun required for this audit,
+the C23 diagnostic contains the copied fixture's absolute
+`.../.work/upper-bad.txt` path, while the cited log contains the run-directory
+path. The stable diff records that undisclosed difference. The documented
+fresh-install lines also differ as expected. The decision must either treat
+the diagnostic path as volatile or narrow the byte-for-byte claim; the
+candidate result itself is unaffected.
 
-The five raw reports pass `scripts/check-answer-shape.sh … crate`, and their
-SHA-256 values match the values in `## Engines`. Curl checks of the tagged
-manifest, crate manifest, `checks.rs`, action entrypoint, pre-commit hook
-metadata, and release record support the decision's version, license, MSRV,
-line-measurement, hook-argument, action, and release-asset claims.
+`review/evidence/audit-r6-citation-checks.log` records six curl spot checks of
+the candidate's crates.io version metadata, release assets, tagged CI,
+published manifest, and the selected tool's tagged manifest and checks source.
+They support the evaluated claims. Gate 1 is correctly recorded as
+inapplicable and was not treated as a finding.
 
 ## Assessment
 
-The fixture proves the claimed enforcement behavior rather than only install
-or startup: it rejects an invalid type and over-width human messages, accepts
-the required URL cases, preserves type enforcement for bot commits while
-relaxing only their widths in CI, blocks a bad local commit, and catches the
-same commit after `--no-verify` through the range check. The dependency audit,
-two operating-system legs, runner-up comparison, source spot checks, and
-corrected provenance support the current decision. Approve.
+The reopened candidate is now evaluated on reproducible evidence and is
+properly excluded by capability plus gates 2 and 4, independent of licence.
+The selected-tool observations and the Supersedes block are correct. Reject
+only until the inaccurate byte-for-byte reproducibility wording is corrected.

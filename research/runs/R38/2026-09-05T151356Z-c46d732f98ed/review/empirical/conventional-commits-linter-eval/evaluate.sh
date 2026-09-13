@@ -115,8 +115,15 @@ ok C22-ctl 0 $? "control committed on the same message — accepted as well: the
 verdict MEETS "the vocabulary is matched case-insensitively by BOTH tools; a shared tolerance, recorded as a finding about the selected tool too"
 out=$("$BIN" "${CAND_ARGS[@]}" - < "$WORK/upper-bad.txt" 2>&1); rc=$?
 ok C23 1 "$rc" "candidate on \`WIBBLE(cli): …\` — an upper-case NON-member is still rejected"
-"$CTL" --config "$CTLCFG" --commit-file "$WORK/upper-bad.txt" > "$WORK/wibble.txt" 2>&1
-ok C23-ctl 1 $? "control committed on the same message — rejected as well"
+# The control's diagnostic ECHOES BACK the path it was given, so passing the
+# absolute `$WORK/upper-bad.txt` made this one printed line carry the location of
+# whatever copy of this fixture was running — the revision-6 auditor's rerun from
+# `/private/tmp/...` differed here, and revision 6's byte-for-byte claim did not
+# account for it. Invoking from inside `$WORK` with a bare relative file name
+# makes the diagnostic location-independent; `--config` stays absolute, so the
+# configuration read is unchanged, and the asserted exit status is unchanged.
+( cd "$WORK" && "$CTL" --config "$CTLCFG" --commit-file upper-bad.txt ) > "$WORK/wibble.txt" 2>&1
+ok C23-ctl 1 $? "control committed on the same message — rejected as well (invoked from inside the work directory with a relative file name, so the diagnostic quotes no absolute path)"
 sed 's/^/       | /' "$WORK/wibble.txt"
 verdict MEETS "neither tool lets a type outside the vocabulary land, in any casing"
 # Missing-binary posture (essential behavior 5).

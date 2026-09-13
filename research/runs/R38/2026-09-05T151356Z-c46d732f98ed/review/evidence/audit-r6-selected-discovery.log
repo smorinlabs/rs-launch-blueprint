@@ -1,0 +1,8 @@
+selected-bin: /private/tmp/r38-audit-r6.46q2YZ/empirical/tools/bin/committed
+root-explicit-exit: 0
+nested-explicit-exit: 1
+nested-cwd-discovery-exit: 0
+root explicit output:
+nested explicit output:
+  /private/tmp/r38-audit-r6-discovery.317CVp/message.txt: error Subject should be capitalized but found `lower-case`
+nested cwd discovery output:
