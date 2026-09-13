@@ -1,4 +1,42 @@
-# R49 — build-target-declaration (crate, Deep) — DECISION (revision 2, 2026-09-12)
+# R49 — build-target-declaration (crate, Deep) — DECISION (revision 3, 2026-09-13)
+
+**What changed in revision 3, and what did not.** Revision 2 (sha256
+`1b5a6b99ecedb88f7358d16a4567aa9b56838a2102e9e4feda99d00bc787513f`) was
+**approved** by `review/audit-codex.r2.md` (actor
+`audit-codex-2026-09-05T155504Z-2107cffb3ecf-r2`, model `gpt-5.6-terra`) with no
+unresolved finding. It is revised here only because the owner ruled on 2026-09-12
+(Q4 as superseded by Q7.B) that licence compatibility is not checked for any tool
+or dependency this project uses, which strikes fitness gate 1 from every item's
+evaluation. **The recommendation does not move.** Nothing in the pick — declare
+every build target in `Cargo.toml` itself and add no build backend, bundler or
+build-orchestration crate — rested on a licence fact: the pick is dominant
+because Cargo's manifest is the only candidate in the three-bin map that declares
+a build target at all. What moves is one piece of reasoning. A mechanical search
+for `licen`, `gate 1`, copyleft and licence identifiers, and `binstall` produced
+the full line list recorded in this revision's commit message; three locations
+carried a *licence-as-gate* claim and all three are edited — the gate-1 row under
+`### Principles and implementation`, the `cargo-binstall` exclusion in the same
+section, and the `## Empirical check` sentence that read gate exclusions off
+check 6's table. Gate 1 is recorded as `inapplicable` with the ruling as its
+reason and is **not** deleted, because this item's binding prompt still lists it
+and the prompt directs that an inapplicable metric be stated with its reason
+rather than omitted. The `cargo-binstall` exclusion **survives intact on its
+scope ground**, which revision 2 already stated as sufficient on its own ("out of
+scope regardless") and which sits in this decision's own voice in
+`### Principles and implementation`, not in any quoted provider report: the
+`[package.metadata.binstall]` table that crate reads belongs to R68 (F214), which
+this item's prompt places out of scope in those words. No raw report excluded
+`cargo-binstall` on a licence ground, so no engine position is disturbed and
+`## Engines` is unchanged. Every `- owns` and `- assumes` line is byte-identical
+to revision 2. Two presentational edits are the only other changes: the title's
+revision number, and the removal of bold emphasis from the `GPL-3.0-only` cell in
+check 6's table, where the bold marked a gate failure that no longer exists — the
+measured value itself is unchanged, being a transcription of
+`review/evidence/registry-figures.log`. No evidence script, log or empirical
+check was altered or re-run, and this revision makes no new empirical claim. The
+repository's own `license` field, its `LICENSE-MIT` + `LICENSE-APACHE` pair and
+the `include` allow-list entries naming them are untouched: the ruling covers
+dependencies and tools, not this repository's own declared licence.
 
 **What changed in revision 2, and nothing else changed.** Revision 1 (sha256
 `b7adf7d8f8ff380cdb25b40ff331d6b83291b2f7ea75a42407684ce2919cbcf9`) was rejected
@@ -154,8 +192,13 @@ this template does not consume. Stars and repository state do exist for
 not by omission** — it is the substance of the F212 baseline-review line above.
 
 **The six fitness gates, answered for the recommendation before any popularity
-figure was weighed.** (1) *License* — pass, and no dependency is added, so
-nothing enters the tree's license set. (2) *MSRV* — pass; Cargo is the toolchain,
+figure was weighed.** (1) *License* — `inapplicable — owner ruling 2026-09-12
+(Q7.B): licence compatibility is not evaluated for any dependency or tool`. The
+row is stated rather than omitted because this item's binding prompt still lists
+the gate and directs that an inapplicable metric carry its reason. The underlying
+fact is unchanged and is kept here as a fact rather than as a gate verdict: this
+recommendation adds no dependency, so nothing enters the tree's license set at
+all. (2) *MSRV* — pass; Cargo is the toolchain,
 not a dependency, and has no `rust-version` to test against the policy. The
 manifest fields recommended here impose no floor above `edition = "2024"`, which
 requires Rust 1.85.0 or newer. (3) *RustSec and `unsafe`* — pass; declaring
@@ -178,9 +221,16 @@ recorded as an evidence gap, not filled with an invented number.
 **Candidates excluded, and on what.** `cargo-make` **fails gate 2**: its newest
 non-yanked release 0.37.24 (2025-01-18) declares **no `rust_version` at all**
 (check 6, re-measured this run), and the fixed policy requires a declared,
-CI-tested floor. `cargo-binstall` **fails gate 1 as a dependency**: newest
-non-yanked 1.23.0, `GPL-3.0-only` (check 6) — and it is out of scope regardless,
-because the `[package.metadata.binstall]` table it reads is R68's (F214).
+CI-tested floor. `cargo-binstall` is **excluded by scope, and by scope alone**:
+the `[package.metadata.binstall]` table it reads is R68's (F214), which this
+item's own prompt places out of scope in those words — *"crates.io-only vs.
+`cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall`
+metadata; R68 (`release-binary-artifacts`) owns F214"* (`inputs/prompt.md`,
+`## Out of scope`). Gate 1 is `inapplicable` to it for the reason given above, so
+no licence ground is carried; revision 3 removed one that earlier revisions had
+stated alongside this scope ground, which they already called sufficient on its
+own. Its registry `license` value is still recorded in check 6 as measured
+metadata.
 `cross` **fails gate 4**: it runs the build inside Docker or Podman, which the
 GitHub-hosted macOS image does not ship (measured by `raw/opus…` against the
 `actions/runner-images` manifests, 2026-09-10). `cargo-zigbuild`, `cbindgen`,
@@ -604,16 +654,20 @@ advisories). Retrieved 2026-09-10; log `review/evidence/registry-figures.log`.
 |---|---|---|---|---|---|---|---|
 | `cargo-dist` | 19,922 | 175,385 | 0.32.0 | 2026-05-22 | MIT OR Apache-2.0 | 1.74 | HTTP 404 |
 | `cargo-make` | 248,798 | 3,672,469 | 0.37.24 | 2025-01-18 | Apache-2.0 | **absent** | HTTP 404 |
-| `cargo-binstall` | 125,820 | 3,483,662 | 1.23.0 | 2026-09-05 | **GPL-3.0-only** | 1.79.0 | HTTP 404 |
+| `cargo-binstall` | 125,820 | 3,483,662 | 1.23.0 | 2026-09-05 | GPL-3.0-only | 1.79.0 | HTTP 404 |
 | `cross` | 307,766 | 6,269,217 | 0.2.5 | 2023-02-04 | MIT OR Apache-2.0 | absent | HTTP 404 |
 | `cargo-zigbuild` | 1,547,057 | 7,034,852 | 0.23.4 | 2026-09-02 | MIT | 1.88 | HTTP 404 |
 | `cbindgen` | 13,646,147 | 101,705,742 | 0.29.4 | 2026-06-09 | MPL-2.0 | 1.74 | HTTP 404 |
 | `cargo-packager` | 47,349 | 178,600 | 0.11.8 | 2025-11-27 | Apache-2.0 OR MIT | absent | HTTP 404 |
 
 An HTTP 404 on a RustSec package page means **no advisory record exists**, not
-that the query failed. The two gate exclusions above rest on this table:
-`cargo-make`'s `rust_version` is absent, and `cargo-binstall`'s license is
-`GPL-3.0-only`.
+that the query failed. **One** gate exclusion above rests on this table:
+`cargo-make`'s `rust_version` is absent. The `license` column is retained because
+it is what the endpoint returned and what `review/evidence/registry-figures.log`
+records, and it is evaluated against **no gate**: under the owner's 2026-09-12
+ruling (Q7.B), licence compatibility is not a fitness criterion for any
+dependency or tool. `cargo-binstall`'s `GPL-3.0-only` value therefore excludes
+nothing, and that crate's exclusion is by scope.
 
 **Check 7 — the packaged-file mechanism and the name-divergence rate in
 well-regarded manifests, measured independently of the raw reports.** Nine
