@@ -1,6 +1,6 @@
 
 ===== CHECK 1 — toolchain and host =====
--- run at 2026-09-13T07:25:32Z
+-- run at 2026-09-13T08:55:00Z
   STATUS OK   rustc --version: exit=0 (expected 0)
 rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
   ASSERT OK   rustc is a released version: /^rustc 1\.[0-9]+\.[0-9]+/ present
@@ -11,7 +11,7 @@ os: macOS 26.4 arm64
 note: the template does not exist yet; no Rust workspace is built or resolved here.
 
 ===== CHECK 2 — current stable Rust (msrv floor input) =====
--- run at 2026-09-13T07:25:32Z
+-- run at 2026-09-13T08:55:00Z
   STATUS OK   GET channel-rust-stable.toml: exit=0 (expected 0)
 [pkg.rust]
 version = "1.98.1 (48a229cea 2026-09-01)"
@@ -20,7 +20,7 @@ git_commit_hash = "48a229ceaefd4985c50990b14116b6d856af0985"
   ASSERT OK   a stable version line is present: /^version = "1\.[0-9]+\.[0-9]+/ present
 
 ===== CHECK 3 — crates.io — the pinned version's licence, rust_version, edition (plus newest unyanked) =====
--- run at 2026-09-13T07:25:33Z
+-- run at 2026-09-13T08:55:01Z
 GET https://crates.io/api/v1/crates/proptest/1.11.0 -> HTTP 200
   STATUS OK   crates.io proptest 1.11.0 is HTTP 200: exit=200 (expected 200)
 GET https://crates.io/api/v1/crates/proptest/versions -> HTTP 200
@@ -79,11 +79,11 @@ GET https://crates.io/api/v1/crates/proptest-derive/versions -> HTTP 200
   ASSERT OK   proptest-derive 0.8.0 declares MIT OR Apache-2.0: /PINNED num=0.8.0 .*license='MIT OR Apache-2\.0'/ present
 
 ===== CHECK 4 — crates.io — download and reverse-dependency figures (VOLATILE: counters move daily) =====
--- run at 2026-09-13T07:25:44Z
+-- run at 2026-09-13T08:55:12Z
   STATUS OK   GET crates.io/proptest: exit=0 (expected 0)
   STATUS OK   GET crates.io/proptest reverse_dependencies: exit=0 (expected 0)
   STATUS OK   parse proptest figures: exit=0 (expected 0)
-  proptest: recent_downloads=47141103 downloads=185879611 reverse_deps=10448
+  proptest: recent_downloads=47141103 downloads=185879611 reverse_deps=10449
   ASSERT OK   proptest figures are numeric: /recent_downloads=[0-9]+ downloads=[0-9]+ reverse_deps=[0-9]+/ present
   STATUS OK   GET crates.io/quickcheck: exit=0 (expected 0)
   STATUS OK   GET crates.io/quickcheck reverse_dependencies: exit=0 (expected 0)
@@ -111,8 +111,145 @@ GET https://crates.io/api/v1/crates/proptest-derive/versions -> HTTP 200
   expect-test: recent_downloads=7439591 downloads=37128584 reverse_deps=313
   ASSERT OK   expect-test figures are numeric: /recent_downloads=[0-9]+ downloads=[0-9]+ reverse_deps=[0-9]+/ present
 
+-- the six ratios, DERIVED from the figures just fetched (VOLATILE values,
+   durable floors). The quotient is printed to four decimal places beside its
+   one-decimal rounding so the rounding is auditable. Only the FLOOR lines are
+   asserted: an exact live value would be a claim that expires overnight.
+  STATUS OK   collect the six live figure lines: exit=0 (expected 0)
+  STATUS OK   derive the six live ratios: exit=0 (expected 0)
+  RATIO live insta/snapbox 90d-downloads = 8.2490 -> 8.2x  (26700493 / 3236799)
+  FLOOR live insta/snapbox 90d-downloads > 5.0 : OK  (8.2490)
+  RATIO live insta/snapbox reverse-deps = 28.2051 -> 28.2x  (4400 / 156)
+  FLOOR live insta/snapbox reverse-deps > 20.0 : OK  (28.2051)
+  RATIO live insta/expect-test 90d-downloads = 3.5890 -> 3.6x  (26700493 / 7439591)
+  FLOOR live insta/expect-test 90d-downloads > 3.0 : OK  (3.5890)
+  RATIO live insta/expect-test reverse-deps = 14.0575 -> 14.1x  (4400 / 313)
+  FLOOR live insta/expect-test reverse-deps > 10.0 : OK  (14.0575)
+  RATIO live proptest/quickcheck 90d-downloads = 4.3973 -> 4.4x  (47141103 / 10720585)
+  FLOOR live proptest/quickcheck 90d-downloads > 3.0 : OK  (4.3973)
+  RATIO live proptest/quickcheck reverse-deps = 6.8027 -> 6.8x  (10449 / 1536)
+  FLOOR live proptest/quickcheck reverse-deps > 5.0 : OK  (6.8027)
+  ASSERT OK   every live ratio is printed in derived form: /^  RATIO live [a-z/-]+ [a-z0-9-]+ = [0-9]+\.[0-9]{4} -> [0-9]+\.[0-9]x  \([0-9]+ / [0-9]+\)$/ present
+  ASSERT OK   live: insta/snapbox 90d-downloads leads by more than 5.0x: /^  FLOOR live insta/snapbox 90d-downloads > 5\.0 : OK/ present
+  ASSERT OK   live: insta/snapbox reverse-deps leads by more than 20.0x: /^  FLOOR live insta/snapbox reverse-deps > 20\.0 : OK/ present
+  ASSERT OK   live: insta/expect-test 90d-downloads leads by more than 3.0x: /^  FLOOR live insta/expect-test 90d-downloads > 3\.0 : OK/ present
+  ASSERT OK   live: insta/expect-test reverse-deps leads by more than 10.0x: /^  FLOOR live insta/expect-test reverse-deps > 10\.0 : OK/ present
+  ASSERT OK   live: proptest/quickcheck 90d-downloads leads by more than 3.0x: /^  FLOOR live proptest/quickcheck 90d-downloads > 3\.0 : OK/ present
+  ASSERT OK   live: proptest/quickcheck reverse-deps leads by more than 5.0x: /^  FLOOR live proptest/quickcheck reverse-deps > 5\.0 : OK/ present
+
+===== CHECK 4b — the same six ratios recomputed from two COMMITTED snapshots, and the stability comparison =====
+-- run at 2026-09-13T08:55:22Z
+-- Inputs are static files in this run's evidence directory, so this section is
+   deterministic: apart from its own '-- run at' header it prints identical text
+   on any day and on any machine.
+  STATUS OK   input exists: adoption-figures-2026-09-10.txt: exit=0 (expected 0)
+  STATUS OK   input exists: adoption-figures-2026-09-13.txt: exit=0 (expected 0)
+  STATUS OK   input exists: DECISION.md: exit=0 (expected 0)
+-- provenance headers of the two snapshots (file names only: an absolute path
+   would make this section machine-specific)
+  [adoption-figures-2026-09-10.txt]
+# source-path: research/topics/33-property-and-snapshot-testing/evidence/2026-09-05T164358Z-eae89906c763-property-and-snapshot-testing.log
+# source-sha256: 33c4358489d43edf46b30e37f7a8f5ff465f99f22ea3058e99604d6d40115f6b
+# source-run: 2026-09-10, revision 2 of review/DECISION.md (published)
+# extracted: 2026-09-13, by revision 4's synthesizer, with
+  STATUS OK   adoption-figures-2026-09-10.txt carries provenance headers: exit=0 (expected 0)
+  [adoption-figures-2026-09-13.txt]
+# source-path: research/runs/R33/2026-09-05T164358Z-eae89906c763/review/evidence/property-and-snapshot-testing.log
+# source-sha256: 235dd90ffcdaba32eea3bf66909d4983da6fe43d05360d4dc0e8fe3c25777102
+# source-run: 2026-09-13T07:25Z, the run recorded by revision 3 of review/DECISION.md
+# extracted: 2026-09-13, by revision 4's synthesizer, with
+  STATUS OK   adoption-figures-2026-09-13.txt carries provenance headers: exit=0 (expected 0)
+  ASSERT OK   the 2026-09-10 snapshot names the published revision-2 log: /^# source-sha256: 33c4358489d43edf46b30e37f7a8f5ff465f99f22ea3058e99604d6d40115f6b$/ present
+  ASSERT OK   the 2026-09-13 snapshot names the run at 07:25Z: /^# source-run: 2026-09-13T07:25Z/ present
+  STATUS OK   derive the six 2026-09-10 ratios: exit=0 (expected 0)
+  RATIO 2026-09-10 insta/snapbox 90d-downloads = 8.2828 -> 8.3x  (26382169 / 3185186)
+  FLOOR 2026-09-10 insta/snapbox 90d-downloads > 5.0 : OK  (8.2828)
+  RATIO 2026-09-10 insta/snapbox reverse-deps = 28.1026 -> 28.1x  (4384 / 156)
+  FLOOR 2026-09-10 insta/snapbox reverse-deps > 20.0 : OK  (28.1026)
+  RATIO 2026-09-10 insta/expect-test 90d-downloads = 3.6009 -> 3.6x  (26382169 / 7326545)
+  FLOOR 2026-09-10 insta/expect-test 90d-downloads > 3.0 : OK  (3.6009)
+  RATIO 2026-09-10 insta/expect-test reverse-deps = 14.0064 -> 14.0x  (4384 / 313)
+  FLOOR 2026-09-10 insta/expect-test reverse-deps > 10.0 : OK  (14.0064)
+  RATIO 2026-09-10 proptest/quickcheck 90d-downloads = 4.4145 -> 4.4x  (46574976 / 10550560)
+  FLOOR 2026-09-10 proptest/quickcheck 90d-downloads > 3.0 : OK  (4.4145)
+  RATIO 2026-09-10 proptest/quickcheck reverse-deps = 6.7630 -> 6.8x  (10388 / 1536)
+  FLOOR 2026-09-10 proptest/quickcheck reverse-deps > 5.0 : OK  (6.7630)
+  ASSERT OK   2026-09-10: insta/snapbox 90d-downloads leads by more than 5.0x: /^  FLOOR 2026-09-10 insta/snapbox 90d-downloads > 5\.0 : OK/ present
+  ASSERT OK   2026-09-10: insta/snapbox reverse-deps leads by more than 20.0x: /^  FLOOR 2026-09-10 insta/snapbox reverse-deps > 20\.0 : OK/ present
+  ASSERT OK   2026-09-10: insta/expect-test 90d-downloads leads by more than 3.0x: /^  FLOOR 2026-09-10 insta/expect-test 90d-downloads > 3\.0 : OK/ present
+  ASSERT OK   2026-09-10: insta/expect-test reverse-deps leads by more than 10.0x: /^  FLOOR 2026-09-10 insta/expect-test reverse-deps > 10\.0 : OK/ present
+  ASSERT OK   2026-09-10: proptest/quickcheck 90d-downloads leads by more than 3.0x: /^  FLOOR 2026-09-10 proptest/quickcheck 90d-downloads > 3\.0 : OK/ present
+  ASSERT OK   2026-09-10: proptest/quickcheck reverse-deps leads by more than 5.0x: /^  FLOOR 2026-09-10 proptest/quickcheck reverse-deps > 5\.0 : OK/ present
+  STATUS OK   derive the six 2026-09-13 ratios: exit=0 (expected 0)
+  RATIO 2026-09-13 insta/snapbox 90d-downloads = 8.2490 -> 8.2x  (26700493 / 3236799)
+  FLOOR 2026-09-13 insta/snapbox 90d-downloads > 5.0 : OK  (8.2490)
+  RATIO 2026-09-13 insta/snapbox reverse-deps = 28.2051 -> 28.2x  (4400 / 156)
+  FLOOR 2026-09-13 insta/snapbox reverse-deps > 20.0 : OK  (28.2051)
+  RATIO 2026-09-13 insta/expect-test 90d-downloads = 3.5890 -> 3.6x  (26700493 / 7439591)
+  FLOOR 2026-09-13 insta/expect-test 90d-downloads > 3.0 : OK  (3.5890)
+  RATIO 2026-09-13 insta/expect-test reverse-deps = 14.0575 -> 14.1x  (4400 / 313)
+  FLOOR 2026-09-13 insta/expect-test reverse-deps > 10.0 : OK  (14.0575)
+  RATIO 2026-09-13 proptest/quickcheck 90d-downloads = 4.3973 -> 4.4x  (47141103 / 10720585)
+  FLOOR 2026-09-13 proptest/quickcheck 90d-downloads > 3.0 : OK  (4.3973)
+  RATIO 2026-09-13 proptest/quickcheck reverse-deps = 6.8021 -> 6.8x  (10448 / 1536)
+  FLOOR 2026-09-13 proptest/quickcheck reverse-deps > 5.0 : OK  (6.8021)
+  ASSERT OK   2026-09-13: insta/snapbox 90d-downloads leads by more than 5.0x: /^  FLOOR 2026-09-13 insta/snapbox 90d-downloads > 5\.0 : OK/ present
+  ASSERT OK   2026-09-13: insta/snapbox reverse-deps leads by more than 20.0x: /^  FLOOR 2026-09-13 insta/snapbox reverse-deps > 20\.0 : OK/ present
+  ASSERT OK   2026-09-13: insta/expect-test 90d-downloads leads by more than 3.0x: /^  FLOOR 2026-09-13 insta/expect-test 90d-downloads > 3\.0 : OK/ present
+  ASSERT OK   2026-09-13: insta/expect-test reverse-deps leads by more than 10.0x: /^  FLOOR 2026-09-13 insta/expect-test reverse-deps > 10\.0 : OK/ present
+  ASSERT OK   2026-09-13: proptest/quickcheck 90d-downloads leads by more than 3.0x: /^  FLOOR 2026-09-13 proptest/quickcheck 90d-downloads > 3\.0 : OK/ present
+  ASSERT OK   2026-09-13: proptest/quickcheck reverse-deps leads by more than 5.0x: /^  FLOOR 2026-09-13 proptest/quickcheck reverse-deps > 5\.0 : OK/ present
+-- each ratio's exact value on each date, asserted (both inputs are immutable)
+  ASSERT OK   2026-09-10 insta/snapbox 90d-downloads computes to 8.2828 (8.3x): /^  RATIO 2026-09-10 insta/snapbox 90d-downloads = 8\.2828 -> 8\.3x/ present
+  ASSERT OK   review/DECISION.md pairs 8.2828 with 8.3x for 2026-09-10 insta/snapbox 90d-downloads: /8\.2828.*8\.3/ present
+  ASSERT OK   2026-09-10 insta/snapbox reverse-deps computes to 28.1026 (28.1x): /^  RATIO 2026-09-10 insta/snapbox reverse-deps = 28\.1026 -> 28\.1x/ present
+  ASSERT OK   review/DECISION.md pairs 28.1026 with 28.1x for 2026-09-10 insta/snapbox reverse-deps: /28\.1026.*28\.1/ present
+  ASSERT OK   2026-09-10 insta/expect-test 90d-downloads computes to 3.6009 (3.6x): /^  RATIO 2026-09-10 insta/expect-test 90d-downloads = 3\.6009 -> 3\.6x/ present
+  ASSERT OK   review/DECISION.md pairs 3.6009 with 3.6x for 2026-09-10 insta/expect-test 90d-downloads: /3\.6009.*3\.6/ present
+  ASSERT OK   2026-09-10 insta/expect-test reverse-deps computes to 14.0064 (14.0x): /^  RATIO 2026-09-10 insta/expect-test reverse-deps = 14\.0064 -> 14\.0x/ present
+  ASSERT OK   review/DECISION.md pairs 14.0064 with 14.0x for 2026-09-10 insta/expect-test reverse-deps: /14\.0064.*14\.0/ present
+  ASSERT OK   2026-09-10 proptest/quickcheck 90d-downloads computes to 4.4145 (4.4x): /^  RATIO 2026-09-10 proptest/quickcheck 90d-downloads = 4\.4145 -> 4\.4x/ present
+  ASSERT OK   review/DECISION.md pairs 4.4145 with 4.4x for 2026-09-10 proptest/quickcheck 90d-downloads: /4\.4145.*4\.4/ present
+  ASSERT OK   2026-09-10 proptest/quickcheck reverse-deps computes to 6.7630 (6.8x): /^  RATIO 2026-09-10 proptest/quickcheck reverse-deps = 6\.7630 -> 6\.8x/ present
+  ASSERT OK   review/DECISION.md pairs 6.7630 with 6.8x for 2026-09-10 proptest/quickcheck reverse-deps: /6\.7630.*6\.8/ present
+  ASSERT OK   2026-09-13 insta/snapbox 90d-downloads computes to 8.2490 (8.2x): /^  RATIO 2026-09-13 insta/snapbox 90d-downloads = 8\.2490 -> 8\.2x/ present
+  ASSERT OK   review/DECISION.md pairs 8.2490 with 8.2x for 2026-09-13 insta/snapbox 90d-downloads: /8\.2490.*8\.2/ present
+  ASSERT OK   2026-09-13 insta/snapbox reverse-deps computes to 28.2051 (28.2x): /^  RATIO 2026-09-13 insta/snapbox reverse-deps = 28\.2051 -> 28\.2x/ present
+  ASSERT OK   review/DECISION.md pairs 28.2051 with 28.2x for 2026-09-13 insta/snapbox reverse-deps: /28\.2051.*28\.2/ present
+  ASSERT OK   2026-09-13 insta/expect-test 90d-downloads computes to 3.5890 (3.6x): /^  RATIO 2026-09-13 insta/expect-test 90d-downloads = 3\.5890 -> 3\.6x/ present
+  ASSERT OK   review/DECISION.md pairs 3.5890 with 3.6x for 2026-09-13 insta/expect-test 90d-downloads: /3\.5890.*3\.6/ present
+  ASSERT OK   2026-09-13 insta/expect-test reverse-deps computes to 14.0575 (14.1x): /^  RATIO 2026-09-13 insta/expect-test reverse-deps = 14\.0575 -> 14\.1x/ present
+  ASSERT OK   review/DECISION.md pairs 14.0575 with 14.1x for 2026-09-13 insta/expect-test reverse-deps: /14\.0575.*14\.1/ present
+  ASSERT OK   2026-09-13 proptest/quickcheck 90d-downloads computes to 4.3973 (4.4x): /^  RATIO 2026-09-13 proptest/quickcheck 90d-downloads = 4\.3973 -> 4\.4x/ present
+  ASSERT OK   review/DECISION.md pairs 4.3973 with 4.4x for 2026-09-13 proptest/quickcheck 90d-downloads: /4\.3973.*4\.4/ present
+  ASSERT OK   2026-09-13 proptest/quickcheck reverse-deps computes to 6.8021 (6.8x): /^  RATIO 2026-09-13 proptest/quickcheck reverse-deps = 6\.8021 -> 6\.8x/ present
+  ASSERT OK   review/DECISION.md pairs 6.8021 with 6.8x for 2026-09-13 proptest/quickcheck reverse-deps: /6\.8021.*6\.8/ present
+-- which ratios moved at one decimal place between the two dates
+  STATUS OK   compare the two dates: exit=0 (expected 0)
+  MOVE insta/snapbox 90d-downloads: 2026-09-10 8.3x -> 2026-09-13 8.2x : moved
+  MOVE insta/snapbox reverse-deps: 2026-09-10 28.1x -> 2026-09-13 28.2x : moved
+  MOVE insta/expect-test 90d-downloads: 2026-09-10 3.6x -> 2026-09-13 3.6x : held
+  MOVE insta/expect-test reverse-deps: 2026-09-10 14.0x -> 2026-09-13 14.1x : moved
+  MOVE proptest/quickcheck 90d-downloads: 2026-09-10 4.4x -> 2026-09-13 4.4x : held
+  MOVE proptest/quickcheck reverse-deps: 2026-09-10 6.8x -> 2026-09-13 6.8x : held
+  one-decimal comparison 2026-09-10 -> 2026-09-13: moved=3 held=3 of 6
+  ASSERT OK   insta/snapbox 90d-downloads went 8.3x -> 8.2x and is 'moved': /^  MOVE insta/snapbox 90d-downloads: 2026-09-10 8\.3x -> 2026-09-13 8\.2x : moved$/ present
+  ASSERT OK   insta/snapbox reverse-deps went 28.1x -> 28.2x and is 'moved': /^  MOVE insta/snapbox reverse-deps: 2026-09-10 28\.1x -> 2026-09-13 28\.2x : moved$/ present
+  ASSERT OK   insta/expect-test 90d-downloads went 3.6x -> 3.6x and is 'held': /^  MOVE insta/expect-test 90d-downloads: 2026-09-10 3\.6x -> 2026-09-13 3\.6x : held$/ present
+  ASSERT OK   insta/expect-test reverse-deps went 14.0x -> 14.1x and is 'moved': /^  MOVE insta/expect-test reverse-deps: 2026-09-10 14\.0x -> 2026-09-13 14\.1x : moved$/ present
+  ASSERT OK   proptest/quickcheck 90d-downloads went 4.4x -> 4.4x and is 'held': /^  MOVE proptest/quickcheck 90d-downloads: 2026-09-10 4\.4x -> 2026-09-13 4\.4x : held$/ present
+  ASSERT OK   proptest/quickcheck reverse-deps went 6.8x -> 6.8x and is 'held': /^  MOVE proptest/quickcheck reverse-deps: 2026-09-10 6\.8x -> 2026-09-13 6\.8x : held$/ present
+  ASSERT OK   three of the six moved at one decimal and three held: /^  one-decimal comparison 2026-09-10 -> 2026-09-13: moved=3 held=3 of 6$/ present
+-- the counters move in BOTH directions: cargo-insta's 90-day downloads FELL
+  [adoption-figures-2026-09-10.txt]   cargo-insta: recent_downloads=204308 downloads=1555508 reverse_deps=5
+  STATUS OK   read cargo-insta in adoption-figures-2026-09-10.txt: exit=0 (expected 0)
+  [adoption-figures-2026-09-13.txt]   cargo-insta: recent_downloads=199628 downloads=1560749 reverse_deps=5
+  STATUS OK   read cargo-insta in adoption-figures-2026-09-13.txt: exit=0 (expected 0)
+  ASSERT OK   cargo-insta 90-day downloads were 204308 on 2026-09-10: /^  cargo-insta: recent_downloads=204308 / present
+  ASSERT OK   cargo-insta 90-day downloads were 199628 on 2026-09-13 (a fall): /^  cargo-insta: recent_downloads=199628 / present
+
 ===== CHECK 5 — RustSec package pages, with two known-advisory controls =====
--- run at 2026-09-13T07:25:53Z
+-- run at 2026-09-13T08:55:22Z
   proptest         404
   quickcheck       404
   insta            404
@@ -135,7 +272,7 @@ GET https://crates.io/api/v1/crates/proptest-derive/versions -> HTTP 200
   ASSERT OK   control 'atty' has a RustSec page (200): /^  atty +200$/ present
 
 ===== CHECK 6 — first-party CI OS matrices (fitness gate 4) =====
--- run at 2026-09-13T07:25:54Z
+-- run at 2026-09-13T08:55:23Z
 --- proptest-rs/proptest .github/workflows/rust.yml
   STATUS OK   gh api repos/proptest-rs/proptest/contents/.github/workflows/rust.yml: exit=0 (expected 0)
   STATUS OK   base64 -d workflow: exit=0 (expected 0)
@@ -185,7 +322,7 @@ GET https://crates.io/api/v1/crates/proptest-derive/versions -> HTTP 200
   ASSERT OK   snapbox CI runs windows-latest: /windows-latest/ present
 
 ===== CHECK 7 — insta manifest — licence field and default features (docs.rs correction) =====
--- run at 2026-09-13T07:25:55Z
+-- run at 2026-09-13T08:55:24Z
   STATUS OK   GET mitsuhiko/insta insta/Cargo.toml: exit=0 (expected 0)
 [package]
 name = "insta"
@@ -281,7 +418,7 @@ lto = "thin"
   ASSERT OK   dist targets include x86_64-unknown-linux-gnu: /x86_64-unknown-linux-gnu/ present
 
 ===== CHECK 8 — proptest manifest at HEAD — rust-version vs the published 1.11.0 value =====
--- run at 2026-09-13T07:25:56Z
+-- run at 2026-09-13T08:55:24Z
   STATUS OK   GET proptest-rs/proptest proptest/Cargo.toml: exit=0 (expected 0)
 2:name = "proptest"
 3:version = "1.11.0"
@@ -295,7 +432,7 @@ lto = "thin"
   ASSERT OK   HEAD default features: /^default = \["std", "fork", "timeout", "bit-set"\]/ present
 
 ===== CHECK 9 — clap documentation — the determinism pins the B2 architecture depends on =====
--- run at 2026-09-13T07:25:56Z
+-- run at 2026-09-13T08:55:24Z
 StyledStr HTTP 200
   STATUS OK   docs.rs StyledStr is HTTP 200: exit=200 (expected 200)
   STATUS OK   scan StyledStr page: exit=0 (expected 0)
@@ -316,7 +453,7 @@ Command HTTP 200
   ASSERT OK   Command exposes term_width: /'term_width': FOUND/ present
 
 ===== CHECK 9b — is a volatile version string actually present in clap --help output? =====
--- run at 2026-09-13T07:25:56Z
+-- run at 2026-09-13T08:55:24Z
 -- raw/opus.md recommends insta's `filters` feature because "Rust --help output for this template will
 -- contain the crate version in the -V, --version line". This check tests that premise.
   STATUS OK   scan Command::help_template prose: exit=0 (expected 0)
@@ -332,7 +469,7 @@ Command HTTP 200
   ASSERT OK   the default template text is not quoted: /page quotes the default template: False/ present
 
 ===== CHECK 10 — py at the pin — the two source suites the ledger cites =====
--- run at 2026-09-13T07:25:56Z
+-- run at 2026-09-13T08:55:25Z
   STATUS OK   git show py tests/core/test_properties.py: exit=0 (expected 0)
 """Property-based round-trip tests (WL-013).
 
@@ -393,7 +530,7 @@ tests/web/test_openapi_snapshot.py
   ASSERT OK   the regeneration command is in the docstring: /pytest tests/cli/test_help_snapshots\.py --snapshot-update/ present
 
 ===== CHECK 11 — ts at the pin — is the absence of both capabilities drift or a language limit? =====
--- run at 2026-09-13T07:25:57Z
+-- run at 2026-09-13T08:55:25Z
 --- vitest and fast-check in package.json:
   STATUS OK   git show ts package.json: exit=0 (expected 0)
 34:    "test": "vitest run",
@@ -420,7 +557,7 @@ grep exit=1 (1 = no line mentions any of these)
   STATUS OK   no recorded reason for either omission: exit=1 (expected 1)
 
 ===== CHECK 11b — the ts testing decision D-019 in full, to show what it does settle =====
--- run at 2026-09-13T07:25:57Z
+-- run at 2026-09-13T08:55:25Z
 -- check 11 establishes the silence; this check prints the decision that is silent,
 -- so the claim 'D-019 settles the runner and is silent on both capabilities' is readable.
   STATUS OK   extract D-019: exit=0 (expected 0)
@@ -446,7 +583,7 @@ grep exit=1 (1 = no line mentions any of these)
   ASSERT OK   D-019 says nothing about snapshots or property testing: /snapshot|fast-check|property/ absent
 
 ===== CHECK 12 — ledger and divergence rows this decision settles =====
--- run at 2026-09-13T07:25:57Z
+-- run at 2026-09-13T08:55:25Z
 -- repository root resolved from this script's location: rs-launch-blueprint-p02-plan
   STATUS OK   grep F122/F123 in COMMONALITY.md: exit=0 (expected 0)
 128:| F122 | property-based (generative) testing | testing-coverage | py-only | DIVERGENT | R33 | bundle; whether Rust adopts a property-based testing crate (e.g. proptest) — decides F123 |
@@ -458,7 +595,7 @@ grep exit=1 (1 = no line mentions any of these)
   ASSERT OK   the divergence row is cause class D, harmonize yes: /\| D \|.*\| yes \|/ present
 
 ===== CHECK 13 — insta's documented CI behaviour and review commands (acceptance criteria 6 and 7) =====
--- run at 2026-09-13T07:25:57Z
+-- run at 2026-09-13T08:55:25Z
   --- https://insta.rs/docs/quickstart/  (HTTP 200)
   STATUS OK   insta.rs quickstart page is HTTP 200: exit=200 (expected 200)
   --- https://insta.rs/docs/cli/  (HTTP 200)

@@ -1,7 +1,30 @@
 #!/usr/bin/env bash
-# R33 property-and-snapshot-testing — synthesizer empirical check (revision 3).
+# R33 property-and-snapshot-testing — synthesizer empirical check (revision 4).
 # Verifies claims made by raw/codex.md and raw/opus.md. Implements nothing:
 # no crate is scaffolded, no tool installed, no workspace or lockfile created.
+#
+# Revision 4 changes, forced by the revision-3 audit (review/audit-codex.md),
+# which found a ratio-stability claim that no check derived:
+#   * check 4 now COMPUTES each of the six ratios the decision states, from the
+#     two fetched figures it comes from, prints the quotient to four decimal
+#     places beside its one-decimal rounding, and asserts a dominance FLOOR per
+#     ratio. A floor is the durable claim: the counters drift daily and in both
+#     directions, so an exact live value cannot be asserted, but "insta leads
+#     snapbox by more than 5x on 90-day downloads" can, and it fails if adoption
+#     actually reverses.
+#   * check 4b is NEW. It recomputes all twelve ratio values (six ratios on each
+#     of two dates) from two committed snapshots of the crates.io counters,
+#     asserts every one of them EXACTLY, and prints the one-decimal moved/held
+#     comparison between the dates. Both inputs are static files, so this check
+#     is deterministic and reproduces byte-for-byte on any day.
+#     It reads the snapshots and NOT research/topics/.../evidence/*.log, because
+#     that path holds the publisher's copy of whichever revision is current: a
+#     check reading it would compare the 2026-09-10 figures against whatever was
+#     published last and fail on every rerun after publication.
+#   * check 4b also asserts that review/DECISION.md carries each of those twelve
+#     computed values, so a ratio can no longer be restated in prose without a
+#     check deriving it. That assertion is between two committed files and is
+#     what the revision-3 audit's finding would have caught.
 #
 # Revision 3 changes:
 #   * check 14 REMOVED. It existed only to test candidates against a strict
@@ -80,6 +103,94 @@ expect_absent() {
 }
 pin_of() { for kv in $PINS; do case "$kv" in "$1="*) echo "${kv#*=}"; return 0;; esac; done; return 1; }
 
+# --- ratio arithmetic, shared by checks 4 and 4b -----------------------------
+# Every ratio this decision states is DERIVED here from the two crates.io
+# figures it comes from. Nothing downstream may restate a ratio that this file
+# did not compute. `single` prints each quotient to four decimal places beside
+# its one-decimal rounding, then a FLOOR verdict; `compare` prints, per ratio,
+# whether the one-decimal value differs between two sets of figures.
+# A figures file is the six `  <crate>: recent_downloads=N downloads=N
+# reverse_deps=N` lines emitted by check 4; comment lines are ignored.
+cat > "$WORK/ratios.py" <<'PYEOF'
+import sys
+
+# id, kind, numerator crate, denominator crate, crates.io field, dominance floor.
+# The floor is the claim the decision makes and the only thing asserted against
+# LIVE figures: counters move daily and in both directions, so an exact live
+# value is not assertable, but a dominance relationship is.
+PAIRS = [
+    ("insta/snapbox",       "90d-downloads", "insta",    "snapbox",     "recent_downloads",  5.0),
+    ("insta/snapbox",       "reverse-deps",  "insta",    "snapbox",     "reverse_deps",     20.0),
+    ("insta/expect-test",   "90d-downloads", "insta",    "expect-test", "recent_downloads",  3.0),
+    ("insta/expect-test",   "reverse-deps",  "insta",    "expect-test", "reverse_deps",     10.0),
+    ("proptest/quickcheck", "90d-downloads", "proptest", "quickcheck",  "recent_downloads",  3.0),
+    ("proptest/quickcheck", "reverse-deps",  "proptest", "quickcheck",  "reverse_deps",      5.0),
+]
+
+def load(path):
+    figs = {}
+    for line in open(path):
+        s = line.strip()
+        if not s or s.startswith("#") or "recent_downloads=" not in s or ":" not in s:
+            continue
+        name, rest = s.split(":", 1)
+        kv = dict(p.split("=", 1) for p in rest.split())
+        figs[name.strip()] = {k: int(v) for k, v in kv.items()}
+    missing = {c for _, _, a, b, _, _ in PAIRS for c in (a, b)} - set(figs)
+    if missing:
+        raise SystemExit("figures file %s is missing crates: %s" % (path, sorted(missing)))
+    return figs
+
+mode = sys.argv[1]
+if mode == "single":
+    label, path = sys.argv[2], sys.argv[3]
+    figs = load(path)
+    for ident, kind, a, b, field, floor in PAIRS:
+        n, d = figs[a][field], figs[b][field]
+        q = n / d
+        print("  RATIO %s %s %s = %.4f -> %.1fx  (%d / %d)" % (label, ident, kind, q, q, n, d))
+        # STRICT `>`: the decision's wording is "leads by more than <floor>x",
+        # so a quotient exactly equal to the floor must not pass.
+        print("  FLOOR %s %s %s > %.1f : %s  (%.4f)"
+              % (label, ident, kind, floor, "OK" if q > floor else "FAIL", q))
+elif mode == "compare":
+    pa, la, pb, lb = sys.argv[2], sys.argv[3], sys.argv[4], sys.argv[5]
+    fa, fb = load(pa), load(pb)
+    moved = held = 0
+    for ident, kind, a, b, field, _ in PAIRS:
+        qa = fa[a][field] / fa[b][field]
+        qb = fb[a][field] / fb[b][field]
+        verdict = "moved" if "%.1f" % qa != "%.1f" % qb else "held"
+        moved, held = (moved + 1, held) if verdict == "moved" else (moved, held + 1)
+        print("  MOVE %s %s: %s %.1fx -> %s %.1fx : %s" % (ident, kind, la, qa, lb, qb, verdict))
+    print("  one-decimal comparison %s -> %s: moved=%d held=%d of %d" % (la, lb, moved, held, len(PAIRS)))
+else:
+    raise SystemExit("unknown mode %r" % mode)
+PYEOF
+
+# The six ratios, as "<id> <kind> <floor>", for the assertion loops below.
+RATIO_IDS='insta/snapbox|90d-downloads|5.0
+insta/snapbox|reverse-deps|20.0
+insta/expect-test|90d-downloads|3.0
+insta/expect-test|reverse-deps|10.0
+proptest/quickcheck|90d-downloads|3.0
+proptest/quickcheck|reverse-deps|5.0'
+
+# assert_floors <figures-label> <ratios-output-file>
+# Asserts, for each of the six ratios, that ratios.py printed a FLOOR verdict of
+# OK. `fail` must increment in this shell, so the loop reads a file rather than
+# a pipe (a piped `while` runs in a subshell and would discard the counter).
+assert_floors() {
+  local label="$1" out="$2" ident kind floor efloor
+  printf '%s\n' "$RATIO_IDS" > "$WORK/ratio-ids.txt"
+  while IFS='|' read -r ident kind floor; do
+    [ -n "$ident" ] || continue
+    efloor=$(printf '%s' "$floor" | sed 's/\./\\./g')
+    expect_content "$label: $ident $kind leads by more than ${floor}x" "$out" \
+      "^  FLOOR $label $ident $kind > $efloor : OK"
+  done < "$WORK/ratio-ids.txt"
+}
+
 hdr 1 "toolchain and host"
 rustc --version > "$WORK/rustc.txt" 2>&1; expect_status "rustc --version" 0 $?
 cat "$WORK/rustc.txt"; expect_content "rustc is a released version" "$WORK/rustc.txt" '^rustc 1\.[0-9]+\.[0-9]+'
@@ -145,6 +256,97 @@ PYEOF
   expect_content "$c figures are numeric" "$WORK/$c-figs.txt" 'recent_downloads=[0-9]+ downloads=[0-9]+ reverse_deps=[0-9]+'
   sleep 1
 done
+
+echo
+echo "-- the six ratios, DERIVED from the figures just fetched (VOLATILE values,"
+echo "   durable floors). The quotient is printed to four decimal places beside its"
+echo "   one-decimal rounding so the rounding is auditable. Only the FLOOR lines are"
+echo "   asserted: an exact live value would be a claim that expires overnight."
+cat "$WORK"/proptest-figs.txt "$WORK"/quickcheck-figs.txt "$WORK"/insta-figs.txt \
+    "$WORK"/cargo-insta-figs.txt "$WORK"/snapbox-figs.txt "$WORK"/expect-test-figs.txt \
+    > "$WORK/figs-live.txt"
+expect_status "collect the six live figure lines" 0 $?
+python3 "$WORK/ratios.py" single live "$WORK/figs-live.txt" > "$WORK/ratios-live.txt"
+expect_status "derive the six live ratios" 0 $?
+cat "$WORK/ratios-live.txt"
+expect_content "every live ratio is printed in derived form" "$WORK/ratios-live.txt" \
+  '^  RATIO live [a-z/-]+ [a-z0-9-]+ = [0-9]+\.[0-9]{4} -> [0-9]+\.[0-9]x  \([0-9]+ / [0-9]+\)$'
+assert_floors live "$WORK/ratios-live.txt"
+
+hdr 4b "the same six ratios recomputed from two COMMITTED snapshots, and the stability comparison"
+echo "-- Inputs are static files in this run's evidence directory, so this section is"
+echo "   deterministic: apart from its own '-- run at' header it prints identical text"
+echo "   on any day and on any machine."
+BASE10="$SELF_DIR/../evidence/adoption-figures-2026-09-10.txt"
+BASE13="$SELF_DIR/../evidence/adoption-figures-2026-09-13.txt"
+DEC="$SELF_DIR/../DECISION.md"
+for f in "$BASE10" "$BASE13" "$DEC"; do
+  test -f "$f"; expect_status "input exists: ${f##*/}" 0 $?
+done
+echo "-- provenance headers of the two snapshots (file names only: an absolute path"
+echo "   would make this section machine-specific)"
+for f in "$BASE10" "$BASE13"; do
+  echo "  [${f##*/}]"
+  grep -E '^# (source-path|source-sha256|source-run|extracted):' "$f"
+  expect_status "${f##*/} carries provenance headers" 0 $?
+done
+expect_content "the 2026-09-10 snapshot names the published revision-2 log" "$BASE10" \
+  '^# source-sha256: 33c4358489d43edf46b30e37f7a8f5ff465f99f22ea3058e99604d6d40115f6b$'
+expect_content "the 2026-09-13 snapshot names the run at 07:25Z" "$BASE13" \
+  '^# source-run: 2026-09-13T07:25Z'
+for lbl in 2026-09-10 2026-09-13; do
+  case "$lbl" in 2026-09-10) src="$BASE10" ;; *) src="$BASE13" ;; esac
+  python3 "$WORK/ratios.py" single "$lbl" "$src" > "$WORK/ratios-$lbl.txt"
+  expect_status "derive the six $lbl ratios" 0 $?
+  cat "$WORK/ratios-$lbl.txt"
+  assert_floors "$lbl" "$WORK/ratios-$lbl.txt"
+done
+echo "-- each ratio's exact value on each date, asserted (both inputs are immutable)"
+for spec in \
+  '2026-09-10|insta/snapbox|90d-downloads|8.2828|8.3' \
+  '2026-09-10|insta/snapbox|reverse-deps|28.1026|28.1' \
+  '2026-09-10|insta/expect-test|90d-downloads|3.6009|3.6' \
+  '2026-09-10|insta/expect-test|reverse-deps|14.0064|14.0' \
+  '2026-09-10|proptest/quickcheck|90d-downloads|4.4145|4.4' \
+  '2026-09-10|proptest/quickcheck|reverse-deps|6.7630|6.8' \
+  '2026-09-13|insta/snapbox|90d-downloads|8.2490|8.2' \
+  '2026-09-13|insta/snapbox|reverse-deps|28.2051|28.2' \
+  '2026-09-13|insta/expect-test|90d-downloads|3.5890|3.6' \
+  '2026-09-13|insta/expect-test|reverse-deps|14.0575|14.1' \
+  '2026-09-13|proptest/quickcheck|90d-downloads|4.3973|4.4' \
+  '2026-09-13|proptest/quickcheck|reverse-deps|6.8021|6.8' ; do
+  IFS='|' read -r lbl ident kind exact rounded <<< "$spec"
+  expect_content "$lbl $ident $kind computes to ${exact} (${rounded}x)" "$WORK/ratios-$lbl.txt" \
+    "^  RATIO $lbl $ident $kind = ${exact//./\\.} -> ${rounded//./\\.}x"
+  expect_content "review/DECISION.md pairs ${exact} with ${rounded}x for $lbl $ident $kind" "$DEC" \
+    "${exact//./\\.}.*${rounded//./\\.}"
+done
+echo "-- which ratios moved at one decimal place between the two dates"
+python3 "$WORK/ratios.py" compare "$BASE10" 2026-09-10 "$BASE13" 2026-09-13 > "$WORK/ratios-compare.txt"
+expect_status "compare the two dates" 0 $?
+cat "$WORK/ratios-compare.txt"
+for spec in \
+  'insta/snapbox|90d-downloads|8.3|8.2|moved' \
+  'insta/snapbox|reverse-deps|28.1|28.2|moved' \
+  'insta/expect-test|90d-downloads|3.6|3.6|held' \
+  'insta/expect-test|reverse-deps|14.0|14.1|moved' \
+  'proptest/quickcheck|90d-downloads|4.4|4.4|held' \
+  'proptest/quickcheck|reverse-deps|6.8|6.8|held' ; do
+  IFS='|' read -r ident kind a b verdict <<< "$spec"
+  expect_content "$ident $kind went ${a}x -> ${b}x and is '$verdict'" "$WORK/ratios-compare.txt" \
+    "^  MOVE $ident $kind: 2026-09-10 ${a//./\\.}x -> 2026-09-13 ${b//./\\.}x : $verdict$"
+done
+expect_content "three of the six moved at one decimal and three held" "$WORK/ratios-compare.txt" \
+  '^  one-decimal comparison 2026-09-10 -> 2026-09-13: moved=3 held=3 of 6$'
+echo "-- the counters move in BOTH directions: cargo-insta's 90-day downloads FELL"
+for f in "$BASE10" "$BASE13"; do
+  printf '  [%s] ' "${f##*/}"; grep -E '^  cargo-insta: ' "$f"
+  expect_status "read cargo-insta in ${f##*/}" 0 $?
+done
+expect_content "cargo-insta 90-day downloads were 204308 on 2026-09-10" "$BASE10" \
+  '^  cargo-insta: recent_downloads=204308 '
+expect_content "cargo-insta 90-day downloads were 199628 on 2026-09-13 (a fall)" "$BASE13" \
+  '^  cargo-insta: recent_downloads=199628 '
 
 hdr 5 "RustSec package pages, with two known-advisory controls"
 : > "$WORK/rustsec.txt"
