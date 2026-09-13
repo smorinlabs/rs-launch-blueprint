@@ -153,6 +153,9 @@ if [ ! -x "$KF_DIR/kingfisher" ]; then
 fi
 shasum -a 256 "$KF_DIR/kingfisher-darwin-arm64.tgz"
 LOCAL_DIGEST=$(shasum -a 256 "$KF_DIR/kingfisher-darwin-arm64.tgz" | cut -d' ' -f1)
+# Fitness gate 6 wants the size stated: printed, not asserted, because it is a property of the one
+# asset this macOS-only script downloads. It is a per-job CI download and never a shipped artifact.
+echo "-- release tarball bytes: $(wc -c < "$KF_DIR/kingfisher-darwin-arm64.tgz" | tr -d ' '); unpacked binary bytes: $(wc -c < "$KF_DIR/kingfisher" | tr -d ' ')"
 # `gh attestation verify` initialises its Sigstore verifier from TUF trusted-root metadata that it
 # refreshes into $XDG_CACHE_HOME/gh/.sigstore (default $HOME/.cache/gh/.sigstore). If that path is
 # not writable the verifier cannot be built and gh exits 1 with
@@ -214,14 +217,72 @@ else
   assert 07f-verifier-fails-without-a-writable-sigstore-cache "1 1" "$RO_EXIT $RO_MSG"
 fi
 echo "-- second prerequisite: the command needs an authenticated gh, so P03's install step needs a token."
+# This control has to demonstrate gh REFUSING FOR WANT OF AUTHENTICATION, and a control that exits
+# non-zero for some other reason is indistinguishable from it in a summary line. Revision 4's form of
+# this check asserted the exit code 4 after invoking whatever `gh` PATH resolved; the audit of that
+# revision reran it on a host where `gh` on PATH is a version-manager shim (mise), and the empty
+# environment made the shim re-read a configuration it no longer trusts, so it aborted with exit 1
+# before the gh CLI started at all — a control failing for the wrong reason, which proves nothing
+# about authentication. The control therefore now (1) resolves an executable that IS the gh CLI
+# rather than a launcher, (2) asserts that it is the same build the checks above used, and (3)
+# asserts the REFUSAL — a failing exit, gh's own `gh auth login` remedy, and no attestation written —
+# instead of an exit number that depends on the gh build the host happens to provide. The number is
+# then compared against the resolved gh's own documentation rather than against a literal here.
+GH_OUTER_V=$(gh --version 2>/dev/null | head -1)
 NOAUTH_HOME="$WORK/noauth-home"; mkdir -p "$NOAUTH_HOME"
-env -i PATH="$PATH" HOME="$NOAUTH_HOME" \
-  gh attestation verify "$KF_DIR/kingfisher-darwin-arm64.tgz" --repo mongodb/kingfisher --format json \
-  > "$WORK/att-noauth.json" 2>"$WORK/att-noauth.err"
-NOAUTH_EXIT=$?
-echo "   gh stderr (wording is gh 2.98.0's):"; sed -n '1,2p' "$WORK/att-noauth.err"
-NOAUTH_MSG=$(grep -c 'gh auth login' "$WORK/att-noauth.err")
-assert 07g-verifier-requires-an-authenticated-gh "4 1" "$NOAUTH_EXIT $NOAUTH_MSG"
+realpath_of() { python3 -c 'import os,sys;print(os.path.realpath(sys.argv[1]))' "$1"; }
+gh_probe() { env -i PATH="$PATH" HOME="$NOAUTH_HOME" "$1" --version 2>/dev/null | head -1; }
+GH_REAL=""; GH_REAL_V=""; GH_LAUNCHER=""; GH_LAUNCHER_V=""
+for c in ${GH_BIN:-} /opt/homebrew/bin/gh /usr/local/bin/gh /usr/bin/gh /home/linuxbrew/.linuxbrew/bin/gh "$(command -v gh 2>/dev/null || true)"; do
+  { [ -n "$c" ] && [ -x "$c" ]; } || continue
+  c_real=$(realpath_of "$c")
+  c_v=$(gh_probe "$c")
+  case "$c_v" in
+    "gh version"*) : ;;
+    *) echo "   candidate $c -> $c_real: does not start the gh CLI under an empty environment; skipped"; continue ;;
+  esac
+  if [ "$(basename "$c_real")" != "gh" ]; then
+    echo "   candidate $c -> $c_real: a version-manager launcher rather than the gh binary; kept only as a fallback"
+    [ -z "$GH_LAUNCHER" ] && { GH_LAUNCHER="$c"; GH_LAUNCHER_V="$c_v"; }
+    continue
+  fi
+  GH_REAL="$c"; GH_REAL_V="$c_v"; break
+done
+if [ -z "$GH_REAL" ] && [ -n "$GH_LAUNCHER" ]; then GH_REAL="$GH_LAUNCHER"; GH_REAL_V="$GH_LAUNCHER_V"; fi
+echo "   gh first on PATH: $(command -v gh 2>/dev/null || echo none) (reports '$GH_OUTER_V' in the caller's environment)"
+if [ -z "$GH_REAL" ]; then
+  echo "   no executable on this host starts the gh CLI under an empty environment, so a non-zero exit"
+  echo "   here would say nothing about authentication. The prerequisite is unproven on this host and"
+  echo "   stands on gh's own documentation (gh help exit-codes) until the control is rerun elsewhere."
+  skip 07g-the-control-runs-the-same-gh-build-as-the-checks-above "no gh CLI starts under an empty environment on this host"
+  skip 07h-unauthenticated-verify-is-refused-for-want-of-authentication "no gh CLI starts under an empty environment on this host"
+  skip 07i-the-refusal-exit-matches-ghs-own-documented-authentication-code "no gh CLI starts under an empty environment on this host"
+else
+  echo "   gh CLI used for this control: $GH_REAL -> $(realpath_of "$GH_REAL") (reports '$GH_REAL_V')"
+  assert 07g-the-control-runs-the-same-gh-build-as-the-checks-above "$GH_OUTER_V" "$GH_REAL_V"
+  env -i PATH="$PATH" HOME="$NOAUTH_HOME" \
+    "$GH_REAL" attestation verify "$KF_DIR/kingfisher-darwin-arm64.tgz" --repo mongodb/kingfisher --format json \
+    > "$WORK/att-noauth.json" 2>"$WORK/att-noauth.err"
+  NOAUTH_EXIT=$?
+  echo "   gh stderr (wording is gh 2.98.0's):"; sed -n '1,2p' "$WORK/att-noauth.err"
+  NOAUTH_MSG=$(grep -c 'gh auth login' "$WORK/att-noauth.err")
+  NOAUTH_ATT=$(wc -c < "$WORK/att-noauth.json" | tr -d ' ')
+  NOAUTH_FAILED=0; [ "$NOAUTH_EXIT" -ne 0 ] && NOAUTH_FAILED=1
+  echo "   refused=$NOAUTH_FAILED (observed exit $NOAUTH_EXIT), 'gh auth login' in stderr=$NOAUTH_MSG, attestation bytes written=$NOAUTH_ATT"
+  assert 07h-unauthenticated-verify-is-refused-for-want-of-authentication "1 1 0" "$NOAUTH_FAILED $NOAUTH_MSG $NOAUTH_ATT"
+  # The exit NUMBER is read from the resolved gh's own documentation rather than written into this
+  # script, so the assertion compares the tool against itself; a gh build that changed the code would
+  # move both sides together, and an unreadable topic fails or skips loudly instead of passing on a
+  # literal this script remembered.
+  DOC_CODE=$(env -i PATH="$PATH" HOME="$NOAUTH_HOME" "$GH_REAL" help exit-codes 2>/dev/null \
+    | sed -n 's/.*requires authentication, the exit code will be \([0-9][0-9]*\).*/\1/p' | head -1)
+  if [ -z "$DOC_CODE" ]; then
+    skip 07i-the-refusal-exit-matches-ghs-own-documented-authentication-code "this gh build ships no 'help exit-codes' topic in the form this check reads"
+  else
+    echo "   gh help exit-codes documents $DOC_CODE for a command that requires authentication"
+    assert 07i-the-refusal-exit-matches-ghs-own-documented-authentication-code "$DOC_CODE" "$NOAUTH_EXIT"
+  fi
+fi
 
 say "08 verified-only behaviour on non-live, template-shaped credentials (fixture A)"
 python3 - "$WORK/fixA" <<'PY'
@@ -352,9 +413,9 @@ cat <<'NOTE'
 - Whether `gh attestation verify` succeeds inside a GitHub Actions job was NOT executed: no CI exists
   for this template yet. Section 07 proves the command on a developer machine with a writable
   Sigstore cache, network egress to api.github.com / tuf-repo-cdn.sigstore.dev / tuf-repo.github.com,
-  and an authenticated gh (assertions 07f and 07g execute both prerequisites as negative controls),
-  so P03's install step needs GH_TOKEN in its environment. Whether a GitHub-hosted runner satisfies
-  all three is an acceptance check for P03, not a settled fact here.
+  and an authenticated gh (07f executes the cache prerequisite as a negative control, and 07g-07i
+  execute the authentication one), so P03's install step needs GH_TOKEN in its environment. Whether
+  a GitHub-hosted runner satisfies all three is an acceptance check for P03, not a settled fact here.
 NOTE
 
 say "12 the gate rule's shell dependency — an executed fail-open, and the two shells that decide it"
@@ -446,12 +507,12 @@ cmp_anchor() { # cmp_anchor <label> <same|differ> <literal line prefix>
   a=$(anchor_line "$WORK/rev2-DECISION.md" "$3")
   b=$(anchor_line "$DEC_NOW" "$3")
   if [ -z "$a" ] || [ -z "$b" ]; then
-    assert "$1" "$2" "anchor-not-found(rev2=${#a}B rev4=${#b}B)"; return
+    assert "$1" "$2" "anchor-not-found(rev2=${#a}B now=${#b}B)"; return
   fi
   ha=$(printf '%s' "$a" | shasum -a 256 | cut -c1-12)
   hb=$(printf '%s' "$b" | shasum -a 256 | cut -c1-12)
   if [ "$ha" = "$hb" ]; then verdict=same; else verdict=differ; fi
-  printf '   rev2=%s rev4=%s %-7s %s\n' "$ha" "$hb" "$verdict" "$3"
+  printf '   rev2=%s now=%s %-7s %s\n' "$ha" "$hb" "$verdict" "$3"
   assert "$1" "$2" "$verdict"
 }
 cmp_anchor 13b-part-1-recommendation-byte-identical            same   '**Part 1 — keep a dedicated'
@@ -460,7 +521,7 @@ cmp_anchor 13d-baseline-review-f050-byte-identical             same   'BASELINE-
 cmp_anchor 13e-equal-base-and-head-narrowing-byte-identical    same   '**The py split, verified at the pinned tag'
 cmp_anchor 13f-equal-base-and-head-consequence-byte-identical  same   'What this changes about the item'
 cmp_anchor 13g-provenance-advantage-byte-identical             same   '**Shape C'
-cmp_anchor 13h-provenance-diagnosis-byte-identical             same   '**The command is environment-dependent'
+cmp_anchor 13h-provenance-diagnosis-rewritten                  differ '**The command is environment-dependent'
 cmp_anchor 13i-assumes-msrv-policy-byte-identical              same   '- assumes msrv-policy = '
 cmp_anchor 13j-assumes-rust-edition-byte-identical             same   '- assumes rust-edition = '
 cmp_anchor 13k-assumes-target-os-matrix-byte-identical         same   '- assumes target-os-matrix = '
@@ -468,9 +529,11 @@ cmp_anchor 13l-assumes-license-byte-identical                  same   '- assumes
 cmp_anchor 13m-part-2-recommendation-rewritten                 differ '**Part 2 — implement it with the Kingfisher CLI'
 cmp_anchor 13n-ranked-runner-up-rewritten                      differ 'The ranked runner-up is the **TruffleHog OSS CLI'
 cmp_anchor 13o-validity-filter-finding-rewritten               differ '**The finding that changes the design.**'
-echo "   The three 'differ' rows are the three the revision-3 audit named. They are asserted to"
-echo "   differ rather than merely allowed to, so this section fails if a later revision quietly"
-echo "   reverts them or if the claim about them is restated as preservation."
+echo "   Four rows are asserted to differ: the three the revision-3 audit named, and the provenance"
+echo "   diagnosis, which revision 5 rewrote because its unauthenticated-prerequisite sentence"
+echo "   carried the environment-dependent exit code that revision's audit rejected. They are"
+echo "   asserted to differ rather than merely allowed to, so this section fails if a later revision"
+echo "   quietly reverts them or if the claim about them is restated as preservation."
 
 printf '\nsummary: PASS=%d FAIL=%d SKIP=%d\n' "$PASS" "$FAIL" "$SKIP"
 [ "$FAIL" -eq 0 ] && { echo "RESULT: PASS"; exit 0; } || { echo "RESULT: FAIL"; exit 1; }
