@@ -1,4 +1,59 @@
-# R49 — build-target-declaration (crate, Deep) — DECISION (revision 3, 2026-09-13)
+# R49 — build-target-declaration (crate, Deep) — DECISION (revision 4, 2026-09-13)
+
+**What changed in revision 4, and what did not.** Revision 3 (sha256
+`85eddc5806c820229f9ad84b82fdc5d9c8e8098c9562105707a6584011794770`) was
+**rejected** by `review/audit-codex.md` (actor
+`audit-codex-2026-09-05T155504Z-2107cffb3ecf-r3`, model `gpt-5.6-terra`, family
+openai) on one unresolved finding: *"false claim that no raw report excluded
+`cargo-binstall` on a licence ground"*. **The finding is correct and the false
+claim was mine.** The canonical Opus raw report does state a licence ground:
+`raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:353-356`
+reads *"**`cargo-binstall` 1.23.0** — fails **gate 1** *as a dependency*: license
+`GPL-3.0-only` … which is not compatible with `MIT OR Apache-2.0` for anything
+linked"*. That same report then gives scope as an independent ground at
+`:359-362`: *"It is excluded here regardless because the
+`[package.metadata.binstall]` table it reads is an artifact-distribution decision
+that **R68 owns (F214)**, explicitly out of scope for this item."*
+
+**Why revision 3 got it wrong — the method, not just the sentence.** The search
+behind that claim was `grep -rn 'binstall' raw/*.md | head -30`. The glob was
+right and did match the Opus file; the `head -30` was not. The true count is
+**56** matches across six files, of which the canonical Opus report carries 14
+and its `raw/opus.md` alias another 14. The truncation cut the stream inside the
+Opus files, leaving visible only their lines 28 and 74 — a landscape-bin row and
+an adopter row, neither carrying licence content — which made a partial read look
+like a complete one. The figure "28" reported at the time was the truncated
+stream's length, not a census. The defect is general and is named here rather
+than quietly patched: **a truncated search result was treated as a complete
+search result.** The other searches in this revision chain were not truncated
+that way. The enumeration greps over `DECISION.md` (`licen`, `gate 1`, copyleft
+and licence identifiers, `binstall`) ran with no `head`; the only truncation
+applied to them shortened each matched line's displayed text without dropping any
+line from the list, so those line lists are complete and re-running them returns
+the same lists.
+
+**What revision 4 changes.** Three locations, none of them the recommendation.
+(a) The false sentence in the revision-3 note below is corrected **in place**, so
+a reader of this decision's own history is not left holding it. (b) The
+`cargo-binstall` exclusion under `### Principles and implementation` now records
+both licence grounds that existed before the ruling — this decision's and the
+Opus raw's — and says which the ruling voids. (c) The `## Engines` entry for
+`opus` now records that report's `cargo-binstall` exclusion on both of its
+grounds, which revision 3 wrongly said needed no entry.
+
+**What revision 4 does not change.** The recommendation does not move: declare
+every build target in `Cargo.toml` itself and add no build backend, bundler or
+build-orchestration crate, a pick that is dominant because Cargo's manifest is
+the only candidate in the three-bin map that declares a build target at all.
+Fitness gate 1 stays `inapplicable` under the owner's 2026-09-12 ruling (Q7.B);
+this revision is a decision-history and provenance correction and is **not** a
+reinstatement of that gate. `cargo-binstall` remains excluded, on the scope
+ground alone — a ground the Opus raw itself called sufficient before any ruling
+existed, in the word *"regardless"*. Every `- owns` and `- assumes` line is
+byte-identical to revisions 2 and 3. No evidence script, log, figure or empirical
+check is altered, and this revision makes no new empirical claim; the audit's own
+rerun of `review/evidence/check-lockfile-inclusion.sh` reproduced against
+revision 3, and nothing that check exercises is touched here.
 
 **What changed in revision 3, and what did not.** Revision 2 (sha256
 `1b5a6b99ecedb88f7358d16a4567aa9b56838a2102e9e4feda99d00bc787513f`) was
@@ -25,9 +80,14 @@ scope ground**, which revision 2 already stated as sufficient on its own ("out o
 scope regardless") and which sits in this decision's own voice in
 `### Principles and implementation`, not in any quoted provider report: the
 `[package.metadata.binstall]` table that crate reads belongs to R68 (F214), which
-this item's prompt places out of scope in those words. No raw report excluded
+this item's prompt places out of scope in those words. *[Sentence corrected in
+revision 4. This paragraph originally continued: "No raw report excluded
 `cargo-binstall` on a licence ground, so no engine position is disturbed and
-`## Engines` is unchanged. Every `- owns` and `- assumes` line is byte-identical
+`## Engines` is unchanged." That was false. The canonical Opus raw does state a
+licence ground, at `raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:353-356`,
+alongside an independent scope ground at `:359-362`; an engine position therefore
+was affected, and `## Engines` now records it. See the revision-4 note above for
+how the error was made.]* Every `- owns` and `- assumes` line is byte-identical
 to revision 2. Besides this paragraph itself, two presentational edits are the
 only other changes: the title's revision number, and the removal of bold emphasis from the `GPL-3.0-only` cell in
 check 6's table, where the bold marked a gate failure that no longer exists — the
@@ -231,11 +291,21 @@ item's own prompt places out of scope in those words — *"crates.io-only vs.
 `cargo-dist` cross-compiled GitHub Release binaries vs. `cargo-binstall`
 metadata; R68 (`release-binary-artifacts`) owns F214"* (`inputs/prompt.md`,
 `## Out of scope`). Gate 1 is `inapplicable` to it for the reason given above, so
-no licence ground is carried; revision 3 removed one that revisions 1 and 2 had
-stated alongside this scope ground, which both already called sufficient on its
-own — the clause *"out of scope regardless"* is byte-identical in revision 1
-(sha256 `b7adf7d8f8ff380cdb25b40ff331d6b83291b2f7ea75a42407684ce2919cbcf9`) and
-in revision 2. Its registry `license` value is still recorded in check 6 as measured
+no licence ground is carried forward. **Two licence grounds existed before the
+ruling; the ruling voids both, and in each case the scope ground it does not
+touch was already stated as sufficient on its own.** The first was this
+decision's own: revisions 1 and 2 wrote *"fails gate 1 as a dependency"* with the
+registry value `GPL-3.0-only` immediately beside the clause *"out of scope
+regardless"* — that clause byte-identical in revision 1 (sha256
+`b7adf7d8f8ff380cdb25b40ff331d6b83291b2f7ea75a42407684ce2919cbcf9`) and revision
+2 — and revision 3 removed the gate-1 half. The second was the Opus raw's, at
+`raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:353-356`,
+which likewise paired it with an independent scope ground at `:359-362`: *"It is
+excluded here regardless because the `[package.metadata.binstall]` table it reads
+is an artifact-distribution decision that **R68 owns (F214)**, explicitly out of
+scope for this item."* That report is recorded as it stands and is not rewritten;
+what the ruling changes is that this decision no longer carries its gate-1 half
+forward. Its registry `license` value is still recorded in check 6 as measured
 metadata.
 `cross` **fails gate 4**: it runs the build inside Docker or Podman, which the
 GitHub-hosted macOS image does not ship (measured by `raw/opus…` against the
@@ -721,7 +791,7 @@ execute, as recorded under `## Engines`.
 ## Engines
 
 - **codex** `raw/codex-cd14ccfbbefdabb73358b9b75dd288f863c9984100d6d5e3d21f796e3c37f183.md` (retrieved 2026-09-05) — Cargo-native, no backend crate; explicit `[lib]` + one `[[bin]]`; `autobins = false`; **`include` allow-list**; package and bin names **match**; no web `[[bin]]` now. Excludes `cargo-make` on the absent-`rust_version` gate and `cargo-dist` on scope. Raised the F218 baseline-review line carried above. Could not measure issue responsiveness — the unauthenticated GitHub core limit was exhausted — and said so rather than inventing a figure.
-- **opus** `raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md` (retrieved 2026-09-10) — the same Cargo-native conclusion reached from an eight-project manifest survey, plus the F212 baseline-review line carried above; **`exclude` deny-list**; names **diverge** (`rslbp`, labelled a naming proposal needing an owner decision); web behind a feature following mdBook rather than a second `[[bin]]`; `default-run` unset; no `build.rs`. Carries two recorded self-corrections, both re-measured here in checks 9 and 10.
+- **opus** `raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md` (retrieved 2026-09-10) — the same Cargo-native conclusion reached from an eight-project manifest survey, plus the F212 baseline-review line carried above; **`exclude` deny-list**; names **diverge** (`rslbp`, labelled a naming proposal needing an owner decision); web behind a feature following mdBook rather than a second `[[bin]]`; `default-run` unset; no `build.rs`. Carries two recorded self-corrections, both re-measured here in checks 9 and 10. Excluded `cargo-binstall` on **two** grounds: fitness gate 1 at `:353-356` (licence `GPL-3.0-only`, *"not compatible with `MIT OR Apache-2.0` for anything linked"*) and, independently, scope at `:359-362` (*"excluded here regardless"*, the `[package.metadata.binstall]` table being R68's F214). Under the owner's 2026-09-12 ruling (Q7.B) the gate-1 ground is void and is not carried forward; the scope ground is the one this decision adopts.
 - **doxa** `raw/doxa.normalized.md` — three providers regrouped under the template's fields; per-provider originals in `raw/doxa-openai.normalized.md`, `raw/doxa-perplexity.normalized.md`, `raw/doxa-gemini.normalized.md`; every repair recorded in `doxa/normalization.json`. All three reach Cargo-native with no backend crate and split on the sub-decisions below.
   - **doxa/openai** (gpt-5.6-sol, retrieved 2026-09-09) — `include` allow-list; names match; `autobins = false`; **also** `build = false` and `default-run` set; proposes a concrete `rust-version = "1.96"`.
   - **doxa/perplexity** (sonar-deep-research, retrieved 2026-09-09) — names match; **neither `include` nor `exclude`**, relying on Cargo's default and documenting that as deliberate; a **second `[[bin]]`** `rs-launch-blueprint-web` with `required-features = ["web-service"]` and CLI at `src/bin/cli.rs`.
