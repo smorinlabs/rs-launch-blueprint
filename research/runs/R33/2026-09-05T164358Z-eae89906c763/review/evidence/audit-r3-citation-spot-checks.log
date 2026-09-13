@@ -1,0 +1,18 @@
+stable status=0 http=200 url=https://static.rust-lang.org/dist/channel-rust-stable.toml
+OK stable HTTP 200
+OK stable cites Rust 1.98.1
+proptest-pin status=0 http=200 url=https://crates.io/api/v1/crates/proptest/1.11.0
+OK proptest-pin HTTP 200
+OK proptest 1.11.0 pin, MSRV, and declaration
+rustsec-proptest status=0 http=404 url=https://rustsec.org/packages/proptest.html
+OK RustSec proptest absence page is 404
+clap-styledstr status=0 http=200 url=https://docs.rs/clap/latest/clap/builder/struct.StyledStr.html
+OK clap-styledstr HTTP 200
+OK clap StyledStr documents color-unaware Display
+insta-quickstart status=0 http=200 url=https://insta.rs/docs/quickstart/
+OK insta-quickstart HTTP 200
+OK insta quickstart documents CI snapshot behavior
+proptest-manifest status=0 http=200 url=https://raw.githubusercontent.com/proptest-rs/proptest/master/proptest/Cargo.toml
+OK proptest-manifest HTTP 200
+OK proptest HEAD manifest cites Rust 1.86
+failures=0
