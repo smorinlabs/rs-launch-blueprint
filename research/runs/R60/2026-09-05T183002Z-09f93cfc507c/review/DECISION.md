@@ -753,11 +753,18 @@ They make no network call and need no git repository. Both were rerun against an
 extraction of the exact tree this revision commits — `git archive` of that tree
 into an empty directory outside the repository, which carries no `.git` and no
 working-tree state — and `diff` against the two logs cited here reported no
-difference. The transcript of that extraction and diff is recorded in this
-revision's commit message, so the claim can be checked without rerunning
-anything. Two properties make it possible and are worth naming, because losing
-either would silently break it: no script prints an absolute path, and `shasum`
-is always fed on **stdin** so it prints `-` instead of a file name.
+difference. **The procedure, so that the claim is checkable rather than merely
+transcribed:** `git archive <this revision's commit> | tar -x -C <empty
+directory>`, then, in that directory's copy of this run, run each script and
+`diff` its output against the log committed beside it. Transcripts of that run
+are in this revision's commit messages, which also record — for the reader who
+finds them — that two of those messages quote a `git write-tree` id that is not
+the resulting commit's tree, because other agents commit to this shared branch
+between one command and the next; the verification of record is the one against
+the **commit** above, which is immutable. Two properties make the byte-identity
+possible and are worth naming, because losing either would silently break it: no
+script prints an absolute path, and `shasum` is always fed on **stdin** so it
+prints `-` instead of a file name.
 
 **The provenance log is reproducible under two stated conditions, and the exact
 variance outside them is recorded here rather than discovered by an auditor.**
