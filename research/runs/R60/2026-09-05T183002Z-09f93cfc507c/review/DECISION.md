@@ -755,8 +755,18 @@ anything. Two properties make it possible and are worth naming, because losing
 either would silently break it: no script prints an absolute path, and `shasum`
 is always fed on **stdin** so it prints `-` instead of a file name.
 
-**The provenance log is reproducible only while the network is reachable, and
-that is said rather than hidden.** `r60-snapshot-provenance-r3.sh` re-downloads
+**The provenance log is reproducible under two stated conditions, and the exact
+variance outside them is recorded here rather than discovered by an auditor.**
+The log cited above reproduces byte-for-byte when the network is reachable **and**
+the checkout carries git history. Without the network, the affected rows report
+`UNREACHABLE`. Without git history — a `git archive` extraction, for instance —
+the two rows that check this decision's own revision-1 and revision-2 baselines
+against this repository's git objects cannot run, so they report
+`UNVERIFIABLE-HERE` and the totals read `CHECKS RUN: 12 … UNVERIFIABLE-HERE: 4`
+instead of `14 … 2`. That is the only difference, it was observed by running the
+script in exactly that situation, and it is why the byte-for-byte claim above is
+made for the two offline logs and not for this one.
+`r60-snapshot-provenance-r3.sh` re-downloads
 every pinned source and re-derives each snapshot's sha256 from it. It counts three
 outcomes separately — `FAILURES` (the source was reached and disagrees),
 `UNREACHABLE` (it could not be fetched, so nothing is proved either way) and
