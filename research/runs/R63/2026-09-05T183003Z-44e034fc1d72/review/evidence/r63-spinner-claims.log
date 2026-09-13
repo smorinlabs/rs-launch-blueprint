@@ -5,7 +5,8 @@ HOST: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
 PASS  cargo reports a version
 HOST: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
 HOST: os: macOS 26.4 (arm64)
-VOLATILE: date: 2026-09-12T19:28:45Z
+HOST: collation pinned by this script: LC_ALL=C (ambient LANG was en_US.UTF-8)
+VOLATILE: date: 2026-09-13T07:27:01Z
 PASS  stable channel manifest (fetched, non-empty body)
 PASS  stable channel manifest has a [pkg.rust] table
 PASS  current stable channel version parsed
@@ -192,9 +193,9 @@ PASS  is_ci 1.2.0: CI compared by value equality
 PASS  is_ci 1.2.0: the literal "1"
 PASS  is_ci 1.2.0: the literal "woodpecker"
 PASS  is_ci 1.2.0: check() is presence-only
-PASS  is_ci 1.2.0 does NOT test CI for emptiness
+PASS  is_ci 1.2.0 does NOT test CI for emptiness (matching lines) == 0
 is_ci 1.2.0 distinct presence-checked variables besides CI: 35
-APPVEYOR bamboo.buildKey BITBUCKET_DEPLOYMENT BITRISE_IO BUDDY_WORKSPACE_ID BUILDER_OUTPUT BUILDKITE CI_NAME CIRCLECI CIRRUS_CI CODEBUILD_SRC_DIR DRONE DSARI GERRIT_PROJECT GITHUB_ACTION GITLAB_CI GITLAB_DEPLOYMENT GO_PIPELINE_NAME HUDSON_URL JENKINS_URL MAGNUM NETLIFY NEVERCODE NOW_BUILDER NOW_GITHUB_DEPLOYMENT RENDER SAIL_CI SEMAPHORE SHIPPABLE STRIDER SYSTEM_TEAMFOUNDATIONCOLLECTIONURI TASKCLUSTER_ROOT_URL TDDIUM TRAVIS WERCKER 
+APPVEYOR BITBUCKET_DEPLOYMENT BITRISE_IO BUDDY_WORKSPACE_ID BUILDER_OUTPUT BUILDKITE CIRCLECI CIRRUS_CI CI_NAME CODEBUILD_SRC_DIR DRONE DSARI GERRIT_PROJECT GITHUB_ACTION GITLAB_CI GITLAB_DEPLOYMENT GO_PIPELINE_NAME HUDSON_URL JENKINS_URL MAGNUM NETLIFY NEVERCODE NOW_BUILDER NOW_GITHUB_DEPLOYMENT RENDER SAIL_CI SEMAPHORE SHIPPABLE STRIDER SYSTEM_TEAMFOUNDATIONCOLLECTIONURI TASKCLUSTER_ROOT_URL TDDIUM TRAVIS WERCKER bamboo.buildKey 
 PASS  is_ci 1.2.0 distinct presence-checked variables besides CI == 35
 
 ===== 4. indicatif 0.18.6 — PUBLISHED ARTIFACT (license, MSRV, edition, stderr default) =====
@@ -445,25 +446,25 @@ PASS  indicatif CI tests the stable channel
 
 ===== 7. REGISTRY FIGURES (crates.io), retrieved now =====
 PASS  crates.io crate record indicatif (fetched, non-empty body)
-VOLATILE: indicatif              recent_downloads=47933805     downloads=215677764    max_stable=0.18.6
+VOLATILE: indicatif              recent_downloads=47566868     downloads=215860629    max_stable=0.18.6
 PASS  crates.io crate record console (fetched, non-empty body)
-VOLATILE: console                recent_downloads=80670316     downloads=345406499    max_stable=0.16.6
+VOLATILE: console                recent_downloads=80106872     downloads=345709624    max_stable=0.16.6
 PASS  crates.io crate record spinners (fetched, non-empty body)
-VOLATILE: spinners               recent_downloads=667982       downloads=7142166      max_stable=4.2.0
+VOLATILE: spinners               recent_downloads=661888       downloads=7143390      max_stable=4.2.0
 PASS  crates.io crate record spinoff (fetched, non-empty body)
-VOLATILE: spinoff                recent_downloads=102741       downloads=740480       max_stable=0.8.0
+VOLATILE: spinoff                recent_downloads=102243       downloads=740829       max_stable=0.8.0
 PASS  crates.io crate record cliclack (fetched, non-empty body)
-VOLATILE: cliclack               recent_downloads=1050733      downloads=3370549      max_stable=0.5.6
+VOLATILE: cliclack               recent_downloads=1039270      downloads=3373958      max_stable=0.5.6
 PASS  crates.io crate record spinach (fetched, non-empty body)
-VOLATILE: spinach                recent_downloads=1533         downloads=46033        max_stable=3.2.0
+VOLATILE: spinach                recent_downloads=1522         downloads=46041        max_stable=3.2.0
 PASS  crates.io crate record throbber-widgets-tui (fetched, non-empty body)
-VOLATILE: throbber-widgets-tui   recent_downloads=206705       downloads=891138       max_stable=0.11.1
+VOLATILE: throbber-widgets-tui   recent_downloads=204896       downloads=892329       max_stable=0.11.1
 PASS  crates.io crate record is_ci (fetched, non-empty body)
-VOLATILE: is_ci                  recent_downloads=12070556     downloads=53618506     max_stable=1.2.0
+VOLATILE: is_ci                  recent_downloads=12012705     downloads=53683359     max_stable=1.2.0
 PASS  crates.io crate record ci_info (fetched, non-empty body)
-VOLATILE: ci_info                recent_downloads=768740       downloads=6362771      max_stable=0.14.15
+VOLATILE: ci_info                recent_downloads=763898       downloads=6365953      max_stable=0.14.15
 PASS  crates.io crate record prodash (fetched, non-empty body)
-VOLATILE: prodash                recent_downloads=12886331     downloads=53745381     max_stable=31.0.0
+VOLATILE: prodash                recent_downloads=12796914     downloads=53802403     max_stable=31.0.0
 --- newest unyanked version + rust_version per candidate
 PASS  crates.io versions indicatif (fetched, non-empty body)
 VOLATILE: indicatif              num=0.18.6   created_at=2026-07-01T13:45:24.733589Z license=MIT                    rust_version=1.85
@@ -486,7 +487,7 @@ PASS  prodash newest unyanked version:rust_version (registry moved if this fails
 
 ===== 8. GITHUB REPO FIGURES + OPEN ISSUES (mandated total_count, not open_issues_count) =====
 PASS  gh repo record console-rs/indicatif (gh api ok)
-VOLATILE: console-rs/indicatif stars=5211 archived=false pushed_at=2026-09-10T15:39:00Z open_issues_count(incl PRs)=94
+VOLATILE: console-rs/indicatif stars=5212 archived=false pushed_at=2026-09-10T15:39:00Z open_issues_count(incl PRs)=94
 PASS  gh repo record fadeevab/cliclack (gh api ok)
 VOLATILE: fadeevab/cliclack stars=367 archived=false pushed_at=2026-08-10T16:49:59Z open_issues_count(incl PRs)=10
 PASS  gh repo record FGRibreau/spinners (gh api ok)
@@ -530,7 +531,7 @@ PASS  rustsec control atty names at least one RUSTSEC- advisory
 PASS  spinoff 0.8.0 published artifact (fetched, non-empty body)
 --- spinoff 0.8.0: default stream (opus claim: stdout)
 spinoff 0.8.0 Cargo.toml: NO rust-version key
-PASS  spinoff 0.8.0 declares no rust-version (gate 2)
+PASS  spinoff 0.8.0 declares no rust-version (gate 2) (matching lines) == 0
 PASS  spinners 4.2.0 published artifact (fetched, non-empty body)
 --- spinners 4.2.0: EPIPE panic claim + default stream + rust-version
 119:                stream.write(&frame, &message, start_time, stop_time).expect("IO Error");
@@ -542,7 +543,7 @@ spinners 4.2.0 Cargo.toml: NO rust-version key
 55:[dependencies.maplit]
 58:[dependencies.strum]
 PASS  spinners 4.2.0 render loop panics on a write error
-PASS  spinners 4.2.0 declares no rust-version (gate 2)
+PASS  spinners 4.2.0 declares no rust-version (gate 2) (matching lines) == 0
 --- cliclack: rust_version across recent versions + CI presence
 VOLATILE: 0.5.6 rust_version= None license= MIT
 VOLATILE: 0.5.5 rust_version= None license= MIT
@@ -550,10 +551,14 @@ VOLATILE: 0.5.4 rust_version= None license= MIT
 VOLATILE: 0.5.3 rust_version= None license= MIT
 PASS  cliclack: the four most recent versions all declare rust_version None
 PASS  gh cliclack repository contents (gh api ok)
-.gitignore, Cargo.toml, LICENSE, README.md, examples, media, src
-PASS  cliclack repository root has no .github directory (gate 4)
-{"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/contents#get-repository-content","status":"404"}gh: Not Found (HTTP 404)
-cliclack .github/workflows: gh-exit=1 (non-zero is the expected 404)
+VOLATILE: .gitignore, Cargo.toml, LICENSE, README.md, examples, media, src
+VOLATILE: (block line count = 1, fixed window = 1)
+PASS  cliclack repository root has no .github directory (gate 4) (matching lines) == 0
+VOLATILE: {"message":"Not Found","documentation_url":"https://docs.github.com/rest/repos/contents#get-repository-content","status":"404"}gh: Not Found (HTTP 404)
+VOLATILE: (block has no line 2)
+VOLATILE: (block has no line 3)
+VOLATILE: (block line count = 1, fixed window = 3)
+VOLATILE: cliclack .github/workflows: gh-exit=1 (non-zero is the expected 404)
 PASS  cliclack .github/workflows returns the expected 404
 
 ===== 11. MSRV ARITHMETIC CHECK =====
@@ -625,6 +630,8 @@ src/indicatif-0.18.6/.gitignore
 src/indicatif-0.18.6/Cargo.lock
 src/indicatif-0.18.6/Cargo.toml
 src/indicatif-0.18.6/Cargo.toml.orig
+src/indicatif-0.18.6/LICENSE
+src/indicatif-0.18.6/README.md
 src/indicatif-0.18.6/deny.toml
 src/indicatif-0.18.6/examples/cargo.rs
 src/indicatif-0.18.6/examples/cargowrap.rs
@@ -643,8 +650,6 @@ src/indicatif-0.18.6/examples/multi.rs
 src/indicatif-0.18.6/examples/single.rs
 src/indicatif-0.18.6/examples/tokio.rs
 src/indicatif-0.18.6/examples/yarnish.rs
-src/indicatif-0.18.6/LICENSE
-src/indicatif-0.18.6/README.md
 src/indicatif-0.18.6/src/draw_target.rs
 src/indicatif-0.18.6/src/format.rs
 src/indicatif-0.18.6/src/in_memory.rs
@@ -665,6 +670,7 @@ PASS  0.18.6 git tag: zero-width regression test (match count) == 0
 PASS  the tag blob is the right file (sanity: it defines ProgressDrawTarget)
 search on the moving main branch (what the codex report read):
 PASS  indicatif draw_target.rs on main (moving branch) (fetched, non-empty body)
+VOLATILE: grep exit=0
 VOLATILE: 880:    fn draw_to_term_narrower_than_its_content() {
 VOLATILE: 881-        // The last visual row can be wider than the terminal: zero columns, or a
 VOLATILE: 882-        // two-column character with one column left.
@@ -682,7 +688,7 @@ VOLATILE: 893-            fn height(&self) -> u16 {
 VOLATILE: 894-                10
 VOLATILE: 895-            }
 VOLATILE: 896-            fn move_cursor_up(&self, _: usize) -> std::io::Result<()> {
-VOLATILE: grep exit=0
+VOLATILE: (block line count = 17, fixed window = 17)
 PASS  the zero-width regression test exists on main (the branch the codex raw cited)
 PASS  the main-branch test builds a NarrowTerm fake
 --- indicatif 0.18.6: any explicit zero-width guard in its own source?
@@ -878,6 +884,7 @@ VOLATILE: 723-        match self {
 VOLATILE: 724-            LineType::Text(s) | LineType::Bar(s) => s,
 VOLATILE: 725-            LineType::Empty => "",
 VOLATILE: 726-        }
+VOLATILE: (block line count = 49, fixed window = 30)
 
 ===== 15. SUPPLEMENT 4: THE DEFAULT-FEATURE WIDTH PATH AT 0.18.6 =====
 default features are ["unicode-width", "wasmbind"], so the cfg(feature="unicode-width") arm is the one compiled:
@@ -1002,7 +1009,7 @@ PASS  prodash 31.0.0 published artifact (fetched, non-empty body)
 published 31.0.0 Cargo.toml: rust-version = "1.74"
 license = "MIT"
 PASS  prodash 31.0.0 published rust-version is 1.74 (not the 1.85 the codex raw read off main)
-PASS  prodash 31.0.0 license is MIT (gate 1 passes)
+PASS  prodash 31.0.0 published license string is MIT (recorded as fact; gate 1 is inapplicable per the owner ruling 2026-09-12, Q7.B)
 PASS  prodash main declares 1.85, which is where the codex figure came from
 --- prodash CI matrix (gate 4: macOS required)
 PASS  prodash ci.yml on main (moving branch) (fetched, non-empty body)
@@ -1012,6 +1019,25 @@ VOLATILE: 65:    runs-on: ubuntu-latest
 VOLATILE: 87:  build-and-test-on-windows:
 VOLATILE: 88:    runs-on: windows-latest
 VOLATILE: 94:      shell: bash  # Use `bash` even on Windows, for `set -e` behavior.
+VOLATILE: (block has no line 7)
+VOLATILE: (block has no line 8)
+VOLATILE: (block has no line 9)
+VOLATILE: (block has no line 10)
+VOLATILE: (block has no line 11)
+VOLATILE: (block has no line 12)
+VOLATILE: (block has no line 13)
+VOLATILE: (block has no line 14)
+VOLATILE: (block has no line 15)
+VOLATILE: (block has no line 16)
+VOLATILE: (block has no line 17)
+VOLATILE: (block has no line 18)
+VOLATILE: (block has no line 19)
+VOLATILE: (block has no line 20)
+VOLATILE: (block has no line 21)
+VOLATILE: (block has no line 22)
+VOLATILE: (block has no line 23)
+VOLATILE: (block has no line 24)
+VOLATILE: (block line count = 6, fixed window = 24)
 VOLATILE: prodash CI jobs: ubuntu-latest=3 windows-latest=1 macos-mentions=0
 PASS  prodash CI macOS mentions (gate 4 fails at 0) == 0
 PASS  prodash CI does run on ubuntu-latest, so the file was read
@@ -1035,7 +1061,7 @@ PASS  rustsec prodash (404 expected = no advisory page) HTTP == 404
 --- spinner (TheNeikos): license and archived state (codex excluded it on both)
 PASS  crates.io versions spinner (fetched, non-empty body)
 VOLATILE: newest unyanked: 0.5.0 2019-11-04T10:14:59.523701Z license: LGPL-3.0 rust_version: None
-PASS  spinner newest unyanked version:license (gate 1 fails on LGPL-3.0) == 0.5.0:LGPL-3.0
+PASS  spinner newest unyanked version:license (recorded as fact; gate 1 is inapplicable per the owner ruling 2026-09-12, Q7.B, so this string excludes nothing) == 0.5.0:LGPL-3.0
 PASS  gh repo record TheNeikos/spinner (gh api ok)
 VOLATILE: TheNeikos/spinner archived=true stars=10 pushed_at=2020-04-20T19:13:44Z
 PASS  TheNeikos/spinner is archived (maintenance rubric)

@@ -1,10 +1,35 @@
 #!/bin/bash
-# R63 progress-spinner — decision-audit empirical check. Revision 2.
+# R63 progress-spinner — decision-audit empirical check. Revision 3.
 # Verifies claims made in the raw reports. Implements nothing: no crate is
 # scaffolded, no spinner is written, no cargo build/test/audit is run and no
 # terminal is driven.
 #
-# Revision 2 changes, answering review/audit-codex.r1.md:
+# Revision 3 changes, answering review/audit-codex.r2.md:
+#   * COLLATION IS PINNED. `export LC_ALL=C` is set below. Revision 2's cited
+#     log was produced under `en_US.UTF-8` and the auditor's rerun under the C
+#     locale, so two `sort`-ordered regions that carry NO `VOLATILE:`/`HOST:`
+#     prefix differed — the presence-checked variable list in section 3 and the
+#     shipped-file listing in section 12 — which made revision 2's stated
+#     comparison rule ("every unprefixed line must match") false in its own
+#     cited log. Pinning the locale removes the class rather than excusing it.
+#     `review/evidence/r63-crossrun-compare.sh` proves this empirically.
+#   * `nolit` NO LONGER READS AN EXIT STATUS. It counts matches and asserts
+#     zero, and reports an unreadable file or a grep read error (exit >1) as a
+#     FAIL, so an absence is never "passed" because grep errored.
+#   * EVERY LIVE-SOURCE ECHO IS PREFIXED AND FIXED-LENGTH. Blocks quoted from a
+#     moving branch or a live GitHub endpoint go through `volk <K>`, which
+#     prefixes each line `VOLATILE: ` and emits EXACTLY K lines, padding or
+#     truncating. So a moving source cannot change this log's line count, and
+#     index-by-index comparison stays valid. A line-count change therefore means
+#     the SCRIPT changed, and is a rejection by design, not a tolerated drift.
+#   * The User-Agent carries the repository URL.
+#   * The default scratch directory is under $TMPDIR, not a session-specific
+#     path, so the documented Linux/other-host rerun is actually possible.
+#   * Two PASS labels no longer assert a fitness-gate-1 verdict: licence
+#     compatibility is not evaluated for any dependency (owner ruling
+#     2026-09-12, Q7.B). The licence STRINGS are still asserted as facts.
+#
+# Revision 2 changes, answering review/audit-codex.r1.md, all retained:
 #   * sections 12-18 are inline code in this script, not a commented-out
 #     `supplements()` function, so one run emits every section the decision
 #     cites (0-18 plus the DONE summary);
@@ -15,12 +40,19 @@
 #     `code` print PASS or FAIL) rather than on an exit code alone; recorded
 #     grep exit codes are kept beside the assertions as raw observation, never
 #     as the assertion;
-#   * time-varying output carries a literal `VOLATILE: ` prefix and host-specific
-#     output a literal `HOST: ` prefix, so a rerun is compared with:
-#         diff <(grep -vE '^(VOLATILE|HOST): ' a.log) \
-#              <(grep -vE '^(VOLATILE|HOST): ' b.log)
 #   * the run ends with `checks: N pass / M fail` and exits non-zero on any
 #     FAIL, so this check can fail.
+#
+# THE DIFFERENCE RULE THIS SCRIPT IS BUILT TO SATISFY (see ## Empirical check):
+#   A conforming rerun has the same number of lines as the cited log, and may
+#   differ from it only at lines carrying the literal prefix `VOLATILE: `
+#   (class V, live figures) or `HOST: ` (class H, host identity), and only at
+#   the line positions where the cited log itself carries that prefix. Every
+#   other line must be byte-identical. Mechanically:
+#       diff <(grep -vE '^(VOLATILE|HOST): ' a.log) \
+#            <(grep -vE '^(VOLATILE|HOST): ' b.log)
+#   must be empty AND `wc -l` must agree. `r63-crossrun-compare.sh` enforces
+#   both, classifies every differing line, and fails on anything left over.
 #
 # Rerun:  bash review/evidence/r63-spinner-claims.sh \
 #           > review/evidence/r63-spinner-claims.log 2>&1
@@ -32,8 +64,13 @@
 set -u
 set -o pipefail
 
-UA='rs-launch-blueprint-research/R63'
-W="${R63_WORK:-/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r63}"
+# Collation is part of this log's contract: `sort`, shell glob expansion and
+# grep character ranges all follow it. Pinning it here is what makes the
+# unprefixed lines of this log reproducible on a host with a different locale.
+export LC_ALL=C
+
+UA='rs-launch-blueprint-research/R63 (+https://github.com/smorinlabs/rs-launch-blueprint)'
+W="${R63_WORK:-${TMPDIR:-/tmp}/r63-spinner-claims}"
 TS=cb1cbcb2e88b898e8c081b0abbfabc1630079c00
 PY=b08bccfb55d05f15e46a83b52c5660b1881d19f5
 TSREPO="${TS_REPO:-$HOME/c/ts-launch-blueprint}"
@@ -48,6 +85,23 @@ hr(){ printf '\n===== %s =====\n' "$1"; }
 sub(){ printf -- '--- %s\n' "$1"; }
 vol(){ sed 's/^/VOLATILE: /'; }
 
+# volk <K> — prefix every line `VOLATILE: ` and emit EXACTLY K lines, padding
+# with a marker and truncating beyond K. Used for every block quoted from a
+# moving branch or a live GitHub endpoint, so that a change in the SOURCE's
+# shape cannot change this log's line count and so misalign an index-by-index
+# comparison. The block's content is still asserted separately by `lit`/`chk`.
+# It always emits exactly K+1 lines: K content-or-padding lines and one line
+# recording the block's true length, so a shape change is visible rather than
+# hidden by the truncation.
+volk(){
+  awk -v k="$1" '
+    NR <= k { printf "VOLATILE: %s\n", $0 }
+    END {
+      for (i = NR + 1; i <= k; i++) printf "VOLATILE: (block has no line %d)\n", i
+      printf "VOLATILE: (block line count = %d, fixed window = %d)\n", NR, k
+    }'
+}
+
 ok(){  PASS=$((PASS+1)); printf 'PASS  %s\n' "$1"; }
 bad(){ FAIL=$((FAIL+1)); printf 'FAIL  %s\n' "$1"; }
 
@@ -60,11 +114,17 @@ lit(){
   else bad "$1: literal absent from $2 -> $3"; fi
 }
 
-# nolit <label> <file> <literal> — assert the file does NOT contain the literal.
+# nolit <label> <file> <literal> — assert the file contains ZERO lines matching
+# the literal. Revision 3: this counts matches and asserts the count is 0. It no
+# longer passes merely because `grep -q` returned non-zero, which it also would
+# for a read error. An unreadable file, or a grep exit status above 1 (an error,
+# not "no match"), is a FAIL and is named as such.
 nolit(){
-  if [ ! -f "$2" ]; then bad "$1: $2 missing"
-  elif grep -qF -- "$3" "$2"; then bad "$1: literal unexpectedly present in $2 -> $3"
-  else ok "$1"; fi
+  local n st
+  if [ ! -r "$2" ]; then bad "$1: $2 missing or unreadable"; return 1; fi
+  n=$(grep -cF -- "$3" "$2"); st=$?
+  if [ "$st" -gt 1 ]; then bad "$1: grep read error (exit $st) on $2"; return 1; fi
+  chk "$1 (matching lines)" "0" "$n"
 }
 
 # cnt <label> <expected-count> <path> <extended-regex> — assert a match count,
@@ -126,7 +186,12 @@ sed 's/^/HOST: /' fetch/rustc.txt
 cargo --version > fetch/cargo.txt 2>&1
 lit "cargo reports a version" fetch/cargo.txt "cargo "
 sed 's/^/HOST: /' fetch/cargo.txt
-printf 'HOST: os: macOS %s (%s)\n' "$(sw_vers -productVersion)" "$(uname -m)"
+if command -v sw_vers >/dev/null 2>&1; then
+  printf 'HOST: os: macOS %s (%s)\n' "$(sw_vers -productVersion)" "$(uname -m)"
+else
+  printf 'HOST: os: %s %s (%s)\n' "$(uname -s)" "$(uname -r)" "$(uname -m)"
+fi
+printf 'HOST: collation pinned by this script: LC_ALL=%s (ambient LANG was %s)\n' "$LC_ALL" "${LANG:-unset}"
 printf 'VOLATILE: date: %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 fetch "stable channel manifest" https://static.rust-lang.org/dist/channel-rust-stable.toml fetch/channel.toml
 lit "stable channel manifest has a [pkg.rust] table" fetch/channel.toml '[pkg.rust]'
@@ -351,11 +416,14 @@ raise SystemExit(0 if all(v['rust_version'] is None for v in vs) else 1)
 PY
 then ok "cliclack: the four most recent versions all declare rust_version None"; else bad "cliclack: one of the four most recent versions now declares a rust-version"; fi
 ghapi "gh cliclack repository contents" "repos/fadeevab/cliclack/contents" '[.[].name] | join(", ")' fetch/cliclack-contents.txt
-cat fetch/cliclack-contents.txt
+# The repository-root listing is a LIVE endpoint: a file added to that
+# repository changes this line. It is prefixed and windowed for that reason.
+volk 1 < fetch/cliclack-contents.txt
 nolit "cliclack repository root has no .github directory (gate 4)" fetch/cliclack-contents.txt '.github'
-CLICLACK_WF=$(gh api "repos/fadeevab/cliclack/contents/.github/workflows" > fetch/cliclack-workflows.txt 2>&1; echo "gh-exit=$?")
-sed -n '1,3p' fetch/cliclack-workflows.txt
-printf 'cliclack .github/workflows: %s (non-zero is the expected 404)\n' "$CLICLACK_WF"
+gh api "repos/fadeevab/cliclack/contents/.github/workflows" > fetch/cliclack-workflows.txt 2>&1
+CLICLACK_WF="gh-exit=$?"
+volk 3 < fetch/cliclack-workflows.txt
+printf 'VOLATILE: cliclack .github/workflows: %s (non-zero is the expected 404)\n' "$CLICLACK_WF"
 lit "cliclack .github/workflows returns the expected 404" fetch/cliclack-workflows.txt '404'
 
 # ============================================================================
@@ -418,8 +486,9 @@ cnt "0.18.6 git tag: zero-width regression test" "0" fetch/dt-tag.rs 'draw_to_te
 lit "the tag blob is the right file (sanity: it defines ProgressDrawTarget)" fetch/dt-tag.rs 'impl ProgressDrawTarget'
 echo "search on the moving main branch (what the codex report read):"
 fetch "indicatif draw_target.rs on main (moving branch)" https://raw.githubusercontent.com/console-rs/indicatif/main/src/draw_target.rs fetch/dt-main.rs
-grep -n -A16 'fn draw_to_term_narrower_than_its_content' fetch/dt-main.rs | vol
+grep -n -A16 'fn draw_to_term_narrower_than_its_content' fetch/dt-main.rs > fetch/dt-main-test.txt
 printf 'VOLATILE: grep exit=%s\n' "$?"
+volk 17 < fetch/dt-main-test.txt
 lit "the zero-width regression test exists on main (the branch the codex raw cited)" fetch/dt-main.rs 'fn draw_to_term_narrower_than_its_content()'
 lit "the main-branch test builds a NarrowTerm fake" fetch/dt-main.rs 'struct NarrowTerm'
 sub "indicatif 0.18.6: any explicit zero-width guard in its own source?"
@@ -469,7 +538,8 @@ raise SystemExit(0 if guard == '#[cfg(not(feature = "unicode-width"))]' else 1)
 PY
 then ok "the only division by width sits under #[cfg(not(feature = \"unicode-width\"))]"; else bad "the division by width is not under the non-default unicode-width cfg arm"; fi
 sub "and the same region at the moving main branch, for comparison"
-grep -n -A22 '#\[cfg(not(feature = "unicode-width"))\]' fetch/dt-main.rs | sed -n '1,30p' | vol
+grep -n -A22 '#\[cfg(not(feature = "unicode-width"))\]' fetch/dt-main.rs > fetch/dt-main-cfg.txt
+volk 30 < fetch/dt-main-cfg.txt
 
 # ============================================================================
 hr "15. SUPPLEMENT 4: THE DEFAULT-FEATURE WIDTH PATH AT 0.18.6"
@@ -529,11 +599,12 @@ tar -xzf src/prodash-31.0.0.crate -C src || bad "prodash 31.0.0 artifact did not
 printf 'published 31.0.0 Cargo.toml: %s\n' "$(grep -m1 'rust-version' src/prodash-31.0.0/Cargo.toml)"
 grep -m1 '^license' src/prodash-31.0.0/Cargo.toml
 lit "prodash 31.0.0 published rust-version is 1.74 (not the 1.85 the codex raw read off main)" src/prodash-31.0.0/Cargo.toml 'rust-version = "1.74"'
-lit "prodash 31.0.0 license is MIT (gate 1 passes)" src/prodash-31.0.0/Cargo.toml 'license = "MIT"'
+lit "prodash 31.0.0 published license string is MIT (recorded as fact; gate 1 is inapplicable per the owner ruling 2026-09-12, Q7.B)" src/prodash-31.0.0/Cargo.toml 'license = "MIT"'
 lit "prodash main declares 1.85, which is where the codex figure came from" fetch/prodash-main-Cargo.toml 'rust-version = "1.85"'
 sub "prodash CI matrix (gate 4: macOS required)"
 fetch "prodash ci.yml on main (moving branch)" https://raw.githubusercontent.com/GitoxideLabs/prodash/main/.github/workflows/ci.yml fetch/prodash-ci.yml
-grep -n -i 'runs-on\|os:\|macos\|ubuntu\|windows' fetch/prodash-ci.yml | vol
+grep -n -i 'runs-on\|os:\|macos\|ubuntu\|windows' fetch/prodash-ci.yml > fetch/prodash-ci-hits.txt
+volk 24 < fetch/prodash-ci-hits.txt
 UBUNTU=$(grep -c 'runs-on: ubuntu-latest' fetch/prodash-ci.yml | tr -d ' ')
 WINDOWS=$(grep -c 'runs-on: windows-latest' fetch/prodash-ci.yml | tr -d ' ')
 MACOS=$(grep -ci 'macos' fetch/prodash-ci.yml | tr -d ' ')
@@ -549,7 +620,7 @@ sub "spinner (TheNeikos): license and archived state (codex excluded it on both)
 fetch "crates.io versions spinner" https://crates.io/api/v1/crates/spinner/versions fetch/versions-spinner.json
 jsonval "spinner newest unyanked" fetch/versions-spinner.json 'import json,sys; v=[x for x in json.load(sys.stdin)["versions"] if not x["yanked"]][0]; print("VOLATILE: newest unyanked:", v["num"], v["created_at"], "license:", v["license"], "rust_version:", v["rust_version"])'
 SPIN=$(jsonval "spinner license" fetch/versions-spinner.json 'import json,sys; v=[x for x in json.load(sys.stdin)["versions"] if not x["yanked"]][0]; print("%s:%s" % (v["num"], v["license"]))')
-chk "spinner newest unyanked version:license (gate 1 fails on LGPL-3.0)" "0.5.0:LGPL-3.0" "$SPIN"
+chk "spinner newest unyanked version:license (recorded as fact; gate 1 is inapplicable per the owner ruling 2026-09-12, Q7.B, so this string excludes nothing)" "0.5.0:LGPL-3.0" "$SPIN"
 ghapi "gh repo record TheNeikos/spinner" repos/TheNeikos/spinner '"TheNeikos/spinner archived=\(.archived) stars=\(.stargazers_count) pushed_at=\(.pushed_at)"' fetch/repo-spinner.txt
 vol < fetch/repo-spinner.txt
 lit "TheNeikos/spinner is archived (maintenance rubric)" fetch/repo-spinner.txt 'archived=true'
