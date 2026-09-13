@@ -115,6 +115,15 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-13T07:47:28Z",
+      "publication": {
+        "acceptance_sha256": "53f6d06db99515ab3d9228530fef3fbecb007d1cdd5030e9e4c012be11d84c50",
+        "decision_sha256": "013fe4c3fc992d7e3755822cd08fe134cafebf83ecff509000b3a98780e8e7f3",
+        "transaction": "83daa354c5ca48299d046ddb25c29534"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -164,6 +173,11 @@
     }
   },
   "prompt_source": "research/topics/26-packed-artifact-content-guard/prompts/packed-artifact-content-guard.prompt.md",
+  "publication": {
+    "acceptance_sha256": "53f6d06db99515ab3d9228530fef3fbecb007d1cdd5030e9e4c012be11d84c50",
+    "decision_sha256": "013fe4c3fc992d7e3755822cd08fe134cafebf83ecff509000b3a98780e8e7f3",
+    "transaction": "83daa354c5ca48299d046ddb25c29534"
+  },
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
     "codex",
@@ -171,7 +185,7 @@
   ],
   "run_id": "2026-09-05T164358Z-bb73f46c3910",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "focused",
-  "updated_at": "2026-09-10T15:17:45Z"
+  "updated_at": "2026-09-13T07:47:28Z"
 }

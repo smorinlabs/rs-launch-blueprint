@@ -29,7 +29,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R23 | lockfile-version-sync | pattern | different | DIVERGENT | — | [prompt](topics/23-lockfile-version-sync/prompts/lockfile-version-sync.prompt.md) | resolved |
 | R24 | changelog-section-mapping | pattern | different | DIVERGENT | — | [prompt](topics/24-changelog-section-mapping/prompts/changelog-section-mapping.prompt.md) | open |
 | R25 | semver-bump-strategy | pattern | ts-only | DIVERGENT | — | [prompt](topics/25-semver-bump-strategy/prompts/semver-bump-strategy.prompt.md) | resolved |
-| R26 | packed-artifact-content-guard | bundle | ts-only | DIVERGENT | — | [prompt](topics/26-packed-artifact-content-guard/prompts/packed-artifact-content-guard.prompt.md) | open |
+| R26 | packed-artifact-content-guard | bundle | ts-only | DIVERGENT | — | [prompt](topics/26-packed-artifact-content-guard/prompts/packed-artifact-content-guard.prompt.md) | resolved |
 | R27 | formatter-config-surface | bundle | different | DIVERGENT | — | [prompt](topics/27-formatter-config-surface/prompts/formatter-config-surface.prompt.md) | open |
 | R28 | linter-and-editor-tooling | bundle | different | DIVERGENT | — | [prompt](topics/28-linter-and-editor-tooling/prompts/linter-and-editor-tooling.prompt.md) | open |
 | R29 | non-code-file-formatting | bundle | py-only | DIVERGENT | — | [prompt](topics/29-non-code-file-formatting/prompts/non-code-file-formatting.prompt.md) | open |
