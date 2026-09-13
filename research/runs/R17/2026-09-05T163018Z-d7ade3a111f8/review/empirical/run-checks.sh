@@ -24,6 +24,10 @@ GHDOCS_PIN=078b5832caa5cde591c2babb389ef447a0ef66eb   # github/docs, resolved fr
                           # pinned because assertions 10h-10i read it, and a docs reorg on a moving
                           # ref would turn them into failures rather than a printed drift
 KF_DIR="${KF_DIR:-${TMPDIR:-/tmp}/r17-kingfisher}"
+# Resolved here, before any section changes directory: sections 09 and 12 run inside $WORK, which is
+# under $TMPDIR and not inside the repository, so section 13 cannot ask git where it is by then.
+START_DIR="$(pwd)"
+REPO_ROOT="${REPO_ROOT:-$(git -C "$START_DIR" rev-parse --show-toplevel 2>/dev/null || echo /nonexistent)}"
 WORK="$(mktemp -d "${TMPDIR:-/tmp}/r17-work.XXXXXX")"
 trap 'rm -rf "$WORK"' EXIT
 
@@ -43,6 +47,7 @@ say "00 toolchain and host"
 rustc --version
 cargo --version
 uname -a
+bash --version | head -1   # section 12 executes two shells, so the shell's own version is recorded
 gh --version | head -1
 curl --version | head -1
 date -u +'UTC now: %Y-%m-%dT%H:%M:%SZ'
@@ -129,7 +134,7 @@ awk '/^## Exit Codes/{f=1} f&&/^## /&&!/^## Exit Codes/{exit} f' "$WORK/USAGE.md
 grep -n -m2 -- '--only-valid` is a compatibility alias' "$WORK/USAGE.md"
 
 say "06 crates.io trap — 'kingfisher' on crates.io is an unrelated project"
-curl -sSL --max-time 60 -H 'User-Agent: rs-launch-blueprint-research (steve@conceptm.com)' \
+curl -sSL --max-time 60 -H 'User-Agent: rs-launch-blueprint-research (https://github.com/smorinlabs/rs-launch-blueprint)' \
   https://crates.io/api/v1/crates/kingfisher \
   | python3 -c 'import json,sys;d=json.load(sys.stdin)["crate"];print({k:d.get(k) for k in ["name","newest_version","repository","recent_downloads","downloads"]})' \
   > "$WORK/kf-crate.txt"
@@ -330,6 +335,14 @@ cat <<'NOTE'
   gate must allow-list and proves two codes outside it, but whether a real scan step fails when the
   scanner cannot run is P03's acceptance check 5 (replace the binary with `false`, or pass a
   rejected flag, and assert the job fails).
+- Section 12 is NOT a GitHub Actions job either, and it creates no workflow file. It runs the two
+  shell command lines that github/docs documents for a `run:` step, at the pinned commit, over a
+  three-line script that is the literal implementation of this decision's gate rule. What it
+  establishes is a property of those shells, executed locally; what it does not establish is how a
+  hosted runner behaves, which stays P03's acceptance check 5.
+- Section 13 asserts on this decision's own text, not on any external source. It compares named
+  lines of revision 4 against revision 2 read out of git history, so it records which approved
+  wording this revision preserved and which it changed. It proves nothing about the scanner.
 - TruffleHog's CLI was NOT downloaded or run. Its exit-183-on-verified behaviour, its 700+
   actively-verifying detector count, and whether `--since-commit` with an empty value consumes the
   following `--branch` flag are all documented-not-executed here.
@@ -343,6 +356,121 @@ cat <<'NOTE'
   so P03's install step needs GH_TOKEN in its environment. Whether a GitHub-hosted runner satisfies
   all three is an acceptance check for P03, not a settled fact here.
 NOTE
+
+say "12 the gate rule's shell dependency — an executed fail-open, and the two shells that decide it"
+# Section 10 showed that exit codes outside the documented set are reachable. This section shows
+# something narrower and more dangerous: "capture the exit code, then allow-list it" is NOT safe on
+# its own. GitHub's DEFAULT run: shell is `bash -e {0}` (10h) and carries no pipefail, so when the
+# scanner is the non-final element of a pipeline — teeing the scan to a step log, or piping the
+# report to jq, both ordinary things to write — the captured status is the LAST command's, which is
+# 0. The allow-list then PASSES the job although the scanner never ran. The explicit `shell: bash`
+# form (10i) carries pipefail and does not. The two shell command lines below are extracted from the
+# pinned github/docs file fetched in section 10, not typed from memory.
+DEF_SHELL=$(grep -o -- '`bash -e {0}`' "$WORK/gh-shells.md" | head -1 | tr -d '`' | sed 's/ {0}//')
+PF_SHELL=$(grep -o -- '`bash --noprofile --norc -eo pipefail {0}`' "$WORK/gh-shells.md" | head -1 | tr -d '`' | sed 's/ {0}//')
+echo "-- default run: shell, argv from the pinned docs: [$DEF_SHELL]"
+echo "-- explicit 'shell: bash', argv from the pinned docs: [$PF_SHELL]"
+assert 12a-default-shell-argv-read-from-the-pinned-docs "bash -e" "$DEF_SHELL"
+assert 12b-explicit-shell-bash-argv-read-from-the-pinned-docs "bash --noprofile --norc -eo pipefail" "$PF_SHELL"
+mkdir -p "$WORK/fix12"      # an empty directory: nothing real is ever scanned by this section
+# The gate exactly as this decision states it, as a workflow step's script would be written.
+cat > "$WORK/gate-piped.sh" <<'GATE'
+rc=0
+"$SCANNER" $SCAN_ARGS 2>&1 | tee "$STEPLOG" || rc=$?
+echo "$rc" > "$RCFILE"
+case "$rc" in
+  0|200) echo "gate verdict: PASS the job (captured rc=$rc)"; exit 0 ;;
+  205)   echo "gate verdict: FAIL the job, validated finding (captured rc=$rc)"; exit 1 ;;
+  *)     echo "gate verdict: FAIL the job, tool error (captured rc=$rc)"; exit 1 ;;
+esac
+GATE
+# The same gate with no pipeline, so the pipeline is isolated as the mechanism rather than assumed.
+sed 's#2>&1 | tee "$STEPLOG"#> "$STEPLOG" 2>\&1#' "$WORK/gate-piped.sh" > "$WORK/gate-nopipe.sh"
+echo "-- the scan line, piped form:  $(grep 'SCAN_ARGS' "$WORK/gate-piped.sh")"
+echo "-- the scan line, no pipeline: $(grep 'SCAN_ARGS' "$WORK/gate-nopipe.sh")"
+gate_run() { # gate_run <gate-file> <scanner> <args> <shell-words...>
+  local gate="$1" scanner="$2" args="$3" tail_line
+  shift 3
+  rm -f "$WORK/step12.rc"
+  SCANNER="$scanner" SCAN_ARGS="$args" STEPLOG="$WORK/step12.log" RCFILE="$WORK/step12.rc" \
+    "$@" "$WORK/$gate" > "$WORK/step12.out" 2>&1
+  GATE_STEP_EXIT=$?
+  if [ -f "$WORK/step12.rc" ]; then GATE_RC=$(cat "$WORK/step12.rc"); else GATE_RC="not-reached"; fi
+  tail_line=$(tail -1 "$WORK/step12.out")
+  printf '   %-14s scanner=%-22s shell=[%s]\n      -> captured rc=%s, step exit=%s  |  %s\n' \
+    "$gate" "$(basename "$scanner")" "$*" "$GATE_RC" "$GATE_STEP_EXIT" "$tail_line"
+}
+MISSING_SCANNER="$WORK/no-such-kingfisher-binary"   # deliberately absent: the scanner cannot run
+echo "-- case 1: the scanner is the real binary but the flag is rejected (exit 2, proven in 10e)."
+gate_run gate-piped.sh "$KF_DIR/kingfisher" "--definitely-not-a-real-flag" $DEF_SHELL
+assert 12c-default-shell-piped-rejected-flag-PASSES-THE-JOB "0 0" "$GATE_RC $GATE_STEP_EXIT"
+gate_run gate-piped.sh "$KF_DIR/kingfisher" "--definitely-not-a-real-flag" $PF_SHELL
+assert 12d-pipefail-shell-piped-rejected-flag-fails-the-job "2 1" "$GATE_RC $GATE_STEP_EXIT"
+gate_run gate-nopipe.sh "$KF_DIR/kingfisher" "--definitely-not-a-real-flag" $DEF_SHELL
+assert 12e-default-shell-unpiped-rejected-flag-fails-the-job "2 1" "$GATE_RC $GATE_STEP_EXIT"
+echo "-- case 2: the scanner binary is absent altogether, which is what a failed install leaves."
+echo "   The captured value itself is shell-dependent (bash 3.2 under errexit reports 1 for an"
+echo "   absent path where a plain shell reports 127), so only the job verdict is asserted."
+gate_run gate-piped.sh "$MISSING_SCANNER" "scan $WORK/fix12" $DEF_SHELL
+assert 12f-default-shell-piped-missing-binary-PASSES-THE-JOB 0 "$GATE_STEP_EXIT"
+gate_run gate-piped.sh "$MISSING_SCANNER" "scan $WORK/fix12" $PF_SHELL
+assert 12g-pipefail-shell-piped-missing-binary-fails-the-job 1 "$GATE_STEP_EXIT"
+gate_run gate-nopipe.sh "$MISSING_SCANNER" "scan $WORK/fix12" $DEF_SHELL
+assert 12h-default-shell-unpiped-missing-binary-fails-the-job 1 "$GATE_STEP_EXIT"
+echo "   Read together: the allow-list is only as good as the status it is handed. Under the"
+echo "   default shell a pipeline hands it the wrong status and the security gate passes a job in"
+echo "   which no scan ran. The rule therefore has to fix the step's shell and forbid an unguarded"
+echo "   pipeline around the scanner, not merely enumerate the scanner's codes."
+
+say "13 which approved wording this revision preserved, and which it changed"
+# Revision 3 claimed a set of already-approved regions stood "as revision 2 wrote them" and that was
+# false for three of them; the audit rejected it on exactly that. This section stops the claim being
+# a matter of assertion: it reads revision 2 out of git, checks that it is the revision the audit
+# named by digest, and compares named anchor lines in both directions — regions claimed unchanged
+# must be byte-identical, and regions this revision rewrote must NOT be.
+REV2_COMMIT=ed16bef14a4dd9cd5adb05cc969a9162f6bfb48a
+REV2_SHA_EXPECTED=e2c3d588eaf1a098027b4c9ced4fa01ef1341fd27ef4cfdfa012bfc44a8321ec
+RUN_REL="research/runs/R17/2026-09-05T163018Z-d7ade3a111f8"
+DEC_NOW="$REPO_ROOT/$RUN_REL/review/DECISION.md"   # $REPO_ROOT was resolved at the top, before any cd
+git -C "$REPO_ROOT" show "$REV2_COMMIT:$RUN_REL/review/DECISION.md" > "$WORK/rev2-DECISION.md" 2>"$WORK/rev2.err" \
+  || { echo "-- git show failed:"; sed -n '1,3p' "$WORK/rev2.err"; : > "$WORK/rev2-DECISION.md"; }
+REV2_SHA=$(shasum -a 256 < "$WORK/rev2-DECISION.md" | cut -d' ' -f1)
+echo "-- repo root: $REPO_ROOT"
+echo "-- revision 2 read from $REV2_COMMIT, sha256: $REV2_SHA"
+echo "-- revision under review: $DEC_NOW, sha256 of its current bytes is NOT asserted here (this"
+echo "   section runs while that file is being written); the anchor lines below are."
+assert 13a-revision-2-is-the-decision-the-audit-named "$REV2_SHA_EXPECTED" "$REV2_SHA"
+anchor_line() { awk -v p="$2" 'index($0,p)==1 {print; exit}' "$1"; }
+cmp_anchor() { # cmp_anchor <label> <same|differ> <literal line prefix>
+  local a b ha hb verdict
+  a=$(anchor_line "$WORK/rev2-DECISION.md" "$3")
+  b=$(anchor_line "$DEC_NOW" "$3")
+  if [ -z "$a" ] || [ -z "$b" ]; then
+    assert "$1" "$2" "anchor-not-found(rev2=${#a}B rev4=${#b}B)"; return
+  fi
+  ha=$(printf '%s' "$a" | shasum -a 256 | cut -c1-12)
+  hb=$(printf '%s' "$b" | shasum -a 256 | cut -c1-12)
+  if [ "$ha" = "$hb" ]; then verdict=same; else verdict=differ; fi
+  printf '   rev2=%s rev4=%s %-7s %s\n' "$ha" "$hb" "$verdict" "$3"
+  assert "$1" "$2" "$verdict"
+}
+cmp_anchor 13b-part-1-recommendation-byte-identical            same   '**Part 1 — keep a dedicated'
+cmp_anchor 13c-f050-ledger-row-byte-identical                  same   '| F050 — Dedicated secret-scanning CI workflow'
+cmp_anchor 13d-baseline-review-f050-byte-identical             same   'BASELINE-REVIEW: F050'
+cmp_anchor 13e-equal-base-and-head-narrowing-byte-identical    same   '**The py split, verified at the pinned tag'
+cmp_anchor 13f-equal-base-and-head-consequence-byte-identical  same   'What this changes about the item'
+cmp_anchor 13g-provenance-advantage-byte-identical             same   '**Shape C'
+cmp_anchor 13h-provenance-diagnosis-byte-identical             same   '**The command is environment-dependent'
+cmp_anchor 13i-assumes-msrv-policy-byte-identical              same   '- assumes msrv-policy = '
+cmp_anchor 13j-assumes-rust-edition-byte-identical             same   '- assumes rust-edition = '
+cmp_anchor 13k-assumes-target-os-matrix-byte-identical         same   '- assumes target-os-matrix = '
+cmp_anchor 13l-assumes-license-byte-identical                  same   '- assumes license = '
+cmp_anchor 13m-part-2-recommendation-rewritten                 differ '**Part 2 — implement it with the Kingfisher CLI'
+cmp_anchor 13n-ranked-runner-up-rewritten                      differ 'The ranked runner-up is the **TruffleHog OSS CLI'
+cmp_anchor 13o-validity-filter-finding-rewritten               differ '**The finding that changes the design.**'
+echo "   The three 'differ' rows are the three the revision-3 audit named. They are asserted to"
+echo "   differ rather than merely allowed to, so this section fails if a later revision quietly"
+echo "   reverts them or if the claim about them is restated as preservation."
 
 printf '\nsummary: PASS=%d FAIL=%d SKIP=%d\n' "$PASS" "$FAIL" "$SKIP"
 [ "$FAIL" -eq 0 ] && { echo "RESULT: PASS"; exit 0; } || { echo "RESULT: FAIL"; exit 1; }
