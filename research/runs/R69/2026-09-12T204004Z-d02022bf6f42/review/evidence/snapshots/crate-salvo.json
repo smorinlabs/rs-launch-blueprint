@@ -1,0 +1,19 @@
+{
+  "crate": "salvo",
+  "retrieved_at": "2026-09-13T07:57:55Z",
+  "endpoints": {
+    "crate": "https://crates.io/api/v1/crates/salvo",
+    "versions": "https://crates.io/api/v1/crates/salvo/versions"
+  },
+  "recent_downloads": 879741,
+  "downloads": 12546171,
+  "repository": "https://github.com/salvo-rs/salvo",
+  "versions_total": 249,
+  "newest_non_yanked": {
+    "num": "0.96.0",
+    "created_at": "2026-08-27T01:10:25.881378Z",
+    "yanked": false,
+    "rust_version": "1.94",
+    "license": "Apache-2.0"
+  }
+}

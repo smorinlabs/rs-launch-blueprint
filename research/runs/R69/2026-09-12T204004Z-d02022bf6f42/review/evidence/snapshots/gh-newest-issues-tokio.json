@@ -1,0 +1,153 @@
+{
+  "repo": "tokio-rs/tokio",
+  "retrieved_at": "2026-09-13T07:57:55Z",
+  "rule": "prompt table: 10 most recently opened issues; first comment whose author_association is OWNER/MEMBER/COLLABORATOR, excluding bots and the issue author",
+  "issues": [
+    {
+      "author": "Daksh14",
+      "created_at": "2026-09-09T16:05:23Z",
+      "number": 8437,
+      "comments": []
+    },
+    {
+      "author": "marcbowes",
+      "created_at": "2026-09-08T19:11:21Z",
+      "number": 8434,
+      "comments": [
+        {
+          "assoc": "CONTRIBUTOR",
+          "author": "rcoh",
+          "created_at": "2026-09-08T19:52:16Z",
+          "type": "User"
+        },
+        {
+          "assoc": "MEMBER",
+          "author": "Darksonn",
+          "created_at": "2026-09-09T08:36:28Z",
+          "type": "User"
+        },
+        {
+          "assoc": "CONTRIBUTOR",
+          "author": "rcoh",
+          "created_at": "2026-09-09T10:21:19Z",
+          "type": "User"
+        },
+        {
+          "assoc": "NONE",
+          "author": "noxware",
+          "created_at": "2026-09-10T23:38:22Z",
+          "type": "User"
+        }
+      ]
+    },
+    {
+      "author": "glaziermag",
+      "created_at": "2026-09-08T17:19:04Z",
+      "number": 8433,
+      "comments": [
+        {
+          "assoc": "MEMBER",
+          "author": "Darksonn",
+          "created_at": "2026-09-09T08:37:58Z",
+          "type": "User"
+        }
+      ]
+    },
+    {
+      "author": "botirkhaltaev",
+      "created_at": "2026-09-07T14:41:03Z",
+      "number": 8429,
+      "comments": [
+        {
+          "assoc": "MEMBER",
+          "author": "Darksonn",
+          "created_at": "2026-09-07T14:46:03Z",
+          "type": "User"
+        }
+      ]
+    },
+    {
+      "author": "rifuki",
+      "created_at": "2026-09-07T06:23:01Z",
+      "number": 8423,
+      "comments": []
+    },
+    {
+      "author": "Darksonn",
+      "created_at": "2026-09-05T08:38:11Z",
+      "number": 8411,
+      "comments": [
+        {
+          "assoc": "MEMBER",
+          "author": "Darksonn",
+          "created_at": "2026-09-07T07:16:06Z",
+          "type": "User"
+        }
+      ]
+    },
+    {
+      "author": "dfoxfranke",
+      "created_at": "2026-09-04T18:00:10Z",
+      "number": 8409,
+      "comments": [
+        {
+          "assoc": "MEMBER",
+          "author": "Darksonn",
+          "created_at": "2026-09-04T18:06:55Z",
+          "type": "User"
+        }
+      ]
+    },
+    {
+      "author": "coremail-cyt",
+      "created_at": "2026-09-04T04:13:37Z",
+      "number": 8406,
+      "comments": [
+        {
+          "assoc": "MEMBER",
+          "author": "Darksonn",
+          "created_at": "2026-09-04T12:05:26Z",
+          "type": "User"
+        }
+      ]
+    },
+    {
+      "author": "carllerche",
+      "created_at": "2026-08-29T00:30:11Z",
+      "number": 8399,
+      "comments": [
+        {
+          "assoc": "MEMBER",
+          "author": "ADD-SP",
+          "created_at": "2026-08-29T13:25:05Z",
+          "type": "User"
+        },
+        {
+          "assoc": "MEMBER",
+          "author": "carllerche",
+          "created_at": "2026-08-31T15:35:40Z",
+          "type": "User"
+        },
+        {
+          "assoc": "MEMBER",
+          "author": "carllerche",
+          "created_at": "2026-08-31T15:40:37Z",
+          "type": "User"
+        }
+      ]
+    },
+    {
+      "author": "Rachit2323",
+      "created_at": "2026-08-27T08:17:23Z",
+      "number": 8395,
+      "comments": [
+        {
+          "assoc": "MEMBER",
+          "author": "Darksonn",
+          "created_at": "2026-08-27T09:00:21Z",
+          "type": "User"
+        }
+      ]
+    }
+  ]
+}

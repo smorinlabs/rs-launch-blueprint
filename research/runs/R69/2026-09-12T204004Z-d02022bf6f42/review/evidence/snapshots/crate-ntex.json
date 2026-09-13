@@ -1,0 +1,19 @@
+{
+  "crate": "ntex",
+  "retrieved_at": "2026-09-13T07:57:55Z",
+  "endpoints": {
+    "crate": "https://crates.io/api/v1/crates/ntex",
+    "versions": "https://crates.io/api/v1/crates/ntex/versions"
+  },
+  "recent_downloads": 98788,
+  "downloads": 1059408,
+  "repository": "https://github.com/ntex-rs/ntex",
+  "versions_total": 261,
+  "newest_non_yanked": {
+    "num": "4.0.0-beta.10",
+    "created_at": "2026-09-12T13:33:34.498468Z",
+    "yanked": false,
+    "rust_version": "1.95",
+    "license": "MIT OR Apache-2.0"
+  }
+}

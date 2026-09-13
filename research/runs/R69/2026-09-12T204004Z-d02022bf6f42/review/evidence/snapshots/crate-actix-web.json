@@ -1,0 +1,19 @@
+{
+  "crate": "actix-web",
+  "retrieved_at": "2026-09-13T07:57:55Z",
+  "endpoints": {
+    "crate": "https://crates.io/api/v1/crates/actix-web",
+    "versions": "https://crates.io/api/v1/crates/actix-web/versions"
+  },
+  "recent_downloads": 10302614,
+  "downloads": 80813772,
+  "repository": "https://github.com/actix/actix-web",
+  "versions_total": 158,
+  "newest_non_yanked": {
+    "num": "4.15.0",
+    "created_at": "2026-08-21T19:31:31.356389Z",
+    "yanked": false,
+    "rust_version": "1.88",
+    "license": "MIT OR Apache-2.0"
+  }
+}

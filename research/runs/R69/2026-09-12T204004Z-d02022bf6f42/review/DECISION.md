@@ -1,0 +1,957 @@
+# R69 web-framework-stack — decision (revision 1, 2026-09-13)
+
+Bundle, Deep tier. Synthesizer: fresh Claude Opus 5 context, 2026-09-13; run
+`research/runs/R69/2026-09-12T204004Z-d02022bf6f42`. This item was admitted ahead of the
+Wave 0 review gate by owner decision Q3.A (2026-09-12) because it consumes only R01, which
+the owner accepted on 2026-09-10, and because 19 items consume its owned parameter directly.
+Five raw reports (codex, opus, and three Doxa providers) are listed under `## Engines`; every
+figure, exclusion and disagreement below is attributed there.
+
+## Decision
+
+**Status: a proposal, to be validated in the implementation phase** (owner ruling,
+2026-09-10). This is a P02 research decision, not a shipped design. P03 builds the template
+and its CI proves the recommendation; the list of what P03 must validate is the unproven
+table under `## Engines`. A recommendation that does not survive implementation is **revised
+against this recorded research** — the raws, the alternatives comparison, the engine
+disagreements and the evidence logs cited below — rather than researched again from scratch.
+
+`rs-launch-blueprint` fills its already-decided optional web feature (ledger row F017,
+`ADOPT`, not reopened here) with **`axum` on `tokio`, behind one additive, off-by-default
+Cargo feature named `web`**:
+
+| Member | Ledger row | Mechanism | Version |
+|---|---|---|---|
+| Web framework | F303 | `Router`, `State`, typed extractors and `IntoResponse` over `hyper` 1.x; `axum::serve` is the server | `axum` **0.8.9** (optional, default features) |
+| Async runtime, listener, OS signals, drain clock | F338 | multi-thread runtime, `tokio::net::TcpListener`, `tokio::signal`, `tokio::time::timeout`, `tokio::sync::oneshot` | `tokio` **1.53.1** (optional; `rt-multi-thread`, `net`, `signal`, `macros`, `time`, `sync`) |
+| In-process handler test idiom | F303 (acceptance) | `tower::ServiceExt::oneshot` against the same `Router` production serves — a **`[dev-dependencies]` entry only**, not gated by `web`, because `axum` 0.8.9 already brings `tower` into the non-dev tree | `tower` **0.5.3** |
+| Validated configuration and service injection | F330 | one `#[derive(Clone)] AppState` of `Arc`-held members, `axum::extract::State` with `FromRef` substates, and `build_router(state) -> Router` as the only constructor; **no lazy-load fallback** | language + `axum`, no separate crate |
+| Resource registration | F331 | native `Router::merge`/`Router::nest` inside that one `build_router`; **no `ROUTERS` registry list** | language + `axum`, no separate crate |
+| Optional-surface gate and target shape | F017 / F303 | one additive Cargo feature `web`, `#[cfg(feature = "web")] pub mod web;`, and `[[bin]] required-features = ["web"]` | Cargo, no crate |
+| Production entrypoint and graceful shutdown | F338 | feature-gated `[[bin]]`, `#[tokio::main]`, `axum::serve(..).with_graceful_shutdown(..)`, with a settings-driven deadline whose clock starts **at the signal**, not at server start | Cargo + `tokio`, no further crate |
+| Dev-serve recipe and auto-reload | F339 | Justfile `serve` recipe exporting a console-log env default and driving a headless restart loop; `serve-once` is the no-watcher fallback | `bacon` **3.25.0**, contributor-installed, **not** a Cargo dependency |
+
+Settled ledger rows: **F303, F330, F331, F338, F339**.
+
+**Not selected**, with the reason given under *Excluded by gate and by fit* below:
+`actix-web` 4.15.0 (ranked runner-up), `poem` 3.1.12, `salvo` 0.96.0, `rocket` 0.5.1,
+`warp` 0.4.3, `ntex`, `xitca-web` 0.8.3, `viz` 0.11.0, `tide`, `pavex` 0.2.10,
+`loco-rs` 1.1.0, `dropshot` 0.17.1, a hand-written `hyper` loop, `axum::Extension` or a
+`OnceLock` singleton for configuration, a function-pointer or link-time router registry,
+`tower-http` (R75's to select), a direct `hyper` dependency (transitive through `axum`),
+`signal-hook`/`ctrlc`, `systemfd` + `listenfd`, `cargo-watch` 8.5.3 and `watchexec-cli` 2.7.2.
+
+### Principles and implementation
+
+**Shared requirement.** The template ships an **optional** HTTP surface that is a thin adapter
+over the same core library the CLI drives; it is composed by one explicit construction
+function; validated configuration and the application service are available to handlers **and
+to tests** through that construction; the production entrypoint runs the server and drains it
+on a termination signal within a settings-driven window; and one developer command starts the
+service with human-readable logs, distinct from the production structured profile.
+
+**Source and agreement level.** `docs/port/COMMONALITY.md` rows F303/F330/F331/F338/F339 are
+all `DIVERGENT`, origin `py-only`; `docs/port/DIVERGENCE-ANALYSIS.md` line 217 records
+`harmonize: partly` at scope level. The level at which agreement is required is **capability**:
+py, ts and rs must each be able to expose the core library over HTTP without a mirror data
+model. What must **not** be harmonized is the mechanism — FastAPI's `Depends`, Hono's context
+bindings and axum's `State<S>` are three ecosystem-appropriate realizations of one injection
+principle, and no shared low-level value (route naming, DI shape, server library, watcher) is
+recommended, because neither an explicit owner requirement nor evidence of the same tradeoff
+in all three ecosystems supports one. All five engines agree on this framing.
+
+**Essential behaviors and observable acceptance criteria.** These are requirements on P03's
+template, not results of this run. Criteria 1, 3 and 5 were exercised here in the reduced,
+verification-only forms described under `## Empirical check`; criteria 2, 4 and 6 were not,
+and are carried in the unproven table under `## Engines`.
+
+1. **The surface is optional and costs nothing when off.** *Observable:* with no features,
+   `cargo tree -e normal` lists no `axum`, `tokio`, `hyper` or `tower`, and
+   `cargo build --bins` produces no serve binary. *Verified here on a manifest probe*
+   (`review/evidence/feature-shape-check.log`, checks 1, 2, 6 and 7), not on a template.
+2. **The web handler reaches the same erased service the CLI reaches, over the same
+   serialisable type, with no mirror struct** (R01 acceptance criterion 6). *Observable:* the
+   handler's return type names the library's own `Project`, and a real HTTP GET against a
+   bound listener decodes into the library's `Vec<Project>`. **Not run here** — that is a
+   request-path behavior, and building it would mean building the recommendation.
+3. **Configuration and the service are injected by explicit construction, checked by the
+   compiler.** *Observable:* `build_router(state: AppState) -> Router` is the only way to
+   build the app, and a handler asking for a substate the app never registered fails to
+   compile rather than returning 500 at request time. *Partly verified here:* the type-level
+   half — that R01's erased service satisfies axum's declared state bound — is
+   `review/evidence/state-bound-check.log`. The compile-failure demonstration for an
+   unregistered substate is P03's.
+4. **The production entrypoint drains in-flight work on SIGINT/SIGTERM and gives up after a
+   configured deadline.** *Observable:* the serve future is bounded by a timeout whose value
+   comes from settings and whose clock starts when the shutdown signal fires. **Not run
+   here**; the enabling fact — that axum supplies no deadline of its own — was verified by
+   reading the published source (below).
+5. **The `web` feature is what CI, container and docs gates select.** *Observable:* one
+   feature name gates module, binary target and tests together. *Verified here* on the
+   manifest probe: `cargo metadata` reports `"required-features":["web"]` on the binary
+   target and `null` on the library target.
+6. **One dev command serves with console-formatted logs and restarts on a source edit.**
+   **Not run** — the environment variable's name and semantics belong to R58's unpublished
+   `logging-pipeline-contract`. The tool's own capabilities were verified instead
+   (`review/evidence/bacon-install-check.log`).
+
+**Landscape — the three-bin map.** *Built-in / first-party toolchain:* `std::net` plus a
+hand-written HTTP loop; Cargo `[features]`, `dep:` syntax, `optional`, `[[bin]]
+required-features`, `#[cfg(feature = ..)]`; the `#[test]` harness; `cargo run`. `hyper`
+1.11.1 is first-party-adjacent — the reference HTTP implementation nearly every candidate
+embeds — not `std`. *Established industry standard:* `axum` 0.8.9, `actix-web` 4.15.0,
+`warp` 0.4.3, `rocket` 0.5.1, `poem` 3.1.12; substrate `tokio` 1.53.1, `hyper` 1.11.1,
+`tower` 0.5.3, `tower-http` 0.7.1; in the dev-reload sub-field, `cargo-watch` 8.5.3 (now
+archived). *Up-and-comer:* `salvo` 0.96.0, `ntex`, `xitca-web` 0.8.3, `viz` 0.11.0,
+`loco-rs` 1.1.0 (built *on* axum), `pavex` 0.2.10 (compile-time framework generator),
+`dropshot` 0.17.1 (Oxide Computer's API-first framework); `tide` is the field's dead end,
+kept in the map as a warning rather than a candidate; in the dev-reload sub-field,
+`watchexec-cli` 2.7.2, `bacon` 3.25.0, and `systemfd` 0.4.6 + `listenfd` 1.0.2. Every
+shortlisted candidate comes from that map.
+
+**Authorities, and why each counts.** (1) `rust-lang/crates.io` at commit
+`3df99c214d640090ab38aad14ae9c34289b0dec0` — the Rust project's own production web service
+and the only surveyed codebase with this template's exact shape (a Cargo workspace of web
+service, workers and library crates, `edition = "2024"`, `license = "MIT OR Apache-2.0"`);
+R01 already established it as this programme's reference implementation. (2) Maintainers'
+own published `.crate` artifacts read at an exact version — the literal bytes a consumer
+compiles, and the manifests the MSRV gate is read against. (3) crates.io and the GitHub REST
+API as the registries of record for population figures, not for judgement. (4) RustSec plus
+an executed `cargo audit` for advisories. (5) The Rust project's 2025 State of Rust Survey
+results, used **only** for the general finding that compile time and resource usage remain a
+top reported problem; that report publishes no web-framework breakdown, so no framework share
+is claimed from it. Deliberately **not** treated as authorities: single blog posts, framework
+comparison articles, and any TechEmpower composite (see *Performance* below).
+
+**Practice evidence, with the standing shown rather than asserted.** `rust-lang/crates.io`
+pins `axum = "=0.8.9"` and `tokio = "=1.53.1"` in one workspace and is run by the Rust project
+itself. `apollographql/router` (Apollo's commercially shipped GraphQL router) depends on
+`axum` — reported by the opus raw at commit `e7b2b32`, not re-read here.
+`meilisearch/meilisearch` depends on `actix-web` 4.14.1 — reported by the opus raw at commit
+`a955694`, not re-read here; it is cited as the counterweight establishing actix-web's
+production standing, not as a point against axum. `qdrant/qdrant` resolves `actix-web` in its
+lockfile (openai raw). `axum` itself is maintained inside the `tokio-rs` organisation
+alongside `tokio`, the substrate every established candidate except `ntex`/`xitca-web` sits on.
+
+**Architectural alternatives compared, before any crate was weighed.**
+
+| Alternative | Shape | Verdict and reason |
+|---|---|---|
+| A. No framework: `hyper` + a hand-written router | `service_fn` over `hyper_util::server::conn::auto` | Rejected. It buys nothing this template needs and pushes routing, extraction and response encoding into template code that R70–R80 would each have to re-solve. It is what every candidate embeds anyway. |
+| **B. Framework with a compile-checked state type** | `axum`'s `Router<S>`/`State<S>`; `build_router(state) -> Router` | **Chosen.** A missing-state wiring mistake is a type error rather than a 500 under traffic, and every test constructs state the same way production does — which is precisely what removes the need for py's lazy fallback. |
+| C. Framework with a runtime type-map for state | `actix-web`'s `web::Data<T>`, or axum's own `Extension` | Rejected as the primary mechanism. actix-web's own documentation states that using `Data<T>` when route data is not set "would cause a 500 Internal Server Error" (opus raw, `actix-web-4.15.0/src/data.rs:39`). A template whose purpose is to be copied should not ship a wiring-mistake class that only appears under traffic. |
+| D. Batteries-included stack | `loco-rs` 1.1.0, `pavex` 0.2.10 | Rejected. This repository *is* the template; a second opinionated template inside it would own decisions R70–R80 are already assigned. `loco-rs` is itself built on axum, so choosing axum keeps that door open for template users. |
+| E. Framework with its own runtime layer | `actix-web` + `actix-rt`/`actix-server`; `ntex` | **Ranked runner-up** (`actix-web`), not chosen. It is production-proven and its `HttpServer::shutdown_timeout(sec)` is a closer literal analogue of py's `timeout_graceful_shutdown`, but the template's CLI, library and future adapters live in one tokio world and actix-web inserts `actix-rt`/`actix-server` between them. |
+
+**Why the chosen design preserves each principle.** Optionality is carried by a Cargo
+feature, the direct analogue of py's install extra. "Thin adapter over one contract" is
+carried by `AppState` holding R01's erased service unchanged and by handlers returning the
+library's own `serde`-derived types. "Config available to handlers and tests" is carried by
+`FromRef` substates on one `AppState`, which is stronger than py's dependency-injection graph
+because it is checked at compile time. "Drain on signal" is carried by
+`axum::serve(..).with_graceful_shutdown(..)` plus an explicit, settings-driven deadline.
+"One dev command" is carried by a Justfile recipe.
+
+**F330 — the requirement behind py's lazy fallback, and whether Rust needs it.** py's
+`get_config` (`src/py_launch_blueprint/web/deps.py:37`, read by the opus and codex raws at
+programme pin `b08bccfb55d05f15e46a83b52c5660b1881d19f5`) falls back to `load_config()` when
+`request.app.state.config` is unset, for "raw ASGI callers like schemathesis that bypass the
+lifespan". The requirement behind it is *every caller of the app object — production, tests,
+contract fuzzers — sees a loaded configuration*. The fallback exists because in FastAPI the
+app object can be constructed and called without its lifespan ever running, so the invariant
+is unenforceable at construction time. In Rust with axum it is enforceable: a `Router<S>` is
+not a service until `with_state` has supplied `S`, so `build_router(state)` makes a
+configuration-less app unrepresentable and a fallback would be dead code hiding a wiring bug.
+**The Rust template must not port the lazy fallback**; it ports the invariant instead. All
+five engines reach this conclusion independently.
+
+BASELINE-REVIEW: F330 — validated configuration is available to every caller of the app object, including tests and contract fuzzers — drop py's lazy-load fallback in the Rust template and carry the invariant in the type system instead: `build_router(state: AppState) -> Router` is the only constructor, so an app without configuration cannot be built or called; affected items: R69 (this row), R77 (`web-env-settings`, which must expose a settings value the composition root constructs, not a lazily-loadable global), R83 (`openapi-contract-fuzzing`, whose fuzzer must construct the app through the same factory tests use rather than bypassing a lifespan) — evidence: py's fallback exists because a raw-ASGI caller can skip the lifespan (`src/py_launch_blueprint/web/deps.py:37` at pin `b08bccfb55d05f15e46a83b52c5660b1881d19f5`, read by the opus and codex raws); axum 0.8.9 makes the equivalent state unrepresentable because its state-carrying `impl<S> Router<S>` block is bounded `S: Clone + Send + Sync + 'static` and `with_state` is what turns a `Router<S>` into a service (`axum-0.8.9/src/routing/mod.rs:138-141` and `:408`, read in this run at the published artifact — `review/evidence/assert-figures.log`, section G).
+
+**F331 — native composition versus a registry list.** py registers resources by iterating a
+module-level list: `for router in ROUTERS: app.include_router(router, prefix=V1_PREFIX)`. The
+prompt's baseline review (2026-09-04) asks that native composition be compared before a
+registry is accepted, keeping "explicit, straightforward resource registration" as the
+acceptance behavior. Evidence from the reference implementation, read in this run:
+`rust-lang/crates.io` composes its entire API by chained explicit calls inside one function
+ending in `.with_state(state)`, with **no registry list and no registration loop**
+(`src/router.rs` at `3df99c2`; asserted in `review/evidence/assert-figures.log`, section F).
+In axum the native operators are `Router::merge` (same prefix) and `Router::nest` (sub-path),
+and a per-resource `pub(crate) fn router() -> Router<AppState>` composes with one line at the
+call site. **Recommendation: native composition in one `build_router`; no `ROUTERS`
+registry.** Adding a resource stays one import plus one line, which satisfies the acceptance
+behavior with less machinery than a registry, and a missing registration is visible at the
+composition site rather than in a separate list. The alternatives rejected on fit: a
+`const ROUTERS: &[fn() -> Router<AppState>]` slice adds indirection that buys nothing where
+the composition site is already one line per resource, and a link-time registry (`inventory`,
+`linkme`) makes route registration invisible in source order, which is unacceptable in a
+template whose readers are learning the layout. Note for R71/R72: axum 0.8 changed
+path-parameter syntax from `/:id` to `/{id}`, and the old form panics rather than silently
+changing behavior (opus raw, `axum-0.8.9/CHANGELOG.md:121-122`).
+
+BASELINE-REVIEW: F331 — resource registration is explicit and straightforward — compose per-resource `axum::Router` values with `merge`/`nest` inside one `build_router` function rather than freezing py's module-level `ROUTERS` registry list into the Rust template; affected items: R69 (this row), R71 (`openapi-generation-pipeline`, whose route/OpenAPI composition must attach to native routers rather than to a registry), R75/R78/R79 (whose layers wrap the composed router from outside) — evidence: py's list-and-loop is FastAPI-specific (`src/py_launch_blueprint/web/app.py` and `web/routers/__init__.py` at pin `b08bccfb`, read by the opus and codex raws), while `rust-lang/crates.io` registers its resources by chained explicit calls with no registry and no loop (`src/router.rs` at commit `3df99c214d640090ab38aad14ae9c34289b0dec0`, asserted in `review/evidence/assert-figures.log`). Codex, opus, openai and gemini raise this finding independently and agree on the direction.
+
+**F338 — the entrypoint, and what graceful shutdown needs beyond the framework.** The
+mechanism is `axum::serve(listener, router).with_graceful_shutdown(signal)`, with the signal
+future built from `tokio::signal::ctrl_c()` and, under `#[cfg(unix)]`,
+`tokio::signal::unix::signal(SignalKind::terminate())`. Both maintained references do exactly
+this: axum's own `examples/graceful-shutdown/src/main.rs` at tag `axum-v0.8.9`, and
+`rust-lang/crates.io`'s `src/bin/crates-io/server.rs` at `3df99c2`, which selects over SIGINT
+and SIGTERM (asserted in `review/evidence/assert-figures.log`, section F). **No crate beyond
+`tokio` is needed** — its `signal` feature covers both signals on both legs of
+`target-os-matrix`; `signal-hook` and `ctrlc` add a dependency for something already present,
+and `hyper-util`'s `GracefulShutdown` is the layer `axum::serve` exists to wrap.
+
+What the framework does not give you is py's `timeout_graceful_shutdown`. **axum's drain is
+unbounded by construction**: after the signal it stops accepting and then awaits
+`close_tx.closed()` with no deadline. This run verified that by reading the published source
+rather than inferring it — `axum-0.8.9/src/serve/mod.rs` contains the
+`close_tx.closed().await` and **zero** occurrences of `timeout` or `deadline`
+(`review/evidence/assert-figures.log`, section G). `rust-lang/crates.io` accepts that
+unbounded drain: its call site awaits `axum::serve(..).with_graceful_shutdown(..)` directly,
+and the one `Duration` in that file is a metrics logging interval (same log, section F). To
+mirror py's settings-driven window the template must add the deadline itself.
+
+**The deadline's clock must start at the signal, not at server start.** This is the one place
+the raws disagree on something that is simply right or wrong. The opus and perplexity raws
+both wrap the whole serve future — `tokio::time::timeout(Duration::from_secs(cfg.graceful_shutdown_seconds), server)`
+— which bounds the server's entire lifetime and would terminate a healthy service after the
+grace period. Only the openai raw gets it right, by signalling the start of shutdown over a
+channel and applying the timeout to the already-pinned server future from that moment:
+
+```rust
+pub async fn serve_until<S>(listener: TcpListener, app: Router, shutdown: S, grace: Duration)
+    -> Result<(), ServeError>
+where S: Future<Output = ()> + Send + 'static,
+{
+    let (started_tx, mut started_rx) = tokio::sync::oneshot::channel::<()>();
+    let server = async move {
+        axum::serve(listener, app)
+            .with_graceful_shutdown(async move { shutdown.await; let _ = started_tx.send(()); })
+            .await
+    };
+    tokio::pin!(server);
+    tokio::select! {
+        result  = &mut server  => result.map_err(ServeError::Io),
+        _ = &mut started_rx => tokio::time::timeout(grace, &mut server).await
+            .map_err(|_| ServeError::GracefulShutdownTimedOut(grace))?.map_err(ServeError::Io),
+    }
+}
+```
+
+That shape has a consequence for the manifest, also verified here: it needs
+`tokio::sync::oneshot`, and **tokio 1.53.1's `sync` feature is enabled by none of
+`signal`, `net`, `rt-multi-thread`, `time` or `macros`** — each was read from the published
+feature graph (`review/evidence/assert-figures.log`, section G). So `sync` joins the feature
+list; the opus raw's list omits it. A `sync`-free alternative exists — a second independent
+signal listener raced against `tokio::time::sleep(grace)` inside the outer `select!`, which
+works because tokio's signal listeners are independent — and is recorded here as the
+variation to take if a consumer wants the narrower feature set. Gemini's proposal to bound
+shutdown with `tower_http::timeout::TimeoutLayer` is a **per-request** bound, not a drain
+deadline; the two are complementary, and the per-request layer is R75's to decide (axum's own
+example uses it for exactly that adjacent problem).
+
+The entrypoint returns `ExitCode` from `main` rather than calling `process::exit`, which is
+what R67's published `error-taxonomy-exit-codes` requires, and the drain-deadline branch is a
+failure exit. The binary takes no CLI flags — every knob is an environment variable, as in
+py's `__main__.py`; the CLI binary keeps its own flags. A `serve` subcommand on the existing
+CLI binary is the ranked runner-up shape, rejected as primary because it would put `tokio` and
+`axum` in the default CLI build unless the subcommand were itself feature-gated, and because
+py's separate entry point is the shape R51's container image expects.
+
+**F339 — the dev-server recipe, and what the owner's licence ruling changed.** py's recipe
+(`Justfile:291`, pin `b08bccfb`) runs uvicorn with `--reload` after defaulting
+`<APP>_WEB_LOG_FORMAT` to `console`. Two halves: a console-log default distinct from the
+production structured profile, and auto-reload. The console half ports cleanly — one exported
+environment variable whose name and semantics belong to R58 and R77, not to this item.
+
+The auto-reload half is where the raws disagreed and where **owner ruling Q7.B of 2026-09-12
+changes the answer**. Four of the five raws excluded `bacon` on fitness gate 1 because it is
+`AGPL-3.0`; the opus raw then demoted auto-reload from a required recipe to an optional one
+explicitly *because every surviving candidate failed a gate*. Gate 1 is struck. Re-evaluating
+on the surviving grounds only:
+
+| Candidate | Newest non-yanked | Declared `rust-version` (gate 2) | Maintenance | Outcome |
+|---|---|---|---|---|
+| `cargo-watch` | 8.5.3 (2024-10-02) | 1.75.0 — passes | repository `archived: true`, `pushed_at` 2025-01-14, and the README at tag `v8.5.3` says it "is on life support: it will not receive further updates … I recommend Bacon or Watchexec instead" | **Excluded on maintenance** — a maintainer's own end-of-life notice is `dormant` under the rubric. This ground survives the ruling. |
+| `watchexec-cli` | 2.7.2 (2026-09-06) | **none declared** — fails | `archived: false`, `pushed_at` 2026-09-07 | **Excluded by gate 2**, under the strict reading settled 2026-09-11. This ground survives the ruling. |
+| **`bacon`** | **3.25.0 (2026-08-23)** | **1.85 — passes** | `archived: false`, `pushed_at` 2026-09-12, 47 open issues, median 0.02 days to first maintainer response over the 10 most recently opened issues with 3 unanswered | **Selected.** Its only recorded exclusion was gate 1, which is now inapplicable. |
+| `systemfd` + `listenfd` | 0.4.6 / 1.0.2 | 1.64.0 / **none declared** | `stable-quiet` | Not needed. Socket hand-off preserves connections across a restart, which is not a behavior F339 asks for, and `listenfd` would have to be linked into the shipped binary. |
+
+So **auto-reload is restored to the required recipe, with `bacon` 3.25.0 as the named
+watcher.** The opus raw's `BASELINE-REVIEW: F339` line — which proposed demoting auto-reload
+to an optional recipe — is **withdrawn**; its premise no longer holds and F339 now ports at
+capability level with no baseline change. This is the one recommendation in this item that
+the licence ruling changed; everything else is unaffected.
+
+Four capabilities of the tool were verified rather than assumed, because a TUI-first runner is
+not obviously able to serve a long-running process with plain console logs
+(`review/evidence/bacon-install-check.log` and `assert-figures.log`, section G):
+
+- **A `run-long` job exists in the shipped defaults**, with `on_change_strategy =
+  "kill_then_restart"`, `background = false` and `need_stdout = true`. `bacon --list-jobs` in
+  a directory with no `bacon.toml` lists it, so reaching it needs no project configuration.
+- **`--headless` streams the child's own output to the terminal**, not into a TUI pane:
+  `CommandStream::StdOut => print!(..)`, `StdErr => eprint!(..)` in `src/tui/app.rs`. That is
+  what makes the console half of F339 hold.
+- **`--features` is plumbed through to the cargo command** (`src/mission.rs`), and arguments
+  after `--` are appended to the job's command tokens, so the recipe needs no custom job
+  definition to select the feature and the binary.
+- **The default job interruption on Unix is `SIGKILL`** (bacon's own configuration reference).
+  A SIGKILL restart cannot exercise the production drain path, and it kills the `cargo`
+  process rather than the server it spawned. **The template must therefore ship a small
+  `bacon.toml` overriding `run-long`'s `kill`** so a dev restart runs the same SIGTERM drain
+  the container does. The opus raw's migration list states that no `bacon.toml` is needed;
+  that is wrong on this point, and the correction is recorded here.
+
+Recommended recipes, following R42's published `package-manager-invocation` (bare executables
+resolved on PATH, no provisioner prefix; presence tested with `command -v bacon`, the rule
+that parameter sets for a tool installed from crates.io):
+
+```just
+# Serve with dev-friendly console logs, restarting on source changes.
+# Requires `bacon` on PATH: cargo install bacon --version 3.25.0 --locked
+serve host="127.0.0.1" port="8000":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    command -v bacon >/dev/null || { echo "bacon not found: cargo install bacon --locked" >&2; exit 1; }
+    export <APP>_WEB_HOST="{{host}}" <APP>_WEB_PORT="{{port}}"
+    export <APP>_WEB_LOG_FORMAT="${<APP>_WEB_LOG_FORMAT:-console}"   # names owned by R58/R77
+    exec bacon --headless -j run-long --features web -- --bin <app>-serve
+
+# Same service, no watcher and no extra tool. The escape hatch.
+serve-once host="127.0.0.1" port="8000":
+    #!/usr/bin/env bash
+    set -euo pipefail
+    export <APP>_WEB_HOST="{{host}}" <APP>_WEB_PORT="{{port}}"
+    export <APP>_WEB_LOG_FORMAT="${<APP>_WEB_LOG_FORMAT:-console}"
+    exec cargo run --features web --bin <app>-serve
+```
+
+**The tradeoff stated plainly.** py's watcher arrives with the `web` install extra; Cargo
+cannot install binary tools as dependencies, so `bacon` is one `cargo install` per
+contributor and `serve-once` exists for anyone who has not run it. Against that, the reload
+benefit is structurally smaller in Rust than in Python: uvicorn's `--reload` re-imports
+modules in well under a second, while the Rust loop is a full incremental rebuild and process
+restart — the opus raw measured 9.28 s wall / 25.61 s user CPU for a *clean* debug build with
+the web feature, a figure this run did not re-measure and carries as engine-reported.
+**Ranked runner-up: `watchexec-cli` 2.7.2**, which sends `TERM` with a bounded stop timeout
+out of the box (`--restart --stop-signal TERM --stop-timeout 20s`, openai's recipe) and so
+needs no kill override; it becomes the recommendation the moment it declares a
+`rust-version`, and that is a re-verify trigger below.
+
+**Minimal realistic endpoint at the R01 boundary.** The handler names R01's types and nothing
+of its own; the error envelope is R70's, the middleware ordering R75's, the trace and metrics
+layers R78's and R79's, and none is preselected here.
+
+```rust
+#[derive(Clone)]
+pub struct AppState {
+    pub config:   Arc<WebConfig>,                 // the typed settings struct is R77's
+    pub projects: Arc<ErasedProjectsService>,     // R01's erased service, unchanged
+}
+impl FromRef<AppState> for Arc<WebConfig>             { fn from_ref(s: &AppState) -> Self { s.config.clone() } }
+impl FromRef<AppState> for Arc<ErasedProjectsService> { fn from_ref(s: &AppState) -> Self { s.projects.clone() } }
+
+async fn list_projects(
+    State(svc): State<Arc<ErasedProjectsService>>,
+    Query(q):   Query<ProjectQuery>,              // the library's own serde type
+) -> Result<Json<Vec<Project>>, WebError> { /* WebError's envelope is R70's */ }
+
+pub fn build_router(state: AppState) -> Router {
+    Router::new()
+        .nest("/v1", projects::router())          // native composition, no registry
+        .merge(ops::router())                     // /healthz now; /readyz is R80's
+        .with_state(state)
+}
+```
+
+**Coupling to R01 — the highest-consequence claim in this item, verified here.** The opus raw
+asserts there is no conflict with R01 because the erased service satisfies axum's state bound
+**without `ProjectsService` deriving a clone trait**. That is the exact failure mode that
+would force a published, owner-accepted decision to be reopened, so it was re-verified rather
+than accepted, in two independent halves (`## Empirical check`, check 1). **The claim holds.**
+axum's state-carrying `impl<S> Router<S>` block is bounded `S: Clone + Send + Sync + 'static`
+— read at the published artifact — and R01's `ProjectsService<Arc<dyn ProjectsPort>>`,
+holding a port whose supertraits are `Send + Sync`, satisfies that bound once wrapped in an
+`Arc`, because `Arc<T>` is unconditionally `Clone`. Two negative twins show what each half
+does: storing the service **by value** fails with ``the trait `Clone` is not implemented for
+`ProjectsService<Arc<(dyn ProjectsPort + 'static)>>` ``, and removing R01's `Send + Sync`
+supertraits from the port fails with ``the trait `Sync` is not implemented for `(dyn
+ProjectsPort + 'static)` ``. **No `CONFLICT:` line is raised and R01's published value is
+unchanged.** If P03 prefers to store the service by value it must add `#[derive(Clone)]` to
+`ProjectsService<P>`, which imposes a `P: Clone` bound that library consumers would inherit;
+that is a P03 implementation choice, not a change to the parameter.
+
+**Performance, and the limits on what can be said.** No comparative throughput figure is used
+anywhere in this decision. The HIGH question asks for a comparison with representative JSON
+handling, validation, trace instrumentation and metrics all enabled; no public benchmark
+measures that, and the opus raw records that the TechEmpower results payload could not be
+retrieved on 2026-09-12 (HTTP 404 at the path the site bundle references;
+`tfb-status.techempower.com` timed out after 20 s). TechEmpower's Rust entries are in any case
+hand-tuned implementations written for the benchmark rather than idiomatic instrumented
+services, and every candidate here except `ntex`/`xitca-web` sits on the same `tokio` + `hyper`
+I/O path, so a composite ranking would not discriminate between them on this template's
+workload — where a single upstream call through R01's port dominates any framework overhead.
+`actix-web` replaces `axum` only if a measured, instrumented workload shows a material p99,
+CPU or RSS advantage; openai's raw specifies that benchmark in full and it is carried as an
+unproven item below. The costs this template actually pays are dependency count, compile time
+and binary size; the dependency-count figure is measured here, the compile-time and
+binary-size figures are engine-reported and carried as unproven.
+
+**Cross-repo adjudication** (changes to py and ts are a follow-on project; this supplies their
+rationale). The principle "one core library, optionally exposed over HTTP by a thin adapter
+that emits the library's own types" is a capability-level agreement. py realizes it with
+FastAPI + uvicorn; rs realizes it with axum + tokio; ts realizes it **not at all** —
+`TS_PORT_DECISIONS.md` records no web-service decision, and the pinned ts snapshot
+`cb1cbcb2e88b898e8c081b0abbfabc1630079c00` contains no web or HTTP-server code, dependency or
+test (`docs/port/areas/web-service.md`, row F303; taken from the repository's own analysis,
+not re-derived — no claim here depends on ts source). Per the owner's 2026-09-04 clarification
+Hono was chosen for TypeScript on ecosystem merits, which is a direction rather than an
+implementation in that snapshot. **Adjudication: ts's missing web tier is an absent
+capability, not a justified ecosystem difference** — nothing about TypeScript prevents a Hono
+adapter over the existing `CliDeps`-injected core, and the owner has already named the
+framework. Proposed follow-on, not this item's to execute: ts gains a Hono adapter exposing
+the same core contract behind an optional entry point, preserving F018 at capability level.
+The gemini raw additionally surveyed `rspc` as a Rust analogue of tRPC and rejected it because
+its primary maintainer stepped back in late 2025 declaring the project largely unmaintained;
+that conclusion is adopted — a REST surface with OpenAPI generation (R71's to select) keeps
+the typed client contract without depending on an unmaintained RPC framework.
+
+**Excluded by gate and by fit.** Fitness gates were answered per candidate before popularity
+was weighed. **Gate 1 (licence) is `inapplicable — owner ruling 2026-09-12 (Q7.B): licence
+compatibility is not evaluated for any dependency or tool`, for every candidate in this item,
+and no candidate is excluded on it.** Licences are still reported as facts because they are
+part of each crate's published metadata. Gate 2 figures below are the newest non-yanked
+version's declared `rust_version`, read from `https://crates.io/api/v1/crates/<name>/versions`
+and asserted in `review/evidence/assert-figures.log`, section C; the floor is **1.96** (stable
+1.98.x minus two minors).
+
+| Candidate | Newest non-yanked | Licence (reported, not gated) | Gate 2: `rust-version` | Outcome |
+|---|---|---|---|---|
+| `axum` | 0.8.9 (2026-04-14) | MIT | 1.80 — pass | **Selected** |
+| `tokio` | 1.53.1 (2026-07-20) | MIT | 1.71 — pass | **Selected** |
+| `tower` | 0.5.3 (2026-01-12) | MIT | 1.64.0 — pass | **Selected** (dev-dependency) |
+| `actix-web` | 4.15.0 (2026-08-21) | MIT OR Apache-2.0 | 1.88 — pass | Ranked runner-up; excluded on fit (its own runtime layer between the template and tokio; `Data<T>`'s runtime failure mode) |
+| `poem` | 3.1.12 (2025-07-28) | MIT OR Apache-2.0 | 1.85 — pass | Excluded on **maintenance**: a 13-month release gap, and the opus raw found no maintainer response in any of its 10 most recently opened issues (window 2025-12-16 → 2026-09-09) — a concrete `at-risk` signal |
+| `salvo` | 0.96.0 (2026-08-27) | Apache-2.0 | 1.94 — passes today | Excluded on **MSRV-policy fit**: two minors of headroom against the 1.96 floor; a project tracking the compiler that closely can push a patch release past the floor between the template's minor releases. Same reasoning R01 applied to `shaku`. |
+| `rocket` | 0.5.1 (2024-05-23) | MIT OR Apache-2.0 | **1.64** — pass | Excluded on **maintenance**: last release 28 months ago, `pushed_at` 2025-12-28. (Settles a raw disagreement: gemini reported MSRV 1.89.0, opus 1.64; the registry says 1.64.) |
+| `warp` | 0.4.3 (2026-05-04) | MIT | **none declared — FAIL** | **Excluded by gate 2** |
+| `viz` | 0.11.0 (2025-11-17) | MIT | **none declared — FAIL** | **Excluded by gate 2** |
+| `pavex` | 0.2.10 (2025-11-10) | Apache-2.0 | **none declared — FAIL** | **Excluded by gate 2** |
+| `tide` | 0.17.0-beta.1 (2021-12-06) | MIT OR Apache-2.0 | **none declared — FAIL** | **Excluded by gate 2**, and dormant on its own (no release in 4+ years) |
+| `xitca-web` | 0.8.3 (2026-08-29) | Apache-2.0 | **1.98 — FAIL**, equals current stable, above the 1.96 floor | **Excluded by gate 2** |
+| `ntex` | 4.0.0-beta.10 (2026-09-12) | MIT OR Apache-2.0 | 1.95 — passes today | Excluded on **fit and maturity**: its own `ntex-rt` runtime abstraction is a second runtime story for a template whose CLI and library already have one, and the newest non-yanked release is a prerelease |
+| `loco-rs` | 1.1.0 (2026-08-16) | Apache-2.0 | 1.94 | Not a competitor: it is built **on** axum, so selecting axum keeps it available to template users without importing its opinions |
+| `dropshot` | 0.17.1 (2026-06-02) | Apache-2.0 | 1.85 | Well-engineered and single-org; its first-class OpenAPI generation is relevant to R71 but does not outweigh axum's adoption or the ecosystem R70–R80 will draw on |
+
+Gates 3–6 for the two selected compiled members, answered from the published artifacts and
+this run's executed checks:
+
+- **Gate 3 (advisories and `unsafe` posture).** `https://rustsec.org/packages/axum.html`,
+  `/tower.html`, `/bacon.html` and `/watchexec-cli.html` return HTTP 404, which RustSec serves
+  for a crate with no advisory. `tokio` and `hyper` have pages listing **historic** advisories
+  only (`RUSTSEC-2025-0023`, `-2023-0005`, `-2023-0001`, `-2021-0124`, `-2021-0072` for tokio;
+  `RUSTSEC-2022-0022` and older for hyper), none of which applies to a recommended version.
+  The decisive check is executed rather than read: `cargo audit` 0.22.1 against the resolved
+  52-package `--features web` lockfile loaded 1,243 advisories and exited 0 with no findings.
+  `axum` declares `[lints.rust] unsafe_code = "forbid"` and its `src/` contains **zero**
+  occurrences of `unsafe` (both asserted). `tokio` uses `unsafe` pervasively and by design —
+  the opus raw counted 1,066 occurrences in the published 1.53.1 `src/`, a figure this run did
+  not recount — which is inherent to a runtime and is why the template's own `unsafe` policy
+  (R06) applies to template code, not to this dependency.
+- **Gate 4 (ubuntu + macOS).** `tokio`'s CI at tag `tokio-1.53.1` covers `ubuntu-latest`,
+  `macos-latest` and `windows-latest` — **pass**. `axum`'s CI at tag `axum-v0.8.9` runs on
+  `ubuntu-24.04` **only, with no macOS runner** — a gap, closed **for this version and this
+  host only** by this run resolving and building `axum` 0.8.9 with `tokio` 1.53.1 on
+  macOS 26.4 aarch64 at rustc 1.98.0. The template's own CI on `ubuntu-latest, macos-latest`
+  re-establishes it continuously. `bacon`'s CI is `ubuntu-latest` only and its v3.25.0 GitHub
+  release carries **no binary assets**, so its macOS support was closed the same way: an
+  executed `cargo install bacon --version 3.25.0 --locked` on this host, exit 0, with the
+  installed binary reporting `bacon 3.25.0`.
+- **Gate 5 (default features and async-runtime coupling).** `axum`'s defaults are
+  `form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing`, and
+  `axum::serve` exists only with the `tokio` feature plus `http1` or `http2` — both read from
+  the published artifact. It couples to tokio and to nothing else. `tokio`'s `default = []`,
+  so every feature is opted into explicitly.
+- **Gate 6 (binary-size and compile-time cost).** Measured here as **dependency count**: with
+  the base set to R01's published members (`serde` 1.0.229 + `serde_json` 1.0.151), the
+  non-dev tree goes from **12 packages to 52** when `--features web` is on, and with the
+  feature off no `axum`, `tokio`, `hyper` or `tower` appears in the tree and no serve binary is
+  produced. Wall-clock build time and binary size are **not** measured here — measuring them
+  honestly means building the recommendation — and the opus raw's figures (clean debug build
+  5.69 s → 9.28 s wall, 7.12 s → 25.61 s user CPU; release serve binary 2,001,600 bytes,
+  1,574,392 stripped) are carried as engine-reported and unproven.
+
+**Compatibility — proof the members work together.** Three ways, two of them by direct
+observation in this run. (1) **A shared adopter at the exact recommended versions:**
+`rust-lang/crates.io` at commit `3df99c2` pins `axum = "=0.8.9"` and `tokio = "=1.53.1"` in one
+workspace under `edition = "2024"` and `MIT OR Apache-2.0` — the same two fixed parameters this
+template carries — composes routes natively, injects one `AppState` via `with_state`, and
+serves with `axum::serve(..).with_graceful_shutdown(..)` over SIGINT and SIGTERM. Every member
+of this stack except the dev-serve recipe is exercised together in that one production
+service. (2) **An executed resolution probe:** a manifest declaring exactly the recommended
+feature, dependencies and feature sets resolved under `edition = "2024"` and
+`rust-version = "1.96"` with the MSRV-aware resolver (`Locking 54 packages to latest Rust 1.96
+compatible versions`); the highest declared `rust-version` anywhere in the resolved non-dev
+tree is `axum`'s own **1.80**, 16 minors inside the floor, and `cargo audit` cleared it.
+(3) **A version matrix would be misleading here**: `axum` 0.8.9 pulls `tokio` through its own
+`tokio` feature and depends on `hyper` and `hyper-util` directly, so the pairing is expressed
+by the resolver rather than by independent choices. The one cross-member constraint worth
+stating is the `axum::serve` cfg above. `bacon` sits outside that compiled graph entirely: it
+is a process wrapper with no Rust ABI or dependency-resolution relationship to the service.
+
+**Migration implications** (file-level; crate placement is R02's, and `<app>` is R49's
+`build-tool-output-shape`):
+
+| File | Change |
+|---|---|
+| `Cargo.toml` | `[features] web = ["dep:axum", "dep:tokio"]`; optional `axum` 0.8.9 (defaults on) and `tokio` 1.53.1 (`rt-multi-thread`, `net`, `signal`, `macros`, `time`, `sync`); `tower` 0.5.3 under `[dev-dependencies]`; `[[bin]] name = "<app>-serve", required-features = ["web"]` |
+| `src/lib.rs` | one line: `#[cfg(feature = "web")] pub mod web;` |
+| `src/web/mod.rs` (new) | `AppState` and its `FromRef` impls, `build_router(state) -> Router`, `shutdown_signal()`, `serve_until(..)` |
+| `src/web/routes/projects.rs` (new) | `pub(crate) fn router() -> Router<AppState>` and the handlers, returning the library's own contract types |
+| `src/web/routes/ops.rs` (new) | `/healthz` now; `/readyz` and its payload are R80's |
+| `src/bin/<app>-serve.rs` (new) | `#[tokio::main] async fn main() -> ExitCode` — settings, R01's composition root, bind, `serve_until` |
+| `tests/web_api.rs` (new) | file-level `#![cfg(feature = "web")]`; the `oneshot` and real-listener tests |
+| `Justfile` | `serve` (bacon-driven, required) and `serve-once` (no watcher) |
+| `bacon.toml` (new) | one override on the `run-long` job's `kill`, so a dev restart sends SIGTERM and the production drain path runs; without it bacon's default Unix interruption is SIGKILL |
+| dev-tool list | `bacon` 3.25.0, acquired from crates.io, presence tested with `command -v bacon` per R42 |
+| `.github/workflows/ci.yml` | a `--features web` axis and a `--no-default-features` build — shape owned by R11 |
+
+Not created by this item: `problems.rs` (R70), `openapi.rs` (R71), `pagination.rs` (R72),
+`idempotency.rs` (R73), `rate_limit.rs` (R74), `middleware.rs` (R75), `cors.rs` (R76),
+`settings.rs` (R77), `telemetry.rs` (R78/R79), `Dockerfile` (R51).
+
+**Validation strategy.** *Verified in this run:* the six checks under `## Empirical check` —
+the R01 state-bound coupling with two negative twins, the feature's gating shape and
+dependency cost, the resolved-tree MSRV, advisories against the resolved lockfile, the
+published-artifact facts about axum's state bound, its unbounded drain and tokio's feature
+graph, the population figures with their endpoints, the issue-responsiveness figure codex
+could not compute, and the dev tool's install and capabilities on macOS. *Proposed for the
+template's CI (wiring is R11's, tiers are R32's):* `cargo test --features web` and
+`cargo build --features web --bin <app>-serve` on `ubuntu-latest` and `macos-latest`; a
+`cargo check` leg pinned to the declared `rust-version`; `cargo hack --each-feature check`,
+or at minimum a `--no-default-features` and an `--all-features` job; `cargo audit` on the
+template's lockfile; one `oneshot` test per route; a real-listener test decoding into the
+library's own `Vec<Project>`; a `compile_fail` doctest for a handler asking for an
+unregistered substate; a process-level test that sends SIGTERM during a slow request and
+asserts both the response completing and the process exiting inside the configured window,
+plus its twin against a permanently blocked request asserting the drain-deadline failure;
+`just serve` answering `GET /healthz` with console-formatted logs and restarting on a source
+edit (blocked on R58); and the instrumented comparative benchmark specified in openai's raw
+before any decision to prefer `actix-web`.
+
+**Confidence.** **High** for the framework, runtime, state-injection, router-composition,
+feature-shape and entrypoint members: each rests on a published artifact read at an exact
+version, a maintained reference implementation at a recorded commit, and an executed check on
+this machine. **Medium-high** for the dev-serve member: the tool's gates, install and
+capabilities are verified, but the recipe's end-to-end behavior depends on R58's unpublished
+logging contract and was not exercised. **Medium** for the exact field list of `AppState`,
+which R77 (settings) and R58 (logging) will refine, and for the drain-deadline code shape,
+which is reasoned and read but not executed.
+
+**Sources.** Retrieved by this synthesis on **2026-09-13** and snapshotted under
+`review/evidence/snapshots/` (reduced, committed) and `review/evidence/sources/`
+(verbatim, not committed): `https://crates.io/api/v1/crates/<name>` and `/versions` for
+`axum`, `tokio`, `tower`, `bacon`, `watchexec-cli`, `cargo-watch`, `actix-web`, `warp`,
+`poem`, `salvo`, `rocket`, `ntex`, `xitca-web`, `pavex`, `viz`, `tide`, `loco-rs`,
+`dropshot`, `hyper`, `tower-http`, `systemfd`, `listenfd`;
+`/reverse_dependencies?per_page=1` for `axum` and `tokio`;
+`https://api.github.com/repos/<o>/<r>` and
+`https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+is:open` for `tokio-rs/axum`,
+`tokio-rs/tokio`, `tower-rs/tower`, `Canop/bacon`, `watchexec/watchexec`,
+`watchexec/cargo-watch`, `actix/actix-web`, `seanmonstar/warp`, `poem-web/poem`,
+`rwf2/Rocket`; the same search endpoint sorted by creation plus each issue's comments for the
+responsiveness figure; `https://rustsec.org/packages/<name>.html` for `axum`, `tokio`,
+`tower`, `bacon`, `watchexec-cli`, `hyper`; published `.crate` artifacts of `axum` 0.8.9,
+`tokio` 1.53.1, `bacon` 3.25.0, `watchexec-cli` 2.7.2 and `tower` 0.5.3 from
+`https://crates.io/api/v1/crates/<name>/<version>/download`;
+`https://raw.githubusercontent.com/tokio-rs/axum/axum-v0.8.9/.github/workflows/CI.yml` and
+`.../examples/graceful-shutdown/src/main.rs`;
+`https://raw.githubusercontent.com/tokio-rs/tokio/tokio-1.53.1/.github/workflows/ci.yml`;
+`https://raw.githubusercontent.com/Canop/bacon/v3.25.0/.github/workflows/tests.yml`;
+`https://api.github.com/repos/Canop/bacon/releases/latest`;
+`https://raw.githubusercontent.com/rust-lang/crates.io/3df99c214d640090ab38aad14ae9c34289b0dec0/{Cargo.toml,src/router.rs,src/bin/crates-io/server.rs}`;
+`https://raw.githubusercontent.com/watchexec/cargo-watch/v8.5.3/README.md`. Carried over from
+the raws with their own retrieval date of **2026-09-12**: the py source at programme pin
+`b08bccfb55d05f15e46a83b52c5660b1881d19f5` (`src/py_launch_blueprint/web/app.py`, `web/deps.py`,
+`web/__main__.py`, `web/routers/__init__.py`, `pyproject.toml`, `Justfile`);
+`https://docs.rs/axum/0.8.9/axum/` and its `State`, `FromRef` and `serve` pages;
+`https://docs.rs/tokio/1.53.1/tokio/` and `tokio/signal`; `https://tokio.rs/tokio/topics/shutdown`;
+`https://doc.rust-lang.org/cargo/reference/features.html` and `.../cargo-targets.html`;
+`https://blog.rust-lang.org/2026/03/02/2025-State-Of-Rust-Survey-results/`;
+`apollographql/router` at `e7b2b32b5c7183475ea874b58b9f0b7d01dc32d8`;
+`meilisearch/meilisearch` at `a955694df9f50771b3ceaf7896754cecfbaf165d`;
+`https://github.com/qdrant/qdrant/blob/master/Cargo.lock`;
+`https://blog.rust-lang.org/2025/02/05/crates-io-development-update/`;
+`https://github.com/specta-rs/rspc/discussions/351`. Repository context:
+`research/topics/01-ports-and-adapters-seam/DECISION.md` (R01, accepted 2026-09-10);
+`docs/port/PARAMETERS.md`; `docs/port/COMMONALITY.md` rows F017, F303, F330, F331, F338, F339;
+`docs/port/DIVERGENCE-ANALYSIS.md` line 217; `docs/port/BASELINE-REVIEW.md` (the F331
+reclassification); `docs/port/OWNER-REVIEW.md` (the 2026-09-04 owner direction).
+
+re-verify: when axum publishes 0.9, when R58 (logging-pipeline-contract) or R02 (crate-boundary-enforcement) publishes, when watchexec-cli declares a rust-version or the owner rules on whether the MSRV gate reaches non-linked developer tools, at the next msrv-policy floor advance past 1.96, or by 2027-03-13, whichever comes first
+
+## Parameters
+
+- owns web-extra-surface = one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, environment-variable-driven with no CLI flags, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+- assumes license = MIT OR Apache-2.0
+- assumes http-transport-injection-seam = trait-object port erased at the composition root: the driven-I/O contract is a dyn-compatible Rust trait (pub trait ProjectsPort: Send + Sync; no async fn, generic methods, associated consts or non-receiver Self) with a blanket impl for Arc<T>; the use case is generic over it (ProjectsService<P: ProjectsPort>); the composition root (plain functions, no DI container) erases the production adapter to Arc<dyn ProjectsPort> and hands the single ProjectsService<Arc<dyn ProjectsPort>> to the CLI and the web layer; fakes and test doubles are injected as any ProjectsPort implementor (the shipped InMemoryProjectsPort), never as injected function values and never by patching a transport; under an async R05 the trait keeps dyn compatibility with async-trait 0.1.92
+
+**No `CONFLICT:` line is raised by this decision, and none of the five raws raised one.** The
+one coupling that could have produced one is R01's, and it was verified rather than assumed:
+the web adapter holds R01's erased service in `AppState` as `Arc<ErasedProjectsService>` and
+returns the library's own `serde`-derived contract types, with no mirror struct and no second
+construction path, and this requires **no change to R01's types** — `Arc<T>` is
+unconditionally `Clone`, which is all axum's `S: Clone + Send + Sync + 'static` state bound
+needs, so `ProjectsService` does not have to derive `Clone`. The check, its two negative
+twins and what they do not establish are under `## Empirical check`, check 1.
+
+The five `- assumes` lines above are quoted byte-for-byte from `docs/port/PARAMETERS.md` and
+are assumptions here, not findings; `review/empirical/parameters-check.sh` re-derives them
+from the registry and diffs them against this file, and its output is
+`review/evidence/parameters-check.log`. How they bear on the decision: `rust-edition` and
+`msrv-policy` set the resolver configuration every probe in this run ran under
+(`edition = "2024"`, `rust-version = "1.96"`, stable 1.98.x minus two minors), and gate 2's
+exclusions of `warp`, `viz`, `pavex`, `tide` and `xitca-web` are read against that floor;
+`target-os-matrix` is why gate 4's macOS leg mattered enough to close by executing installs
+and builds on this host, and why Windows support is noted rather than required — only the
+macOS leg was exercised here, the Linux leg belongs to the template's CI (R11);
+`license` governs this repository's own declared expression and, under owner ruling Q7.B, is
+**not** evaluated against any dependency or tool, which is what restored `bacon` to the
+dev-reload recommendation.
+
+`package-manager-invocation` (R42, published) is not listed above because the prompt's
+`- consumes:` line names only R01, so it is not a consumed parameter of this item. It still
+bears on the answer: its rule that a crates.io-installed tool is invoked as a bare executable
+on PATH and presence-tested with `command -v <executable>` is exactly the form the `serve`
+recipe and the dev-tool list above take.
+
+Open items this answer depends on but does not decide, and how it behaves either way:
+**R05 `sync-async-execution-model`** — if R01's port stays synchronous the handler wraps the
+call in `tokio::task::spawn_blocking`; if R05 chooses an async port the handler awaits it
+directly and R01's `async-trait` clause applies. Nothing in this stack changes either way and
+`rt-multi-thread` is required in both cases. R05 registers no parameter, so this is a coupling,
+not a conflict. **R02 `crate-boundary-enforcement`** — decides which crate carries the feature
+and the `src/web/` module; the owned value above is phrased to survive either a single-crate or
+a multi-crate layout. **R58 `logging-pipeline-contract`** — owns the console/structured profile
+split the dev recipe's environment variable selects, and the name of that variable.
+
+## Empirical check
+
+This section reports **verification only**. This is a research programme: the template does not
+exist yet and P03 builds it, so nothing here builds, wires or runs the recommended web surface.
+No handler, router, listener, service, seam or template scaffold was written. The two probe
+packages that exist contain an empty `src/lib.rs`, a `fn main() {}`, and type declarations with
+no methods; they are described with each check and retained under `review/empirical/`.
+
+**Toolchain and OS.** macOS 26.4 (build 25E246), `aarch64-apple-darwin`.
+`rustc -vV` → `rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)`, `host: aarch64-apple-darwin`,
+LLVM 22.1.8. `cargo --version` → `cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)`.
+`cargo audit --version` → `cargo-audit-audit 0.22.1`. `jq` 1.x at `/opt/homebrew/bin/jq`;
+`gh` authenticated as `smorin`. Under `msrv-policy` the floor today is **1.96**.
+
+**Working directory.** All six scripts live in
+`research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/` and resolve their own
+paths from `${BASH_SOURCE[0]}`, so they rerun unchanged from any directory after this decision
+is committed. Every script sets `set -o pipefail`. Every script asserts on **content**, and
+three of them carry a deliberate control assertion that must fail, so that a check which
+cannot fail is visible as such.
+
+| # | Claim under test | Script | Exit | Log under `review/evidence/` |
+|---|---|---|---|---|
+| 1 | **the R01 coupling**: the erased service satisfies axum's state bound without `ProjectsService` deriving `Clone`, and the `Arc` and R01's `Send + Sync` supertraits are each load-bearing | `state-bound-check.sh` | 0 | `state-bound-check.log` |
+| 2 | the `web` feature's gating shape, its dependency cost, the resolved-tree MSRV, and that no advisory applies to the resolved lockfile | `feature-shape-check.sh` | 0 | `feature-shape-check.log` |
+| 3 | every population figure, gate answer and published-artifact fact this decision cites | `assert-figures.sh` | 0 | `assert-figures.log` |
+| 4 | the issue-responsiveness figure the codex raw recorded as unverified | `issue-responsiveness.sh` | 0 | `issue-responsiveness.log` |
+| 5 | the recommended dev tool's version pin installs on macOS and exposes the two capabilities F339's recipe needs | `bacon-install-check.sh` | 0 | `bacon-install-check.log` |
+| 6 | the `## Parameters` block's five `- assumes` lines are byte-identical to the registry, the one `- owns` line carries no backtick/link/whitespace defect, and the H2 section list is exactly what the role contract fixes | `parameters-check.sh` | 0 | `parameters-check.log` |
+
+Two fetchers feed them and are not themselves checks: `fetch-figures.sh` queries every
+endpoint the prompt's figure table names and writes a **reduced** snapshot — only the fields
+that table names — under `review/evidence/snapshots/`, which **is committed**;
+`fetch-sources.sh` downloads the upstream files read at an immutable version, tag or commit
+into `review/evidence/sources/`, which is **not** committed, because it is third-party source
+and one of it (`bacon` 3.25.0) is AGPL-3.0 — and the owner's 2026-09-12 ruling explicitly does
+not touch the rule against committing third-party copyleft files **into** this repository.
+
+**On reproducibility, stated precisely.** Checks 1, 2, 5 and 6 run locally and reproduce
+byte-for-byte. Checks 3 and 4 read the committed reduced snapshots rather than live endpoints,
+because download counters, `pushed_at` and star counts move hourly and a live re-run could
+never be byte-identical; `fetch-figures.sh` refreshes them and records its retrieval timestamp
+in `snapshots/RETRIEVED-AT.txt` (`2026-09-13T07:57:55Z`). Check 3 additionally reads the
+uncommitted sources, and invokes `fetch-sources.sh` itself when they are absent — which
+reproduces, because every one of those files is fetched at an immutable coordinate (a
+published `.crate` version, a git tag, a commit SHA). An auditor therefore runs the six
+scripts and nothing else. Immediately before writing this sentence, all six were re-run and
+each produced output **identical** to the log cited above, with `diff` reporting no
+differences. Re-running `fetch-figures.sh` will move the counters inside the snapshots and
+therefore the figures the logs print; the assertions — the version numbers, MSRVs, licences,
+`archived` flags and source facts — are the stable part, and are what the decision rests on.
+
+**Check 1 — the R01 coupling.** Three dependency-free packages under
+`review/empirical/state-bound/`. Each declares R01's published seam shape transcribed from
+`research/topics/01-ports-and-adapters-seam/DECISION.md` — `pub trait ProjectsPort: Send +
+Sync`, the blanket `impl` for `Arc<T>`, `ProjectsService<P: ProjectsPort>` **deliberately not
+deriving `Clone`**, and `ErasedProjectsService` — **with no methods, no bodies and no
+behavior**, plus axum's state bound transcribed verbatim from the published artifact
+(`axum-0.8.9/src/routing/mod.rs:138-141`) as
+`pub fn assert_axum_state_bound<S: Clone + Send + Sync + 'static>() {}`. They import nothing:
+no `axum`, no `tokio`, no handler, no router, no listener. Each builds with `--offline`, which
+is itself an assertion that nothing crept into the manifests. Observed:
+
+```text
+case: positive             expect: expect-pass     exit=0     (no diagnostics)
+    assert_axum_state_bound::<Arc<ErasedProjectsService>>();
+    assert_axum_state_bound::<AppState>();            // #[derive(Clone)] over two Arc fields
+
+case: neg-by-value         expect: expect-fail     exit=101
+error[E0277]: the trait bound `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>: Clone` is not satisfied
+   |     assert_axum_state_bound::<ErasedProjectsService>();
+   |  the trait `Clone` is not implemented for `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>`
+   |  note: required by a bound in `assert_axum_state_bound`
+
+case: neg-no-supertraits   expect: expect-fail     exit=101
+error[E0277]: `(dyn ProjectsPort + 'static)` cannot be shared between threads safely
+   |  = help: the trait `Sync` is not implemented for `(dyn ProjectsPort + 'static)`
+   |  note: required because it appears within `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>`
+state-bound-check rc=0
+```
+
+**What this establishes.** R01's erased service, `Arc`-held, satisfies axum 0.8.9's declared
+application-state bound with `ProjectsService` deriving no clone trait; the positive case also
+covers the recommended `AppState` whose own `Clone` derive sits over two `Arc` fields neither
+of whose inner types is `Clone`. The first negative twin shows the outer `Arc` is what does the
+work — storing the service by value fails, which is why P03 would have to add `#[derive(Clone)]`
+and a `P: Clone` bound to take that route. The second shows R01's `Send + Sync` supertraits are
+what make the erased service shareable at all. **What it does not establish:** anything about
+handlers, dispatch, request behavior, or the real axum crate's behavior at runtime. It is a
+type-level fact about a declared bound, paired with that bound read at the published artifact.
+
+**Check 2 — the feature's shape and cost.** Two manifest probes under
+`review/empirical/feature-shape/` and `feature-shape-r01base/`. Both contain an empty
+`src/lib.rs` and a `fn main() {}` binary; their only purpose is to make the manifests resolvable
+so the feature's gating, cost and resolved MSRV are observable. Observed, with the feature off:
+`cargo tree -e normal` contains no `axum`, no `tokio`, no `hyper` and no `tower`, and after
+`cargo clean && cargo build --no-default-features --bins` the serve binary is absent. With it
+on, all four appear, at `axum v0.8.9` and `tokio v1.53.1`. `cargo metadata` reports
+`"required-features":["web"]` on the binary target and `null` on the library target.
+`cargo tree --invert tower` shows `tower v0.5.3 └── axum v0.8.9`, which settles the dev-dependency
+question: `tower` is already in the non-dev tree through `axum`, so a direct entry is needed only
+to bring `ServiceExt` into scope in tests. The resolved non-dev tree's highest declared
+`rust-version` is **`axum` 0.8.9's 1.80** (the probe's own 1.96 is the floor itself and is
+excluded); the same test applied against a 1.70 floor reports a failure, so it can fail. Nine
+transitive dependencies declare no `rust-version` at all — the strict gate-2 reading is applied
+to *candidates*, not to every transitive crate, and this figure records that limit. `cargo audit`
+0.22.1 loaded 1,243 advisories, scanned 55 crate dependencies and exited 0 with no findings.
+With the base set to R01's published members, the non-dev tree is **12 packages with the feature
+off and 52 with it on**; the 52 matches the opus raw exactly, and the base differs by one package
+because that probe carried one further base dependency, so the delta reads 40 here and 39 there.
+This confirms the **shape** of the opus measurement; the wall-clock and binary-size halves of
+that measurement are not reproduced here and are carried as unproven.
+
+**Check 3 — figures, gates and artifact facts.** 71 assertions, all passing, plus one
+deliberate control that must and does report `FAIL`. **Gate 1 is asserted nowhere in this
+script**, and the script says so in its own header: under owner ruling Q7.B it is inapplicable
+to every dependency and tool, so licences are printed as published metadata and never
+compared. What is asserted: the version, MSRV, licence and `archived` state of every
+candidate; the RustSec HTTP status and listed advisory ids per crate; the upstream CI runner
+lists at each pinned tag; the reference implementation's pins, its edition, its registry-free
+router and its unwrapped drain call site; axum's state bound, its `with_state` signature, its
+`FromRef` substate documentation, its `close_tx.closed().await`, its **zero** occurrences of
+`timeout` or `deadline` in `src/serve/mod.rs`, its `unsafe_code = "forbid"` lint, its **zero**
+occurrences of `unsafe` in `src/`, its default feature list and the `axum::serve` cfg; tokio's
+`default = []` and that none of `signal`, `net`, `rt-multi-thread`, `time` or `macros` enables
+`sync`; and bacon's declared MSRV, its SIGKILL default, its `run-long` job's
+`kill_then_restart` strategy and `need_stdout`, its headless stdout/stderr passthrough, and
+its `--features` and post-`--` argument plumbing. Figures as snapshotted at
+`2026-09-13T07:57:55Z`:
+
+| Crate | 90-day dl | All-time dl | Newest non-yanked | Stars / pushed / archived | Open issues | Licence | `rust-version` | Rev-deps |
+|---|---:|---:|---|---|---:|---|---|---:|
+| `axum` | 114,795,000 | 466,425,972 | 0.8.9 (2026-04-14) | 27,100 / 2026-09-11 / false | 34 | MIT | 1.80 | 8,598 |
+| `tokio` | 222,551,461 | 961,082,746 | 1.53.1 (2026-07-20) | 33,136 / 2026-09-13 / false | 316 | MIT | 1.71 | 72,187 |
+| `tower` | 169,723,285 | 656,241,115 | 0.5.3 (2026-01-12) | 4,293 / 2026-06-22 / false | 69 | MIT | 1.64.0 | — |
+| `bacon` | 21,763 | 328,857 | 3.25.0 (2026-08-23) | 3,410 / 2026-09-12 / false | 47 | AGPL-3.0 | 1.85 | — |
+| `watchexec-cli` | 8,702 | 659,914 | 2.7.2 (2026-09-06) | 7,180 / 2026-09-07 / false | 31 | Apache-2.0 | **none** | — |
+| `cargo-watch` | 174,663 | 1,970,345 | 8.5.3 (2024-10-02) | 2,861 / 2025-01-14 / **true** | — | CC0-1.0 | 1.75.0 | — |
+
+**Check 4 — issue responsiveness.** The codex raw declined to compute this figure, noting that
+the ten-newest listing mixes issues and pull requests and that a maintainer-attribution
+calculation needs comment sampling. The rule applied here is the prompt's: over the 10 most
+recently **opened issues**, the first comment whose `author_association` is `OWNER`, `MEMBER`
+or `COLLABORATOR`, excluding bots and the issue author. Observed — `tokio-rs/axum`: median
+**0.41 days**, **5 of 10 unanswered**, window 2026-06-16 → 2026-09-07; `Canop/bacon`: median
+**0.02 days**, **3 of 10 unanswered**, window 2026-02-17 → 2026-08-24; `tokio-rs/tokio`:
+median **0.33 days**, **3 of 10 unanswered**, window 2026-08-27 → 2026-09-09. The axum and
+bacon figures reproduce the opus raw's independently, including the identical axum window; the
+tokio median differs from opus's 0.03 days, a method difference this synthesis did not
+reconcile, and the figure reported here is this run's. A control asserts the parser reports no
+response for an empty comment list, so it cannot invent one. `axum`'s 5-of-10 unanswered is the
+one population figure that argues against it; set against a `pushed_at` of the previous day, 34
+open issues in total, and a normal patch cadence on the 0.8 line, the maintenance verdict is
+**active**.
+
+**Check 5 — the dev tool.** `cargo install bacon --version 3.25.0 --locked` exited 0 on this
+host and the installed binary reports `bacon 3.25.0`; `bacon --list-jobs` run in a directory
+with **no `bacon.toml`** lists `run-long` among the default jobs; `--headless` and `--features`
+are both present in `--help`; and a control confirms the flag assertion reports an absent flag
+as absent. This closes gate 4's macOS leg for this pin, which neither bacon's CI
+(`ubuntu-latest` only) nor its v3.25.0 GitHub release (zero binary assets) demonstrates. It
+builds a development **tool**, not the recommendation.
+
+**A boundary judgement recorded for the auditors.** The opus raw reports executing a probe that
+built a feature-off binary, served a handler over a real bound TCP listener with a real HTTP
+client, and measured a drain with an in-flight request. The research-worker contract says not
+to scaffold a crate or write a server; the worker states it wrote only its own report file, so
+the probe lived outside the run directory. In this synthesizer's judgement that exceeds the
+contract as the role now reads it, and it is recorded here rather than repeated. **Nothing in
+this decision rests on those executions except where independently re-verified above:** the
+state bound (check 1, type-level only), the 52-package feature-on tree (check 2), and axum's
+unbounded drain (check 3, read at source rather than timed). The three passing tests the opus
+raw reports, and its build-time and binary-size figures, are carried as engine-reported and
+unproven.
+
+## Engines
+
+- codex `raw/codex.md` — gpt-5.6-terra (sha256 `6f1d03df7be0ab3afc4c1fc2bed545d0ad0ab55f30b138c10750346e7f9e21fd`), bundle shape OK. Recommends `axum` 0.8.9 on `tokio` 1.53.1 behind a `web` feature with explicit `WebState` injection, `axum::serve` plus tokio signals, and externally installed `watchexec-cli` 2.7.2 for the dev recipe. Members: `axum`, `tokio`, `watchexec-cli`. Executed nothing. Raised `BASELINE-REVIEW: F331`. Flagged six figures it could not verify (resolved-tree MSRV, RustSec advisory counts, platform CI, issue-response medians, watchexec-cli's declared MSRV, and all proposed integration and benchmark measurements) — of these, this synthesis verified the resolved-tree MSRV (1.80, check 2), the advisory answer (`cargo audit` exit 0 over 55 crates, check 2), platform CI for `axum`, `tokio` and `bacon` (check 3), the issue-response medians for `axum`, `tokio` and `bacon` (check 4), and watchexec-cli's absent `rust_version` (check 3). The proposed integration and benchmark measurements remain unproven and are in the table below.
+- opus `raw/opus.md` — claude-opus-5 (sha256 `161fcbb42aadb8752c59d36a7ba337e1b69e717429110ad94c548ce649e0f91d`), bundle shape OK. Recommends the same `axum`/`tokio` stack with `State` + `FromRef` over one `AppState`, native router composition, a feature-gated serve binary, and a settings-driven drain deadline. Seven members (two crates, five patterns). By far the most evidence-dense raw: read published `.crate` artifacts at exact versions, the reference implementation at a recorded commit, and executed a build-and-serve probe. Raised `BASELINE-REVIEW: F330` (adopted) and `BASELINE-REVIEW: F339` (**withdrawn** — see Disagreement 1). Three corrections to it are recorded below.
+- doxa (one engine, three provider bodies from operation `research-20260912-134041-a1150ec8a7594fa0`). The merged digest `raw/doxa.normalized.md` **fails** bundle shape validation — `doxa/normalization.json` records `answer: bundle H5 member field is outside a named member in '### Members'` — because gemini's member fields are emitted under a different H2 in the regrouped file. That is a layout defect in the digest only; all three per-provider normalized files pass validation and are what this synthesis used.
+  - `raw/doxa-openai.normalized.md` — OpenAI gpt-5.6-sol (sha256 `efa7c6dc8385077a86280841d101713fd6426f7e5802c613bdcc8024ae3d0106`), shape OK. Members: `axum` 0.8.9, `tokio` 1.53.1, `tower` 0.5.2, `watchexec-cli` 2.5.1. **The only raw that gets the drain deadline right** (Disagreement 2). Raised `BASELINE-REVIEW: F330` and `F331`. Its own ledger records every crates.io and GitHub figure as "pending exact endpoint collection; not inferred from scraped substitutes" — an honest gap, and its `watchexec-cli` 2.5.1 / Rust 1.93 figures are stale against the registry's 2.7.2 (2026-09-06) with no declared `rust_version`. Its `tower` 0.5.2 pin is likewise superseded by 0.5.3.
+  - `raw/doxa-gemini.normalized.md` — Gemini deep-research-preview-04-2026 (sha256 `6b0772ed4e79cca4e8e100aa6bfaaa20a49b9ccc239baa72933af309d0e5d85c`), shape OK. Members: `axum`, `axum::extract::State`, `tokio::signal` combined with `with_graceful_shutdown`, `bacon`. **Alone among the five it declined to exclude `bacon` on licence**, reasoning that an external, developer-installed tool that is never linked into the shipped binary does not engage the gate — which is the position owner ruling Q7.B has since made binding, so this raw's dev-reload recommendation survives the ruling unchanged and is adopted. Against that, **its figures are not endpoint-collected and are not used anywhere in this decision**: it reports axum at ">15k" stars (actual 27,100), "~150-200" open issues (actual 34), bacon 90-day downloads as ">1,500,000 (Proxy estimate based on tooling adoption)" (actual 21,763) and bacon's all-time downloads as "Data unavailable … assumed highly active", and it gives `rocket`'s MSRV as 1.89.0 where the registry says 1.64. Most of its inline citations are Vertex redirect URLs. It also proposes bounding shutdown with `tower_http::timeout::TimeoutLayer`, which is a per-request bound and R75's to decide.
+  - `raw/doxa-perplexity.normalized.md` — Perplexity sonar-deep-research (sha256 `666031a08615390c89d5a834f5b2c6e119f02e79d3649ffce838ef7534e0382d`), shape OK. Members: `axum`, `tokio`, `hyper`, `tower-http`, and dev tooling as `Just` + `cargo-watch`. Agrees on the framework, the feature shape, `State` injection and native composition, and raises `BASELINE-REVIEW: F330`. Three of its positions are not adopted: `cargo-watch` is archived with a maintainer end-of-life notice; `tower-http` is explicitly out of scope (R75 owns it); and its drain wrapper carries the same clock-start defect as opus's. It carries no crate figures and states so, citing comparative articles rather than endpoints.
+
+**What the owner's licence ruling changed versus the raws.** Every licence-based exclusion in
+every raw was enumerated and re-evaluated. Gate 1 is recorded throughout this decision as
+`inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any
+dependency or tool`, and the row is retained rather than deleted because the binding prompt
+still contains gate 1 and its sha256 is cited by acceptance records.
+
+| Raw | Licence-based sentence | Disposition |
+|---|---|---|
+| codex, `#### watchexec-cli` → *Qualified shortlist*, *Excluded by gate*, *Ranked runner-up* | "`bacon` is not qualified because its latest crate license is AGPL-3.0"; "`bacon` is excluded by the repository's compatible-license gate"; "no runner-up passes all recorded checks: … bacon's license is incompatible" | **Struck.** `bacon` is not excluded. |
+| opus, `#### Dev-serve recipe` → *Excluded by gate*, and `BASELINE-REVIEW: F339` | "`bacon` 3.25.0 — **gate 1**: licence `AGPL-3.0` … a tool the template *requires* every contributor to install is the wrong place to spend that ambiguity"; and the F339 demotion premised on "each surviving candidate fails one gate" | **Struck**, and the recommendation changes: `bacon` is selected and the `BASELINE-REVIEW: F339` line is withdrawn. |
+| opus, `#### axum` → *Tradeoffs* and `#### tokio` → *Tradeoffs* | "`axum` is `MIT`-only, not dual-licensed — compatible … but without Apache-2.0's explicit patent grant, which is the owner's stated reason for the dual licence"; "`MIT`-only (see `#### axum`)" | **Struck as an evaluation ground.** It was explicitly non-discriminating in the raw itself (it notes 17 of 52 packages are MIT-only whatever the framework), so removing it changes no recommendation. Licences are still reported as published facts. |
+| openai, *Fitness gates* table | "Bacon 3.24.x … fails the owner's strict dependency/tool license rubric. **Excluded by gate 1**"; and *Ranked runner-up*: "Bacon, only under a recorded license-policy exception" | **Struck.** The exception is now the rule; no policy exception is needed. |
+| gemini, `#### bacon` → *Excluded by gate* | "Pass (`AGPL-3.0` - strictly a local dev tool, not linked into the template binary)"; "*Note: … entirely permissible because it functions exclusively as an external, developer-installed command-line tool*" | **No change.** This raw did not exclude on licence, so the ruling leaves its conclusion standing. |
+| perplexity, `#### axum` → *Excluded by gate* | "None of the shortlisted frameworks are excluded by obvious license incompatibility" | **No change.** No exclusion to strike. |
+
+No candidate anywhere in this item is excluded on licence. The exclusions that stand —
+`warp`, `viz`, `pavex`, `tide`, `xitca-web` and `watchexec-cli` on gate 2; `cargo-watch`,
+`poem` and `rocket` on maintenance; `salvo`, `ntex` and `actix-web` on fit — rest on grounds
+the ruling does not touch. The ruling does **not** touch this repository's own declared
+licence expression, nor any rule against committing third-party copyleft files into this
+repository; `bacon` is installed from crates.io by each contributor and no AGPL-3.0 file
+enters this repository.
+
+**Disagreements, and the evidence that settled each.**
+
+1. **The dev-reload tool** — `watchexec-cli` (codex, openai), `bacon` (gemini), `cargo-watch`
+   (perplexity), or no tool with auto-reload demoted to optional (opus). **Settled for
+   `bacon` 3.25.0** by the licence ruling plus registry facts: with gate 1 struck, `bacon` is
+   the only candidate that fails no applicable gate — `cargo-watch` is archived with its
+   maintainer's own end-of-life notice in the README at tag `v8.5.3`, and `watchexec-cli`
+   2.7.2 declares no `rust_version`. Because opus's demotion was premised on every candidate
+   failing a gate, the premise is gone and auto-reload returns to the required recipe;
+   `BASELINE-REVIEW: F339` is withdrawn and F339 now ports at capability level. The tool's
+   fitness for the *console-log* half of F339 was then verified rather than assumed, since a
+   TUI-first runner is not obviously able to stream a server's logs: `--headless` prints the
+   child's stdout and stderr directly, `run-long` is a default job needing no `bacon.toml`, and
+   `--features` reaches cargo. One correction to opus follows from the same reading: its
+   migration list says no `bacon.toml` is needed, but bacon's default Unix job interruption is
+   SIGKILL, so a `kill` override is required for a dev restart to exercise the production drain.
+2. **Where the drain deadline's clock starts.** Opus and perplexity both wrap the entire serve
+   future in `tokio::time::timeout(grace, server)`, which bounds the server's whole lifetime
+   and would terminate a healthy service after the grace period; openai starts the timeout when
+   the shutdown future fires. **Settled for openai's shape** on the merits — the two behave
+   identically only if shutdown is requested at t=0 — with a consequence verified at source:
+   that shape needs `tokio::sync::oneshot`, and none of `signal`, `net`, `rt-multi-thread`,
+   `time` or `macros` enables tokio's `sync` feature, so `sync` is added to the recommended
+   feature list, which opus's manifest omits. Gemini's `tower_http::timeout::TimeoutLayer` is a
+   per-request bound, not a drain deadline, and belongs to R75.
+3. **The member list — naming and granularity.** The raws differ: codex lists three members
+   (two crates plus a tool), openai four (three crates plus a tool, with versions in the
+   headings), gemini four (one crate, one **extractor type**, one API pairing, one tool),
+   perplexity five (four crates including `hyper` and `tower-http`, plus "Just + cargo-watch"),
+   and opus seven (two crates plus five patterns). **Settled on the merits, not by vote, by one
+   rule: a member is a decidable artifact this item owns.** The prompt's own value test names
+   five things that get rewritten if this answer is wrong — the framework dependency, the
+   feature-gate shape, the config-injection mechanism, `main`'s entrypoint, and the dev-serve
+   recipe — and the 2026-09-04 baseline review added router composition (F331) to this item.
+   That yields the eight rows in the table under `## Decision`: three crate members plus five
+   pattern members, one per artifact. What this rule excludes, and why: **`hyper`** (perplexity)
+   is never declared in the template's manifest — it arrives transitively through `axum`, so
+   there is nothing to decide; **`tower-http`** (perplexity, gemini) is named in this item's
+   `## Out of scope` as R75's; **`axum::extract::State`** (gemini) is the mechanism the F330
+   decision *selects*, not a separate decision — listing a type as a member would equally
+   oblige listing `Router` and `IntoResponse`; and **`Just`** (perplexity) is the repository's
+   existing command runner, not something this item chooses. `tower` **is** kept as a member,
+   against codex and opus who fold it away, because it is a crate with a version pin the
+   template's manifest must carry — but as a `[dev-dependencies]` entry, which check 2 settles:
+   `cargo tree --invert tower` shows it already in the non-dev tree through `axum`, so a direct
+   entry buys only the `ServiceExt` import in tests and must not be inside the `web` feature as
+   openai and perplexity have it.
+4. **The axum feature set.** Codex proposes `default-features = false` with
+   `["http1", "json", "tokio"]`; openai `default-features = false` with seven named features;
+   opus leaves the defaults on. **Settled for defaults on.** Codex's minimal set drops
+   `matched-path` (which R78 and R79 need for low-cardinality route labels rather than raw
+   high-cardinality URLs), `query` (which R72's pagination anticipates) and `tracing` (which
+   emits axum's own spans into whatever subscriber R58 selects) — openai identifies each of
+   those reasons explicitly, and they are the merits argument. Openai's explicit list then
+   differs from the defaults only by `form` and `tower-log`; enumerating a default set invites
+   silent drift when the crate changes it, and the reference implementation keeps the defaults
+   on and adds to them rather than disabling them. `http2` stays off; it is off by default and
+   no consumer has asked for it.
+5. **The tokio feature set.** Codex `["macros", "rt-multi-thread", "net", "signal"]`; gemini
+   `["rt-multi-thread", "net", "signal"]`; opus adds `time`; openai adds `time` and `sync`.
+   **Settled for openai's set.** `time` is not optional — without it there is no
+   `tokio::time::timeout` and therefore no drain deadline at all, so codex's and gemini's lists
+   cannot implement the F338 behavior they describe. `sync` follows from Disagreement 2 and was
+   confirmed to be implied by nothing else in the feature graph.
+6. **Whether Rust needs py's lazy configuration fallback.** All five raws say no, for the same
+   reason. Recorded as `BASELINE-REVIEW: F330`; no disagreement to settle.
+7. **Router registry versus native composition.** Codex, opus, openai and gemini all say
+   native; perplexity does not raise it. Settled by the reference implementation read at
+   source: `rust-lang/crates.io` has no `ROUTERS` list and no registration loop. Recorded as
+   `BASELINE-REVIEW: F331`.
+8. **Framework figures where the raws disagree.** `rocket`'s MSRV — gemini 1.89.0, opus 1.64 —
+   settled at **1.64** by the registry. `ntex`'s newest non-yanked version — opus 3.12.3 with
+   `rust-version` 1.88 — is actually **4.0.0-beta.10 (2026-09-12), `rust-version` 1.95** under
+   the prompt's "newest non-yanked" rule; `ntex` is excluded on fit either way. `tide`'s newest
+   non-yanked is **0.17.0-beta.1 (2021-12-06)**, not opus's 0.16.0 (2021-01-29); dormant either
+   way. `watchexec-cli` — openai 2.5.1, codex and opus 2.7.2 — settled at **2.7.2** by the
+   registry. Where codex's and opus's 2026-09-12 figures overlap they agree with each other and
+   with this run's 2026-09-13 snapshot up to one day's counter drift (for example axum's 90-day
+   downloads 115,597,652 → 114,795,000 and stars 27,095 → 27,100); the figures reported in this
+   decision are **this run's**, with this run's retrieval date.
+
+**Unproven here; P03's to prove in the real template.** Each row is a claim this decision makes
+that no check in this run establishes, paired with what would establish it. A row that fails in
+implementation sends the decision back for revision against this recorded research, not back to
+research.
+
+| Claim | Status | What would prove it |
+|---|---|---|
+| The web handler returns the library's own `serde` types over a real listener, with no mirror struct, byte-identical to the CLI's output (R01 acceptance criterion 6) | **Unproven here.** The opus raw reports two passing tests covering exactly this, in-process and over a bound listener; those are engine-reported and were not re-executed, because executing them means building the recommendation. | A template integration test: a real HTTP GET to a bound listener whose body decodes into the library's `Vec<Project>`, compared against the CLI's rendered output for the same query. |
+| `build_router(state)` is the only constructor, and a handler asking for an unregistered substate fails to compile | **Partly proven.** The state bound itself is verified (check 1); the compile-failure demonstration is not. | A `compile_fail` doctest in the template showing a handler requesting a substate `AppState` has no `FromRef` impl for, and asserting the error. |
+| The entrypoint drains in-flight work on SIGTERM and exits within the configured window, and exceeds the deadline when a request never completes | **Unproven.** The enabling fact — axum supplies no deadline — is read at source (check 3); the two behaviors are not exercised. | Two template tests: one that begins a slow request, sends SIGTERM, and asserts both the response completing and a zero exit inside the window; one with a permanently blocked request asserting the `GracefulShutdownTimedOut` branch and its non-zero exit. The opus raw reports a passing test for the unbounded-drain half only. |
+| The stack compiles and tests on both `target-os-matrix` legs and at the MSRV floor | **Unproven.** Only the macOS host at rustc 1.98.0 was exercised here; the Linux leg and the 1.96 leg were not. | The template's CI matrix (R11): `cargo test --workspace --locked --features web` on `ubuntu-latest` and `macos-latest`, plus a `cargo check` leg pinned to the declared `rust-version`. |
+| The web feature's wall-clock build cost and binary size | **Unproven and not measured here** — measuring them honestly means building the recommendation. The opus raw's figures (5.69 s → 9.28 s wall, 7.12 s → 25.61 s user CPU, release binary 2,001,600 bytes / 1,574,392 stripped) are engine-reported. Only the dependency-count half (12 → 52 packages) is reproduced here. | A timed clean and incremental build of the real template on each CI runner, and `cargo build --release` plus a size measurement of the stripped serve binary. |
+| The dev recipe serves with console-formatted logs and restarts on a source edit | **Unproven, and blocked on R58.** The tool's capabilities are verified (check 5); the recipe's behavior is not, because the environment variable's name and semantics are R58's and unpublished. | Once R58 publishes: `just serve` answering `GET /healthz` with console-formatted logs on stderr, a source edit producing one restart, and the same binary outside the recipe emitting the production structured profile. |
+| A `bacon.toml` `kill` override makes the dev restart run the production SIGTERM drain | **Unproven.** That bacon's default is SIGKILL and that a `kill` override exists are both read from its published configuration reference; that the override produces a clean drain of `cargo run`'s grandchild process is not exercised. | A template check that edits a source file under `just serve` and observes the old process logging its graceful-shutdown path rather than dying silently. |
+| `actix-web` does not win on a representative instrumented workload | **Unproven and deliberately unmeasured.** No public benchmark measures the required path, and the TechEmpower payload was unretrievable on 2026-09-12 (opus raw). | The two-workload benchmark openai's raw specifies — an adapter ceiling and a service-like run with R75/R78/R79's layers and a local collector — reporting p50/p95/p99, throughput, CPU-seconds per million requests, peak RSS, binary size and build times on identical hardware. Only a material advantage there reopens the framework choice. |
+| `axum`'s and `bacon`'s macOS support beyond the pinned versions tested here | **Unproven beyond `axum` 0.8.9 and `bacon` 3.25.0 on macOS 26.4 aarch64.** Neither project's CI covers macOS. | The template's own `macos-latest` CI leg, continuously. |
+| `unsafe` posture of `tokio` and of the unrecommended candidates | **Unproven here.** `axum`'s is verified (`unsafe_code = "forbid"`, zero occurrences in `src/`); tokio's 1,066 occurrences are the opus raw's count, not recounted; the remaining candidates were not inspected by anyone. | `cargo geiger` over the template's resolved tree, if a posture question ever arises; none of the uninspected candidates is recommended. |
+
+**Uncertainty and coverage.** Every required top-level field and every member field of this
+decision is supported by at least the codex, opus and openai raws; gemini and perplexity add
+the dev-reload position that the licence ruling vindicated and independent agreement on the
+framework, the feature shape and F330, and no field is left unsupported. Remaining uncertainty
+beyond the unproven table: the resolved-tree MSRV figure of 1.80 is read from declared
+`rust-version` fields, and nine transitive dependencies declare none, so it is a floor on what
+is *declared*, not a proof that the tree compiles at 1.96 — the template's MSRV CI leg is what
+would prove that. The population figures are a single snapshot at `2026-09-13T07:57:55Z` and
+will drift. The `AppState` field list stays medium-confidence until R77 defines the settings
+type and R58 the logging contract.

@@ -1,0 +1,19 @@
+{
+  "crate": "loco-rs",
+  "retrieved_at": "2026-09-13T07:57:55Z",
+  "endpoints": {
+    "crate": "https://crates.io/api/v1/crates/loco-rs",
+    "versions": "https://crates.io/api/v1/crates/loco-rs/versions"
+  },
+  "recent_downloads": 108953,
+  "downloads": 649802,
+  "repository": "https://github.com/loco-rs/loco",
+  "versions_total": 46,
+  "newest_non_yanked": {
+    "num": "1.1.0",
+    "created_at": "2026-08-16T07:20:05.314328Z",
+    "yanked": false,
+    "rust_version": "1.94",
+    "license": "Apache-2.0"
+  }
+}
