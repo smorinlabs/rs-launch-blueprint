@@ -504,7 +504,13 @@ of the script only and was never copied into `$CARGO_HOME/bin`; every
 `check-deps` recipe, `install-tool` recipe, `lefthook.yml` or acceptance script
 was written. Every check below either queries a recorded endpoint, reads a
 maintained project's committed file, or exercises a documented Cargo/rustup
-mechanism against a stub input.
+mechanism against a stub input — with one addition at revision 7, stated plainly
+because it is the first check in this item that runs a third-party binary:
+**check 15 executes the recommended recipe body itself**, using the published
+`v1.23.0` release artifact from a scratch directory with `--dry-run` on every
+call. That verifies the command and its flags; it does not build the
+`install-tool` recipe, the tool table or anything else the recommendation
+describes, and what it leaves unproven is unproven items 4 and 5.
 
 | # | Check | Command | Exit | Result | Log |
 |---|---|---|---:|---|---|
