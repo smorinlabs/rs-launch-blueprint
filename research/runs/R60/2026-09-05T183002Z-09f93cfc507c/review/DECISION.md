@@ -1,4 +1,4 @@
-# R60 — CLI parsing framework (bundle, Deep) — revision 2, 2026-09-12
+# R60 — CLI parsing framework (bundle, Deep) — revision 3, 2026-09-13
 
 Synthesized 2026-09-10 by a fresh context that produced none of this item's raw
 reports, from three engine reports (five provider bodies) plus the verification
@@ -8,9 +8,19 @@ written here.
 Revised 2026-09-12 after the revision-1 draft (sha256
 `d35d4f5a681b1d6572b80533393963bb55a435a71ca59fcca21d10b4c461bd6c`) was
 **rejected** on two findings — a non-conformant plural command noun and an
-unpinned standard. What changed, and what is unchanged, is enumerated at the end
-of `## Engines`. No crate was scaffolded and no command surface was written in
-either revision.
+unpinned standard.
+
+Revised again 2026-09-13 after the revision-2 draft (sha256
+`18769c3a522c94ee59c5635a338828781efa9c6bc8aa4e13ac9443a5773c5c2c`) was
+**rejected** on one finding: **its evidence scripts could not be rerun once the
+revision was committed.** Nothing about the recommendation was challenged and
+nothing about it moves. The evidence apparatus is rebuilt so that every input a
+script reads is either committed inside this run directory or fetched from a
+pinned remote source, and the rerun is demonstrated from a clean extraction of
+the commit rather than asserted. This revision also records fitness gate 1 as
+`inapplicable` under the owner's 2026-09-12 licence ruling. What changed, and
+what is unchanged, is enumerated at the end of `## Engines`. No crate was
+scaffolded and no command surface was written in any revision.
 
 ## Decision
 
@@ -123,22 +133,28 @@ hash would still catch it.
 |---|---|
 | Document version | **1.4.14**, `Status: Active — canonical`, `Last updated 2026-06-28` (declared in the document's own header table, `:1-12`) |
 | Repository | `https://github.com/smorinlabs/cli-standards`, path `cli-design-standard.md` |
-| Commit | `fb30a591c267a7ec1130ba4cda679eaee494b9d7` (`docs: resolve PR #1 review findings (v1.4.14)`, 2026-06-28) — the most recent commit to touch the file as of 2026-09-12, **confirmed against `origin/main` after `git fetch` on 2026-09-12**, and reachable from it, so the resolution recipe below works from a fresh clone rather than only from this machine's |
+| Commit | `fb30a591c267a7ec1130ba4cda679eaee494b9d7` (`docs: resolve PR #1 review findings (v1.4.14)`, 2026-06-28) — the most recent commit to touch the file, **confirmed against the published history rather than against a local clone**: `GET https://api.github.com/repos/smorinlabs/cli-standards/commits?path=cli-design-standard.md&per_page=1` returns this commit as the newest, checked 2026-09-12 against `origin/main` after `git fetch` and re-checked 2026-09-13 through that endpoint (`## Empirical check` row E10) |
 | Blob object id | `f9de0437baece3383e73ca2c5f48b7ab399b51c7` |
 | Content sha256 | `9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f` |
 
-**How a future reader resolves it.** Run
-`git -C <clone-of-cli-standards> cat-file blob f9de0437baece3383e73ca2c5f48b7ab399b51c7`,
-or `git show fb30a591c267a7ec1130ba4cda679eaee494b9d7:cli-design-standard.md`,
-and confirm the output's sha256 is `9fb05d3d…`. Every `:<line>` citation below
-is a **line number in that blob**, not in whatever the working tree holds later.
-The local working-tree file read on 2026-09-10 was verified byte-identical to
-the pinned blob (same sha256), so the reads this decision rests on and the
-pinned text are the same bytes. `origin` was fetched before checking, and
-`origin/main` holds the same commit and the same blob for this path, so
-"newest" is a claim about the published history and not merely about this
-clone. Version, commit, blob id, sha256 and each cited line were checked
-mechanically; see `## Empirical check` rows E1–E5.
+**How a future reader resolves it, without a clone and without this machine.**
+The pinned text is committed in this run directory as
+`review/evidence/snapshots/cli-design-standard-1.4.14.md`, and its sha256 is
+`9fb05d3d…` — the same hash the pinned blob has. So the primary recipe is: hash
+that file and confirm the value. Two independent recipes re-derive the same
+bytes from the published source: `curl -sSL
+https://raw.githubusercontent.com/smorinlabs/cli-standards/fb30a591c267a7ec1130ba4cda679eaee494b9d7/cli-design-standard.md`
+(a content-addressed URL — the commit id is in the path, so the bytes cannot
+move under it), or, given any clone of the repository, `git cat-file blob
+f9de0437baece3383e73ca2c5f48b7ab399b51c7`. All three were executed on
+2026-09-13 and agreed (`## Empirical check` rows E1 and E10). Every `:<line>`
+citation below is a **line number in that text**, not in whatever the working
+tree holds later; the pinned text is 773 lines, which is itself asserted so that
+an out-of-range citation cannot pass silently. The local working-tree file read
+on 2026-09-10 was verified byte-identical to the pinned blob (same sha256), so
+the reads this decision rests on and the pinned text are the same bytes. Version,
+sha256 and each cited line were checked mechanically; see `## Empirical check`
+rows E1–E5 and E10.
 
 **R67 did not pin this document in its decision, and that is why the pin is
 stated here in full.** The distinction matters, so state both halves exactly.
@@ -340,7 +356,7 @@ does not transfer.
 figure below is from the run recorded in `## Empirical check`, retrieved
 2026-09-10.
 
-| Candidate | 1. license | 2. MSRV (floor 1.96) | 3. advisory / `unsafe` | 4. OS matrix | 5. default features | 6. size & build cost | Gate result |
+| Candidate | 1. license — **gate inapplicable**; the value is recorded as a fact, see below | 2. MSRV (floor 1.96) | 3. advisory / `unsafe` | 4. OS matrix | 5. default features | 6. size & build cost | Gate result |
 |---|---|---|---|---|---|---|---|
 | `clap 4.6.6` | `MIT OR Apache-2.0` | declares `1.85` — 11 minors of headroom | no RustSec page; `cargo audit` clean on the resolved tree | see qualification 2 | `std,color,help,usage,error-context,suggestions` | largest of the surveyed field in the upstream benchmark (qualification 3) | **pass** |
 | `clap_complete 4.6.9` | `MIT OR Apache-2.0` | declares `1.85` | no RustSec page | see qualification 2 | `default = []`; requires `clap >= 4.5.20` | not separately measured in the upstream benchmark; adds five shell writers | **pass** |
@@ -352,6 +368,23 @@ figure below is from the run recorded in `## Empirical check`, retrieved
 | `argh 0.1.19` | **`BSD-3-Clause`** | **declares none** | no RustSec page | not assessed | not assessed | 38 KiB in the upstream benchmark (qualification 3) | **excluded by gate 2**; also rejects invalid-UTF-8 argv per that same benchmark's own column |
 | `lexopt 0.3.2` | `MIT` | **declares none** | no RustSec page | not assessed | not assessed | 37 KiB in the upstream benchmark (qualification 3) | **excluded by gate 2**; also architecture C |
 | `pico-args 0.5.0` | `MIT` | **declares none** | no RustSec page | not assessed | not assessed | 24 KiB in the upstream benchmark (qualification 3) | **excluded by gate 2**; newest release 2022-06-04, repo `pushed_at` 2023-10-19 |
+
+**Gate 1 is `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility
+is not evaluated for any dependency or tool`.** The owner ruled that this project
+performs no licence check on any tool or library it uses, and extended that
+knowingly to crates compiled into the shipped artifact; the repository's own
+declared expression `MIT OR Apache-2.0` and its per-file headers are unaffected,
+because those are this repository's own source. The gate row is stated rather
+than deleted because this item's binding prompt still lists it and directs that
+an inapplicable metric carry its reason. **The recommendation does not move, and
+no exclusion in the table above ever rested on this gate**: all four exclusions
+(`shadow-rs`, `argh`, `lexopt`, `pico-args`) are gate-2 exclusions for declaring
+no `rust-version`, and `argh`'s `BSD-3-Clause` — the only value in the column
+that differs in kind from the rest — excluded nothing before the ruling and
+excludes nothing after it. The licence expressions recorded in that column, in
+`## Empirical check` §01 and §08, and in the evidence log's section W are
+retained as the values the registry endpoint returned. They are facts about the
+crates, evaluated against no gate.
 
 Four qualifications on that table, each of which limits exactly one column:
 
@@ -546,7 +579,7 @@ are native to the recommended stack rather than hand-built. The Codex raw report
 emits a `BASELINE-REVIEW: F269` line; that line is not carried, for the reason
 given in `## Engines`.
 
-re-verify: 2027-03-10, or earlier on any of — **the org CLI Design Standard moving off the pinned revision (version 1.4.14, blob `f9de0437baece3383e73ca2c5f48b7ab399b51c7`), which is detectable by re-running `## Empirical check` row E1: any new commit to `cli-design-standard.md` changes the blob id and invalidates every `:<line>` citation here, and an amendment to R1.1, R1.3, R3.10, R4.5, R4.6, R5.4, R9.1 or the Appendix A entry criteria would change the substance as well**; clap releasing a 5.x line; the `clap_complete` `unstable-dynamic` completion path stabilizing; a RustSec advisory opening against `clap`, `clap_builder`, `clap_derive`, `clap_complete` or `strsim`; R22 (`runtime-version-accessor`) resolving and changing where the version value comes from; Rust stable advancing far enough that the MSRV floor rises above a recommended crate's declared `rust-version` (the highest declared `rust-version` among the 28 dependency crates is **1.85**, shared by the five `clap`-family crates, so the current 1.96 floor has eleven minors of headroom and this trigger is remote); or the owner ruling on OVERRIDE (OV-01).
+re-verify: 2027-03-10, or earlier on any of — **the org CLI Design Standard moving off the pinned revision (version 1.4.14, blob `f9de0437baece3383e73ca2c5f48b7ab399b51c7`), which is detectable by re-running `## Empirical check` row E10, the only check here that reads live history — `bash review/evidence/r60-snapshot-provenance-r3.sh`, whose check `C2a` fails the moment the newest published commit for that path is no longer `fb30a591…`: any new commit to `cli-design-standard.md` changes the blob id and invalidates every `:<line>` citation here, and an amendment to R1.1, R1.3, R3.10, R4.5, R4.6, R5.4, R9.1 or the Appendix A entry criteria would change the substance as well**; clap releasing a 5.x line; the `clap_complete` `unstable-dynamic` completion path stabilizing; a RustSec advisory opening against `clap`, `clap_builder`, `clap_derive`, `clap_complete` or `strsim`; R22 (`runtime-version-accessor`) resolving and changing where the version value comes from; Rust stable advancing far enough that the MSRV floor rises above a recommended crate's declared `rust-version` (the highest declared `rust-version` among the 28 dependency crates is **1.85**, shared by the five `clap`-family crates, so the current 1.96 floor has eleven minors of headroom and this trigger is remote); or the owner ruling on OVERRIDE (OV-01).
 
 ## Parameters
 
@@ -567,9 +600,13 @@ How each bears on the decision. **msrv-policy** fixes the floor at `1.96` today
 `1.96.0` sits exactly on the floor with no headroom — beneath a dependency-free
 `build.rs`. **rust-edition** is satisfied without action: `clap 4.6.6` and
 `clap_complete 4.6.9` both declare `edition = "2024"` themselves.
-**license** is satisfied by the whole resolved tree — all 28 dependency crates
-are MIT-or-Apache-compatible (full list in the evidence log, section W), the
-only single-licensed one being `strsim` at MIT. **target-os-matrix** is the gate
+**license** is this repository's own declared expression and is unaffected by
+anything recommended here, because nothing recommended here is committed into
+this repository as source. Under the owner's 2026-09-12 ruling (Q7.B) no
+dependency's licence is evaluated against it, so this parameter imposes no
+constraint on crate selection and excluded no candidate; the expressions the
+registry returned for all 28 resolved crates are recorded as facts in the
+evidence log, section W. **target-os-matrix** is the gate
 this run did *not* discharge: nothing here was executed on `ubuntu-latest`, and
 that gap is recorded under `## Engines`.
 
@@ -602,17 +639,22 @@ resolution-only manifests, each with an empty `src/lib.rs`, which exist solely
 so that `cargo` will resolve the pins.
 
 **Two runs, kept separate.** Sections 01–12 below are the **revision-1** run of
-2026-09-10; rows E1–E9 are the **revision-2** run of 2026-09-12, which verifies
-the standard pin, the R1.3 rule text, every standard line this decision cites,
-the clap APIs the new acceptance criteria name, and what revision 2 preserved.
+2026-09-10; rows E1–E10 are the verification run first performed for revision 2
+on 2026-09-12 and **re-executed in full for revision 3 on 2026-09-13** against a
+rebuilt, self-contained evidence apparatus. It verifies the standard pin, the
+R1.3 rule text, every standard line this decision cites, the clap APIs the new
+acceptance criteria name, what this revision preserved, and — row E10 — that
+every snapshot it reads really came from the source it names.
 **Identifier note:** `E<n>` numbers an evidence row in this section and `C<n>` a
 check inside a saved script; `P<n>` numbers a *principle* in `## Decision`'s
 agreement table and `AC<n>` an acceptance criterion. The four sequences are
-independent — `E6` and `P6` are unrelated.
+independent — `E6` and `P6` are unrelated. The `C<n>` ids were renumbered in
+revision 3 when the scripts were rewritten; where a row names one, it names the
+revision-3 script's id.
 
 **Revision-1 output: `review/evidence/r60-cli-parsing-verification.log`** (1,142
 lines; the section numbers and letters below match the headings in that file).
-**Revision 2 did not re-run sections 01–12**, and does not restate their output
+**Neither later revision re-ran sections 01–12**, and neither restates their output
 as freshly reproduced. Those sections queried live endpoints (crates.io, the
 GitHub API, rustsec.org), so a rerun would legitimately differ in download
 counts, star counts, issue totals and advisory-database size. What is
@@ -642,88 +684,128 @@ re-description of the original run.
 | 11 | adopter manifests | `GET /repos/<o>/<r>/contents/Cargo.toml`, base64-decoded, for seven projects | the practice-evidence table in `## Decision`; `casey/just` carries this decision's exact feature set; `starship` carries `shadow-rs`; `ripgrep` carries `lexopt` and no clap |
 | 12 | MSRV of the whole resolved tree | `cargo metadata --format-version 1 --all-features` | 28 of the 29 packages declare a `rust-version`; the highest among the dependencies is **1.85**, shared by `clap`, `clap_builder`, `clap_complete`, `clap_derive` and `clap_lex`; `utf8parse` declares none |
 
-**Revision-2 run — the standard pin, R1.3, and the new criteria's APIs.**
-Script `review/evidence/r60-standard-pin-r2.sh`; full output
-`review/evidence/r60-standard-pin-r2.log`. Working directory: the script takes
-none — every path in it is absolute or `$HOME`-relative. Host: macOS 26.4
-`aarch64`, 2026-09-12. **Nothing was implemented**: no crate was scaffolded, no
-command surface, `build.rs`, `completion` command or test was written. The only
-file created outside the run directory is an unpacked copy of a published crate
-tarball under `/private/tmp/r60-r2-verify/`, used read-only.
+**Revision-3 run — the standard pin, R1.3, the new criteria's APIs, and the
+provenance of every input.** Three scripts, all under `review/evidence/`, run on
+macOS 26.4 `aarch64` on 2026-09-13. Each takes no argument and no working
+directory: each derives its own location from `${BASH_SOURCE[0]}` and reaches
+everything else relative to that, so the invocation is the same from any
+directory and the results do not depend on where the checkout lives.
 
-`bash review/evidence/r60-standard-pin-r2.sh` → **exit 0**, `CHECKS RUN: 66
-FAILURES: 0`. The script's own check ids (`C1`…`C18`) are given per row below.
+| Script | Log | Result |
+|---|---|---|
+| `r60-standard-pin-r3.sh` | `r60-standard-pin-r3.log` | exit `0`, `CHECKS RUN: 73   FAILURES: 0` |
+| `r60-preservation-diff-r3.sh` | `r60-preservation-diff-r3.log` | exit `0`, `CHECKS RUN: 66   FAILURES: 0` |
+| `r60-snapshot-provenance-r3.sh` | `r60-snapshot-provenance-r3.log` | exit `0`, `CHECKS RUN: 14   FAILURES: 0   UNREACHABLE: 0   UNVERIFIABLE-HERE: 2` |
 
-Three properties of this script, stated because each one is a claim an auditor
-will test. **It can fail**: check `C0` is a negative control that asserts a
-substring known to be absent, so the log opens with a deliberate `FAIL` line
-followed by `PASS C0 harness detected the mismatch`; if the harness ever stops
-detecting mismatches, `C0` exits `99` and says the results are meaningless. That
-control exists because the script's *first* draft put `check` on the right-hand
-side of a pipe, which runs it in a subshell, discards its increment of the
-failure counter, and printed `ALL CHECKS PASSED` while two checks had in fact
-failed — so the rewritten harness passes output as an argument and keeps the
-counter in the current shell. **It asserts on content, never on exit status
-alone**: every check names an expected substring, and an empty expectation is
-itself reported as a bug rather than passed. **It is reproducible byte-for-byte**:
-the script was re-run against the saved log immediately before this sentence was
-written and `diff` reported no difference. That holds because every source it
-reads is a git blob, a local file, or an unpacked tarball whose digest it
-verifies. It reads no rendered documentation page and no live counter, which
-is exactly why sections 01–12 above are *not* claimed as reproducible. It does
-make two network calls, and both are safe for reproducibility: `git fetch
-origin` on the standards repository, whose output is discarded and whose only
-use is to let the pin be compared against `origin/main` (check `C1b`), and a
-`curl` of two published crate tarballs whose digests are compared against the
-checksums crates.io records for those exact versions (`C17`, `C18`). An
-immutable artifact fetched by version and verified by hash is as stable as a
-local file; a rendered page reordering its own list is not.
+**Nothing was implemented**: no crate was scaffolded, no command surface,
+`build.rs`, `completion` command or test was written, and no script writes any
+file anywhere — all three emit only to stdout.
 
-**Both revision-2 logs are reproducible byte-for-byte, and one volatile output
-was moved out of them to keep that true.** The preservation script also reports
-the *other* research items holding uncommitted work on this shared branch —
-required, because pre-existing changes that are not R60's are reported and never
-staged. That listing reads live repository state, and other sessions write to
-`research/p02-execution` while the script runs: an early rerun did in fact differ
-from its predecessor by one line, a lock directory another session had just
-created. Rather than describe the log as reproducible "apart from a tail", the
-listing now goes to a sidecar,
-`review/evidence/r60-concurrent-branch-state-r2.txt`, which labels itself
-volatile. Both cited logs were then re-run and were byte-identical on every
-rerun performed. Nothing in this decision rests on the sidecar;
-every check that backs a claim reads only git blobs, the pinned files, and a
-tarball whose digest it verifies. As of this writing the sidecar lists
-uncommitted work under R18, R26, R49, R63, R64, R65 and R81 — none of it R60's,
-none of it touched here.
+**The revision-2 scripts and logs are retained and are not evidence for this
+revision.** `r60-standard-pin-r2.sh`, `r60-preservation-diff-r2.sh`, their two
+logs and the volatile sidecar `r60-concurrent-branch-state-r2.txt` stay in
+`review/evidence/` because `review/audit-codex.r2.md` cites them by name and
+deleting them would erase the record the rejection rests on. They are **known not
+to rerun to their saved output from the committed state** — that is the finding
+that produced this revision, reproduced by the auditor at exit `1` and exit `2`
+— and no row below cites them. The sidecar is no longer produced by anything;
+nothing in this decision ever rested on it.
+
+**Why the apparatus was rebuilt, since that is this revision's whole subject.**
+Revision 2's two scripts produced the same *content* answers, but they could not
+be rerun once revision 2 was committed. Four distinct mechanisms did that, and
+each one is removed rather than worked around:
+
+| # | What revision 2 depended on | Why it failed after the commit | What revision 3 does instead |
+|---|---|---|---|
+| 1 | `HEAD:…/DECISION.md` resolving to the revision-1 blob `5ae06c37…` | at revision 2's commit that path resolves to the revision-2 blob, so the check inverted | the revision-1 and revision-2 texts are committed as `snapshots/r60-decision-r1.md` and `snapshots/r60-decision-r2.md` and identified by the sha256 each audit report names |
+| 2 | `git status --porcelain` reporting exactly six dirty paths, one of them `DECISION.md` | committing makes the tree clean, so both counts go to zero | "the revision landed" is the r1→r3 and r2→r3 diffs being non-empty; "nothing was scaffolded" is a `find` over the committed run directory |
+| 3 | `$HOME/c/cli-standards`, `$HOME/c/py-launch-blueprint`, `$HOME/c/ts-launch-blueprint` | those clones exist only on the authoring machine | the exact bytes read are committed under `review/evidence/snapshots/`, each verified against `snapshots/MANIFEST.txt` before it is read |
+| 4 | an unpacked crate tarball under `/private/tmp/r60-r2-verify/` | a scratch directory that no longer exists; the script's own fallback branch counted a failure | the two source files read out of those tarballs are committed as snapshots, and the tarballs are re-downloaded and re-extracted by the provenance script |
+
+**What each script guarantees, stated as the claims an auditor will test.**
+
+**They can fail.** Every script opens with a `C0` negative control asserting a
+substring known to be absent, so each log opens with a deliberate `FAIL` line
+followed by `PASS C0 …`; if a harness ever stops detecting mismatches it exits
+`99` and says the results are meaningless. Counters are then reset, which is why
+the deliberate failure is not in the totals. That control exists because an early
+draft put `check` on the right-hand side of a pipe — a subshell, whose increment
+of the failure counter is lost — and printed `ALL CHECKS PASSED` while two checks
+had in fact failed.
+
+**They assert on content, never on exit status alone.** Every check names an
+expected substring, and an empty expectation is itself reported as a bug rather
+than passed. Numeric checks compare a labelled string (`count=0`, not `0`), so a
+count of `10` cannot satisfy an expectation of `0` by substring match — a latent
+defect in revision 2's harness, found and fixed here.
+
+**The two offline logs are reproducible byte-for-byte, and that was demonstrated
+from the committed state rather than from the working tree.** `r60-standard-pin-r3.sh`
+and `r60-preservation-diff-r3.sh` read only files committed in this repository:
+the snapshots under `review/evidence/snapshots/`, `docs/port/PARAMETERS.md`, the
+published R67 topic, this run's audit reports, and `review/DECISION.md` itself.
+They make no network call and need no git repository. Both were rerun against an
+extraction of the exact tree this revision commits — `git archive` of that tree
+into an empty directory outside the repository, which carries no `.git` and no
+working-tree state — and `diff` against the two logs cited here reported no
+difference. The transcript of that extraction and diff is recorded in this
+revision's commit message, so the claim can be checked without rerunning
+anything. Two properties make it possible and are worth naming, because losing
+either would silently break it: no script prints an absolute path, and `shasum`
+is always fed on **stdin** so it prints `-` instead of a file name.
+
+**The provenance log is reproducible only while the network is reachable, and
+that is said rather than hidden.** `r60-snapshot-provenance-r3.sh` re-downloads
+every pinned source and re-derives each snapshot's sha256 from it. It counts three
+outcomes separately — `FAILURES` (the source was reached and disagrees),
+`UNREACHABLE` (it could not be fetched, so nothing is proved either way) and
+`UNVERIFIABLE-HERE` (there is no public remote at all) — and exits on `FAILURES`
+alone, so an offline rerun is visibly incomplete instead of quietly green. Its two
+`UNVERIFIABLE-HERE` entries are the two TypeScript source files: `smorinlabs/ts-launch-blueprint`
+is a private repository, so no rerun outside the owning organisation can refetch
+them. That is not asserted either: the script probes
+`https://raw.githubusercontent.com/smorinlabs/ts-launch-blueprint/cb1cbcb2…/<path>`
+anonymously and requires **HTTP 404**, which is what makes "no public remote" a
+checked fact. For those two files the committed snapshot is the evidence of
+record. Everything else re-derived exactly: the standard from a commit-addressed
+`raw.githubusercontent.com` URL, the two `clap` sources from crates.io tarballs
+whose checksums crates.io itself records, the two Python sources from a
+commit-addressed URL, and the two decision texts from this repository's own git
+objects.
+
+Sections 01–12 above remain **not** claimed as reproducible, for the unchanged
+reason: they queried live counters.
 
 | Row | What it checks | Command | Result |
 |---|---|---|---|
-| E1 | the standard's pinned revision, locally **and against the published remote** (`C1`, `C1b`, `C2`–`C4`) | `git log -1 -- cli-design-standard.md`; `git fetch origin` then `git log -1 origin/main -- <file>`, `git merge-base --is-ancestor <commit> origin/main` and `git rev-parse origin/main:<file>`; `git rev-parse <commit>:<file>`; `git cat-file blob <blob> \| shasum -a 256`; `shasum -a 256` on the working-tree file | the file's newest commit is `fb30a591…` (`docs: resolve PR #1 review findings (v1.4.14)`, 2026-06-28); blob `f9de0437…`; sha256 `9fb05d3d…`; **the working-tree file read on 2026-09-10 hashes identically to the pinned blob**, so the reads behind this decision and the pinned text are the same bytes. After fetching, `origin/main` names that same commit as its newest for this path, the commit is reachable from `origin/main`, and `origin/main:<file>` is that same blob — so "newest" is a claim about published history, and the resolution recipe works from a fresh clone rather than only from this machine's. Without `C1b` both of those would have been asserted from a local clone alone |
-| E2 | the document declares version 1.4.14 (`C5`) | `git cat-file blob f9de0437… \| sed -n '1,12p'` | `| **Version** | 1.4.14 |`, `| **Status** | Active — canonical |`, `| **Last updated** | 2026-06-28 |` |
-| E3 | R1.3's full text, the rule this revision satisfies (`C6`) | the same blob, `sed -n '133,137p'` | `**R1.3 — Noun number. (MUST)**`; "Resource nouns **MUST** be **singular** in their canonical form"; "The plural form **MAY** be accepted as an undocumented alias but **MUST NOT** appear in help or docs"; "`list` returning many is not a reason to pluralize"; and the ❌ example "documenting `acme widgets list` as the primary form" |
-| E4 | R1.3 is org-locked, and the Decision Log line numbers (`C7`, `C8`) | the same blob, `sed -n '61p;63p;65p;67p;69p;70p'` | row 5 `| 5 | Noun number | Singular canonical; plural accepted as undocumented alias |` is at **`:67`**, marked `org-locked`; the table header is at `:61` and row *N* at line 62 + *N*, so row 1 is `:63`, row 3 `:65`, row 7 `:69`, and **`:70` is row 8, Exit codes** — R67's row. **This corrected three citations**: revision 1 cited `:70` for rows 1, 3 and 7, having copied R67's line for its own row 8 |
-| E5 | every other standard line this decision cites (`C9`–`C12`) | the same blob, one `sed -n '<n>p'` per citation | all resolve: `:50` the SHOULD-waiver clause, `:124` R1.1, `:129` R1.2, `:146` R1.6, `:229` R3.10, `:270` R4.5, `:275` R4.6, `:321` R5.4, `:579` Appendix A criterion 1, `:586` the noun-verb counter-example; R1.3 is cross-referenced by R2.2 at `:177` and by the Appendix C checklist at `:635` ("R1.3 singular nouns"); `origin` is `github.com/smorinlabs/cli-standards` |
-| E6 | whether R67 pinned the standard (`C15`) | `grep` over R67's `DECISION.md` and its 18 evidence logs | **R67's body: no pin** — zero citations carrying a version, commit, blob or hash, across its two citations of the file (`:78`, `:464`), and zero occurrences of `1.4.14`. **R67's audit trail: the version, but not a pin** — its revision-4 audit log records at `:6` "Standard read: `…/cli-design-standard.md`, version 1.4.14"; the only other mention among the evidence logs is one quoted line of the standard's own changelog. Asserted as counts (`0`, `2`, `2`, `1`), so an absence cannot be confused with a failed search |
-| E7 | that both source ports document the plural noun (`C13`, `C16`) | `git show` through each port's pin | py `cli/commands/projects.py:37` is `@click.group(name="projects", cls=SuggestingGroup)`; py `cli/commands/__init__.py` is `COMMAND_GROUPS = [projects_group, config_group]`; ts `src/commands/projects.ts:70` is `.command('projects', { isDefault: true })`, looked up by that name at ts `src/router.ts:234`. This is the recorded practice R1.3 overrides |
-| E8 | the clap 4.6.6 APIs AC9/AC10 name (`C17`) | `curl` the published `clap_builder-4.6.6.crate`, check its sha256 against crates.io's recorded checksum, unpack, `sed` each cited line | tarball sha256 `7b48fea5a88e9ae728a2dcbedbfc0e730f7d60da42e1cb049a83c9fb8b789889` **equals the checksum crates.io records for 4.6.6** (`GET /api/v1/crates/clap_builder/4.6.6`, which also confirms `rust_version: 1.85`). All eight methods exist on `Command` at the cited lines: `get_subcommands` `:3932`, `get_name` `:3756`, `is_hide_set` `:4242`, `render_long_help` `:1037`, `get_visible_aliases` `:3847`, `get_all_aliases` `:3874`, `alias` `:2691`, `visible_alias` `:2893`. And the behavioral half: `alias`'s own doc says "Aliases defined with this method are *hidden* from the help message" (`:2664-2666`) while `visible_alias`'s says its alias "is *visible* from the help message" (`:2865-2868`) — which is what makes `#[command(alias = …)]` the R1.3-conformant spelling and `visible_alias` a violation. **The derive forwarding is verified too** (`C18`), since the R1.3 repair rests on it: `clap_derive-4.6.4` (tarball sha256 `d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061`, equal to crates.io's recorded checksum) has no `MagicAttrName::Alias` variant and no mention of `alias` in `src/attr.rs`, so the name falls to the generic branch `_ => self.methods.push(Method::new(name, arg))` (`src/item.rs:337-345`) and a `Method` renders as `quote!( .#name(#args) )` (`:1281-1289`) — emitting `.alias("projects")`, the hidden method |
-| E9 | that revision 2 preserved what the audit did not challenge (`review/evidence/r60-preservation-diff-r2.sh`, log `review/evidence/r60-preservation-diff-r2.log`; its own `C1`–`C6`) | recover blob `5ae06c37…` and confirm its sha256 is the rejected draft's; for each preserved claim, require every revision-1 line carrying it to still be present verbatim; re-read the four `assumes` values out of `docs/port/PARAMETERS.md`; `git status` scoped to this run directory; enumerate every differing line | **exit 0**, `CHECKS RUN: 45 FAILURES: 0`, with **20 preservation targets all verbatim**: the `clap 4.6.6` pin and its four features, the `clap_complete 4.6.9` pin, `strsim 0.11.1` transitive-only, the dependency-free `build.rs`, `clap_complete`'s `default = []` and its `clap >= 4.5.20` floor, "Locking 28 packages to latest Rust 1.96 compatible versions", the `cargo generate-lockfile`/`cargo tree` row, the `cargo audit` **exit 0** row with its 1,243 advisories and 29 dependencies, all four `assumes` lines, OV-01's R4.6 quotation and its options b and c and its owner-ruling sentence, architectures A and E, the `clap` fitness-gate row, and the `casey/just` composition evidence. The four `assumes` values still match `docs/port/PARAMETERS.md` byte-for-byte. Structurally: four H2 sections in the required order, no `## Supersedes`, exactly one override declared and no second one, and no affirmative claim that the owner granted the waiver (eight phrasings searched, negated forms excluded). **38 revision-1 lines were replaced or removed, and the log enumerates all 38**; the count of added lines is recorded in the log rather than here, because quoting it here would change it. The test is a subset test by design — revision 2's own prose quotes several preserved strings when explaining what it preserved, which would make a set-equality test report a change that did not occur; the claim being checked is that no revision-1 line was altered, so each original line is required to still occur verbatim |
+| E1 | that the text every `:<line>` citation resolves against is the pinned revision (`C1`, `C2` of `r60-standard-pin-r3.sh`) | verify each snapshot's sha256 against `snapshots/MANIFEST.txt`, then hash `snapshots/cli-design-standard-1.4.14.md` | all 10 snapshots match their recorded hashes, MANIFEST records exactly the files present and no others, and the standard snapshot's sha256 is `9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f` — **the sha256 of blob `f9de0437…` at commit `fb30a591…`**, which is how the committed text and the pinned blob are established to be the same bytes without needing a clone of the standards repository. The snapshot is 773 lines, asserted, so an out-of-range `:<line>` citation cannot pass silently. Its recorded origin is the commit-addressed URL `raw.githubusercontent.com/smorinlabs/cli-standards/fb30a591…/cli-design-standard.md`. That the pin is still the *newest* published commit is a live-history claim and is row E10 |
+| E2 | the document declares version 1.4.14 (`C3`) | `sed -n '1,12p'` on the pinned text | `| **Version** | 1.4.14 |`, `| **Status** | Active — canonical |`, `| **Last updated** | 2026-06-28 |` |
+| E3 | R1.3's full text, the rule revision 2 repaired the decision against (`C4`) | the same pinned text, `sed -n '133,137p'` | `**R1.3 — Noun number. (MUST)**`; "Resource nouns **MUST** be **singular** in their canonical form"; "The plural form **MAY** be accepted as an undocumented alias but **MUST NOT** appear in help or docs"; "`list` returning many is not a reason to pluralize"; and the ❌ example "documenting `acme widgets list` as the primary form" |
+| E4 | R1.3 is org-locked, and the Decision Log line numbers (`C5`, `C6`) | the same pinned text, `sed -n '61p;63p;65p;67p;69p;70p'` | row 5 `| 5 | Noun number | Singular canonical; plural accepted as undocumented alias |` is at **`:67`**, marked `org-locked`; the table header is at `:61` and row *N* at line 62 + *N*, so row 1 is `:63`, row 3 `:65`, row 7 `:69`, and **`:70` is row 8, Exit codes** — R67's row. **This corrected three citations**: revision 1 cited `:70` for rows 1, 3 and 7, having copied R67's line for its own row 8 |
+| E5 | every other standard line this decision cites (`C7`–`C9`) | the same pinned text, one `sed -n '<n>p'` per citation | all resolve: `:50` the SHOULD-waiver clause, `:124` R1.1, `:129` R1.2, `:146` R1.6, `:229` R3.10, `:270` R4.5, `:275` R4.6, `:321` R5.4, `:579` Appendix A criterion 1, `:586` the noun-verb counter-example; R1.3 is cross-referenced by R2.2 at `:177` and by the Appendix C checklist at `:635` ("R1.3 singular nouns") |
+| E6 | whether R67 pinned the standard (`C13`) | `grep` over the published R67 topic's `DECISION.md` and its 18 evidence logs, reached by a path relative to the script | **R67's body: no pin** — zero citations carrying a version, commit, blob or hash, across its two citations of the file (`:78`, `:464`), and zero occurrences of `1.4.14`. **R67's audit trail: the version, but not a pin** — its revision-4 audit log records at `:6` "Standard read: `…/cli-design-standard.md`, version 1.4.14"; the only other mention among the evidence logs is one quoted line of the standard's own changelog. Asserted as labelled counts (`count=0`, `count=2`, `count=2`, `count=1`), so an absence cannot be confused with a failed search and a two-digit count cannot satisfy a one-digit expectation. The presence of R67's decision file is itself asserted first, so a moved file would fail rather than read as four zeroes |
+| E7 | that both source ports document the plural noun (`C10`) | read the four committed port snapshots, taken through each port's pin | py `cli/commands/projects.py:37` is `@click.group(name="projects", cls=SuggestingGroup)`; py `cli/commands/__init__.py` is `COMMAND_GROUPS = [projects_group, config_group]`; ts `src/commands/projects.ts:70` is `.command('projects', { isDefault: true })`, looked up by that name at ts `src/router.ts:234`. This is the recorded practice R1.3 overrides |
+| E8 | the clap 4.6.6 APIs AC9/AC10 name (`C11`, `C12`) | read `snapshots/clap_builder-4.6.6-src-builder-command.rs.txt` and the two `clap_derive-4.6.4` snapshots, each hash-verified against MANIFEST, which records the tarball each came from and that tarball's checksum | the `clap_builder` snapshot's recorded origin is `clap_builder-4.6.6.crate`, sha256 `7b48fea5a88e9ae728a2dcbedbfc0e730f7d60da42e1cb049a83c9fb8b789889` — **the checksum crates.io records for 4.6.6** (`GET /api/v1/crates/clap_builder/4.6.6`, retrieved 2026-09-12 and re-retrieved 2026-09-13; the same response gives `rust_version: 1.85`). All eight methods exist on `Command` at the cited lines: `get_subcommands` `:3932`, `get_name` `:3756`, `is_hide_set` `:4242`, `render_long_help` `:1037`, `get_visible_aliases` `:3847`, `get_all_aliases` `:3874`, `alias` `:2691`, `visible_alias` `:2893`. And the behavioral half: `alias`'s own doc says "Aliases defined with this method are *hidden* from the help message" (`:2664-2666`) while `visible_alias`'s says its alias "is *visible* from the help message" (`:2865-2868`) — which is what makes `#[command(alias = …)]` the R1.3-conformant spelling and `visible_alias` a violation. **The derive forwarding is verified too** (`C12`), since the R1.3 repair rests on it: `clap_derive-4.6.4` (tarball sha256 `d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061`, likewise the checksum crates.io records) has no `MagicAttrName::Alias` variant and no mention of `alias` in `src/attr.rs`, so the name falls to the generic branch `_ => self.methods.push(Method::new(name, arg))` (`src/item.rs:337-345`) and a `Method` renders as `quote!( .#name(#args) )` (`:1281-1289`) — emitting `.alias("projects")`, the hidden method |
+| E9 | that this revision preserved what the audits did not challenge (`review/evidence/r60-preservation-diff-r3.sh`, log `review/evidence/r60-preservation-diff-r3.log`; its own `C1`–`C7`) | confirm the committed revision-1 and revision-2 texts hash to the values the two audit reports themselves name; for each preserved claim, require every baseline line carrying it to still be present verbatim; re-read the four `assumes` values out of `docs/port/PARAMETERS.md`; `find` the run directory for Rust or Cargo artifacts; enumerate every differing line against both baselines | **exit 0**, `CHECKS RUN: 66 FAILURES: 0`, with **20 revision-1 preservation targets all verbatim**: the `clap 4.6.6` pin and its four features, the `clap_complete 4.6.9` pin, `strsim 0.11.1` transitive-only, the dependency-free `build.rs`, `clap_complete`'s `default = []` and its `clap >= 4.5.20` floor, "Locking 28 packages to latest Rust 1.96 compatible versions", the `cargo generate-lockfile`/`cargo tree` row, the `cargo audit` **exit 0** row with its 1,243 advisories and 29 dependencies, all four `assumes` lines, OV-01's R4.6 quotation and its options b and c and its owner-ruling sentence, architectures A and E, the `clap` fitness-gate data row, and the `casey/just` composition evidence — **plus 3 revision-2 targets**: OV-01's dated not-granted status line, R1.3's rule text as revision 2 quoted it, and the standard-pin row carrying the content hash. The four `assumes` values still match `docs/port/PARAMETERS.md` byte-for-byte and there is no `owns` line, as the prompt's empty `- owns:` requires. Structurally: four H2 sections in the required order, no `## Supersedes`, exactly one override declared and no second one, no affirmative claim that the owner granted the waiver (eight phrasings searched, negated forms excluded), the title recording revision 3, and gate 1 recorded as `inapplicable` with the ruling as its reason while the gate's row is kept in the table rather than removed. `find` reports zero `.rs`, `Cargo.toml` or `Cargo.lock` files and zero `src/` or `target/` directories anywhere in this run directory, and each of the nine evidence files this decision cites is asserted present. Both diffs are enumerated in full in the log; **their line counts are deliberately not quoted here, because quoting a count of the decision's own changed lines would change it** |
+| E10 | that every committed snapshot really is what MANIFEST.txt says, and that the pin is still the newest published commit (`review/evidence/r60-snapshot-provenance-r3.sh`, log `review/evidence/r60-snapshot-provenance-r3.log`; its `C1`, `C2`) | re-download each pinned source and re-derive the snapshot's sha256 from it; for a crate, verify the tarball against the checksum crates.io records before extracting; for a private origin, probe anonymously and require HTTP 404; then `GET https://api.github.com/repos/smorinlabs/cli-standards/commits?path=cli-design-standard.md&per_page=1` | **exit 0**, `CHECKS RUN: 14 FAILURES: 0 UNREACHABLE: 0 UNVERIFIABLE-HERE: 2`. The standard re-fetched from its commit-addressed URL hashes to `9fb05d3d…`; both `clap` tarballs hash to the checksums crates.io records and the three extracted files hash to their snapshots; both Python sources re-fetched from their commit-addressed URLs match; both decision baselines match this repository's own git objects. The newest published commit touching `cli-design-standard.md` is still `fb30a591c267a7ec1130ba4cda679eaee494b9d7` — this is the live half of the `re-verify` trigger, and it is the check that will fail first when the standard moves. The 2 `UNVERIFIABLE-HERE` entries are the two TypeScript snapshots: `smorinlabs/ts-launch-blueprint` returns **HTTP 404** to an anonymous request, which the script asserts rather than assumes, so "there is no public remote to refetch from" is a checked fact and the committed snapshot is the evidence of record |
 
 **Headline command and exit status.** `cargo generate-lockfile` on the
 recommended pins at `rust-version = "1.96"` → **exit 0**, followed by
 `cargo audit` on the resulting lockfile → **exit 0** (revision-1 run, and both
 independently reproduced at exit 0 by the revision-1 auditor as described
-above). For revision 2: `bash review/evidence/r60-standard-pin-r2.sh` → **exit
-0**, 66 checks, 0 failures.
+above). For revision 3: `bash review/evidence/r60-standard-pin-r3.sh` → **exit
+0**, 73 checks, 0 failures.
 
 **What these runs do not establish**, stated so they are not read as more:
-neither built or ran any CLI; neither executed any acceptance criterion; neither
-ran a benchmark; neither ran anything on `ubuntu-latest`; and neither audited any
-crate's `unsafe` usage. Each of those is carried to `## Engines`. Revision 2
-narrows none of that list: it verifies that the standard says what this decision
-says it says, that its cited lines resolve, and that the clap methods AC9 and
-AC10 name exist with the documented alias visibility — **not** that any
-criterion passes. In particular, AC9 and AC10 are new and unexecuted, exactly as
-AC1–AC8 are.
+none of them built or ran any CLI; none executed any acceptance criterion; none
+ran a benchmark; none ran anything on `ubuntu-latest`; and none audited any
+crate's `unsafe` usage. Each of those is carried to `## Engines`. Rows E1–E10
+narrow none of that list: they verify that the standard says what this decision
+says it says, that its cited lines resolve, that the clap methods AC9 and
+AC10 name exist with the documented alias visibility, and that the evidence can
+be rerun from the committed state — **not** that any criterion passes. In
+particular, AC9 and AC10 are unexecuted, exactly as AC1–AC8 are.
 
 ## Engines
 
@@ -882,8 +964,10 @@ from ts's source. Editing either would have falsified a quotation.
 
 **F2 — the standard was not version-pinned.** Repaired by "THE STANDARD PIN" in
 `## Decision`, which fixes version 1.4.14, commit `fb30a591…`, blob
-`f9de0437…` and content sha256 `9fb05d3d…`, states the two commands that
-resolve it, and records that R67's body pins nothing while R67's revision-4
+`f9de0437…` and content sha256 `9fb05d3d…`, states the three independent recipes
+that resolve it (the committed snapshot, the commit-addressed
+`raw.githubusercontent.com` URL, and `git cat-file` in any clone), and records
+that R67's body pins nothing while R67's revision-4
 audit log independently attests the same version 1.4.14. The pin is referenced
 from the status paragraph, from OV-01, from the R5.4 citation in this section,
 and from the `re-verify` line, which now triggers on the blob id changing.
@@ -903,7 +987,9 @@ and feature set (`clap 4.6.6` with `derive`/`env`/`string`/`wrap_help`,
 `clap_complete 4.6.9`, the dependency-free `build.rs`, `strsim 0.11.1`
 transitive only); the lockfile generation and advisory audit that both exited
 `0`; the four fixed `assumes` parameter lines, byte-for-byte; the five
-architecture alternatives and the fitness-gate table; the seven essential
+architecture alternatives and every data row of the fitness-gate table (its
+header cell is the one part that changed, and only to mark gate 1 inapplicable —
+see the revision-3 note below); the seven essential
 behaviors; the practice-evidence table; OV-01's argument, its three options and
 its pending status; the five engine disagreements; and U1–U7 apart from U5's
 criterion range. **OV-01 remains the only override** and remains ungranted: the
@@ -912,3 +998,46 @@ owner has not answered the waiver request, and revision 2 adds an explicit
 name, so no reading of it implies approval. Conformance to R1.3 is deliberately
 **not** recorded as a second override, because a non-waivable `MUST` is a
 constraint rather than a choice — the same treatment F269 already receives.
+
+**Audit of revision 2, and what revision 3 changed.** The revision-2 draft
+(sha256 `18769c3a522c94ee59c5635a338828781efa9c6bc8aa4e13ac9443a5773c5c2c`) was
+**rejected** by `audit-codex-2026-09-05T183002Z-09f93cfc507c-r2` (gpt-5.6-terra;
+report at `review/audit-codex.r2.md`) on a single blocker: **the evidence scripts
+were not rerunnable once the revision was committed**, which contradicted the
+decision's own byte-for-byte reproducibility claim. The auditor reported every
+substantive content check passing and both negative controls behaving correctly;
+what failed were lifecycle assertions that could only hold in an uncommitted
+working tree. **No finding touched the recommendation, and the recommendation
+does not move.** The four mechanisms behind the failure are named and removed one
+by one in the table under `## Empirical check`; the two offline scripts now read
+only committed files, and the rerun was demonstrated from a `git archive`
+extraction of this revision's own commit rather than asserted.
+
+**Corrected while rebuilding the scripts, although the auditor did not raise
+it:** revision 2's harness compared counts as bare substrings, so an expectation
+of `0` was satisfied by an actual count of `10`. Six checks were exposed to that.
+Every numeric comparison in the revision-3 scripts is now a labelled string
+(`count=0`), which cannot match that way. No revision-2 result changes as a
+result — the counts were genuinely `0`, `1` and `2` — but the checks were weaker
+than they read.
+
+**Also changed in revision 3, on the owner's licence ruling of 2026-09-12 (Q4 as
+superseded by Q7.B):** fitness gate 1 is struck from every item's evaluation, so
+it is recorded here as `inapplicable — owner ruling 2026-09-12 (Q7.B): licence
+compatibility is not evaluated for any dependency or tool`, with the reason, in
+the two places this decision evaluated a licence against a criterion: the
+fitness-gate table's gate-1 column header, which now marks the gate inapplicable
+and points at the qualification that carries the ruling, and the `## Parameters`
+prose for `license`, which had said the parameter was "satisfied by the whole
+resolved tree". **Nothing else moves, because nothing else rested on it**: all
+four gate exclusions are gate-2 exclusions for a missing `rust-version`, and
+`argh`'s `BSD-3-Clause` excluded nothing before the ruling and excludes nothing
+after it. The licence values recorded in the table's cells, in `## Empirical
+check` §01 and §08 and in the evidence log's section W are left byte-identical
+and are re-labelled in prose as facts the registry returned rather than gate
+verdicts — deliberately, because three of those lines are revision-1
+preservation targets whose alteration would break the preservation claim this
+decision rests on, and because deleting an observation is not what the ruling
+asks for. The `- assumes license = MIT OR Apache-2.0` line is unchanged: it is
+the repository's own declared expression, which the ruling explicitly leaves
+standing, and it must in any case match `docs/port/PARAMETERS.md` byte-for-byte.
