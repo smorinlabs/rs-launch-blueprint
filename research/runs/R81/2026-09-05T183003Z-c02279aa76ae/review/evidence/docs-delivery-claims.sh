@@ -12,7 +12,7 @@
 set -u
 set -o pipefail
 
-UA='rs-launch-blueprint-research/1.0 (steve@conceptm.com)'
+UA='rs-launch-blueprint-research/1.0 (https://github.com/smorinlabs/rs-launch-blueprint)'
 REPO_ROOT=$(cd "$(dirname "$0")/../../../../../.." && pwd)
 EV=$(cd "$(dirname "$0")" && pwd)
 SNAP="$EV/snapshots"
@@ -141,7 +141,7 @@ assert_has "CI guidance: --no-default-features drops serve" "$K" "Disables featu
 
 # ---------------------------------------------------------------- check 6
 hdr "check 6 — GitHub's own renderer on the dialect (POST /markdown, mode=gfm)"
-printf '%s\n' '> [!NOTE]' '> hello' '' '# Head { #id .cls }' '' 'term' ': definition' '' '[link](./other.md)' > "$SNAP/.dialect-probe.md"
+printf '%s\n' '> [!NOTE]' '> hello' '' '# Head { #id .cls }' '' 'term' ': definition' '' '[link](./other.md)' '' '```mermaid' 'graph TD; A-->B;' '```' > "$SNAP/.dialect-probe.md"
 python3 - "$SNAP/.dialect-probe.md" > "$SNAP/.dialect-probe.json" <<'PY'
 import json,sys
 print(json.dumps({"text":open(sys.argv[1]).read(),"mode":"gfm"}))
@@ -335,27 +335,159 @@ assert "macos-latest (aarch64 macOS) asset count" "1" \
   "$(grep -c 'aarch64-apple-darwin' "$SNAP/.mdbook-v0.5.4-assets.txt")"
 
 # ---------------------------------------------------------------- check 12
-# Revision 2 answers four audit findings. This check proves mechanically which
-# parts of revision 1 it did NOT touch, by diffing the current DECISION.md
-# against the revision-1 git blob and asserting that each region the audit did
-# not challenge is byte-identical. The blob id is stable across later commits.
+# The fit judgement in revision 3 rests on the shape of the corpus F342 fixes.
+# Measure it rather than assert it, and measure it from an immutable source an
+# auditor can reach: the ts-launch-blueprint tree at the pinned commit the
+# programme reads that repository through. The GitHub tree API at a commit SHA
+# returns the same bytes forever, so this is reproducible off this machine.
+# Counted: blobs whose path matches ^docs/<category>/....md for the six
+# categories F342 fixes. Files directly under docs/ are NOT in the six-category
+# count and are reported separately.
+hdr "check 12 — the corpus F342 fixes, measured at the ts pin"
+TSPIN=cb1cbcb2e88b898e8c081b0abbfabc1630079c00
+gh api "repos/smorinlabs/ts-launch-blueprint/git/trees/$TSPIN?recursive=1" \
+  --jq '.tree[] | select(.type=="blob") | "\(.size)\t\(.path)"' > "$SNAP/.ts-tree.txt"
+assert "ts pinned tree fetch exit" "0" "$?"
+assert "ts pinned tree is non-empty" "yes" \
+  "$([ -s "$SNAP/.ts-tree.txt" ] && echo yes || echo no)"
+for c in about tasks tools tutorials reference contributing; do
+  n=$(grep -cE "	docs/$c/[^	]*\.md$" "$SNAP/.ts-tree.txt")
+  say "   docs/$c: $n .md files"
+done
+assert "ts docs/about .md count"        "3"  "$(grep -cE '	docs/about/[^	]*\.md$' "$SNAP/.ts-tree.txt")"
+assert "ts docs/tasks .md count"        "7"  "$(grep -cE '	docs/tasks/[^	]*\.md$' "$SNAP/.ts-tree.txt")"
+assert "ts docs/tools .md count"        "12" "$(grep -cE '	docs/tools/[^	]*\.md$' "$SNAP/.ts-tree.txt")"
+assert "ts docs/tutorials .md count"    "2"  "$(grep -cE '	docs/tutorials/[^	]*\.md$' "$SNAP/.ts-tree.txt")"
+assert "ts docs/reference .md count"    "5"  "$(grep -cE '	docs/reference/[^	]*\.md$' "$SNAP/.ts-tree.txt")"
+assert "ts docs/contributing .md count" "6"  "$(grep -cE '	docs/contributing/[^	]*\.md$' "$SNAP/.ts-tree.txt")"
+assert "six F342 categories: total .md files" "35" \
+  "$(grep -cE '	docs/(about|tasks|tools|tutorials|reference|contributing)/[^	]*\.md$' "$SNAP/.ts-tree.txt")"
+assert "six F342 categories: total bytes" "171225" \
+  "$(grep -E '	docs/(about|tasks|tools|tutorials|reference|contributing)/[^	]*\.md$' "$SNAP/.ts-tree.txt" | awk -F'\t' '{s+=$1} END{print s+0}')"
+assert "whole docs/ tree .md count" "48" \
+  "$(grep -cE '	docs/.*\.md$' "$SNAP/.ts-tree.txt")"
+# The six categories are nested one level below docs/, which is the structural
+# property the fit judgement turns on. A flat corpus would have 0 here.
+assert "the six categories are directories, not flat files" "6" \
+  "$(grep -oE '	docs/(about|tasks|tools|tutorials|reference|contributing)/' "$SNAP/.ts-tree.txt" | sort -u | wc -l | tr -d ' ')"
+
+# ---------------------------------------------------------------- check 13
+# Practice evidence for the fit judgement: among widely used Rust projects, the
+# ones that keep narrative in the README keep it FLAT at the repository root and
+# ship no book.toml; the one with a nested narrative tree ships mdBook. Every
+# repository is read at a pinned commit so the result is stable.
+hdr "check 13 — Rust practice splits on narrative structure, not on project kind"
+probe_repo() { # probe_repo <owner/repo> <sha>  -> "<size>\t<path>" per blob
+  gh api "repos/$1/git/trees/$2?recursive=1" --jq '.tree[] | select(.type=="blob") | "\(.size)\t\(.path)"' > "$SNAP/.tree-$(printf '%s' "$1" | tr '/' '_').txt"
+}
+for pair in "BurntSushi/ripgrep 3fce3b5bb0236da2df6d99672afb8a719642eca7" \
+            "clap-rs/clap 48ed7869b91addcfb485decf2b445c74bef00535" \
+            "serde-rs/serde a874a1b1bb1cc16cf5ee3b1b7b527af5705742bb" \
+            "ratatui/ratatui 982cd76bcabf3899bd35e7ad10f16553e95c84db" \
+            "cargo-generate/cargo-generate b1def653c6104a5e98024f56208b243dc6294de9"; do
+  set -- $pair
+  probe_repo "$1" "$2" || { say "FAIL  tree fetch $1"; FAILS=$((FAILS+1)); continue; }
+  f="$SNAP/.tree-$(printf '%s' "$1" | tr '/' '_').txt"
+  nd=$(grep -cE '\t(docs|doc|guide|book)/' "$f")
+  nb=$(grep -cE '(\t|/)book\.toml$' "$f")
+  nr=$(grep -cE '\t[^/]*\.md$' "$f")
+  say "   $1  narrative-dir-files=$nd  book.toml=$nb  root-md=$nr"
+  assert "$1 tree is non-empty" "yes" "$([ -s "$f" ] && echo yes || echo no)"
+done
+for r in BurntSushi_ripgrep clap-rs_clap serde-rs_serde ratatui_ratatui; do
+  assert "$r has no docs/doc/guide/book directory" "0" \
+    "$(grep -cE '\t(docs|doc|guide|book)/' "$SNAP/.tree-$r.txt")"
+  assert "$r ships no book.toml" "0" \
+    "$(grep -cE '(\t|/)book\.toml$' "$SNAP/.tree-$r.txt")"
+done
+assert "cargo-generate ships guide/book.toml" "1" "$(grep -cE '\tguide/book\.toml$' "$SNAP/.tree-cargo-generate_cargo-generate.txt")"
+assert "cargo-generate keeps an mdBook SUMMARY.md" "1" "$(grep -cE '\tguide/src/SUMMARY\.md$' "$SNAP/.tree-cargo-generate_cargo-generate.txt")"
+# ...and its guide is nested, not flat: subdirectories under guide/src.
+assert "cargo-generate guide/src has nested subdirectories" "2" \
+  "$(grep -oE '\tguide/src/[^/]+/' "$SNAP/.tree-cargo-generate_cargo-generate.txt" | sort -u | wc -l | tr -d ' ')"
+# ripgrep's root narrative is flat and substantial: the split is by structure,
+# not by byte count. Assert the three files exist at the root.
+# The decision quotes these byte figures, so they are gated, not just printed.
+assert "ripgrep GUIDE.md size"  "40895" "$(awk -F'\t' '$2=="GUIDE.md"{print $1}'  "$SNAP/.tree-BurntSushi_ripgrep.txt")"
+assert "ripgrep FAQ.md size"    "42243" "$(awk -F'\t' '$2=="FAQ.md"{print $1}'    "$SNAP/.tree-BurntSushi_ripgrep.txt")"
+assert "ripgrep README.md size" "21599" "$(awk -F'\t' '$2=="README.md"{print $1}' "$SNAP/.tree-BurntSushi_ripgrep.txt")"
+assert "clap README.md size"    "1827"  "$(awk -F'\t' '$2=="README.md"{print $1}' "$SNAP/.tree-clap-rs_clap.txt")"
+
+# ---------------------------------------------------------------- check 14
+# Two facts the fit judgement and the F343 forbidden set rest on:
+#   (a) mdBook's HTML renderer enables full-text search by default;
+#   (b) mdBook 0.5 documents no mermaid support, while GitHub documents diagram
+#       rendering for the same fence - so the fence renders differently on the
+#       two surfaces and is excluded by the GFM-intersect-mdBook rule.
+# (b) is asserted as a NEGATIVE on mdBook's own Markdown reference page: a
+# non-zero count there would mean the exclusion is wrong, so the assertion can
+# genuinely fail.
+hdr "check 14 — mdBook default search; mermaid renders differently on the two surfaces"
+R=$(fetch_norm format/configuration/renderers.html) || { say "FAIL fetch renderers.html"; FAILS=$((FAILS+1)); }
+assert_has "mdBook HTML search is on by default" "$R" "search feature enabled (on by default)"
+assert_has "mdBook documents [output.html.search] enable" "$R" "enable: Enables the search feature"
+# mdBook's Markdown reference must not mention mermaid at all.
+assert "mdBook Markdown reference mentions mermaid" "0" \
+  "$(grep -oic 'mermaid' "$SNAP/n_format_markdown.html" | tr -d ' ')"
+curl -sS -o "$SNAP/github-creating-diagrams.html" -L \
+  "https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams"
+assert "GitHub diagrams doc fetch exit" "0" "$?"
+python3 "$SNAP/.norm.py" "$SNAP/github-creating-diagrams.html" > "$SNAP/n_github-diagrams.txt"
+assert_has "GitHub documents mermaid-fence diagram rendering" "$SNAP/n_github-diagrams.txt" \
+  "add Mermaid syntax inside a fenced code block with the mermaid language identifier"
+# The REST renderer recognizes the language but returns a highlighted code block,
+# not a diagram. Recorded exactly, so the decision cannot overstate it.
+assert_has "POST /markdown marks the fence as source-mermaid" "$SNAP/dialect-probe.html" \
+  'class="highlight highlight-source-mermaid"'
+
+# ---------------------------------------------------------------- check 15
+# Zola is re-judged on fit alone now that gate 1 is inapplicable. The fit reason
+# is its shape: a general website generator with a required base_url and no
+# chapter/SUMMARY model. Read that from the maintainers' own configuration page.
+hdr "check 15 — Zola's site model (maintainers' configuration documentation)"
+curl -sS -o "$SNAP/zola-configuration.html" https://www.getzola.org/documentation/getting-started/configuration/
+assert "Zola configuration doc fetch exit" "0" "$?"
+python3 "$SNAP/.norm.py" "$SNAP/zola-configuration.html" > "$SNAP/n_zola-configuration.txt"
+assert_has "Zola: base_url is the only required variable" "$SNAP/n_zola-configuration.txt" \
+  "The base URL of the site; the only required configuration variable."
+assert "Zola configuration page mentions SUMMARY" "0" \
+  "$(grep -oc 'SUMMARY' "$SNAP/n_zola-configuration.txt" | tr -d ' ')"
+assert "Zola configuration page mentions chapters" "0" \
+  "$(grep -oic 'chapter' "$SNAP/n_zola-configuration.txt" | tr -d ' ')"
+
+# ---------------------------------------------------------------- recorded, not gated
+# The hosted Pages URL this decision names is DERIVED from the repository slug,
+# not observed. These two facts are printed and deliberately NOT asserted,
+# because the owner performing the one-time "Pages source = GitHub Actions"
+# setting flips both of them, and that is a change the decision welcomes rather
+# than a regression. The decision states them as of their retrieval date only.
+hdr "recorded (not gated) — upstream Pages state for smorinlabs/rs-launch-blueprint"
+say "has_pages: $(gh api repos/smorinlabs/rs-launch-blueprint --jq '.has_pages' 2>&1)"
+say "GET /pages http status: $(gh api repos/smorinlabs/rs-launch-blueprint/pages --silent >/dev/null 2>&1 && echo 200 || echo 'non-200 (404 expected while Pages is disabled)')"
+
+# ---------------------------------------------------------------- check 16
+# Revision 3 changes the recommendation. This check proves mechanically which
+# parts of revision 2 it did NOT touch, by diffing the current DECISION.md
+# against the revision-2 git blob and asserting that each region the licence
+# ruling does not reach is byte-identical. The blob id is stable across later
+# commits.
 #
 # PRECONDITION: this check reads the repository's own git history, so $REPO_ROOT
 # must be a git checkout (clone or worktree) whose object database contains blob
-# f098d011723244c43e9673ce9633ce562829681d. A rerun from a plain file copy of the
+# 9f2bcb9ddf5266bf4face766e98b7cd1be3616ad. A rerun from a plain file copy of the
 # tree with no .git cannot run it: the blob read fails, this check reports FAIL,
-# and the script exits 1. Checks 1-11 do not read git and are unaffected.
-hdr "check 12 — revision-2 diff against the revision-1 blob"
-R1BLOB=f098d011723244c43e9673ce9633ce562829681d
-git -C "$REPO_ROOT" cat-file blob "$R1BLOB" > "$SNAP/.decision-r1.md"
-assert "revision-1 blob read exit" "0" "$?"
-assert "revision-1 blob sha256" "204949689ccc0c3190c2479ca80d5c18f9fd9753931cffcf78706190d75ff21d" \
-  "$(shasum -a 256 "$SNAP/.decision-r1.md" | awk '{print $1}')"
-assert "revision-1 blob is non-empty" "yes" \
-  "$([ -s "$SNAP/.decision-r1.md" ] && echo yes || echo no)"
-python3 - "$SNAP/.decision-r1.md" "$EV/../DECISION.md" <<'PY'
+# and the script exits 1. Checks 1-15 do not read git and are unaffected.
+hdr "check 16 — revision-3 diff against the revision-2 blob"
+R2BLOB=9f2bcb9ddf5266bf4face766e98b7cd1be3616ad
+git -C "$REPO_ROOT" cat-file blob "$R2BLOB" > "$SNAP/.decision-r2.md"
+assert "revision-2 blob read exit" "0" "$?"
+assert "revision-2 blob sha256" "5ab7479c7d5e0485fa1c05aef9a894f4c36b56de3692bef89c17efc33a09404e" \
+  "$(shasum -a 256 "$SNAP/.decision-r2.md" | awk '{print $1}')"
+assert "revision-2 blob is non-empty" "yes" \
+  "$([ -s "$SNAP/.decision-r2.md" ] && echo yes || echo no)"
+python3 - "$SNAP/.decision-r2.md" "$EV/../DECISION.md" <<'PY'
 import sys
-r1=open(sys.argv[1]).read().splitlines(True); r2=open(sys.argv[2]).read().splitlines(True)
+r2=open(sys.argv[1]).read().splitlines(True); r3=open(sys.argv[2]).read().splitlines(True)
 def region(lines,start,ends):
     i=[k for k,l in enumerate(lines) if l.startswith(start)]
     if not i: return None
@@ -363,46 +495,82 @@ def region(lines,start,ends):
     for k in range(i+1,len(lines)):
         if any(lines[k].startswith(e) for e in ends): return lines[i:k]
     return None
-# Regions the audit did not challenge: asserted byte-identical to revision 1.
+# Regions the owner's licence ruling does not reach: asserted byte-identical to
+# revision 2. The licence-walk table and its reading are the substantive ones -
+# the ruling changes what is EVALUATED, not what the walk found.
 REGIONS=[
- ("engine report lines",        "- **codex** `raw/codex-",                      ["**Disagreement 1"]),
- ("disagreements 2, 3 and 4",   "**Disagreement 2 — Zola's standing.**",        ["**Unproven, with what would prove it.**"]),
- ("unproven entries 1-5",       "**Unproven, with what would prove it.**",      ["**What P03 must validate.**"]),
- ("what P03 must validate",     "**What P03 must validate.**",                  ["**Revision history.**","**Uncertainty.**"]),
- ("baseline-review F357 line",  "BASELINE-REVIEW: F357",                        ["","BASELINE-REVIEW: F358"]),
- ("principles and implementation", "### Principles and implementation",         ["re-verify:"]),
+ ("licence partition table",      "| Class | Count | Packages",                   ["\n"]),
+ ("what each class means",        "**What each class means for the fixed",        ["**None of these 218"]),
+ ("shared requirement -> what may vary",
+                                  "**Shared requirement, its source and agreement level.**",
+                                                                                  ["**Architectural alternatives compared"]),
+ ("the four fixed - assumes lines", "- assumes msrv-policy",                      ["\n"]),
+ ("check-8 snapshot rationale",   "**How check 8 avoids lying about a rate-limited sweep.**",
+                                                                                  ["**Nothing recommended was implemented.**"]),
+ ("revision-1 check-defect record", "Three assertions failed on revision 1's first run",
+                                                                                  ["| # | Check |"]),
+ ("disagreement 4 (figures)",     "**Disagreement 4 — the mdBook MSRV and figure set.**",
+                                                                                  ["**Unproven, with what would prove it.**"]),
+ ("unproven entry 3 (unsafe posture)", "3. **mdBook's `unsafe` posture**",        ["4. **Whether mdBook"]),
+ ("revision-1 history entry",     "- **Revision 1**, 2026-09-10, sha256",         ["- **Revision 2**"]),
 ]
 bad=0
 for name,start,ends in REGIONS:
-    a,b=region(r1,start,ends),region(r2,start,ends)
+    a,b=region(r2,start,ends),region(r3,start,ends)
     if a is None or b is None:
-        print("FAIL  region marker not found: %-34s r1=%s r2=%s"%(name,a is not None,b is not None)); bad+=1
+        print("FAIL  region marker not found: %-38s r2=%s r3=%s"%(name,a is not None,b is not None)); bad+=1
     elif a==b:
-        print("PASS  region byte-identical to revision 1: %-28s %d lines"%(name,len(a)))
+        print("PASS  region byte-identical to revision 2: %-34s %d lines"%(name,len(a)))
     else:
         print("FAIL  region CHANGED: %s"%name); bad+=1
         for l in a:
-            if l not in b: print("        r1-only: %s"%l.rstrip()[:120])
-# The two places in Engines and the baseline-review lines that finding F3 DOES
-# change: asserted to have changed, and to carry the branch-A delta reference.
-CHANGED_BY_F3=[
- ("Disagreement 1 closing sentence", "**Disagreement 1 — ship a generator",
-  ["**Disagreement 2"], "the complete branch-A delta enumerated in `## Decision`"),
- ("baseline-review F358 line",       "BASELINE-REVIEW: F358",
-  ["","### Principles"], "the complete branch-A delta as enumerated above"),
+            if l not in b: print("        r2-only: %s"%l.rstrip()[:120])
+# Regions the ruling DOES change: asserted to have changed, and to carry the
+# sentence that shows they were changed for the right reason.
+# Each entry: name, revision-2 start marker, revision-3 start marker, end markers,
+# and the sentence revision 3's version must carry. The gate-1 record opens with a
+# different line in each revision, so its two markers differ.
+CHANGED_BY_RULING=[
+ ("recommendation paragraph", "**Recommendation — ", "**Recommendation — ",
+  ["| Ledger row"], "GitHub Pages site published from the upstream repository."),
+ ("fitness gate 1 record", "**The licence condition", "**Fitness gate 1**",
+  ["What the ruling does not reach","**The dependency tree was walked"],
+  "inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool"),
+ ("disagreement 1 (the fit judgement)", "**Disagreement 1 — ship a generator",
+  "**Disagreement 1 — ship a generator", ["**Disagreement 2"],
+  "Settled for `opus`, on fit, in revision 3."),
+ ("baseline-review F357 line", "BASELINE-REVIEW: F357", "BASELINE-REVIEW: F357",
+  ["\n","BASELINE-REVIEW: F358"], "that condition is now met"),
+ ("baseline-review F358 line", "BASELINE-REVIEW: F358", "BASELINE-REVIEW: F358",
+  ["\n","### Principles"], "with mdBook shipped"),
 ]
-for name,start,ends,frag in CHANGED_BY_F3:
-    a,b=region(r1,start,ends),region(r2,start,ends)
+for name,s2,s3,ends,frag in CHANGED_BY_RULING:
+    a,b=region(r2,s2,ends),region(r3,s3,ends)
     if a is None or b is None:
-        print("FAIL  F3 region marker not found: %s"%name); bad+=1; continue
+        print("FAIL  ruling region marker not found: %-34s r2=%s r3=%s"%(name,a is not None,b is not None)); bad+=1; continue
     if a==b:
-        print("FAIL  F3 region NOT updated (still revision-1 text): %s"%name); bad+=1
+        print("FAIL  ruling region NOT updated (still revision-2 text): %s"%name); bad+=1
     elif frag in "".join(b):
-        print("PASS  F3 region updated and carries the delta reference: %s"%name)
+        print("PASS  ruling region updated and carries its marker sentence: %s"%name)
     else:
-        print("FAIL  F3 region changed but lacks the delta reference: %s"%name); bad+=1
-# Two sentences the audit explicitly said to preserve, asserted as literal text.
-PRESERVE=[
+        print("FAIL  ruling region changed but lacks its marker sentence: %s"%name); bad+=1
+# Text revision 3 must carry (the gate-1 record on ONE line, so a grep finds it
+# whole) and text it must NO LONGER carry (the branch structure).
+whole3="".join(r3)
+MUST_CARRY=[
+ ("gate 1 recorded on one line, verbatim",
+  "`inapplicable \u2014 owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool`"),
+ ("the theme/ prohibition survives the ruling",
+  "never commit a `theme/` directory"),
+ ("the Font Awesome attribution duty survives the ruling",
+  "attribution owed for icon\nassets in the built site"),
+ ("no surveyed licence reaches the template's own source",
+  "none of them\nreaches the template's own `MIT OR Apache-2.0` source"),
+ ("mermaid fences are forbidden by F343",
+  "` ```mermaid ` fences"),
+ # Carried forward from revision 2's check 12: the three sentences the revision-1
+ # audit required preserved. They are still gated here so the requirement does not
+ # silently lapse when the revision-diff check is re-targeted.
  ("no adopter of the exact Pages-action majors is claimed",
   "not the `v6.0.0`/`v5.0.0`/`v5.0.1`\n   majors `opus` recommends"),
  ("no local renderer matches the host's dialect",
@@ -410,25 +578,42 @@ PRESERVE=[
  ("identical rendering rests on inspection",
   "**Identical rendering on both surfaces is inspected, not verified.**"),
 ]
-whole="".join(r2)
-for name,frag in PRESERVE:
-    if frag in whole: print("PASS  preserved verbatim: %s"%name)
-    else: print("FAIL  preserved text MISSING: %s"%name); bad+=1
+for name,frag in MUST_CARRY:
+    if frag in whole3: print("PASS  present verbatim: %s"%name)
+    else: print("FAIL  required text MISSING: %s"%name); bad+=1
+# The branch structure must be gone from the decision itself. It is allowed, and
+# required, in the revision-history entries, which describe what revisions 1 and
+# 2 said - so the scan stops at "**Revision history.**".
+cut=whole3.index("**Revision history.**")
+live=whole3[:cut]
+MUST_NOT_CARRY=["branch A","branch B","Branch A","Branch B",
+                "branch-A","branch-B","two-branch"]
+for frag in MUST_NOT_CARRY:
+    n=live.count(frag)
+    if n==0: print("PASS  branch structure removed from the live decision: no %r"%frag)
+    else: print("FAIL  branch structure still in the live decision: %r x%d"%(frag,n)); bad+=1
+# ...and it must still be described in the history, or the history is lying.
+if "branch" in whole3[cut:]: print("PASS  revision history still describes the branch structure")
+else: print("FAIL  revision history no longer describes the branch structure"); bad+=1
+# There must be no `## Supersedes` section: R81 is not published.
+# A heading, not a mention: the decision legitimately says in prose that no such
+# section is present, so match a line that STARTS with the heading.
+if not any(l.startswith("## Supersedes") for l in r3): print("PASS  no ## Supersedes heading")
+else: print("FAIL  ## Supersedes heading present"); bad+=1
 import difflib
-hunks=[l for l in difflib.unified_diff(r1,r2,n=3) if l.startswith('@@')]
+hunks=[l for l in difflib.unified_diff(r2,r3,n=3) if l.startswith('@@')]
 print("whole-file unified-diff hunks: %d"%len(hunks))
 for h in hunks: print("      %s"%h.strip())
-# Every hunk must be one of the locations revision 2 set out to edit. The count is
-# gated so a later stray edit cannot slip in as an unremarked change.
-EXPECTED_HUNKS=11
+# The count is gated so a later stray edit cannot slip in as an unremarked change.
+EXPECTED_HUNKS=17
 if len(hunks)==EXPECTED_HUNKS: print("ASSERT hunk_count_is_%d=True"%EXPECTED_HUNKS)
 else: print("ASSERT hunk_count_is_%d=False actual=%d"%(EXPECTED_HUNKS,len(hunks))); bad+=1
 sys.exit(1 if bad else 0)
 PY
-assert "revision-2 untouched-region diff" "0" "$?"
+assert "revision-3 untouched-region diff" "0" "$?"
 
 hdr "result"
 say "failed assertions: $FAILS"
-rm -f "$SNAP"/.norm.py "$SNAP"/.cratelic.py "$SNAP"/.decision-r1.md
+rm -f "$SNAP"/.norm.py "$SNAP"/.cratelic.py "$SNAP"/.decision-r2.md
 [ "$FAILS" -eq 0 ] || exit 1
 exit 0

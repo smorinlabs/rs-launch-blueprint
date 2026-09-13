@@ -1,1 +1,1 @@
-{"text": "> [!NOTE]\n> hello\n\n# Head { #id .cls }\n\nterm\n: definition\n\n[link](./other.md)\n", "mode": "gfm"}
+{"text": "> [!NOTE]\n> hello\n\n# Head { #id .cls }\n\nterm\n: definition\n\n[link](./other.md)\n\n```mermaid\ngraph TD; A-->B;\n```\n", "mode": "gfm"}

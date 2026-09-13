@@ -195,6 +195,27 @@ grep -q 'command.arg("--features")' "$B/src/mission.rs" \
   && ok "bacon plumbs its --features flag into the cargo command" || bad "bacon --features plumbing not found"
 grep -q 'tokens.chain(&self.settings.additional_job_args)' "$B/src/mission.rs" \
   && ok "arguments after -- are appended to the job's command tokens" || bad "additional_job_args plumbing not found"
+# The recipe passes BOTH --headless and -j run-long. bacon's own --help says
+# headless mode runs "the default job", so whether -j still selects the job is
+# load-bearing: if it did not, the recipe would loop `cargo check` and never
+# start the server. Read the selection path rather than assume it.
+grep -q 'self.arg_job = Some(job.clone())' "$B/src/conf/settings.rs" \
+  && ok "the -j argument is stored as settings.arg_job (src/conf/settings.rs)" \
+  || bad "-j is not plumbed into settings"
+python3 - "$B/src/jobs/job_stack.rs" <<'PYX'
+import sys, re, pathlib
+src = pathlib.Path(sys.argv[1]).read_text()
+m = re.search(r"JobRef::Initial\s*=>\s*settings\s*\.arg_job\s*\.as_ref\(\)\s*\.unwrap_or\(&settings\.default_job\)", src)
+print("OK   the initial job is settings.arg_job, falling back to default_job (src/jobs/job_stack.rs)"
+      if m else "FAIL the initial-job selection does not read arg_job")
+sys.exit(0 if m else 1)
+PYX
+[ $? -eq 0 ] && pass=$((pass+1)) || { fail=$((fail+1)); }
+n_headless=$(grep -c 'headless' "$B/src/cli/mod.rs")
+eq "references to 'headless' in bacon src/cli/mod.rs (all of them screen setup, none job selection)" "4" "$n_headless"
+grep -q 'if !headless {' "$B/src/cli/mod.rs" \
+  && ok "headless only guards the alternate-screen setup around tui::app::run -- it does not touch job selection" \
+  || bad "the headless guard is not the expected screen-setup branch"
 
 echo; echo "### H. control -- an assertion that MUST report FAIL, proving these checks can fail"
 eq "deliberate control (expected to FAIL)" "0.0.0-not-a-real-version" "$(nv axum num)"

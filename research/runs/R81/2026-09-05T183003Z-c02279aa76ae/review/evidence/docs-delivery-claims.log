@@ -74,7 +74,8 @@ PASS  POST /markdown exit                                        0
 <h1>Head { #id .cls }</h1>
 <p>term<br>
 : definition</p>
-<p><a href="./other.md">link</a></p>PASS  alert renders as a GitHub callout                          present
+<p><a href="./other.md">link</a></p>
+<div class="highlight highlight-source-mermaid"><pre class="notranslate"><span class="pl-k">graph</span> <span class="pl-ent">TD</span><span class="pl-sg">;</span> <span class="pl-ent">A</span><span class="pl-k">--&gt;</span><span class="pl-ent">B</span><span class="pl-sg">;</span></pre></div>PASS  alert renders as a GitHub callout                          present
 PASS  heading attributes render literally                        present
 PASS  definition list renders literally                          present
 PASS  relative .md link href preserved                           present
@@ -187,35 +188,126 @@ PASS  NO aarch64-unknown-linux-gnu asset                         0
 PASS  ubuntu-latest (x86_64 Linux glibc) asset count             1
 PASS  macos-latest (aarch64 macOS) asset count                   1
 
-=== check 12 — revision-2 diff against the revision-1 blob ===
-PASS  revision-1 blob read exit                                  0
-PASS  revision-1 blob sha256                                     204949689ccc0c3190c2479ca80d5c18f9fd9753931cffcf78706190d75ff21d
-PASS  revision-1 blob is non-empty                               yes
-PASS  region byte-identical to revision 1: engine report lines          3 lines
-PASS  region byte-identical to revision 1: disagreements 2, 3 and 4     27 lines
-PASS  region byte-identical to revision 1: unproven entries 1-5         38 lines
-PASS  region byte-identical to revision 1: what P03 must validate       10 lines
-PASS  region byte-identical to revision 1: baseline-review F357 line    1 lines
-PASS  region byte-identical to revision 1: principles and implementation 119 lines
-PASS  F3 region updated and carries the delta reference: Disagreement 1 closing sentence
-PASS  F3 region updated and carries the delta reference: baseline-review F358 line
-PASS  preserved verbatim: no adopter of the exact Pages-action majors is claimed
-PASS  preserved verbatim: no local renderer matches the host's dialect
-PASS  preserved verbatim: identical rendering rests on inspection
-whole-file unified-diff hunks: 11
-      @@ -1,4 +1,22 @@
-      @@ -31,10 +49,17 @@
-      @@ -68,23 +93,50 @@
-      @@ -128,7 +180,7 @@
-      @@ -270,10 +322,25 @@
-      @@ -295,7 +362,17 @@
-      @@ -318,10 +395,15 @@
-      @@ -334,15 +416,40 @@
-      @@ -353,17 +460,31 @@
-      @@ -391,7 +512,10 @@
-      @@ -468,7 +592,37 @@
-ASSERT hunk_count_is_11=True
-PASS  revision-2 untouched-region diff                           0
+=== check 12 — the corpus F342 fixes, measured at the ts pin ===
+PASS  ts pinned tree fetch exit                                  0
+PASS  ts pinned tree is non-empty                                yes
+   docs/about: 3 .md files
+   docs/tasks: 7 .md files
+   docs/tools: 12 .md files
+   docs/tutorials: 2 .md files
+   docs/reference: 5 .md files
+   docs/contributing: 6 .md files
+PASS  ts docs/about .md count                                    3
+PASS  ts docs/tasks .md count                                    7
+PASS  ts docs/tools .md count                                    12
+PASS  ts docs/tutorials .md count                                2
+PASS  ts docs/reference .md count                                5
+PASS  ts docs/contributing .md count                             6
+PASS  six F342 categories: total .md files                       35
+PASS  six F342 categories: total bytes                           171225
+PASS  whole docs/ tree .md count                                 48
+PASS  the six categories are directories, not flat files         6
+
+=== check 13 — Rust practice splits on narrative structure, not on project kind ===
+   BurntSushi/ripgrep  narrative-dir-files=0  book.toml=0  root-md=7
+PASS  BurntSushi/ripgrep tree is non-empty                       yes
+   clap-rs/clap  narrative-dir-files=0  book.toml=0  root-md=3
+PASS  clap-rs/clap tree is non-empty                             yes
+   serde-rs/serde  narrative-dir-files=0  book.toml=0  root-md=3
+PASS  serde-rs/serde tree is non-empty                           yes
+   ratatui/ratatui  narrative-dir-files=0  book.toml=0  root-md=9
+PASS  ratatui/ratatui tree is non-empty                          yes
+   cargo-generate/cargo-generate  narrative-dir-files=28  book.toml=1  root-md=5
+PASS  cargo-generate/cargo-generate tree is non-empty            yes
+PASS  BurntSushi_ripgrep has no docs/doc/guide/book directory    0
+PASS  BurntSushi_ripgrep ships no book.toml                      0
+PASS  clap-rs_clap has no docs/doc/guide/book directory          0
+PASS  clap-rs_clap ships no book.toml                            0
+PASS  serde-rs_serde has no docs/doc/guide/book directory        0
+PASS  serde-rs_serde ships no book.toml                          0
+PASS  ratatui_ratatui has no docs/doc/guide/book directory       0
+PASS  ratatui_ratatui ships no book.toml                         0
+PASS  cargo-generate ships guide/book.toml                       1
+PASS  cargo-generate keeps an mdBook SUMMARY.md                  1
+PASS  cargo-generate guide/src has nested subdirectories         2
+PASS  ripgrep GUIDE.md size                                      40895
+PASS  ripgrep FAQ.md size                                        42243
+PASS  ripgrep README.md size                                     21599
+PASS  clap README.md size                                        1827
+
+=== check 14 — mdBook default search; mermaid renders differently on the two surfaces ===
+PASS  mdBook HTML search is on by default                        present
+PASS  mdBook documents [output.html.search] enable               present
+PASS  mdBook Markdown reference mentions mermaid                 0
+PASS  GitHub diagrams doc fetch exit                             0
+PASS  GitHub documents mermaid-fence diagram rendering           present
+PASS  POST /markdown marks the fence as source-mermaid           present
+
+=== check 15 — Zola's site model (maintainers' configuration documentation) ===
+PASS  Zola configuration doc fetch exit                          0
+PASS  Zola: base_url is the only required variable               present
+PASS  Zola configuration page mentions SUMMARY                   0
+PASS  Zola configuration page mentions chapters                  0
+
+=== recorded (not gated) — upstream Pages state for smorinlabs/rs-launch-blueprint ===
+has_pages: false
+GET /pages http status: non-200 (404 expected while Pages is disabled)
+
+=== check 16 — revision-3 diff against the revision-2 blob ===
+PASS  revision-2 blob read exit                                  0
+PASS  revision-2 blob sha256                                     5ab7479c7d5e0485fa1c05aef9a894f4c36b56de3692bef89c17efc33a09404e
+PASS  revision-2 blob is non-empty                               yes
+PASS  region byte-identical to revision 2: licence partition table            7 lines
+PASS  region byte-identical to revision 2: what each class means              15 lines
+PASS  region byte-identical to revision 2: shared requirement -> what may vary 44 lines
+PASS  region byte-identical to revision 2: the four fixed - assumes lines     4 lines
+PASS  region byte-identical to revision 2: check-8 snapshot rationale         20 lines
+PASS  region byte-identical to revision 2: revision-1 check-defect record     7 lines
+PASS  region byte-identical to revision 2: disagreement 4 (figures)           8 lines
+PASS  region byte-identical to revision 2: unproven entry 3 (unsafe posture)  4 lines
+PASS  region byte-identical to revision 2: revision-1 history entry           6 lines
+PASS  ruling region updated and carries its marker sentence: recommendation paragraph
+PASS  ruling region updated and carries its marker sentence: fitness gate 1 record
+PASS  ruling region updated and carries its marker sentence: disagreement 1 (the fit judgement)
+PASS  ruling region updated and carries its marker sentence: baseline-review F357 line
+PASS  ruling region updated and carries its marker sentence: baseline-review F358 line
+PASS  present verbatim: gate 1 recorded on one line, verbatim
+PASS  present verbatim: the theme/ prohibition survives the ruling
+PASS  present verbatim: the Font Awesome attribution duty survives the ruling
+PASS  present verbatim: no surveyed licence reaches the template's own source
+PASS  present verbatim: mermaid fences are forbidden by F343
+PASS  present verbatim: no adopter of the exact Pages-action majors is claimed
+PASS  present verbatim: no local renderer matches the host's dialect
+PASS  present verbatim: identical rendering rests on inspection
+PASS  branch structure removed from the live decision: no 'branch A'
+PASS  branch structure removed from the live decision: no 'branch B'
+PASS  branch structure removed from the live decision: no 'Branch A'
+PASS  branch structure removed from the live decision: no 'Branch B'
+PASS  branch structure removed from the live decision: no 'branch-A'
+PASS  branch structure removed from the live decision: no 'branch-B'
+PASS  branch structure removed from the live decision: no 'two-branch'
+PASS  revision history still describes the branch structure
+PASS  no ## Supersedes heading
+whole-file unified-diff hunks: 17
+      @@ -1,22 +1,47 @@
+      @@ -30,68 +55,147 @@
+      @@ -128,59 +232,111 @@
+      @@ -231,12 +387,17 @@
+      @@ -252,8 +413,9 @@
+      @@ -261,22 +423,27 @@
+      @@ -286,22 +453,29 @@
+      @@ -318,11 +492,13 @@
+      @@ -340,39 +516,46 @@
+      @@ -418,14 +601,14 @@
+      @@ -436,13 +619,24 @@
+      @@ -458,40 +652,54 @@
+      @@ -503,38 +711,62 @@
+      @@ -558,7 +790,7 @@
+      @@ -567,30 +799,45 @@
+      @@ -600,7 +847,10 @@
+      @@ -621,11 +871,42 @@
+ASSERT hunk_count_is_17=True
+PASS  revision-3 untouched-region diff                           0
 
 === result ===
 failed assertions: 0

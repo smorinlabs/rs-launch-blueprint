@@ -296,6 +296,13 @@ not obviously able to serve a long-running process with plain console logs
 - **`--features` is plumbed through to the cargo command** (`src/mission.rs`), and arguments
   after `--` are appended to the job's command tokens, so the recipe needs no custom job
   definition to select the feature and the binary.
+- **`-j run-long` still selects the job under `--headless`.** This needed checking rather than
+  assuming, because bacon's own `--help` describes `--headless` as running "the default job on
+  change" — had that been literal, the recipe would have looped `cargo check` and never started
+  the server. Read at source: `-j` is stored as `settings.arg_job`, the initial job is
+  `settings.arg_job` falling back to `default_job` (`src/jobs/job_stack.rs`), and every one of
+  the four `headless` references in `src/cli/mod.rs` guards the alternate-screen setup, none of
+  them job selection. No `default_job` override is required in the template's `bacon.toml`.
 - **The default job interruption on Unix is `SIGKILL`** (bacon's own configuration reference).
   A SIGKILL restart cannot exercise the production drain path, and it kills the `cargo`
   process rather than the server it spawned. **The template must therefore ship a small
@@ -752,7 +759,7 @@ because that probe carried one further base dependency, so the delta reads 40 he
 This confirms the **shape** of the opus measurement; the wall-clock and binary-size halves of
 that measurement are not reproduced here and are carried as unproven.
 
-**Check 3 — figures, gates and artifact facts.** 71 assertions, all passing, plus one
+**Check 3 — figures, gates and artifact facts.** 75 assertions, all passing, plus one
 deliberate control that must and does report `FAIL`. **Gate 1 is asserted nowhere in this
 script**, and the script says so in its own header: under owner ruling Q7.B it is inapplicable
 to every dependency and tool, so licences are printed as published metadata and never
@@ -766,7 +773,8 @@ occurrences of `unsafe` in `src/`, its default feature list and the `axum::serve
 `default = []` and that none of `signal`, `net`, `rt-multi-thread`, `time` or `macros` enables
 `sync`; and bacon's declared MSRV, its SIGKILL default, its `run-long` job's
 `kill_then_restart` strategy and `need_stdout`, its headless stdout/stderr passthrough, and
-its `--features` and post-`--` argument plumbing. Figures as snapshotted at
+its `--features` and post-`--` argument plumbing, and that `-j` selects the initial job while
+`--headless` guards only the screen setup. Figures as snapshotted at
 `2026-09-13T07:57:55Z`:
 
 | Crate | 90-day dl | All-time dl | Newest non-yanked | Stars / pushed / archived | Open issues | Licence | `rust-version` | Rev-deps |
@@ -918,10 +926,12 @@ enters this repository.
    `BASELINE-REVIEW: F331`.
 8. **Framework figures where the raws disagree.** `rocket`'s MSRV — gemini 1.89.0, opus 1.64 —
    settled at **1.64** by the registry. `ntex`'s newest non-yanked version — opus 3.12.3 with
-   `rust-version` 1.88 — is actually **4.0.0-beta.10 (2026-09-12), `rust-version` 1.95** under
-   the prompt's "newest non-yanked" rule; `ntex` is excluded on fit either way. `tide`'s newest
-   non-yanked is **0.17.0-beta.1 (2021-12-06)**, not opus's 0.16.0 (2021-01-29); dormant either
-   way. `watchexec-cli` — openai 2.5.1, codex and opus 2.7.2 — settled at **2.7.2** by the
+   `rust-version` 1.88 — is **4.0.0-beta.10 (2026-09-12), `rust-version` 1.95** under the
+   prompt's rule as written ("newest with `yanked: false`"); the same reading makes `tide`'s
+   newest **0.17.0-beta.1 (2021-12-06)** rather than opus's 0.16.0 (2021-01-29). Both gaps are
+   a **field-rule reading, not a data error on either side**: the opus raw appears to have
+   applied a newest-*stable* filter that the prompt's rule does not contain. Neither crate is
+   recommended, and both are excluded on grounds that hold under either reading. `watchexec-cli` — openai 2.5.1, codex and opus 2.7.2 — settled at **2.7.2** by the
    registry. Where codex's and opus's 2026-09-12 figures overlap they agree with each other and
    with this run's 2026-09-13 snapshot up to one day's counter drift (for example axum's 90-day
    downloads 115,597,652 → 114,795,000 and stars 27,095 → 27,100); the figures reported in this
@@ -940,6 +950,7 @@ research.
 | The stack compiles and tests on both `target-os-matrix` legs and at the MSRV floor | **Unproven.** Only the macOS host at rustc 1.98.0 was exercised here; the Linux leg and the 1.96 leg were not. | The template's CI matrix (R11): `cargo test --workspace --locked --features web` on `ubuntu-latest` and `macos-latest`, plus a `cargo check` leg pinned to the declared `rust-version`. |
 | The web feature's wall-clock build cost and binary size | **Unproven and not measured here** — measuring them honestly means building the recommendation. The opus raw's figures (5.69 s → 9.28 s wall, 7.12 s → 25.61 s user CPU, release binary 2,001,600 bytes / 1,574,392 stripped) are engine-reported. Only the dependency-count half (12 → 52 packages) is reproduced here. | A timed clean and incremental build of the real template on each CI runner, and `cargo build --release` plus a size measurement of the stripped serve binary. |
 | The dev recipe serves with console-formatted logs and restarts on a source edit | **Unproven, and blocked on R58.** The tool's capabilities are verified (check 5); the recipe's behavior is not, because the environment variable's name and semantics are R58's and unpublished. | Once R58 publishes: `just serve` answering `GET /healthz` with console-formatted logs on stderr, a source edit producing one restart, and the same binary outside the recipe emitting the production structured profile. |
+| The exact `cargo` argv bacon composes from `-j run-long --features web -- --bin <app>-serve` | **Inferred, not observed.** Each link is read at source — the job's `["cargo", "run"]` tokens, post-`--` arguments appended to them, and `--features` applied after — but bacon has no dry-run mode, so the assembled command line was never printed. | Running the recipe once in the real template and reading the command bacon reports, or `bacon` with `RUST_LOG=debug`, which logs `command: {:#?}` in `src/mission.rs`. |
 | A `bacon.toml` `kill` override makes the dev restart run the production SIGTERM drain | **Unproven.** That bacon's default is SIGKILL and that a `kill` override exists are both read from its published configuration reference; that the override produces a clean drain of `cargo run`'s grandchild process is not exercised. | A template check that edits a source file under `just serve` and observes the old process logging its graceful-shutdown path rather than dying silently. |
 | `actix-web` does not win on a representative instrumented workload | **Unproven and deliberately unmeasured.** No public benchmark measures the required path, and the TechEmpower payload was unretrievable on 2026-09-12 (opus raw). | The two-workload benchmark openai's raw specifies — an adapter ceiling and a service-like run with R75/R78/R79's layers and a local collector — reporting p50/p95/p99, throughput, CPU-seconds per million requests, peak RSS, binary size and build times on identical hardware. Only a material advantage there reopens the framework choice. |
 | `axum`'s and `bacon`'s macOS support beyond the pinned versions tested here | **Unproven beyond `axum` 0.8.9 and `bacon` 3.25.0 on macOS 26.4 aarch64.** Neither project's CI covers macOS. | The template's own `macos-latest` CI leg, continuously. |

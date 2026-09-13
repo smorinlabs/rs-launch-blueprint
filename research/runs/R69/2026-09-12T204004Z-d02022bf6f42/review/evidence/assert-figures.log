@@ -129,11 +129,15 @@ OK   bacon's DEFAULT job interruption on unix is SIGKILL -- so a bacon.toml 'kil
 OK   in --headless mode bacon prints the child's stdout/stderr straight to the terminal, not into a TUI pane
 OK   bacon plumbs its --features flag into the cargo command
 OK   arguments after -- are appended to the job's command tokens
+OK   the -j argument is stored as settings.arg_job (src/conf/settings.rs)
+OK   the initial job is settings.arg_job, falling back to default_job (src/jobs/job_stack.rs)
+OK   references to 'headless' in bacon src/cli/mod.rs (all of them screen setup, none job selection) = 4
+OK   headless only guards the alternate-screen setup around tui::app::run -- it does not touch job selection
 
 ### H. control -- an assertion that MUST report FAIL, proving these checks can fail
 FAIL deliberate control (expected to FAIL): expected '0.0.0-not-a-real-version', got '0.8.9'
   -> the line above must read FAIL. If it reads OK, the harness is broken
      and every OK above is worthless.
 
-assertions passed: 71   failures: 1 (exactly 1 expected: the control)
+assertions passed: 75   failures: 1 (exactly 1 expected: the control)
 assert-figures rc=0
