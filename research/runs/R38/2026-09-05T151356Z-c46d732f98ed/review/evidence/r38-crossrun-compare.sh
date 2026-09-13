@@ -84,10 +84,14 @@
 # quietly. That is the intended behaviour and it is why the decision carries a
 # `re-verify:` trigger; it is not a difference class.
 #
-# SCOPE OF WHAT IS DEMONSTRATED HERE, HONESTLY. Classes T, I and F are observed
-# LIVE by the reruns below. Classes H and S cannot be: every rerun here happens
-# on one host with one toolchain, so both lines come out identical, and they are
-# exercised only by the labelled SYNTHETIC in-position control of PHASE H2. The
+# SCOPE OF WHAT IS DEMONSTRATED HERE, HONESTLY. Classes T and I are observed
+# LIVE by the reruns below; PHASE D prints exactly which classes were observed.
+# Class F is observed only when a live counter moves inside this script's
+# few-minute window — none did in the cited run — and is otherwise exercised by
+# the synthetic control of PHASE H3. Classes H and S cannot be observed here:
+# every rerun happens on one host with one toolchain, so both lines come out
+# identical, and they are exercised only by the labelled SYNTHETIC in-position
+# control of PHASE H2. The
 # environments exercised are three fresh copies of the fixture at three
 # different absolute paths of three different lengths, one of them invoked from
 # an unrelated working directory (`/`), on one macOS arm64 host. No Linux run
