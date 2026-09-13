@@ -1,7 +1,21 @@
 #!/usr/bin/env bash
-# R33 property-and-snapshot-testing — synthesizer empirical check (revision 2).
+# R33 property-and-snapshot-testing — synthesizer empirical check (revision 3).
 # Verifies claims made by raw/codex.md and raw/opus.md. Implements nothing:
 # no crate is scaffolded, no tool installed, no workspace or lockfile created.
+#
+# Revision 3 changes:
+#   * check 14 REMOVED. It existed only to test candidates against a strict
+#     all-dependencies-dual reading of the `license` fitness gate. The owner's
+#     ruling of 2026-09-12 (Q4 as superseded by Q7.B) strikes licence-compat
+#     evaluation for every dependency and tool, so that check no longer tests
+#     anything this decision asks. Checks 1-13 (with 9b and 11b) are unchanged,
+#     and every "(check N)" citation still names the section it always named.
+#   * the User-Agent header carries the repository URL instead of a personal
+#     email address (standing evidence rule; R42 revision 7 set the precedent).
+#     No log ever contained the address; it was sent on the wire only.
+#   * checks 3 and 7 keep their licence reads. They are retained as recorded
+#     fact alongside each crate's MSRV, edition and default features, and no
+#     gate verdict in the decision now rests on them.
 #
 # Revision 2 changes, all forced by the revision-1 audit (review/audit-codex.r1.md):
 #   * `set -o pipefail` plus explicit per-command status capture, so a failing
@@ -12,8 +26,9 @@
 #   * check 11 now reads docs/port/TS_PORT_DECISIONS.md (the path that exists at
 #     the pin) instead of the repository-root path that does not;
 #   * follow-ups 9b, 11b and 13, previously run by hand, are part of the script;
-#   * check 14 (new) walks the declared, non-optional, normal dependencies of the
-#     four candidate crates and reports each dependency's declared licence.
+#   * check 14 (new in revision 2, REMOVED IN REVISION 3) walked the declared,
+#     non-optional, normal dependencies of the four candidate crates and
+#     reported each dependency's declared licence.
 #
 # Run from anywhere: every repository path is resolved from this script's own
 # location, so the working directory does not change the result.
@@ -25,7 +40,7 @@ ROOT=$(git -C "$SELF_DIR" rev-parse --show-toplevel)
 WORK=$(mktemp -d)
 trap 'rm -rf "$WORK"' EXIT
 
-UA='User-Agent: rs-launch-blueprint-research (steve@conceptm.com)'
+UA='User-Agent: rs-launch-blueprint-research (https://github.com/smorinlabs/rs-launch-blueprint)'
 PY=~/c/py-launch-blueprint
 TS=~/c/ts-launch-blueprint
 PYPIN=b08bccfb55d05f15e46a83b52c5660b1881d19f5
@@ -353,92 +368,6 @@ expect_content "INSTA_UPDATE auto is 'no' under CI"      "$WORK/insta-doc.txt" "
 expect_content "--unreferenced defaults to ignore"       "$WORK/insta-doc.txt" "The default is ignore"
 expect_content "the review subcommands are documented"   "$WORK/insta-doc.txt" "'pending-snapshots': FOUND"
 expect_absent  "'--check' is NOT documented on the CLI page" "$WORK/insta-doc.txt" "'--check': FOUND"
-
-hdr 14 "declared first-level dependency licences of the four candidate crates"
-echo "-- SCOPE, stated so the result is not over-read: this walks each candidate's DECLARED"
-echo "-- dependencies at its pinned version, kind=normal and optional=false only, one level deep,"
-echo "-- from https://crates.io/api/v1/crates/<name>/<version>/dependencies. For each such"
-echo "-- dependency it reads the HIGHEST published, unyanked, non-prerelease version that satisfies"
-echo "-- the declared requirement (Cargo's caret rule, implemented here) and prints that version's"
-echo "-- declared licence — not merely the most recently published version of the crate."
-echo "-- It is NOT a resolved-lockfile audit: optional and feature-gated dependencies are not"
-echo "-- followed, depth beyond one level is not walked, and no unification across the graph is"
-echo "-- performed. A NOT-DUAL row therefore DISQUALIFIES a crate under an all-dependencies-dual"
-echo "-- rule; an all-DUAL result does NOT qualify one."
-echo "-- The dual predicate applied here is a PROPOSAL, not an owner ruling: an SPDX expression"
-echo "-- qualifies when its top-level OR arms include a bare MIT arm and an Apache-2.0 arm"
-echo "-- (so 'MIT OR Apache-2.0', 'Apache-2.0 OR MIT' and 'MIT/Apache-2.0' all qualify)."
-: > "$WORK/licwalk.txt"
-for c in snapbox insta cargo-insta proptest; do
-  pin=$(pin_of "$c")
-  code=$(curl -s --max-time 30 -H "$UA" -o "$WORK/$c-deps.json" -w '%{http_code}' "https://crates.io/api/v1/crates/$c/$pin/dependencies")
-  echo "GET https://crates.io/api/v1/crates/$c/$pin/dependencies -> HTTP $code"
-  expect_status "$c $pin dependency list is HTTP 200" 200 "$code"
-  deps=$(python3 -c "
-import json
-d = json.load(open('$WORK/$c-deps.json'))['dependencies']
-print(' '.join(sorted({x['crate_id'] + '@' + x['req'].replace(' ', '') for x in d if x['kind'] == 'normal' and not x['optional']})))
-")
-  expect_status "parse $c dependency list" 0 $?
-  echo "  $c $pin — required normal dependencies (name@declared-requirement): ${deps:-<none>}"
-  for spec in $deps; do
-    dep=${spec%@*}; req=${spec##*@}
-    curl -s --max-time 30 -H "$UA" -o "$WORK/dep-$dep.json" "https://crates.io/api/v1/crates/$dep"
-    python3 - "$c" "$dep" "$req" "$WORK" >> "$WORK/licwalk.txt" <<'PYEOF'
-import json, re, sys
-parent, dep, req, work = sys.argv[1], sys.argv[2], sys.argv[3], sys.argv[4]
-
-def parse(num):
-    m = re.match(r'^(\d+)(?:\.(\d+))?(?:\.(\d+))?', num)
-    return (int(m.group(1)), int(m.group(2) or 0), int(m.group(3) or 0)) if m else None
-
-def satisfies(num, req):
-    if '-' in num:                      # pre-release: never auto-selected
-        return False
-    v = parse(num)
-    op = '=' if req.startswith('=') else '^'
-    base = parse(req.lstrip('^=~>'))
-    if v is None or base is None:
-        return False
-    if op == '=':
-        return v == base
-    if v < base:
-        return False
-    if base[0] > 0:
-        return v[0] == base[0]
-    if base[1] > 0:
-        return v[0] == 0 and v[1] == base[1]
-    return v[0] == 0 and v[1] == 0 and v[2] == base[2]
-
-d = json.load(open(f"{work}/dep-{dep}.json"))
-cands = [x for x in d["versions"] if not x["yanked"] and satisfies(x["num"], req)]
-if not cands:
-    print(f"    {parent} -> {dep} (req {req}): NO PUBLISHED VERSION SATISFIES THE REQUIREMENT")
-else:
-    v = max(cands, key=lambda x: parse(x["num"]))
-    expr = (v["license"] or "")
-    arms = [a.strip() for a in expr.replace("/", " OR ").split(" OR ")]
-    bare = [a.split(" WITH ")[0].strip() for a in arms]
-    dual = ("MIT" in bare) and any(a == "Apache-2.0" for a in bare)
-    print(f"    {parent} -> {dep} {v['num']} (req {req}): license={expr!r} dual={'DUAL' if dual else 'NOT-DUAL'}")
-PYEOF
-    expect_status "resolve and read $dep for $c" 0 $?
-    sleep 1
-  done
-done
-cat "$WORK/licwalk.txt"
-echo "  --- crates reached above whose declared licence is not dual:"
-grep 'NOT-DUAL' "$WORK/licwalk.txt" | tee "$WORK/notdual.txt" || echo "    (none)"
-expect_content "snapbox requires normalize-line-endings, which is Apache-2.0 alone" "$WORK/licwalk.txt" \
-  "snapbox -> normalize-line-endings .*license='Apache-2\.0' dual=NOT-DUAL"
-expect_content "insta requires similar, which is Apache-2.0 alone" "$WORK/licwalk.txt" \
-  "insta -> similar .*license='Apache-2\.0' dual=NOT-DUAL"
-expect_content "cargo-insta requires insta itself, Apache-2.0 alone" "$WORK/licwalk.txt" \
-  "cargo-insta -> insta 1\.48\.0 .*dual=NOT-DUAL"
-expect_absent  "no proptest dependency resolves to a non-dual licence" "$WORK/licwalk.txt" \
-  'proptest -> .*NOT-DUAL'
-expect_absent  "every requirement resolved to a published version" "$WORK/licwalk.txt" \
-  'NO PUBLISHED VERSION SATISFIES'
 
 echo
 echo "===== SUMMARY ====="
