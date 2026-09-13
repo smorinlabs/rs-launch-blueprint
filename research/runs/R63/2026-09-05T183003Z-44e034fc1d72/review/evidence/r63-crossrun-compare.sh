@@ -46,6 +46,14 @@
 #   The rule admits nothing else. In particular it does NOT admit a reordered
 #   `sort` output: revision 3's check pins `LC_ALL=C`, so collation is fixed.
 #
+# THIS SCRIPT'S OWN LOG is reproducible only under the same kind of qualification
+# it applies to the check's log, and the qualification is NOT the same rule. It
+# quotes no wall-clock time and no live figure, but phase C prints the class-V
+# LINE NUMBERS that differed between its reruns, so if a crates.io or GitHub
+# counter moves inside this script's own window — a few minutes — that list gains
+# entries and this log differs from its cited copy. Observed identity across
+# several runs is a property of the window, not a guarantee.
+#
 # SCOPE OF WHAT IS DEMONSTRATED HERE, HONESTLY. Both classes are OBSERVED, each
 # at a SMALL SUBSET of its allowed positions: class V at the wall-clock date
 # line, class H at the line recording the ambient locale, which run 3 unsets.
@@ -393,8 +401,11 @@ echo "contain the literal."
 NOLIT_PROBE="$WORK/nolit-probe.sh"
 {
   printf 'set -u\nset -o pipefail\nPASS=0\nFAIL=0\n'
-  printf 'ok(){  PASS=$((PASS+1)); printf "PASS  %%s\\n" "$1"; }\n'
-  printf 'bad(){ FAIL=$((FAIL+1)); printf "FAIL  %%s\\n" "$1"; }\n'
+  # The probe's own PASS/FAIL lines are deliberately NOT spelled `PASS  `/`FAIL  `:
+  # two of the three probes are SUPPOSED to fail, and an auditor counting
+  # `grep -c '^FAIL' ` over this log must not read them as assertion failures.
+  printf 'ok(){  PASS=$((PASS+1)); printf "probe-PASS  %%s\\n" "$1"; }\n'
+  printf 'bad(){ FAIL=$((FAIL+1)); printf "probe-FAIL  %%s\\n" "$1"; }\n'
   printf 'chk(){ if [ "$2" = "$3" ]; then ok "$1 == $2"; else bad "$1: expected [$2], got [$3]"; fi; }\n'
   awk '/^nolit\(\)\{$/,/^\}$/' "$CHECK"
   printf 'printf "x\\n" > "%s/present.txt"\n' "$WORK"
@@ -412,15 +423,15 @@ cat "$WORK/nolit-probe.out"
 assert_eq "nolit/lifted-from-the-archived-check" 1 \
   "$(awk '/^nolit\(\)\{$/,/^\}$/' "$CHECK" | grep -c 'grep -cF' | tr -d ' ')"
 assert_eq "nolit/absent-literal-passes" 1 \
-  "$(grep -c '^PASS  probe: absent literal in a readable file' "$WORK/nolit-probe.out" | tr -d ' ')"
+  "$(grep -c '^probe-PASS  probe: absent literal in a readable file' "$WORK/nolit-probe.out" | tr -d ' ')"
 assert_eq "nolit/present-literal-fails" 1 \
-  "$(grep -c '^FAIL  probe: PRESENT literal must fail' "$WORK/nolit-probe.out" | tr -d ' ')"
+  "$(grep -c '^probe-FAIL  probe: PRESENT literal must fail' "$WORK/nolit-probe.out" | tr -d ' ')"
 assert_eq "nolit/unreadable-file-fails" 1 \
-  "$(grep -c '^FAIL  probe: unreadable file must fail: /nonexistent-dir/r63-nolit-probe.txt missing or unreadable$' "$WORK/nolit-probe.out" | tr -d ' ')"
+  "$(grep -c '^probe-FAIL  probe: unreadable file must fail: /nonexistent-dir/r63-nolit-probe.txt missing or unreadable$' "$WORK/nolit-probe.out" | tr -d ' ')"
 # This script's own log must not carry its scratch path either, or a rerun of
 # the comparator would differ from the cited comparator log for the same reason
 # revision 2's check did.
-assert_eq "compare/own-log-is-scratch-path-free" 0 \
+assert_eq "nolit-probe/output-is-scratch-path-free" 0 \
   "$(grep -c 'r63-crossrun\.' "$WORK/nolit-probe.out" | tr -d ' ')"
 assert_eq "nolit/probe-summary" "probe: 1 pass / 2 fail" \
   "$(grep -m1 '^probe: ' "$WORK/nolit-probe.out")"

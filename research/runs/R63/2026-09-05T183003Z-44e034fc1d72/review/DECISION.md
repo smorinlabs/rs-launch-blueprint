@@ -35,8 +35,7 @@ What revision 3 changed, and nothing else:
    negative controls that prove the classifier rejects an unclassified difference, a
    class-shaped difference at a disallowed position, and a line-count change, and it
    reproduces the revision-2 defect from the archived files. It ends
-   `failed assertions: 0` over 85 assertions, and its own log is byte-for-byte
-   reproducible.
+   `failed assertions: 0` over 84 assertions.
 2. **Four absence claims are now zero-match assertions.** *Audit finding: "`nolit` marks an
    absence as passed whenever `grep -qF` returns nonzero; it does not count matches and it
    also treats a grep error as absence."* `nolit` now counts matching lines and asserts the
@@ -46,8 +45,9 @@ What revision 3 changed, and nothing else:
    asserts `probe: 1 pass / 2 fail`.
 3. **The unauditable falsification claim is withdrawn.** *Audit finding: "the first claimed
    falsification has no auditable record."* Revision 2 said two expectations in an
-   unarchived first draft of its script failed during authoring. That happened, but nothing
-   in the run records it, so revision 3 **drops the claim entirely** rather than defend it.
+   unarchived first draft of its script failed during authoring. Whether or not that
+   happened, nothing in the run records it and this revision's author did not witness it,
+   so revision 3 **drops the claim entirely** rather than defend it.
    Falsifiability now rests only on archived, reproducible controls: the
    `TS_REPO=/nonexistent-repo` run at
    `review/evidence/r63-spinner-claims-negative-control.log`, and the comparator's four
@@ -524,13 +524,23 @@ which removes the class instead of excusing it, and windows the moving-branch bl
     bash review/evidence/r63-crossrun-compare.sh \
       > review/evidence/r63-crossrun-compare.log 2>&1
 
-**Exit status 0**, ending `failed assertions: 0` over **85** assertions
-(`review/evidence/r63-crossrun-compare.log`). Unlike the check's log, the comparator's own
-log **is** byte-for-byte reproducible: it quotes no live figure and no wall-clock time, and
-it was rerun immediately after the cited copy was written and diffed against it with an
-empty result. One assertion exists solely to keep that true — it fails if the comparator's
-scratch path, which carries its process id, ever reaches its output. It reruns the archived
-check three times —
+**Exit status 0**, ending `failed assertions: 0` over **84** assertions
+(`review/evidence/r63-crossrun-compare.log`; the three `probe-PASS`/`probe-FAIL` lines in
+that log are the deliberate output of the `nolit` probe, two of whose three cases are meant
+to fail, and are prefixed so that counting `^FAIL` over the log still yields 0).
+
+The comparator's own log is reproducible **when no live figure moves inside the
+comparator's own window**, which is the same qualification this decision applies to the
+check's log and not a stronger one. It quotes no wall-clock time and no counter value, but
+its classification output names the class-V *line numbers* that differed between its
+reruns, so a crates.io or GitHub counter moving inside its few-minute window would add
+entries to that list and change this log. It was rerun and diffed against its cited copy
+after the regeneration and again after the commit, empty both times; that is a property of
+those windows, not a guarantee. One assertion exists to keep a second, avoidable source of
+drift out: it fails if the comparator's scratch path, which carries its process id, ever
+reaches the probe output it quotes.
+
+It reruns the archived check three times —
 fresh scratch directory each time, under the ambient locale, under a forced
 `LC_ALL=en_US.UTF-8`, and with every `LC_*` and `LANG` unset — and classifies five
 comparisons (cited-vs-each-rerun, run1-vs-run2, run2-vs-run3) line by line against the rule

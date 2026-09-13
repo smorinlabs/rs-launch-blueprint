@@ -227,15 +227,15 @@ The revision-2 auditor's second finding: an absence must be a zero MATCH
 COUNT, and a read error must fail loudly. Drive revision 3's helper
 directly, against a file that does not exist and against a file that does
 contain the literal.
-PASS  probe: absent literal in a readable file (matching lines) == 0
-FAIL  probe: PRESENT literal must fail (matching lines): expected [0], got [1]
-FAIL  probe: unreadable file must fail: /nonexistent-dir/r63-nolit-probe.txt missing or unreadable
+probe-PASS  probe: absent literal in a readable file (matching lines) == 0
+probe-FAIL  probe: PRESENT literal must fail (matching lines): expected [0], got [1]
+probe-FAIL  probe: unreadable file must fail: /nonexistent-dir/r63-nolit-probe.txt missing or unreadable
 probe: 1 pass / 2 fail
 PASS nolit/lifted-from-the-archived-check (1)
 PASS nolit/absent-literal-passes (1)
 PASS nolit/present-literal-fails (1)
 PASS nolit/unreadable-file-fails (1)
-PASS compare/own-log-is-scratch-path-free (0)
+PASS nolit-probe/output-is-scratch-path-free (0)
 PASS nolit/probe-summary (probe: 1 pass / 2 fail)
 PASS nolit/no-exit-status-branch-remains (0)
 
