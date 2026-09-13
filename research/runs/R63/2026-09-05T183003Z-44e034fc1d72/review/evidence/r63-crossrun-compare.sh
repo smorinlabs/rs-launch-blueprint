@@ -400,7 +400,11 @@ NOLIT_PROBE="$WORK/nolit-probe.sh"
   printf 'printf "x\\n" > "%s/present.txt"\n' "$WORK"
   printf 'nolit "probe: absent literal in a readable file" "%s/present.txt" "y"\n' "$WORK"
   printf 'nolit "probe: PRESENT literal must fail" "%s/present.txt" "x"\n' "$WORK"
-  printf 'nolit "probe: unreadable file must fail" "%s/no-such-file.txt" "x"\n' "$WORK"
+  # A fixed absolute path that cannot exist, NOT one under $WORK: $WORK carries
+  # this process's pid, and the FAIL message prints the path, so using it would
+  # make this script's own log differ between runs — the very defect this
+  # comparator exists to catch.
+  printf 'nolit "probe: unreadable file must fail" "/nonexistent-dir/r63-nolit-probe.txt" "x"\n'
   printf 'printf "probe: %%d pass / %%d fail\\n" "$PASS" "$FAIL"\n'
 } > "$NOLIT_PROBE"
 bash "$NOLIT_PROBE" > "$WORK/nolit-probe.out" 2>&1
@@ -412,7 +416,12 @@ assert_eq "nolit/absent-literal-passes" 1 \
 assert_eq "nolit/present-literal-fails" 1 \
   "$(grep -c '^FAIL  probe: PRESENT literal must fail' "$WORK/nolit-probe.out" | tr -d ' ')"
 assert_eq "nolit/unreadable-file-fails" 1 \
-  "$(grep -c '^FAIL  probe: unreadable file must fail: .*missing or unreadable$' "$WORK/nolit-probe.out" | tr -d ' ')"
+  "$(grep -c '^FAIL  probe: unreadable file must fail: /nonexistent-dir/r63-nolit-probe.txt missing or unreadable$' "$WORK/nolit-probe.out" | tr -d ' ')"
+# This script's own log must not carry its scratch path either, or a rerun of
+# the comparator would differ from the cited comparator log for the same reason
+# revision 2's check did.
+assert_eq "compare/own-log-is-scratch-path-free" 0 \
+  "$(grep -c 'r63-crossrun\.' "$WORK/nolit-probe.out" | tr -d ' ')"
 assert_eq "nolit/probe-summary" "probe: 1 pass / 2 fail" \
   "$(grep -m1 '^probe: ' "$WORK/nolit-probe.out")"
 assert_eq "nolit/no-exit-status-branch-remains" 0 \
