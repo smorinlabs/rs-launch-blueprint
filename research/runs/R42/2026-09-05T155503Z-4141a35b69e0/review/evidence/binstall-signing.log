@@ -3,10 +3,12 @@
 # on the owner's licence ruling and proved (check 15) that `--locked` binds only the compile
 # fallback. This check establishes what, if anything, binds the prebuilt path instead.
 #
-# Run twice in the window 2026-09-13T08:05Z-08:12Z, which is 2026-09-13 01:05-01:12
-# America/Los_Angeles. The script prints no timestamp of its own, so these stamps are the
-# session's, not the log's. The execution recorded below is the FIRST of the two; the second
-# was run only to establish the rerun rule and is not reproduced here.
+# Run three times, at 2026-09-13T08:13:31Z, 08:14:05Z and 08:24:35Z, which is 2026-09-13
+# 01:13, 01:14 and 01:24 America/Los_Angeles (the stamps are the mtimes of the outputs each
+# run captured; the script prints no timestamp of its own). The execution recorded below is
+# the FIRST. The second was run only to establish the rerun rule; the THIRD was run after
+# this revision was committed, to show the script is still rerunnable from the committed
+# tree, and differed from the first in exactly the four lines the rule below names.
 #
 # Working directory: the run directory. Scratch directory: <scratch>/r42r8run, outside the
 # repository. Nothing was installed: the v1.23.0 release asset is unzipped into the scratch

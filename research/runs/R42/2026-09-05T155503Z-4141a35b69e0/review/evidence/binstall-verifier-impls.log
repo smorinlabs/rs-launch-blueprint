@@ -1,0 +1,176 @@
+# R42 revision 8 — check 16, second leg. The first leg (evidence/binstall-signing.log)
+# read four source files and established that a minisign signature is checked only where
+# the crate publishes a key. This leg asks the complementary question over the WHOLE source
+# tree at the immutable tag v1.23.0, rather than over the files that leg happened to open:
+# is a signature the only thing cargo-binstall can verify downloaded bytes against, or does
+# a checksum path exist somewhere too?
+#
+# Run twice in the window 2026-09-13T08:28:23Z-08:28:35Z, which is 2026-09-13 01:28
+# America/Los_Angeles. The script prints no timestamp of its own, so these stamps are the
+# session's, not the log's. The execution recorded below is the FIRST of the two.
+#
+# Working directory: the run directory. Scratch directory: <scratch>/r42r8b, outside the
+# repository. This leg installs nothing and runs no third-party binary: it fetches an
+# archive, unpacks it and greps it.
+#
+# HOW IT CAN FAIL, in three independent ways, because a grep sweep that cannot fail is not
+# evidence. (1) Step 2 hashes the unpacked `crates/bin/src/args.rs` and exits 1 unless it
+# equals `4e179aaa…`, the value checks 15 and 16 already recorded — a gzip archive is not
+# byte-stable, so the tree is authenticated by a file whose hash this decision already cites.
+# (2) Step 5 runs a PAIRED control on one grep key: `impl DataVerifier for Sha256Digest`
+# must be found (exit 0, count 1) and `impl DataVerifier for Blake3Digest` must not (exit 1).
+# (3) Step 6's sweep reports its own exit status, so a hit and a miss are distinguishable.
+#
+# RERUN RULE.
+# (a) On THIS host: byte-for-byte except ONE line — step 5's `grep -rc` echoes the absolute
+#     path of the file it counted, which carries the scratch directory. Two consecutive runs
+#     differed in that line and in nothing else. There are no timings in this leg.
+# (b) On ANY OTHER host: everything must match except that one path. The tag is immutable and
+#     nothing here reads host state, a target triple, $CARGO_HOME or the network beyond the
+#     one archive.
+#
+# WHAT THIS LEG DOES NOT SHOW. It reads cargo-binstall's own source. It says nothing about
+# what Cargo itself verifies when the compile fallback runs `cargo install --locked`, which
+# is a different program; that remains unproven item 11(b).
+#
+# ---8<--- check16b.sh ---8<---
+# #!/bin/bash
+# # R42 revision 8 — check 16, second leg: is a minisign signature the ONLY thing
+# # cargo-binstall 1.23.0 can verify a downloaded artifact against, or is there a
+# # checksum path as well? Enumerated over the whole source tree at the immutable
+# # tag v1.23.0, not over the four files check 16's first leg happened to read.
+# set -o pipefail
+# SCRATCH="${SCRATCH:?set SCRATCH}"
+# UA='rs-launch-blueprint-research (+https://github.com/smorinlabs/rs-launch-blueprint)'
+# TAG=v1.23.0
+# SRC="$SCRATCH/src/cargo-binstall-1.23.0"
+# say() { printf '\n--- %s\n' "$*"; }
+# 
+# say "1. Fetch and unpack the whole source tree at $TAG"
+# curl -sSL -H "User-Agent: $UA" -o "$SCRATCH/cb.tar.gz" -w 'tarball HTTP %{http_code}\n' \
+#   "https://codeload.github.com/cargo-bins/cargo-binstall/tar.gz/refs/tags/$TAG"; echo "curl exit=$?"
+# mkdir -p "$SCRATCH/src"; tar -xzf "$SCRATCH/cb.tar.gz" -C "$SCRATCH/src"; echo "tar exit=$?"
+# 
+# say "2. CONTROL: the unpacked tree must be the same tree check 16's first leg read"
+# # A gzip archive is not byte-stable, so the tarball is not hashed. The file whose
+# # sha256 is already recorded in this decision at check 15 is, and it must match.
+# shasum -a 256 "$SRC/crates/bin/src/args.rs" | awk '{print "args.rs sha256 "$1}'
+# if shasum -a 256 "$SRC/crates/bin/src/args.rs" \
+#    | grep -q '^4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783 '; then
+#   echo "tree control: MATCHES the sha256 recorded at checks 15 and 16"
+# else
+#   echo "tree control: DOES NOT MATCH — every finding below is void"; exit 1
+# fi
+# 
+# say "3. Every implementation of the DataVerifier trait in the tree"
+# grep -rn 'impl DataVerifier' "$SRC/crates" | sed "s#$SRC/##"; echo "grep exit=$?"
+# echo "impl DataVerifier count: $(grep -rl 'impl DataVerifier' "$SRC/crates" | wc -l | tr -d ' ') file(s), $(grep -rn 'impl DataVerifier' "$SRC/crates" | wc -l | tr -d ' ') site(s)"
+# 
+# say "4. The trait itself, and what the downloader says about checksums"
+# grep -n -B3 -A12 'pub trait DataVerifier' "$SRC/crates/binstalk-downloader/src/download.rs"
+# echo "grep trait exit=$?"
+# grep -n -i 'checksum' "$SRC/crates/binstalk-downloader/src/download.rs"; echo "grep checksum(download.rs) exit=$?"
+# 
+# say "5. Where that third implementation is used, and a paired control"
+# grep -n -B3 -A22 'struct Sha256Digest {' "$SRC/crates/binstalk-registry/src/common.rs"
+# echo "grep Sha256Digest exit=$?"
+# grep -n -A8 'pub(super) async fn parse_manifest' "$SRC/crates/binstalk-registry/src/common.rs"
+# echo "grep parse_manifest exit=$?"
+# echo "Sha256Digest construction sites: $(grep -rn 'Sha256Digest::new' "$SRC/crates" | wc -l | tr -d ' ')"
+# grep -rn 'Sha256Digest::new' "$SRC/crates" | sed "s#$SRC/##"; echo "grep construction exit=$?"
+# echo "# paired control on the same grep key: one form must be found, the other must not"
+# grep -rc 'impl DataVerifier for Sha256Digest' "$SRC/crates/binstalk-registry/src/common.rs"
+# echo "positive control exit=$? (0 with count 1 = found, as required)"
+# grep -rn 'impl DataVerifier for Blake3Digest' "$SRC/crates"
+# echo "negative control exit=$? (1 = found nothing, as required)"
+# 
+# say "6. Tree-wide: does any fetcher compare a digest against registry metadata?"
+# grep -rn -i 'cksum\|sha256\|sha-256\|digest' "$SRC/crates/binstalk-fetchers/src" | sed "s#$SRC/##"
+# echo "grep exit=$? (1 = no hit anywhere under binstalk-fetchers/src)"
+# ---8<--- end of check16b.sh ---8<---
+
+--- 1. Fetch and unpack the whole source tree at v1.23.0
+tarball HTTP 200
+curl exit=0
+tar exit=0
+
+--- 2. CONTROL: the unpacked tree must be the same tree check 16's first leg read
+args.rs sha256 4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783
+tree control: MATCHES the sha256 recorded at checks 15 and 16
+
+--- 3. Every implementation of the DataVerifier trait in the tree
+crates/binstalk-fetchers/src/signing.rs:78:impl DataVerifier for MinisignDataVerifier<'_> {
+crates/binstalk-downloader/src/download.rs:74:impl DataVerifier for () {
+crates/binstalk-registry/src/common.rs:44:impl DataVerifier for Sha256Digest {
+grep exit=0
+impl DataVerifier count: 3 file(s), 3 site(s)
+
+--- 4. The trait itself, and what the downloader says about checksums
+58-    }
+59-}
+60-
+61:pub trait DataVerifier: Send + Sync {
+62-    /// Digest input data.
+63-    ///
+64-    /// This method can be called repeatedly for use with streaming messages,
+65-    /// it will be called in the order of the message received.
+66-    fn update(&mut self, data: &Bytes);
+67-
+68-    /// Finalise the data verification.
+69-    ///
+70-    /// Return false if the data is invalid.
+71-    fn validate(&mut self) -> bool;
+72-}
+73-
+grep trait exit=0
+198:    /// This does not support verifying a checksum due to the partial extraction
+grep checksum(download.rs) exit=0
+
+--- 5. Where that third implementation is used, and a paired control
+25-    pub(super) auth_required: bool,
+26-}
+27-
+28:struct Sha256Digest {
+29-    expected: Vec<u8>,
+30-    actual: Option<Vec<u8>>,
+31-    state: Option<Sha256>,
+32-}
+33-
+34-impl Sha256Digest {
+35-    fn new(checksum: Vec<u8>) -> Self {
+36-        Self {
+37-            expected: checksum,
+38-            actual: None,
+39-            state: Some(Sha256::new()),
+40-        }
+41-    }
+42-}
+43-
+44-impl DataVerifier for Sha256Digest {
+45-    fn update(&mut self, data: &Bytes) {
+46-        if let Some(ref mut state) = &mut self.state {
+47-            state.update(data);
+48-        }
+49-    }
+50-
+grep Sha256Digest exit=0
+66:pub(super) async fn parse_manifest(
+67-    client: Client,
+68-    crate_name: &str,
+69-    crate_url: Url,
+70-    MatchedVersion { version, cksum }: MatchedVersion,
+71-    auth: Option<&RegistryAuth>,
+72-) -> Result<Manifest<Meta>, RegistryError> {
+73-    debug!("Fetching crate from: {crate_url} and extracting Cargo.toml from it");
+74-
+grep parse_manifest exit=0
+Sha256Digest construction sites: 1
+crates/binstalk-registry/src/common.rs:78:    let mut digest = Sha256Digest::new(checksum);
+grep construction exit=0
+# paired control on the same grep key: one form must be found, the other must not
+/private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r42r8b/src/cargo-binstall-1.23.0/crates/binstalk-registry/src/common.rs:1
+positive control exit=0 (0 with count 1 = found, as required)
+negative control exit=1 (1 = found nothing, as required)
+
+--- 6. Tree-wide: does any fetcher compare a digest against registry metadata?
+grep exit=1 (1 = no hit anywhere under binstalk-fetchers/src)

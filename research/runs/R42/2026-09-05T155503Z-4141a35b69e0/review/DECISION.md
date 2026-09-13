@@ -127,9 +127,13 @@ it with a negative and a **positive** control. What it found:
   'cargo-binstall': gh=cargo-bins/cargo-binstall git=b874e25e… ts=…
   run=33978884356` (log `:302`, `:340`, `:346`).
 - **The second prebuilt fetcher behaves differently and did not apply here.**
-  `QuickInstall` artifacts are always checked against a minisign key compiled
-  into `cargo-binstall` itself (`quickinstall.rs:22`, log `:233`), so that path
-  is signature-verified by default. It resolved nothing in either check: its
+  `QuickInstall` artifacts are checked against a minisign key compiled into
+  `cargo-binstall` itself (`quickinstall.rs:22`, log `:233`) **where a `.sig` is
+  served**; where the `.sig` cannot be downloaded, only `SignaturePolicy::Require`
+  errors, and the default policy takes the `else` branch that logs
+  `Failed to download signature, skipping verification`
+  (`quickinstall.rs:131-136`, log `:264-269`) — so that path is better defended
+  than the crate's own release but is not unconditionally verified either. It resolved nothing in either check: its
   asset 404s for both specs, and the `WARN` line that did print names
   `github.com` with no `third-party source ` prefix, which by
   `resolution.rs:125-127` (log `:279-281`) identifies the crate's own release,
@@ -145,7 +149,7 @@ it with a negative and a **positive** control. What it found:
 | | Revision 6's backend (`cargo install --locked`) | The authorised backend (`cargo binstall --locked --no-confirm`) |
 |---|---|---|
 | Where the bytes come from | the crates.io registry, for every tool | the crate's own GitHub release **where an artifact resolves**; otherwise identical to the left column |
-| Verified before use | not established in this decision — see unproven item 11 | **nothing**, unless the crate publishes a signing key; neither of the two tools probed does |
+| Verified before use | not established in this decision for Cargo itself — see unproven item 11(b) | on the prebuilt path, **nothing**: no signature unless the crate publishes a key (neither probed tool does), and no checksum anywhere under `binstalk-fetchers` |
 | What `--locked` binds | the resolved dependency graph of every install | the compile fallback only; inert on a prebuilt download (check 15) |
 | Bytes executed on the contributor's machine | compiled locally from fetched source | a foreign prebuilt executable |
 | Scope of the change | — | per tool and per target: a tool with no artifact for the target is unaffected |
@@ -569,12 +573,17 @@ target's state and will differ elsewhere — including the `cargo-machete`
 short-circuit, which exists only because this host already carries that tool.
 
 **The host for revision 8's check 16.** The same machine again, unchanged, on the
-default `PATH`. The check was run twice in the window `2026-09-13T08:05Z`-`08:12Z`,
-local `2026-09-13 01:05`-`01:12` by the UTC rule above; the log records the first
-run and the second was run only to establish the rerun rule. **The two runs
-differed in exactly four lines** — the scratch directory's absolute path and the
-three `INFO Done in <elapsed>` wall-clock timings — and in nothing else, which is
-the rerun rule the log states for this host. For another host the log names what
+default `PATH`. The first leg was run three times, at `2026-09-13T08:13:31Z`,
+`08:14:05Z` and `08:24:35Z` — local `01:13`, `01:14` and `01:24` by the UTC rule
+above, the stamps being the mtimes of the outputs each run captured. The log
+records the first; the second established the rerun rule; **the third was run
+after this revision was committed**, because an evidence script that only works
+before its own commit has been a rejection ground in this programme. **All three
+runs differed in exactly four lines** — the scratch directory's absolute path and
+the three `INFO Done in <elapsed>` wall-clock timings — and in nothing else, which
+is the rerun rule the log states for this host. The second leg was run twice at
+`08:28:23Z` and `08:28:35Z` and differed in exactly one line, the one scratch path
+its `grep -rc` echoes; it contains no timings at all. For another host the log names what
 must still match: every exit status, every sha256 of a file fetched at the
 immutable tag `v1.23.0` and every excerpt quoted from those files, the three
 `PRESENT`/`ABSENT` signing verdicts (crates.io versions are immutable), the two
@@ -632,7 +641,10 @@ from each, the `cargo-binstall-aarch64-apple-darwin.zip` for that tag and the
 single executable unzipped from it, and four captured command outputs. That
 executable was again put on `PATH` for the duration of the script only, every
 `cargo binstall` call carries `--dry-run`, and the `~/.cargo/bin` listing hashes
-identically before and after.
+identically before and after. Check 16's **second leg** used a separate
+`…/scratchpad/r42r8b`, holding only the `v1.23.0` source tarball and the tree
+unpacked from it; it runs no third-party binary at all — it fetches an archive,
+unpacks it and greps it.
 
 **Nothing recommended was implemented.** No template, workspace, `Justfile`,
 `check-deps` recipe, `install-tool` recipe, `lefthook.yml` or acceptance script
@@ -670,7 +682,7 @@ unproven item 11.
 | 13 | **Cargo aliases in the four surveyed reference repositories** (revision 2) | `GET https://raw.githubusercontent.com/<repo>/HEAD/.cargo/config.toml` for the four; alias-name greps over each fetched `justfile`; `gh api repos/cargo-limit/cargo-limit/contents/src/bin` | 0 | `oxc` HTTP 200 with `[alias]` `ck`, `lint`, `codecov`, `coverage`, `benchmark`, `minsize`, `allocs`, `lint-timings`, `rule`, `lintgen`, invoked on 14 justfile lines (`:40`, `:51`, `:60`, `:64`, `:104`, `:108`, `:114`, `:119`, `:130`, `:298`, `:303`, `:307`, `:312`, `:314`); `biome` HTTP 200 with `[alias]` including `lint = "clippy --workspace …"`, `format = "fmt --all --verbose"` and `documentation`, invoked at `justfile:160`, `:234`, `:334`; `casey/just` and `cargo-bins/cargo-binstall` HTTP **404** — neither defines aliases, and `just`'s `cargo lclippy`/`lrun`/`lbuild`/`ltest` are `cargo-limit`'s binaries (`src/bin/cargo-lclippy.rs`, `cargo-lrun.rs`, `cargo-lbuild.rs`, `cargo-ltest.rs`), installed by its own `justfile:117` `cargo install cargo-limit`. Re-confirmed in the same fetch: **0** wrapper-prefix lines in all four `justfile`s | `evidence/reference-aliases.log` |
 | 14 | **The two figures the table asserted without a query** (revision 5; the correction the judgment audit asked for) | `curl -o /dev/null -w '%{http_code}' https://rustsec.org/packages/{rustup,time,atty}.html`; `GET https://crates.io/api/v1/crates/rustup`; `gh api repos/rust-lang/{rustup,cargo} --jq '{repo,license}'` | 0 | `rustup` **404** with the `time` and `atty` controls at **200**, so the RustSec cell is now a probed 404 rather than a figure carried from `raw/opus.md`; the crates.io crate named `rustup` exists but its only version `0.1.0` is **yanked** (`newest_version` `0.0.0`), which is why no crates.io licence for the toolchain manager exists to quote; GitHub `license.spdx_id` is `Apache-2.0` for `rust-lang/rustup` and for `rust-lang/cargo`. Run 2026-09-10T07:05:07Z | `evidence/rustup-figures.log` |
 | 15 | **The backend the 2026-09-12 owner ruling authorises: is it current, do its flags mean what the recipe body needs, and does the command run as written?** (revision 7) | `GET https://crates.io/api/v1/crates/cargo-binstall`; `GET https://raw.githubusercontent.com/cargo-bins/cargo-binstall/v1.23.0/crates/bin/src/args.rs` plus greps for `no_confirm`, `locked`, `crate[@version]`, `dry_run` and `disable-telemetry`; then, with the unzipped `v1.23.0` release binary on `PATH` in a scratch directory, `cargo binstall -V`, `cargo binstall --locked --no-confirm --dry-run` for `taplo-cli@0.10.0`, `cargo-machete@0.9.2` and `cargo-shear@1.13.1`, and a failing control `rs-launch-blueprint-no-such-crate@9.9.9`; `~/.cargo/bin` listing hashed before and after | 0 / 0 / 0 / 0 / 0 / **76** | **Current**: newest unyanked is `1.23.0`, `2026-09-05T16:59:01.959145Z`, `yanked False`, `license GPL-3.0-only`, `rust_version 1.79.0`. **Flags, read at the immutable tag** (`args.rs` sha256 `4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783`): `no_confirm` at `:255-262`, short `-y`, "Disable interactive mode / confirmation prompts"; `locked` at `:346-350`, "This option will be passed through to all `cargo-install` invocations"; the positional is `crate[@version]` at `:44`; `dry_run` at `:251-253`; the telemetry opt-out `--disable-telemetry` at `:29-35`. **Runs as written**, `cargo binstall -V` → `1.23.0`, the `cargo <sub>` dispatch resolving the scratch `cargo-binstall`, with **all three outcomes of the backend observed in one run**: `cargo-shear@1.13.1` **resolved a prebuilt artifact** (`has been downloaded from github.com`, then `Dry-run: Not proceeding to install fetched binaries`); `taplo-cli@0.10.0` found **none** for `aarch64-apple-darwin`, warned `will be installed from source (with cargo)` and printed `Dry-run: running /opt/homebrew/bin/cargo install taplo-cli --version 0.10.0 --locked --root /Users/stevemorin/.cargo`; `cargo-machete@0.9.2` short-circuited with `already installed, use --force to override`, an outcome that exists only because this host carries it. The control exited **76** with `crate is not found`, so this check can fail. **Nothing installed**: the `~/.cargo/bin` listing hashes identically before and after. **Neither path was timed.** The log states the rerun rule for this host and for another | `evidence/binstall-backend.log` |
-| 16 | **What verifies a prebuilt artifact before it would reach `PATH`, now that check 15 has shown `--locked` does not?** (revision 8) | `GET https://raw.githubusercontent.com/cargo-bins/cargo-binstall/v1.23.0/` for `crates/bin/src/args.rs`, `crates/binstalk-fetchers/src/gh_crate_meta.rs`, `crates/binstalk-fetchers/src/quickinstall.rs`, `crates/binstalk/src/ops/resolve/resolution.rs` and `SIGNING.md`, each hashed and grepped for the signature-policy code; `GET https://static.crates.io/crates/<n>/<n>-<v>.crate` for `cargo-shear@1.13.1`, `taplo-cli@0.10.0` and `cargo-binstall@1.23.0`, each unpacked and its `Cargo.toml` tested for `[package.metadata.binstall.signing]`; then, with the unzipped `v1.23.0` release binary on `PATH` in a fresh scratch directory, `cargo binstall --locked --no-confirm --dry-run cargo-shear@1.13.1` (7a), the same spec with `--only-signed` (7b), `--only-signed cargo-binstall@1.23.0` as a **positive control** (7c) and `rs-launch-blueprint-no-such-crate@9.9.9` as a negative control (7d); `~/.cargo/bin` listing hashed before and after | 0 / 0 / 0 / **76** | **Signing is opt-in by the crate.** `SIGNING.md:6` — "This feature requires adding to the Cargo.toml metadata: no autodiscovery here!"; `args.rs:408-411` documents the default as "verify signatures if they are available, but to allow unsigned packages as well"; `gh_crate_meta.rs:301-306` takes `SignatureVerifier::Noop` for `(IfPresent, None)` and returns `FetchError::MissingSignature` only for `(Require, None)`. **Neither probed tool opts in**: `cargo-shear@1.13.1` and `taplo-cli@0.10.0` are `signing: ABSENT`, `cargo-binstall@1.23.0` is `signing: PRESENT` (`algorithm = "minisign"`). **7a**: the recommended recipe body resolved `cargo-shear v1.13.1 (aarch64-apple-darwin) has been downloaded from github.com` with **`Verified signature` occurrences: 0**. **7c, the positive control**: **occurrences: 1** — `Verified signature for package 'cargo-binstall': gh=cargo-bins/cargo-binstall git=b874e25e… ts=2026-09-05T16:59:07.371Z run=33978884356` — so the verification path works and 7a's zero is the crate's absence of a key, not a broken check. **7b**: `--only-signed` did **not** fail; every prebuilt fetcher refused (`No signature present` from `github.com`; a 404 on QuickInstall's `.sig`) and the run fell through to `Dry-run: running … cargo install cargo-shear --version 1.13.1 --locked`, exit 0. **The other fetcher did not apply**: `QuickInstall` pins its own key in `quickinstall.rs:22` and is always verified, but it resolved nothing here, and `resolution.rs:125-127` shows the `WARN` line prints `third-party source ` only for it — its absence identifies the crate's own release. The control exited **76**, so this check can fail. **Nothing installed**: the `~/.cargo/bin` listing hashes identically before and after, to the same value check 15 recorded. **Nothing was timed and nothing was installed, so no post-install verification was observed.** The log states the rerun rule for this host and for another | `evidence/binstall-signing.log` |
+| 16 | **What verifies a prebuilt artifact before it would reach `PATH`, now that check 15 has shown `--locked` does not?** (revision 8) | `GET https://raw.githubusercontent.com/cargo-bins/cargo-binstall/v1.23.0/` for `crates/bin/src/args.rs`, `crates/binstalk-fetchers/src/gh_crate_meta.rs`, `crates/binstalk-fetchers/src/quickinstall.rs`, `crates/binstalk/src/ops/resolve/resolution.rs` and `SIGNING.md`, each hashed and grepped for the signature-policy code; `GET https://static.crates.io/crates/<n>/<n>-<v>.crate` for `cargo-shear@1.13.1`, `taplo-cli@0.10.0` and `cargo-binstall@1.23.0`, each unpacked and its `Cargo.toml` tested for `[package.metadata.binstall.signing]`; then, with the unzipped `v1.23.0` release binary on `PATH` in a fresh scratch directory, `cargo binstall --locked --no-confirm --dry-run cargo-shear@1.13.1` (7a), the same spec with `--only-signed` (7b), `--only-signed cargo-binstall@1.23.0` as a **positive control** (7c) and `rs-launch-blueprint-no-such-crate@9.9.9` as a negative control (7d); `~/.cargo/bin` listing hashed before and after | 0 / 0 / 0 / **76** | **Signing is opt-in by the crate.** `SIGNING.md:6` — "This feature requires adding to the Cargo.toml metadata: no autodiscovery here!"; `args.rs:408-411` documents the default as "verify signatures if they are available, but to allow unsigned packages as well"; `gh_crate_meta.rs:301-306` takes `SignatureVerifier::Noop` for `(IfPresent, None)` and returns `FetchError::MissingSignature` only for `(Require, None)`. **Neither probed tool opts in**: `cargo-shear@1.13.1` and `taplo-cli@0.10.0` are `signing: ABSENT`, `cargo-binstall@1.23.0` is `signing: PRESENT` (`algorithm = "minisign"`). **7a**: the recommended recipe body resolved `cargo-shear v1.13.1 (aarch64-apple-darwin) has been downloaded from github.com` with **`Verified signature` occurrences: 0**. **7c, the positive control**: **occurrences: 1** — `Verified signature for package 'cargo-binstall': gh=cargo-bins/cargo-binstall git=b874e25e… ts=2026-09-05T16:59:07.371Z run=33978884356` — so the verification path works and 7a's zero is the crate's absence of a key, not a broken check. **7b**: `--only-signed` did **not** fail; every prebuilt fetcher refused (`No signature present` from `github.com`; a 404 on QuickInstall's `.sig`) and the run fell through to `Dry-run: running … cargo install cargo-shear --version 1.13.1 --locked`, exit 0. **The other fetcher did not apply**: `QuickInstall` pins its own key in `quickinstall.rs:22` and verifies where a `.sig` is served, skipping verification where one cannot be downloaded unless the policy is `Require` (`quickinstall.rs:131-136`), but it resolved nothing here, and `resolution.rs:125-127` shows the `WARN` line prints `third-party source ` only for it — its absence identifies the crate's own release. **Second leg, over the whole tree**: exactly three `DataVerifier` implementations exist — `()` (`binstalk-downloader/src/download.rs:74`), `MinisignDataVerifier` (`binstalk-fetchers/src/signing.rs:78`) and `Sha256Digest` (`binstalk-registry/src/common.rs:44`), the last constructed at one site only, `:78` in `parse_manifest`, against the registry index's `cksum`; a grep of `binstalk-fetchers/src` for `cksum`, `sha256` or `digest` exits **1**, finding nothing. That leg carries its own three failure modes — an args.rs-hash tree control that aborts on mismatch, a paired `Sha256Digest`-found/`Blake3Digest`-not-found control, and a sweep that reports its own status. The 7d control exited **76**, so the first leg can fail too. **Nothing installed**: the `~/.cargo/bin` listing hashes identically before and after, to the same value check 15 recorded. **Nothing was timed and nothing was installed, so no post-install verification was observed.** Each log states its rerun rule for this host and for another | `evidence/binstall-signing.log`, `evidence/binstall-verifier-impls.log` |
 
 **Figures, each retrieved 2026-09-10 from the endpoint its column names, except
 where the cell names another source** (endpoints per the prompt's evidence table;
@@ -744,7 +756,16 @@ spec check 15 exercised publishes one: `cargo-shear@1.13.1` and
 `taplo-cli@0.10.0` are both `signing: ABSENT` in their published `Cargo.toml`
 (`evidence/binstall-signing.log:294`, `:298`), and the recommended recipe body run
 against `cargo-shear@1.13.1` printed **zero** `Verified signature` lines
-(`evidence/binstall-signing.log:325`). No checksum is compared either. So on the
+(`evidence/binstall-signing.log:325`). **Nor is a checksum compared on that
+path**, which check 16's second leg establishes over the whole source tree rather
+than over the files the first leg opened: `cargo-binstall` 1.23.0 has exactly
+three implementations of its `DataVerifier` trait — the no-op `()`, the minisign
+stream verifier, and a `Sha256Digest` constructed at exactly one site,
+`binstalk-registry/src/common.rs:78`, inside `parse_manifest`, where it checks a
+`.crate` archive fetched **from the registry** against the index's `cksum`. The
+two prebuilt fetchers are in a different crate, and a tree-wide grep of
+`binstalk-fetchers/src` for `cksum`, `sha256` or `digest` returns nothing
+(`evidence/binstall-verifier-impls.log:102-106`, `:167-176`). So on the
 prebuilt path the residual supply-chain risk is narrowed by **transport security
 and the pinned version alone**; the integrity comparison in `## Decision` puts
 that change to the owner, and unproven item 11 records what this decision did not
@@ -1210,8 +1231,15 @@ for byte; the 17-repository survey; the presence test and its matrix; the alias
 answer; the five earlier adjudications; the eighteen-row sweep; checks 1 to 15
 and every evidence log they cite, none of which was rerun or modified; and the
 `## Supersedes` payload, which is byte-identical to the published revision 6 and
-was not reflowed. One file was added, as the new check required:
-`evidence/binstall-signing.log`.
+was not reflowed. Two files were added, as the new check required:
+`evidence/binstall-signing.log` and `evidence/binstall-verifier-impls.log`, check
+16's two legs. **The second leg exists because of a correction made to this
+revision's own draft**: the draft asserted "no checksum is compared either" on the
+strength of source the first leg's script did not read, which is exactly the
+defect finding J2 rejected. The claim is now carried by a script that enumerates
+every `DataVerifier` implementation in the tree, and the enumeration found a third
+one the draft had not accounted for — a `Sha256Digest` on the registry path — so
+the text says what that one covers and what it does not.
 
 **Disagreements, and the evidence that settled each.**
 
@@ -1433,11 +1461,13 @@ what would prove it.
     R39's and R40's to choose, and how many of those crates publish a
     `[package.metadata.binstall.signing]` key was not measured; two out of two
     probed here do not, which is a sample, not a rate. (b) **What the compile
-    fallback verifies**: this decision states that the fallback fetches from the
-    crates.io registry and that `--locked` pins the graph, and it does **not**
-    assert that Cargo compares a registry-recorded checksum of the `.crate`
-    archive — no check here tested that, so the integrity table's left column
-    says "not established in this decision" rather than claiming a guarantee.
+    fallback verifies**: check 16's second leg shows that `cargo-binstall`'s own
+    registry client checks a `.crate` archive against the index's `cksum`
+    (`binstalk-registry/src/common.rs:78`), but the compile fallback hands the
+    install to **Cargo**, a different program that this decision did not read or
+    exercise. So whether `cargo install --locked` compares a registry-recorded
+    checksum is **not established here**, which is what the integrity table's left
+    column says rather than claiming a guarantee.
     (c) **Anything after download**: every call carried `--dry-run`, so no
     artifact was written and no post-install verification was observed. Proof:
     for (a), once the tool table exists, test each declared crate's published
