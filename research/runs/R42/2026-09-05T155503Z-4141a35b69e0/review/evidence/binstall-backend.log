@@ -1,8 +1,9 @@
 # R42 revision 7 — check 15: the fast prebuilt backend the owner ruling of 2026-09-12 authorises.
-# Run 2026-09-13T07:01Z, which is 2026-09-13 00:01 America/Los_Angeles. The first capture of this
-# check ran at 2026-09-13T06:50:57Z, local 2026-09-12 23:50; the run recorded below is the third,
-# taken after a `cargo-shear@1.13.1` spec was added so that the prebuilt path is exercised and not
-# merely asserted. Working directory: the run directory. Scratch directory: <scratch>/r42r7,
+# Run within the window 2026-09-13T07:00Z-07:02Z, which is 2026-09-13 00:00-00:02
+# America/Los_Angeles. The first capture of this check was written at 2026-09-13T06:50:57Z, local
+# 2026-09-12 23:50; the run recorded below is the third execution of the script, the first after a
+# `cargo-shear@1.13.1` spec was added so that the prebuilt path is exercised and not merely
+# asserted. The script itself prints no timestamp, so these stamps are the session's, not the log's. Working directory: the run directory. Scratch directory: <scratch>/r42r7,
 # outside the repository. Nothing was installed: the release asset is unzipped into the scratch
 # directory and put on PATH for the duration of the script only, every binstall call carries
 # --dry-run, and the listing of ~/.cargo/bin is hashed before and after to show it did not change.
