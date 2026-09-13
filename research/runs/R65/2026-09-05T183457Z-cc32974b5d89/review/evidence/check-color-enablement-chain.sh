@@ -103,7 +103,8 @@ for t in clap-rs/clap:v4.6.6 rust-lang/cargo:0.99.0 BurntSushi/ripgrep:15.2.0 \
          console-rs/console:0.16.6 owo-colors/owo-colors:v4.4.0 eyre-rs/eyre:color-eyre-v0.6.5 \
          BurntSushi/termcolor:1.4.1 polyfill-rs/is_terminal_polyfill:v1.70.2 \
          rust-cli/anstyle:anstream-v1.0.0 rust-cli/anstyle:anstyle-query-v1.1.5 \
-         rust-cli/anstyle:colorchoice-v1.0.5 rust-cli/anstyle:v1.0.14; do
+         rust-cli/anstyle:colorchoice-v1.0.5 rust-cli/anstyle:v1.0.14 \
+         colored-rs/colored:v3.1.1; do
   r=${t%%:*}; g=${t##*:}
   n=$(tags "$r" | grep -cx "$g")
   assert_n "tag exists: $r@$g" 1 "$n"
@@ -323,11 +324,18 @@ for c in anstream anstyle anstyle-query colorchoice colored; do
   fi
   sleep 3
 done
-assert "gate 1 license anstream"      'MIT OR Apache-2.0' "$(VFIELD anstream license)"
-assert "gate 1 license anstyle"       'MIT OR Apache-2.0' "$(VFIELD anstyle license)"
-assert "gate 1 license anstyle-query" 'MIT OR Apache-2.0' "$(VFIELD anstyle-query license)"
-assert "gate 1 license colorchoice"   'MIT OR Apache-2.0' "$(VFIELD colorchoice license)"
-assert "gate 1 EXCLUDES colored (copyleft, not MIT OR Apache-2.0)" 'MPL-2.0' "$(VFIELD colored license)"
+# Gate 1 (licence compatibility) is INAPPLICABLE per the owner ruling of 2026-09-12 (Q7.B):
+# licence compatibility is not evaluated for any dependency or tool. The licence fields below
+# are still fetched and asserted, because DECISION.md reports them as recorded facts -- but
+# NO candidate is excluded by them, and no label here claims a gate verdict.
+assert "licence field recorded (not a gate; ruling 2026-09-12 Q7.B) anstream"      'MIT OR Apache-2.0' "$(VFIELD anstream license)"
+assert "licence field recorded (not a gate; ruling 2026-09-12 Q7.B) anstyle"       'MIT OR Apache-2.0' "$(VFIELD anstyle license)"
+assert "licence field recorded (not a gate; ruling 2026-09-12 Q7.B) anstyle-query" 'MIT OR Apache-2.0' "$(VFIELD anstyle-query license)"
+assert "licence field recorded (not a gate; ruling 2026-09-12 Q7.B) colorchoice"   'MIT OR Apache-2.0' "$(VFIELD colorchoice license)"
+assert "licence field recorded (not a gate; colored is NOT excluded by it -- see section 11) colored" 'MPL-2.0' "$(VFIELD colored license)"
+assert "gate 2 colored rust-version (colored fails no gate this decision evaluates)" '1.80' "$(VFIELD colored rust_version)"
+assert_n "gate 3 colored has no RustSec page (404 = no advisories)" 404 \
+  "$(curl -sS -o /dev/null -w '%{http_code}' https://rustsec.org/packages/colored.html)"
 assert "gate 2 anstream rust-version"      '1.66.0' "$(VFIELD anstream rust_version)"
 assert "gate 2 anstyle rust-version"       '1.66.0' "$(VFIELD anstyle rust_version)"
 assert "gate 2 anstyle-query rust-version" '1.66.0' "$(VFIELD anstyle-query rust_version)"
@@ -511,6 +519,71 @@ ln_at "ripgrep --color long flag name"      "$RG_DEF"  698 '"color"'
 ln_at "ripgrep --color metavariable WHEN"   "$RG_DEF"  701 'Some("WHEN")'
 CE_MAN=$(raw eyre-rs/eyre color-eyre-v0.6.5 color-eyre/Cargo.toml)
 ln_at "color-eyre depends on owo-colors (workspace-inherited)" "$CE_MAN" 25 'owo-colors = { workspace = true }'
+CLR_LIB=$(raw colored-rs/colored v3.1.1 src/lib.rs)
+CLR_CTL=$(raw colored-rs/colored v3.1.1 src/control.rs)
+ln_at "colored Colorize method returns ColoredString"  "$CLR_LIB" 150 'fn red(self) -> ColoredString {'
+ln_at "colored ColoredString Display impl"             "$CLR_LIB" 604 'impl fmt::Display for ColoredString {'
+ln_at "colored Display consults has_colors() at format time" "$CLR_LIB" 606 'if !Self::has_colors() || self.is_plain() {'
+ln_at "colored has_colors() reads the process global"  "$CLR_LIB" 384 'control::SHOULD_COLORIZE.should_colorize()'
+ln_at "colored SHOULD_COLORIZE is one process-wide static" "$CLR_CTL" 86 'pub static SHOULD_COLORIZE: LazyLock<ShouldColorize> = LazyLock::new(ShouldColorize::from_env);'
+ln_at "colored gate reads stdout's TTY-ness only"      "$CLR_CTL" 108 '&& io::stdout().is_terminal(),'
+ln_at "colored checks CLICOLOR_FORCE before NO_COLOR"  "$CLR_CTL" 152 'if Self::normalize_env(clicolor_force) == Some(true) {'
+ln_at "colored NO_COLOR tested second"                 "$CLR_CTL" 154 '} else if Self::normalize_env(no_color).is_some() {'
+echo
+
+# --------------------------------------------------------------------------
+echo "## 11. Why colored 3.1.1 is excluded, now that gate 1 is inapplicable"
+echo "     Read at tag colored-rs/colored@v3.1.1. The manifest is NEVER printed wholesale"
+echo "     (it carries an author e-mail address); individual fields are asserted instead."
+CLR_MAN=$(raw colored-rs/colored v3.1.1 Cargo.toml)
+assert "colored manifest declares MPL-2.0 (recorded, no longer a gate)" 'license = "MPL-2.0"' "$CLR_MAN"
+assert "colored manifest declares rust-version 1.80 (gate 2 passes)" 'rust-version = "1.80"' "$CLR_MAN"
+
+# (a) What the API returns, and whether that type would cross a library's public surface.
+assert "colored's styling entry point is the Colorize trait" 'pub trait Colorize: Sized {' "$CLR_LIB"
+CLR_RET=$(printf '%s\n' "$CLR_LIB" | grep -c -- '-> ColoredString')
+if [ "$CLR_RET" -ge 50 ]; then
+  ok "every Colorize method returns ColoredString  [count of '-> ColoredString' in src/lib.rs = $CLR_RET]"
+else
+  bad "expected >=50 '-> ColoredString' returns in colored src/lib.rs, got $CLR_RET"
+fi
+assert "ColoredString is a public struct (it is what a pub fn would have to return)" 'pub struct ColoredString {' "$CLR_LIB"
+assert "ColoredString's Display decides colour at format time, not at construction" \
+  'if !Self::has_colors() || self.is_plain() {' "$CLR_LIB"
+assert "has_colors() resolves against colored's process global" \
+  'control::SHOULD_COLORIZE.should_colorize()' "$CLR_LIB"
+assert_n "compute_style is private, so Display is the only styled-output path" 0 \
+  "$(printf '%s\n' "$CLR_LIB" | grep -c 'pub fn compute_style')"
+assert "SHOULD_COLORIZE is a single process-wide LazyLock static" \
+  'pub static SHOULD_COLORIZE: LazyLock<ShouldColorize> = LazyLock::new(ShouldColorize::from_env);' "$CLR_CTL"
+
+# (b) Can colored fill the stream-adapter role the recommended architecture needs?
+CLR_WRITE_TOTAL=0
+for f in lib.rs control.rs color.rs style.rs formatters.rs customcolors.rs error.rs; do
+  body=$(raw colored-rs/colored v3.1.1 "src/$f")
+  if [ -z "$body" ]; then bad "could not read colored src/$f at tag v3.1.1"; continue; fi
+  n=$(printf '%s\n' "$body" | grep -cE 'io::Write|impl[^)]*\bWrite\b[^)]*for ')
+  CLR_WRITE_TOTAL=$((CLR_WRITE_TOTAL + n))
+  printf '      src/%-18s io::Write / Write-impl occurrences: %s\n' "$f" "$n"
+done
+assert_n "colored ships NO writer adapter anywhere in src/ (cannot fill the stream-adapter role)" 0 "$CLR_WRITE_TOTAL"
+
+# (c) Per-stream gating: colored's gate is computed from stdout alone, process-wide.
+assert "colored's env gate reads io::stdout().is_terminal()" '&& io::stdout().is_terminal(),' "$CLR_CTL"
+assert_n "colored src/control.rs: occurrences of stderr (a stderr write is gated on stdout)" 0 \
+  "$(printf '%s\n' "$CLR_CTL" | grep -c 'stderr')"
+assert_n "colored src/lib.rs: occurrences of stderr" 0 \
+  "$(printf '%s\n' "$CLR_LIB" | grep -c 'stderr')"
+assert "colored's only escape hatch writes the same process-wide global (no per-stream override)" \
+  'pub fn set_override(override_colorize: bool) {' "$CLR_CTL"
+
+# (d) Same precedence defects as console 0.16.6 — recorded, not the load-bearing ground.
+assert "colored lets CLICOLOR_FORCE win before NO_COLOR is tested" \
+  'if Self::normalize_env(clicolor_force) == Some(true) {' "$CLR_CTL"
+assert "colored treats any set NO_COLOR (including empty) as disabling" \
+  '} else if Self::normalize_env(no_color).is_some() {' "$CLR_CTL"
+assert "colored's normalize_env only excludes the literal \"0\"" \
+  'env_res.map_or(None, |string| Some(string != "0"))' "$CLR_CTL"
 echo
 
 echo "=============================================================="

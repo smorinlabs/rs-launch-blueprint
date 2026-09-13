@@ -1,20 +1,41 @@
-# R65 — color-enablement-chain — DECISION (revision 2, 2026-09-12)
+# R65 — color-enablement-chain — DECISION (revision 3, 2026-09-13)
 
-**Revision note.** Revision 2 rewrites revision 1 (sha256
-`0582a7c58e78fe4a1ba3a9b01c321f6664eca7089c4f87a80972c593eb83e3af`) in place. No revision of
-this decision has been published, so there is no `## Supersedes`. It answers the five findings
-of the revision-1 audit (`review/audit-codex.md`, actor
+**Revision note.** Revision 3 rewrites revision 2 (sha256
+`4d428b87131988a74f8d1d4216ff2ac264d38f46733f3bad6c29031f027e150d`) in place. No revision of
+this decision has been published, so there is no `## Supersedes`.
+
+Revision 2 answered the five findings of the revision-1 audit (`review/audit-codex.md`, actor
 `audit-codex-2026-09-05T183457Z-cc32974b5d89-r1`, model `gpt-5.6-terra`, family openai, verdict
-reject): F1 the cited log was not the output of the current saved script (the script had grown
-16 assertions after the log was saved, and the section count was misstated); F2 the three
-unversioned standards pages were asserted live rather than from the snapshots saved beside the
-log; F3 the resolver's input list contradicted the resolver signature in the same document; F4
-the `BASELINE-REVIEW` line counted `clap`, an argument-parsing library, as a third surveyed
-command-line flag; F5 the saved issue JSON did not establish the `clap`-and-`cargo`-maintainer
-role attributed to the quoted commenter. Everything the audit did not challenge is carried
-through unchanged, including the argument of `### Principles and implementation` for the
-template owning tiers 1–4, the `BASELINE-REVIEW: F286` proposal, and the four `- assumes`
-lines.
+reject) and passed its own empirical audit. Revision 3 exists for one reason that arrived
+afterwards: the **owner's licence ruling of 2026-09-12 (Q4 as superseded by Q7.B)** — *"We
+don't need to check the licensing for any tool we use. Zero license check… The license we have
+only applies to the source code in the repo itself directly, not anything it includes or
+depends on"* — knowingly extended to crates compiled into the shipped artifact. **Fitness gate
+1 (licence compatibility) is struck from this item's evaluation and is recorded as
+`inapplicable` wherever this decision reported it.** The ruling does not touch this
+repository's own declared `license` expression, which is why the `- assumes license = …`
+parameter line is unchanged.
+
+**What that broke, and what revision 3 does about it.** Revision 2 excluded `colored` 3.1.1 —
+the most-adopted candidate in this field, at 6,631 reverse dependencies — **solely** by gate 1,
+for its `MPL-2.0` weak copyleft. With gate 1 struck, that exclusion had no stated ground left.
+Revision 3 does not restore it by assertion: it **read `colored`'s own public API at tag
+`colored-rs/colored@v3.1.1`** and re-grounded the exclusion on three architectural findings,
+each asserted by the check script's new §11 and each carrying a `file:line` citation in the
+§10 ledger — `colored` gates colour from `io::stdout().is_terminal()` alone, process-wide, so
+it cannot satisfy acceptance criterion 8; its API returns `ColoredString`, a renderer whose
+`Display` reads a process global at format time, so a `pub fn` returning it would export a
+renderer through the library crate's public surface; and it ships no writer adapter at all, so
+it cannot fill the stream-adapter role the recommended architecture needs. **The
+recommendation does not change.** Two of the three findings are stronger than the Opus raw's
+one-clause claim ("would export a renderer"), which is the only ground the raw stated.
+
+**Everything else is carried through unchanged**, including the argument of
+`### Principles and implementation` for the template owning tiers 1–4, the
+`BASELINE-REVIEW: F286` proposal, the resolved chain, and the four `- assumes` lines. The
+counts in `## Empirical check` moved because the script grew (177 → 205 assertions, eleven →
+twelve sections, thirteen → fourteen tags, 41 → 49 ledger entries); those are recorded, not
+silent.
 
 ## Decision
 
@@ -160,11 +181,66 @@ one that separates the two candidate resolver shapes (see `## Engines`, Disagree
 
 - **(A) A boolean gate plus conditional styling at each call site** — ts's shape
   (`colorEnabled(gate)` → `createColors(enabled)`), and in Rust `owo-colors`'
-  `if_supports_color(Stream::Stdout, …)`. Every call site must remember to ask, and
-  `owo-colors` keeps its override in a process global (`pub(crate) struct
-  Override(AtomicU8);`, `src/overrides.rs:78` at tag `v4.4.0`, verified) scoped only by
-  `with_override`. Cost: the gate becomes a cross-cutting concern smeared over every
+  `if_supports_color(Stream::Stdout, …)` and `colored`'s `Colorize` trait. Every call site
+  must remember to ask, and the gate lives in a process global: `owo-colors` keeps its
+  override in one (`pub(crate) struct Override(AtomicU8);`, `src/overrides.rs:78` at tag
+  `v4.4.0`, verified) scoped only by `with_override`, and `colored` keeps the whole decision
+  in one (`pub static SHOULD_COLORIZE: LazyLock<ShouldColorize>`, `src/control.rs:86` at tag
+  `v3.1.1`, verified). Cost: the gate becomes a cross-cutting concern smeared over every
   formatting site, and the global is hostile to `cargo test`'s in-process thread parallelism.
+
+  **This is where `colored` 3.1.1 falls, and it is why `colored` is excluded — the gate-1
+  question no longer bears on it.** `colored` is the most-adopted candidate in this field: the
+  Opus raw records 6,631 reverse dependencies
+  (`GET https://crates.io/api/v1/crates/colored/reverse_dependencies` → `meta.total`) and
+  44,397,983 90-day downloads (`GET https://crates.io/api/v1/crates/colored` →
+  `crate.recent_downloads`), both retrieved 2026-09-10 and carried with the raw's own date
+  rather than re-asserted here, because download counts move daily. Its exclusion is therefore
+  the one that most needs a stated ground. There are three, each read at tag
+  `colored-rs/colored@v3.1.1` and asserted by `## Empirical check` §11:
+
+  1. **It cannot satisfy acceptance criterion 8**, the criterion this decision names as the
+     one that separates the three architectures. `ShouldColorize::from_env()` computes its
+     enable bit from `io::stdout().is_terminal()` and nothing else (`src/control.rs:108`), and
+     `SHOULD_COLORIZE` is a single process-wide `LazyLock` (`src/control.rs:86`). The string
+     `stderr` appears **zero** times in `src/control.rs` and zero times in `src/lib.rs`. So a
+     styled write to stderr is gated on *stdout's* terminal-ness — the shared-gate shape F289
+     rejects, and the crate's only escape hatch, `control::set_override(bool)`, is itself
+     process-wide, so a caller cannot re-decide one stream without re-deciding the other.
+  2. **Its API returns a renderer, which would cross the library crate's public surface.**
+     Every method of the `Colorize` trait returns `ColoredString` (81 occurrences of
+     `-> ColoredString` in `src/lib.rs`; e.g. `fn red(self) -> ColoredString` at
+     `src/lib.rs:150`), and `ColoredString` is a `pub struct` (`src/lib.rs:124`) whose
+     `Display` impl decides colour *at format time* by calling `Self::has_colors()`
+     (`src/lib.rs:604,606`), which resolves to `control::SHOULD_COLORIZE.should_colorize()`
+     (`src/lib.rs:384`). `compute_style` is private (zero occurrences of
+     `pub fn compute_style`), so `Display` is the only styled-output path and the process-global
+     read cannot be bypassed. A `pub fn` in the library crate returning `ColoredString`
+     therefore exports both a renderer and an environment read, breaking acceptance criterion
+     10. **This is the same ground that selects `anstyle` over the other rendering crates**
+     — the stack table admits `anstyle` as *the only colour type allowed in the library
+     crate's public API*, and the Opus raw holds `owo-colors` 4.4.0 and `yansi` 1.0.1 off that
+     role with the identical objection, "renderer, not a vocabulary; would appear in the
+     public API" (`raw/opus-a92869ae8e70073d1a94ec2e3df1ef8d700d2cc91b324064903391fe3babfa33.md`).
+     Revision 2 never reached that question for `colored`, because gate 1 stopped it first.
+  3. **It cannot fill the stream-adapter role at all.** All seven files of `colored`'s `src/`
+     at `v3.1.1` contain **zero** occurrences of `io::Write` or of a `Write` implementation.
+     There is no `AutoStream` equivalent, so architecture (B) — the recommended one — is not
+     expressible with `colored` as the styling crate.
+
+  Two precedence defects are recorded as the same class as `console` 0.16.6's, and are *not*
+  the load-bearing ground: `resolve_clicolor_force` tests `CLICOLOR_FORCE` before `NO_COLOR`
+  (`src/control.rs:152,154`), so a force variable beats an explicit disable; and
+  `normalize_env` maps any set value other than the literal `"0"` to "set"
+  (`src/control.rs:145`), so `NO_COLOR=` (set, empty) disables, against the standard's
+  non-empty rule.
+
+  **What is no longer claimed.** Revision 2 said `license` excluded `colored`. It does not:
+  gate 1 is inapplicable (owner ruling 2026-09-12, Q7.B). With gate 1 struck, `colored` fails
+  **no** gate this decision evaluated — gate 2 passes (`rust-version = "1.80"`, verified at the
+  tag and in the registry) and gate 3 passes (no RustSec page, HTTP 404, verified). Gates 4–6
+  were not evaluated for it, because the exclusion is architectural and precedes them. Its
+  `MPL-2.0` licence is recorded as a fact and carries no verdict here.
 - **(B) Always emit ANSI into a stream adapter that strips when the destination cannot use
   it** — `anstream::AutoStream`. Writing code is colour-blind; one object per stream holds the
   decision. Cost: with colour off, `StripStream` runs a `utf8parse`-driven state machine over
@@ -281,9 +357,14 @@ stream. `anstream` ships `divan` benchmarks for `strip`, `stream` and `wincon`; 
 executed here**, so `StripStream`'s per-byte cost on the un-coloured path is described
 qualitatively and left unmeasured for P03.
 
-**Fitness gates** (verified, `## Empirical check` §6): (1) licence — `anstyle`, `anstream`,
-`anstyle-query` and `colorchoice` are all `MIT OR Apache-2.0`; `colored` 3.1.1 is `MPL-2.0`
-and is **excluded by gate 1**. (2) MSRV — the four crates in the stack table each declare
+**Fitness gates** (verified, `## Empirical check` §6): (1) licence —
+`inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any
+dependency or tool`. The row is kept rather than deleted because the binding prompt requires
+this gate and directs that an inapplicable metric state `inapplicable` and the reason. The
+licence fields are still *recorded*, and they exclude nobody: `anstyle`, `anstream`,
+`anstyle-query` and `colorchoice` are `MIT OR Apache-2.0`, and `colored` 3.1.1 is `MPL-2.0` —
+`colored` is excluded on the architectural grounds stated under **(A)** in
+`### Principles and implementation`, not on its licence. (2) MSRV — the four crates in the stack table each declare
 `rust-version = "1.66.0"`, far below any floor the policy can produce against a 1.9x stable;
 the resolved dependency tree must still be checked against the then-current floor once a
 lockfile exists, so this is a qualified pass. (3) advisories — `anstyle` has no RustSec page
@@ -304,7 +385,8 @@ there is no async-runtime coupling. (6) binary size and compile time — qualita
 re-verify: before P03 implements the colour gate, or earlier on any of — `rust-cli/anstyle`
 issue #192 closing (built-in `FORCE_COLOR` would let the template drop tier 4); an `anstream`
 2.0 or `anstyle` 2.0; `clap` changing the `anstyle` major it depends on; a new RustSec
-advisory against any member; `no-color.org`, `force-color.org` or `bixense.com/clicolors`
+advisory against any member; a `colored` 4.x that ships a writer adapter or stops gating on
+`stdout` alone, which would reopen the exclusion argued under **(A)**; `no-color.org`, `force-color.org` or `bixense.com/clicolors`
 changing the text this decision quotes from their snapshots (run the check script with
 `R65_REFRESH_SNAPSHOTS=1` to detect it); the `anstyle-query` crates.io ownership line
 changing, which is what attributes the recorded statement quoted above; R63 selecting
@@ -324,10 +406,15 @@ rows, not registry parameters; their answers are stated in `## Decision` rather 
 registered. No conflict line is raised, by either raw report or by this decision: nothing
 recommended here requires a consumed parameter to change.
 
-How the four fixed parameters bear on the decision. `license` excluded `colored` 3.1.1
-(`MPL-2.0`) before popularity was weighed, even though the Opus raw records it as the
-most-depended-on candidate in this field at 6,631 reverse dependencies
-(`GET https://crates.io/api/v1/crates/colored/reverse_dependencies`, retrieved 2026-09-10). `msrv-policy` is satisfied with a wide margin — the four crates in the stack table each declare
+How the four fixed parameters bear on the decision. `license` **excludes nothing**: it fixes
+this repository's own declared licence expression, and the owner's ruling of 2026-09-12 (Q7.B)
+strikes licence compatibility as an evaluation criterion for any dependency or tool. The
+most-depended-on candidate in this field — `colored` 3.1.1, which the Opus raw records at 6,631
+reverse dependencies (`GET https://crates.io/api/v1/crates/colored/reverse_dependencies`,
+retrieved 2026-09-10) — is excluded on the architectural grounds set out under **(A)** in
+`### Principles and implementation`, and those grounds still precede popularity, because the
+research mandate (spec §2, owner amendment A5) directs that architectures be compared before
+libraries. Its `MPL-2.0` field is recorded and carries no verdict. `msrv-policy` is satisfied with a wide margin — the four crates in the stack table each declare
 `rust-version = "1.66.0"` and `std::io::IsTerminal` needs 1.70.0 — so this item never forces
 an MSRV bump; the dependency-tree check against the then-current floor still belongs to P03's
 CI. `target-os-matrix` is satisfied and exceeded, and it is why `anstream`'s `wincon` default
@@ -349,7 +436,7 @@ cd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R65/2026-09-05
 bash review/evidence/check-color-enablement-chain.sh
 ```
 
-**Exit status:** `0` (all 177 assertions passed, 0 failed). The run takes a few minutes: crates.io
+**Exit status:** `0` (all 205 assertions passed, 0 failed). The run takes a few minutes: crates.io
 rate-limits a burst of requests, so each crate's `/versions` document is fetched once per
 run, paced, retried with exponential backoff, and snapshotted into
 `review/evidence/crates-io-<crate>-versions.json`. **A registry endpoint that cannot be
@@ -360,9 +447,9 @@ retrieved fails the check loudly; it is never silently treated as a pass.**
 The script **verifies claims and implements nothing**: it scaffolds no crate, writes no
 resolver, and creates no template file. It starts with `set -o pipefail`, and every check
 asserts on expected *content* — a substring or an exact count — rather than on an exit code,
-counting passes and failures and returning non-zero if any failed. It prints **eleven**
-sections, `## 0` through `## 10`: section 0 is the toolchain block quoted above, and sections
-1–10 are these:
+counting passes and failures and returning non-zero if any failed. It prints **twelve**
+sections, `## 0` through `## 11`: section 0 is the toolchain block quoted above, and sections
+1–11 are these:
 
 1. **Pinned source repositories**, read only through `git show <pin>:<path>` — py
    `b08bccfb55d05f15e46a83b52c5660b1881d19f5`, ts `cb1cbcb2e88b898e8c081b0abbfabc1630079c00`.
@@ -375,9 +462,11 @@ sections, `## 0` through `## 10`: section 0 is the toolchain block quoted above,
    re-read at an immutable tag: `clap-rs/clap@v4.6.6`, `rust-lang/cargo@0.99.0`,
    `BurntSushi/ripgrep@15.2.0`, `console-rs/console@0.16.6`, `owo-colors/owo-colors@v4.4.0`,
    `eyre-rs/eyre@color-eyre-v0.6.5`, `BurntSushi/termcolor@1.4.1`,
-   `zkat/supports-color@v3.0.2`, `polyfill-rs/is_terminal_polyfill@v1.70.2`, plus the four
+   `zkat/supports-color@v3.0.2`, `polyfill-rs/is_terminal_polyfill@v1.70.2`, the four
    `rust-cli/anstyle` tags the stack itself is read at — `anstream-v1.0.0`,
-   `anstyle-query-v1.1.5`, `colorchoice-v1.0.5` and `v1.0.14`. That is thirteen tags, and
+   `anstyle-query-v1.1.5`, `colorchoice-v1.0.5` and `v1.0.14` — and
+   `colored-rs/colored@v3.1.1`, added in revision 3 because the exclusion of `colored` is now
+   argued from its source rather than from its licence. That is fourteen tags, and
    each one's existence is asserted before any file is read from it.
 3. **The core claim.** The tier audit over the seven candidates described in
    `### Principles and implementation`, including the `grep -c FORCE_COLOR` = 0 result for
@@ -395,12 +484,16 @@ sections, `## 0` through `## 10`: section 0 is the toolchain block quoted above,
    re-verification is opt-in (`R65_REFRESH_SNAPSHOTS=1`), writes `*-live.txt` files and diffs
    them, and adds no assertion — so the pass inventory is identical with and without it.
 6. **Fitness gates**: crates.io per-version metadata (`license`, `rust_version`, `edition`,
-   `created_at`, newest non-yanked `num`), the `anstream` manifest's default and `test`
+   `created_at`, newest non-yanked `num`) — the `license` values are asserted as *recorded
+   fields*, and every label in this section says so, because gate 1 is inapplicable and no
+   candidate is excluded by a licence here; `colored`'s `rust_version` (gate 2) and its
+   absent RustSec page (gate 3) are asserted in the same section, which is what makes
+   "`colored` fails no gate this decision evaluated" checkable. Also the `anstream` manifest's default and `test`
    features, its full `[dependencies]` list printed and asserted entry by entry, its
    Windows-only `anstyle-wincon` target dependency, the `anstyle` workspace `rust-version`,
    `is_terminal_polyfill`'s delegation to `std`, `anstyle-query`'s `unsafe` being confined to
    its `#[cfg(windows)]` module, the CI matrix, and the RustSec pages for `anstream`,
-   `anstyle` and `atty`.
+   `anstyle`, `atty` and `colored`.
 7. **First-party practice at tags**: cargo's and clap's declared versions, cargo's two
    per-stream `AutoStream::new` constructions, its `AutoStream::never` test seam, its zero
    `write_global` calls, and its flag-above-config line.
@@ -409,18 +502,33 @@ sections, `## 0` through `## 10`: section 0 is the toolchain block quoted above,
 9. **Parameters**: the four `- assumes` lines are *generated* by `awk` from
    `docs/port/PARAMETERS.md` into `review/evidence/params-generated.txt` and `diff`ed against
    the lines in this file; the diff must be empty.
-10. **Line-number ledger**: every `file:line` citation appearing in this decision — 41 of
-    them, across the two source pins and nine upstream tags — is re-read at that exact line
+10. **Line-number ledger**: every `file:line` citation appearing in this decision — 49 of
+    them, across the two source pins and ten upstream tags — is re-read at that exact line
     number and asserted to carry the expected text. This is what makes the sentence "every
     line number cited here is a tag or pin offset" a claim an auditor can rerun rather than a
     claim to be taken on trust.
+11. **Why `colored` 3.1.1 is excluded, now that gate 1 is inapplicable** (added in revision
+    3). Read at tag `colored-rs/colored@v3.1.1`: that every `Colorize` method returns
+    `ColoredString`, that `ColoredString` is `pub`, that its `Display` impl calls
+    `has_colors()`, that `has_colors()` resolves against the `SHOULD_COLORIZE` process global,
+    that `compute_style` is private so `Display` is the only styled-output path, that the
+    enable bit is computed from `io::stdout().is_terminal()` alone with zero occurrences of
+    `stderr` in either file, that all seven files of `src/` contain zero `io::Write`
+    occurrences and no `Write` implementation, that the crate's only override entry point
+    `control::set_override` writes the same process-wide global, and that `CLICOLOR_FORCE` is
+    tested before `NO_COLOR`. The manifest is never printed wholesale — it carries an author e-mail address
+    — so `license` and `rust-version` are asserted as individual lines.
 
 **Reproducibility, stated exactly.** The cited log was regenerated from the script as it now
 stands — this is what the revision-1 audit's F1 found wrong, the script having grown 16
-assertions after the previous log was saved. The script was then run twice in succession on
-2026-09-12 and the two logs were diffed with `diff -u`: the diff is empty, they are
-byte-for-byte identical, and the saved log is the output of the second run. Reruns stay
-byte-identical **while the five live inputs in the table below hold their current values**,
+assertions after the previous log was saved, and revision 3 grew it again by 28 (177 → 205),
+so the log was regenerated a second time. The script was then run twice in succession on
+2026-09-13 and the two logs were diffed with `diff -u`: the diff is empty, they are
+byte-for-byte identical, and the saved log is the output of the second run. It was then run a
+third time, after the last edit to this file, and diffed against the saved log: empty again.
+So the log cited here is the output of the script as committed, against this file as
+committed. Reruns stay
+byte-identical **while the six live inputs in the table below hold their current values**,
 and a rerun that differs is evidence one of them moved, not that the log was mis-saved. The
 three standards pages are no longer among them: since §5 reads the committed snapshots, their
 contribution to the log is three fixed sha256 values.
@@ -430,7 +538,8 @@ contribution to the log is three fixed sha256 values.
 | `rust-cli/anstyle` issue #192 state | `open` (printed as an `INFO` line, not asserted) | `review/evidence/anstyle-issue-192.json` |
 | crates.io individual owners of `anstyle-query` / of `clap` | `epage` / `kbknapp` (asserted: `epage` present for `anstyle-query`, absent for `clap`) | `review/evidence/crates-io-anstyle-query-owners.json`, `review/evidence/crates-io-clap-owners.json` |
 | newest non-yanked version of `anstream`, `anstyle`, `anstyle-query`, `colorchoice` | `1.0.0`, `1.0.14`, `1.1.5`, `1.0.5` | asserted, each marked `VOLATILE` in the log; the fetched documents are snapshotted as `review/evidence/crates-io-<crate>-versions.json` |
-| the RustSec advisory lists for `anstream`, `anstyle`, `atty` | `RUSTSEC-2024-0404` / none (HTTP 404) / `RUSTSEC-2021-0145`, `RUSTSEC-2024-0375` | read live from `rustsec.org` and printed; a new advisory against any of the three changes the log and is a `re-verify` trigger |
+| newest non-yanked `colored`, whose `license` and `rust_version` §6 reads | `3.1.1`, `MPL-2.0`, `1.80` | asserted; the fetched document is snapshotted as `review/evidence/crates-io-colored-versions.json`. A `colored` 4.x would move these and is a `re-verify` trigger |
+| the RustSec advisory lists for `anstream`, `anstyle`, `atty`, `colored` | `RUSTSEC-2024-0404` / none (HTTP 404) / `RUSTSEC-2021-0145`, `RUSTSEC-2024-0375` / none (HTTP 404) | read live from `rustsec.org` and printed; a new advisory against any of the four changes the log and is a `re-verify` trigger |
 | `zkat/supports-color` tag count | 15 | the assertion needs only `v3.0.2` to exist |
 
 Everything else the log prints comes from immutable sources: git tags, `git show` at a commit
@@ -443,8 +552,8 @@ Opus 2026-09-10) and are not re-asserted here.
 classes, and nothing sits outside them:
 
 1. **Immutable, and all crate and repository source is here.** Both source repos at commit
-   pins, and every upstream file at a release tag — thirteen distinct tags, each asserted to
-   exist before any file is read from it; nine of the thirteen also carry `file:line`
+   pins, and every upstream file at a release tag — fourteen distinct tags, each asserted to
+   exist before any file is read from it; ten of the fourteen also carry `file:line`
    citations and so appear in the §10 ledger.
    **No crate source in this decision is read from a default branch.** The
    one raw report that disclosed such a read (the Opus raw on `zkat/supports-color`, "has no
@@ -544,6 +653,20 @@ line is `context/mod.rs:1209`, not `1207`; `colorchoice`'s global is `static USE
 at `lib.rs:41` over `AtomicChoice(AtomicUsize)` at `:44`, not "`AtomicUsize` at `:31-38,41`";
 `color-eyre`'s `owo-colors` dependency is at `Cargo.toml:25` and is workspace-inherited, not `:26`).
 Every line number cited in this decision is a tag offset, verified by the check.
+
+**A raw exclusion ground struck by the owner's ruling, and what replaced it (revision 3).**
+Both engines' raw reports excluded `colored` 3.1.1 under *Excluded by gate* on gate 1
+(`MPL-2.0`). The owner's ruling of 2026-09-12 (Q7.B) strikes gate 1, and no other ground for
+that exclusion appeared anywhere in revision 2 — not in a gate row, not in another exclusion
+list, not in the three architecture comparisons. Rather than let the field's most-adopted
+candidate be excluded by silence, revision 3 read `colored`'s public API at tag `v3.1.1` and
+argued the exclusion from what it found: a process-wide gate computed from stdout's
+terminal-ness alone, a renderer return type that would cross the library crate's public
+surface, and no writer adapter anywhere in the crate. The Opus raw stated only the second of
+those, in one clause and without a citation to the source; the first and third are this
+decision's own findings, and all three are asserted by `## Empirical check` §11. **The
+recommendation is unchanged by the ruling** — `colored` was not the recommendation, the
+runner-up, or a member of the stack in any revision.
 
 **One raw claim corrected in the BASELINE-REVIEW evidence.** The Opus raw's F286 line asserts
 that "every first-party Rust CLI exposes the tri-state form". Verified at tags, `cargo`'s
