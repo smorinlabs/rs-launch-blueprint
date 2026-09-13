@@ -1,12 +1,12 @@
 R01 revision 3 — licence-repair assertions
 decision   research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/DECISION.md
-published  research/topics/01-ports-and-adapters-seam/DECISION.md
+baseline   revision 2, extracted from that file own history, pinned sha256 8025fd5b1a959b1e76fa9a738176071b418fd411aa2ba6ad5c6e4bffbd9a018f
 
-check  1  PASS  supersedes-bytes-verbatim              published revision-2 bytes present after the Supersedes heading
+check  1  PASS  supersedes-bytes-are-rev2              history tail hashes to the published revision-2 digest
 check  2  PASS  supersedes-heading-once                1 heading line
 check  3  PASS  current-h2-sequence                    ## Decision|## Parameters|## Empirical check|## Engines|
 check  4  PASS  current-entry-dated                    # 2026-09-13 — R01 ports-and-adapters-seam — decision (revision 3)
-check  5  PASS  owns-line-byte-identical               http-transport-injection-seam unchanged (803 bytes)
+check  5  PASS  owns-line-byte-identical               http-transport-injection-seam identical to revision 2 (803 bytes)
 check  6  PASS  assumes-lines-byte-identical           4 lines unchanged: msrv-policy, rust-edition, target-os-matrix, license
 check  7  detail (void phrases, repaired text)
   gate-list              ok   absent

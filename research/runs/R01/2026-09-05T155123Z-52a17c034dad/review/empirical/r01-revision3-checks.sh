@@ -14,18 +14,26 @@
 # they are not, the list has gone stale and check 7's pass means nothing.
 # Reverting any single repair was verified to make check 7 exit non-zero.
 #
-# Reads only committed paths, resolved from this script's own location, so the
-# working directory cannot change the result. No network source is queried, so
-# the log does not drift: re-running after the revision is committed reproduces
-# it byte for byte.
+# The revision-2 baseline is taken from THIS FILE's own Supersedes history and
+# pinned by sha256, never from research/topics/.../DECISION.md. That path holds
+# revision 2 only until revision 3 is published; reading it would make the script
+# pass today and fail three assertions the moment the publisher overwrites it.
+# The script therefore reads exactly one input, resolved from its own location,
+# so neither the working directory nor the publication state can change the
+# result, and no network source is queried: the log does not drift.
 set -o pipefail
 set -u
 
 here=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" && pwd)
 root=$(cd -- "$here/../../../../../.." && pwd)
 decision="$root/research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/DECISION.md"
-published="$root/research/topics/01-ports-and-adapters-seam/DECISION.md"
 evidence="$root/research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/evidence"
+
+# The published revision-2 digest, as recorded in
+# research/topics/01-ports-and-adapters-seam/acceptance.json and in
+# docs/planning/p02/execution-ledger.md. Checks 1, 5 and 6 are anchored to it.
+REV2_SHA256=8025fd5b1a959b1e76fa9a738176071b418fd411aa2ba6ad5c6e4bffbd9a018f
+REV2_HEADING='# R01 ports-and-adapters-seam — decision (revision 2, 2026-09-10)'
 
 checks=0
 failures=0
@@ -40,12 +48,10 @@ report() { # report <name> <ok|FAIL> <detail>
   fi
 }
 
-for required in "$decision" "$published"; do
-  if [ ! -f "$required" ]; then
-    printf 'fatal: missing input %s\n' "$required"
-    exit 99
-  fi
-done
+if [ ! -f "$decision" ]; then
+  printf 'fatal: missing input %s\n' "$decision"
+  exit 99
+fi
 
 RULING='`inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool`'
 
@@ -65,22 +71,29 @@ status=$?
 
 printf 'R01 revision 3 — licence-repair assertions\n'
 printf 'decision   research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/DECISION.md\n'
-printf 'published  research/topics/01-ports-and-adapters-seam/DECISION.md\n\n'
+printf 'baseline   revision 2, extracted from that file own history, pinned sha256 %s\n\n' "$REV2_SHA256"
 
 # 1 — the published revision-2 bytes survive verbatim in the history.
-python3 - "$decision" "$published" > "$work/verbatim.txt" 2>&1 <<'PY'
-import sys, pathlib
-new = pathlib.Path(sys.argv[1]).read_bytes()
-old = pathlib.Path(sys.argv[2]).read_bytes()
-tail = new.split(b"\n## Supersedes", 1)
-print("preserved" if len(tail) == 2 and old in tail[1] else "MISSING")
-PY
+#     Extracted by byte offset from this file's own history and hashed; matching
+#     the pinned digest proves the preserved bytes ARE published revision 2, which
+#     a substring test against a live path could not, and which stays true after
+#     revision 3 is published over that path.
+python3 - "$decision" "$REV2_HEADING" "$work/rev2.md" > "$work/verbatim.txt" 2>&1 <<'EXTRACT'
+import sys, pathlib, hashlib
+data = pathlib.Path(sys.argv[1]).read_bytes()
+marker = ("\n" + sys.argv[2] + "\n").encode("utf-8")
+if data.count(marker) != 1:
+    print("MARKER-COUNT-%d" % data.count(marker)); raise SystemExit(0)
+rev2 = data[data.find(marker) + 1:]
+pathlib.Path(sys.argv[3]).write_bytes(rev2)
+print(hashlib.sha256(rev2).hexdigest())
+EXTRACT
 status=$?
 verbatim=$(cat "$work/verbatim.txt")
-if [ $status -eq 0 ] && [ "$verbatim" = preserved ]; then
-  report supersedes-bytes-verbatim ok "published revision-2 bytes present after the Supersedes heading"
+if [ $status -eq 0 ] && [ "$verbatim" = "$REV2_SHA256" ]; then
+  report supersedes-bytes-are-rev2 ok "history tail hashes to the published revision-2 digest"
 else
-  report supersedes-bytes-verbatim FAIL "got: $verbatim (python exit $status)"
+  report supersedes-bytes-are-rev2 FAIL "got: $verbatim (python exit $status)"
 fi
 
 # 2 — exactly one Supersedes heading, at the top level.
@@ -114,12 +127,13 @@ fi
 
 # 5 — the owned parameter line is byte-identical to the published one. R69 is
 #     consuming this value; a moved byte would invalidate a published parameter.
+#     The baseline is the hash-verified revision 2 extracted by check 1.
 grep '^- owns ' "$work/current.md" > "$work/owns-new.txt"
 status_new=$?
-grep '^- owns ' "$published" > "$work/owns-old.txt"
+grep '^- owns ' "$work/rev2.md" > "$work/owns-old.txt"
 status_old=$?
 if [ $status_new -eq 0 ] && [ $status_old -eq 0 ] && cmp -s "$work/owns-new.txt" "$work/owns-old.txt"; then
-  report owns-line-byte-identical ok "http-transport-injection-seam unchanged ($(wc -c < "$work/owns-new.txt" | tr -d ' ') bytes)"
+  report owns-line-byte-identical ok "http-transport-injection-seam identical to revision 2 ($(wc -c < "$work/owns-new.txt" | tr -d ' ') bytes)"
 else
   report owns-line-byte-identical FAIL "differs, or absent (grep exits $status_new/$status_old)"
 fi
@@ -127,7 +141,7 @@ fi
 # 6 — all four assumed parameter lines are byte-identical, in order.
 grep '^- assumes ' "$work/current.md" > "$work/assumes-new.txt"
 status_new=$?
-grep '^- assumes ' "$published" > "$work/assumes-old.txt"
+grep '^- assumes ' "$work/rev2.md" > "$work/assumes-old.txt"
 status_old=$?
 lines=$(wc -l < "$work/assumes-new.txt" | tr -d ' ')
 if [ $status_new -eq 0 ] && [ $status_old -eq 0 ] && [ "$lines" = 4 ] && cmp -s "$work/assumes-new.txt" "$work/assumes-old.txt"; then
@@ -169,7 +183,7 @@ fi
 # 10 — each excluded crate's surviving independent ground is present in the
 #      decision's own outcome text.
 missing=""
-grep -q -F 'no push across two years of releases' "$work/current.md" || missing="$missing test-case-at-risk"
+grep -q -F '"no push through two years of releases", against the table'\''s own figures' "$work/current.md" || missing="$missing test-case-at-risk"
 grep -q -F '`test-case` varies *values*' "$work/current.md" || missing="$missing test-case-fit"
 grep -q -F 'with "liberal use of unsafe" per its own documentation' "$work/current.md" || missing="$missing faux-unsafe"
 grep -q -F 'mocks a concrete struct instead of implementing the port trait' "$work/current.md" || missing="$missing faux-fit"
@@ -191,6 +205,8 @@ cat > "$work/log-hashes.txt" <<'EOF'
 EOF
 bad=""
 while read -r want name; do
+  # `set -o pipefail` is in force, so this pipeline reports shasum's status
+  # when shasum fails, not awk's.
   got=$(shasum -a 256 "$evidence/$name" | awk '{print $1}')
   status=$?
   [ $status -eq 0 ] && [ "$got" = "$want" ] || bad="$bad $name"
