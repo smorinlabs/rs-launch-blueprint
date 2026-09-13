@@ -338,7 +338,9 @@ PASS  colored's only escape hatch writes the same process-wide global (no per-st
 PASS  colored lets CLICOLOR_FORCE win before NO_COLOR is tested  [matched: if Self::normalize_env(clicolor_force) == Some(true) {]
 PASS  colored treats any set NO_COLOR (including empty) as disabling  [matched: } else if Self::normalize_env(no_color).is_some() {]
 PASS  colored's normalize_env only excludes the literal "0"  [matched: env_res.map_or(None, |string| Some(string != "0"))]
+PASS  the Codex raw never mentions colored (coverage gap, not a disagreement)  [count=0]
+PASS  the Opus raw is the only one that surveyed colored  [occurrences=12]
 
 ==============================================================
-TOTAL: 205 passed, 0 failed
+TOTAL: 207 passed, 0 failed
 ==============================================================

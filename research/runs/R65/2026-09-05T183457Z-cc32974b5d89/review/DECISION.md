@@ -33,7 +33,7 @@ one-clause claim ("would export a renderer"), which is the only ground the raw s
 **Everything else is carried through unchanged**, including the argument of
 `### Principles and implementation` for the template owning tiers 1–4, the
 `BASELINE-REVIEW: F286` proposal, the resolved chain, and the four `- assumes` lines. The
-counts in `## Empirical check` moved because the script grew (177 → 205 assertions, eleven →
+counts in `## Empirical check` moved because the script grew (177 → 207 assertions, eleven →
 twelve sections, thirteen → fourteen tags, 41 → 49 ledger entries); those are recorded, not
 silent.
 
@@ -219,9 +219,11 @@ one that separates the two candidate resolver shapes (see `## Engines`, Disagree
      therefore exports both a renderer and an environment read, breaking acceptance criterion
      10. **This is the same ground that selects `anstyle` over the other rendering crates**
      — the stack table admits `anstyle` as *the only colour type allowed in the library
-     crate's public API*, and the Opus raw holds `owo-colors` 4.4.0 and `yansi` 1.0.1 off that
-     role with the identical objection, "renderer, not a vocabulary; would appear in the
-     public API" (`raw/opus-a92869ae8e70073d1a94ec2e3df1ef8d700d2cc91b324064903391fe3babfa33.md`).
+     crate's public API*, and the Opus raw holds the rendering crates off that role on the
+     same reasoning: `owo-colors` 4.4.0 is "renderer, not a vocabulary; would appear in the
+     public API", and `yansi` 1.0.1 is a renderer that "merges the vocabulary and the gate
+     rather than separating them" by owning a global `enable()`/`disable()` switch
+     (`raw/opus-a92869ae8e70073d1a94ec2e3df1ef8d700d2cc91b324064903391fe3babfa33.md`).
      Revision 2 never reached that question for `colored`, because gate 1 stopped it first.
   3. **It cannot fill the stream-adapter role at all.** All seven files of `colored`'s `src/`
      at `v3.1.1` contain **zero** occurrences of `io::Write` or of a `Write` implementation.
@@ -358,8 +360,8 @@ executed here**, so `StripStream`'s per-byte cost on the un-coloured path is des
 qualitatively and left unmeasured for P03.
 
 **Fitness gates** (verified, `## Empirical check` §6): (1) licence —
-`inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any
-dependency or tool`. The row is kept rather than deleted because the binding prompt requires
+`inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool`.
+The row is kept rather than deleted because the binding prompt requires
 this gate and directs that an inapplicable metric state `inapplicable` and the reason. The
 licence fields are still *recorded*, and they exclude nobody: `anstyle`, `anstream`,
 `anstyle-query` and `colorchoice` are `MIT OR Apache-2.0`, and `colored` 3.1.1 is `MPL-2.0` —
@@ -436,7 +438,7 @@ cd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R65/2026-09-05
 bash review/evidence/check-color-enablement-chain.sh
 ```
 
-**Exit status:** `0` (all 205 assertions passed, 0 failed). The run takes a few minutes: crates.io
+**Exit status:** `0` (all 207 assertions passed, 0 failed). The run takes a few minutes: crates.io
 rate-limits a burst of requests, so each crate's `/versions` document is fetched once per
 run, paced, retried with exponential backoff, and snapshotted into
 `review/evidence/crates-io-<crate>-versions.json`. **A registry endpoint that cannot be
@@ -516,18 +518,19 @@ sections, `## 0` through `## 11`: section 0 is the toolchain block quoted above,
     `stderr` in either file, that all seven files of `src/` contain zero `io::Write`
     occurrences and no `Write` implementation, that the crate's only override entry point
     `control::set_override` writes the same process-wide global, and that `CLICOLOR_FORCE` is
-    tested before `NO_COLOR`. The manifest is never printed wholesale — it carries an author e-mail address
+    tested before `NO_COLOR`. It also counts occurrences of the string `colored` in each raw
+    report, which is the evidence for the coverage gap recorded in `## Engines`: zero in the
+    Codex raw, many in the Opus raw. The manifest is never printed wholesale — it carries an author e-mail address
     — so `license` and `rust-version` are asserted as individual lines.
 
 **Reproducibility, stated exactly.** The cited log was regenerated from the script as it now
 stands — this is what the revision-1 audit's F1 found wrong, the script having grown 16
-assertions after the previous log was saved, and revision 3 grew it again by 28 (177 → 205),
+assertions after the previous log was saved, and revision 3 grew it again by 30 (177 → 207),
 so the log was regenerated a second time. The script was then run twice in succession on
 2026-09-13 and the two logs were diffed with `diff -u`: the diff is empty, they are
-byte-for-byte identical, and the saved log is the output of the second run. It was then run a
-third time, after the last edit to this file, and diffed against the saved log: empty again.
-So the log cited here is the output of the script as committed, against this file as
-committed. Reruns stay
+byte-for-byte identical, and the saved log is the output of the second run. It was re-run once
+more after the final edit to this file and diffed against the saved log: empty again. So the
+log cited here is the output of the script as committed, against this file as committed. Reruns stay
 byte-identical **while the six live inputs in the table below hold their current values**,
 and a rerun that differs is evidence one of them moved, not that the log was mis-saved. The
 three standards pages are no longer among them: since §5 reads the committed snapshots, their
@@ -655,8 +658,12 @@ at `lib.rs:41` over `AtomicChoice(AtomicUsize)` at `:44`, not "`AtomicUsize` at 
 Every line number cited in this decision is a tag offset, verified by the check.
 
 **A raw exclusion ground struck by the owner's ruling, and what replaced it (revision 3).**
-Both engines' raw reports excluded `colored` 3.1.1 under *Excluded by gate* on gate 1
-(`MPL-2.0`). The owner's ruling of 2026-09-12 (Q7.B) strikes gate 1, and no other ground for
+The **Opus** raw excluded `colored` 3.1.1 under *Excluded by gate* on gate 1 (`MPL-2.0`). The
+**Codex** raw does not mention `colored` anywhere — zero occurrences of the string in
+`raw/codex-5df6c0a31e49b8cfa8401fb94d64a97e9858516d0ec6962993df20d984362b94.md`, asserted by
+`## Empirical check` §11 — so it never
+surveyed the field's most-adopted crate at all, which is a coverage gap in that raw rather
+than a disagreement about the crate. The owner's ruling of 2026-09-12 (Q7.B) strikes gate 1, and no other ground for
 that exclusion appeared anywhere in revision 2 — not in a gate row, not in another exclusion
 list, not in the three architecture comparisons. Rather than let the field's most-adopted
 candidate be excluded by silence, revision 3 read `colored`'s public API at tag `v3.1.1` and

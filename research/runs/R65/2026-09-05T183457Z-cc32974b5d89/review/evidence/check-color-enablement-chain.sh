@@ -584,6 +584,22 @@ assert "colored treats any set NO_COLOR (including empty) as disabling" \
   '} else if Self::normalize_env(no_color).is_some() {' "$CLR_CTL"
 assert "colored's normalize_env only excludes the literal \"0\"" \
   'env_res.map_or(None, |string| Some(string != "0"))' "$CLR_CTL"
+
+# (e) Which raw report actually surveyed colored. Only Opus did; the Codex raw never names it.
+CODEX_RAW="$RUN_DIR/raw/codex-5df6c0a31e49b8cfa8401fb94d64a97e9858516d0ec6962993df20d984362b94.md"
+OPUS_RAW="$RUN_DIR/raw/opus-a92869ae8e70073d1a94ec2e3df1ef8d700d2cc91b324064903391fe3babfa33.md"
+if [ -f "$CODEX_RAW" ] && [ -f "$OPUS_RAW" ]; then
+  assert_n "the Codex raw never mentions colored (coverage gap, not a disagreement)" 0 \
+    "$(grep -ci 'colored' "$CODEX_RAW")"
+  OPUS_CLR=$(grep -ci 'colored' "$OPUS_RAW")
+  if [ "$OPUS_CLR" -ge 5 ]; then
+    ok "the Opus raw is the only one that surveyed colored  [occurrences=$OPUS_CLR]"
+  else
+    bad "expected >=5 'colored' occurrences in the Opus raw, got $OPUS_CLR"
+  fi
+else
+  bad "raw reports not found at $CODEX_RAW / $OPUS_RAW"
+fi
 echo
 
 echo "=============================================================="
