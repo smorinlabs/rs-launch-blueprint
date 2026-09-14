@@ -1,4 +1,137 @@
-# R49 — build-target-declaration (crate, Deep) — DECISION (revision 4, 2026-09-13)
+# R49 — build-target-declaration (crate, Deep) — DECISION (revision 5, 2026-09-14)
+
+**What changed in revision 5, and what did not.** Revision 4 (sha256
+`7f088e512f1393896c043274a9f05f9ff65639433b23cd6b0e6b1b35b416fcc7`) was
+**rejected** by `review/audit-codex.md` (actor
+`audit-codex-2026-09-05T155504Z-2107cffb3ecf-r4`, model `gpt-5.6-terra`, family
+openai) on one unresolved finding: *"recorded full licence-identifier
+enumeration is incomplete"*. **The finding is correct and the false claim was
+mine.** Revision 4 diagnosed a truncated search that had been read as a census
+and then, in the same paragraph, asserted that the chain's other enumeration
+greps returned their recorded line lists raw. For three of those four greps the
+assertion is true and the round-4 audit's own evidence confirms it
+(`review/evidence/audit-provenance-r4.log`, `ASSERT ok` on the `licen`, `gate 1`
+and `binstall` lists). For the fourth it is false.
+
+**The enumeration that was wrong, as a command and its raw output.** The
+revision-3 commit message (`7a08061`) records this command and records its result
+as the five lines `182 363 607 610 616`:
+
+```
+grep -niE 'copyleft|agpl|[^a-z]gpl|mpl|mozilla|patent|permissive'
+```
+
+Re-run untruncated against the revision-2 blob — `git show
+2ac02e1:research/runs/R49/2026-09-05T155504Z-2107cffb3ecf/review/DECISION.md`,
+sha256 `1b5a6b99ecedb88f7358d16a4567aa9b56838a2102e9e4feda99d00bc787513f` — that
+command returns **40** lines, not five (the block below prints the matched line
+numbers only, space-separated and wrapped to the page width;
+`review/evidence/licence-enumeration.log` carries the same list unwrapped on one
+line, beside the raw match count):
+
+```
+8 29 30 32 36 37 61 90 94 110 132 150 162 167 182 191 197 204 231 243 264 273
+278 290 297 301 338 354 363 413 456 516 607 610 616 652 665 680 716 730
+```
+
+**The five recorded lines are therefore a filtered subset of that command's
+output, and this decision no longer presents them as the command's raw output.**
+Every list in this note is anchored to a named immutable git blob rather than to
+"this file", so re-running the stated command reproduces the stated list even
+after this revision is committed. The round-4 audit's prose gives the figure as
+41 while its own evidence log prints the same 40-entry list reproduced above, and
+re-running the command here returns 40; the difference is one of counting, not of
+content — the list is the same list.
+
+**The filter, stated as a rule and proved rather than asserted.** The rule
+applied — silently at the time, explicitly now — was: *keep a line only where a
+matched token is a licence identifier or a licence-policy term; drop it where the
+matched token is a substring of an ordinary English word.* It is checkable here
+because the pattern's noise has a single source. Of the 35 dropped lines, every
+one matched through the bare `mpl` alternative and through **no other
+alternative** — the tokens are tabulated line by line in
+`review/evidence/licence-enumeration.log` — and those `mpl` occurrences sit
+inside `template` (15), `implementation` (7), `example` (3), `implements` (2) and
+one each of `templates`, `sampling`, `implies`, `implied`, `implicitly`,
+`implication`, `implementations` and `autoexamples`. Exactly one dropped line,
+`:338`, does carry licence text — the `- owns build-tool-output-shape` line,
+whose `/LICENSE-MIT` and `/LICENSE-APACHE` allow-list entries are this
+repository's own licence files — and that line is in the `licen` grep's list,
+which revision 3 did record and did act on. Raw count 40, reported count 5, and
+the 35-line difference accounted for individually.
+
+**The corrected pattern, whose raw output needs no filtering.** Matching the same
+identifiers case-sensitively and as whole words (`-w`) removes the ordinary-word
+matches at the source, so the printed list and the command's raw output are the
+same object:
+
+```
+grep -nwE 'copyleft|AGPL|LGPL|GPL|MPL|Mozilla|PERMISSIVE|permissive|patent'
+```
+
+On the revision-2 blob its raw output is `182 363 607 610 616` — **exactly the
+five lines revision 3 acted on**, with nothing removed by hand. On the revision-4
+blob (`ddbee6a`, sha256
+`7f088e512f1393896c043274a9f05f9ff65639433b23cd6b0e6b1b35b416fcc7`) its raw
+output is `12 29 70 92 298 489 733 736 745 794`. A negative control in the script
+confirms it matches none of `OMIT`, `implementation`, `template`. **No licence
+location revision 3 or 4 acted on is missing from that list, and the
+licence-repair conclusions hold at each line it finds**: `:12` and `:298` carry
+the Opus raw's `GPL-3.0-only` ground inside the provenance repair the round-4
+audit confirmed; `:29`, `:70` and `:92` are revision-history prose; `:489` is the
+Rust API Guidelines' C-PERMISSIVE convention attached to this repository's own
+`LICENSE-MIT` + `LICENSE-APACHE` pair, which the ruling exempts; `:733` and
+`:736` are measured registry metadata in check 6; `:745` is that table's readout,
+which already states the `license` column is evaluated against no gate; `:794` is
+the `opus` `## Engines` entry the round-4 audit confirmed.
+
+**What the corrected pattern finds that no revision-3 list carried, and why it is
+left byte-identical.** Widening it to the permissive SPDX identifiers —
+`…|Apache-2\.0|MIT|BSD|ISC|Unlicense|CC0`, still `-w`, still case-sensitive —
+returns 15 lines on the revision-2 blob and 21 on the revision-4 blob. Six of the
+revision-2 lines (`582 605 606 608 609 611`; in revision-4 numbering `708 731 732
+734 735 737`) appear in **none** of revision 3's four recorded lists, because
+neither `licen` nor the noisy identifier pattern reaches them: they are check 6's
+registry rows for `cargo-dist`, `cargo-make`, `cross`, `cargo-zigbuild` and
+`cargo-packager`, and check 10's parenthetical record of `dist`'s licence at its
+pinned tag. Each was read. **None carries a licence-as-gate claim**: each is a
+permissive value transcribed from `review/evidence/registry-figures.log` or from
+the crates.io endpoint, and the status of that whole column is stated once, in
+this decision's own voice, in `## Empirical check` check 6 — *"it is evaluated
+against **no gate**"*. They are left byte-identical, recorded here rather than
+left silent.
+
+**Evidence, and the grep binary the lists came from.** `review/evidence/check-licence-enumeration.sh`
+is new with this revision; it extracts both blobs with `git show`, asserts their
+sha256 values, and makes 13 content assertions covering every figure above,
+exiting non-zero on any failure. Its log is
+`review/evidence/licence-enumeration.log`. `grep` on this machine's `PATH` is
+`ugrep 7.8.4`, not BSD or GNU grep, so the script runs every enumeration through
+`/usr/bin/grep` at an absolute path and separately asserts that the `PATH` grep
+returns the same count for the pattern at issue. The script was re-run after its
+log was saved and reproduces it byte-for-byte except the `retrieved:` UTC
+timestamp on line 1 (raw `diff` differs on that line alone; the same `diff` with
+that line removed exits 0).
+
+**What revision 5 changes.** Two locations, neither of them the recommendation,
+plus the title's revision number. Both false completeness sentences are
+**preserved and corrected in place** rather than rewritten away, which is the
+method revision 4 used for its own correction: the revision-4 note's claim that
+the other enumeration greps' "line lists are complete", and the revision-3 note's
+phrase "the full line list recorded in this revision's commit message".
+
+**What revision 5 does not change.** The recommendation does not move: declare
+every build target in `Cargo.toml` itself and add no build backend, bundler or
+build-orchestration crate. Fitness gate 1 stays `inapplicable` under the owner's
+2026-09-12 ruling (Q7.B), and this revision is a decision-history and
+search-method correction, **not** a reinstatement of that gate. Every repair the
+round-4 audit confirmed is untouched: the original false statement preserved at
+the revision-3 note, the two pre-ruling licence grounds recorded with scope
+retained as the surviving ground, the `## Engines` entry for `opus`, and check
+6's table and readout. `cargo-binstall` remains excluded on the scope ground
+alone. Every `- owns` and `- assumes` line is byte-identical to revisions 2, 3
+and 4. No existing evidence script, log, figure or empirical check is altered,
+and no existing empirical claim moves.
 
 **What changed in revision 4, and what did not.** Revision 3 (sha256
 `85eddc5806c820229f9ad84b82fdc5d9c8e8098c9562105707a6584011794770`) was
@@ -30,7 +163,15 @@ that way. The enumeration greps over `DECISION.md` (`licen`, `gate 1`, copyleft
 and licence identifiers, `binstall`) ran with no `head`; the only truncation
 applied to them shortened each matched line's displayed text without dropping any
 line from the list, so those line lists are complete and re-running them returns
-the same lists.
+the same lists. *[Corrected in revision 5. That holds for three of the four
+greps — the `licen`, `gate 1` and `binstall` lists are their commands' raw
+output, which `review/evidence/audit-provenance-r4.log` independently confirms —
+but not for the fourth. `grep -niE 'copyleft|agpl|[^a-z]gpl|mpl|mozilla|patent|permissive'`
+returns 40 lines on the revision-2 blob, not the five recorded, because its bare
+`mpl` alternative matches `template`, `implementation` and 33 further
+ordinary-word occurrences; the recorded five are a filtered subset. See the
+revision-5 note at the top of this decision for the command, its raw output, the
+filter rule, and the corrected pattern whose raw output needs no filter.]*
 
 **What revision 4 changes.** Three locations, none of them the recommendation.
 (a) The false sentence in the revision-3 note below is corrected **in place**, so
@@ -68,7 +209,11 @@ build-orchestration crate — rested on a licence fact: the pick is dominant
 because Cargo's manifest is the only candidate in the three-bin map that declares
 a build target at all. What moves is one piece of reasoning. A mechanical search
 for `licen`, `gate 1`, copyleft and licence identifiers, and `binstall` produced
-the full line list recorded in this revision's commit message; three locations
+the full line list recorded in this revision's commit message *[corrected in
+revision 5: of the four greps recorded there, the `licen`, `gate 1` and
+`binstall` lists are their commands' raw output, but the copyleft/licence-identifier
+list is a filtered subset of its command's 40-line output — see the revision-5
+note at the top]*; three locations
 carried a *licence-as-gate* claim and all three are edited — the gate-1 row under
 `### Principles and implementation`, the `cargo-binstall` exclusion in the same
 section, and the `## Empirical check` sentence that read gate exclusions off
