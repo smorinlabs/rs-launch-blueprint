@@ -1137,9 +1137,16 @@ committed in this repository and make no network call; both were rerun against a
 directory with no `.git` and no working-tree state — and `diff` against the two
 logs cited here reported no difference. `r60-snapshot-provenance-r4.sh` carries
 the identical two conditions revision 3 recorded: byte-for-byte only while the
-network is reachable **and** the checkout carries git history; without history
-the three `self` rows report `UNVERIFIABLE-HERE` and the totals shift, which is
-stated here rather than left for an auditor to discover.
+network is reachable **and** the checkout carries git history. **The exact
+variance outside the second condition, observed rather than predicted**, from the
+same `git archive` extraction: the three `self` rows — the revision-1, revision-2
+and revision-3 baselines, which are checked against this repository's own git
+objects — report `UNVERIFIABLE-HERE`, and the totals read
+`CHECKS RUN: 14 … UNVERIFIABLE-HERE: 5` rather than `17 … 2`. **That is the only
+difference**; every other line is byte-identical, including the network-dependent
+ones. Revision 3 recorded the same variance with its own numbers
+(`12 … 4` against `14 … 2`, two `self` rows rather than three), so the behavior
+is unchanged and only the counts moved with the MANIFEST.
 
 | Row | What it checks | Command | Result |
 |---|---|---|---|
