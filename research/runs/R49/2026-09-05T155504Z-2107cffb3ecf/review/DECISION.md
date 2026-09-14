@@ -61,9 +61,13 @@ which revision 3 did record and did act on. Raw count 40, reported count 5, and
 the 35-line difference accounted for individually.
 
 **The corrected pattern, whose raw output needs no filtering.** Matching the same
-identifiers case-sensitively and as whole words (`-w`) removes the ordinary-word
-matches at the source, so the printed list and the command's raw output are the
-same object:
+identifiers case-sensitively and as whole words (`-w`) removes the substring
+matches that made the recorded pattern noisy, so the printed list and the
+command's raw output are the same object. The claim being made is that the
+printed list **is** the raw output of the command below on the named blob — not
+that no ordinary word could ever match it, since `permissive` and `patent` are
+ordinary words; every line the pattern returns is therefore printed in the
+evidence log to be read rather than only counted:
 
 ```
 grep -nwE 'copyleft|AGPL|LGPL|GPL|MPL|Mozilla|PERMISSIVE|permissive|patent'
@@ -168,8 +172,10 @@ greps — the `licen`, `gate 1` and `binstall` lists are their commands' raw
 output, which `review/evidence/audit-provenance-r4.log` independently confirms —
 but not for the fourth. `grep -niE 'copyleft|agpl|[^a-z]gpl|mpl|mozilla|patent|permissive'`
 returns 40 lines on the revision-2 blob, not the five recorded, because its bare
-`mpl` alternative matches `template`, `implementation` and 33 further
-ordinary-word occurrences; the recorded five are a filtered subset. See the
+`mpl` alternative matches ordinary words — 35 occurrences across twelve of them
+on those 40 lines, commonest `template` (15) and `implementation` (7), tabulated
+in `review/evidence/licence-enumeration.log`; the recorded five are a filtered
+subset. See the
 revision-5 note at the top of this decision for the command, its raw output, the
 filter rule, and the corrected pattern whose raw output needs no filter.]*
 

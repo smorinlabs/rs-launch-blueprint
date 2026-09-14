@@ -43,7 +43,11 @@ GREP=/usr/bin/grep
 # The pattern recorded in the revision-3 commit message (7a08061).
 PAT_OLD='copyleft|agpl|[^a-z]gpl|mpl|mozilla|patent|permissive'
 # The corrected pattern: licence identifiers and licence-policy terms, matched
-# case-sensitively and as whole words, so no ordinary word can match.
+# case-sensitively and as whole words. Whole-word matching removes the substring
+# matches that made the original pattern noisy; it does not make an ordinary-word
+# match impossible in principle, because `permissive` and `patent` are ordinary
+# words, so every line this pattern returns is printed below for the reader to
+# check rather than merely counted.
 PAT_ID='copyleft|AGPL|LGPL|GPL|MPL|Mozilla|PERMISSIVE|permissive|patent'
 # The same, widened to the permissive SPDX identifiers this decision records.
 PAT_ID_FULL='copyleft|AGPL|LGPL|GPL|MPL|Mozilla|PERMISSIVE|permissive|patent|Apache-2\.0|MIT|BSD|ISC|Unlicense|CC0'
