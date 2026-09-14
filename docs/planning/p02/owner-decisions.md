@@ -258,6 +258,41 @@ record is incomplete without it.
 
 **Response that settles it.** "Acknowledged".
 
+## 9. Whether your CLI Design Standard binds this port -- ANSWERED 2026-09-14
+
+**DECIDED.** The standard BINDS. Override OV-01 is NOT waived; the owner
+selected R60's own conformant option (b).
+
+The ask was re-put after the owner said the first version was unclear. The
+rewrite named the document (`/Users/stevemorin/c/cli-standards/cli-design-standard.md`,
+version 1.4.14), quoted its own scope line ("Applies to: All new CLIs, any
+language"), showed that R67 is already published relying on its rule R6.1, and
+reduced the real question to one thing: what `--version` prints. The binding
+question was presented as a confirmation the document already answers, not as an
+open choice, which is what it always was.
+
+**Effect on R60.** `-V` and `--version` both print the single conformant line
+`<tool> <semver>`; the target-triple and rustc lines move behind
+`<tool> --version -o json`, which R4.6 explicitly permits at `:277-279` and
+whose object shape it specifies. AC2 and AC3 are rewritten and nothing else in
+R60 changes, exactly as R60 itself predicted for options (b) and (c).
+
+**OV-01 is retired rather than deleted.** The programme's first override ends
+as a waiver REQUESTED 2026-09-12 and REFUSED 2026-09-14, with the argument and
+options table kept as the record of how the choice was reached. R60 now carries
+zero overrides, and the template conforms to the pinned standard with no waived
+SHOULD on file.
+
+**One consequence that needs work rather than bookkeeping.** R60's own text
+warns that option (b) "couples F267 to R66's output-format surface, which R60's
+prompt puts out of scope." That coupling is now real. The revision is directed
+to establish what R66 actually owns and either record a `related (not a registry
+dependency)` note naming what R66 must stay compatible with, or write a
+`CONFLICT: R66 ...` line if R60's recommendation genuinely needs a value R66
+owns. It may not change another item.
+
+---
+
 ## 9. Whether your CLI Design Standard binds this port
 
 **What is being asked.** To confirm, not to decide. R60 flagged as an owner call
