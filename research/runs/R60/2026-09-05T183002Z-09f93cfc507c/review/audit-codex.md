@@ -1,23 +1,22 @@
-decision-sha256: 18769c3a522c94ee59c5635a338828781efa9c6bc8aa4e13ac9443a5773c5c2c
-actor: audit-codex-2026-09-05T183002Z-09f93cfc507c-r2
+decision-sha256: 14f66259aad6063f9506410735e61e9a58a026fc24200cb048b9bbc71bbc2100
+actor: audit-codex-2026-09-05T183002Z-09f93cfc507c-r3
 model: gpt-5.6-terra
 family: openai
-verdict: reject
-unresolved-findings: revision-2 evidence scripts are not rerunnable after the revision is committed, contradicting the decision's byte-for-byte reproducibility claim
+verdict: approve
+unresolved-findings: none
 
 ## Rerun
 
-argv: `bash review/evidence/r60-standard-pin-r2.sh`; then `bash review/evidence/r60-preservation-diff-r2.sh`.
-cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R60/2026-09-05T183002Z-09f93cfc507c`.
-toolchain: macOS. The supplied Linux command was attempted after `source $HOME/.cargo/env`, but the stopped `ubuntu` VM could not start because the sandbox denied Lima's unlink of `~/.lima/ubuntu/ha.stdout.log`; no Linux result is claimed.
-exit code: standard-pin script `1`; preservation script `2`.
-log path: `review/evidence/audit-cli-parsing-framework-r2.log`.
-output match: no. Both scripts executed their deliberate negative controls correctly, and every substantive content check passed, but their lifecycle checks require revision 2 to remain an uncommitted worktree change. Revision 2 is now committed at `892954669e0073b2d9747a6e67068645f5cbf088`.
+argv: `bash <archive>/review/evidence/r60-standard-pin-r3.sh`; `bash <archive>/review/evidence/r60-preservation-diff-r3.sh`; `bash <archive>/review/evidence/r60-snapshot-provenance-r3.sh`.
+
+cwd: `/private/tmp`; toolchain: `git archive`, `tar`, `bash`, `curl`, `diff`, and `shasum` on macOS. I archived commit `d642814cddfd3f1756fc56cd38738904440d9141` into an empty directory with no `.git`, then ran the three scripts from that extracted copy. All three exited `0`; complete output is `review/evidence/audit-cli-parsing-framework-r3.log`.
+
+Output match: the two offline scripts diffed empty against their committed logs. The provenance script diffed empty in the history-bearing checkout. In the archive it differed only in the two declared self-baseline Git-object rows and their resulting totals: `CHECKS RUN: 12 ... UNVERIFIABLE-HERE: 4`, rather than `14 ... 2`.
 
 ## Findings
 
-1. Blocker — the decision claims at `review/DECISION.md:668-693` that both revision-2 logs are reproducible byte-for-byte. They are not reproducible from the published revision. `r60-standard-pin-r2.sh:190-193` requires `HEAD:.../DECISION.md` to equal the revision-1 blob `5ae06c37...`; current `HEAD` instead resolves that path to revision-2 blob `8c3c7c09...`, so C14a fails. `r60-preservation-diff-r2.sh:175-192` requires exactly six dirty paths and a dirty `DECISION.md`; both are false after the revision has been committed, so C5b/C5c fail. The script's C0 controls correctly prove the harness detects mismatches, so these are real failed checks rather than suppressed errors. Replace worktree-status assertions with comparisons between named revision-1 and revision-2 commits, then regenerate and rerun the evidence logs.
+None. The archive provenance rerun re-fetched and hash-verified the standard, two crate tarballs and extracted files, and two Python snapshots; it also verified the two TypeScript privacy probes as HTTP 404. Each C0 control emitted its deliberate failure and the harness recorded it before resetting counters. The numeric inverse control confirmed `count=10` does not satisfy `count=0`; count expectations in the revision-3 scripts use labelled values. Gate 1 is correctly recorded as inapplicable under Q7.B, and the four exclusions are all explicitly gate-2 missing-`rust-version` exclusions.
 
 ## Assessment
 
-The repaired R1.3 content is otherwise correct at the pinned versions. The pin resolves version `1.4.14`, commit `fb30a591c267a7ec1130ba4cda679eaee494b9d7`, blob `f9de0437baece3383e73ca2c5f48b7ab399b51c7`, and SHA-256 `9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f`; the cited blob lines contain the singular canonical noun, the undocumented/hidden-only plural allowance, and the help/docs prohibition. At `clap_builder 4.6.6`, `Command::alias` is documented as hidden from help and `Command::visible_alias` as visible. At `clap_derive 4.6.4`, a non-special `alias` attribute is rendered verbatim as `.alias("projects")`. AC9 asserts the three mandatory rule parts, and AC10 asserts the optional hidden-alias case. R67's decision body has no version, commit, blob, or content-hash pin; revision 1's corrected Decision Log lines are `:63`, `:65`, and `:69`, while `:70` is Exit codes. The preservation script's C2 independently found all 20 requested targets byte-identical, including the crate/features, lockfile/advisory rows, four `assumes` lines, and OV-01 argument. OV-01 remains requested, not granted, and R1.3 conformance is not filed as a second override.
+The revision-2 post-commit rerunnability failure is corrected. The decision's stated evidence limits remain accurate: this audit verifies the recorded evidence apparatus and citations, not a non-existent template implementation.

@@ -1,4 +1,4 @@
-# R60 — CLI parsing framework (bundle, Deep) — revision 3, 2026-09-13
+# R60 — CLI parsing framework (bundle, Deep) — revision 4, 2026-09-14
 
 Synthesized 2026-09-10 by a fresh context that produced none of this item's raw
 reports, from three engine reports (five provider bodies) plus the verification
@@ -22,6 +22,39 @@ the commit rather than asserted. This revision also records fitness gate 1 as
 what is unchanged, is enumerated at the end of `## Engines`. No crate was
 scaffolded and no command surface was written in any revision.
 
+Revised again 2026-09-14, and **not on an audit finding**: the revision-3 draft
+(sha256 `14f66259aad6063f9506410735e61e9a58a026fc24200cb048b9bbc71bbc2100`) was
+**approved**, with `unresolved-findings: none`, by
+`audit-codex-2026-09-05T183002Z-09f93cfc507c-r3` (`review/audit-codex.md`). This
+revision implements an **owner ruling of 2026-09-14** on the one question
+revision 3 left open. Asked whether the org CLI Design Standard binds this port
+and whether OVERRIDE (OV-01)'s `SHOULD` waiver was granted, the owner answered
+that the standard binds — the same pinned revision 1.4.14, blob `f9de0437`,
+recorded under "THE STANDARD PIN" — and that **the waiver is refused**, choosing
+this decision's own conforming **option (b)** instead. Three things follow.
+**OV-01 is retired**, so R60 now declares **zero overrides**; the argument and
+the options table are kept unedited as the record of how the choice was reached,
+re-labelled rather than deleted, per the charter's `OVERRIDE (OV-nn)`
+discipline. **F267 changes to option (b)**: `-V` and `--version` each print the
+single conformant line and the extended build data moves behind a JSON version
+object. **The template now conforms to the pinned standard with no waived
+`SHOULD`**, where revision 3 had to record a waiver as outstanding.
+
+Revision 3 predicted that adopting (b) would rewrite "only the acceptance
+criteria AC2/AC3". **That prediction was too narrow and this revision says so
+rather than absorbing it.** Delivering (b)'s JSON path is not reachable through
+`ArgAction::Version`, which terminates parsing before any other flag is seen, so
+the clap wiring for F267 moves as well: `Command::long_version` leaves the stack,
+`Command::disable_version_flag(true)` and a template-declared global
+`-V`/`--version` enter it, and `ErrorKind::DisplayVersion` stops being reachable,
+which shortens the R67 error-routing paragraph by one kind. Essential behaviors 1
+and 2, AC2, AC3, AC7 and the F267 row all move with it. The evidence for the
+short-circuit is read in the published crate source and is `## Empirical check`
+rows E11 and E12. Nothing else in the decision moves: the crate pins, the
+architecture comparison, the fitness gates, the parameter lines, the four failure
+mechanisms revision 3 diagnosed, the snapshot apparatus and the post-commit
+`git archive` proof all stand exactly as the revision-3 audit approved them.
+
 ## Decision
 
 **Status.** This is a **proposal**, to be validated in the implementation phase
@@ -36,8 +69,10 @@ P03 builds the template and its CI proves the recommendation. Where a
 recommendation here does not survive contact with the built template, the
 correction is made **against this recorded research** — its principles, its
 compared alternatives and its verified mechanisms — rather than by researching
-the item again from scratch. The owner has not reviewed R60; no acceptance is
-claimed or implied.
+the item again from scratch. The owner has ruled on exactly one question this
+decision put — OV-01's waiver request, **refused 2026-09-14**, with option (b)
+selected in its place — but has not reviewed the decision as a whole; no
+acceptance of the decision is claimed or implied.
 
 Adopt **`clap` with its `derive` API** as the single declaration of the argv
 grammar, and take every one of this bundle's six derived surfaces from that one
@@ -59,7 +94,7 @@ The six surfaces this bundle decides, and the mechanism chosen for each:
 |---|---|---|
 | F264 | parsing framework | `clap` 4.6.6, `derive` API; a `Cli::command()` factory kept for completion generation and parser tests |
 | F265 | command surface shape | noun-verb subcommand groups as nested `Subcommand` enums, each noun **singular in its canonical documented form** (R1.3 `MUST`, `:133`); **no default business command** |
-| F267 | extended `--version` | `Command::version` (one line) for `-V`; `Command::long_version` (extended) for `--version` — **see OVERRIDE (OV-01)** |
+| F267 | extended `--version` | `Command::version` alone — `-V` and `--version` each print the single conformant line `<tool> <semver>`; the target triple and the rustc version move behind `<tool> --version <format-flag> json`, which R4.6 permits (`:276-277`). **No `Command::long_version`.** Delivering the JSON path costs `Command::disable_version_flag(true)` plus a template-declared global `-V`/`--version` — **see "F267 AS DECIDED" below**, and **RETIRED OVERRIDE (OV-01)** for the history |
 | F268 | completion generation | a regular `completion <shell>` subcommand calling `clap_complete::aot::generate` against a fresh `Cli::command()` |
 | F269 | env-var binding | a **curated** per-option `#[arg(env = "<TOOL>_<NAME>")]`; **no blanket prefix** — py's `auto_envvar_prefix` is not ported |
 | F270 | stackable global options | one `#[derive(Args)] struct GlobalArgs`, `#[command(flatten)]`-ed at the root, `global = true` on each field |
@@ -78,15 +113,25 @@ JSON envelope on stderr, and stdout byte-empty on the error path
 (`research/topics/67-error-and-exit-code-contract/DECISION.md`, read
 2026-09-10). `Cli::parse()` does not compose with that: it prints clap's own
 message and terminates the process itself. So the template calls
-**`Cli::try_parse()`** and routes the `clap::Error` by `kind()`: exactly two
-kinds — `ErrorKind::DisplayHelp` and `ErrorKind::DisplayVersion` — are
-successful output on stdout at exit `0`; every other kind is `RSLB201` → `2`.
-Those two and no others, because that is the exact match arm clap itself uses:
+**`Cli::try_parse()`** and routes the `clap::Error` by `kind()`. Clap's own rule
+sends exactly two kinds to stdout at exit `0` — `ErrorKind::DisplayHelp` and
+`ErrorKind::DisplayVersion` — because that is the exact match arm clap uses:
 `stream()` is `ErrorKind::DisplayHelp | ErrorKind::DisplayVersion =>
 Stream::Stdout, _ => Stream::Stderr`, and `exit_code()` returns `USAGE_CODE`
 for every stderr kind and `SUCCESS_CODE` otherwise, those constants being `2`
 and `0` (`clap_builder-4.6.6/src/error/mod.rs:222-237`,
-`clap_builder-4.6.6/src/util/mod.rs:26,32`, read 2026-09-10). Note the one kind
+`clap_builder-4.6.6/src/util/mod.rs:26,32`, read 2026-09-10). **In this
+template only the first of those two is reachable.** F267's decided mechanism
+sets `Command::disable_version_flag(true)` and declares its own `-V`/`--version`
+as a plain boolean, so no argument carries `ArgAction::Version` and clap never
+constructs a `DisplayVersion` error; the version path returns through `Ok` and
+the template prints it (see "F267 AS DECIDED" below). The routing rule the
+template implements is therefore: `ErrorKind::DisplayHelp` is successful output
+on stdout at exit `0`; every other kind is `RSLB201` → `2`. Handling
+`DisplayVersion` as well is harmless and costs one match arm, but it is dead
+code under this design, and P03 should either omit it or assert it unreachable
+rather than leave a reader to infer that `--version` still travels the error
+path. Note the one kind
 that reads as if it belonged in the exit-`0` list and does not:
 `DisplayHelpOnMissingArgumentOrSubcommand` (`error/kind.rs:300`) falls in the
 `_` arm, so clap sends it to stderr at `2`. Whether the template overrides that
@@ -189,7 +234,7 @@ adopting this pin form is the cheaper direction of alignment.
 |---|---|---|---|---|
 | P1 | The argv grammar has one declaration; help, version and completions are generated from it | **capability** (ledger F264 `DIVERGENT`) | that generation is derived, never hand-maintained in parallel | which crate generates; derive vs builder front-end |
 | P2 | A command path reads noun then verb, and the noun is singular | **standard, one value for all three repos** — R1.1 `(MUST, Standard profile)` (`:124`), org-locked (`:63` row 1); R1.3 `(MUST)` noun number (`:133`), org-locked (`:67` row 5) | the ordering itself, **and that the canonical documented noun is singular** | nesting depth (R1.2 `SHOULD` ≤ 3, `:129`) and the module layout; whether a hidden plural alias is offered at all (R1.3's `MAY`) |
-| P3 | `-V`/`--version` exists and reports the tool's version | **capability + standard** — ledger F266 `COMMON → REUSE`; R4.1 `(MUST)` required global core (`:237`), R4.6 `(SHOULD)` output shape (`:275`) | that the flag exists, and that `-v` is verbose, not version (`:65` row 3, org-locked) | whether `--version` prints more than one line, and where the extra data comes from (R22) |
+| P3 | `-V`/`--version` exists and reports the tool's version | **capability + standard** — ledger F266 `COMMON → REUSE`; R4.1 `(MUST)` required global core (`:237`), R4.6 `(SHOULD)` output shape (`:275`) | that the flag exists, that `-v` is verbose, not version (`:65` row 3, org-locked), and — after the owner's 2026-09-14 ruling — that the default output of both spellings is R4.6's single line | whether a machine-readable version object is offered at all (R4.6's `MAY`, `:276`), which spelling reaches it (R66), and where the extra data comes from (R22) |
 | P4 | A setting exposed in more than one place uses one deterministic name, and env exposure is curated | **standard** — R3.8 `(MUST)` (`:220`), R5.4 `(MUST)` (`:321`), org-locked (`:69` row 7) | `--some-flag` ↔ `TOOL_SOME_FLAG`, and that the env surface is a curated subset | which options are in the curated subset |
 | P5 | Global options work wherever the user puts them | **capability**, floor fixed by R4.5 `(SHOULD)`: "Global flags **MUST** be accepted before the subcommand and **SHOULD** also be accepted after it" (`:270-271`) | before-the-verb acceptance | whether after-the-verb acceptance is free or costs per-command declarations |
 | P6 | An unknown command produces a suggestion, not a bare failure | **capability** (ledger F271 `COMMON → REUSE`) | that a suggestion appears | the string metric and threshold (F272) |
@@ -284,8 +329,20 @@ Three consequences follow, and they are different in kind:
   leaves nothing to trade off. Recording conformance to an org-locked `MUST` as
   an override would misrepresent a settled constraint as a choice this item
   made. The ports' plural is evidence of prior practice, not a competing option.
-- **R4.6 is a `SHOULD` that this design deviates from.** Recorded as OVERRIDE
-  (OV-01) below — the only override in this decision.
+- **R4.6 is a `SHOULD` that this design satisfies.** Revision 3 deviated from it
+  and filed OVERRIDE (OV-01) for the deviation. The owner **refused** that waiver
+  on 2026-09-14 and selected the conforming **option (b)**, so the deviation is
+  withdrawn: `-V` and `--version` both print R4.6's single line, and the JSON
+  object R4.6 itself specifies carries the extended data. **This decision
+  therefore records no override at all, and no `SHOULD` of the pinned standard
+  is waived.** OV-01 is kept below, re-labelled as retired, because the charter
+  asks that the argument and the options be preserved as the record of how the
+  choice was reached — not because any deviation survives. The conformance
+  record for this item now reads: **every rule this decision cites is satisfied
+  as written, with no waiver on file** — the `MUST`s R1.1, R1.3, R3.8, R3.10,
+  R4.1, R5.4 and R9.3 as constraints the design meets, and the `SHOULD`s R1.2,
+  R4.5, R4.6 and R9.1 met on their own terms. R1.6's `MAY`/`MUST NOT` pair is
+  engaged only if P03 declares the optional hidden alias (AC10).
 
 **What the standard excludes, and why the exclusion is not a clap limitation.**
 py binds *every* option to an env var through one prefix (py
@@ -461,20 +518,49 @@ shared by both.
 **Essential behaviors** — each verified by reading the published crate source at
 the version cited, 2026-09-10:
 
-1. `--version` renders `Command::long_version` and `-V` renders
-   `Command::version`. This is not configuration; it is how the parser
-   dispatches `ArgAction::Version`: `Identifier::Long` sets `use_long = true`
-   and `Identifier::Short` sets `use_long = false`
-   (`clap_builder-4.6.6/src/parser/parser.rs:1322-1330`), and `_render_version`
-   then prefers `long_version` or `version` accordingly, each falling back to
-   the other (`command.rs:4898-4914`).
-2. The rendered string is `format!("{display_name} {ver}\n")`
-   (`command.rs:4913`). So the version string is *appended* to the display name
-   on one line rather than replacing it: give `long_version` a value whose first
-   line is the bare semver, and the **first line of `--version` is
-   `<tool> <semver>`**, in R4.6's GNU name-and-version shape, with the extra
-   lines coming from newlines inside the `long_version` value. A `long_version`
-   whose first line is not the semver would not have that property.
+1. **`ArgAction::Version` terminates the parse, so no other flag on the command
+   line is ever seen.** Its match arm computes `use_long` from the identifier —
+   `Identifier::Long` sets `use_long = true`, `Identifier::Short` sets it
+   `false` — and then returns `Err(self.version_err(use_long))`
+   (`clap_builder-4.6.6/src/parser/parser.rs:1322-1331`, read 2026-09-14;
+   `## Empirical check` row E11). `version_err` renders from the
+   `Command::version` and `Command::long_version` *strings* and has no access to
+   any parsed value, and `_render_version` prefers one or the other by
+   `use_long`, each falling back to the other
+   (`command.rs:4898-4914`). Two consequences decide F267's mechanism. The
+   built-in flag **can** give `-V` and `--version` different text, which is what
+   revision 3's withdrawn option (a) used. It **cannot** give either of them
+   `<tool> --version <format-flag> json`: the parse stops at `--version`, so a
+   format flag placed after it is never read, and one placed before it is read
+   into a `ArgMatches` the version renderer never receives. That is why option
+   (b) is not a pure acceptance-criteria change.
+2. **`Command::render_version()` is public and emits exactly R4.6's shape**, so
+   the conformant line stays clap's own formatting rather than a hand-rolled
+   `format!`. It is `self._render_version(false)` (`command.rs:1097-1099`), and
+   `_render_version` ends `format!("{display_name} {ver}\n")`
+   (`command.rs:4913`) — the version string appended to the display name on one
+   line. With `Command::version` set and `Command::long_version` unset, the
+   `false` branch reads `self.version` (`command.rs:4906-4911`), so
+   `render_version()` is `<tool> <semver>\n`: R4.6's GNU name-and-version shape,
+   one line, no leading `v` because Cargo rejects a leading `v` in a manifest
+   `version` field and `CARGO_PKG_VERSION` therefore carries none.
+   `Command::disable_version_flag(true)` removes the built-in `-V`/`--version`
+   entirely — its own doctest asserts that `--version` then returns
+   `ErrorKind::UnknownArgument` (`command.rs:1448-1463`, method at `:1493`) —
+   and the documentation shows re-declaring a custom flag in its place
+   (`:1465-1478`). Read that second example carefully, because it is a trap
+   here: it re-declares the flag with `.action(ArgAction::Version)` (`:1476`),
+   which restores the very short-circuit behavior 1 describes, and its own
+   assertion at `:1490` is that `--version` still yields
+   `ErrorKind::DisplayVersion`. The template must **not** follow that recipe. It
+   declares a plain boolean instead, so the flag records a value and the parse
+   continues to the format flag. Those three facts are what make option (b)
+   buildable:
+   `disable_version_flag(true)`, a template-declared global `-V`/`--version`
+   boolean that does **not** carry `ArgAction::Version`, and `render_version()`
+   for the conformant line once the parse has completed and the format flag is
+   known. All four line ranges are verified in the committed crate snapshots
+   (`## Empirical check` rows E11 and E12).
 3. A `global = true` argument matches on every child subcommand: "Global
    arguments *only* propagate down … it doesn't matter where the user *uses* the
    global argument" (`arg.rs:877-886`, with the doctest at `:894-911` asserting
@@ -515,22 +601,67 @@ executed here** (see `## Empirical check` for what was and was not run):
 | # | Criterion |
 |---|---|
 | AC1 | `<tool> project list --json` and `<tool> --json project list` both parse, and the flag is declared exactly once (R4.5) |
-| AC2 | `<tool> -V` emits exactly one line matching `^<tool> \d+\.\d+\.\d+$` and exits `0` (R4.6's shape) |
-| AC3 | `<tool> --version` emits that same first line plus a target-triple line and a rustc line, and the triple differs between the `ubuntu-latest` and `macos-latest` CI legs — which is what distinguishes a build script that read Cargo's `TARGET` from one carrying a hard-coded string |
+| AC2 | **`<tool> -V` and `<tool> --version` produce byte-identical output**: exactly one line matching `^<tool> \d+\.\d+\.\d+$`, on stdout, exit `0` (R4.6's single-line `SHOULD`, `:276`). Byte-identity is the assertion that discharges the owner's 2026-09-14 ruling, because it is what a `Command::long_version` on the long spelling would break; asserting each spelling separately would pass a tool that printed extended data on one of them. A second assertion makes the mechanism observable rather than inferred: the semver carries **no leading `v`** (R4.6 `MUST`, `:276`) |
+| AC3 | **`<tool> --version <format-flag> json` emits one JSON object and exits `0`**, where `<format-flag>` is R66's format-selection flag (see `## Parameters`). The object parses, and `version` is the same SemVer string AC2 asserts, again with no leading `v` (R4.6 `MUST`, `:276`). It carries a `target` field holding the build's target triple and a `rustc` field holding the compiler version; `commit` and `built` are **absent**, which R4.6's "**MAY** be omitted or `null` when unknown" permits for a build script that reads neither. The build-script half is what AC3 exists to prove: `target` differs between the `ubuntu-latest` and `macos-latest` CI legs, which is what distinguishes a `build.rs` that read Cargo's `TARGET` from one carrying a hard-coded string. Nothing but the object goes to stdout on this path |
 | AC4 | `<tool> completion bash`, `… zsh` and `… fish` each write a non-empty script to stdout and exit `0`; a golden-file test detects drift between the parser and the emitted scripts |
 | AC5 | `<TOOL>_OUTPUT=json <tool> project list` honors the env var; a global option deliberately left out of the curated set is **not** readable from `<TOOL>_*`, asserted by a test over `Cli::command()` that enumerates every argument carrying an `env` and compares it to a pinned list (R5.4) |
 | AC6 | `<tool> projct list` (a mistyped noun, unknown) exits `2`, prints a suggestion naming `project` on stderr, keeps stdout byte-empty, and executes no command; and `<tool> proj list` (a bare prefix) also exits `2` rather than resolving to `project`, which is what `infer_subcommands` left off buys (R3.10 + R67) |
-| AC7 | `<tool> --help` and `<tool> --version` exit `0` with output on stdout; every other parse failure exits `2` inside R67's JSON envelope on stderr |
+| AC7 | `<tool> --help` and `<tool> --version` exit `0` with output on stdout; every other parse failure exits `2` inside R67's JSON envelope on stderr. The two halves now reach that outcome by different routes and the test must not assume one: `--help` is still a `clap::Error` of kind `DisplayHelp` that `try_parse` returns and the template maps to `0`, while `--version` returns through `Ok` and is printed by the template, because F267's mechanism removes `ArgAction::Version` (essential behavior 1). Asserted on the observable outcome — stream, bytes and exit status — not on the error kind |
 | AC8 | every command path is `<noun> <verb>` at depth ≤ 3, asserted by walking `Cli::command().get_subcommands()` (R1.1, R1.2) |
 | AC9 | **the canonical form of every documented noun is singular (R1.3 `MUST`).** Three assertions, because the rule has three parts. (a) `<tool> project list` parses and is the documented spelling: `<tool> project --help` and `<tool> --help` both exit `0` and name `project`. (b) Walking `Cli::command().get_subcommands()` (`command.rs:3932`), every subcommand that is help-visible — `is_hide_set()` (`:4242`) false — has a singular `get_name()` (`:3756`), checked against a pinned list of the template's nouns rather than by an English pluralization heuristic, which would misjudge irregular nouns. (c) No plural spelling appears in any rendered help: `render_long_help()` (`:1037`) for the root and for every subcommand contains no `projects`, asserted by string search over the rendered text. (c) is the assertion that actually discharges "**MUST NOT** appear in help or docs"; (a) and (b) alone would pass a tool that documented both spellings |
 | AC10 | **if, and only if, a hidden plural alias is declared:** `<tool> projects list` parses to the same command as `<tool> project list` and exits `0`, while the alias is absent from every help surface AC9(c) searches — for the `project` subcommand, `get_visible_aliases()` (`command.rs:3847`) yields nothing and `get_all_aliases()` (`:3874`) yields `projects`, which is exactly the split `Command::alias` produces and `visible_alias` does not (R1.3's `MAY`, R1.6). If no alias is declared, AC10 is vacuous and `<tool> projects list` exits `2` under AC6's rule. Both outcomes conform; P03 records which it chose |
 
-**OVERRIDE (OV-01) — F267 extended `--version` output deviates from R4.6
-`(SHOULD)`.** This is the programme's first override and the only one in this
-decision. Its rule references — R4.6 at `:275-279` and the conformance clause at
-`:50` — resolve against the pinned standard revision recorded under "THE
-STANDARD PIN" above (version 1.4.14, blob `f9de0437`), so the `SHOULD` being
-deviated from is fixed text rather than whatever a later amendment makes of it.
+**RETIRED OVERRIDE (OV-01) — F267's proposed deviation from R4.6 `(SHOULD)`,
+withdrawn on the owner's ruling of 2026-09-14.** OV-01 was filed by revision 1 as
+the programme's first override and carried by revisions 2 and 3 as an outstanding
+waiver request. **It is no longer an override.** The owner refused the waiver and
+selected this item's own conforming **option (b)**, so **R60 declares zero
+overrides** and no `SHOULD` of the pinned standard is waived. The block is kept,
+re-labelled rather than deleted: the charter records a departure as
+`OVERRIDE (OV-nn)` with its `**Argument:**` and `**Options:**`, and the argument
+and the options table below are the record of how the choice was reached — the
+owner chose from exactly this table. They now describe a **withdrawn proposal**,
+not an active deviation, and nothing in them should be read as a live departure.
+
+Its rule references — R4.6 and the conformance clause at `:50` — resolve against
+the pinned standard revision recorded under "THE STANDARD PIN" above (version
+1.4.14, blob `f9de0437`), so the `SHOULD` at issue is fixed text rather than
+whatever a later amendment makes of it. **One citation correction, found while
+re-reading R4.6 for this revision and reported rather than fixed silently:** R4.6
+spans `:275-277` in the pinned text — heading at `:275`, the rule at `:276`, the
+✅/❌ example at `:277` — with `:278` blank and `:279` the heading of R4.7. The
+ranges `:275-279` and `:277-279` used below therefore overrun the rule by two
+lines. They are **left byte-identical** because those lines are the preserved
+historical record and one of them is a revision-1 preservation target; every
+citation this revision *relies* on uses the corrected range. The permission that
+option (b) rests on and the object shape it must match are both on **`:276`**,
+and the worked example is on `:277`. Verified line by line in
+`## Empirical check` row E5.
+
+**Waiver status — two dated states, the second superseding the first.**
+
+- **Requested 2026-09-12**, by revision 2, and recorded as outstanding through
+  revision 3. The text of that record is kept verbatim below.
+- **REFUSED 2026-09-14.** The owner declined the waiver and selected **option
+  (b)**. No `SHOULD` waiver is owed for this item, none is outstanding, and no
+  owner waiver record under `:50` needs to exist — because there is no longer a
+  deviation for one to cover.
+
+**What the repository can and cannot show for that ruling, stated plainly.** The
+refusal reached this revision as a task instruction from the programme
+controller. **It is not written into any file in this repository**:
+`docs/port/OWNER-REVIEW.md:101` carries only R60's 2026-09-04 codesign
+acceptance ("Effect: none; runs as written") and says nothing about OV-01, and a
+search of that file for `OV-01` or `2026-09-14` returns nothing. So a reader of
+this repository alone cannot re-derive the ruling, and this decision does not
+pretend otherwise: the ruling is listed under `## Engines` as **U8, unproven
+from the repository**, with what would prove it. What *is* checkable here is the
+consequence — that the decision now declares no override and claims no waiver —
+and that is asserted mechanically in `## Empirical check` row E9.
+
+**The status as recorded on 2026-09-12, kept verbatim as the record of what was
+asked and when. It is superseded by the refusal above and is not this revision's
+position:**
 
 **Waiver status, as of 2026-09-12: requested, not granted.** The owner has not
 answered the waiver request, and nothing below should be read as approval. Only
@@ -541,6 +672,9 @@ extended data behind `<tool> --version -o json` — and **option (c)** — exten
 data moved to a `doctor` verb; either can be adopted instead of (a) with no
 waiver at all, and the cost of adopting one is confined to rewriting AC2 and
 AC3.
+
+**The argument and the options exactly as filed, kept unedited. Option (a) is
+the withdrawn proposal; option (b) is what the owner selected:**
 
 **Argument:** R4.6 (`:275-279`, read 2026-09-10) says `--version`/`-V`
 "**SHOULD** print a single line `acme <semver>` … a build **MAY** append
@@ -572,6 +706,116 @@ waiver. **If the ruling is (b) or (c), nothing else in this decision changes**:
 the build-metadata mechanism, the `version`/`long_version` API and every other
 member are unaffected, and only the acceptance criteria AC2/AC3 are rewritten.
 
+**That last sentence was wrong on one clause, and this revision corrects it
+rather than quietly working to it.** The ruling was (b). The build-metadata
+mechanism and every other member are indeed unaffected, as predicted. But the
+`version`/`long_version` API is **not** unaffected, and the change is not
+confined to AC2 and AC3. `Command::long_version` leaves the design entirely, and
+delivering (b)'s JSON path requires `Command::disable_version_flag(true)` plus a
+template-declared `-V`/`--version`, because `ArgAction::Version` ends the parse
+before a format flag can be read (essential behavior 1, evidence row E11). The
+sentence was written from the *content* of the two options — both print one line
+by default — without checking whether clap's built-in version flag could carry
+(b)'s second half. It could not. The full list of what moved is in `## Engines`
+under "Audit of revision 3, and what revision 4 changed".
+
+**F267 AS DECIDED — option (b), and the mechanism that delivers it.**
+
+| Surface | Behavior | Mechanism |
+|---|---|---|
+| `<tool> -V` | one line, `<tool> <semver>`, stdout, exit `0` | `Command::render_version()` (`command.rs:1097`), which is `_render_version(false)` and reads `Command::version` |
+| `<tool> --version` | **byte-identical to `-V`** | the same call; there is no `long_version` to diverge from |
+| `<tool> --version <format-flag> json` | one JSON object, stdout, exit `0` | the template serializes `{"version","target","rustc"}` from `CARGO_PKG_VERSION` and the two `build.rs` values |
+
+The declaration, in derive form: `#[command(disable_version_flag = true)]` on the
+root, and a `-V`/`--version` boolean carried in the same `#[derive(Args)]
+GlobalArgs` struct F270 already flattens with `global = true`, so R4.5's `MUST`
+(accepted before the subcommand) and its `SHOULD` (accepted after it) hold for it
+as they do for every other global. The flag must be a plain boolean; giving it
+`ArgAction::Version`, as clap's own `disable_version_flag` example does at
+`command.rs:1476`, would reinstate the short-circuit and make the JSON path
+unreachable again.
+
+**The JSON object, matched to R4.6 rather than invented.** R4.6 (`:276`) says a
+supported JSON version output "**SHOULD** emit an object such as
+`{"version":"1.4.0","commit":"abc123","built":"2026-06-27T12:00:00Z"}`;
+`version` **MUST** be SemVer without a leading `v`, while `commit` and `built`
+**MAY** be omitted or `null` when unknown." This template emits:
+
+- `version` — required, and the `MUST` is satisfied structurally rather than by
+  a runtime check: the value is `CARGO_PKG_VERSION`, which mirrors the manifest
+  `version` field, and **Cargo refuses to parse a manifest whose `version`
+  carries a leading `v`** — verified in this run, command and verbatim output
+  under `## Empirical check`, "Revision-4 one-off check". So the string cannot
+  carry one, and AC2 and AC3 still assert it observably rather than relying on
+  that argument alone. Which of compile-time `env!` and a runtime metadata
+  lookup supplies the value is **R22's** decision, not this item's; both satisfy
+  the `MUST` identically.
+- `target` and `rustc` — the target triple and the compiler version, from the
+  dependency-free `build.rs` that reads Cargo's `TARGET` and runs `$RUSTC -vV`.
+  These are the two fields F267 exists to carry. R4.6's wording is "an object
+  **such as**", which makes its three named keys illustrative rather than
+  closed, so additional fields ride alongside without deviating.
+- `commit` and `built` — **omitted**, not `null`. The recommended `build.rs`
+  reads neither git state nor a clock, so both are genuinely unknown, which is
+  the case R4.6's `MAY` names. Omission rather than `null` also matches R67's
+  envelope convention for an absent optional field
+  (`research/topics/67-error-and-exit-code-contract/DECISION.md`, the `hint`
+  field, read 2026-09-10), so the two machine-readable surfaces this template
+  ships treat absence the same way.
+
+**`<format-flag>` is a placeholder, on the same footing as `<tool>`, and the
+coupling to R66 is named rather than absorbed.** Option (b)'s own text warned
+that it "couples F267 to R66's output-format surface, which R60's prompt puts
+out of scope". The owner selected (b), so that coupling is now real. Three
+questions decide how to record it, and each is answered from the two prompts and
+the registry rather than from judgement.
+
+1. **Does R60 need a value R66 owns?** No, because **R66 owns no registry
+   parameter**. Its prompt's `- owns:` line is empty
+   (`research/runs/R66/2026-09-05T183458Z-9ff7d91f9b8f/inputs/prompt.md`, the
+   `## Couplings` block, read 2026-09-14), and `docs/port/PARAMETERS.md` carries
+   no output-format row (read 2026-09-14; `## Empirical check` row E13). A
+   `CONFLICT: R66 <param> — <needed value> — <reason>` line names a *consumed
+   parameter* whose registry value would have to change; there is no such
+   parameter to name, so writing one would invent a registry row. **No
+   `CONFLICT:` line is raised**, and this is recorded instead as a
+   `related (not a registry dependency)` note in `## Parameters`.
+2. **Does R60's conformance depend on R66 resolving?** No. R4.6's `SHOULD` is
+   the single line, and both spellings print it under this decision. The JSON
+   path is R4.6's `MAY` (`:276`). So if R66 never resolved at all, F267 would
+   still conform; what would be lost is F267's extended content, not the
+   template's conformance. The `no waived SHOULD` claim above therefore stands
+   on its own.
+3. **What must R66 stay compatible with, exactly?** Three things, and nothing
+   else:
+   - **A format-selection flag that accepts the value `json`.** F292 (`--json`
+     shorthand, `COMMON → REUSE`) already guarantees a JSON mode exists; R66
+     decides the underlying flag it aliases to.
+   - **That flag being declarable on the root command**, so
+     `<tool> --version <format-flag> json` parses. R60 supplies this half: the
+     flag is declared in F270's flattened `GlobalArgs` with `global = true`.
+     R66 need not make it global for result output — R4.6 says `--version`
+     "**MAY** honor `-o json`/`--output json` **even when normal result-output
+     options are otherwise command-scoped**" (`:276`), so R66's scoping choice
+     for result output does not constrain F267 either way.
+   - **The spelling**, which is the only part R60 cannot supply. R4.5 (`:270`)
+     and R4.6 (`:276-277`) both write it `-o`/`--output`; ts's D-033 instead
+     keeps `--output` as the file sink and uses `--format`, which R66's own
+     prompt describes as "a documented divergence from cli-standards' `-o`
+     output-format enum". **R60 does not decide between them**, exactly as it
+     does not decide `<tool>` (R49's binary name). Every `<format-flag>` here
+     resolves to whatever R66 names; if R66 lands on `-o`/`--output`, the
+     surface is R4.6's own worked example verbatim, and if it lands on
+     `--format`, the surface is `<tool> --version --format json` and every
+     sentence above holds with the spelling substituted.
+
+   If R66 were to decide that **no** format-selection flag is accepted at the
+   root under any spelling, F267 would have to fall back to option (c) — the
+   `doctor` verb — which is equally conformant and needs nothing from R66. That
+   is the one R66 outcome that would reopen F267, and it is added to
+   `re-verify`.
+
 **BASELINE-REVIEW findings.** None. F266 and F271, the two inherited rows this
 item touches, are marked `retained` in `docs/port/BASELINE-REVIEW.md:114-115`
 (read 2026-09-10), and the crate-source reads above confirm both capabilities
@@ -579,7 +823,7 @@ are native to the recommended stack rather than hand-built. The Codex raw report
 emits a `BASELINE-REVIEW: F269` line; that line is not carried, for the reason
 given in `## Engines`.
 
-re-verify: 2027-03-10, or earlier on any of — **the org CLI Design Standard moving off the pinned revision (version 1.4.14, blob `f9de0437baece3383e73ca2c5f48b7ab399b51c7`), which is detectable by re-running `## Empirical check` row E10, the only check here that reads live history — `bash review/evidence/r60-snapshot-provenance-r3.sh`, whose check `C2a` fails the moment the newest published commit for that path is no longer `fb30a591…`: any new commit to `cli-design-standard.md` changes the blob id and invalidates every `:<line>` citation here, and an amendment to R1.1, R1.3, R3.10, R4.5, R4.6, R5.4, R9.1 or the Appendix A entry criteria would change the substance as well**; clap releasing a 5.x line; the `clap_complete` `unstable-dynamic` completion path stabilizing; a RustSec advisory opening against `clap`, `clap_builder`, `clap_derive`, `clap_complete` or `strsim`; R22 (`runtime-version-accessor`) resolving and changing where the version value comes from; Rust stable advancing far enough that the MSRV floor rises above a recommended crate's declared `rust-version` (the highest declared `rust-version` among the 28 dependency crates is **1.85**, shared by the five `clap`-family crates, so the current 1.96 floor has eleven minors of headroom and this trigger is remote); or the owner ruling on OVERRIDE (OV-01).
+re-verify: 2027-03-10, or earlier on any of — **the org CLI Design Standard moving off the pinned revision (version 1.4.14, blob `f9de0437baece3383e73ca2c5f48b7ab399b51c7`), which is detectable by re-running `## Empirical check` row E10, the only check here that reads live history — `bash review/evidence/r60-snapshot-provenance-r3.sh`, whose check `C2a` fails the moment the newest published commit for that path is no longer `fb30a591…`: any new commit to `cli-design-standard.md` changes the blob id and invalidates every `:<line>` citation here, and an amendment to R1.1, R1.3, R3.10, R4.5, R4.6, R5.4, R9.1 or the Appendix A entry criteria would change the substance as well**; clap releasing a 5.x line; the `clap_complete` `unstable-dynamic` completion path stabilizing; a RustSec advisory opening against `clap`, `clap_builder`, `clap_derive`, `clap_complete` or `strsim`; R22 (`runtime-version-accessor`) resolving and changing where the version value comes from; Rust stable advancing far enough that the MSRV floor rises above a recommended crate's declared `rust-version` (the highest declared `rust-version` among the 28 dependency crates is **1.85**, shared by the five `clap`-family crates, so the current 1.96 floor has eleven minors of headroom and this trigger is remote); or **R66 (`output-format-surface`) resolving in a way that leaves no format-selection flag acceptable on the root command under any spelling, which is the one R66 outcome that reopens F267 and sends it to option (c)** — R66 merely *naming* the flag does not reopen anything, because `<format-flag>` is a placeholder that resolves to whatever R66 names. **The trigger "the owner ruling on OVERRIDE (OV-01)", carried by revisions 1 through 3, has fired and is removed:** the owner ruled on 2026-09-14, refusing the waiver and selecting option (b), and OV-01 is retired.
 
 ## Parameters
 
@@ -610,11 +854,33 @@ evidence log, section W. **target-os-matrix** is the gate
 this run did *not* discharge: nothing here was executed on `ubuntu-latest`, and
 that gap is recorded under `## Engines`.
 
-Three parameter-shaped notes that are deliberately **not** parameter lines.
+Four parameter-shaped notes that are deliberately **not** parameter lines.
 R22 (`runtime-version-accessor`, ledger F064) supplies the version *value* that
 F267 prints; it is listed in this item's prompt as "related (not a registry
 dependency)", and this decision is compatible with either R22 outcome and
-imposes no constraint on it. R67 owns `error-taxonomy-exit-codes`; this item
+imposes no constraint on it.
+
+**R66 (`output-format-surface`) — related (not a registry dependency), and no
+`CONFLICT:` line.** F267's decided mechanism (option (b), on the owner's ruling
+of 2026-09-14) puts the extended build data behind
+`<tool> --version <format-flag> json`, where `<format-flag>` is R66's
+format-selection flag. That is a real coupling and it is recorded here rather
+than absorbed. It is **not** a registry dependency and **not** a `CONFLICT:`,
+for a checked reason: **R66 owns no registry parameter.** Its prompt's
+`- owns:` line is empty, and `docs/port/PARAMETERS.md` carries no output-format
+row, so there is no consumed parameter whose value this item could need changed
+— which is what a `CONFLICT:` line names. What R66 must stay compatible with is
+three properties, set out in full under "F267 AS DECIDED" in `## Decision`: a
+format-selection flag that accepts `json`; that flag being declarable on the
+root command, which R60 itself supplies by carrying it in F270's flattened
+`GlobalArgs` with `global = true`; and its spelling, which R60 deliberately does
+not decide. R60's *conformance* does not depend on R66 at all, because R4.6's
+`SHOULD` is discharged by the single line that both `-V` and `--version` print
+and the JSON path is R4.6's `MAY`. The single R66 outcome that would reopen
+F267 — no root-acceptable format flag under any spelling — is on the
+`re-verify` line.
+
+R67 owns `error-taxonomy-exit-codes`; this item
 consumes none of it as a parameter, but its parser-error routing must satisfy
 R67's contract, as described in `## Decision`. All three Doxa provider bodies
 wrote `owns` lines for names such as `cli-parsing-framework`,
@@ -798,9 +1064,86 @@ objects.
 Sections 01–12 above remain **not** claimed as reproducible, for the unchanged
 reason: they queried live counters.
 
+**Revision-4 one-off check — does Cargo actually reject a leading `v`?** F267's
+JSON object claims R4.6's `version` `MUST` (SemVer, no leading `v`) is satisfied
+structurally, so the premise is checked rather than asserted. **This is one
+command run by hand; it is deliberately not part of the three scripts and is
+counted in none of their totals**, because it needs a toolchain rather than a
+committed file and would make an offline rerun of those scripts impossible.
+Toolchain `cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)`, macOS 26.4
+`aarch64`. Working directory a scratch directory outside this repository holding
+a two-file throwaway package — `Cargo.toml` and an empty `src/lib.rs` — created
+only as input to the parse, exactly as the revision-1 run's resolution manifests
+were. **Nothing was written into this repository or this run directory, and
+nothing recommended here was implemented.** With `version = "v0.1.0"`,
+`cargo metadata --format-version 1 --no-deps` exits **101** and prints:
+
+```
+error: unexpected character 'v' while parsing major version number
+ --> Cargo.toml:3:11
+  |
+3 | version = "v0.1.0"
+  |           ^^^^^^^^
+```
+
+With `version = "0.1.0"` and nothing else changed, the same command exits **0**.
+The pair is the evidence: the failure is caused by the leading `v` and by
+nothing else about the manifest. So a `CARGO_PKG_VERSION` carrying a leading
+`v` cannot arise from a manifest Cargo accepted.
+
+**Revision-4 run — the clap version-flag mechanism, the standard's R4.6 text,
+and the R66 coupling.** Revision 4 changes F267's mechanism on an owner ruling,
+and three of its load-bearing claims are new: that `ArgAction::Version`
+terminates the parse, that `render_version()` and `disable_version_flag` give
+the conformant line and the escape from that termination, and that R66 owns no
+registry parameter. Each is checked, and the revision-3 apparatus is extended
+rather than replaced — same harness, same negative controls, same
+committed-input rule.
+
+| Script | Log | Result |
+|---|---|---|
+| `r60-standard-pin-r4.sh` | `r60-standard-pin-r4.log` | exit `0` — revision 3's checks plus the R4.6 rule and example lines, the four `clap_builder` version APIs, and the R66 `- owns:`/registry checks |
+| `r60-preservation-diff-r4.sh` | `r60-preservation-diff-r4.log` | exit `0` — revision 3's preservation targets against r1 and r2, plus r3 as a third baseline, plus the inverted override and waiver assertions this ruling requires |
+| `r60-snapshot-provenance-r4.sh` | `r60-snapshot-provenance-r4.log` | exit `0` — every snapshot re-derived from its pinned source, now including the `parser.rs` snapshot and the revision-3 decision baseline |
+
+**Two snapshots were added and `snapshots/MANIFEST.txt` grew from 10 rows to
+12.** `clap_builder-4.6.6-src-parser-parser.rs.txt` is the file carrying
+`ArgAction::Version`'s match arm, taken from the same `clap_builder-4.6.6.crate`
+tarball whose crates.io checksum the MANIFEST already records; adding it means
+the short-circuit claim rests on a hash-verified committed file rather than on a
+line number remembered from the revision-1 run. `r60-decision-r3.md` is the
+approved revision-3 text, sha256
+`14f66259aad6063f9506410735e61e9a58a026fc24200cb048b9bbc71bbc2100` — the value
+`review/audit-codex.md` itself names — taken from commit
+`d642814cddfd3f1756fc56cd38738904440d9141`, the commit that audit archived.
+
+**The revision-3 scripts and logs are retained and are no longer this revision's
+evidence**, on the same footing as the revision-2 pair before them.
+`r60-preservation-diff-r3.sh` reads the live `DECISION.md` and asserts the text
+this revision changes, so it **no longer reruns to its saved log** — its C4f
+family requires the waiver to be outstanding, which the owner's ruling ends, and
+its C4h requires the title to read revision 3. `r60-standard-pin-r3.sh` and
+`r60-snapshot-provenance-r3.sh` read only pinned inputs and the MANIFEST; the
+standard-pin script still reruns clean, and the provenance script's totals move
+because the MANIFEST gained two rows. They stay in `review/evidence/` because
+`review/audit-codex.md` cites all three by name and deleting them would erase the
+record this revision's approval rests on. **No row below cites a revision-3
+script for a revision-4 claim.**
+
+**The same two reproducibility claims, re-demonstrated rather than inherited.**
+`r60-standard-pin-r4.sh` and `r60-preservation-diff-r4.sh` read only files
+committed in this repository and make no network call; both were rerun against a
+`git archive` extraction of the exact tree this revision commits — an empty
+directory with no `.git` and no working-tree state — and `diff` against the two
+logs cited here reported no difference. `r60-snapshot-provenance-r4.sh` carries
+the identical two conditions revision 3 recorded: byte-for-byte only while the
+network is reachable **and** the checkout carries git history; without history
+the three `self` rows report `UNVERIFIABLE-HERE` and the totals shift, which is
+stated here rather than left for an auditor to discover.
+
 | Row | What it checks | Command | Result |
 |---|---|---|---|
-| E1 | that the text every `:<line>` citation resolves against is the pinned revision (`C1`, `C2` of `r60-standard-pin-r3.sh`) | verify each snapshot's sha256 against `snapshots/MANIFEST.txt`, then hash `snapshots/cli-design-standard-1.4.14.md` | all 10 snapshots match their recorded hashes, MANIFEST records exactly the files present and no others, and the standard snapshot's sha256 is `9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f` — **the sha256 of blob `f9de0437…` at commit `fb30a591…`**, which is how the committed text and the pinned blob are established to be the same bytes without needing a clone of the standards repository. The snapshot is 773 lines, asserted, so an out-of-range `:<line>` citation cannot pass silently. Its recorded origin is the commit-addressed URL `raw.githubusercontent.com/smorinlabs/cli-standards/fb30a591…/cli-design-standard.md`. That the pin is still the *newest* published commit is a live-history claim and is row E10 |
+| E1 | that the text every `:<line>` citation resolves against is the pinned revision (`C1`, `C2` of `r60-standard-pin-r4.sh`) | verify each snapshot's sha256 against `snapshots/MANIFEST.txt`, then hash `snapshots/cli-design-standard-1.4.14.md` | all 10 snapshots match their recorded hashes, MANIFEST records exactly the files present and no others, and the standard snapshot's sha256 is `9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f` — **the sha256 of blob `f9de0437…` at commit `fb30a591…`**, which is how the committed text and the pinned blob are established to be the same bytes without needing a clone of the standards repository. The snapshot is 773 lines, asserted, so an out-of-range `:<line>` citation cannot pass silently. Its recorded origin is the commit-addressed URL `raw.githubusercontent.com/smorinlabs/cli-standards/fb30a591…/cli-design-standard.md`. That the pin is still the *newest* published commit is a live-history claim and is row E10 |
 | E2 | the document declares version 1.4.14 (`C3`) | `sed -n '1,12p'` on the pinned text | `| **Version** | 1.4.14 |`, `| **Status** | Active — canonical |`, `| **Last updated** | 2026-06-28 |` |
 | E3 | R1.3's full text, the rule revision 2 repaired the decision against (`C4`) | the same pinned text, `sed -n '133,137p'` | `**R1.3 — Noun number. (MUST)**`; "Resource nouns **MUST** be **singular** in their canonical form"; "The plural form **MAY** be accepted as an undocumented alias but **MUST NOT** appear in help or docs"; "`list` returning many is not a reason to pluralize"; and the ❌ example "documenting `acme widgets list` as the primary form" |
 | E4 | R1.3 is org-locked, and the Decision Log line numbers (`C5`, `C6`) | the same pinned text, `sed -n '61p;63p;65p;67p;69p;70p'` | row 5 `| 5 | Noun number | Singular canonical; plural accepted as undocumented alias |` is at **`:67`**, marked `org-locked`; the table header is at `:61` and row *N* at line 62 + *N*, so row 1 is `:63`, row 3 `:65`, row 7 `:69`, and **`:70` is row 8, Exit codes** — R67's row. **This corrected three citations**: revision 1 cited `:70` for rows 1, 3 and 7, having copied R67's line for its own row 8 |
@@ -808,25 +1151,41 @@ reason: they queried live counters.
 | E6 | whether R67 pinned the standard (`C13`) | `grep` over the published R67 topic's `DECISION.md` and its 18 evidence logs, reached by a path relative to the script | **R67's body: no pin** — zero citations carrying a version, commit, blob or hash, across its two citations of the file (`:78`, `:464`), and zero occurrences of `1.4.14`. **R67's audit trail: the version, but not a pin** — its revision-4 audit log records at `:6` "Standard read: `…/cli-design-standard.md`, version 1.4.14"; the only other mention among the evidence logs is one quoted line of the standard's own changelog. Asserted as labelled counts (`count=0`, `count=2`, `count=2`, `count=1`), so an absence cannot be confused with a failed search and a two-digit count cannot satisfy a one-digit expectation. The presence of R67's decision file is itself asserted first, so a moved file would fail rather than read as four zeroes |
 | E7 | that both source ports document the plural noun (`C10`) | read the four committed port snapshots, taken through each port's pin | py `cli/commands/projects.py:37` is `@click.group(name="projects", cls=SuggestingGroup)`; py `cli/commands/__init__.py` is `COMMAND_GROUPS = [projects_group, config_group]`; ts `src/commands/projects.ts:70` is `.command('projects', { isDefault: true })`, looked up by that name at ts `src/router.ts:234`. This is the recorded practice R1.3 overrides |
 | E8 | the clap 4.6.6 APIs AC9/AC10 name (`C11`, `C12`) | read `snapshots/clap_builder-4.6.6-src-builder-command.rs.txt` and the two `clap_derive-4.6.4` snapshots, each hash-verified against MANIFEST, which records the tarball each came from and that tarball's checksum | the `clap_builder` snapshot's recorded origin is `clap_builder-4.6.6.crate`, sha256 `7b48fea5a88e9ae728a2dcbedbfc0e730f7d60da42e1cb049a83c9fb8b789889` — **the checksum crates.io records for 4.6.6** (`GET /api/v1/crates/clap_builder/4.6.6`, retrieved 2026-09-12 and re-retrieved 2026-09-13; the same response gives `rust_version: 1.85`). All eight methods exist on `Command` at the cited lines: `get_subcommands` `:3932`, `get_name` `:3756`, `is_hide_set` `:4242`, `render_long_help` `:1037`, `get_visible_aliases` `:3847`, `get_all_aliases` `:3874`, `alias` `:2691`, `visible_alias` `:2893`. And the behavioral half: `alias`'s own doc says "Aliases defined with this method are *hidden* from the help message" (`:2664-2666`) while `visible_alias`'s says its alias "is *visible* from the help message" (`:2865-2868`) — which is what makes `#[command(alias = …)]` the R1.3-conformant spelling and `visible_alias` a violation. **The derive forwarding is verified too** (`C12`), since the R1.3 repair rests on it: `clap_derive-4.6.4` (tarball sha256 `d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061`, likewise the checksum crates.io records) has no `MagicAttrName::Alias` variant and no mention of `alias` in `src/attr.rs`, so the name falls to the generic branch `_ => self.methods.push(Method::new(name, arg))` (`src/item.rs:337-345`) and a `Method` renders as `quote!( .#name(#args) )` (`:1281-1289`) — emitting `.alias("projects")`, the hidden method |
-| E9 | that this revision preserved what the audits did not challenge (`review/evidence/r60-preservation-diff-r3.sh`, log `review/evidence/r60-preservation-diff-r3.log`; its own `C1`–`C7`) | confirm the committed revision-1 and revision-2 texts hash to the values the two audit reports themselves name; for each preserved claim, require every baseline line carrying it to still be present verbatim; re-read the four `assumes` values out of `docs/port/PARAMETERS.md`; `find` the run directory for Rust or Cargo artifacts; enumerate every differing line against both baselines | **exit 0**, `CHECKS RUN: 66 FAILURES: 0`, with **20 revision-1 preservation targets all verbatim**: the `clap 4.6.6` pin and its four features, the `clap_complete 4.6.9` pin, `strsim 0.11.1` transitive-only, the dependency-free `build.rs`, `clap_complete`'s `default = []` and its `clap >= 4.5.20` floor, "Locking 28 packages to latest Rust 1.96 compatible versions", the `cargo generate-lockfile`/`cargo tree` row, the `cargo audit` **exit 0** row with its 1,243 advisories and 29 dependencies, all four `assumes` lines, OV-01's R4.6 quotation and its options b and c and its owner-ruling sentence, architectures A and E, the `clap` fitness-gate data row, and the `casey/just` composition evidence — **plus 3 revision-2 targets**: OV-01's dated not-granted status line, R1.3's rule text as revision 2 quoted it, and the standard-pin row carrying the content hash. The four `assumes` values still match `docs/port/PARAMETERS.md` byte-for-byte and there is no `owns` line, as the prompt's empty `- owns:` requires. Structurally: four H2 sections in the required order, no `## Supersedes`, exactly one override declared and no second one, no affirmative claim that the owner granted the waiver (eight phrasings searched, negated forms excluded), the title recording revision 3, and gate 1 recorded as `inapplicable` with the ruling as its reason while the gate's row is kept in the table rather than removed. `find` reports zero `.rs`, `Cargo.toml` or `Cargo.lock` files and zero `src/` or `target/` directories anywhere in this run directory, and each of the nine evidence files this decision cites is asserted present. Both diffs are enumerated in full in the log; **their line counts are deliberately not quoted here, because quoting a count of the decision's own changed lines would change it** |
-| E10 | that every committed snapshot really is what MANIFEST.txt says, and that the pin is still the newest published commit (`review/evidence/r60-snapshot-provenance-r3.sh`, log `review/evidence/r60-snapshot-provenance-r3.log`; its `C1`, `C2`) | re-download each pinned source and re-derive the snapshot's sha256 from it; for a crate, verify the tarball against the checksum crates.io records before extracting; for a private origin, probe anonymously and require HTTP 404; then `GET https://api.github.com/repos/smorinlabs/cli-standards/commits?path=cli-design-standard.md&per_page=1` | **exit 0**, `CHECKS RUN: 14 FAILURES: 0 UNREACHABLE: 0 UNVERIFIABLE-HERE: 2`. The standard re-fetched from its commit-addressed URL hashes to `9fb05d3d…`; both `clap` tarballs hash to the checksums crates.io records and the three extracted files hash to their snapshots; both Python sources re-fetched from their commit-addressed URLs match; both decision baselines match this repository's own git objects. The newest published commit touching `cli-design-standard.md` is still `fb30a591c267a7ec1130ba4cda679eaee494b9d7` — this is the live half of the `re-verify` trigger, and it is the check that will fail first when the standard moves. The 2 `UNVERIFIABLE-HERE` entries are the two TypeScript snapshots: `smorinlabs/ts-launch-blueprint` returns **HTTP 404** to an anonymous request, which the script asserts rather than assumes, so "there is no public remote to refetch from" is a checked fact and the committed snapshot is the evidence of record |
+| E9 | that this revision preserved what the approved revision 3 established, and that the owner's ruling is implemented rather than asserted (`review/evidence/r60-preservation-diff-r4.sh`, log `review/evidence/r60-preservation-diff-r4.log`; its `C0`–`C8`) | confirm the committed revision-1, revision-2 and revision-3 texts hash to the values the three audit reports themselves name — the revision-3 report located **by the hash it names** rather than by a file name, because this run's controller renames the previous report to `audit-codex.rN.md` when the next audit lands and a hard-coded name would break the same way revision 2's `HEAD:<path>` check broke — and that that report's `verdict:` is `approve` with `unresolved-findings: none` and its `actor:` the revision-3 auditor; for each preserved claim, require every baseline line carrying it to still be present verbatim; assert the inverted override and waiver state the ruling produces; re-read the four `assumes` values out of `docs/port/PARAMETERS.md`; `find` the run directory for Rust or Cargo artifacts; enumerate every differing line against all three baselines | **exit 0**, `CHECKS RUN: 104 FAILURES: 0`. **Preservation:** the 20 revision-1 targets and the 3 revision-2 targets are all still verbatim — the `clap 4.6.6` pin and its four features, the `clap_complete 4.6.9` pin, `strsim 0.11.1` transitive-only, the dependency-free `build.rs`, `clap_complete`'s `default = []` and its `clap >= 4.5.20` floor, "Locking 28 packages to latest Rust 1.96 compatible versions", the `cargo generate-lockfile`/`cargo tree` row, the `cargo audit` **exit 0** row with its 1,243 advisories and 29 dependencies, all four `assumes` lines, **OV-01's R4.6 quotation, its option (b) and option (c) rows and its owner-ruling sentence**, architectures A and E, the `clap` fitness-gate data row, the `casey/just` composition evidence, the 2026-09-12 status line, R1.3's rule text and the standard-pin content-hash row. That OV-01's argument and options survive its retirement byte-for-byte is the point, not an accident: the owner chose from exactly that table. **The inversion**, the 34 checks of the `C4f` family (`C4f` through `C4f29`; the count exceeds the labels because `C4f28` is a loop over the six fitness gates): the refusal is recorded and dated `REFUSED 2026-09-14`; option (b) is named as what the owner selected; OV-01 carries the `RETIRED OVERRIDE` label; the decision declares **zero overrides** and states that no `SHOULD` is waived; the 2026-09-12 record is labelled as superseded; the F267 row drops `Command::long_version` and names the JSON path at `:276-277`; AC2 asserts byte-identity and the no-leading-`v` `MUST`; AC3 asserts the JSON object with `commit` and `built` absent; AC7 records that `--version` returns through `Ok`; the R66 note is `related (not a registry dependency)` with the reason; **there are zero `CONFLICT:` lines**; the fired OV-01 `re-verify` trigger is marked removed and the R66 one added; and all six fitness gates appear in the closing enumeration. **C4g survives the inversion** — a refusal is not a grant, so eight affirmative grant phrasings must still be absent, and revision 4 both scans sentence-wise instead of line-wise (this prose is hard-wrapped, so a line-scoped scan could see `waiver was granted` while its `whether` sat on the previous line) and adds `C4g2`, a positive control running the same patterns over synthetic text that does claim a grant, which must fire. Structurally: four H2 sections in the required order, no `## Supersedes`, no second override declared, the title recording revision 4, and gate 1 recorded as `inapplicable` with the ruling as its reason while the gate's row is kept in the table rather than removed. `find` reports zero `.rs`, `Cargo.toml` or `Cargo.lock` files and zero `src/` or `target/` directories anywhere in this run directory, and each of the twelve evidence files this decision cites is asserted present. All three diffs are enumerated in full in the log; **their line counts are deliberately not quoted here, because quoting a count of the decision's own changed lines would change it** |
+| E10 | that every committed snapshot really is what MANIFEST.txt says, and that the pin is still the newest published commit (`review/evidence/r60-snapshot-provenance-r4.sh`, log `review/evidence/r60-snapshot-provenance-r4.log`; its `C1`, `C2`) | re-download each pinned source and re-derive the snapshot's sha256 from it; for a crate, verify the tarball against the checksum crates.io records before extracting; for a private origin, probe anonymously and require HTTP 404; then `GET https://api.github.com/repos/smorinlabs/cli-standards/commits?path=cli-design-standard.md&per_page=1` | **exit 0**, `CHECKS RUN: 17 FAILURES: 0 UNREACHABLE: 0 UNVERIFIABLE-HERE: 2` — three checks more than revision 3's 14, which is the two MANIFEST rows revision 4 added (`parser.rs` contributes both a tarball-checksum and an extracted-file check; `r60-decision-r3.md` contributes one git-object check). The standard re-fetched from its commit-addressed URL hashes to `9fb05d3d…`; both `clap` tarballs hash to the checksums crates.io records and **all four** extracted files hash to their snapshots; both Python sources re-fetched from their commit-addressed URLs match; **all three** decision baselines match this repository's own git objects, including revision 3 at commit `d642814cddfd3f1756fc56cd38738904440d9141`. The newest published commit touching `cli-design-standard.md` is still `fb30a591c267a7ec1130ba4cda679eaee494b9d7` — this is the live half of the `re-verify` trigger, and it is the check that will fail first when the standard moves. The 2 `UNVERIFIABLE-HERE` entries are unchanged: the two TypeScript snapshots, whose repository `smorinlabs/ts-launch-blueprint` returns **HTTP 404** to an anonymous request, which the script asserts rather than assumes |
+| E11 | **that `ArgAction::Version` terminates the parse** — the one new mechanical fact behind F267's move to option (b) (`C14` of `r60-standard-pin-r4.sh`) | read `snapshots/clap_builder-4.6.6-src-parser-parser.rs.txt`, hash-verified against MANIFEST, which records the tarball it came from and that tarball's crates.io checksum; `sed -n '1322,1331p'` | the arm at `parser.rs:1322` computes `use_long` from the identifier — `Some(Identifier::Long) => true`, `Some(Identifier::Short) => false` — and then **returns `Err(self.version_err(use_long))`**. Asserted in both directions: the arm contains no `Ok(` continuation (`count=0`), so it cannot fall through to a later argument, and — the control that keeps that zero from being vacuous — the immediately preceding arms *do* return `Ok(ParseResult::…)`, which the same search finds. So `<tool> --version <format-flag> json` is unreachable through clap's built-in version flag: the parse ends at `--version`, and `version_err` renders from the `Command::version`/`long_version` strings, which no parsed value reaches. **This is why option (b) costs more than an AC2/AC3 rewrite** |
+| E12 | that the four `clap 4.6.6` APIs F267's decided mechanism names exist and behave as described (`C15` of `r60-standard-pin-r4.sh`) | read `snapshots/clap_builder-4.6.6-src-builder-command.rs.txt`, the same hash-verified snapshot row E8 uses (origin `clap_builder-4.6.6.crate`, sha256 `7b48fea5…`, the checksum crates.io records) | `Command::render_version` `:1097`, `disable_version_flag` `:1493`, `version` `:2119`, `long_version` `:2151` all exist at those lines. Behaviorally: `render_version()` is `self._render_version(false)` — the **short**, single-line form — and `_render_version`'s `false` branch reads `self.version` first and ends `format!("{display_name} {ver}\n")` (`:4906-4913`), which is R4.6's GNU name-and-version shape; `disable_version_flag` documents itself as disabling **both** `-V` and `--version` (`:1448`) and its own doctest asserts `--version` then yields `ErrorKind::UnknownArgument` (`:1455-1463`). The trap is asserted too: clap's documented custom-flag recipe re-declares the flag with `.action(ArgAction::Version)` and its doctest asserts `ErrorKind::DisplayVersion` (`:1465-1491`), so following that recipe would restore the short-circuit E11 describes. The template declares a plain boolean instead |
+| E13 | **that R66 owns no registry parameter**, which is why the coupling is recorded as `related (not a registry dependency)` and no `CONFLICT: R66 <param>` line is raised (`C16` of `r60-standard-pin-r4.sh`) | `grep` over R66's committed binding prompt, `docs/port/PARAMETERS.md`, `research/CLAUDE.md` and `docs/port/OWNER-REVIEW.md`, all reached by paths relative to the script | R66's prompt carries `- owns:` at `:20` with **no value** (`count=0` owns lines carrying one); the registry carries **no** output-format row (`count=0`); the research index has exactly one R66 row, recording `—` for `owns` and `open` for status, so its flag spelling is genuinely undecided. Each negative is a labelled count and each is preceded by an assertion that the file is present, so a moved file fails rather than reading as a zero. The same row checks **U8**: `docs/port/OWNER-REVIEW.md` contains `OV-01` zero times and `2026-09-14` zero times while carrying exactly one `R60` row — so the owner's ruling is genuinely absent from this repository, and that absence is a checked fact rather than an admission |
 
 **Headline command and exit status.** `cargo generate-lockfile` on the
 recommended pins at `rust-version = "1.96"` → **exit 0**, followed by
 `cargo audit` on the resulting lockfile → **exit 0** (revision-1 run, and both
 independently reproduced at exit 0 by the revision-1 auditor as described
 above). For revision 3: `bash review/evidence/r60-standard-pin-r3.sh` → **exit
-0**, 73 checks, 0 failures.
+0**, 73 checks, 0 failures. For revision 4:
+`bash review/evidence/r60-standard-pin-r4.sh` → **exit 0**, 114 checks, 0
+failures.
 
 **What these runs do not establish**, stated so they are not read as more:
 none of them built or ran any CLI; none executed any acceptance criterion; none
 ran a benchmark; none ran anything on `ubuntu-latest`; and none audited any
-crate's `unsafe` usage. Each of those is carried to `## Engines`. Rows E1–E10
+crate's `unsafe` usage. Each of those is carried to `## Engines`. Rows E1–E13
 narrow none of that list: they verify that the standard says what this decision
 says it says, that its cited lines resolve, that the clap methods AC9 and
-AC10 name exist with the documented alias visibility, and that the evidence can
-be rerun from the committed state — **not** that any criterion passes. In
-particular, AC9 and AC10 are unexecuted, exactly as AC1–AC8 are.
+AC10 name exist with the documented alias visibility, that
+`ArgAction::Version` short-circuits and that the four version APIs F267's
+mechanism names exist and are documented as described, that R66 owns no registry
+parameter, and that the evidence can be rerun from the committed state —
+**not** that any criterion passes. Say the same thing about the new rows
+specifically, because they are the ones most likely to be over-read: **E11 and
+E12 read source and documentation, they do not run clap.** Nothing here compiled
+a `Cli` type, set `disable_version_flag`, called `render_version()` or executed
+`<tool> --version <format-flag> json`; that the mechanism composes as described
+is P03's to prove, and AC2, AC3 and AC7 are as unexecuted as every other
+criterion. **E13 establishes that no registry parameter exists for R66 to owe
+this item, not that R66 will name a flag this item can use** — which R66 outcome
+lands is R66's, and the one outcome that would reopen F267 is on the `re-verify`
+line. In particular, AC9 and AC10 are unexecuted, exactly as AC1–AC8 are.
 
 ## Engines
 
@@ -889,9 +1248,15 @@ STANDARD PIN" in `## Decision` for the pin and for the verification that R67
 carries no version pin of its own. The practical effect is confined but is wider
 than revision 1 stated: it fixes F265's ordering as a `MUST` rather than a
 preference **and F265's noun number as a `MUST` (R1.3), which is where revision 1
-was wrong** — it proposed a plural canonical noun; it decides F269; and it turns
-F267 into a recorded override. Every other row lands where all three engines
-already put it.
+was wrong** — it proposed a plural canonical noun; it decides F269; and it
+decides F267's output shape. On that last row the effect changed again in
+revision 4: revisions 1 through 3 turned F267 into a recorded override, and the
+owner's refusal of that waiver on 2026-09-14 turned it back into plain
+conformance with R4.6, leaving this decision with **no override**. Every other
+row lands where all three engines already put it. Note what that does to the
+standard's practical effect overall: it did **not** change which crate is
+recommended on any row, and it has now changed F267's mechanism twice without
+touching `clap`, `clap_complete` or the `build.rs`.
 
 **No engine raised R1.3.** None of the three reports — and none of the five
 provider bodies — mentions noun number at all; all of them carried the plural
@@ -945,6 +1310,7 @@ in the real template:
 | U5 | Every acceptance criterion AC1–AC10. None was executed: no Rust CLI exists. AC9 and AC10 were added in revision 2 and are as unexecuted as the rest; what revision 2 *did* verify is that the clap APIs they name exist at 4.6.6 with the documented hidden-vs-visible alias behavior (`## Empirical check` row E8), which is a different and weaker claim than the criteria passing. | P03's integration tests |
 | U6 | Issue responsiveness for every candidate except `clap-rs/clap`. The Opus report measured the 10 most recently opened issues for that one repository (5 of 10 answered, median 1.29 days among those answered, 5 unanswered, retrieved 2026-09-10) and states it measured no other; that figure also covers `clap_complete`, which shares the tracker. For `bpaf`, `built`, `vergen`, `argh`, `lexopt`, `pico-args` and `strsim`, the maintenance verdicts above rest on open-issue `total_count`, `pushed_at`, `archived` and release recency only. | the same 10-issue procedure run per candidate |
 | U7 | That `bpaf` lacks a completion story equivalent to `clap_complete`. Opus asserts it does; Codex asserts a completion feature exists. Neither was verified here, and `bpaf` is excluded on fit (architecture D) rather than on this point, so the disagreement does not change the recommendation. | reading `bpaf 0.9.27`'s published source and feature table |
+| U8 | **The owner's ruling of 2026-09-14 itself — refusing OV-01's waiver and selecting option (b) — is not recorded anywhere in this repository.** It reached this revision as a task instruction from the programme controller. `docs/port/OWNER-REVIEW.md` carries R60's 2026-09-04 codesign acceptance at `:101` and no mention of `OV-01` or of 2026-09-14 (checked, `## Empirical check` row E13). This is the only unproven item on this list that is not a claim about the template: it is a claim about a decision the owner made. Everything downstream of it in this revision *is* checkable — that F267 now takes option (b), that no override is declared, that no waiver is claimed — and is checked. | the ruling recorded in `docs/port/OWNER-REVIEW.md`, which is the owner's and the controller's file to write, not this item's (the charter forbids a synthesizer from editing it) |
 
 **Uncertainty that is not an evidence gap.** `clap-rs/clap` carries 369 open
 issues against a project led by a single primary maintainer, which is a real
@@ -1002,7 +1368,10 @@ the pin doing its job on its first use: pinning a document is worth nothing if
 the line numbers into it are wrong, and only a mechanical check of every cited
 line surfaces that.
 
-**What is unchanged from revision 1**, and confirmed unchanged by diffing
+**What is unchanged from revision 1** — **a statement about revision 2, in
+revision 2's present tense, kept as written; three of its clauses are no longer
+true of the current text and each is named immediately after it** — and
+confirmed unchanged by diffing
 against blob `5ae06c378ee71a8d6b16eb394862806284c72ca5`: the recommended crate
 and feature set (`clap 4.6.6` with `derive`/`env`/`string`/`wrap_help`,
 `clap_complete 4.6.9`, the dependency-free `build.rs`, `strsim 0.11.1`
@@ -1019,6 +1388,21 @@ owner has not answered the waiver request, and revision 2 adds an explicit
 name, so no reading of it implies approval. Conformance to R1.3 is deliberately
 **not** recorded as a second override, because a non-waivable `MUST` is a
 constraint rather than a choice — the same treatment F269 already receives.
+
+**The three clauses of that paragraph that revision 4 falsified, listed so no
+reader takes it for a current claim.** (i) "the seven essential behaviors" — six
+are unchanged; **behaviors 1 and 2 are rewritten** around `ArgAction::Version`'s
+short-circuit and `render_version()`, so the count holds but the content of two
+does not. (ii) "OV-01's argument, its three options and its pending status" —
+the argument and the three options are still byte-identical, but **the pending
+status is gone**: the waiver was refused on 2026-09-14 and OV-01 is retired.
+(iii) "**OV-01 remains the only override** and remains ungranted" — **R60 now
+declares no override at all**, and "ungranted" is superseded by "refused". The
+rest of the paragraph still holds, including every preservation target the
+revision-3 script checks: the crate and feature set, the lockfile and advisory
+results, the four `assumes` lines byte-for-byte, the five architectures, the
+fitness-gate data rows, the practice-evidence table and the five engine
+disagreements.
 
 **Audit of revision 2, and what revision 3 changed.** The revision-2 draft
 (sha256 `18769c3a522c94ee59c5635a338828781efa9c6bc8aa4e13ac9443a5773c5c2c`) was
@@ -1062,3 +1446,107 @@ decision rests on, and because deleting an observation is not what the ruling
 asks for. The `- assumes license = MIT OR Apache-2.0` line is unchanged: it is
 the repository's own declared expression, which the ruling explicitly leaves
 standing, and it must in any case match `docs/port/PARAMETERS.md` byte-for-byte.
+
+**Audit of revision 3, and what revision 4 changed.** The revision-3 draft
+(sha256 `14f66259aad6063f9506410735e61e9a58a026fc24200cb048b9bbc71bbc2100`) was
+**approved** by `audit-codex-2026-09-05T183002Z-09f93cfc507c-r3` (gpt-5.6-terra;
+report at `review/audit-codex.md`, rerun log
+`review/evidence/audit-cli-parsing-framework-r3.log`) with
+`unresolved-findings: none`. The auditor archived commit
+`d642814cddfd3f1756fc56cd38738904440d9141` into an empty directory with no
+`.git`, ran all three revision-3 scripts from that extraction, and reported all
+three at exit `0` with the two offline logs diffing empty. **So revision 4
+implements no audit finding.** It implements the owner's ruling of 2026-09-14 on
+the single question revision 3 left open, and its scope is that ruling and
+nothing else.
+
+**What the ruling was, and what it did to this decision.** The owner was asked
+whether the org CLI Design Standard binds this port and whether OV-01's `SHOULD`
+waiver was granted. The answer: the standard binds — the same pinned revision
+1.4.14, blob `f9de0437`, that this decision already records and that the
+published R67 already relies on for R6.1 — and **the waiver is refused**, with
+F267's own conforming **option (b)** selected in its place. OV-01 is therefore
+retired and **R60 declares zero overrides**. The ruling itself is not recorded in
+this repository and is carried as **U8**.
+
+**The edit list, enumerated mechanically before any edit was made rather than by
+re-reading afterwards.** The document was searched for every line carrying
+`OV-01`, `OVERRIDE`, `waiv`, `granted`, `long_version`, `DisplayVersion`,
+`--version`, `` `-V` ``, `F267`, `AC2`, `AC3`, `AC7`, `R4.6`, `R66`, `extended`,
+`re-verify`, `only override`, `first override` and `has not reviewed`; the
+resulting line list was the work queue, and the same search was re-run against
+the edited file. Fourteen locations moved:
+
+| # | Location | Change |
+|---|---|---|
+| 1 | the title | revision 3 → revision 4 |
+| 2 | the revision preamble | a revision-4 paragraph naming the approval, the ruling, and the widening beyond AC2/AC3 |
+| 3 | `## Decision`'s status paragraph | "the owner has not reviewed R60" qualified: one question answered, the decision not reviewed |
+| 4 | the F267 row of the six-surfaces table | `long_version` out; single line on both spellings; the JSON path and its cost named |
+| 5 | the R67 integration paragraph | `ErrorKind::DisplayVersion` is no longer reachable, so the template's routing rule names one kind, not two |
+| 6 | principles row P3 | what must agree now includes the single-line default; what may vary is the JSON object and its spelling |
+| 7 | the third standard-consequence bullet | "R4.6 is a `SHOULD` this design deviates from" → satisfies, with the full conformance record and no waiver |
+| 8 | essential behaviors 1 and 2 | rewritten around `ArgAction::Version`'s short-circuit, `render_version()`, and `disable_version_flag(true)` |
+| 9 | AC2 | byte-identity of `-V` and `--version`, plus the no-leading-`v` `MUST` |
+| 10 | AC3 | the JSON object replaces the two extra lines; fields matched to R4.6 `:276` |
+| 11 | AC7 | the two halves now reach exit `0` by different routes; assert on the outcome, not the error kind |
+| 12 | the OV-01 block | retitled `RETIRED OVERRIDE`, the refusal recorded, the argument and options table kept unedited, the "only AC2/AC3" prediction corrected, and `F267 AS DECIDED` plus the R66 coupling analysis added |
+| 13 | the `re-verify` line | the fired OV-01 trigger removed; the one R66 outcome that reopens F267 added |
+| 14 | `## Parameters` prose | three related-notes become four; R66 recorded as `related (not a registry dependency)` with the reason no `CONFLICT:` line is possible |
+
+Two further locations were edited to stop a *historical* statement from reading
+as a current one, rather than to change a claim: Disagreement 3's sentence about
+what the standard's applicability decided, which now records that F267's row
+moved twice; and the revision-2 "What is unchanged from revision 1" paragraph,
+which is kept in revision 2's present tense with its three now-false clauses
+listed immediately after it.
+
+**What did not change, and why that is the point.** The recommendation is
+untouched: `clap 4.6.6` with `derive`/`env`/`string`/`wrap_help`,
+`clap_complete 4.6.9`, the dependency-free `build.rs`, `strsim 0.11.1`
+transitive only. So are the five architecture alternatives, every data row and
+every qualification of the fitness-gate table, the practice-evidence table, the
+`## Parameters` lines byte-for-byte, the five engine disagreements, U1–U7, the
+standard pin, the R1.3 repair, the four failure mechanisms revision 3
+diagnosed, the snapshot apparatus and the post-commit `git archive` proof. Gate
+1 stays `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is
+not evaluated for any dependency or tool`. Sections 01–12 of `## Empirical
+check` are not re-run and are not re-claimed.
+
+**Two corrections made beyond the brief, reported rather than fixed quietly.**
+First, R4.6's line range: the rule spans `:275-277` in the pinned text, not the
+`:275-279` and `:277-279` that revisions 1 through 3 used, which overrun into
+the blank line at `:278` and R4.7's heading at `:279`. The historical lines are
+left byte-identical — one is a revision-1 preservation target — and every
+citation this revision relies on uses `:276` for the rule and `:277` for the
+worked example. Second, revision 3's own sentence predicting that adopting (b)
+would rewrite "only the acceptance criteria AC2/AC3" is false, and is corrected
+in place under OV-01 rather than deleted: it was written from the two options'
+*content* without checking whether clap's built-in version flag could carry
+(b)'s JSON half. It cannot, and behaviors 1 and 2, AC7, the F267 row and the R67
+routing paragraph move with it.
+
+**The six fitness gates, enumerated mechanically at the close of this revision
+because two items this week shipped an "exhaustive" edit list that had silently
+dropped one.** Each is answered for every candidate in the fitness-gate table
+under `## Decision`, and nothing revision 4 changed touches any of them.
+**Gate 1, licence:** `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool` — stated on one unwrapped line here, so the recorded wording can be matched whole; the column is kept with the registry's values recorded as facts, and no exclusion ever rested on it. **Gate 2, MSRV within the policy:** answered per candidate against the 1.96
+floor; it is the gate that excludes `shadow-rs`, `argh`, `lexopt` and
+`pico-args` for declaring no `rust-version`, and that demotes `vergen 10.0.3`
+for declaring exactly the floor (qualification 4). **Gate 3, RustSec advisories
+and `unsafe` posture:** no advisory page for any of the eight crates queried,
+the 404 reading validated against two positive controls, and `cargo audit` clean
+on the resolved tree; the `unsafe` half is **explicitly not assessed** and is
+carried as U3 (qualification 1). **Gate 4, builds and is tested on
+`ubuntu-latest, macos-latest`:** **not established by this decision** — no CI
+configuration was read and nothing ran on Linux — and carried as U1
+(qualification 2). **Gate 5, default features and async-runtime coupling:**
+answered per candidate in its own column — `clap`'s
+`std,color,help,usage,error-context,suggestions`, `clap_complete`'s
+`default = []` with its `clap >= 4.5.20` floor, `strsim` pulled only by clap's
+`suggestions` — and no candidate couples to an async runtime, which is why no
+row names one. **Gate 6, binary-size and compile-time cost:** answered
+qualitatively per candidate from the upstream `rosetta-rs` benchmark, with its
+limits stated in full (another project's system, `rustc 1.94.0`, clap v4.5.60,
+neither CI runner) and the unmeasured case carried as U2 (qualification 3). All
+six are answered, none is omitted, and none is answered by a bare exit status.

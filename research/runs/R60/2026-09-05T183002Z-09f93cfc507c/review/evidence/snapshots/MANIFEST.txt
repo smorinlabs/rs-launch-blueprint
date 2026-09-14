@@ -17,16 +17,18 @@
 #                 (local/self), or '-' (raw)
 #   6 checksum    for kind=crate, the sha256 crates.io records for that tarball; else '-'
 #
-# `r60-snapshot-provenance-r3.sh` re-derives columns 1 from columns 3-6 over the
-# network. `r60-standard-pin-r3.sh` and `r60-preservation-diff-r3.sh` verify
-# column 1 offline before reading any snapshot.
+# `r60-snapshot-provenance-r4.sh` re-derives columns 1 from columns 3-6 over the
+# network. `r60-standard-pin-r4.sh` and `r60-preservation-diff-r4.sh` verify
+# column 1 offline before reading any snapshot. (The revision-3 scripts of the
+# same three names are retained beside them and read this same file.)
 #
 # The `.txt` suffix on source files is deliberate: it keeps this run directory free
 # of anything a build tool would treat as Rust, Python or TypeScript source, which
-# is what `r60-preservation-diff-r3.sh` check C5 asserts.
+# is what `r60-preservation-diff-r4.sh` check C5 asserts.
 #
 9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f|cli-design-standard-1.4.14.md|raw|https://raw.githubusercontent.com/smorinlabs/cli-standards/fb30a591c267a7ec1130ba4cda679eaee494b9d7/cli-design-standard.md|-|-
 ec8854cb291bb4f666de87470c99459db312ba9addd0864cedf83e52225cd8fc|clap_builder-4.6.6-src-builder-command.rs.txt|crate|https://static.crates.io/crates/clap_builder/clap_builder-4.6.6.crate|clap_builder-4.6.6/src/builder/command.rs|7b48fea5a88e9ae728a2dcbedbfc0e730f7d60da42e1cb049a83c9fb8b789889
+0347f3b3f6fc4665634050cbbe3dd88a9b98474e1312bdccfa8e9c119935faf3|clap_builder-4.6.6-src-parser-parser.rs.txt|crate|https://static.crates.io/crates/clap_builder/clap_builder-4.6.6.crate|clap_builder-4.6.6/src/parser/parser.rs|7b48fea5a88e9ae728a2dcbedbfc0e730f7d60da42e1cb049a83c9fb8b789889
 382ef691d65bdc867eaa5465a408374ffda528e96824cebeff88de7f9d40e2eb|clap_derive-4.6.4-src-item.rs.txt|crate|https://static.crates.io/crates/clap_derive/clap_derive-4.6.4.crate|clap_derive-4.6.4/src/item.rs|d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061
 29783c4d7b9499315679711bea94476da6fef2c73f6a1b1f6c808e71330fbb02|clap_derive-4.6.4-src-attr.rs.txt|crate|https://static.crates.io/crates/clap_derive/clap_derive-4.6.4.crate|clap_derive-4.6.4/src/attr.rs|d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061
 ef0cbb123ce38f67b3e776f427c2d8bb0cebe0c8efa00d4a5a0530e341312a91|py-b08bccfb-cli-commands-projects.py.txt|raw|https://raw.githubusercontent.com/smorinlabs/py-launch-blueprint/b08bccfb55d05f15e46a83b52c5660b1881d19f5/src/py_launch_blueprint/cli/commands/projects.py|-|-
@@ -35,3 +37,4 @@ e6fc59ac8c8ebb66d4d9c87fffe3e1931bb81693e26f498b510940c9add76a01|py-b08bccfb-cli
 55a3cc9684a2b54f874cfca635b1a49e1bb284bb4b1c611798e21b94c1657dce|ts-cb1cbcb2-src-commands-projects.ts.txt|local|smorinlabs/ts-launch-blueprint@cb1cbcb2e88b898e8c081b0abbfabc1630079c00|src/commands/projects.ts|-
 d35d4f5a681b1d6572b80533393963bb55a435a71ca59fcca21d10b4c461bd6c|r60-decision-r1.md|self|blob 5ae06c378ee71a8d6b16eb394862806284c72ca5|research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/DECISION.md|-
 18769c3a522c94ee59c5635a338828781efa9c6bc8aa4e13ac9443a5773c5c2c|r60-decision-r2.md|self|commit 892954669e0073b2d9747a6e67068645f5cbf088|research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/DECISION.md|-
+14f66259aad6063f9506410735e61e9a58a026fc24200cb048b9bbc71bbc2100|r60-decision-r3.md|self|commit d642814cddfd3f1756fc56cd38738904440d9141|research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/DECISION.md|-
