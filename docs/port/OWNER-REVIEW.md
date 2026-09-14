@@ -36,6 +36,60 @@ Current binding interpretation for P02 (spec §2, amendment A5). This replaces t
 - Multi-engine research (2026-09-04): every item runs on Claude Opus, Codex and Doxa deep research in parallel, each as its own subagent; a non-producer synthesizes the decision; at most 4 Claude subagents at once, out-of-process engines uncounted (spec §13 A2, `research/RUNBOOK.md` §2).
 - Dependency waves (2026-09-04): keystone decisions such as the web framework (R69) are researched before the items that hang off them, independent items run in parallel (spec §13 A3, `research/RUNBOOK.md` §1).
 
+## Later owner rulings that bind every item (recorded after the 2026-09-04 codesign)
+
+The dispositions table below records one 2026-09-04 codesign choice per item. The
+rulings in this section came later, bind items regardless of their disposition,
+and are recorded here because `docs/port/` is the port's durable record; the
+reasoning and blast radius for each is in `docs/planning/p02/owner-decisions.md`
+and `docs/planning/p02/execution-ledger.md`.
+
+### 2026-09-12 — no licence check for anything the template uses (Q4, superseded and widened by Q7.B)
+
+Owner ruling, verbatim:
+
+> Here, we don't need to check the licensing for any tool we use. Zero license
+> check. That accounts for other tools and libraries we're including. The license
+> we have only applies to the source code in the repo itself directly, not
+> anything it includes or depends on.
+
+Q7.B extended this knowingly to crates compiled into the shipped artifact, after
+the owner was shown that a linked crate's terms travel into every downstream
+binary. **Fitness gate 1 ("license compatible with `MIT OR Apache-2.0`") is
+struck from every item's evaluation.** It appears in 85 of the 86 binding
+prompts; this is an owner *interpretation* of that gate, not a prompt edit,
+because editing the prompts would invalidate the prompt hashes that published
+acceptance records cite. Decisions record gate 1 as `inapplicable` with the
+ruling named, rather than deleting the row.
+
+What the ruling does **not** touch: the repository's own declared
+`license = MIT OR Apache-2.0` and its per-file licence headers (R46); any rule
+against committing third-party copyleft files *into* this repository; a tool's
+usage terms restricting where it may lawfully run (R16), which is a functional
+availability constraint rather than a compatibility check; and an
+attribution notice owed on shipped content (R81), which is a distribution duty.
+
+### 2026-09-14 — the CLI Design Standard binds, and OV-01 is refused
+
+The owner confirmed that `/Users/stevemorin/c/cli-standards/cli-design-standard.md`
+(version 1.4.14, blob `f9de0437`) governs this template. Its own header states
+"Applies to: All new CLIs, any language", and R67 is published relying on its
+rule R6.1 for the entire exit-code taxonomy.
+
+**Override OV-01 is REFUSED.** It was requested on 2026-09-12 as a waiver of
+R4.6 `(SHOULD)`, which says `--version`/`-V` should print a single line
+`acme <semver>`. R60 had recommended printing a target-triple line and a rustc
+line on every build. The owner instead selected R60's own conformant option (b):
+both spellings print the single line, and extended build data moves behind a
+JSON output flag, which R4.6 explicitly permits.
+
+**Consequence for conformance: the template waives no `SHOULD`.** The standard's
+conformance clause (`:50`) requires a waiver to name the rule ID, describe the
+deviation, explain the rationale, and record the owner and date. No waiver record
+exists because none is owed. R60 carries zero overrides; OV-01 is retired as
+refused rather than deleted, its argument and options table kept as the record of
+how the choice was reached.
+
 ## Dispositions
 
 | item | disposition | rationale | date |
