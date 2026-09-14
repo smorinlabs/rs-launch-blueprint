@@ -35,10 +35,16 @@ REV4_COMMIT="ddbee6a"
 REV2_SHA="1b5a6b99ecedb88f7358d16a4567aa9b56838a2102e9e4feda99d00bc787513f"
 REV4_SHA="7f088e512f1393896c043274a9f05f9ff65639433b23cd6b0e6b1b35b416fcc7"
 
-# `grep` on the author's PATH is ugrep 7.8.4, not BSD or GNU grep. Every list
-# below is produced with the system grep at an absolute path so the command is
-# unambiguous; check 0 shows the two agree on the pattern that matters.
+# Every list below is produced by ONE named executable, /usr/bin/grep, invoked by
+# absolute path, and the script asserts that executable's own version string so a
+# reported count always names the program that produced it. Typing a bare `grep`
+# is not equivalent: in a Claude Code zsh session `grep` resolves to a shell
+# function from the session's shell snapshot which routes to an embedded ugrep,
+# while a `bash <script>` invocation, an auditor's sandbox and CI all get the PATH
+# binary. Those are different programs. `review/evidence/check-grep-identity.sh`
+# records that difference and compares the two on this item's patterns.
 GREP=/usr/bin/grep
+GREP_VERSION_EXPECTED='grep (BSD grep, GNU compatible) 2.6.0-FreeBSD'
 
 # The pattern recorded in the revision-3 commit message (7a08061).
 PAT_OLD='copyleft|agpl|[^a-z]gpl|mpl|mozilla|patent|permissive'
@@ -67,8 +73,13 @@ assert_eq() { # label expected actual
 
 printf 'retrieved: %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
 printf 'repo: %s\n' "$REPO"
-printf 'grep(PATH): %s\n' "$(command -v grep)"
-printf 'grep(used): %s\n\n' "$GREP"
+printf 'grep executable used for every list below: %s\n' "$GREP"
+grep_version="$("$GREP" --version 2>&1 | head -1)"
+printf 'its own --version, first line: %s\n' "$grep_version"
+printf 'what a bare `grep` resolves to under this script interpreter (bash): %s\n\n' \
+  "$(command -v grep)"
+assert_eq "the grep invoked is the one this log names" \
+  "$GREP_VERSION_EXPECTED" "$grep_version"
 
 ## 0. fix the two blobs and prove they are the revisions named
 git -C "$REPO" show "$REV2_COMMIT:$DEC" > "$TMP/rev2.md" || { echo "git show rev2 failed"; exit 1; }
@@ -89,9 +100,11 @@ assert_eq "untruncated licence-identifier grep returns 40 lines" "40" "$old_coun
 assert_eq "recorded revision-3 list is NOT that raw output" \
   "differs" \
   "$([ "$old_lines" = "182 363 607 610 616" ] && echo same || echo differs)"
-# the same pattern through the PATH grep, to show the 40 is not a grep artifact
-path_count="$(grep -ciE "$PAT_OLD" "$TMP/rev2.md")"
-assert_eq "PATH grep agrees on the count" "40" "$path_count"
+# A bare `grep` here would resolve to this same /usr/bin/grep, because a bash
+# script never sees the zsh session's shell function, so comparing the two here
+# would be a check that cannot fail. The genuine second-implementation comparison
+# lives in `review/evidence/check-grep-identity.sh`, which reaches the embedded
+# ugrep explicitly and is expected to SKIP that comparison where it is absent.
 
 echo
 echo '## 2. the filter that was applied but not stated'

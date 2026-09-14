@@ -1,8 +1,10 @@
-retrieved: 2026-09-14T22:57:29Z
+retrieved: 2026-09-14T23:30:05Z
 repo: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
-grep(PATH): /usr/bin/grep
-grep(used): /usr/bin/grep
+grep executable used for every list below: /usr/bin/grep
+its own --version, first line: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+what a bare `grep` resolves to under this script interpreter (bash): /usr/bin/grep
 
+ASSERT ok   the grep invoked is the one this log names
 ASSERT ok   revision-2 blob sha256
 ASSERT ok   revision-4 blob sha256
 
@@ -13,7 +15,6 @@ raw output, one line per match, line numbers only:
 raw match count: 40
 ASSERT ok   untruncated licence-identifier grep returns 40 lines
 ASSERT ok   recorded revision-3 list is NOT that raw output
-ASSERT ok   PATH grep agrees on the count
 
 ## 2. the filter that was applied but not stated
 For each line in raw-output minus recorded-list, the tokens it matched:

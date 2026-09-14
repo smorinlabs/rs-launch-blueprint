@@ -1,4 +1,115 @@
-# R49 — build-target-declaration (crate, Deep) — DECISION (revision 5, 2026-09-14)
+# R49 — build-target-declaration (crate, Deep) — DECISION (revision 6, 2026-09-14)
+
+**What changed in revision 6, and what did not.** Revision 5 (sha256
+`71ef987941cc2e3c903a16eb242c7ee4b94ecf55497253a337b3ce6b27e65963`) was
+**rejected** by `review/audit-codex.md` (actor
+`audit-codex-2026-09-05T155504Z-2107cffb3ecf-r5`, model `gpt-5.6-terra`, family
+openai) on one unresolved finding: *"decision falsely identifies PATH grep as
+ugrep 7.8.4"*. **The finding is correct and the false claim was mine.** The
+audit also caught that the claim contradicted my own cited log, which prints
+`grep(PATH): /usr/bin/grep`. Nothing the audit confirmed is disturbed here: the
+enumeration repair, the proved filter rule, the six newly disclosed licence
+locations and the audited provenance repair all stand, and gate 1 stays
+`inapplicable`.
+
+**What is actually true, and why both the audit and I saw what we saw.** The
+divergence is not between machines; it is between a command **typed at a shell**
+and a command **run inside a script**, and revision 5 described it with the wrong
+noun.
+
+| What is named | What it actually is |
+|---|---|
+| `/usr/bin/grep` — the PATH binary | `grep (BSD grep, GNU compatible) 2.6.0-FreeBSD` |
+| a bare `grep` typed in this Claude Code zsh session | a shell **function** from that session's shell snapshot, `~/.claude/shell-snapshots/snapshot-zsh-*.sh`, which runs an `ugrep 7.8.4` **embedded inside the `claude` executable**, adding `-G --ignore-files --hidden -I --exclude-dir=.git` and siblings |
+| a bare `grep` inside `bash <script>` | `/usr/bin/grep` — a bash script never sees the zsh function |
+| `ugrep` as a PATH command | does not exist; it is reachable only through that executable |
+
+`type -a grep` in the authoring session reports the function first and
+`/usr/bin/grep` second. The auditor's sandbox loads no snapshot, so there `grep`
+**is** `/usr/bin/grep`, which is exactly what the audit reported. So typing
+`grep` really did get me ugrep, and calling it "the PATH grep" was the error.
+
+**The corrected statement.** *In the authoring shell, a typed `grep` resolves to
+a shell function that routes to `ugrep 7.8.4` embedded in the `claude`
+executable; the PATH binary `/usr/bin/grep` is BSD grep 2.6.0-FreeBSD; a script
+run with `bash` gets the PATH binary in every environment. Both implementations
+return the same result for every pattern this decision reports.* The fact is kept
+rather than deleted because anyone re-running this work needs it.
+
+**Both counts under both implementations.** Every list below is
+`/usr/bin/grep` output; the embedded ugrep was then run on the same blob with the
+same arguments and compared. Log `review/evidence/grep-identity.log`, script
+`review/evidence/check-grep-identity.sh`, exit status 0.
+
+| pattern, blob | `/usr/bin/grep` | embedded `ugrep 7.8.4` |
+|---|---|---|
+| recorded revision-3 pattern, `2ac02e1` | 40 lines | 40 lines, same list |
+| corrected word-bounded pattern, `2ac02e1` | 5 lines, `182 363 607 610 616` | same 5, same list |
+| corrected word-bounded pattern, `ddbee6a` | 10 lines, `12 29 70 92 298 489 733 736 745 794` | same 10, same list |
+| `licen`, `ddbee6a` | 33 lines | same 33, same list |
+
+**So revision 5's central claim survives the correction unchanged**: the printed
+list is the raw output of the stated command on the stated blob, under either
+implementation.
+
+**Which binary this item's scripts invoke, and why — the programme-wide
+judgement.** Both of this revision's scripts invoke `/usr/bin/grep` by absolute
+path, and each now asserts that binary's own `--version` string, so a reported
+count always names the program that produced it. That is the right default for
+every evidence script in this programme, for a reason stronger than tidiness: the
+two implementations are not interchangeable, and where they differ, the embedded
+one **silently returns fewer results**. `check-grep-identity.sh` demonstrates it
+rather than asserting it — on a throwaway directory holding a `.gitignore` that
+ignores `ignored/`, a **recursive** search finds both files under
+`/usr/bin/grep` and only `visible.md` under the embedded ugrep, because the
+snapshot's function passes `--ignore-files`. An enumeration that is supposed to
+be exhaustive, run recursively over a tree with ignore rules, would therefore be
+quietly incomplete — the precise defect this item has now been rejected for three
+times. Two limits on that finding, stated so it is not over-read. First,
+**explicitly named files, including a shell-expanded glob, are read by both**;
+the script asserts that too. Revision 3's failed census ran
+`grep -rn 'binstall' raw/*.md | head -30`, whose glob the shell expanded into
+explicit file arguments, so the ignore behaviour was **not** a second cause of
+that failure and is not claimed as one: `head -30` remains its sole cause.
+Second, a script invoked as `bash <script>` already gets `/usr/bin/grep`
+everywhere, so this is not a defect in existing scripts — it is a defect waiting
+for the first enumeration typed at a shell and then reported as complete.
+`review/evidence/check-lockfile-inclusion.sh`, which the round-3 through round-5
+audits each reran and reproduced, is therefore left **byte-identical**: its one
+recursive search runs under `bash` and so under `/usr/bin/grep`, and perturbing a
+reproduced artifact to fix a hazard it does not have would cost more than it
+buys. The recommendation for new scripts is the absolute path; the recommendation
+for agents is that no completeness claim rest on a search typed at a shell.
+
+**What revision 6 changes.** The title's revision number; one new paragraph, this
+one; and the revision-5 note's grep-identity sentence, **preserved and corrected
+in place** with a bracketed note, the method used for every earlier correction in
+this chain. Two evidence files change and one is new:
+`review/evidence/check-licence-enumeration.sh` now names and asserts the binary
+it invokes and drops a comparison that could not fail (a bare `grep` inside that
+bash script resolved to the same `/usr/bin/grep` it was being compared against);
+its log is regenerated, still 13 content assertions, exit status 0, and re-run
+after saving it reproduces byte-for-byte except the `retrieved:` timestamp.
+`review/evidence/check-grep-identity.sh` and
+`review/evidence/grep-identity.log` are new, 10 content assertions, exit status
+0. **That log is deliberately environment-dependent** and is the one artifact
+here not expected to reproduce byte-for-byte: where the embedded ugrep is absent
+— an auditor sandbox, CI, a `git archive` extraction — the `second
+implementation:` block shortens to one line and every `[2/2]` comparison prints
+`SKIP` instead of `SAME`, with no assertion silently converted into a pass. This
+was verified by re-running the script with `CLAUDE_CODE_EXECPATH` unset and
+`HOME` pointed at an empty directory: exit status 0, five `SKIP` lines, and the
+two logs identical once `retrieved:`, the `second implementation:` block and
+every `[2/2]`-guarded line are dropped. The script's header states that
+comparison rule.
+
+**What revision 6 does not change.** The recommendation does not move: declare
+every build target in `Cargo.toml` itself and add no build backend, bundler or
+build-orchestration crate. Fitness gate 1 stays `inapplicable` under the owner's
+2026-09-12 ruling (Q7.B). Every figure, line list and conclusion in the
+revision-5 note stands as written, now with the binary that produced it correctly
+named. Every `- owns` and `- assumes` line is byte-identical to revisions 2
+through 5. No other evidence script, log, figure or empirical check is altered.
 
 **What changed in revision 5, and what did not.** Revision 4 (sha256
 `7f088e512f1393896c043274a9f05f9ff65639433b23cd6b0e6b1b35b416fcc7`) was
@@ -112,7 +223,16 @@ exiting non-zero on any failure. Its log is
 `review/evidence/licence-enumeration.log`. `grep` on this machine's `PATH` is
 `ugrep 7.8.4`, not BSD or GNU grep, so the script runs every enumeration through
 `/usr/bin/grep` at an absolute path and separately asserts that the `PATH` grep
-returns the same count for the pattern at issue. The script was re-run after its
+returns the same count for the pattern at issue. *[Corrected in revision 6. The
+PATH binary is `grep (BSD grep, GNU compatible) 2.6.0-FreeBSD`, not ugrep;
+`ugrep` is reachable on this machine only as an `ugrep 7.8.4` embedded in the
+`claude` executable, through a shell function defined in the session's shell
+snapshot, so it is what a **typed** `grep` runs and never what a `bash` script
+runs. The described second-count check was consequently `/usr/bin/grep` compared
+against itself — a check that could not fail — and revision 6 replaces it with a
+real two-implementation comparison in `review/evidence/check-grep-identity.sh`.
+Every list this revision reports is unchanged and holds under both. See the
+revision-6 note at the top of this decision.]* The script was re-run after its
 log was saved and reproduces it byte-for-byte except the `retrieved:` UTC
 timestamp on line 1 (raw `diff` differs on that line alone; the same `diff` with
 that line removed exits 0).
