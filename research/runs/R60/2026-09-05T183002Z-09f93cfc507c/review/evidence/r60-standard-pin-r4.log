@@ -299,6 +299,8 @@ PASS  C15e its doctest asserts --version then yields UnknownArgument
     /// ```
 PASS  C15f clap's own custom-flag recipe uses ArgAction::Version
 PASS  C15g and therefore still yields DisplayVersion — the trap the decision names
+occurrences of 'disable_version_flag' in clap_derive's attribute table (attr.rs): 0
+PASS  C15h 'disable_version_flag' is not a magic attribute name, so it forwards verbatim
 === C16. R66 owns no registry parameter — why no CONFLICT line is raised ===
 R66's binding prompt: present
 PASS  C16z R66's prompt is in this checkout, so the counts below are real
@@ -322,5 +324,5 @@ PASS  C16i and nothing dated 2026-09-14 — likewise U8
 R60 rows in the owner-review file: 1
 PASS  C16j R60 does appear there (one row), so the two zeroes above are a real gap
 
-CHECKS RUN: 114   FAILURES: 0
+CHECKS RUN: 115   FAILURES: 0
 RESULT: all checks passed

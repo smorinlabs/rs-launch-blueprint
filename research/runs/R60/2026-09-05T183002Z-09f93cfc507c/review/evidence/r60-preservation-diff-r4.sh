@@ -252,9 +252,16 @@ check "C4b they are Decision, Parameters, Empirical check, Engines in order" \
   "## Decision ## Parameters ## Empirical check ## Engines" "$out"
 out="$(grep -c '^## Supersedes' "$DEC")"
 check "C4c no ## Supersedes section" "count=0" "count=$out"
+# C4d and C4e2 were inherited from revision 3 and are RELABELLED here rather than
+# dropped. Their assertions still hold and still matter — OV-01 must remain named
+# and its block must remain present, because deleting a retired override would
+# erase how the choice was reached — but revision 3's labels said "this decision's
+# only override" and "OV-01 is declared as an override", which would print a PASS
+# line contradicting a revision that declares zero. C4e (no OV-02..OV-09) and the
+# zero-override assertion in the C4f family are what carry the count.
 out="$(grep -c 'OV-01' "$DEC")"
 echo "OV-01 mentions: $out"
-check "C4d OV-01 is named (this decision's only override)" "yes" \
+check "C4d OV-01 is still named, as a RETIRED override" "yes" \
   "$([ "$out" -gt 0 ] && echo yes || echo no)"
 # Scoped to override DECLARATIONS, not to any mention of the string: the prose
 # names OV-02..OV-09 when stating that none was invented.
@@ -263,7 +270,7 @@ echo "OVERRIDE (OV-02..OV-09) declarations: $out"
 check "C4e no second override was declared" "count=0" "count=$out"
 out="$(grep -coE 'OVERRIDE \(OV-01\)' "$DEC")"
 echo "OVERRIDE (OV-01) declarations: $out"
-check "C4e2 OV-01 is declared as an override" "yes" \
+check "C4e2 the OVERRIDE (OV-01) block is present, so the record was relabelled rather than deleted" "yes" \
   "$([ "$out" -ge 1 ] && echo yes || echo no)"
 out="$(grep -c 'requested, not granted' "$DEC")"
 echo "'requested, not granted' occurrences (the preserved 2026-09-12 record, plus the narrative citing it): $out"

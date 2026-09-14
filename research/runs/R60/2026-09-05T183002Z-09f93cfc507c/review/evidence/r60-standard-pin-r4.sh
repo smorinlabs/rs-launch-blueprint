@@ -424,6 +424,15 @@ check "C15f clap's own custom-flag recipe uses ArgAction::Version" \
   ".action(ArgAction::Version)" "$out"
 check "C15g and therefore still yields DisplayVersion — the trap the decision names" \
   "ErrorKind::DisplayVersion" "$out"
+# The decision writes the derive spelling as #[command(disable_version_flag = true)].
+# Revision 3 proved the same forwarding for `alias` (C12) because the R1.3 repair
+# rested on it; the same proof is owed here, since F267's mechanism rests on this
+# one. `disable_version_flag` is not a MagicAttrName either, so it takes the same
+# generic branch C12b and C12c already verified and emits
+# `.disable_version_flag(true)` — the builder method C15 just located.
+out="$(grep -c 'disable_version_flag' "$CD_ATTR")"
+echo "occurrences of 'disable_version_flag' in clap_derive's attribute table (attr.rs): $out"
+check "C15h 'disable_version_flag' is not a magic attribute name, so it forwards verbatim" "count=0" "count=$out"
 
 echo "=== C16. R66 owns no registry parameter — why no CONFLICT line is raised ==="
 # A 'CONFLICT: R66 <param>' line names a consumed registry parameter whose value

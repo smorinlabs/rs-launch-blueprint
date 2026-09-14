@@ -79,11 +79,11 @@ H2s: ## Decision ## Parameters ## Empirical check ## Engines
 PASS  C4b they are Decision, Parameters, Empirical check, Engines in order
 PASS  C4c no ## Supersedes section
 OV-01 mentions: 26
-PASS  C4d OV-01 is named (this decision's only override)
+PASS  C4d OV-01 is still named, as a RETIRED override
 OVERRIDE (OV-02..OV-09) declarations: 0
 PASS  C4e no second override was declared
 OVERRIDE (OV-01) declarations: 5
-PASS  C4e2 OV-01 is declared as an override
+PASS  C4e2 the OVERRIDE (OV-01) block is present, so the record was relabelled rather than deleted
 'requested, not granted' occurrences (the preserved 2026-09-12 record, plus the narrative citing it): 2
 PASS  C4f the 2026-09-12 request is still recorded, as history
 the preserved 2026-09-12 status line: **Waiver status, as of 2026-09-12: requested, not granted.** The owner has not
@@ -251,7 +251,7 @@ PASS  C6 the r1 diff is non-empty in both directions, so the revision landed
 < all three engines already put it.
 < | U5 | Every acceptance criterion AC1–AC8. None was executed: no Rust CLI exists. | P03's integration tests |
 === C7. every line that differs from revision 2, enumerated ===
-revision-2 lines replaced or removed: 139
+revision-2 lines replaced or removed: 140
 PASS  C7 the r2 diff is non-empty in both directions
 --- full list of revision-2 lines replaced or removed ---
 < # R60 — CLI parsing framework (bundle, Deep) — revision 2, 2026-09-12
@@ -312,6 +312,7 @@ PASS  C7 the r2 diff is non-empty in both directions
 < only single-licensed one being `strsim` at MIT. **target-os-matrix** is the gate
 < Three parameter-shaped notes that are deliberately **not** parameter lines.
 < imposes no constraint on it. R67 owns `error-taxonomy-exit-codes`; this item
+< **Two runs, kept separate.** Sections 01–12 below are the **revision-1** run of
 < 2026-09-10; rows E1–E9 are the **revision-2** run of 2026-09-12, which verifies
 < the standard pin, the R1.3 rule text, every standard line this decision cites,
 < the clap APIs the new acceptance criteria name, and what revision 2 preserved.
@@ -394,7 +395,7 @@ PASS  C7 the r2 diff is non-empty in both directions
 < **What is unchanged from revision 1**, and confirmed unchanged by diffing
 < architecture alternatives and the fitness-gate table; the seven essential
 === C8. every line that differs from revision 3, enumerated ===
-revision-3 lines replaced or removed: 50
+revision-3 lines replaced or removed: 60
 PASS  C8 the r3 diff is non-empty in both directions
 --- full list of revision-3 lines replaced or removed ---
 < # R60 — CLI parsing framework (bundle, Deep) — revision 3, 2026-09-13
@@ -435,7 +436,17 @@ PASS  C8 the r3 diff is non-empty in both directions
 < re-verify: 2027-03-10, or earlier on any of — **the org CLI Design Standard moving off the pinned revision (version 1.4.14, blob `f9de0437baece3383e73ca2c5f48
 < Three parameter-shaped notes that are deliberately **not** parameter lines.
 < imposes no constraint on it. R67 owns `error-taxonomy-exit-codes`; this item
+< **Two runs, kept separate.** Sections 01–12 below are the **revision-1** run of
+< 2026-09-10; rows E1–E10 are the verification run first performed for revision 2
+< on 2026-09-12 and **re-executed in full for revision 3 on 2026-09-13** against a
+< rebuilt, self-contained evidence apparatus. It verifies the standard pin, the
+< R1.3 rule text, every standard line this decision cites, the clap APIs the new
+< acceptance criteria name, what this revision preserved, and — row E10 — that
+< every snapshot it reads really came from the source it names.
+< revision 3 when the scripts were rewritten; where a row names one, it names the
+< revision-3 script's id.
 < | E1 | that the text every `:<line>` citation resolves against is the pinned revision (`C1`, `C2` of `r60-standard-pin-r3.sh`) | verify each snapshot's sha256
+< | E5 | every other standard line this decision cites (`C7`–`C9`) | the same pinned text, one `sed -n '<n>p'` per citation | all resolve: `:50` the SHOULD-waiv
 < | E9 | that this revision preserved what the audits did not challenge (`review/evidence/r60-preservation-diff-r3.sh`, log `review/evidence/r60-preservation-di
 < | E10 | that every committed snapshot really is what MANIFEST.txt says, and that the pin is still the newest published commit (`review/evidence/r60-snapshot-p
 < 0**, 73 checks, 0 failures.
