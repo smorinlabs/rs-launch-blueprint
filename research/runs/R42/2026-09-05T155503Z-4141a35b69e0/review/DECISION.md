@@ -1,4 +1,4 @@
-# 2026-09-13 — R42 — dev-toolchain-provisioning (bundle, Deep) — DECISION (revision 8)
+# 2026-09-14 — R42 — dev-toolchain-provisioning (bundle, Deep) — DECISION (revision 9)
 
 ## Decision
 
@@ -98,52 +98,75 @@ observed directly in check 15 rather than inferred:
 
 **The integrity posture changes with the backend, the owner has not been asked
 about that, and this paragraph is the ask.** The ruling of 2026-09-12 is about
-licence and reaches nothing else; it authorises the substitution and revision 8
-does not reverse it. But the backend it authorises verifies the bytes it places
-on a contributor's `PATH` differently from the backend it replaces, and revision
-7 booked the speed benefit without recording that difference. **Revision 8
-establishes the mechanism rather than guessing at it**, at new **check 16**
-(`evidence/binstall-signing.log`), which reads `cargo-binstall` 1.23.0's
-signature policy in the source at the immutable tag `v1.23.0` and then exercises
-it with a negative and a **positive** control. What it found:
+licence and reaches nothing else; it authorises the substitution and revisions 8
+and 9 do not reverse it. But the backend it authorises verifies the bytes it
+places on a contributor's `PATH` differently from the backend it replaces, and
+revision 7 booked the speed benefit without recording that difference.
+**Revision 8 established the mechanism rather than guessing at it**, at new
+**check 16** (`evidence/binstall-signing.log`), which reads `cargo-binstall`
+1.23.0's signature policy in the source at the immutable tag `v1.23.0` and then
+exercises it. **Revision 9 makes that check enforce what it observes.** Revision
+8's payloads printed each critical command's status and each count and asserted
+none of them, so a wrong status or a wrong count still left the script exiting
+zero; the round-8 audit rejected the revision on exactly that ground and was
+right to. Every control named below is now an assertion that exits the script
+non-zero when its input is wrong — 45 in the first leg, 23 in the second, each
+leg also asserting its own assertion count so a skipped assertion fails the run —
+and each control is **demonstrated failing** in a third leg
+(`evidence/binstall-assertion-controls.log`, `:299-302`), which reruns the owning
+leg once per control with exactly one input substituted and requires both a
+non-zero exit and that control's own `ASSERT-FAIL` line. Thirteen controls, seven
+in the first leg (`:265-293`) and six in the second (`:233-257`), were shown
+failing that way; both legs pass unperturbed. What the checks found, unchanged by
+the repair:
 
 - **Signature verification on a crate's own GitHub release is opt-in by the
   crate, not by the installer.** The maintainers say so in their own
   documentation — "This feature requires adding to the Cargo.toml metadata: no
-  autodiscovery here!" (`SIGNING.md:6`, log `:220`) — and the code matches:
+  autodiscovery here!" (`SIGNING.md:6`, log `:323`) — and the code matches:
   with the default policy and no `[package.metadata.binstall.signing]` stanza the
   fetcher takes `SignatureVerifier::Noop` (`gh_crate_meta.rs:301-306`, log
-  `:188-194`). The documented default is "verify signatures if they are
+  `:288-293`). The documented default is "verify signatures if they are
   available, but to allow unsigned packages as well" (`args.rs:408-411`, log
-  `:165-171`).
+  `:263-269`). Each of those five files is fetched at the immutable tag and its
+  sha256 asserted against the value recorded here, so a substituted file fails
+  the leg; substituting one was demonstrated (`binstall-assertion-controls.log:266-268`).
 - **Neither tool check 15 exercised opts in.** In their published `Cargo.toml`
   files, fetched from `static.crates.io`, `cargo-shear@1.13.1` and
-  `taplo-cli@0.10.0` are both `signing: ABSENT` (log `:294`, `:298`).
+  `taplo-cli@0.10.0` are both `signing: ABSENT` (log `:404`, `:410`) — a verdict
+  the leg asserts per spec, demonstrated by probing a crate that does declare a
+  key and watching the assertion fail (`binstall-assertion-controls.log:270-272`).
   Consequently the recommended recipe body, run unchanged against
   `cargo-shear@1.13.1`, resolved the artifact and printed **zero**
-  `Verified signature` lines (log `:325`). The mechanism is not broken and the
-  check is not vacuous: the positive control `cargo-binstall@1.23.0`, which does
-  publish a minisign key, printed exactly one — `Verified signature for package
+  `Verified signature` lines (log `:442`), a count the leg now requires to be
+  exactly zero. The mechanism is not broken and the check is not vacuous: the
+  positive control `cargo-binstall@1.23.0`, which does publish a minisign key,
+  printed exactly one — `Verified signature for package
   'cargo-binstall': gh=cargo-bins/cargo-binstall git=b874e25e… ts=…
-  run=33978884356` (log `:302`, `:340`, `:346`).
+  run=33978884356` (log `:416`, `:461`, `:468`) — and that count is required to be
+  exactly one. Both counts were shown failing the leg when the crate under each
+  was swapped for the other (`binstall-assertion-controls.log:274-276`, `:282-284`).
 - **The second prebuilt fetcher behaves differently and did not apply here.**
   `QuickInstall` artifacts are checked against a minisign key compiled into
-  `cargo-binstall` itself (`quickinstall.rs:22`, log `:233`) **where a `.sig` is
+  `cargo-binstall` itself (`quickinstall.rs:22`, log `:338`) **where a `.sig` is
   served**; where the `.sig` cannot be downloaded, only `SignaturePolicy::Require`
   errors, and the default policy takes the `else` branch that logs
   `Failed to download signature, skipping verification`
-  (`quickinstall.rs:131-136`, log `:264-269`) — so that path is better defended
+  (`quickinstall.rs:131-136`, log `:368-373`) — so that path is better defended
   than the crate's own release but is not unconditionally verified either. It resolved nothing in either check: its
   asset 404s for both specs, and the `WARN` line that did print names
   `github.com` with no `third-party source ` prefix, which by
-  `resolution.rs:125-127` (log `:279-281`) identifies the crate's own release,
+  `resolution.rs:125-127` (log `:387-389`) identifies the crate's own release,
   the opt-in path.
 - **A fail-closed flag exists, and what it does was observed rather than
   predicted.** `--only-signed` (`args.rs:408-413`) run against the unsigned
   `cargo-shear@1.13.1` did **not** error. Every prebuilt fetcher refused it —
   `No signature present` from `github.com`, a 404 on QuickInstall's `.sig` — and
   the run fell through to `Dry-run: running … cargo install cargo-shear --version
-  1.13.1 --locked`, exiting 0 (log `:328-336`). So the flag degrades a tool to
+  1.13.1 --locked`, exiting 0 (log `:446-453`). The leg asserts that exit status
+  and that fall-through text, and running the same step against a crate that does
+  verify was shown failing it
+  (`binstall-assertion-controls.log:278-280`). So the flag degrades a tool to
   revision 6's backend rather than failing the recipe.
 
 | | Revision 6's backend (`cargo install --locked`) | The authorised backend (`cargo binstall --locked --no-confirm`) |
@@ -572,26 +595,41 @@ while `taplo-cli` does not), and the seven lines that carry this host's or this
 target's state and will differ elsewhere — including the `cargo-machete`
 short-circuit, which exists only because this host already carries that tool.
 
-**The host for revision 8's check 16.** The same machine again, unchanged, on the
-default `PATH`. The first leg was run three times, at `2026-09-13T08:13:31Z`,
-`08:14:05Z` and `08:24:35Z` — local `01:13`, `01:14` and `01:24` by the UTC rule
-above, the stamps being the mtimes of the outputs each run captured. The log
-records the first; the second established the rerun rule; **the third was run
-after this revision was committed**, because an evidence script that only works
-before its own commit has been a rejection ground in this programme. **All three
-runs differed in exactly four lines** — the scratch directory's absolute path and
-the three `INFO Done in <elapsed>` wall-clock timings — and in nothing else, which
-is the rerun rule the log states for this host. The second leg was run twice at
-`08:28:23Z` and `08:28:35Z` and differed in exactly one line, the one scratch path
-its `grep -rc` echoes; it contains no timings at all. For another host the log names what
-must still match: every exit status, every sha256 of a file fetched at the
-immutable tag `v1.23.0` and every excerpt quoted from those files, the three
-`PRESENT`/`ABSENT` signing verdicts (crates.io versions are immutable), the two
-`Verified signature` counts (0 for the unsigned spec, 1 for the positive control)
-and the fall-through to `cargo install` under `--only-signed`. Check 16 also
-re-observes a figure check 15 recorded: `ls ~/.cargo/bin | sort` still hashes to
-`01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed`, so this
-host's tool set has not moved between the two checks.
+**The host for check 16, whose three legs revision 9 rewrote.** The same machine
+again, unchanged, on the default `PATH`. All nineteen executions ran in one
+session on 2026-09-14, between `23:01:46Z` and `23:03:07Z` — local `16:01` to
+`16:03` by the UTC rule above, the stamps being the mtimes of the captured
+outputs, since no script prints a timestamp of its own. The recorded first-leg
+output is the clean run at `23:01:46Z` and the recorded second-leg output the
+clean run at `23:01:55Z`; the third leg, recorded at `23:03:07Z`, drove all
+nineteen. **The rerun rule is asserted rather than claimed.** The third leg runs
+each leg clean twice **in one scratch directory** and diffs the pair. The first
+leg's two clean runs differed in exactly three lines, the three
+`INFO Done in <elapsed>` wall-clock timings, and the third leg fails if any
+differing line is not one of those (`evidence/binstall-assertion-controls.log:202-213`).
+Two clean runs in **different** scratch directories add a fourth differing line,
+the `command -v cargo-binstall ->` path; that case was exercised separately, by
+rerunning the payload extracted from this log in a fresh directory, and the diff
+was those four lines and nothing else. The second leg's two clean runs were
+**byte-identical**, a zero-line diff (`:216`), because revision 9 removed the one
+absolute path revision 8's second leg printed. For another host each log names what must still match: every
+assertion and the final `RESULT: PASSED` line, every exit status, every sha256 of
+a file fetched at the immutable tag `v1.23.0` and every excerpt quoted from those
+files, the three `PRESENT`/`ABSENT` signing verdicts (crates.io versions are
+immutable), the two `Verified signature` counts (0 for the unsigned spec, 1 for
+the positive control) and the fall-through to `cargo install` under
+`--only-signed`. Check 16 also re-observes a figure check 15 recorded:
+`ls ~/.cargo/bin | sort` still hashes to
+`01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed`, and the first
+leg now **asserts** that the before and after hashes are equal rather than
+printing them. **All three payloads read no file inside this repository and write
+none**, so committing this revision cannot change what they do; extracting them
+from the three logs into one directory and running the third leg reproduces the
+whole check. All three payloads were extracted from these logs and diffed against
+the scripts that ran, byte for byte, before this revision was written; the two
+legs were then rerun from that extraction, and both passed — the second leg's
+output identical to the recorded one, the first leg's differing only in the four
+lines its rule names.
 
 **A second toolchain, for the revision-2 checks 9–12.** Those checks run with
 `PATH` restricted to `$HOME/.cargo/bin:/usr/bin:/bin`, which removes the Homebrew
@@ -632,19 +670,24 @@ of the script only and was never copied into `$CARGO_HOME/bin`; every
 `cargo binstall` call in the script carries `--dry-run`; and the script hashes
 `ls ~/.cargo/bin | sort` before and after, obtaining
 `01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed` both times.
-**Check 16 (revision 8) has the same property and demonstrates it the same way.**
-It ran from the run directory and used a fresh `…/scratchpad/r42r8run`, which
-holds exactly: five source files fetched at tag `v1.23.0` (`args.rs`,
+**Check 16 has the same property and demonstrates it the same way.**
+It ran from the run directory and used a fresh `…/scratchpad/r42r9/ctl/leg1`,
+which holds exactly: five source files fetched at tag `v1.23.0` (`args.rs`,
 `gh_crate_meta.rs`, `quickinstall.rs`, `resolution.rs`, `SIGNING.md`), three
 `.crate` archives fetched from `static.crates.io` and the `Cargo.toml` extracted
 from each, the `cargo-binstall-aarch64-apple-darwin.zip` for that tag and the
 single executable unzipped from it, and four captured command outputs. That
 executable was again put on `PATH` for the duration of the script only, every
-`cargo binstall` call carries `--dry-run`, and the `~/.cargo/bin` listing hashes
-identically before and after. Check 16's **second leg** used a separate
-`…/scratchpad/r42r8b`, holding only the `v1.23.0` source tarball and the tree
-unpacked from it; it runs no third-party binary at all — it fetches an archive,
-unpacks it and greps it.
+`cargo binstall` call carries `--dry-run`, and the `~/.cargo/bin` listing is
+hashed before and after and the two hashes **asserted equal**. Check 16's
+**second leg** used a separate `…/scratchpad/r42r9/ctl/leg2`, holding only the
+source tarball and the tree unpacked from it; it runs no third-party binary at
+all — it fetches an archive, unpacks it and greps it. Check 16's **third leg**
+(revision 9) writes nothing of its own beyond the captured outputs of the runs it
+drives, under `…/scratchpad/r42r9/ctl/controls`; two of its second-leg
+perturbations edit the unpacked tree, and both restore it, which the leg proves by
+rerunning that leg clean afterwards and requiring an output identical to the first
+clean run (`evidence/binstall-assertion-controls.log:259-263`).
 
 **Nothing recommended was implemented.** No template, workspace, `Justfile`,
 `check-deps` recipe, `install-tool` recipe, `lefthook.yml` or acceptance script
@@ -657,13 +700,16 @@ because it is the first check in this item that runs a third-party binary:
 call. That verifies the command and its flags; it does not build the
 `install-tool` recipe, the tool table or anything else the recommendation
 describes, and what it leaves unproven is unproven items 4 and 5. **Check 16
-(revision 8) runs the same third-party binary under the same rule** — the
+runs the same third-party binary under the same rule** — the
 published `v1.23.0` release artifact from a scratch directory, `--dry-run` on
 every call — and adds reads of five source files at the same immutable tag and of
 three published `Cargo.toml` files from `static.crates.io`. It establishes what
 `cargo-binstall` verifies before a prebuilt artifact would be placed; it installs
 nothing, so it observes no post-install step, and what it leaves unproven is
-unproven item 11.
+unproven item 11. Its **third leg** (revision 9) implements nothing either: it
+reruns the other two legs with one input substituted at a time and inspects their
+exit status and output, which is a statement about those scripts and not about
+the template.
 
 | # | Check | Command | Exit | Result | Log |
 |---|---|---|---:|---|---|
@@ -682,7 +728,7 @@ unproven item 11.
 | 13 | **Cargo aliases in the four surveyed reference repositories** (revision 2) | `GET https://raw.githubusercontent.com/<repo>/HEAD/.cargo/config.toml` for the four; alias-name greps over each fetched `justfile`; `gh api repos/cargo-limit/cargo-limit/contents/src/bin` | 0 | `oxc` HTTP 200 with `[alias]` `ck`, `lint`, `codecov`, `coverage`, `benchmark`, `minsize`, `allocs`, `lint-timings`, `rule`, `lintgen`, invoked on 14 justfile lines (`:40`, `:51`, `:60`, `:64`, `:104`, `:108`, `:114`, `:119`, `:130`, `:298`, `:303`, `:307`, `:312`, `:314`); `biome` HTTP 200 with `[alias]` including `lint = "clippy --workspace …"`, `format = "fmt --all --verbose"` and `documentation`, invoked at `justfile:160`, `:234`, `:334`; `casey/just` and `cargo-bins/cargo-binstall` HTTP **404** — neither defines aliases, and `just`'s `cargo lclippy`/`lrun`/`lbuild`/`ltest` are `cargo-limit`'s binaries (`src/bin/cargo-lclippy.rs`, `cargo-lrun.rs`, `cargo-lbuild.rs`, `cargo-ltest.rs`), installed by its own `justfile:117` `cargo install cargo-limit`. Re-confirmed in the same fetch: **0** wrapper-prefix lines in all four `justfile`s | `evidence/reference-aliases.log` |
 | 14 | **The two figures the table asserted without a query** (revision 5; the correction the judgment audit asked for) | `curl -o /dev/null -w '%{http_code}' https://rustsec.org/packages/{rustup,time,atty}.html`; `GET https://crates.io/api/v1/crates/rustup`; `gh api repos/rust-lang/{rustup,cargo} --jq '{repo,license}'` | 0 | `rustup` **404** with the `time` and `atty` controls at **200**, so the RustSec cell is now a probed 404 rather than a figure carried from `raw/opus.md`; the crates.io crate named `rustup` exists but its only version `0.1.0` is **yanked** (`newest_version` `0.0.0`), which is why no crates.io licence for the toolchain manager exists to quote; GitHub `license.spdx_id` is `Apache-2.0` for `rust-lang/rustup` and for `rust-lang/cargo`. Run 2026-09-10T07:05:07Z | `evidence/rustup-figures.log` |
 | 15 | **The backend the 2026-09-12 owner ruling authorises: is it current, do its flags mean what the recipe body needs, and does the command run as written?** (revision 7) | `GET https://crates.io/api/v1/crates/cargo-binstall`; `GET https://raw.githubusercontent.com/cargo-bins/cargo-binstall/v1.23.0/crates/bin/src/args.rs` plus greps for `no_confirm`, `locked`, `crate[@version]`, `dry_run` and `disable-telemetry`; then, with the unzipped `v1.23.0` release binary on `PATH` in a scratch directory, `cargo binstall -V`, `cargo binstall --locked --no-confirm --dry-run` for `taplo-cli@0.10.0`, `cargo-machete@0.9.2` and `cargo-shear@1.13.1`, and a failing control `rs-launch-blueprint-no-such-crate@9.9.9`; `~/.cargo/bin` listing hashed before and after | 0 / 0 / 0 / 0 / 0 / **76** | **Current**: newest unyanked is `1.23.0`, `2026-09-05T16:59:01.959145Z`, `yanked False`, `license GPL-3.0-only`, `rust_version 1.79.0`. **Flags, read at the immutable tag** (`args.rs` sha256 `4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783`): `no_confirm` at `:255-262`, short `-y`, "Disable interactive mode / confirmation prompts"; `locked` at `:346-350`, "This option will be passed through to all `cargo-install` invocations"; the positional is `crate[@version]` at `:44`; `dry_run` at `:251-253`; the telemetry opt-out `--disable-telemetry` at `:29-35`. **Runs as written**, `cargo binstall -V` → `1.23.0`, the `cargo <sub>` dispatch resolving the scratch `cargo-binstall`, with **all three outcomes of the backend observed in one run**: `cargo-shear@1.13.1` **resolved a prebuilt artifact** (`has been downloaded from github.com`, then `Dry-run: Not proceeding to install fetched binaries`); `taplo-cli@0.10.0` found **none** for `aarch64-apple-darwin`, warned `will be installed from source (with cargo)` and printed `Dry-run: running /opt/homebrew/bin/cargo install taplo-cli --version 0.10.0 --locked --root /Users/stevemorin/.cargo`; `cargo-machete@0.9.2` short-circuited with `already installed, use --force to override`, an outcome that exists only because this host carries it. The control exited **76** with `crate is not found`, so this check can fail. **Nothing installed**: the `~/.cargo/bin` listing hashes identically before and after. **Neither path was timed.** The log states the rerun rule for this host and for another | `evidence/binstall-backend.log` |
-| 16 | **What verifies a prebuilt artifact before it would reach `PATH`, now that check 15 has shown `--locked` does not?** (revision 8) | `GET https://raw.githubusercontent.com/cargo-bins/cargo-binstall/v1.23.0/` for `crates/bin/src/args.rs`, `crates/binstalk-fetchers/src/gh_crate_meta.rs`, `crates/binstalk-fetchers/src/quickinstall.rs`, `crates/binstalk/src/ops/resolve/resolution.rs` and `SIGNING.md`, each hashed and grepped for the signature-policy code; `GET https://static.crates.io/crates/<n>/<n>-<v>.crate` for `cargo-shear@1.13.1`, `taplo-cli@0.10.0` and `cargo-binstall@1.23.0`, each unpacked and its `Cargo.toml` tested for `[package.metadata.binstall.signing]`; then, with the unzipped `v1.23.0` release binary on `PATH` in a fresh scratch directory, `cargo binstall --locked --no-confirm --dry-run cargo-shear@1.13.1` (7a), the same spec with `--only-signed` (7b), `--only-signed cargo-binstall@1.23.0` as a **positive control** (7c) and `rs-launch-blueprint-no-such-crate@9.9.9` as a negative control (7d); `~/.cargo/bin` listing hashed before and after | 0 / 0 / 0 / **76** | **Signing is opt-in by the crate.** `SIGNING.md:6` — "This feature requires adding to the Cargo.toml metadata: no autodiscovery here!"; `args.rs:408-411` documents the default as "verify signatures if they are available, but to allow unsigned packages as well"; `gh_crate_meta.rs:301-306` takes `SignatureVerifier::Noop` for `(IfPresent, None)` and returns `FetchError::MissingSignature` only for `(Require, None)`. **Neither probed tool opts in**: `cargo-shear@1.13.1` and `taplo-cli@0.10.0` are `signing: ABSENT`, `cargo-binstall@1.23.0` is `signing: PRESENT` (`algorithm = "minisign"`). **7a**: the recommended recipe body resolved `cargo-shear v1.13.1 (aarch64-apple-darwin) has been downloaded from github.com` with **`Verified signature` occurrences: 0**. **7c, the positive control**: **occurrences: 1** — `Verified signature for package 'cargo-binstall': gh=cargo-bins/cargo-binstall git=b874e25e… ts=2026-09-05T16:59:07.371Z run=33978884356` — so the verification path works and 7a's zero is the crate's absence of a key, not a broken check. **7b**: `--only-signed` did **not** fail; every prebuilt fetcher refused (`No signature present` from `github.com`; a 404 on QuickInstall's `.sig`) and the run fell through to `Dry-run: running … cargo install cargo-shear --version 1.13.1 --locked`, exit 0. **The other fetcher did not apply**: `QuickInstall` pins its own key in `quickinstall.rs:22` and verifies where a `.sig` is served, skipping verification where one cannot be downloaded unless the policy is `Require` (`quickinstall.rs:131-136`), but it resolved nothing here, and `resolution.rs:125-127` shows the `WARN` line prints `third-party source ` only for it — its absence identifies the crate's own release. **Second leg, over the whole tree**: exactly three `DataVerifier` implementations exist — `()` (`binstalk-downloader/src/download.rs:74`), `MinisignDataVerifier` (`binstalk-fetchers/src/signing.rs:78`) and `Sha256Digest` (`binstalk-registry/src/common.rs:44`), the last constructed at one site only, `:78` in `parse_manifest`, against the registry index's `cksum`; a grep of `binstalk-fetchers/src` for `cksum`, `sha256` or `digest` exits **1**, finding nothing. That leg carries its own three failure modes — an args.rs-hash tree control that aborts on mismatch, a paired `Sha256Digest`-found/`Blake3Digest`-not-found control, and a sweep that reports its own status. The 7d control exited **76**, so the first leg can fail too. **Nothing installed**: the `~/.cargo/bin` listing hashes identically before and after, to the same value check 15 recorded. **Nothing was timed and nothing was installed, so no post-install verification was observed.** Each log states its rerun rule for this host and for another | `evidence/binstall-signing.log`, `evidence/binstall-verifier-impls.log` |
+| 16 | **What verifies a prebuilt artifact before it would reach `PATH`, now that check 15 has shown `--locked` does not?** (revision 8; every control made an assertion and demonstrated failing, revision 9) | `GET https://raw.githubusercontent.com/cargo-bins/cargo-binstall/v1.23.0/` for `crates/bin/src/args.rs`, `crates/binstalk-fetchers/src/gh_crate_meta.rs`, `crates/binstalk-fetchers/src/quickinstall.rs`, `crates/binstalk/src/ops/resolve/resolution.rs` and `SIGNING.md`, each hashed and grepped for the signature-policy code; `GET https://static.crates.io/crates/<n>/<n>-<v>.crate` for `cargo-shear@1.13.1`, `taplo-cli@0.10.0` and `cargo-binstall@1.23.0`, each unpacked and its `Cargo.toml` tested for `[package.metadata.binstall.signing]`; then, with the unzipped `v1.23.0` release binary on `PATH` in a fresh scratch directory, `cargo binstall --locked --no-confirm --dry-run cargo-shear@1.13.1` (7a), the same spec with `--only-signed` (7b), `--only-signed cargo-binstall@1.23.0` as a **positive control** (7c) and `rs-launch-blueprint-no-such-crate@9.9.9` as a negative control (7d); `~/.cargo/bin` listing hashed before and after | leg 1 **0** (45/45 assertions), leg 2 **0** (23/23), leg 3 **0** (37/37); inside leg 1 the 7d control **76** | **Signing is opt-in by the crate.** `SIGNING.md:6` — "This feature requires adding to the Cargo.toml metadata: no autodiscovery here!"; `args.rs:408-411` documents the default as "verify signatures if they are available, but to allow unsigned packages as well"; `gh_crate_meta.rs:301-306` takes `SignatureVerifier::Noop` for `(IfPresent, None)` and returns `FetchError::MissingSignature` only for `(Require, None)`. **Neither probed tool opts in**: `cargo-shear@1.13.1` and `taplo-cli@0.10.0` are `signing: ABSENT`, `cargo-binstall@1.23.0` is `signing: PRESENT` (`algorithm = "minisign"`). **7a**: the recommended recipe body resolved `cargo-shear v1.13.1 (aarch64-apple-darwin) has been downloaded from github.com` with **`Verified signature` occurrences: 0**. **7c, the positive control**: **occurrences: 1** — `Verified signature for package 'cargo-binstall': gh=cargo-bins/cargo-binstall git=b874e25e… ts=2026-09-05T16:59:07.371Z run=33978884356` — so the verification path works and 7a's zero is the crate's absence of a key, not a broken check. **7b**: `--only-signed` did **not** fail; every prebuilt fetcher refused (`No signature present` from `github.com`; a 404 on QuickInstall's `.sig`) and the run fell through to `Dry-run: running … cargo install cargo-shear --version 1.13.1 --locked`, exit 0. **The other fetcher did not apply**: `QuickInstall` pins its own key in `quickinstall.rs:22` and verifies where a `.sig` is served, skipping verification where one cannot be downloaded unless the policy is `Require` (`quickinstall.rs:131-136`), but it resolved nothing here, and `resolution.rs:125-127` shows the `WARN` line prints `third-party source ` only for it — its absence identifies the crate's own release. **Second leg, over the whole tree**: exactly three `DataVerifier` implementations exist — `()` (`binstalk-downloader/src/download.rs:74`), `MinisignDataVerifier` (`binstalk-fetchers/src/signing.rs:78`) and `Sha256Digest` (`binstalk-registry/src/common.rs:44`), the last constructed at one site only, `:78` in `parse_manifest`, against the registry index's `cksum`; a grep of `binstalk-fetchers/src` for `cksum`, `sha256` or `digest` exits **1**, finding nothing. **Third leg (revision 9), the controls demonstrated**: revision 8's payloads printed each critical command's status and each count without asserting either, so nothing they called a control could fail the script — the round-8 rejection. Each is now an assertion, and each was shown failing: the third leg reruns the owning leg once per control with exactly one input substituted and requires both a non-zero exit and that control's own `ASSERT-FAIL` line, a rate-limited run being reported VOID rather than counted. **Thirteen of thirteen fired** — seven in the first leg (the tag-pinned `args.rs` hash, the published signing verdict, 7a's zero count, 7b's fall-through text, 7c's one count, 7d's status 76 and the unchanged `~/.cargo/bin` listing) and six in the second. **One revision-8 claim did not survive the demonstration and is corrected here**: its tree control hashed one file, and perturbing the tag to v1.22.0 did **not** fire it, because all eight files either leg reads are byte-identical at v1.22.0 and v1.23.0 — asserted, 8 of 8. The control authenticates the content each finding rests on, not the release number, so no finding differs across those two tags; the second leg now hashes all eight files rather than one, and the perturbation used is v1.21.0, whose `args.rs` differs. **Nothing installed**: the `~/.cargo/bin` listing hashes identically before and after, to the same value check 15 recorded. **Nothing was timed and nothing was installed, so no post-install verification was observed.** Each log states its rerun rule for this host and for another | `evidence/binstall-signing.log`, `evidence/binstall-verifier-impls.log`, `evidence/binstall-assertion-controls.log` |
 
 **Figures, each retrieved 2026-09-10 from the endpoint its column names, except
 where the cell names another source** (endpoints per the prompt's evidence table;
@@ -749,23 +795,30 @@ exercises. In the default policy a GitHub-release artifact is verified **only if
 the crate itself publishes a minisign public key in
 `[package.metadata.binstall.signing]`** — "This feature requires adding to the
 Cargo.toml metadata: no autodiscovery here!" (`SIGNING.md:6`,
-`evidence/binstall-signing.log:220`) — and where it does not, the fetcher takes
+`evidence/binstall-signing.log:323`) — and where it does not, the fetcher takes
 `SignatureVerifier::Noop` and the bytes are accepted unverified
-(`gh_crate_meta.rs:301-306`, `evidence/binstall-signing.log:188-194`). Neither
+(`gh_crate_meta.rs:301-306`, `evidence/binstall-signing.log:288-293`). Neither
 spec check 15 exercised publishes one: `cargo-shear@1.13.1` and
 `taplo-cli@0.10.0` are both `signing: ABSENT` in their published `Cargo.toml`
-(`evidence/binstall-signing.log:294`, `:298`), and the recommended recipe body run
+(`evidence/binstall-signing.log:404`, `:410`), and the recommended recipe body run
 against `cargo-shear@1.13.1` printed **zero** `Verified signature` lines
-(`evidence/binstall-signing.log:325`). **Nor is a checksum compared on that
-path**, which check 16's second leg establishes over the whole source tree rather
-than over the files the first leg opened: `cargo-binstall` 1.23.0 has exactly
+(`evidence/binstall-signing.log:442`). **Each of those three observations is an
+assertion of the check, not a line it printed**: the verdict per spec, the count
+of `Verified signature` lines and the fetched file's sha256 each fail the leg when
+wrong, and each was shown failing when its input was substituted
+(`evidence/binstall-assertion-controls.log:265-293`). **Nor is a checksum compared
+on that path**, which check 16's second leg establishes over the whole source tree
+rather than over the files the first leg opened: `cargo-binstall` 1.23.0 has exactly
 three implementations of its `DataVerifier` trait — the no-op `()`, the minisign
 stream verifier, and a `Sha256Digest` constructed at exactly one site,
 `binstalk-registry/src/common.rs:78`, inside `parse_manifest`, where it checks a
 `.crate` archive fetched **from the registry** against the index's `cksum`. The
 two prebuilt fetchers are in a different crate, and a tree-wide grep of
 `binstalk-fetchers/src` for `cksum`, `sha256` or `digest` returns nothing
-(`evidence/binstall-verifier-impls.log:102-106`, `:167-176`). So on the
+(`evidence/binstall-verifier-impls.log:256-265`, `:330-332`, `:341-345`). That
+leg asserts the implementation count, the file set, the single construction site
+and a zero-hit sweep, and each was shown failing under a substituted input
+(`evidence/binstall-assertion-controls.log:233-257`). So on the
 prebuilt path the residual supply-chain risk is narrowed by **transport security
 and the pinned version alone**; the integrity comparison in `## Decision` puts
 that change to the owner, and unproven item 11 records what this decision did not
@@ -1241,6 +1294,115 @@ every `DataVerifier` implementation in the tree, and the enumeration found a thi
 one the draft had not accounted for — a `Sha256Digest` on the registry path — so
 the text says what that one covers and what it does not.
 
+**Revision 9** (this text; 2026-09-14, model `claude-opus-5`) answers the single
+blocking finding of the round-8 audit. It changes no recommendation, no
+parameter, no acceptance criterion, no survey figure and no substantive
+observation. It changes what the evidence *enforces*.
+
+**The finding, and why it was right.** Check 16's two payloads printed the status
+of every critical command and both `Verified signature` counts and asserted
+neither. The 7a, 7b, 7c and 7d calls were each followed by an `echo` of `$?`; the
+counts were bare command substitutions; the closing
+`[ "$BEFORE" = "$AFTER" ] && echo … || echo …` always exits zero. In the second
+leg only the tree-hash mismatch could fail; the purported positive and negative
+controls and the no-digest sweep printed their status and nothing more.
+`set -o pipefail` does not turn a failed standalone command, or an unexpected
+count, into a failure. So revision 8's statements that the 7d control let the
+first leg "fail" and that the second leg carried three failure modes **were not
+supported by the scripts as written**, whatever the underlying facts. The audit
+did not dispute the signing conclusions and this revision does not revisit them;
+what it repairs is the programme's own rule that a check which cannot fail is not
+evidence.
+
+**What the repair is.** Every claimed control is now an assertion that prints
+`ASSERT-OK <name>` or `ASSERT-FAIL <name>`, increments a counter and exits the
+script non-zero when it fails: 45 assertions in the first leg, 23 in the second.
+Each leg also asserts its own assertion **count**, so an assertion that is
+silently skipped fails the run — the failure mode the role contract names, where a
+script emits fewer checks than the decision cites. `set -e` is deliberately not
+used, because the 7d negative control expects status 76, and no assertion is
+evaluated inside `$(…)`, where a subshell would swallow it. Assertions are keyed
+on stable substrings rather than on volatile text: 7c's on
+`Verified signature for package 'cargo-binstall'` and the count, never on the
+`gh=`/`git=`/`ts=`/`run=` fields; 7b's on
+`cargo install cargo-shear --version 1.13.1 --locked`, never on the resolved
+`cargo` path; the digest sweep on `grep` status **exactly 1**, because 2 means
+error, not absence.
+
+**Why a third leg exists.** A control asserted to be capable of failing, with no
+run showing it fail, is the same defect one step removed. The third leg
+(`evidence/binstall-assertion-controls.log`) therefore reruns the owning leg once
+per control with exactly **one input** substituted — a different crate under the
+step, a different file in the hashed slot, a different directory hashed after, a
+second call site copied into the tree, the negative control's own pattern written
+into the tree — and requires the run to exit non-zero **and** to print that
+control's own `ASSERT-FAIL` line. Exit status alone would not discriminate: a
+rate-limited fetch also exits non-zero, so any run carrying a 403/429/rate-limit
+marker is reported VOID rather than counted. Thirteen controls were demonstrated,
+seven in the first leg and six in the second; the two perturbations that edit the
+unpacked tree restore it, which the leg proves by rerunning that leg clean and
+requiring an identical output. The leg also runs each leg clean twice and diffs
+the pair, so each log's **rerun rule is asserted rather than claimed**.
+
+**What the demonstration changed in the conclusions, and it is one thing.**
+Revision 8's second leg authenticated the unpacked tree by hashing one file,
+`crates/bin/src/args.rs`, and called that a failure control. Perturbing the tag to
+the adjacent v1.22.0 did **not** fire it. The cause is not a broken assertion:
+every one of the eight files either leg of check 16 reads is byte-identical at
+v1.22.0 and v1.23.0, which the third leg asserts rather than asserts away — 8 of 8
+(`evidence/binstall-assertion-controls.log:228-231`). Two corrections follow and
+both are made here rather than glossed. First, the control authenticates the
+**content** every finding rests on, not the release number; across those two tags
+the content is the same, so no finding of check 16 would differ, and that is not a
+gap. Second, one file is a weaker control than the eight the findings actually
+rest on, so the second leg now hashes all eight — the five the first leg fetches at
+the same tag and the three this leg reads — and the perturbation used is v1.21.0,
+whose `args.rs` hashes to `2e77dce1…` and does fire it. **No other conclusion
+moved**: every fact the audit reproduced still holds, asserted this time. The
+first leg's 45 assertions and the second's 23 all passed unperturbed on the first
+run, with one exception found and fixed before anything was recorded — the second
+leg's positive control read `grep -rc` on a single file, which prints
+`path:count` rather than `count`, so the assertion compared the wrong string. That
+was a brittle match, not a changed fact, and the corrected form counts 1 as
+expected.
+
+**Every location was found by search before any edit, and re-searched after.**
+The keys were `check 16`, `revision 8`, `can fail`, `cannot fail`,
+`failure mode`, `negative control`, `positive control`, `binstall-signing`,
+`binstall-verifier`, and both citation forms this decision uses for a log line —
+the relative one, the word `log` followed by a code span holding a colon and a
+line number, and the absolute one, `.log:NNN`.
+**Eleven locations** make up this revision and this list is exhaustive: (1) the
+title line, now dated 2026-09-14 and numbered 9; (2) the paragraph in `## Decision`
+that introduces check 16, which now states what the check asserts and points at
+the third leg; (3) the four check-16 finding bullets, whose thirteen log citations
+were all re-derived against the rebuilt logs; (4) the check-16 host paragraph in
+`## Empirical check`, whose run count, timestamps and rerun rule all changed;
+(5) the scratch-directory paragraph; (6) the nothing-was-implemented paragraph;
+(7) the check-16 table row, including its exit column and its failure-control
+tail; (8) fitness gate 3's five citations into the two logs; (9) this
+revision-history entry; (10) the `## Supersedes` framing paragraph; (11) unproven
+item 11, which gains what the third leg does not settle. **What did not change**,
+each re-read rather than assumed: the recommendation and all five layers; the
+integrity comparison and its three options, which remain an open ask to the owner
+and are not pre-empted here; the owned parameter's value and all four `- assumes`
+lines, byte for byte; acceptance criteria (A) to (E), byte for byte; the
+17-repository survey; the presence test and its matrix; the alias answer; the five
+earlier adjudications; the eighteen-row sweep; checks 1 to 15 and every evidence
+log they cite, none of which was rerun or modified; gate 5's answer, restored by
+revision 8; gate 3's parenthetical label, added by revision 8; and the
+`## Supersedes` payload, which is byte-identical to the published revision 6 and
+was not reflowed. **All six fitness gates were re-enumerated mechanically** by
+matching `Gate [1-6] (` across the text above `## Supersedes`: six hits, each with
+a verdict and a closing parenthesis — gate 1 `inapplicable`, struck by the owner
+ruling; gate 2 `inapplicable` where a prebuilt artifact is found and the
+development channel where it is not; gate 3 answered and scoped to the probed
+candidates; gate 4 answered, `verified on macOS/arm64 only`; gate 5
+`inapplicable`, nothing is linked; gate 6 answered, zero for the artifact and a
+per-tool cost for the contributor. One file was added,
+`evidence/binstall-assertion-controls.log`, and the two existing check-16 logs
+were replaced by the runs of their repaired payloads.
+
 **Disagreements, and the evidence that settled each.**
 
 1. **Adopt a declarative provisioner manifest, or not?** codex and opus say no;
@@ -1476,6 +1638,15 @@ what would prove it.
     or read Cargo's registry download path and cite it; for (c), run the recipe
     without `--dry-run` on a CI runner for each operating system in
     `target-os-matrix` and capture the full output.
+    (d) **How completely each control discriminates**, added by revision 9. The
+    third leg shows each of the thirteen controls failing under **one** substituted
+    input; it does not show that every wrong input would fire the same control, and
+    a control can be sound against the substitution tried and blind to another. The
+    v1.22.0 result is the concrete instance: the tree control did not separate two
+    adjacent tags, for a reason that turned out to be benign, and it was found only
+    because the substitution was tried. Proof: enumerate, per control, the class of
+    inputs it must reject, and drive one case from each class. Nothing here does
+    that, and P03's CI is the place for it once the tool table exists.
 
 ## Supersedes
 
@@ -1484,6 +1655,8 @@ what would prove it.
 **What revision 7 reversed**, in one line each: the recipe body becomes `cargo binstall --locked --no-confirm <name>@<version>` at `cargo-binstall` 1.23.0; `cargo-binstall` joins the declared tool table, because the backend must itself be on `PATH`; the `cargo-quickinstall` licence-clean prebuilt fallback is **gone**, having no licence ground left to stand on; the re-verify trigger watching for `cargo-binstall` to relicense is **gone**, for the same reason; unproven item 7, which held the owner ruling open, is **resolved in its slot**; and fitness gate 1 is struck wherever this decision answered it. What revision 7 did **not** change — the owned parameter's value, the four `- assumes` lines, acceptance criteria (A) to (E), the other four layers, the 17-repository survey, the presence test and its matrix, the alias answer, the five earlier adjudications, the eighteen-row sweep and checks 1 to 14 — is established by diff against the bytes preserved below.
 
 **Revision 8 (2026-09-13) does not reverse anything and did not touch this section's payload.** It restores fitness gate 5, whose answer revision 7 deleted — the restored bytes were read out of the preserved text below and are identical to it — rewrites fitness gate 3 to scope `--locked` to the compile fallback, adds check 16 establishing what verifies a prebuilt artifact, and puts the resulting integrity tradeoff to the owner in `## Decision`. The preserved revision-6 bytes below are unchanged and unreflowed; the backend substitution revision 7 made on the owner's ruling stands.
+
+**Revision 9 (2026-09-14) does not reverse anything either, and did not touch this section's payload.** It answers the round-8 audit's single blocking finding: check 16's two evidence payloads printed the status of every critical command and both `Verified signature` counts instead of asserting them, so nothing they called a failure control could make a script fail. Every control is now an assertion, each was demonstrated failing under one substituted input in a new third leg, and the one revision-8 claim the demonstration did not support — that hashing a single file distinguishes the tag the findings rest on — is corrected in place: the second leg now hashes all eight files check 16 reads, and the record says why the adjacent v1.22.0 does not fire that control. The recommendation, the owned parameter, acceptance criteria (A) to (E), and the integrity comparison and its three open options are all unchanged; the owner's ruling on that tradeoff is still outstanding and this revision does not pre-empt it. The preserved revision-6 bytes below were not read, edited or reflowed by this revision.
 
 The complete revision-6 entry follows, preserved verbatim.
 
