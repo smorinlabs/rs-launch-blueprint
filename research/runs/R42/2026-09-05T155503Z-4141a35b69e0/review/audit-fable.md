@@ -1,275 +1,275 @@
-decision-sha256: fd09fa1c682c049be39bfb841c0a57b1c6fff557ce5a16f0ba828dc4ceecabd1
-actor: audit-fable-2026-09-05T155503Z-4141a35b69e0-r7
+decision-sha256: 3620897e85a288ea76b071bc5383694802420920dcf8cf335866bbc60a69f045
+actor: audit-fable-2026-09-05T155503Z-4141a35b69e0-r9
 model: claude-opus-5
 family: anthropic
 verdict: reject
-unresolved-findings: J1 — fitness gate 5's answer was deleted by this revision, leaving the gate unanswered and the sentence ungrammatical, and the revision's own "exhaustive" twenty-one-location edit list does not name it; J2 — fitness gate 3 still credits `--locked` with narrowing the recommended backend's supply-chain risk, which check 15 limits to the compile fallback, and the prebuilt path's integrity posture is neither examined, nor recorded as unproven, nor put to the owner
+unresolved-findings: J1 — the owner-facing option 2 says `--only-signed` makes a tool "silently compile from source" and cites step 7b, whose recorded output announces the fall-through with an `ERROR` line and a `WARN` line, which is the same "silently" overstatement the decision's own sweep row 1 struck for the alias case, sitting this time in the block the owner is being asked to decide; J2 — "its asset 404s for both specs" is supported for `taplo-cli` only, since for `cargo-shear` no log records the QuickInstall asset's status and the 404 that is recorded is on the `.sig` under `--only-signed`, which is not an asset 404
 
 ## Principle and agreement level
 
-The shared requirement is stated at the right level and is unchanged from
-revision 6: *a contributor runs one command, learns exactly which development
-tools are missing, receives the exact command that installs each one, and every
-repeatable task then invokes those tools by a single stable name that does not
-depend on how they were installed.* The agreement level is named as
-**architectural pattern plus policy** — a discover-report-remediate loop and a
-stable invocation vocabulary — and explicitly not a capability and not a specific
-tool. What must agree (one presence-check command; one remediation string per
-missing tool; one invocation form per tool class; exactly one authoritative
-location for the declared tool set) is separated from what may vary (the
-acquisition backend, the number of tools, which tools are chosen, whether the
-residue slot is ever occupied).
+The shared principle is stated at the level the spec's §2 table calls
+**architectural pattern plus policy** — a discover-report-remediate loop plus a
+stable invocation vocabulary — and the decision says so explicitly, separating
+what must agree (one presence command, one remediation string per tool, one
+invocation form per tool class, exactly one authoritative tool list) from what
+may vary (the acquisition backend, the tool count, the tool identities). That
+separation is the load-bearing move of the item: it is what lets py's per-tool
+installer layer die in Rust without the principle dying with it, and the reason
+given is structural rather than stylistic — py's four tools sat outside `uv`'s
+reach because `uv` installs Python distributions, while the Rust equivalents are
+themselves crates and rustup reaches `rustfmt` and `clippy` by definition.
+Nothing in revision 9 touches any of this, and the rev6→rev9 diff confirms it:
+22 hunks, none in the principle, the agreement level, the essential behaviors or
+the acceptance criteria.
 
-That separation is load-bearing for this revision and it holds. The backend is
-named in the "may vary" list, so substituting `cargo binstall` for
-`cargo install` is a change inside the space the principle already permits. The
-owned parameter is **obeyed rather than amended**: `cargo-binstall`'s executable
-is named `cargo-binstall`, so the parameter's own `cargo-<sub>` → `cargo <sub>`
-rule invokes it as `cargo binstall` with no new rule, and its presence test is
-the crates.io-class `command -v cargo-binstall` the parameter already prescribes.
-I verified the parameter's value is byte-identical to the live registry (below),
-so the claim that the substitution needed no parameter change is true rather than
-asserted.
-
-The native-design justification survives the ruling intact and is argued
-structurally, not by preference: py's per-tool installer layer exists because
-`uv` installs Python distributions and cannot reach `taplo`, `gitleaks`,
-`actionlint` or `yamlfmt`, whereas the Rust equivalents are themselves crates and
-rustup reaches `rustfmt` and `clippy` by definition. The per-tool layer is
-therefore dropped for a stated mechanical reason rather than because ts dropped
-it. Recording fitness gate 1 as struck under the owner's Q7.B ruling is correct
-and I raise no finding on it; the repository's own `license = MIT OR Apache-2.0`
-is correctly described as unaffected in reach-versus-value terms.
+The two `BASELINE-REVIEW:` lines (F181, F179) are byte-identical to the
+published revision 6, carry the runbook's four fields — row, prescription,
+evidence, `Affected:` — and answer what `docs/port/BASELINE-REVIEW.md` actually
+asked R42: F181's row is marked `blocked pending R42` and asks whether a
+`command -v` loop is the right test at all (`:86`), which the line answers by
+splitting the test on acquisition channel; F179's finding line asks that `make`
+be justified as a chosen mechanism rather than asserted as the only
+dependency-free entry point (`:276`, `:462`), which the line does, with the
+0-of-17 root-`Makefile` measurement as the cost. No `CONFLICT:` line is owed:
+the consumes list is empty and no registered parameter value changes.
 
 ## Design and evidence
 
-**Architecture alternatives were genuinely compared, and the comparison is
-licence-independent.** Five architectures are tabulated with grounds. The
-hermetic-environment row is the test of whether the ruling was allowed to
-rewrite conclusions it does not reach: `flox`'s GPL-2.0 is correctly demoted from
-a ground to a recorded figure, and the row's two surviving grounds — a Nix
-installation imposed on every downstream consumer, and an environment prefix on
-every recipe and hook line — are both independent of any licence and were already
-the load-bearing ones. That is the right handling. The provisioner rejection
-rests on a re-measured survey (0 of 17 carrying `mise.toml`/`.mise.toml`/
-`.tool-versions`/`.flox`, 5 of 17 carrying `flake.nix`, 9 of 17 carrying
-`rust-toolchain.toml`), not on repository agreement — and the decision explicitly
-records that three of five engines wanted `mise` and were overruled by
-measurement, quoting openai's own concession against its own position.
+**The architecture comparison is genuine and survives the licence ruling.** Five
+architectures are compared before any tool is named, and the two rejections that
+matter are argued on grounds independent of gate 1. The hermetic option is
+rejected because it imposes a Nix installation on every downstream consumer of a
+*template* and puts an environment prefix on every recipe and hook line —
+breaking essential behavior (3) — with its GPL-2.0 declaration explicitly
+demoted to a figure. The provisioner option is rejected on a re-measured 0/17
+against 5/17 for `flake.nix`, and the decision then does the harder thing:
+it concedes that any declarative-provisioner argument in the Rust field has to
+be made against `flake.nix` rather than `mise.toml`, and quotes doxa/openai's
+own concession against openai's own proposal. Disagreement 6 is the model of how
+this should be done — it splits one question the engines asked as one, adopts
+openai's provisioner-independent half (`rustup component state`) and rejects
+gemini's half because gemini's stated rationale is entirely provisioner-
+dependent. I verified the three cited raw-report lines land
+(`raw/doxa-openai.normalized.md:201` and `:348`, `raw/doxa-gemini.normalized.md:48`)
+and that the `## Engines` one-liners match the reports
+(`raw/codex.md:13`, `:112-114`, `:234-235`; `raw/opus.md:155`, `:500`).
 
-**The three corrections this audit was asked to press hardest on.** I judge two
-of the three fully honest and the third honest in `## Decision` but unpropagated.
+**Revision 9's assertions assert content, not exit codes.** I read the three
+payloads rather than the prose. The first leg's helpers are
+`expect_eq <name> <expected> <actual>` and `expect_has <name> <fixed-string> <file>`;
+`set -e` is deliberately absent and no assertion is evaluated inside `$(…)`.
+Every claim the decision rests on is one of those:
 
-1. **`--locked` binds only the `cargo install` fallback.** Stated correctly and
-   without hedging in three places: layer 2's table row ("downloads a prebuilt
-   artifact where one exists for the target and otherwise runs
-   `cargo install --locked` itself"), the dedicated bullet quoting
-   `args.rs:346-350` verbatim, and unproven item 4 ("the `--locked` pass-through
-   to the compile fallback"). The mechanical claim is quoted from source at an
-   immutable tag and the fallback was observed, not inferred. **But one passage
-   does still credit `--locked` beyond its reach — fitness gate 3 — and that is
-   finding J2.**
-2. **`cargo-binstall` must itself join the tool table.** Owned, not
-   re-described. The decision writes "The one-line half is too narrow, in three
-   respects", layer 2's row carries the reason inline ("`cargo-binstall` is
-   itself a declared tool, because `cargo binstall` needs it on `PATH` where
-   `cargo install` needs nothing"), the revision-history entry says the check
-   "surfaced a cost the 'one line' phrasing hid", and the `## Supersedes` block
-   lists it as one of the reversals. It also declines to decide how P03
-   bootstraps it, which is correct for a research phase, and cites `biomejs/biome`
-   as a maintained project with exactly that shape. No softening.
-3. **Prebuilt availability is per tool and per target.** Scoped exactly to what
-   was observed and no wider. `cargo-shear@1.13.1` resolving an artifact and
-   `taplo-cli@0.10.0` falling through to source on the same target are both
-   quoted from the run, the benefit is stated as "an upper bound each selected
-   tool either earns or does not", the worst case is named as revision 6's
-   recommendation exactly, and "**How large the saving is was not measured**" is
-   stated in bold with unproven item 5 asking for the measurement. A reader does
-   understand that some tools will compile from source. This is the strongest
-   part of the revision.
+| Decision claim | Assertion in the script | Demonstrated failing |
+|---|---|---|
+| five source files read at tag `v1.23.0` | `sha256-<file>` against the recorded digest, plus `http-<file> = 0 200` | `leg1/sha` (`main.rs` in the `args.rs` slot) |
+| `signing: ABSENT` / `PRESENT` per spec | `signing-verdict-<spec>` against the expected verdict, computed from the unpacked published `Cargo.toml` | `leg1/signing` (a crate that does declare a key) |
+| 7a printed **zero** `Verified signature` lines | `7a-verified-signature-count = 0` from `grep -c` over the captured output | `leg1/p7a` (got 1) |
+| 7c printed **exactly one** | `7c-verified-signature-count = 1` plus `7c-verified-package-name` on the stable substring | `leg1/p7c` (got 0) |
+| the `--only-signed` fall-through occurred | `7b-falls-through-to-cargo-install` on the literal `cargo install cargo-shear --version 1.13.1 --locked`, plus `7b-status = 0` | `leg1/p7b` (string missing) |
+| the negative control failed | `7d-status = 76` plus `7d-crate-not-found` | `leg1/p7d` (got 0) |
+| nothing was installed | `cargo-bin-listing-unchanged`, the before and after hashes compared | `leg1/cargohome` |
+| exactly three `DataVerifier` impls, one `Sha256Digest` site | `dv-file-count`, `dv-site-count`, `dv-file-set` (the full sorted path set), `sha256digest-construction-sites = 1` | `leg2/dvcount`, `leg2/dupsite` |
+| the digest sweep found nothing | `digest-sweep-status = 1` **and** `digest-sweep-hit-count = 0` — status 1 specifically, because 2 means error | `leg2/sweep` |
 
-**Does the recommendation still follow?** Conditionally — and the condition is
-finding J2. The licence ground for preferring the slower first-party backend is
-genuinely gone, the owner's ruling is wider than the condition revision 6 named,
-and the substitution is therefore authorised. What does not follow as written is
-the recommendation's *integrity* posture. Revision 6's backend was
-`cargo install --locked` against the crates.io registry, where `--locked` pinned
-the transitive graph and the registry supplied the trust anchor; revision 7's fast
-path fetches a release artifact from GitHub, and the decision's own check 15
-establishes that `--locked` reaches none of that. The decision states that
-mechanical fact in `## Decision` and then never carries it to the one place where
-the consequence bites. `evidence/binstall-backend.log:176-179` — the only prebuilt
-resolution the run captured — prints `WARN The package cargo-shear v1.13.1
-(aarch64-apple-darwin) has been downloaded from github.com` and nothing else: no
-signature, checksum or verification line. So what secures the fast path is not
-merely unstated, it is **unexamined**, and the decision contains no occurrence of
-"trust", no mention of a GitHub release artifact's verification, and no unproven
-item asking for it. The owner ruled on licence; the owner was not asked to accept
-a different integrity posture, and this decision absorbs that tradeoff silently.
-The recommendation follows once gate 3 is rewritten to scope `--locked` to the
-compile fallback and the prebuilt path's integrity is either examined and cited or
-recorded as unproven with what would prove it.
+Each leg asserts its own assertion count (45, 23), so a skipped assertion fails
+the run; the round-9 empirical audit demonstrated that meta-assertion firing.
+The answer to the question I was asked to press is therefore **yes** — these are
+content assertions, and the counts, the fall-through text and the negative
+control's status are all among them. I confirmed the thirteen demonstrations in
+`evidence/binstall-assertion-controls.log:233-302`, each requiring both a
+non-zero exit and that control's own named `ASSERT-FAIL` line, with a
+rate-limited run reported `VOID` rather than counted. I spot-checked thirteen
+log citations in the decision's four check-16 bullets and gate 3
+(`binstall-signing.log:263-269`, `:288-293`, `:323`, `:338`, `:368-373`,
+`:387-389`, `:404`, `:410`, `:416`, `:442`, `:446-453`, `:461`, `:468`); all
+land on the text they are cited for.
 
-**Claims are matched to their evidence elsewhere.** The decision does not
-implement its own recommendation and is not faulted for declining to: "**This
-example was not built**", "Nothing recommended was implemented", and check 15's
-own scope statement ("That verifies the command and its flags; it does not build
-the `install-tool` recipe, the tool table or anything else") are all explicit. Ten
-unproven items each name what would prove them. Prescriptions are repeatedly
-stated at the strength of their evidence — the `command -v` failure for rustup
-components is prescribed "for this template on the strength of that recorded
-failure, not asserted as a property every rustup installation has", and the alias
-shadowing is demoted to "the third and lesser reason" because Cargo warns rather
-than failing silently. Host dependence is enumerated line by line in the evidence
-log's rerun rule. The UTC-versus-local date question raised by a
-`2026-09-13T06:50Z` stamp on a decision dated 2026-09-12 is explained in the text
-and is not a defect.
+**The one conclusion that moved is reported honestly.** Revision 8's tree
+control hashed one file and did not separate v1.22.0 from v1.23.0. Revision 9
+neither hides that nor explains it away: the third leg asserts that all eight
+files are byte-identical at those two tags (8 of 8, `:228-231`), the second leg
+now hashes all eight, and the perturbation becomes v1.21.0. The decision states
+both consequences — that the control authenticates content rather than a release
+number, and that one file was the weaker control — and adds unproven item 11(d),
+which concedes that each control is shown failing under *one* substituted input
+and that a control can be sound against the substitution tried and blind to
+another. That is the right generalisation to decline.
 
-**The audit-codex rerun is consistent with the decision.** Round 7 (family
-openai) approved with no findings, replayed check 15 with only `CARGO_HOME`
-redirected, and independently confirms all three corrections. Its one divergent
-branch — `cargo-machete` resolving instead of short-circuiting — is exactly the
-host-state difference the decision's rerun rule declares in advance. Its remark
-that the live owned-value cell is a `—` placeholder describes the frozen
-`inputs/PARAMETERS.md`; I compared against live `docs/port/PARAMETERS.md` instead
-and all five lines match byte for byte, so the two audits do not actually
-disagree.
+**Check 15's own overstatement was swept and corrected, unprompted.** Location
+(12) of the revision's edit list found that the check-15 row and the revision-7
+history both credited that check's negative control with making the check "able
+to fail", when its script prints `pipestatus=` without testing it — the same
+defect the audit found in check 16. Both sentences now say the status was
+printed rather than asserted, and point at check 16's repaired `7d-status`
+assertion against the same binary and version. The script and log are left
+byte-identical rather than rewritten, with the reason stated. This is the
+programme's rule applied to evidence the audit did not challenge, which is the
+behaviour the rule is for.
+
+**Scoping.** The recommendation is scoped to what was observed. Gate 4 records
+`verified on macOS/arm64 only`; the check-16 host paragraph names Darwin 25.4.0
+arm64 and the single session; every runtime observation names its spec and
+version (`cargo-shear@1.13.1`, `taplo-cli@0.10.0`, `cargo-binstall@1.23.0`); the
+speed benefit is stated as a bound with `How large the saving is was not
+measured` and unproven item 5 asking for the measurement; unproven item 11(a)
+says two out of two probed is "a sample, not a rate" for signing coverage; and
+unproven item 1 enumerates exactly which checks have a Linux leg and which two
+(10 and 12) do not. A reader does learn that some tools compile from source:
+layer 2's row says the backend "otherwise runs `cargo install --locked` itself",
+the third `--locked` bullet records `taplo-cli@0.10.0` falling through with the
+`will be installed from source (with cargo)` warning, and gate 6 prices it as
+"one source compile per tool wherever it does not". What that reader is told
+*about the manner* of the fall-through is J1 below.
+
+**Does the recommendation still follow, now that the licence ground is gone?
+Yes.** The affirmative case does not depend on gate 1 and never did: the
+generic-recipe shape rests on the two maintained reference implementations that
+provision tools at all (`oxc`'s `init`, `biome`'s `install-tools`), the backend
+itself is what both of those use, the fast path was exercised rather than
+assumed (`cargo-shear@1.13.1` resolved a prebuilt artifact), and revision 6 had
+already written that this exact substitution would follow if gate 1 fell. The
+decision does not overclaim the benefit — it is qualitative, untimed, and booked
+as an upper bound each tool either earns or does not, with the worst case stated
+as revision 6's recommendation exactly. Crucially, the decision refuses the
+symmetric temptation: having lost the licence ground for the slower backend, it
+declines to substitute an integrity ground for it on its own initiative, and
+says so in terms.
+
+**Is the integrity choice presented as the owner's? Yes, structurally.** It is
+not absorbed. The paragraph opens by naming itself as the ask; the five-row
+comparison table sets revision 6's backend against the authorised one on
+origin, verification, what `--locked` binds, what executes, and scope; three
+options are given with their costs; the close is `choose 1, 2 or 3, or direct
+otherwise`; a re-verify event fires on the ruling either way; and unproven item
+11 records what was not established. The table's left column is the test of good
+faith and it passes — it does **not** claim Cargo verifies anything, it says
+`not established in this decision for Cargo itself` and points at 11(b), which
+explains that the compile fallback hands the install to a different program this
+decision did not read. An owner reading that block gets a true picture of the
+tradeoff, with one word wrong (J1).
 
 ## Completeness
 
-Verified by diff and byte-comparison rather than accepted:
-
-- **`## Supersedes` payload.** Extracted everything after "The complete
-  revision-6 entry follows, preserved verbatim." and hashed it:
-  `ca5a731081e51ab5d0eea91dd9f4ef8a456855df026354ed1f8146bea77f6d7f`, identical to
-  `research/topics/42-dev-toolchain-provisioning/DECISION.md`. **Byte-identical,
-  confirmed.** The H2 itself is spec-permitted for reversals (spec lines 475 and
-  516). It sits last, and `re-verify:` remains the final line of `## Decision`.
-- **Owned parameter and all four `- assumes` lines.** Parsed each and compared to
-  the live registry table in `docs/port/PARAMETERS.md`:
-  `package-manager-invocation` (667 chars), `msrv-policy` (118),
-  `rust-edition` (4), `target-os-matrix` (27), `license` (17) — **all five
-  MATCH byte for byte.** The format note explaining revision 5's backtick refusal
-  is accurate and the lines carry a value and nothing else.
-- **Acceptance criteria (A)–(E).** Extracted from both revisions and compared:
-  1177 bytes each, **identical**. Each is backend-agnostic; none names an
-  installer, so the substitution genuinely leaves them untouched.
-- **Fitness gates.** Gate 1 struck with the ruling and its reason — correct, not
-  a finding. Gates 2, 4 and 6 answered and correctly rescoped for the two-path
-  backend. Gate 3 answered but **overstated** — finding J2. Gate 5 **unanswered**
-  — finding J1.
-- **`BASELINE-REVIEW:` lines.** Two, both well-formed with feature ID, principle,
-  proposed change, evidence and `Affected:` — F181 (retain `just check-deps`,
-  test presence by acquisition channel) and F179 (retain the two-layer split,
-  record `make` as a consistency choice with a measured cost). Neither silently
-  changes another item or the ledger.
-- **`CONFLICT:` lines.** None owed and the absence is justified: `- consumes:` is
-  empty, no raw report raised one, and the R27 `channel` overlap is correctly
-  recorded as a coordination note rather than a conflict.
-- **Source dates.** Every figure carries its endpoint and retrieval date;
-  revision 7's re-query is dated and attributed to check 15.
-- **Privacy check.** Check 15's User-Agent is
-  `rs-launch-blueprint-research (+https://github.com/smorinlabs/rs-launch-blueprint)` —
-  repository URL only, no personal contact address, as the log states at
-  `binstall-backend.log:13-14`. I scanned every file in the run directory for
-  email-shaped strings: **no new evidence artifact contains a personal address**,
-  and the only occurrence anywhere in the run is a `git log` author line inside
-  the frozen `review/audit-codex-r6-transcript.txt`. See observation O1 — the
-  decision makes no disclosure about that residue, and none is required of it.
+- Four required H2s present and in order, with `## Supersedes` last and
+  `re-verify:` still the final line of `## Decision`. The extra H2 is permitted
+  for exactly this case and the decision names the permission.
+- `## Supersedes` payload: I extracted lines 1674-end and diffed them against
+  `research/topics/42-dev-toolchain-provisioning/DECISION.md`. **Byte-identical**,
+  both hashing to `ca5a731081e51ab5d0eea91dd9f4ef8a456855df026354ed1f8146bea77f6d7f`,
+  which is the value the framing paragraph claims.
+- Parameters: the owned line and all four `- assumes` lines are byte-identical
+  both to revision 6 and to the registered values in `docs/port/PARAMETERS.md`
+  (`:7-10`, `:14`), compared programmatically rather than by eye. The format note
+  explaining why they carry no backticks is still correct.
+- Acceptance criteria (A)-(E): byte-identical to revision 6 (20 lines, no diff).
+- Fitness gates: all six present, answered and grammatical, each with the
+  `Gate N (…)` parenthetical. Gate 1 `inapplicable`, **struck by the owner
+  ruling of 2026-09-12 and named as such — correct, and not a finding**. Gate 5
+  `inapplicable` (restored at revision 8, still present). Gate 3 is scoped to
+  the probed candidates and now splits `--locked` across the two paths.
+- Source dates: every figure row carries a retrieval date; the two cells that
+  once lacked a query now name check 14; the UTC convention is stated and the
+  local-midnight crossing explained rather than left as an apparent future date.
+- The decision does not implement its own recommendation and correctly declines
+  to. "Nothing recommended was implemented" is stated and the one addition —
+  that check 15 and check 16 execute a third-party binary — is disclosed rather
+  than buried, with `--dry-run` on every call and the `~/.cargo/bin` listing
+  hashed before and after, now asserted equal.
+- Consistency with `review/audit-codex.md` (round 9, `gpt-5.6-terra`, approve,
+  no findings): consistent. It binds the same sha256, reproduces the three-leg
+  replay (45/45, 23/23, 37/37 with 13/13 controls), independently probes the
+  meta-assertion and a synthetic HTTP-429 `VOID` path, re-diffs the `Supersedes`
+  payload to the same hash, and records that the integrity comparison "remains an
+  unanswered owner ask". Its scope is the replay; neither of my findings is
+  reachable from it, because both are prose claims that no assertion covers.
 
 ## Findings
 
-**J1 — fitness gate 5 is no longer answered, and the revision's own exhaustive
-edit list does not account for the change.** At line 611 the decision reads:
+**J1 (blocking, owner-facing).** `## Decision`, option 2 of the integrity ask:
+"the prebuilt path is taken only when the artifact is signed and verifies;
+otherwise the tool **silently** compiles from source — observed at check 16,
+step 7b." Step 7b's recorded output is not silent. It carries
+`cargo-binstall: ERROR Failed to download signature: … 404 Not Found` and
+`cargo-binstall:  WARN The package cargo-shear v1.13.1 will be installed from
+source (with cargo)` before the `Dry-run: running … cargo install` line
+(`evidence/binstall-signing.log:446-453`) — output the decision itself quotes
+four paragraphs earlier. This is the identical defect this decision's own
+eighteen-row sweep recorded as row 1 and marked **Wrong**: "an alias *silently*
+shadows a same-named external subcommand … Cargo warns." The same standard
+applies to the same word describing the same kind of announced degradation, and
+it applies harder here, because row 1's sentence was an argument inside
+`## Parameters` while this one is a consequence inside the three options the
+owner is being asked to choose between. The decision already has the accurate
+formulation and uses it elsewhere: "the flag degrades a tool to revision 6's
+backend rather than failing the recipe." Repair: state option 2's cost as the
+observed behaviour — the run does not fail, it announces the degradation at
+`ERROR`/`WARN` level and compiles from source — or drop the adverb. Nothing else
+in the option changes, and the option's substance (the speed benefit is lost for
+every tool that does not publish a key, which is both tools probed) is correct
+and asserted.
 
-> Gate 5 (default features, async coupling with R05's execution model can occur.
+**J2 (blocking, narrow).** `## Decision`, the QuickInstall bullet: "It resolved
+nothing in either check: **its asset 404s for both specs**, and the `WARN` line
+that did print names `github.com` with no `third-party source ` prefix." The
+first half is supported for one spec and unrecorded for the other.
+For `taplo-cli@0.10.0`, check 15 records the QuickInstall *tarball* 404 twice,
+for both Apple targets (`evidence/binstall-backend.log:166-167`). For
+`cargo-shear@1.13.1` there is no such line anywhere: check 15's `cargo-shear`
+run resolves from `github.com` with no QuickInstall output at all
+(`binstall-backend.log:176-182`), check 16's 7a likewise
+(`binstall-signing.log:434-440`), and the only QuickInstall 404 recorded for
+that spec is on `…-aarch64-apple-darwin.tar.gz.sig` under `--only-signed`
+(`:450`). A signature 404 is not an asset 404 — `download_signature` is spawned
+as its own task (`quickinstall.rs:110-136`, quoted in the same log at `:346-373`),
+so reaching it does not establish what happened to the tarball, in either
+direction. What the decision should say is that QuickInstall's asset 404s for
+`taplo-cli` and that its asset status for `cargo-shear` is unrecorded, which
+costs the bullet nothing: its conclusion is carried by the second half, and that
+half *is* asserted — `7a-downloaded-from-github` requires the literal
+`has been downloaded from github.com`, which a QuickInstall win could not
+produce, because `resolution.rs:125-127` prefixes a third-party fetcher's name
+with `third-party source `. Repair: one clause.
 
-The preserved revision-6 bytes at line 1698 read:
+**Neither finding moves anything else.** The recommendation and all five layers,
+the owned parameter, the four `- assumes` lines, acceptance criteria (A)-(E),
+the six gates, the architecture comparison, the survey, the three options'
+substance, the `## Supersedes` payload and every assertion in the three payloads
+all stand as written. Revision 10 is two clauses in `## Decision`, with no
+check rerun and no evidence log touched.
 
-> Gate 5 (default features, async coupling): **inapplicable** — nothing is
-> linked, so no feature unification or coupling with R05's execution model can
-> occur.
-
-A word-level diff of the fitness-gate paragraph shows a bare DELETE of
-`coupling): **inapplicable** — nothing is linked, so no feature unification or`
-with nothing inserted in its place. The verdict, the reason and the closing
-parenthesis are all gone. This is a revision-7 regression, not a pre-existing
-defect: the published revision 6 carries the complete sentence. The prompt's
-tier-execution guidance is explicit — "Apply every fitness gate above. If a
-metric is inapplicable to this item kind, state `inapplicable` and the reason in
-the answer; **do not omit it silently**" — and the decision now does exactly
-that. The second half of the finding is worse than the typo: the revision-history
-entry asserts "**Twenty-one locations** make up this revision, and this list is
-exhaustive", naming "(14) fitness gates 1 and 2" and "(15) fitness gate 6" as the
-only gate edits. Gate 5 also changed. The decision's own bytes falsify its own
-completeness claim, which is the kind of assertion a reader is invited to rely on
-when checking that a reversal stayed inside its authorised scope. Fix: restore
-gate 5's `inapplicable` verdict and its reason, and correct the edit list to
-account for every location that in fact moved.
-
-**J2 — fitness gate 3 still credits `--locked` with an integrity contribution the
-revision's own check refutes, and the prebuilt path's integrity posture is
-unexamined, unrecorded and never put to the owner.** Gate 3 reads, carried
-forward from revision 6 untouched:
-
-> the residual risk is supply-chain, which the pinned `name@version` spec and
-> `--locked` narrow but do not eliminate.
-
-That sentence was true when the recipe body was `cargo install --locked`. Under
-revision 7's body it is overstated, and the decision itself is what establishes
-this: check 15 reads `args.rs:346-350` at tag `v1.23.0` and concludes `--locked`
-"constrains the **compile fallback** and says nothing about a prebuilt download,
-which resolves no lockfile at all." The prebuilt download is the path the entire
-substitution exists to reach. So the one place in the decision where `--locked` is
-credited with a *security* property is the one place the correction did not
-propagate — and it sits between two clauses the revision claims it did edit
-(locations 14 and 15 are gates 1, 2 and 6). This is a claim asserted beyond what
-the evidence shows, not a claim recorded as unproven.
-
-The gap behind the sentence is the substantive half. `evidence/binstall-backend.log:176-179`
-captures the run's only prebuilt resolution and prints
-`WARN The package cargo-shear v1.13.1 (aarch64-apple-darwin) has been downloaded
-from github.com` followed by `Dry-run: Not proceeding to install fetched
-binaries` — no signature, checksum or verification output of any kind. Nothing in
-this decision examines what `cargo-binstall` verifies before placing a GitHub
-release artifact on a contributor's `PATH`; the words "trust" and "signature" do
-not appear in revision 7 at all, and no unproven item asks for it. Revision 6
-called `cargo install --locked` "the price paid for the licence-clean backend";
-revision 7 deletes that clause and books the benefit without booking the cost.
-The owner's ruling of 2026-09-12 covers licence and nothing else, so the weaker
-integrity guarantee on the fast path is a tradeoff the owner has not been asked
-to accept. Fix, in three parts: rewrite gate 3 to scope `--locked` to the compile
-fallback and say what does and does not narrow the prebuilt path; either cite what
-`cargo-binstall` 1.23.0 verifies for a release artifact or add an unproven item
-naming that as unexamined with what would prove it; and surface the integrity
-delta as an owner decision rather than absorbing it, since the ruling that
-authorised the substitution did not reach it.
+**Checked and left, so they are not re-litigated.** (1) Gate 1 recorded as
+`inapplicable` with the 2026-09-12 ruling named — correct under the settled
+ruling, and the decision is right that the declared licences become figures
+rather than tests. (2) 7c resolved an `x86_64-apple-darwin` artifact on an arm64
+host; the decision never claims otherwise and the verification claim is
+unaffected. (3) The integrity table says "no checksum anywhere under
+`binstalk-fetchers`" where the sweep covers `binstalk-fetchers/src`; that is
+where the crate's code is. (4) The sweep pattern includes `sha-256`, which the
+prose does not name — a wider search than claimed, which is the safe direction.
+(5) The rerun rules each log states for "any other host" are reproduction
+criteria, not assertions about untested hosts, and are labelled as such.
+(6) The decision declines to assert that the fast path generalises, that Linux
+behaves the same, or that anything after download is verified; each is an
+unproven item with a named proof.
 
 ## Assessment
 
-**Reject**, on two findings, neither of which touches the research, the
-architecture comparison or the owner's ruling.
+**Reject**, on two clauses and nothing more. Revision 9 does what the round-8
+rejection asked and does it properly: the controls are real assertions over
+content — digests, counts, verdicts, literal fall-through text, an exit status
+of 76 — each leg guards its own assertion count, and thirteen controls are shown
+failing under a single substituted input with the rate-limit case voided rather
+than counted. It also went looking for the same defect where nobody had asked,
+found it in check 15's prose, and corrected the claim rather than the evidence.
+The recommendation follows on grounds that never depended on the struck licence
+gate, and the integrity tradeoff is handed to the owner with a comparison table
+whose left column declines to flatter the backend it replaced.
 
-This is a careful revision and it is candid about the things it was most tempted
-to soften. All three of the corrections that contradict revision 6's own
-prediction are made in the open: the "one line" claim is retracted in terms and
-the reason named, the per-tool/per-target scoping is stated as a bound rather than
-a benefit with both observed outcomes quoted, and `--locked`'s narrow reach is
-quoted from source at an immutable tag. Gate 1's striking is recorded correctly
-with the ruling's own wording, licence-independent grounds are preserved where
-they were already load-bearing, and the `## Supersedes` payload, the five
-parameter lines and acceptance criteria (A)–(E) are all byte-identical where the
-decision says they are. The empirical audit's approval is consistent with all of
-that.
-
-The two findings are both failures of *propagation* rather than of research.
-J1 destroyed a required gate answer as collateral of an adjacent edit and then
-asserted an exhaustive edit list that does not contain it. J2 is the more
-consequential: the decision proves that `--locked` does not bind the prebuilt
-path and then leaves standing the one sentence that relies on `--locked` binding
-it, while the integrity mechanism that actually governs the fast path goes
-unexamined and the resulting tradeoff is absorbed rather than surfaced. Both are
-narrow, mechanical repairs — restore one sentence, rewrite one sentence, add one
-unproven item, and put the integrity delta to the owner. Once gate 3 is scoped to
-what check 15 showed and the prebuilt path's integrity is either cited or booked
-as unproven, the recommendation follows and the item is ready to publish.
+What stops approval is that the same revision reintroduces, in the owner's own
+option list, the one habit this item has been rejected for three times — a word
+stronger than the recorded output ("silently", against an `ERROR` and a `WARN`
+the decision itself quotes) — and rests a bullet on a 404 that the logs place on
+a signature file rather than on the asset it names. Both are corrected in place
+by revision 10; neither requires a check to be rerun, and the owner ask should
+go out with option 2's cost stated as the run actually behaves.
