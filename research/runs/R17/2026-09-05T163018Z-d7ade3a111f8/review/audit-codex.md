@@ -1,46 +1,42 @@
-decision-sha256: 7e4e27e6d26577a6c1180cff7efea7bf9d755cdb247023aafd7a4b1f622eab19
-actor: audit-codex-2026-09-05T163018Z-d7ade3a111f8-r3
+decision-sha256: 81bf62f19c1ddabe96c762de4f142ef3a8ee4f344acdd51b7036712329c50554
+actor: audit-codex-2026-09-05T163018Z-d7ade3a111f8-r4
 model: gpt-5.6-terra
 family: openai
 verdict: reject
-unresolved-findings: F1: the revision's byte-preservation claim is false for named approved content; the Part 2 recommendation, ranked runner-up, and validity-filter finding differ from revision 2
+unresolved-findings: F1: the recorded empirical check does not reproduce because assertion 07g fails; the unauthenticated control exits 1 before reaching gh authentication instead of the asserted 4 with gh auth login
 
 ## Rerun
 
-argv: `PATH=/opt/homebrew/bin:/usr/bin:/bin:/usr/sbin:/sbin XDG_CACHE_HOME=<mode-0500 temporary directory> bash /private/tmp/r17-audit-r3.*/run-checks.sh`, where the script was an unmodified copy of `review/empirical/run-checks.sh` with sha256 `4471f964f2936fc6e41b7885d85f87c793e6d8a5af3ca43135777b49171a1163`.
+argv: `bash run-checks.sh`
 
-cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R17/2026-09-05T163018Z-d7ade3a111f8`.
+cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R17/2026-09-05T163018Z-d7ade3a111f8/review/empirical`
 
-toolchain: macOS arm64; `gh 2.98.0`; `curl 8.7.1`; the script's own section 00 records `rustc` and `cargo`. I attempted the supplied Linux VM first. `limactl` was callable, but `limactl start ubuntu` failed before boot with `unlinkat /Users/stevemorin/.lima/ubuntu/ha.stdout.log: operation not permitted`; the recorded script downloads and executes the macOS arm64 release, so this macOS run is the applicable rerun.
+toolchain: macOS arm64; `rustc 1.98.0`; `cargo 1.98.0`; GNU bash 3.2.57; `gh 2.98.0`; `curl 8.7.1`.
 
-exit code: `0`.
+exit code: `1`.
 
-log path: `review/evidence/audit-secret-scanning-ci-workflow-r3.log` (280 lines, sha256 `9b49450d01ae793446e8f3610169474fb9260e3517ad7a56a86d6984c27350b1`).
+log path: `review/evidence/audit-secret-scanning-ci-workflow-r4.log` (sha256 `1091c3734efe34f31eed51b28cce6a89858b9f9ea07d1adf5068326c1a0b45f7`).
 
-output matches the decision: the empirical execution does. It ends `summary: PASS=36 FAIL=0 SKIP=0` and `RESULT: PASS`, exactly as the decision specifies. All 27 revision-2 `RESULT` labels remain, with the nine new `10a` through `10i` labels. The document's separate claim that named already-approved prose is byte-identical does not match the diff; that is F1.
+output matches the decision: no. The rerun ends `summary: PASS=58 FAIL=1 SKIP=0` and `RESULT: FAIL`; the decision records a passing run with all 59 assertions.
 
 ## Findings
 
-### Confirmed — the fail-open evidence is reachable and the repaired rule is complete
+### F1 — reject: assertion 07g does not reproduce its claimed unauthenticated negative control
 
-Section 10 of the independent rerun extracted the whole documented table from `docs/USAGE.md` at `v2.2.0`, including its digest `28cbe0cabac3c4f0ad69ed25d882ca33bae3ed699cce1a1d7d2df4634d0a0b84`. It asserted the only documented codes are `0`, `200`, and `205`. The top-level rejected-flag probe exited `2`; the missing scan-target probe exited `1`; and `10g` proved neither is in the documented set. The pinned `github/docs` source also made `10h` and `10i` pass: the default `run:` shell is `bash -e {0}`, while explicit `shell: bash` includes `-e` and `pipefail`.
+The script invokes `env -i PATH="$PATH" HOME="$NOAUTH_HOME" gh attestation verify ...` for `07g`. On this rerun, `gh` resolves through `/Users/stevemorin/.local/share/mise/shims/gh`. With the empty environment, that shim exits `1` while reporting that `/Users/stevemorin/.config/mise/config.toml` is not trusted. It never emits `gh auth login`; `07g` therefore reports `FAIL (expected=4 1 actual=1 0)`.
 
-The full gate rule appears once at `review/DECISION.md:23`. Its later references in essential behavior 3, acceptance criterion 1, the per-principle paragraph, migration implications, the section-08 finding, and the P03 test list consistently preserve the same allow-list: `0` and `200` pass, `205` fails, and every undocumented exit fails as a tool error. Acceptance criterion 5 explicitly requires both a replaced scanner and a rejected flag to fail the job. The ranked runner-up explicitly says its allow-list must be re-derived from its own pin rather than inherit Kingfisher's values.
+This contradicts the decision's executed claim that the unauthenticated prerequisite was demonstrated by `07g`, including the assertion that it exits `4` and directs the caller to `gh auth login`. It is not enough that this may be true when the CLI starts: the recorded command must reach the CLI and demonstrate it. The decision must either make the check execute a known `gh` binary without the `mise` shim, or record this prerequisite as unproven until such a command is rerun successfully.
 
-### Confirmed — the prior table-capture defect is repaired
+### Confirmed — revision-4's requested repairs are real
 
-The rerun log prints the heading, blank line, header, separator, and all three table rows, not only the heading. The file digest is printed immediately before that table. This closes the revision-2 `sed` range defect.
+Section 12 passes all eight assertions. The piped default-shell controls pass the job unscanned (`12c`, `12f`); the `pipefail` and unpiped controls fail it (`12d`, `12e`, `12g`, `12h`). This isolates the pipe as the mechanism.
 
-### Confirmed — citation and secret-shape checks
+Section 13 passes its pinned revision-2 digest assertion, eleven explicit `same` anchor assertions, and all three explicit `differ` assertions. The comparison is genuinely two-way, not equality-only.
 
-Six representative cited endpoints returned HTTP `200`: GitHub's secret-scanning documentation, TruffleHog `v3.95.9` `action.yml`, MongoDB Kingfisher's repository API, Kingfisher `v2.2.0` `docs/USAGE.md`, the Gitleaks Action README, and the crates.io Kingfisher API with the recorded User-Agent. The decision's ten secret-shape patterns each returned zero matches against this audit log. No secret-shaped value was added by this audit.
+The decision consistently makes the JSON/SARIF findings read an additional condition after the exit-code allow-list, never an alternative. The licence fitness gate is correctly recorded as inapplicable under owner ruling Q7.B and is not a finding.
 
-### F1 — reject: the stated byte-preservation claim is false
-
-`review/DECISION.md:9` says that the recommendation and validity-filter finding "stand as revision 2 wrote them." A direct diff against revision-2 decision sha256 `e2c3d588eaf1a098027b4c9ced4fa01ef1341fd27ef4cfdfa012bfc44a8321ec` shows the Part 2 recommendation line is not byte-identical, the ranked-runner-up line is not byte-identical, and the section-08 validity-filter finding line is not byte-identical. Each now includes necessary allow-list wording. In contrast, the Part 1 recommendation, F050 table row, `BASELINE-REVIEW: F050` line, equal-base-and-head narrowing, provenance diagnosis, and all four `assumes` lines are byte-identical.
-
-This does not undermine the gate repair. It does make the revision's preservation assurance inaccurate, including the requested confirmation of both recommendations and the validity-filter finding. Correct the revision note to distinguish unchanged tool-selection conclusions from changed wording, or enumerate only byte-identical anchors. No further scanner evidence is needed.
+Five cited primary endpoints were independently retrieved with `curl`: TruffleHog `action.yml` at `v3.95.9`, Kingfisher `docs/USAGE.md` and `Cargo.toml` at `v2.2.0`, GitHub's pinned supported-shells document, and the crates.io `kingfisher` API. Their recorded claims matched. Evidence: `review/evidence/audit-secret-scanning-ci-workflow-r4-citation-spotchecks.log` (sha256 `c90b828d5ccb489a933ba500558eb066040f1e91cb9363182997176a2bf8660c`).
 
 ## Assessment
 
-Reject revision 3 on F1 only. The fail-open defect is actually repaired: documented successful outcomes are allow-listed, two reachable unexpected outcomes are proven, the shell behavior is pinned and reproduced, and P03 has a concrete fail-the-job acceptance test. The decision must accurately describe what the diff preserved before it can be accepted.
+Reject on F1 only. The byte-preservation repair, the shell fail-open proof, the additional-report condition, the source spot checks, and the licence-gate treatment are sound. The document nevertheless presents `07g` as executed evidence that this rerun did not establish.

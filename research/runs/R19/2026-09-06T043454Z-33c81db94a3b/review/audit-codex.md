@@ -1,32 +1,22 @@
-decision-sha256: ec37d000455e786370406944a42db27b7bd4b3e62ad73c970a93e88058e30ad9
-actor: audit-codex-2026-09-06T043454Z-33c81db94a3b-r3
+decision-sha256: 6eb66faf2432e3c72f3e65c50fec9bc62621f74bc59ce3fc8fd8fb16cc99dd6c
+actor: audit-codex-2026-09-06T043454Z-33c81db94a3b-r4
 model: gpt-5.6-terra
 family: openai
-verdict: reject
-unresolved-findings: F1 section 5f is an unasserted live issue read, not a pinned read; the Empirical check miscounts and misclassifies the fail-open sections
+verdict: approve
+unresolved-findings: none
 
 ## Rerun
 
-argv: recovered `bash /private/tmp/r19-check-r3.sh`, whose SHA-256 is `ce8e720463cca485e8dcf6a4027c695236f8ceb32247c299b5ec440b32a7bd23`; cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan`; toolchain: Darwin 25.4.0 arm64, Rust 1.98.0, Cargo 1.98.0, GitHub CLI 2.98.0, and Python 3. The Linux VM could not start because Lima was denied access to `~/.lima/ubuntu/ha.stdout.log`; both reruns therefore used macOS.
-
-Both full outputs are in `review/evidence/audit-dependabot-config-shape-r3.log`. Run 1 started at `2026-09-12T19:45:11Z`; run 2 started at `2026-09-12T19:45:41Z`. Each has 929 lines, exit code 0, and `failed assertions: 0`. Their diff has exactly nine numeric diff lines: the run timestamp and the eight `LIVE` retrieval timestamps. No content line differs.
-
-The published four-part comparison is accurate. The r2/r3 `SCRIPT SOURCE` bodies diff cleanly. The selected immutable sections have 285 lines on each side and diff cleanly. Sections 2b and 5f produce exactly two transport hunks. The published r3/r3-repeat logs differ on nine timestamp lines. The audit log records the commands' outcomes.
+- argv: `bash review/evidence/r19-check-5f.sh`; cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R19/2026-09-06T043454Z-33c81db94a3b`; toolchain: `git version 2.50.1 (Apple Git-155)`, `gh version 2.98.0 (2026-08-20)`.
+- exit code: 0; complete output: `review/evidence/audit-dependabot-config-shape-r4.log` (sha256 `c9a501c109a4643057ff375f1bc39a21dfb025b1ba9bb31b5ffec7567195209a`). It contains 17 `PASS`, 0 `FAIL`, and `failed assertions: 0`.
+- Output matches the cited pinned run after excluding only its documented dynamic fields (`run-utc`, `cwd`, `evidence`, the live retrieval stamp, and mutable live JSON); the normalized output and embedded script source are identical. Evidence: `review/evidence/audit-dependabot-config-shape-r4-comparison.log`.
+- I replayed `r19-5f-snapshot.sh` and the checker from an independent scratch copy. The regenerated pin snapshot diffs identically from the committed snapshot and the check exits 0: `review/evidence/audit-dependabot-config-shape-r4-snapshot-replay.log`.
+- The negative control exits 0 after its tampered child checker exits 1 with exactly two failures: the blob-sha assertion and the `rust-version` zero-occurrence assertion. Evidence: `review/evidence/audit-dependabot-config-shape-r4-negative.log`.
 
 ## Findings
 
-### F1 — the new fail-open count is still wrong
-
-`review/DECISION.md` says sections 2b and 5f both read pinned immutable sources, and then counts 5f, 12, and 15 as unasserted pinned-source sections. The recovered script does not support that classification. Section 2b obtains `npm_and_yarn.rb` through `DBC`, which uses `ref=$DBC_SHA`, but its failed-content branch calls `note`, not `fail`. Section 5f is the bare live call `gh api repos/dependabot/dependabot-core/issues/5423 ...`; it has neither `DBC`, `DOCS`, nor a pin reference, and no assertion. Sections 12 and 15 are the two unasserted pin reads: local `git show <pin>` pipelines and `SPM=$(DOCS ...ref=$DOCS_SHA)` respectively. `set -uo pipefail` omits `-e`, so all four paths can emit an error and continue.
-
-The underlying general defect is therefore correctly identified: a failed read can be converted to a note or can have its non-zero status ignored. The decision must state the accurate classification before acceptance: one pinned read with a note fallback (2b), two unasserted pinned reads (12 and 15), and one unasserted live read (5f). Calling the 5f TLS hunk a pinned transport read is false.
-
-### Checks that passed
-
-The revision-2 blob is `bcdf35c07904369a66eb3771a4ee61f91ff65e77bdfc1c724386737301f9c118`. Its `## Parameters` section, including all four `assumes` lines, and its `## Engines` section are byte-identical to revision 3. Among 47 non-separator Markdown table rows, only the two revised prose-citation rows (2/2b/2c and 5f) differ; the other 45 rows are byte-identical. The decision body changes only those two citations, revision metadata, and the documented empirical-check rewrite.
-
-The DataFusion explanation is correct. The current page-one Dependabot query returns no rows, while the page-two query returns both cited group branches: `dependabot/cargo/main/all-other-cargo-deps-03ff8603f0` and `dependabot/cargo/main/arrow-parquet-a49d07efbf`.
+None. I independently re-derived all 21 Git blob hashes from `tree.tsv` with `git hash-object -t blob`; all matched. The checker establishes the bare `latest_version` call, its `language_version: nil` default, the first `next release unless language_version` guard, the zero `rust-version` matches across the non-vacuous 20-file corpus, and the bounded `latest_resolvable_version` caveat. Six cited pinned source files were re-fetched with `curl` and each re-derived its recorded blob hash; `version_resolver.rb` contains `cargo update -p #{dependency_spec} -vv` and no `--precise`: `review/evidence/audit-dependabot-config-shape-r4-citation-spotchecks.log`.
 
 ## Assessment
 
-Reject revision 3 only for F1. Its provenance repair, script identity, rerun record, transport-hunk comparison, timestamp comparison, revision-2 preservation boundaries, and DataFusion paging correction all reproduce. The decision must correct the pinned-versus-live classification and resulting count of unasserted reads.
+Revision 4 fixes F1 with asserted, content-addressed evidence rather than relabelling the prior mutable issue read. The mutable issue is explicitly corroboration only, and the decision scopes the unexecuted Cargo resolver path and real-template behavior as unproven. The owner-directed licence gate is absent from R19, so no inapplicable-gate record is required.

@@ -21,19 +21,19 @@
   },
   "evidence_checks": {},
   "synthesis": {
-    "actor": "synth-opus-2026-09-06T043454Z-6f31d86e5b7d-r5",
+    "actor": "synth-opus-2026-09-06T043454Z-6f31d86e5b7d-r6",
     "model": "claude-opus-5",
     "family": "anthropic"
   },
   "audits": {
     "empirical": {
-      "actor": "audit-codex-2026-09-06T043454Z-6f31d86e5b7d-r5",
+      "actor": "audit-codex-2026-09-06T043454Z-6f31d86e5b7d-r7",
       "model": "gpt-5.6-terra",
       "family": "openai",
       "file": "review/audit-codex.md"
     },
     "judgment": {
-      "actor": "audit-fable-2026-09-06T043454Z-6f31d86e5b7d-r5",
+      "actor": "audit-fable-2026-09-06T043454Z-6f31d86e5b7d-r7",
       "model": "claude-opus-5",
       "family": "anthropic",
       "file": "review/audit-fable.md"
@@ -42,12 +42,12 @@
   "empirical": {
     "argv": [
       "actionlint",
-      "candidate-claude-code-review.r4.yml",
-      "candidate-claude.r4.yml"
+      "candidate-claude-code-review.r5.yml",
+      "candidate-claude.r5.yml"
     ],
     "cwd": "research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence",
-    "toolchain": "actionlint 1.7.12, gh 2.98.0, curl and git on macOS 26.4 arm64 (Darwin 25.4.0); rustc 1.98.0 and cargo 1.98.0 recorded because the role contract requires them, though neither member invokes them. The stopped Ubuntu virtual machine was not started. Every command in the replay is read-only: no workflow was installed, no credential was read or used, and no provider run was made.",
-    "output_log": "review/evidence/audit-ai-assisted-review-workflows-r5.log",
+    "toolchain": "actionlint 1.7.12 on macOS 26.4 arm64 (Darwin 25.4.0); the Lima ubuntu instance could not be started (sandbox denied the host-state unlink), so the isolated shell probe was rerun on macOS",
+    "output_log": "review/evidence/audit-ai-assisted-review-workflows-r7.log",
     "exit_code": 0
   }
 }

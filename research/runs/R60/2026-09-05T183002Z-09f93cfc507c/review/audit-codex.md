@@ -1,22 +1,22 @@
-decision-sha256: 14f66259aad6063f9506410735e61e9a58a026fc24200cb048b9bbc71bbc2100
-actor: audit-codex-2026-09-05T183002Z-09f93cfc507c-r3
+decision-sha256: 12aaf65c88f6bbcde915723913257f78d2e2e483c6deac4ee808b41af122ef43
+actor: audit-codex-2026-09-05T183002Z-09f93cfc507c-r4
 model: gpt-5.6-terra
 family: openai
-verdict: approve
-unresolved-findings: none
+verdict: reject
+unresolved-findings: F1 — U8 and the ruling-provenance statements are false: docs/port/OWNER-REVIEW.md:72-91 now records the binding standard, refused OV-01, selected option (b), zero overrides, and no waived SHOULD.
 
 ## Rerun
 
-argv: `bash <archive>/review/evidence/r60-standard-pin-r3.sh`; `bash <archive>/review/evidence/r60-preservation-diff-r3.sh`; `bash <archive>/review/evidence/r60-snapshot-provenance-r3.sh`.
+argv: `bash review/evidence/r60-standard-pin-r4.sh`; `bash review/evidence/r60-preservation-diff-r4.sh`; `bash review/evidence/r60-snapshot-provenance-r4.sh`; then the recorded Cargo metadata pair with `version = "v0.1.0"` and `version = "0.1.0"`.
 
-cwd: `/private/tmp`; toolchain: `git archive`, `tar`, `bash`, `curl`, `diff`, and `shasum` on macOS. I archived commit `d642814cddfd3f1756fc56cd38738904440d9141` into an empty directory with no `.git`, then ran the three scripts from that extracted copy. All three exited `0`; complete output is `review/evidence/audit-cli-parsing-framework-r3.log`.
-
-Output match: the two offline scripts diffed empty against their committed logs. The provenance script diffed empty in the history-bearing checkout. In the archive it differed only in the two declared self-baseline Git-object rows and their resulting totals: `CHECKS RUN: 12 ... UNVERIFIABLE-HERE: 4`, rather than `14 ... 2`.
+cwd: this run directory; the scripts were also replayed from a clean `git archive HEAD` extraction. Toolchain: `rustc 1.98.0`, `cargo 1.98.0`, macOS `aarch64`. Clean replay exits: standard-pin `2`; preservation-diff `0`; snapshot-provenance `0` (the documented no-git variance: 14 checks and 5 `UNVERIFIABLE-HERE`). The one-off Cargo pair exited `101` then `0`. Complete log: `review/evidence/audit-cli-parsing-framework-r4.log` (sha256 `483018cf0188e1777635a9ff1585b2a8b2176aa6e3ea93190e8ab6ef35ab2dc5`). Output does not match the decision's recorded all-zero revision-4 script result.
 
 ## Findings
 
-None. The archive provenance rerun re-fetched and hash-verified the standard, two crate tarballs and extracted files, and two Python snapshots; it also verified the two TypeScript privacy probes as HTTP 404. Each C0 control emitted its deliberate failure and the harness recorded it before resetting counters. The numeric inverse control confirmed `count=10` does not satisfy `count=0`; count expectations in the revision-3 scripts use labelled values. Gate 1 is correctly recorded as inapplicable under Q7.B, and the four exclusions are all explicitly gate-2 missing-`rust-version` exclusions.
+### F1 — stale claim that makes E13 fail
+
+`review/DECISION.md:650-660` says the ruling is not in the repository and `:1330` carries that assertion as U8. The durable owner record contradicts it: `docs/port/OWNER-REVIEW.md:72-91` binds standard 1.4.14/blob `f9de0437`, records OV-01 as refused, selects option (b), and states zero overrides with no waived `SHOULD`. Accordingly the exact r4 standard-pin rerun failed C16h/C16i (`OV-01` count `3`, `2026-09-14` count `1`) rather than its recorded 115/0. Remove or revise U8 and its surrounding provenance assertions, then update the C16/E13 evidence and recorded result.
 
 ## Assessment
 
-The revision-2 post-commit rerunnability failure is corrected. The decision's stated evidence limits remain accurate: this audit verifies the recorded evidence apparatus and citations, not a non-existent template implementation.
+The owner-ruling implementation itself is otherwise supported: the pinned `clap_builder 4.6.6` parser source returns `Err(self.version_err(use_long))` at `parser.rs:1322-1331`; the corrected R4.6 span is `:275-277`; AC2/AC3/AC7, the retired OV-01 record, and R66's related-not-conflict classification are present. The five source refetches in the provenance replay (standard, two crate tarballs, and two Python snapshots) matched their pinned bytes. U1, U3, and the unexecuted acceptance criteria remain correctly labeled unproven.
