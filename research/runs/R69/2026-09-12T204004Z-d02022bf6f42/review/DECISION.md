@@ -1,6 +1,52 @@
-# R69 web-framework-stack — decision (revision 1, 2026-09-13)
+# R69 web-framework-stack — decision (revision 2, 2026-09-15)
 
-Bundle, Deep tier. Synthesizer: fresh Claude Opus 5 context, 2026-09-13; run
+**Revision note.** Revision 2 rewrites revision 1 (sha256
+`7a1257842cfe1b39befa54e6ea0c8cdd125ee1768e13e72a1463c64d49d7d2d8`) in place. No revision of
+this decision has been published, so there is no `## Supersedes`. **One owned parameter value
+changes**: JF-3 requires the `<app>-serve` binary to carry the CLI Design Standard's required
+global core, and revision 1 fixed that binary at "no CLI flags" inside the value of
+`web-extra-surface`. Changing an owned value is permitted here only because this item is not
+yet owner-accepted; the registry cell for `web-extra-surface` is still the placeholder `—` and
+this revision does not edit `docs/port/PARAMETERS.md`. **The recommendation does not move**:
+`axum` 0.8.9 on `tokio` 1.53.1 behind an off-by-default `web` feature, `tower` 0.5.3 as a
+dev-dependency, and `bacon` 3.25.0 as the dev watcher are unchanged, as are every version pin,
+every exclusion, every evidence script and every cited log except the one named below.
+
+Revision 1 was **approved** by the empirical audit (`review/audit-codex.md`, actor
+`audit-codex-2026-09-12T204004Z-d02022bf6f42-r1`, model `gpt-5.6-terra`, family openai; it
+reran all six scripts, five byte-identical and the sixth differing only in a sandbox-forced
+advisory-database path) and **rejected** by the judgment audit (`review/audit-fable.md`, actor
+`audit-fable-2026-09-12T204004Z-d02022bf6f42-r1`, model `claude-opus-5`, family anthropic) on
+three blocking findings. Revision 2 answers each:
+
+- **JF-1** — *"the serve binary's SIGTERM exit code contradicts R67's published contract, which
+  the decision cites as satisfied, and the drain-deadline failure exit carries no number"*.
+  Repaired by stating the serve binary's exit integers from R67's accepted taxonomy — SIGTERM
+  →143, SIGINT →130, drain-deadline expiry →1 — in `### Principles and implementation`
+  (criterion 4 and the new *The serve binary's process contract* paragraph), in the validation
+  strategy and in the unproven table, whose acceptance test no longer says "a zero exit". The
+  catalog token for the drain-deadline branch is recorded as a **request to R67**, whose
+  catalog is append-only and owned there.
+- **JF-2** — *"the fit ground that ranks `actix-web` runner-up and excludes `ntex` … is stated
+  as present fact but is contradicted by the decision's own acceptance criterion 1 and is
+  contingent on R05, which the decision records as open"*. Repaired by qualifying both
+  locations (`## Decision` alternative E and the `ntex` row in *Excluded by gate and by fit*):
+  the one tokio world exists when the `web` feature is **on**, and whether the CLI and library
+  join it is R05's open question.
+- **JF-3** — *"the new `<app>-serve` executable is fixed at 'no CLI flags' without examining
+  the CLI Design Standard's required global core, which owner ruling 2026-09-14 binds to this
+  template's CLI surface"*. Repaired by giving the serve binary the standard's R4.1 required
+  global core and nothing beyond it, in the owned parameter value and in the new flag-surface
+  paragraph, with the standard's own scope sentences cited.
+
+Nothing else in the decision is edited. The only evidence change is a **rerun** of the
+unmodified `review/empirical/parameters-check.sh` against the revised file, saved as the new
+`review/evidence/parameters-check-r2.log`; revision 1's `parameters-check.log` is retained
+unchanged as the record of revision 1.
+
+Bundle, Deep tier. Synthesizer: fresh Claude Opus 5 context, 2026-09-13; revision 2 by a
+second fresh Claude Opus 5 context that produced none of this item's raws, audits or revision
+1, 2026-09-15; run
 `research/runs/R69/2026-09-12T204004Z-d02022bf6f42`. This item was admitted ahead of the
 Wave 0 review gate by owner decision Q3.A (2026-09-12) because it consumes only R01, which
 the owner accepted on 2026-09-10, and because 19 items consume its owned parameter directly.
@@ -83,9 +129,11 @@ and are carried in the unproven table under `## Engines`.
    unregistered substate is P03's.
 4. **The production entrypoint drains in-flight work on SIGINT/SIGTERM and gives up after a
    configured deadline.** *Observable:* the serve future is bounded by a timeout whose value
-   comes from settings and whose clock starts when the shutdown signal fires. **Not run
-   here**; the enabling fact — that axum supplies no deadline of its own — was verified by
-   reading the published source (below).
+   comes from settings and whose clock starts when the shutdown signal fires, and the process
+   exits with R67's integer for the signal that started the drain — **143** after SIGTERM,
+   **130** after SIGINT, and **1** when the deadline expires (see *The serve binary's process
+   contract* below). **Not run here**; the enabling fact — that axum supplies no deadline of
+   its own — was verified by reading the published source (below).
 5. **The `web` feature is what CI, container and docs gates select.** *Observable:* one
    feature name gates module, binary target and tests together. *Verified here* on the
    manifest probe: `cargo metadata` reports `"required-features":["web"]` on the binary
@@ -141,7 +189,7 @@ alongside `tokio`, the substrate every established candidate except `ntex`/`xitc
 | **B. Framework with a compile-checked state type** | `axum`'s `Router<S>`/`State<S>`; `build_router(state) -> Router` | **Chosen.** A missing-state wiring mistake is a type error rather than a 500 under traffic, and every test constructs state the same way production does — which is precisely what removes the need for py's lazy fallback. |
 | C. Framework with a runtime type-map for state | `actix-web`'s `web::Data<T>`, or axum's own `Extension` | Rejected as the primary mechanism. actix-web's own documentation states that using `Data<T>` when route data is not set "would cause a 500 Internal Server Error" (opus raw, `actix-web-4.15.0/src/data.rs:39`). A template whose purpose is to be copied should not ship a wiring-mistake class that only appears under traffic. |
 | D. Batteries-included stack | `loco-rs` 1.1.0, `pavex` 0.2.10 | Rejected. This repository *is* the template; a second opinionated template inside it would own decisions R70–R80 are already assigned. `loco-rs` is itself built on axum, so choosing axum keeps that door open for template users. |
-| E. Framework with its own runtime layer | `actix-web` + `actix-rt`/`actix-server`; `ntex` | **Ranked runner-up** (`actix-web`), not chosen. It is production-proven and its `HttpServer::shutdown_timeout(sec)` is a closer literal analogue of py's `timeout_graceful_shutdown`, but the template's CLI, library and future adapters live in one tokio world and actix-web inserts `actix-rt`/`actix-server` between them. |
+| E. Framework with its own runtime layer | `actix-web` + `actix-rt`/`actix-server`; `ntex` | **Ranked runner-up** (`actix-web`), not chosen. It is production-proven and its `HttpServer::shutdown_timeout(sec)` is a closer literal analogue of py's `timeout_graceful_shutdown`. The layering ground, stated with its conditions: **when the `web` feature is on**, the web surface and any future async adapter live in one tokio world, and actix-web would insert `actix-rt`/`actix-server` beside it inside that same feature — `tokio` is absent from the feature-off tree by criterion 1, measured in check 2, so this is not a claim about the template's default build. **Whether the CLI and library join that world is R05's open question** (`sync-async-execution-model`, recorded open under `## Parameters`): under an async R05 they do and the ground is at its strongest; under a synchronous R05 they do not, and the ground weakens to two runtime abstractions inside the feature rather than one. The ranking does not rest on it alone — the `Data<T>` runtime failure mode in alternative C holds either way. |
 
 **Why the chosen design preserves each principle.** Optionality is carried by a Cargo
 feature, the direct analogue of py's install extra. "Thin adapter over one contract" is
@@ -250,10 +298,89 @@ shutdown with `tower_http::timeout::TimeoutLayer` is a **per-request** bound, no
 deadline; the two are complementary, and the per-request layer is R75's to decide (axum's own
 example uses it for exactly that adjacent problem).
 
-The entrypoint returns `ExitCode` from `main` rather than calling `process::exit`, which is
-what R67's published `error-taxonomy-exit-codes` requires, and the drain-deadline branch is a
-failure exit. The binary takes no CLI flags — every knob is an environment variable, as in
-py's `__main__.py`; the CLI binary keeps its own flags. A `serve` subcommand on the existing
+**The serve binary's process contract — R67's integers, not this item's.** R67
+`error-and-exit-code-contract` is published and owner-accepted (2026-09-14, at
+`research/topics/67-error-and-exit-code-contract/DECISION.md`, sha256
+`16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497`, read 2026-09-15), its
+owned `error-taxonomy-exit-codes` fixes the taxonomy `0/1/2/3/4/5/130/143` with "unlisted
+failures collapse to `1`", and it names this item as bound: "R05 (`sync-async-execution-model`)
+and R69 (`web-extra-surface`) decide the web surface's signal source, which must return the
+same 130/143". Revision 1 asserted agreement with R67 while leaving the numbers out; they are
+stated here. The entrypoint returns `ExitCode` from `main` rather than calling `process::exit`,
+which is what R67 requires, and:
+
+| Serve-binary termination | Exit | R67 catalog row |
+|---|---:|---|
+| Drain initiated by `SIGTERM` completes inside the deadline | **143** | `RSLB902` SIGTERM → 143 |
+| Drain initiated by `SIGINT` (Ctrl-C) completes inside the deadline | **130** | `RSLB901` SIGINT → 130 |
+| Drain deadline expires — `ServeError::GracefulShutdownTimedOut` | **1** | none yet; see the request below |
+| Bind, accept or other `std::io` failure — `ServeError::Io` | **1** | `RSLB101` I/O → 1 |
+| The server future returns without a signal (normal `axum::serve` completion) | **0** | — |
+
+**Request to R67 — one appended catalog row, no exit integer invented.** R67's catalog is
+append-only and R67 owns it, so this item does not mint a code. The drain-deadline branch is a
+*failure*, not a clean signal exit: the process gave up on requests it had accepted. R67's
+taxonomy therefore gives it **1** today, as an unlisted failure, and until R67 appends a row the
+branch exits 1 carrying no catalog token of its own. **The request:** append one `1xx` row —
+the hundreds digit is the exit code in R67's scheme, so a `1xx` token implies exit 1 and
+nothing else — for *graceful-shutdown drain deadline exceeded*; the next free slot in that block
+appears to be `RSLB105` (`RSLB101`–`RSLB104` are taken), but the token is R67's to assign.
+**One question travels with the request**: R67's boundary precedence is *signal → broken pipe →
+domain error → unexpected*, which could instead be read as making any SIGTERM-initiated
+termination 143 even when the drain failed. This item reads the timed-out drain as a domain
+failure, because the observable outcome differs from a clean drain and R51's container image and
+the template's process tests consume that difference; R67 owns the final reading. This is not a
+`CONFLICT:` line — R67 is not on this item's `- consumes:` line, and nothing here diverges from
+its published value — and not a `BASELINE-REVIEW:` line, because no py/ts baseline behavior is
+at issue.
+
+**What `serve_until`'s signature must carry, which the recorded shape does not.** The snippet
+above takes `S: Future<Output = ()>`, a signal future that has forgotten *which* signal fired —
+so as drawn it cannot deliver 130 versus 143. This is the same defect R67 excluded `ctrlc` for:
+"the handler specified by `set_handler()` will be executed for `SIGINT`, `SIGTERM` and `SIGHUP`
+… `ctrlc` therefore *cannot* produce distinct 130/143". The way out is already in this
+decision's F338 mechanism rather than in a new dependency: `tokio::signal::ctrl_c()` and
+`tokio::signal::unix::signal(SignalKind::terminate())` are two separate sources selected over —
+the shape the reference implementation uses, asserted in check 3 as "selects over SIGTERM via
+`tokio::signal::unix`" — so the `select!` inside `shutdown_signal()` can report which arm fired.
+P03 threads that answer out: the future resolves to the signal kind, or directly to R67's `Exit`
+value, rather than to `()`. **No check in this run exercised that**, and the row is carried in
+the unproven table below. The snippet is retained unedited because it is the drain *shape* this
+decision settles, and the clock-start rule it demonstrates is unaffected by what the future
+carries.
+
+**The serve binary's flag surface, under the binding CLI Design Standard.** Revision 1 fixed the
+binary at "no CLI flags", copying py's `__main__.py`, which is the inherited-mechanism move the
+research mandate asks to be justified rather than ported. Owner ruling 2026-09-14
+(`docs/port/OWNER-REVIEW.md`, *"the CLI Design Standard binds, and OV-01 is refused"*) makes
+`/Users/stevemorin/c/cli-standards/cli-design-standard.md` v1.4.14 govern this template; its
+header reads "Applies to: All new CLIs, any language" and its R4.1 opens "Every CLI **MUST**
+implement the **required global core**". A second shipped executable is such a CLI, and the
+standard offers it no exemption: its only profile relaxation, Appendix A's Small-CLI
+(verb-first) profile — which `<app>-serve` would otherwise fit, being a single-purpose tool with
+no resource nouns — states that under it "every other rule in Part III applies unchanged …
+standard options (§4)". **So `<app>-serve` carries R4.1's required global core, and nothing
+beyond it:**
+
+| Option | Short | Meaning, per R4.1 | Who binds its behavior |
+|---|---|---|---|
+| `--help` | `-h` | print help for the binary and exit `0`, on stdout (R7.5, R7.1) | the standard; help layout is R60's parser |
+| `--version` | `-V` | print version and exit `0`, on stdout — the single line `<app>-serve <semver>` per R4.6 and the owner's 2026-09-14 refusal of OV-01 | the standard; R60 |
+| `--verbose` | `-v` | increase diagnostic detail, repeatable (R4.4) | R58's `logging-pipeline-contract` binds what the levels select |
+| `--quiet` | `-q` | suppress non-essential stderr output; never suppresses stdout (R4.4) | R58 |
+| `--config` | — | path to a config file, overriding discovery (R5.2) | R54's `config-discovery-tiers` and R77's `web-env-settings` |
+| `--debug` | — | maximum diagnostics including internal detail (R4.4) | R58 |
+
+Everything else stays out. The result-output tier (`-o`/`--output`, `--json`) is not required:
+R4.1 scopes it to "commands that emit formatted result data", and this binary's stdout carries
+no result set — it serves HTTP and logs to stderr. No safety/action option applies: it creates,
+deletes and confirms nothing. Every *service* knob — host, port, log format, drain deadline —
+remains an environment variable, as py's `__main__.py` has it and as R77 will name them; the
+standard's R5.1 precedence (flag > env > config > default) is satisfied vacuously where no flag
+exists for a knob. This adds **no crate to the `web` feature**: the CLI binary already requires
+a parser as a non-optional dependency of the package (the crate is R60's to select), so the
+serve binary reuses it, and check 2's measured 12 → 52 package delta — which is the marginal
+cost of the feature — is unaffected. The CLI binary keeps its own flags. A `serve` subcommand on the existing
 CLI binary is the ranked runner-up shape, rejected as primary because it would put `tokio` and
 `axum` in the default CLI build unless the subcommand were itself feature-gated, and because
 py's separate entry point is the shape R51's container image expects.
@@ -447,7 +574,7 @@ and asserted in `review/evidence/assert-figures.log`, section C; the floor is **
 | `pavex` | 0.2.10 (2025-11-10) | Apache-2.0 | **none declared — FAIL** | **Excluded by gate 2** |
 | `tide` | 0.17.0-beta.1 (2021-12-06) | MIT OR Apache-2.0 | **none declared — FAIL** | **Excluded by gate 2**, and dormant on its own (no release in 4+ years) |
 | `xitca-web` | 0.8.3 (2026-08-29) | Apache-2.0 | **1.98 — FAIL**, equals current stable, above the 1.96 floor | **Excluded by gate 2** |
-| `ntex` | 4.0.0-beta.10 (2026-09-12) | MIT OR Apache-2.0 | 1.95 — passes today | Excluded on **fit and maturity**: its own `ntex-rt` runtime abstraction is a second runtime story for a template whose CLI and library already have one, and the newest non-yanked release is a prerelease |
+| `ntex` | 4.0.0-beta.10 (2026-09-12) | MIT OR Apache-2.0 | 1.95 — passes today | Excluded on **fit and maturity**: its own `ntex-rt` runtime abstraction is a second runtime story inside the `web` feature, beside the tokio one the web surface already needs — carrying the same two conditions as alternative E above, that the tokio world exists only when the feature is on and that whether the CLI and library join it is R05's open question — and the newest non-yanked release is a prerelease |
 | `loco-rs` | 1.1.0 (2026-08-16) | Apache-2.0 | 1.94 | Not a competitor: it is built **on** axum, so selecting axum keeps it available to template users without importing its opinions |
 | `dropshot` | 0.17.1 (2026-06-02) | Apache-2.0 | 1.85 | Well-engineered and single-org; its first-class OpenAPI generation is relevant to R71 but does not outweigh axum's adoption or the ecosystem R70–R80 will draw on |
 
@@ -517,7 +644,7 @@ is a process wrapper with no Rust ABI or dependency-resolution relationship to t
 | `src/web/mod.rs` (new) | `AppState` and its `FromRef` impls, `build_router(state) -> Router`, `shutdown_signal()`, `serve_until(..)` |
 | `src/web/routes/projects.rs` (new) | `pub(crate) fn router() -> Router<AppState>` and the handlers, returning the library's own contract types |
 | `src/web/routes/ops.rs` (new) | `/healthz` now; `/readyz` and its payload are R80's |
-| `src/bin/<app>-serve.rs` (new) | `#[tokio::main] async fn main() -> ExitCode` — settings, R01's composition root, bind, `serve_until` |
+| `src/bin/<app>-serve.rs` (new) | `#[tokio::main] async fn main() -> ExitCode` — R4.1's required global core parsed with the CLI's own parser crate (R60's choice, already a non-optional dependency), then settings, R01's composition root, bind, `serve_until`, and R67's exit integers (143 / 130 / 1 / 0) |
 | `tests/web_api.rs` (new) | file-level `#![cfg(feature = "web")]`; the `oneshot` and real-listener tests |
 | `Justfile` | `serve` (bacon-driven, required) and `serve-once` (no watcher) |
 | `bacon.toml` (new) | one override on the `run-long` job's `kill`, so a dev restart sends SIGTERM and the production drain path runs; without it bacon's default Unix interruption is SIGKILL |
@@ -541,8 +668,10 @@ or at minimum a `--no-default-features` and an `--all-features` job; `cargo audi
 template's lockfile; one `oneshot` test per route; a real-listener test decoding into the
 library's own `Vec<Project>`; a `compile_fail` doctest for a handler asking for an
 unregistered substate; a process-level test that sends SIGTERM during a slow request and
-asserts both the response completing and the process exiting inside the configured window,
-plus its twin against a permanently blocked request asserting the drain-deadline failure;
+asserts both the response completing and the process exiting **143** inside the configured
+window, its SIGINT twin asserting **130**, and its twin against a permanently blocked request
+asserting the drain-deadline branch exits **1**; a conformance fixture over the serve binary's
+R4.1 global core (`--help` and `-V` on stdout at exit 0, per R7.5 and R9.14);
 `just serve` answering `GET /healthz` with console-formatted logs and restarting on a source
 edit (blocked on R58); and the instrumented comparative benchmark specified in openai's raw
 before any decision to prefer `actix-web`.
@@ -554,7 +683,11 @@ this machine. **Medium-high** for the dev-serve member: the tool's gates, instal
 capabilities are verified, but the recipe's end-to-end behavior depends on R58's unpublished
 logging contract and was not exercised. **Medium** for the exact field list of `AppState`,
 which R77 (settings) and R58 (logging) will refine, and for the drain-deadline code shape,
-which is reasoned and read but not executed.
+which is reasoned and read but not executed. The serve binary's **exit integers** and its
+**required global core** are a separate case from both: they are **High** as *rules*, because
+each is quoted from a normative document this programme has already settled — R67's accepted
+owned value and the standard's R4.1 under the owner's 2026-09-14 ruling — and **unproven** as
+*behavior*, because no binary exists to run; three rows in the unproven table carry them.
 
 **Sources.** Retrieved by this synthesis on **2026-09-13** and snapshotted under
 `review/evidence/snapshots/` (reduced, committed) and `review/evidence/sources/`
@@ -590,17 +723,26 @@ the raws with their own retrieval date of **2026-09-12**: the py source at progr
 `meilisearch/meilisearch` at `a955694df9f50771b3ceaf7896754cecfbaf165d`;
 `https://github.com/qdrant/qdrant/blob/master/Cargo.lock`;
 `https://blog.rust-lang.org/2025/02/05/crates-io-development-update/`;
-`https://github.com/specta-rs/rspc/discussions/351`. Repository context:
+`https://github.com/specta-rs/rspc/discussions/351`. Read by **revision 2 on 2026-09-15** and by
+no earlier revision: `research/topics/67-error-and-exit-code-contract/DECISION.md` (R67,
+published and owner-accepted 2026-09-14, sha256
+`16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497`) — its owned
+`error-taxonomy-exit-codes` value, its `## Decision` answer to the SIGTERM question, its
+boundary-precedence rule and its `ctrlc` source read; the org CLI Design Standard at
+`/Users/stevemorin/c/cli-standards/cli-design-standard.md` **v1.4.14** (2026-06-28) — its header
+scope line, its conformance clause, R4.1, R4.4, R4.6, R5.1, R5.2, R7.1, R7.5, R9.6, R9.14 and
+Appendix A; and `docs/port/OWNER-REVIEW.md`, section *2026-09-14 — the CLI Design Standard
+binds, and OV-01 is refused*. Repository context:
 `research/topics/01-ports-and-adapters-seam/DECISION.md` (R01, accepted 2026-09-10);
 `docs/port/PARAMETERS.md`; `docs/port/COMMONALITY.md` rows F017, F303, F330, F331, F338, F339;
 `docs/port/DIVERGENCE-ANALYSIS.md` line 217; `docs/port/BASELINE-REVIEW.md` (the F331
 reclassification); `docs/port/OWNER-REVIEW.md` (the 2026-09-04 owner direction).
 
-re-verify: when axum publishes 0.9, when R58 (logging-pipeline-contract) or R02 (crate-boundary-enforcement) publishes, when watchexec-cli declares a rust-version or the owner rules on whether the MSRV gate reaches non-linked developer tools, at the next msrv-policy floor advance past 1.96, or by 2027-03-13, whichever comes first
+re-verify: when axum publishes 0.9, when R58 (logging-pipeline-contract) or R02 (crate-boundary-enforcement) publishes, when watchexec-cli declares a rust-version or the owner rules on whether the MSRV gate reaches non-linked developer tools, when R67 dispositions this item's request for a drain-deadline catalog row or revises the 130/143 reading of its boundary precedence, when R60 selects the CLI parser the serve binary's global core is parsed with, when the CLI Design Standard revises R4.1's required global core past v1.4.14, at the next msrv-policy floor advance past 1.96, or by 2027-03-13, whichever comes first
 
 ## Parameters
 
-- owns web-extra-surface = one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, environment-variable-driven with no CLI flags, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files
+- owns web-extra-surface = one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate the CLI binary already carries (R60's choice, so no crate is added to this feature) - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with R67's accepted integers: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 when the drain deadline expires or on an I/O failure, and 0 otherwise, returned as ExitCode from main, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files
 - assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
 - assumes rust-edition = 2024
 - assumes target-os-matrix = ubuntu-latest, macos-latest
@@ -674,7 +816,7 @@ cannot fail is visible as such.
 | 3 | every population figure, gate answer and published-artifact fact this decision cites | `assert-figures.sh` | 0 | `assert-figures.log` |
 | 4 | the issue-responsiveness figure the codex raw recorded as unverified | `issue-responsiveness.sh` | 0 | `issue-responsiveness.log` |
 | 5 | the recommended dev tool's version pin installs on macOS and exposes the two capabilities F339's recipe needs | `bacon-install-check.sh` | 0 | `bacon-install-check.log` |
-| 6 | the `## Parameters` block's five `- assumes` lines are byte-identical to the registry, the one `- owns` line carries no backtick/link/whitespace defect, and the H2 section list is exactly what the role contract fixes | `parameters-check.sh` | 0 | `parameters-check.log` |
+| 6 | the `## Parameters` block's five `- assumes` lines are byte-identical to the registry, the one `- owns` line carries no backtick/link/whitespace defect, and the H2 section list is exactly what the role contract fixes | `parameters-check.sh` | 0 | `parameters-check-r2.log` (revision 2's rerun; revision 1's `parameters-check.log` is retained unchanged) |
 
 Two fetchers feed them and are not themselves checks: `fetch-figures.sh` queries every
 endpoint the prompt's figure table names and writes a **reduced** snapshot — only the fields
@@ -694,7 +836,15 @@ reproduces, because every one of those files is fetched at an immutable coordina
 published `.crate` version, a git tag, a commit SHA). An auditor therefore runs the six
 scripts and nothing else. Immediately before writing this sentence, all six were re-run and
 each produced output **identical** to the log cited above, with `diff` reporting no
-differences. Re-running `fetch-figures.sh` will move the counters inside the snapshots and
+differences. **What revision 2 changed about that, stated precisely.** Check 6 is the only one
+of the six that reads `review/DECISION.md`, so it is the only one whose output revision 2 can
+move — and it does move, because the `- owns` line is longer and check 6 prints its byte count.
+The script itself is **unmodified**; it was re-run against the revised file and its output is
+the new `review/evidence/parameters-check-r2.log` (`rc=0`), while revision 1's
+`parameters-check.log` is retained unedited as the record of revision 1. The other five were
+**not** re-run for revision 2 and are not claimed to have been: none of them reads this file,
+none of their inputs changed, and the revision-1 sentence above — which the empirical audit
+independently reproduced — is what stands for them. Re-running `fetch-figures.sh` will move the counters inside the snapshots and
 therefore the figures the logs print; the assertions — the version numbers, MSRVs, licences,
 `archived` flags and source facts — are the stable part, and are what the decision rests on.
 
@@ -946,7 +1096,9 @@ research.
 |---|---|---|
 | The web handler returns the library's own `serde` types over a real listener, with no mirror struct, byte-identical to the CLI's output (R01 acceptance criterion 6) | **Unproven here.** The opus raw reports two passing tests covering exactly this, in-process and over a bound listener; those are engine-reported and were not re-executed, because executing them means building the recommendation. | A template integration test: a real HTTP GET to a bound listener whose body decodes into the library's `Vec<Project>`, compared against the CLI's rendered output for the same query. |
 | `build_router(state)` is the only constructor, and a handler asking for an unregistered substate fails to compile | **Partly proven.** The state bound itself is verified (check 1); the compile-failure demonstration is not. | A `compile_fail` doctest in the template showing a handler requesting a substate `AppState` has no `FromRef` impl for, and asserting the error. |
-| The entrypoint drains in-flight work on SIGTERM and exits within the configured window, and exceeds the deadline when a request never completes | **Unproven.** The enabling fact — axum supplies no deadline — is read at source (check 3); the two behaviors are not exercised. | Two template tests: one that begins a slow request, sends SIGTERM, and asserts both the response completing and a zero exit inside the window; one with a permanently blocked request asserting the `GracefulShutdownTimedOut` branch and its non-zero exit. The opus raw reports a passing test for the unbounded-drain half only. |
+| The entrypoint drains in-flight work on SIGTERM and exits **143** within the configured window, exits **130** on the SIGINT path, and exits **1** when a request never completes | **Unproven.** The enabling fact — axum supplies no deadline — is read at source (check 3); the three behaviors are not exercised, and neither is the signal-kind threading the exit integers need. R67's own unproven list carries the same item ("*The web surface's `SIGTERM` drain to 143* … only the exit integer is shared, so the risk is low but the path is unbuilt"). | Three template tests: one that begins a slow request, sends SIGTERM, and asserts both the response completing and exit **143** inside the window; its SIGINT twin asserting exit **130**; and one with a permanently blocked request asserting the `GracefulShutdownTimedOut` branch and exit **1**. The opus raw reports a passing test for the unbounded-drain half only, and names no exit code. |
+| The serve binary's shutdown future reports **which** signal fired, so `main` can map 130 versus 143 | **Unproven, and not implementable as the recorded snippet is written** — it takes `S: Future<Output = ()>`. The enabling fact is the two-source mechanism already recorded under F338: `tokio::signal::ctrl_c()` and `tokio::signal::unix::signal(SignalKind::terminate())` are separate listeners selected over, as the reference implementation does (`src/bin/crates-io/server.rs` at `3df99c2`, asserted in `assert-figures.log` section F as "selects over SIGTERM via tokio::signal::unix"). **No check in this run asserts that the two futures are distinguishable at the type level**; that is why this row exists. | A template test asserting the two integers (row above), which fails if the signal kind is erased; P03 threads the kind (or R67's `Exit` value) out of `shutdown_signal()` instead of `()`. |
+| The serve binary satisfies the CLI Design Standard's required global core | **Unproven.** The rule and its scope are read at the standard (R4.1, its header scope line, Appendix A's "§4 … unchanged"); no binary exists to run, and R60 has not selected the parser. | The R9.14 conformance fixture named under *Validation strategy*: `<app>-serve --help` and `<app>-serve -V` each printing to stdout and exiting `0`, `-V` printing the single `<app>-serve <semver>` line R4.6 fixes, and the four remaining core options accepted. |
 | The stack compiles and tests on both `target-os-matrix` legs and at the MSRV floor | **Unproven.** Only the macOS host at rustc 1.98.0 was exercised here; the Linux leg and the 1.96 leg were not. | The template's CI matrix (R11): `cargo test --workspace --locked --features web` on `ubuntu-latest` and `macos-latest`, plus a `cargo check` leg pinned to the declared `rust-version`. |
 | The web feature's wall-clock build cost and binary size | **Unproven and not measured here** — measuring them honestly means building the recommendation. The opus raw's figures (5.69 s → 9.28 s wall, 7.12 s → 25.61 s user CPU, release binary 2,001,600 bytes / 1,574,392 stripped) are engine-reported. Only the dependency-count half (12 → 52 packages) is reproduced here. | A timed clean and incremental build of the real template on each CI runner, and `cargo build --release` plus a size measurement of the stripped serve binary. |
 | The dev recipe serves with console-formatted logs and restarts on a source edit | **Unproven, and blocked on R58.** The tool's capabilities are verified (check 5); the recipe's behavior is not, because the environment variable's name and semantics are R58's and unpublished. | Once R58 publishes: `just serve` answering `GET /healthz` with console-formatted logs on stderr, a source edit producing one restart, and the same binary outside the recipe emitting the production structured profile. |
