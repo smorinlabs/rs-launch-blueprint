@@ -7,8 +7,8 @@
 openai) on one unresolved finding, quoted here in full:
 
 > **The universal equivalence sentence is broader than its evidence.**
-> `review/DECISION.md:32-36` says, "Both implementations return the same result
-> for every pattern this decision reports." `check-grep-identity.sh:126-135`
+> `review/DECISION.md:32-36` says, “Both implementations return the same result
+> for every pattern this decision reports.” `check-grep-identity.sh:126-135`
 > compares only four patterns. The decision separately reports the widened SPDX
 > pattern at `review/DECISION.md:203-216`, and `check-licence-enumeration.sh:156-169`
 > tests that pattern only with `/usr/bin/grep`; `check-grep-identity.sh` has no
@@ -16,6 +16,11 @@ openai) on one unresolved finding, quoted here in full:
 > sentence is not. Narrow the sentence to those four tested pattern/blob pairs,
 > or add content assertions that compare the widened pattern under embedded
 > ugrep before accepting the decision.
+
+Every line number inside that quotation is **revision-6 numbering**, that is, the
+blob at commit `93b3d5a`. Revision 7 inserts this note above them, so those
+numbers do not address the current file; the text they named is quoted or
+described below wherever it matters.
 
 **The finding is correct and the overstatement was mine.** Four comparisons do
 not prove a claim about "every pattern this decision reports", and the widened
@@ -28,8 +33,9 @@ construction rather than true because it was trimmed to fit.
 the pattern of that name in `check-licence-enumeration.sh:59`, and three new
 `compare` calls: the widened pattern on the revision-2 blob `2ac02e1`, the same
 on the revision-4 blob `ddbee6a` — the two blobs this decision reports that
-pattern for at `## Empirical check` and in the revision-5 note — and the same
-against the seven-line negative-control fixture. Each runs under the same
+pattern for, in the revision-5 note's paragraph beginning *"What the corrected
+pattern finds that no revision-3 list carried"* — and the same against the
+seven-line negative-control fixture. Each runs under the same
 discipline as the four that were already there: the `/usr/bin/grep` result is
 asserted **unconditionally**, and the embedded ugrep result is compared against
 it only when that implementation is reachable, printing an explicit `SKIP` by

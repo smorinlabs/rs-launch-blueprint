@@ -4,8 +4,8 @@
 #
 # WHAT REVISION 7 ADDS. Revision 6 compared four pattern/blob pairs and the
 # decision then said the two implementations agree "for every pattern this
-# decision reports". They do not both get tested by four comparisons: the
-# decision separately reports the WIDENED SPDX pattern (`PAT_ID_FULL` below,
+# decision reports". Four comparisons do not reach every pattern the decision
+# reports: it separately reports the WIDENED SPDX pattern (`PAT_ID_FULL` below,
 # byte-identical to the one in `check-licence-enumeration.sh`) on both blobs, and
 # that script tests it under /usr/bin/grep alone. Revision 7 therefore adds three
 # comparisons — the widened pattern on the revision-2 blob, the widened pattern on
@@ -61,8 +61,11 @@ GREP_VERSION_EXPECTED='grep (BSD grep, GNU compatible) 2.6.0-FreeBSD'
 
 PAT_OLD='copyleft|agpl|[^a-z]gpl|mpl|mozilla|patent|permissive'
 PAT_ID='copyleft|AGPL|LGPL|GPL|MPL|Mozilla|PERMISSIVE|permissive|patent'
-# The widened pattern the decision reports at `review/DECISION.md:203-216`,
-# byte-identical to `PAT_ID_FULL` in `check-licence-enumeration.sh`.
+# The widened pattern the decision reports in its revision-5 note, in the
+# paragraph beginning "What the corrected pattern finds that no revision-3 list
+# carried" (`review/DECISION.md:203-216` in revision-6 numbering, that is, in the
+# blob at commit 93b3d5a; revision 7 moved those lines down).
+# Byte-identical to `PAT_ID_FULL` in `check-licence-enumeration.sh`.
 PAT_ID_FULL='copyleft|AGPL|LGPL|GPL|MPL|Mozilla|PERMISSIVE|permissive|patent|Apache-2\.0|MIT|BSD|ISC|Unlicense|CC0'
 
 TMP="$(mktemp -d)" || exit 1
