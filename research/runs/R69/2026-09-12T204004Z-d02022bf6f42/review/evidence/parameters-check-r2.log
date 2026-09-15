@@ -6,7 +6,7 @@ OK   rust-edition: byte-identical to the registry (4 bytes)
 OK   target-os-matrix: byte-identical to the registry (27 bytes)
 OK   license: byte-identical to the registry (17 bytes)
 OK   http-transport-injection-seam: byte-identical to the registry (763 bytes)
-OK   exactly one '- owns' line, for web-extra-surface (2407 bytes)
+OK   exactly one '- owns' line, for web-extra-surface (2638 bytes)
 OK   owns value contains no backticks
 OK   owns value contains no a markdown link
 OK   owns value contains no a double space

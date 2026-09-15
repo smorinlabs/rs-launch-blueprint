@@ -39,10 +39,26 @@ three blocking findings. Revision 2 answers each:
   global core and nothing beyond it, in the owned parameter value and in the new flag-surface
   paragraph, with the standard's own scope sentences cited.
 
-Nothing else in the decision is edited. The only evidence change is a **rerun** of the
-unmodified `review/empirical/parameters-check.sh` against the revised file, saved as the new
-`review/evidence/parameters-check-r2.log`; revision 1's `parameters-check.log` is retained
-unchanged as the record of revision 1.
+**Everything revision 2 edited beyond the three findings, enumerated rather than folded in.**
+Each is a consequence of a finding, not a new position, and none moves a recommendation, a
+version, an exclusion or a gate answer: (1) the title, this note and the preamble's synthesizer
+line; (2) a new paragraph, *What `serve_until`'s signature must carry*, because JF-1's integers
+are undeliverable through the recorded `S: Future<Output = ()>`, plus its row in the unproven
+table; (3) a third new unproven row for the serve binary's global-core conformance, which
+nothing in this run verified; (4) three `re-verify:` triggers — R67 dispositioning the request
+below, R60 selecting the parser, and the standard revising R4.1; (5) the migration table's
+`src/bin/<app>-serve.rs` row; (6) two sentences in the confidence paragraph separating these
+two rules, which are quoted from normative documents, from the behavior, which is unproven;
+(7) the `**Sources.**` paragraph, which now lists R67, the standard and `OWNER-REVIEW.md` as
+read by revision 2 on 2026-09-15. **The owned value carries changes from two findings, not
+one**: JF-3's flag surface and JF-1's exit integers both sit inside it. It records only the
+integers R67 has already settled — 143, 130, I/O→1 and 0 — and deliberately leaves the
+drain-deadline branch out of the value, because this revision reads it as `1` under a question
+R67 owns and has not yet answered; that reading lives in the prose table below, where an R67
+ruling either way corrects prose rather than staling an owned value. The only evidence change
+is a **rerun** of the unmodified `review/empirical/parameters-check.sh` against the revised
+file, saved as the new `review/evidence/parameters-check-r2.log`; revision 1's
+`parameters-check.log` is retained unchanged as the record of revision 1.
 
 Bundle, Deep tier. Synthesizer: fresh Claude Opus 5 context, 2026-09-13; revision 2 by a
 second fresh Claude Opus 5 context that produced none of this item's raws, audits or revision
@@ -377,10 +393,12 @@ no result set — it serves HTTP and logs to stderr. No safety/action option app
 deletes and confirms nothing. Every *service* knob — host, port, log format, drain deadline —
 remains an environment variable, as py's `__main__.py` has it and as R77 will name them; the
 standard's R5.1 precedence (flag > env > config > default) is satisfied vacuously where no flag
-exists for a knob. This adds **no crate to the `web` feature**: the CLI binary already requires
-a parser as a non-optional dependency of the package (the crate is R60's to select), so the
-serve binary reuses it, and check 2's measured 12 → 52 package delta — which is the marginal
-cost of the feature — is unaffected. The CLI binary keeps its own flags. A `serve` subcommand on the existing
+exists for a knob. This adds **no crate to the `web` feature**, on a condition rather than
+as a present fact: the parser is R60's open choice, and whichever crate R60 selects for the CLI
+binary is a non-optional dependency of the package, so the serve binary reuses it instead of
+introducing one. Check 2's measured 12 → 52 package delta stands unchanged **by construction,
+not by re-measurement** — a non-optional dependency appears in both counts, so it cancels out
+of the delta that is the feature's marginal cost. The CLI binary keeps its own flags. A `serve` subcommand on the existing
 CLI binary is the ranked runner-up shape, rejected as primary because it would put `tokio` and
 `axum` in the default CLI build unless the subcommand were itself feature-gated, and because
 py's separate entry point is the shape R51's container image expects.
@@ -644,7 +662,7 @@ is a process wrapper with no Rust ABI or dependency-resolution relationship to t
 | `src/web/mod.rs` (new) | `AppState` and its `FromRef` impls, `build_router(state) -> Router`, `shutdown_signal()`, `serve_until(..)` |
 | `src/web/routes/projects.rs` (new) | `pub(crate) fn router() -> Router<AppState>` and the handlers, returning the library's own contract types |
 | `src/web/routes/ops.rs` (new) | `/healthz` now; `/readyz` and its payload are R80's |
-| `src/bin/<app>-serve.rs` (new) | `#[tokio::main] async fn main() -> ExitCode` — R4.1's required global core parsed with the CLI's own parser crate (R60's choice, already a non-optional dependency), then settings, R01's composition root, bind, `serve_until`, and R67's exit integers (143 / 130 / 1 / 0) |
+| `src/bin/<app>-serve.rs` (new) | `#[tokio::main] async fn main() -> ExitCode` — R4.1's required global core parsed with the parser crate R60 selects for the CLI binary (non-optional whichever crate that is, so the feature adds none), then settings, R01's composition root, bind, `serve_until`, and R67's exit integers (143 / 130 / 1 / 0) |
 | `tests/web_api.rs` (new) | file-level `#![cfg(feature = "web")]`; the `oneshot` and real-listener tests |
 | `Justfile` | `serve` (bacon-driven, required) and `serve-once` (no watcher) |
 | `bacon.toml` (new) | one override on the `run-long` job's `kill`, so a dev restart sends SIGTERM and the production drain path runs; without it bacon's default Unix interruption is SIGKILL |
@@ -742,7 +760,7 @@ re-verify: when axum publishes 0.9, when R58 (logging-pipeline-contract) or R02 
 
 ## Parameters
 
-- owns web-extra-surface = one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate the CLI binary already carries (R60's choice, so no crate is added to this feature) - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with R67's accepted integers: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 when the drain deadline expires or on an I/O failure, and 0 otherwise, returned as ExitCode from main, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files
+- owns web-extra-surface = one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files
 - assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
 - assumes rust-edition = 2024
 - assumes target-os-matrix = ubuntu-latest, macos-latest
