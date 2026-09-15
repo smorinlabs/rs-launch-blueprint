@@ -1,0 +1,194 @@
+#!/usr/bin/env bash
+# R19 dependabot-config-shape — pinned evidence for the two sentences that settle
+# the CONFIGURED case of `cooldown` and `open-pull-requests-limit`, plus the
+# documented default the phrase "the default open-PR budget written out" rests on.
+#
+# Why this file exists. Revision 4's decision defended essential behavior 4
+# ("Security updates are never delayed or batched behind the routine cadence")
+# and the budget half of essential behavior 2 with sentences the pinned source
+# attaches to Dependabot's behavior when those keys are ABSENT. The
+# recommendation configures both keys, so the settling sentences are different
+# ones, and no section of either earlier check read them. This script reads them
+# at the pin the decision already names and asserts on their bytes.
+#
+# Reads only files committed under this directory plus two GET requests at a
+# literal commit sha. It creates nothing, writes nothing, and installs nothing.
+# Run it from anywhere: it locates its own directory.
+#
+#   bash research/runs/R19/2026-09-06T043454Z-33c81db94a3b/review/evidence/r19-check-r5.sh
+#
+# Every check below asserts on CONTENT. A transport failure is a FAIL, never a
+# NOTE: fail-open reads are the defect the revision-4 checker was built to remove
+# and this one keeps that property. `grep` is called by absolute path
+# (/usr/bin/grep) so no shell alias or PATH shim can change what it matches.
+set -uo pipefail
+
+GREP=/usr/bin/grep
+FAILS=0
+pass() { printf 'PASS  %s\n' "$1"; }
+fail() { printf 'FAIL  %s\n' "$1"; FAILS=$((FAILS+1)); }
+hdr()  { printf '\n===== %s =====\n' "$1"; }
+live() { printf 'LIVE  %s (retrieved %s) — this line is not byte-for-byte reproducible\n' "$1" "$(date -u '+%Y-%m-%dT%H:%M:%SZ')"; }
+
+E="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DOCS_SHA=dd75c5f38a14d1c07c3982beddb471a605b142f7
+SNAP="$E/github-docs-dd75c5f3"
+DOC_PATH=content/code-security/reference/supply-chain-security/dependabot-options-reference.md
+DOC="$SNAP/$DOC_PATH"
+UA='rs-launch-blueprint-research (https://github.com/smorinlabs/rs-launch-blueprint)'
+
+# Assert that line <n> of the pinned file is EXACTLY <text>. Both the line number
+# and the bytes are part of the assertion, so a reflow of the document fails here
+# rather than passing on a lucky substring match elsewhere in the file.
+line_is() {
+  local n="$1" want="$2" label="$3" got
+  got=$(sed -n "${n}p" "$DOC")
+  printf '%s:%s\n' "$n" "$got"
+  if [ "$got" = "$want" ]; then pass "$label"; else
+    printf '  WANTED %s\n' "$want"
+    fail "$label"
+  fi
+}
+
+# Bounded retry. Three attempts, then FAIL — never a note, never a silent skip.
+GH_OUT=''
+gh_try() {
+  local i
+  for i in 1 2 3; do
+    if GH_OUT=$(gh api -H "User-Agent: $UA" "$@" 2>&1); then return 0; fi
+    sleep 3
+  done
+  return 1
+}
+
+hdr "0. Toolchain and environment"
+date -u '+run-utc %Y-%m-%dT%H:%M:%SZ'
+uname -a
+git --version
+gh --version | head -1
+"$GREP" --version | head -1
+printf 'cwd      %s\n' "$(pwd)"
+printf 'evidence %s\n' "$E"
+printf 'script sha256 %s\n' "$(shasum -a 256 < "${BASH_SOURCE[0]}" | cut -d' ' -f1)"
+
+hdr "1. Snapshot integrity: the file is content-addressed by the pin's own blob sha"
+# A git blob sha IS the content address of the bytes. Re-deriving it offline with
+# `git hash-object` proves the committed file is exactly what commit dd75c5f3
+# holds at that path — the snapshot is bound to the pin, not merely dated.
+ROWS=$(wc -l < "$SNAP/tree.tsv" | tr -d ' ')
+cat "$SNAP/tree.tsv"
+BAD=0; SEEN=0
+while IFS=$'\t' read -r p s; do
+  SEEN=$((SEEN+1))
+  if [ ! -f "$SNAP/$p" ]; then
+    printf '  MISSING %s\n' "$p"; BAD=$((BAD+1)); continue
+  fi
+  h=$(git hash-object -t blob "$SNAP/$p")
+  if [ "$h" != "$s" ]; then
+    printf '  MISMATCH %s  %s != %s\n' "$p" "$h" "$s"; BAD=$((BAD+1))
+  fi
+done < "$SNAP/tree.tsv"
+printf 'verified %s blob(s), %s defect(s), %s line(s) of markdown\n' \
+  "$SEEN" "$BAD" "$(wc -l < "$DOC" | tr -d ' ')"
+if [ "$ROWS" = "1" ] && [ "$SEEN" -eq 1 ] && [ "$BAD" -eq 0 ]; then
+  pass "1a the snapshot file re-derives the git blob sha tree.tsv records at pin $DOCS_SHA"
+else
+  fail "1a snapshot does not re-derive the pin's blob sha ($ROWS row(s), $SEEN read, $BAD defective)"
+fi
+EXTRA=$(cd "$SNAP" && find . -type f ! -name tree.tsv | sed 's|^\./||' | LC_ALL=C sort \
+        | comm -23 - <(cut -f1 "$SNAP/tree.tsv" | LC_ALL=C sort))
+if [ -z "$EXTRA" ]; then
+  pass "1b the snapshot directory holds tree.tsv and exactly that one file, nothing else"
+else
+  printf '%s\n' "$EXTRA"; fail "1b snapshot directory holds files absent from tree.tsv"
+fi
+
+hdr "2. CLAIM (essential behavior 4): cooldown reaches version updates only, CONFIGURED or not"
+echo "--- 2a. the sentence that settles the configured case ---"
+line_is 187 'Defines a **cooldown period** for dependency updates, allowing updates to be delayed for a configurable number of days. The `cooldown` option is only available for _version_ updates, not _security_ updates.' \
+  "2a the pinned cooldown section states the option is only available for version updates, not security updates"
+
+echo "--- 2b. the section header carries the version-updates octicon and no security one ---"
+CD_HDR=$(sed -n '185p' "$DOC")
+printf '185:%s\n' "$CD_HDR"
+Q=0
+printf '%s' "$CD_HDR" | "$GREP" -qF '## `cooldown` {% octicon "versions"' || Q=1
+printf '%s' "$CD_HDR" | "$GREP" -qF 'shield-check' && Q=1
+if [ "$Q" -eq 0 ]; then
+  pass "2b the ## cooldown header carries the Version-updates octicon and NOT the Security-updates one"
+else
+  fail "2b the ## cooldown header does not read as a version-updates-only header"
+fi
+
+echo "--- 2c. non-vacuity control: neighbouring keys DO carry the security octicon ---"
+# Without this, 2b's absence could be a broken grep or a reflowed file rather
+# than a real asymmetry in the document.
+BOTH=0
+for k in labels groups commit-message versioning-strategy; do
+  L=$("$GREP" -n '^## `'"$k"'`' "$DOC" | head -1)
+  printf '%s\n' "$L"
+  printf '%s' "$L" | "$GREP" -qF 'shield-check' && BOTH=$((BOTH+1))
+done
+printf 'headers carrying the Security-updates octicon: %s of 4\n' "$BOTH"
+if [ "$BOTH" -eq 4 ]; then
+  pass "2c labels, groups, commit-message and versioning-strategy all carry it — 2b's absence is a real absence"
+else
+  fail "2c only $BOTH of the 4 control headers carry the security octicon — the grep or the file has moved"
+fi
+
+echo "--- 2d. the two states the decision must not conflate, located in the same section ---"
+line_is 196 '* Apply a **default cooldown period of 3 days** to version updates, even when `cooldown` is not configured. A new version is not considered for a version update until 3 days after its release. **This default cooldown does not apply to security updates.**' \
+  "2d the UNCONFIGURED-default sentence revisions 1-4 quoted is at line 196 and describes the unconfigured state"
+line_is 198 'You can configure the `cooldown` option to customize these default cooldown periods and control which dependencies they apply to. When **`cooldown`** is defined:' \
+  "2d the CONFIGURED branch opens at line 198, and 2a is the sentence that covers it"
+
+hdr "3. CLAIM (essential behavior 2, budget half): the documented default of five, and the security exemption"
+echo "--- 3a. the section header is version-updates-only ---"
+OPL_HDR=$(sed -n '539p' "$DOC")
+printf '539:%s\n' "$OPL_HDR"
+Q=0
+printf '%s' "$OPL_HDR" | "$GREP" -qF '## `open-pull-requests-limit` {% octicon "versions" aria-label="Version updates only"' || Q=1
+printf '%s' "$OPL_HDR" | "$GREP" -qF 'shield-check' && Q=1
+if [ "$Q" -eq 0 ]; then
+  pass "3a the ## open-pull-requests-limit header is labelled Version updates only"
+else
+  fail "3a the ## open-pull-requests-limit header does not read as version-updates-only"
+fi
+
+echo "--- 3b. the documented default the decision writes out as 5 ---"
+line_is 545 '* If five pull requests with version updates are open, no further pull requests are raised until some of those open requests are merged or closed.' \
+  "3b the pinned source documents a default of five open VERSION-UPDATE pull requests"
+
+echo "--- 3c. the security-update exemption quoted in the decision ---"
+line_is 548 '> _Security update_ pull requests are not subject to this limit and do not count toward it. There is no limit on the number of open pull requests for security updates.' \
+  "3c security-update pull requests are not subject to the limit and do not count toward it"
+
+hdr "4. The pinned read re-verified against the live pin (transport failure FAILS)"
+if gh_try "repos/github/docs/commits/$DOCS_SHA" --jq '.sha + "  " + .commit.committer.date'; then
+  printf 'commit echo: %s\n' "$GH_OUT"
+  [ "${GH_OUT%% *}" = "$DOCS_SHA" ] \
+    && pass "4a the pin exists and resolves to itself" \
+    || fail "4a the pin did not resolve to itself"
+else
+  printf '%s\n' "$GH_OUT"
+  fail "4a could not read the pinned commit after 3 attempts"
+fi
+
+RECORDED=$(cut -f2 "$SNAP/tree.tsv")
+live "GET https://api.github.com/repos/github/docs/contents/$DOC_PATH?ref=$DOCS_SHA"
+if gh_try "repos/github/docs/contents/$DOC_PATH?ref=$DOCS_SHA" --jq '.sha'; then
+  printf 'live blob sha at the pin: %s\n' "$GH_OUT"
+  [ "$GH_OUT" = "$RECORDED" ] \
+    && pass "4b the live pin serves exactly the blob sha committed in tree.tsv" \
+    || fail "4b the live pin serves $GH_OUT, not the committed $RECORDED"
+else
+  printf '%s\n' "$GH_OUT"
+  fail "4b could not re-read the pinned file after 3 attempts"
+fi
+
+hdr "SUMMARY"
+printf 'failed assertions: %s\n' "$FAILS"
+hdr "SCRIPT SOURCE"
+cat "${BASH_SOURCE[0]}"
+[ "$FAILS" -eq 0 ] || exit 1
+exit 0
