@@ -1,4 +1,4 @@
-# 2026-09-14 — R42 — dev-toolchain-provisioning (bundle, Deep) — DECISION (revision 9)
+# 2026-09-14 — R42 — dev-toolchain-provisioning (bundle, Deep) — DECISION (revision 10)
 
 ## Decision
 
@@ -155,10 +155,19 @@ the repair:
   `Failed to download signature, skipping verification`
   (`quickinstall.rs:131-136`, log `:368-373`) — so that path is better defended
   than the crate's own release but is not unconditionally verified either. It resolved nothing in either check: its
-  asset 404s for both specs, and the `WARN` line that did print names
-  `github.com` with no `third-party source ` prefix, which by
+  asset 404s for `taplo-cli@0.10.0`, on both Apple targets
+  (`evidence/binstall-backend.log:166-167`), while for `cargo-shear@1.13.1`
+  **no log records its asset's status at all** — the only 404 recorded for that
+  spec is on the `.sig` under `--only-signed`
+  (`evidence/binstall-signing.log:450`), and
+  `download_signature` is spawned as its own task
+  (`quickinstall.rs:110-136`, log `:346-373`), so reaching it establishes
+  nothing about the tarball in either direction; and the `WARN` line that did
+  print names `github.com` with no `third-party source ` prefix, which by
   `resolution.rs:125-127` (log `:387-389`) identifies the crate's own release,
-  the opt-in path.
+  the opt-in path. That second half is what carries the bullet: the first leg
+  asserts the literal `has been downloaded from github.com`
+  (`7a-downloaded-from-github`), which a QuickInstall win could not produce.
 - **A fail-closed flag exists, and what it does was observed rather than
   predicted.** `--only-signed` (`args.rs:408-413`) run against the unsigned
   `cargo-shear@1.13.1` did **not** error. Every prebuilt fetcher refused it —
@@ -187,11 +196,16 @@ to the recipe body goes beyond the substitution the ruling authorised:
    unsigned and unchecksummed on exactly that path for any tool that does not
    publish a key. No further work.
 2. **Add `--only-signed` to the recipe body.** Per tool, the prebuilt path is
-   taken only when the artifact is signed and verifies; otherwise the tool
-   silently compiles from source — observed at check 16, step 7b. Cost: the
-   speed benefit is lost for every tool that does not publish a key, which is
-   both tools probed here, so on this evidence the recipe would behave close to
-   revision 6's for the current candidates.
+   taken only when the artifact is signed and verifies; otherwise **the run does
+   not fail — it announces the fall-through at `WARN`/`ERROR` level and compiles
+   from source**, closing with
+   `WARN The package cargo-shear v1.13.1 will be installed from source (with
+   cargo)` before the `cargo install` line — observed at check 16, step 7b
+   (`evidence/binstall-signing.log:446-453`, quoted in the fail-closed-flag
+   bullet above). The flag degrades a tool to revision 6's backend rather than
+   failing the recipe. Cost: the speed benefit is lost for every tool that does
+   not publish a key, which is both tools probed here, so on this evidence the
+   recipe would behave close to revision 6's for the current candidates.
 3. **Require, per tool, that the declared tool table records whether its
    artifact is signed**, and let a tool with no key be a deliberate entry rather
    than an invisible one. Cost: one column of manual upkeep on the table F183
@@ -1414,6 +1428,75 @@ per-tool cost for the contributor. One file was added,
 `evidence/binstall-assertion-controls.log`, and the two existing check-16 logs
 were replaced by the runs of their repaired payloads.
 
+**Revision 10** (this text; 2026-09-14, model `claude-opus-5`) answers the two
+blocking findings of the round-9 judgment audit (`review/audit-fable.md`, actor
+`audit-fable-2026-09-05T155503Z-4141a35b69e0-r9`), which rejected revision 9
+"on two clauses and nothing more"; the round-9 empirical audit
+(`review/audit-codex.md`, `gpt-5.6-terra`) approved with no findings.
+**No recommendation, parameter value, acceptance criterion, gate answer, option
+substance, survey figure or empirical observation moves, no check was rerun and
+no evidence log was touched.** Both repairs are prose in `## Decision`, made in
+place.
+
+> **J1** — "the owner-facing option 2 says `--only-signed` makes a tool
+> 'silently compile from source' and cites step 7b, whose recorded output
+> announces the fall-through with an `ERROR` line and a `WARN` line".
+> **Repair:** option 2 now states the observed behaviour — the run does not
+> fail, it announces the fall-through at `WARN`/`ERROR` level and compiles from
+> source — quotes the `will be installed from source (with cargo)` warning,
+> cites `evidence/binstall-signing.log:446-453`, and closes on this decision's
+> own accurate formulation, that the flag degrades a tool to revision 6's
+> backend rather than failing the recipe. The word `silently` is gone from the
+> option. Nothing else in the option changed: its cost sentence is correct and
+> asserted, and the three options remain an open ask to the owner.
+>
+> **J2** — "'its asset 404s for both specs' is supported for `taplo-cli` only,
+> since for `cargo-shear` no log records the QuickInstall asset's status and the
+> 404 that is recorded is on the `.sig` under `--only-signed`, which is not an
+> asset 404". **Repair:** the QuickInstall bullet now says the asset 404s for
+> `taplo-cli@0.10.0` on both Apple targets
+> (`evidence/binstall-backend.log:166-167`) and that `cargo-shear@1.13.1`'s
+> asset status is **unrecorded**, the only 404 for that spec being the `.sig`
+> under `--only-signed` (`evidence/binstall-signing.log:450`), which
+> `download_signature` fetches as its own spawned task
+> (`quickinstall.rs:110-136`, log `:346-373`) and which therefore establishes
+> nothing about the tarball in either direction. The bullet's conclusion is
+> unchanged and now names what carries it: the first leg's
+> `7a-downloaded-from-github` assertion on the literal
+> `has been downloaded from github.com`, which a QuickInstall win could not
+> produce, because `resolution.rs:125-127` prefixes a third-party fetcher's
+> name with `third-party source `.
+
+**Every location was found by search before any edit, and re-searched after.**
+The keys were `silent` (case-insensitively), `404`, `quickinstall`,
+`only-signed`, `asset`, `from source`, `both specs`, `either check`, `tarball`
+and `resolved nothing`. **Five locations** make up this revision and this list is
+exhaustive: (1) the title line, now numbered 10; (2) the QuickInstall bullet in
+`## Decision` (J2); (3) option 2 of the integrity ask in `## Decision` (J1);
+(4) this revision-history entry; and (5) the `## Supersedes` framing paragraph.
+**The other `silent` and `404` hits were enumerated and deliberately left
+byte-identical, because none carries either defect**: the eighteen-row sweep's
+row 1 and row 14 are about a Cargo **alias** shadowing an external subcommand,
+already adjudicated `Wrong` and `Holds` respectively; the `silently skipped`
+uses in `## Empirical check` and the gates paragraph are about omitting a gate
+or an assertion; `parameter is silent on Cargo aliases` is a different subject;
+the check-15 and check-16 table rows, the fail-closed-flag bullet at the top of
+this section, gate 3 and unproven item 11 already state the fall-through and the
+`.sig` 404 accurately and never say `silently` or `both specs`; and the
+remaining `404` hits are RustSec, crates.io and `.cargo/config.toml` probe
+results in checks 7, 13 and 14 and the survey table. **What did not change**,
+each re-read rather than assumed: the recommendation and all five layers; the
+integrity comparison table and the substance of all three options, which remain
+an unanswered ask to the owner and are not pre-empted here; the owned
+parameter's value and all four `- assumes` lines, byte for byte; acceptance
+criteria (A) to (E), byte for byte; all six fitness gates, including gate 1
+`inapplicable` under the 2026-09-12 owner ruling; the 17-repository survey; the
+presence test and its matrix; the alias answer; the five earlier adjudications;
+the eighteen-row sweep; checks 1 to 16 and **every evidence log they cite, none
+of which was rerun, replaced or modified by this revision**; the three check-16
+payloads and all 45 + 23 + 37 assertions; and the `## Supersedes` payload, which
+is byte-identical to the published revision 6 and was not reflowed.
+
 **Disagreements, and the evidence that settled each.**
 
 1. **Adopt a declarative provisioner manifest, or not?** codex and opus say no;
@@ -1668,6 +1751,8 @@ what would prove it.
 **Revision 8 (2026-09-13) does not reverse anything and did not touch this section's payload.** It restores fitness gate 5, whose answer revision 7 deleted — the restored bytes were read out of the preserved text below and are identical to it — rewrites fitness gate 3 to scope `--locked` to the compile fallback, adds check 16 establishing what verifies a prebuilt artifact, and puts the resulting integrity tradeoff to the owner in `## Decision`. The preserved revision-6 bytes below are unchanged and unreflowed; the backend substitution revision 7 made on the owner's ruling stands.
 
 **Revision 9 (2026-09-14) does not reverse anything either, and did not touch this section's payload.** It answers the round-8 audit's single blocking finding: check 16's two evidence payloads printed the status of every critical command and both `Verified signature` counts instead of asserting them, so nothing they called a failure control could make a script fail. Every control is now an assertion, each was demonstrated failing under one substituted input in a new third leg, and the one revision-8 claim the demonstration did not support — that hashing a single file distinguishes the tag the findings rest on — is corrected in place: the second leg now hashes all eight files check 16 reads, and the record says why the adjacent v1.22.0 does not fire that control. The recommendation, the owned parameter, acceptance criteria (A) to (E), and the integrity comparison and its three open options are all unchanged; the owner's ruling on that tradeoff is still outstanding and this revision does not pre-empt it. The preserved revision-6 bytes below were not edited or reflowed by this revision; they were hashed, to confirm they still match the published file byte for byte.
+
+**Revision 10 (2026-09-14) does not reverse anything either, and did not touch this section's payload.** It answers the two blocking findings of the round-9 judgment audit, both prose clauses in `## Decision`: option 2 of the integrity ask said `--only-signed` makes a tool "silently" compile from source where step 7b's recorded output announces the fall-through at `WARN`/`ERROR` level, and the QuickInstall bullet said "its asset 404s for both specs" where the logs record that 404 for `taplo-cli@0.10.0` only and record no asset status at all for `cargo-shear@1.13.1`. Both are corrected in place. No check was rerun, no evidence log was touched, and the recommendation, the owned parameter, the four `- assumes` lines, acceptance criteria (A) to (E), the six gates and the substance of the integrity comparison and its three open options are all unchanged; the owner's ruling on that tradeoff is still outstanding and this revision does not pre-empt it. The preserved revision-6 bytes below were not edited or reflowed by this revision; they were hashed, to confirm they still match the published file byte for byte.
 
 The complete revision-6 entry follows, preserved verbatim.
 
