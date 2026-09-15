@@ -1,0 +1,365 @@
+===== R17 audit round 5: discriminating controls and citation spot checks =====
+-- mutation: change only the 07h stderr marker so a real authentication refusal no longer matches --
+
+===== 00 toolchain and host =====
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+Darwin Steves-MacBook-Pro.local 25.4.0 Darwin Kernel Version 25.4.0: Thu Mar 19 19:33:25 PDT 2026; root:xnu-12377.101.15~1/RELEASE_ARM64_T6041 arm64
+GNU bash, version 3.2.57(1)-release (arm64-apple-darwin25)
+gh version 2.98.0 (2026-08-20)
+curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+UTC now: 2026-09-15T01:17:47Z
+
+===== 01 py secret-scan workflow at pin b08bccfb55d05f15e46a83b52c5660b1881d19f5 (read through the pin, not the worktree) =====
+# ITM-031 - TruffleHog secret-scan CI. --only-verified scope (decided round 3).
+# Pairs with gitleaks at lefthook (ITM-001/002) for two-layer coverage per ADR-02.
+
+name: secret-scan
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions: {}
+
+concurrency:
+  group: secret-scan-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  trufflehog:
+    name: trufflehog
+    runs-on: ${{ vars.RUNNER_UBUNTU || 'ubuntu-latest' }}
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # Range scan needs full history to compare base..head.
+          fetch-depth: 0
+
+      - name: TruffleHog secret scan
+        uses: trufflesecurity/trufflehog@v3.95.9
+        with:
+          # P0004 dogfood PROBLEM-09: on push (esp. a new repo's FIRST push)
+          # base==head, which TruffleHog rejects ("BASE and HEAD commits are
+          # the same"). Diff-scan only on pull_request; on push leave base
+          # empty so TruffleHog does a full-history scan (fetch-depth: 0
+          # above) — more thorough, and never hits the equal-commits error.
+          base: ${{ github.event_name == 'pull_request' && github.event.pull_request.base.sha || '' }}
+          head: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || 'HEAD' }}
+          # ITM-031 round-3: verified-only (gitleaks covers unverified patterns).
+          extra_args: --only-verified
+RESULT 01a-py-comment-names-the-tool-error: PASS (expected=1 actual=1)
+RESULT 01b-py-pins-trufflehog-v3.95.9: PASS (expected=1 actual=1)
+
+===== 02 ts workflow inventory at pin cb1cbcb2e88b898e8c081b0abbfabc1630079c00 — no CI-tier secret scanner =====
+.github/workflows/ci.yml
+.github/workflows/codeql.yml
+.github/workflows/dependency-review.yml
+.github/workflows/difftree-pr-comment.yml
+.github/workflows/manual-pr-security-scan.yml
+.github/workflows/publish.yml
+.github/workflows/release-please.yml
+.github/workflows/update-contributors.yml
+RESULT 02a-ts-has-no-ci-secret-scanner: PASS (expected=0 actual=0)
+-- manual-pr-security-scan.yml is an OSV dependency scan, not a secret scanner:
+20:# Manual, environment-gated PR security review (D-022(6)).
+23:# pyupio/safety-action with google/osv-scanner (no API key). Two source bugs are
+31:# The security-review environment gate, the attributed PR comment, and the
+32:# workflow_dispatch inputs are preserved.
+36:on:
+37:  workflow_dispatch:
+40:        description: 'Pull Request Number'
+44:        description: 'Security Reviewer Name'
+
+===== 03 TruffleHog action.yml at v3.95.9 — the equal-base/head guard and the container call =====
+c3847cdbebcf469ef336c9b3f32dc6075ed65523e80e661cf404daebd57e5ba9  /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r17-work.fxzYoY/action.yml
+-- guard:
+70:          if [ "$base_commit" == "$head_commit" ] ; then
+71-            echo "::error::BASE and HEAD commits are the same. TruffleHog won't scan anything. Please see documentation (https://github.com/trufflesecurity/trufflehog#octocat-trufflehog-github-action)."
+72-            exit 1
+-- the guard is entered only when base or head is non-empty:
+59:        if [ -n "$BASE" ] || [ -n "$HEAD" ]; then
+-- the action's own else-branch derives the range from the event, incl. the all-zeros first push:
+78:          if [ "${{ github.event_name }}" == "push" ]; then
+79-            COMMIT_LENGTH=$(printenv COMMIT_IDS | jq length)
+80-            if [ $COMMIT_LENGTH == "0" ]; then
+81-              echo "No commits to scan"
+82-              exit 0
+83-            fi
+84-            HEAD=${{ github.event.after }}
+-- terminal command:
+101:        docker run --rm -v .:/tmp -w /tmp \
+102-        "${IMAGE}:${VERSION}" \
+103-        git file:///tmp/ \
+104-        --since-commit \
+RESULT 03a-guard-exists-at-tag: PASS (expected=1 actual=1)
+RESULT 03b-action-shells-out-to-docker: PASS (expected=1 actual=1)
+RESULT 03c-action-is-composite-not-container: PASS (expected=1 actual=1)
+
+===== 04 incumbent repository figures (authenticated REST) =====
+{"archived":false,"license":"AGPL-3.0","pushed_at":"2026-09-14T23:45:10Z","repo":"trufflesecurity/trufflehog","stars":27894}
+v3.97.4 2026-09-03T20:01:40Z
+v3.97.3 2026-09-03T16:52:51Z
+v3.97.2 2026-09-02T16:55:13Z
+RESULT 04a-trufflehog-cli-license-agpl: PASS (expected=AGPL-3.0 actual=AGPL-3.0)
+{"license":"NOASSERTION","pushed_at":"2026-07-21T07:03:11Z","repo":"gitleaks/gitleaks-action","stars":644}
+RESULT 04b-gitleaks-action-license-not-osi: PASS (expected=NOASSERTION actual=NOASSERTION)
+116:Since v2.0.0 of Gitleaks-Action, the license has changed from MIT to a [license](LICENSE.txt). Prior versions to v2.0.0 of Gitleaks-Actions will remain under the MIT license.
+
+===== 05 Kingfisher repository, release assets, manifest and its own CI runners =====
+{"archived":false,"created_at":"2025-05-08T17:27:15Z","language":"Rust","license":"Apache-2.0","pushed_at":"2026-09-09T08:15:20Z","repo":"mongodb/kingfisher","stars":1231}
+v2.2.0 2026-09-09T08:15:21Z
+v2.1.0 2026-08-30T22:55:10Z
+v2.0.0 2026-08-23T23:23:16Z
+v1.113.0 2026-08-12T02:43:59Z
+kingfisher-darwin-arm64.tgz 13888081
+kingfisher-darwin-x64.tgz 15534095
+kingfisher-linux-arm64.deb 10735812
+kingfisher-linux-arm64.rpm 12193315
+kingfisher-linux-arm64.tgz 15582173
+kingfisher-linux-x64.deb 11756396
+kingfisher-linux-x64.rpm 12459611
+kingfisher-linux-x64.tgz 16427460
+kingfisher-windows-arm64.zip 15186162
+kingfisher-windows-x64.zip 16819352
+multiple.intoto.jsonl 12274
+RESULT 05a-kingfisher-not-archived: PASS (expected=false actual=false)
+RESULT 05b-kingfisher-license-apache: PASS (expected=Apache-2.0 actual=Apache-2.0)
+RESULT 05c-macos-release-assets-exist: PASS (expected=2 actual=2)
+RESULT 05d-linux-release-assets-exist: PASS (expected=6 actual=6)
+-- workspace manifest at v2.2.0:
+[workspace.package]
+edition = "2024"
+rust-version = "1.96"
+license = "Apache-2.0"
+authors = ["Mick Grove <mick.grove@mongodb.com>"]
+homepage = "https://github.com/mongodb/kingfisher"
+repository = "https://github.com/mongodb/kingfisher"
+publish = false
+
+-- Kingfisher's own CI runners:
+24:    runs-on: ubuntu-24.04
+60:    runs-on: ubuntu-24.04-arm
+96:    runs-on: macos-14
+119:    runs-on: ${{ matrix.runs_on }}
+-- documented exit codes and the --only-valid alias:
+   docs/USAGE.md at v2.2.0, sha256: 28cbe0cabac3c4f0ad69ed25d882ca33bae3ed699cce1a1d7d2df4634d0a0b84  -
+## Exit Codes
+
+| Code | Meaning                       |
+| ---- | ----------------------------- |
+| 0    | No findings                   |
+| 200  | Findings discovered           |
+| 205  | Validated findings discovered |
+64:`--only-valid` is a compatibility alias for `--validation-filter active`. To retain active
+79:`--only-valid` is a compatibility alias for `--validation-filter active`. The two options are
+
+===== 06 crates.io trap — 'kingfisher' on crates.io is an unrelated project =====
+{'name': 'kingfisher', 'newest_version': '0.1.2', 'repository': 'https://github.com/mongrov/kingfisher', 'recent_downloads': 50, 'downloads': 7408}
+RESULT 06a-cratesio-kingfisher-is-a-different-project: PASS (expected=1 actual=1)
+RESULT 06b-mongodb-kingfisher-is-not-published-to-cratesio: PASS (expected=1 actual=1)
+
+===== 07 download the macOS release, verify its build provenance, run it =====
+shasum: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r17-kingfisher/kingfisher-darwin-arm64.tgz: No such file or directory
+shasum: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r17-kingfisher/kingfisher-darwin-arm64.tgz: No such file or directory
+bash: line 158: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r17-kingfisher/kingfisher-darwin-arm64.tgz: No such file or directory
+-- release tarball bytes: ; unpacked binary bytes: 26723072
+RESULT 07a-slsa-provenance-verifies: FAIL (expected=0 actual=1)
+-- gh produced no attestation JSON; its stderr follows:
+
+Error: failed to open local artifact: open /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r17-kingfisher/kingfisher-darwin-arm64.tgz: no such file or directory
+-- macOS execution: kingfisher 2.2.0
+RESULT 07b-macos-binary-runs: PASS (expected=kingfisher 2.2.0 actual=kingfisher 2.2.0)
+-- built-in rules listed: 485 (total rules; the listing exposes no validator flag,
+   so this is NOT comparable to TruffleHog's stated 700+ actively-verifying detectors)
+RESULT 07c-rules-listed-and-counted: PASS (expected=485 actual=485)
+RESULT 07d-attested-subject-digest-equals-the-downloaded-file: PASS (expected= actual=)
+-- the signer workflow below is READ FROM the certificate, not enforced by the flags used:
+   --repo mongodb/kingfisher constrains the repository identity only; enforcing the workflow
+   path needs --signer-workflow or --cert-identity, which this check does not pass.
+RESULT 07e-signer-workflow-observed-in-certificate: FAIL (expected=https://github.com/mongodb/kingfisher/.github/workflows/release.yml@refs/heads/main actual=)
+-- negative control: the same command with a non-writable Sigstore trusted-root cache.
+   gh stderr (wording is gh 2.98.0's):
+mise WARN  failed to write cache file: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r17-work.fxzYoY/ro-cache/mise/npm/12.0.1/bin_paths-392dd.msgpack.z failed create_dir_all: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r17-work.fxzYoY/ro-cache/mise/npm/12.0.1: Permission denied (os error 13)
+mise WARN  failed to write cache file: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r17-work.fxzYoY/ro-cache/mise/npm/12.0.1/bin_paths-392dd.msgpack.z failed create_dir_all: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r17-work.fxzYoY/ro-cache/mise/npm/12.0.1: Permission denied (os error 13)
+mise WARN  failed to write cache file: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r17-work.fxzYoY/ro-cache/mise/npm/12.0.1/bin_paths-392dd.msgpack.z failed create_dir_all: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r17-work.fxzYoY/ro-cache/mise/npm/12.0.1: Permission denied (os error 13)
+RESULT 07f-verifier-fails-without-a-writable-sigstore-cache: PASS (expected=1 1 actual=1 1)
+-- second prerequisite: the command needs an authenticated gh, so P03's install step needs a token.
+   gh first on PATH: /Users/stevemorin/.local/share/mise/shims/gh (reports 'gh version 2.98.0 (2026-08-20)' in the caller's environment)
+   gh CLI used for this control: /opt/homebrew/bin/gh -> /opt/homebrew/Cellar/gh/2.98.0/bin/gh (reports 'gh version 2.98.0 (2026-08-20)')
+RESULT 07g-the-control-runs-the-same-gh-build-as-the-checks-above: PASS (expected=gh version 2.98.0 (2026-08-20) actual=gh version 2.98.0 (2026-08-20))
+   gh stderr (wording is gh 2.98.0's):
+To get started with GitHub CLI, please run:  gh auth login
+Alternatively, populate the GH_TOKEN environment variable with a GitHub API authentication token.
+   refused=1 (observed exit 4), 'gh auth login' in stderr=0, attestation bytes written=0
+RESULT 07h-unauthenticated-verify-is-refused-for-want-of-authentication: FAIL (expected=1 1 0 actual=1 0 0)
+   gh help exit-codes documents 4 for a command that requires authentication
+RESULT 07i-the-refusal-exit-matches-ghs-own-documented-authentication-code: PASS (expected=4 actual=4)
+
+===== 08 verified-only behaviour on non-live, template-shaped credentials (fixture A) =====
+fixture A written: .env.example with 1 synthetic PAT-shaped value, 1 synthetic AWS key pair,
+one localhost postgres URI; values are deterministic, non-live and are not printed here.
+json report findings array length: 0
+json summary: {'findings': 0, 'active_findings': 0, 'successful_validations': 0, 'failed_validations': 1, 'rules_applied': 485}
+RESULT 08a-only-valid-empties-the-report: PASS (expected=0 actual=0)
+RESULT 08b-but-exit-code-is-still-200-not-0: PASS (expected=200 actual=200)
+-- same scan, same flags, pretty format instead of json:
+ |__Failed........: 0
+ |Findings....................: 1
+ |__Successful Validations....: 0
+ |__Failed Validations........: 1
+RESULT 08c-pretty-summary-counts-the-filtered-candidate: PASS (expected=1 actual=1)
+RESULT 08d-pretty-run-exit-also-200: PASS (expected=200 actual=200)
+   The two formats disagree for one scan: pretty prints the pre-filter count (1),
+   the JSON report prints the post-filter count (0). A gate must read the exit code
+   or the JSON/SARIF findings array, never the pretty summary.
+
+===== 09 full-history scanning with no --since-commit (fixture B) =====
+fixture B: one synthetic PAT-shaped value committed then deleted (value not printed)
+-- working tree after deletion:
+(no tracked files remain)
+ |__Findings......: 1
+ |Findings....................: 1
+ |__Successful Validations....: 0
+ |__Failed Validations........: 1
+ |__Skipped Validations.......: 0
+ |__Blobs Scanned.............: 29
+RESULT 09a-history-scan-finds-deleted-blob-without-since-commit: PASS (expected=200 actual=200)
+RESULT 09b-exactly-one-history-finding: PASS (expected=1 actual=1)
+
+===== 10 the documented exit-code set, and the codes outside it =====
+-- documented exit codes, in table order: [0 200 205]
+RESULT 10a-documented-exit-code-set-is-exactly-0-200-205: PASS (expected=0 200 205 actual=0 200 205)
+RESULT 10b-top-level-help-documents-no-exit-code: PASS (expected=0 actual=0)
+RESULT 10c-scan-help-documents-no-exit-code: PASS (expected=0 actual=0)
+RESULT 10d-readme-documents-no-exit-code: PASS (expected=0 actual=0)
+-- rejected flag, first line: error: unexpected argument '--definitely-not-a-real-flag' found
+RESULT 10e-rejected-flag-exits-2: PASS (expected=2 actual=2)
+-- unreadable scan target, last line: Error: Error: unrecognized scan target or path does not exist: no-such-scan-target
+RESULT 10f-unreadable-target-exits-1: PASS (expected=1 actual=1)
+RESULT 10g-neither-tool-error-code-is-in-the-documented-set: PASS (expected=0 actual=0)
+   github/docs at 078b5832caa5cde591c2babb389ef447a0ef66eb, supported-shells.md sha256: 49b49c756f8c6f47a91111d5e46363526ff101d4d3095012b9b9df3b4cb733cf  -
+RESULT 10h-github-default-run-shell-is-bash-dash-e: PASS (expected=1 actual=1)
+RESULT 10i-explicit-shell-bash-also-sets-errexit: PASS (expected=1 actual=1)
+
+===== 11 not executed, and why =====
+- Kingfisher exit code 205 ("validated findings discovered") was NOT exercised: proving it needs a
+  genuinely live third-party credential, which this research will not create. 205 rests on
+  docs/USAGE.md's exit-code table only. P03 must prove it with a throwaway live credential.
+- No workflow step was run, so the gate itself is NOT executed here. Section 10 proves the set the
+  gate must allow-list and proves two codes outside it, but whether a real scan step fails when the
+  scanner cannot run is P03's acceptance check 5 (replace the binary with `false`, or pass a
+  rejected flag, and assert the job fails).
+- Section 12 is NOT a GitHub Actions job either, and it creates no workflow file. It runs the two
+  shell command lines that github/docs documents for a `run:` step, at the pinned commit, over a
+  three-line script that is the literal implementation of this decision's gate rule. What it
+  establishes is a property of those shells, executed locally; what it does not establish is how a
+  hosted runner behaves, which stays P03's acceptance check 5.
+- Section 13 asserts on this decision's own text, not on any external source. It compares named
+  lines of revision 4 against revision 2 read out of git history, so it records which approved
+  wording this revision preserved and which it changed. It proves nothing about the scanner.
+- TruffleHog's CLI was NOT downloaded or run. Its exit-183-on-verified behaviour, its 700+
+  actively-verifying detector count, and whether `--since-commit` with an empty value consumes the
+  following `--branch` flag are all documented-not-executed here.
+- No benchmark was reproduced. Every comparative runtime, network-request and binary-size figure in
+  the raw reports comes from MongoDB's own docs/COMPARISON.md and stays vendor-authored.
+- No workflow file, template or repository scaffold was created by this script.
+- Whether `gh attestation verify` succeeds inside a GitHub Actions job was NOT executed: no CI exists
+  for this template yet. Section 07 proves the command on a developer machine with a writable
+  Sigstore cache, network egress to api.github.com / tuf-repo-cdn.sigstore.dev / tuf-repo.github.com,
+  and an authenticated gh (07f executes the cache prerequisite as a negative control, and 07g-07i
+  execute the authentication one), so P03's install step needs GH_TOKEN in its environment. Whether
+  a GitHub-hosted runner satisfies all three is an acceptance check for P03, not a settled fact here.
+
+===== 12 the gate rule's shell dependency — an executed fail-open, and the two shells that decide it =====
+-- default run: shell, argv from the pinned docs: [bash -e]
+-- explicit 'shell: bash', argv from the pinned docs: [bash --noprofile --norc -eo pipefail]
+RESULT 12a-default-shell-argv-read-from-the-pinned-docs: PASS (expected=bash -e actual=bash -e)
+RESULT 12b-explicit-shell-bash-argv-read-from-the-pinned-docs: PASS (expected=bash --noprofile --norc -eo pipefail actual=bash --noprofile --norc -eo pipefail)
+-- the scan line, piped form:  "$SCANNER" $SCAN_ARGS 2>&1 | tee "$STEPLOG" || rc=$?
+-- the scan line, no pipeline: "$SCANNER" $SCAN_ARGS > "$STEPLOG" 2>&1 || rc=$?
+-- case 1: the scanner is the real binary but the flag is rejected (exit 2, proven in 10e).
+   gate-piped.sh  scanner=kingfisher             shell=[bash -e]
+      -> captured rc=0, step exit=0  |  gate verdict: PASS the job (captured rc=0)
+RESULT 12c-default-shell-piped-rejected-flag-PASSES-THE-JOB: PASS (expected=0 0 actual=0 0)
+   gate-piped.sh  scanner=kingfisher             shell=[bash --noprofile --norc -eo pipefail]
+      -> captured rc=2, step exit=1  |  gate verdict: FAIL the job, tool error (captured rc=2)
+RESULT 12d-pipefail-shell-piped-rejected-flag-fails-the-job: PASS (expected=2 1 actual=2 1)
+   gate-nopipe.sh scanner=kingfisher             shell=[bash -e]
+      -> captured rc=2, step exit=1  |  gate verdict: FAIL the job, tool error (captured rc=2)
+RESULT 12e-default-shell-unpiped-rejected-flag-fails-the-job: PASS (expected=2 1 actual=2 1)
+-- case 2: the scanner binary is absent altogether, which is what a failed install leaves.
+   The captured value itself is shell-dependent (bash 3.2 under errexit reports 1 for an
+   absent path where a plain shell reports 127), so only the job verdict is asserted.
+   gate-piped.sh  scanner=no-such-kingfisher-binary shell=[bash -e]
+      -> captured rc=0, step exit=0  |  gate verdict: PASS the job (captured rc=0)
+RESULT 12f-default-shell-piped-missing-binary-PASSES-THE-JOB: PASS (expected=0 actual=0)
+   gate-piped.sh  scanner=no-such-kingfisher-binary shell=[bash --noprofile --norc -eo pipefail]
+      -> captured rc=1, step exit=1  |  gate verdict: FAIL the job, tool error (captured rc=1)
+RESULT 12g-pipefail-shell-piped-missing-binary-fails-the-job: PASS (expected=1 actual=1)
+   gate-nopipe.sh scanner=no-such-kingfisher-binary shell=[bash -e]
+      -> captured rc=1, step exit=1  |  gate verdict: FAIL the job, tool error (captured rc=1)
+RESULT 12h-default-shell-unpiped-missing-binary-fails-the-job: PASS (expected=1 actual=1)
+   Read together: the allow-list is only as good as the status it is handed. Under the
+   default shell a pipeline hands it the wrong status and the security gate passes a job in
+   which no scan ran. The rule therefore has to fix the step's shell and forbid an unguarded
+   pipeline around the scanner, not merely enumerate the scanner's codes.
+
+===== 13 which approved wording this revision preserved, and which it changed =====
+-- repo root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+-- revision 2 read from ed16bef14a4dd9cd5adb05cc969a9162f6bfb48a, sha256: e2c3d588eaf1a098027b4c9ced4fa01ef1341fd27ef4cfdfa012bfc44a8321ec
+-- revision under review: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R17/2026-09-05T163018Z-d7ade3a111f8/review/DECISION.md, sha256 of its current bytes is NOT asserted here (this
+   section runs while that file is being written); the anchor lines below are.
+RESULT 13a-revision-2-is-the-decision-the-audit-named: PASS (expected=e2c3d588eaf1a098027b4c9ced4fa01ef1341fd27ef4cfdfa012bfc44a8321ec actual=e2c3d588eaf1a098027b4c9ced4fa01ef1341fd27ef4cfdfa012bfc44a8321ec)
+   rev2=5a9967952e8d now=5a9967952e8d same    **Part 1 — keep a dedicated
+RESULT 13b-part-1-recommendation-byte-identical: PASS (expected=same actual=same)
+   rev2=96445b4b64f6 now=96445b4b64f6 same    | F050 — Dedicated secret-scanning CI workflow
+RESULT 13c-f050-ledger-row-byte-identical: PASS (expected=same actual=same)
+   rev2=f33583326eec now=f33583326eec same    BASELINE-REVIEW: F050
+RESULT 13d-baseline-review-f050-byte-identical: PASS (expected=same actual=same)
+   rev2=2ec3c705034a now=2ec3c705034a same    **The py split, verified at the pinned tag
+RESULT 13e-equal-base-and-head-narrowing-byte-identical: PASS (expected=same actual=same)
+   rev2=4cba8a492078 now=4cba8a492078 same    What this changes about the item
+RESULT 13f-equal-base-and-head-consequence-byte-identical: PASS (expected=same actual=same)
+   rev2=402cd1c94b5f now=402cd1c94b5f same    **Shape C
+RESULT 13g-provenance-advantage-byte-identical: PASS (expected=same actual=same)
+   rev2=038acc43145f now=7d7bc3c02be7 differ  **The command is environment-dependent
+RESULT 13h-provenance-diagnosis-rewritten: PASS (expected=differ actual=differ)
+   rev2=5a44a831e386 now=5a44a831e386 same    - assumes msrv-policy = 
+RESULT 13i-assumes-msrv-policy-byte-identical: PASS (expected=same actual=same)
+   rev2=56e6a8478263 now=56e6a8478263 same    - assumes rust-edition = 
+RESULT 13j-assumes-rust-edition-byte-identical: PASS (expected=same actual=same)
+   rev2=7b8714e72ce0 now=7b8714e72ce0 same    - assumes target-os-matrix = 
+RESULT 13k-assumes-target-os-matrix-byte-identical: PASS (expected=same actual=same)
+   rev2=79b88e316bdf now=79b88e316bdf same    - assumes license = 
+RESULT 13l-assumes-license-byte-identical: PASS (expected=same actual=same)
+   rev2=a827e330debd now=e5512251525d differ  **Part 2 — implement it with the Kingfisher CLI
+RESULT 13m-part-2-recommendation-rewritten: PASS (expected=differ actual=differ)
+   rev2=c87c1a7e5514 now=29c8a68394ee differ  The ranked runner-up is the **TruffleHog OSS CLI
+RESULT 13n-ranked-runner-up-rewritten: PASS (expected=differ actual=differ)
+   rev2=029ed0fd7c8f now=c6ff022d6143 differ  **The finding that changes the design.**
+RESULT 13o-validity-filter-finding-rewritten: PASS (expected=differ actual=differ)
+   Four rows are asserted to differ: the three the revision-3 audit named, and the provenance
+   diagnosis, which revision 5 rewrote because its unauthenticated-prerequisite sentence
+   carried the environment-dependent exit code that revision's audit rejected. They are
+   asserted to differ rather than merely allowed to, so this section fails if a later revision
+   quietly reverts them or if the claim about them is restated as preservation.
+
+summary: PASS=58 FAIL=3 SKIP=0
+RESULT: FAIL
+mutation exit: 1
+-- clean HOME probe: gh api must not silently use the caller login --
+clean-home gh api exit: 4
+To get started with GitHub CLI, please run:  gh auth login
+Alternatively, populate the GH_TOKEN environment variable with a GitHub API authentication token.
+-- source spot checks via curl --
+PASS trufflehog action guard
+PASS trufflehog action docker
+PASS kingfisher documented 205
+PASS kingfisher unpublished
+PASS kingfisher macos CI
+PASS crates.io namespace trap
+PASS github default shell

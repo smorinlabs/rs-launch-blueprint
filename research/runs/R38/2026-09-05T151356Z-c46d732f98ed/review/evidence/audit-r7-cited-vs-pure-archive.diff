@@ -1,0 +1,19 @@
+--- review/evidence/conventional_commits_linter-0.17.1-evaluation.log	2026-09-13 01:44:42
++++ review/evidence/audit-r7-pure-archive-evaluation.log	2026-09-14 18:05:47
+@@ -1,4 +1,4 @@
+-conventional_commits_linter evaluation, date (UTC): 2026-09-13T08:43:55Z   [volatile line]
++conventional_commits_linter evaluation, date (UTC): 2026-09-15T01:04:28Z   [volatile line]
+ host: Darwin 25.4.0 arm64; rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew); cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+ provisioning conventional_commits_linter 0.17.1 ...
+ cargo install exit=0  (log: install.log)
+@@ -143,8 +143,8 @@
+ D18      expected=0                      observed=0                      PASS GATE 3: zero vulnerability-class advisories
+ D19      expected=1                      observed=1                      PASS GATE 3 note: ansi_term, a DIRECT dependency of the crate, carries the unmaintained advisory RUSTSEC-2021-0139
+ --- figures [volatile section: every line below can change without any change upstream]
+-       | crates.io recent_downloads=1018 downloads=47122 max_stable_version=0.17.1
+-       | github stargazers_count=6 forks=2 archived=false pushed_at=2026-09-07T01:50:49Z
++       | crates.io recent_downloads=1012 downloads=47145 max_stable_version=0.17.1
++       | github stargazers_count=6 forks=2 archived=false pushed_at=2026-09-14T22:11:03Z
+        | open issues total_count=12
+        | ten most recently opened issues, author and comment count: #318 DeveloperC286/0, #317 DeveloperC286/0, #312 DeveloperC286/0, #310 DeveloperC286/0, #309 DeveloperC286/0, #308 DeveloperC286/0, #297 DeveloperC286/3, #264 DeveloperC286/0, #249 aes/2, #48 renovate[bot]/0
+        | crates.io reverse dependencies total=1
