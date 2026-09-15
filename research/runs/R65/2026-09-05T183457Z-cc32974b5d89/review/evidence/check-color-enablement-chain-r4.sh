@@ -157,8 +157,8 @@ echo "## R4.6 This revision's own text carries the qualifications it claims"
 DEC="$RUN_DIR/review/DECISION.md"
 if [ -f "$DEC" ]; then
   DECT=$(tr '\n' ' ' < "$DEC" | tr -s ' ')
-  assert "criterion 9 is scoped to CI unset and CLICOLOR unset or 0" \
-    'with `CI` unset and `CLICOLOR` either unset or `0`**, nothing else set ⇒ no colour' "$DECT"
+  assert "criterion 9 is scoped to CI and CLICOLOR both unset" \
+    'with `CI` and `CLICOLOR` both unset** (not merely set to `0` — see `## Engines` item 2), nothing else set ⇒ no colour' "$DECT"
   assert "criterion 11 exercises the config tier against NO_COLOR" \
     'Config file `color = "always"`, `NO_COLOR=1` set' "$DECT"
   assert "criterion 12 exercises the config tier against the force tiers" \

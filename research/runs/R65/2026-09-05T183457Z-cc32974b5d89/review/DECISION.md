@@ -21,7 +21,7 @@ answers each:
   (`raw.is_terminal() && (term_supports_color() || clicolor_enabled || is_ci())`) in which
   `is_ci()` is `std::env::var_os("CI").is_some()` — set on both runners of
   `target-os-matrix`. **Repair:** criterion 9 is re-scoped to the environment in which it
-  holds (`CI` unset and `CLICOLOR` unset or `0`), a template-owned `TERM` tier is
+  holds (`CI` and `CLICOLOR` both unset), a template-owned `TERM` tier is
   considered and **declined** with its ground stated, the harness condition is made
   explicit in `## Engines` items 1 and 2, and Disagreement 2's tie-break sentence is
   replaced by what the source actually shows.
@@ -253,7 +253,7 @@ asserted against these files. What this costs: a quotation is only as current as
 6. `NO_COLOR=1` **and** `FORCE_COLOR=1` ⇒ no colour.
 7. Both streams piped, nothing else set ⇒ no colour on either.
 8. stdout piped, stderr a TTY, nothing else set ⇒ stderr coloured, **stdout not**.
-9. `TERM=dumb` on a TTY, **with `CI` unset and `CLICOLOR` either unset or `0`**, nothing else set ⇒ no colour.
+9. `TERM=dumb` on a TTY, **with `CI` and `CLICOLOR` both unset** (not merely set to `0` — see `## Engines` item 2), nothing else set ⇒ no colour.
 10. The library crate exposes no function that reads the process environment or writes a process global; a caller can construct a fully-determined renderer.
 11. Config file `color = "always"`, `NO_COLOR=1` set, no `--color` flag, both streams piped ⇒ SGR sequences on both streams (tier 2 beats tier 3).
 12. Config file `color = "never"`, `FORCE_COLOR=1` and `CLICOLOR_FORCE=1` set, no `--color` flag, both streams TTYs ⇒ no `ESC [` byte on either stream (tier 2 beats tiers 4 and 5); and the same config value with `--color=always` given ⇒ SGR sequences (tier 1 beats tier 2).
@@ -692,7 +692,11 @@ sha256 printed beside the assertion and **no** network fetch, exactly as the pri
 §5 does; and `R4.6` six assertions that **this file** carries the qualifications the revision
 note claims for it — the scoped criterion 9, criteria 11 and 12, R85 named, `FORCE_HYPERLINK`
 ruled out, and the declined `TERM` tier. `R4.4`, `R4.5` and `R4.6` read committed files in
-this repository; the rest reads two files at two immutable tags. Nothing in
+this repository; the rest reads two files at two immutable tags. **A rerun outside this
+worktree must carry `research/topics/85-rich-terminal-row-niceties/DECISION.md` at its
+repo-relative path**, the way the round-3 empirical audit's isolated copy carried
+`docs/port/PARAMETERS.md` for the primary script's §9; without it `R4.4` fails loudly rather
+than passing silently. Nothing in
 it is volatile, so its log has no equivalent of the volatile table below: a rerun that differs
 means a tag moved or a committed file changed. It was run twice in succession after the final
 edit to this file and the two outputs were diffed with `diff -u`: empty, and the saved log is
@@ -707,7 +711,7 @@ byte-for-byte identical, and the saved log is the output of the second run. It w
 more after the final edit to this file and diffed against the saved log: empty again. **In
 revision 4 neither the script nor the log was touched, and the claim was re-established rather
 than inherited:** the script was run again on 2026-09-15 and diffed against the committed log
-with `diff -u` — empty, 207 passed, 0 failed — so the log still reproduces five days after it
+with `diff -u` — empty, 207 passed, 0 failed — so the log still reproduces two days after it
 was saved and across the round-3 audit's own independent rerun. So the
 log cited here is the output of the script as committed, against this file as committed. Reruns stay
 byte-identical **while the six live inputs in the table below hold their current values**,
@@ -807,8 +811,8 @@ the recommended stack reads it as **one operand of tier 7's three-way disjunctio
 own `TERM` check); both were verified. **What that buys is stated exactly, because revision 3
 overstated it (judgment finding J1):** what is verified is that
 `anstyle_query::term_supports_color()` participates in tier 7 and returns `false` for
-`TERM=dumb`, so the stack suppresses colour on a `TERM=dumb` TTY **when `CI` is unset and
-`CLICOLOR` is unset or `0`** — which is what re-scoped criterion 9 now says. It is **not**
+`TERM=dumb`, so the stack suppresses colour on a `TERM=dumb` TTY **when `CI` and `CLICOLOR`
+are both unset** — which is what re-scoped criterion 9 now says. It is **not**
 verified, and is not true, that `TERM=dumb` suppresses colour unconditionally: `is_ci()` is
 `std::env::var_os("CI").is_some()` and `CI` is set on both runners of `target-os-matrix`, so
 a pty test of criterion 9 must clear `CI` and `CLICOLOR` from the child environment or it

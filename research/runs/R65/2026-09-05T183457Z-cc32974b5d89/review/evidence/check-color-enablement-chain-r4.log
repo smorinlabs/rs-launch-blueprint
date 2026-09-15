@@ -55,7 +55,7 @@ PASS  no-color.org argues against a TERM tier (the third ground for declining on
 PASS  no-color.org: the terminal should print colour when instructed  [matched: The terminal is capable of color and should be able to print color when instructed.]
 
 ## R4.6 This revision's own text carries the qualifications it claims
-PASS  criterion 9 is scoped to CI unset and CLICOLOR unset or 0  [matched: with `CI` unset and `CLICOLOR` either unset or `0`**, nothing else set ⇒ no colour]
+PASS  criterion 9 is scoped to CI and CLICOLOR both unset  [matched: with `CI` and `CLICOLOR` both unset** (not merely set to `0` — see `## Engines` item 2), nothing else set ⇒ no colour]
 PASS  criterion 11 exercises the config tier against NO_COLOR  [matched: Config file `color = "always"`, `NO_COLOR=1` set]
 PASS  criterion 12 exercises the config tier against the force tiers  [matched: Config file `color = "never"`, `FORCE_COLOR=1` and `CLICOLOR_FORCE=1` set]
 PASS  the decision names R85 as a consumer  [matched: rich-terminal-row-niceties`, resolved,]
