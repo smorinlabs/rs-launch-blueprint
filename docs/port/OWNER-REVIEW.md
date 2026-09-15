@@ -90,6 +90,22 @@ exists because none is owed. R60 carries zero overrides; OV-01 is retired as
 refused rather than deleted, its argument and options table kept as the record of
 how the choice was reached.
 
+## Wave 0 owner acceptances (recorded from 2026-09-14)
+
+An acceptance binds the **recommendation** of one decision at one
+`review/DECISION.md` sha256, the way the two audits do. A later revision that
+changes only reasoning or evidence leaves the acceptance standing; the item is
+re-bound here with a new row at the new hash. A revision that moves the
+recommendation, a selected crate or version, or an owned parameter value stales
+the acceptance and the item is re-asked. Acceptance makes the recommendation
+P03's proposal; publication still waits on the item's two approving audits, and
+a `hold` keeps the item where it is until the owner's named concern is answered.
+The briefs the owner answered from are in `docs/planning/p02/owner-decisions.md`.
+
+| item | revision | decision sha256 | verdict | date | owner note |
+|---|---|---|---|---|---|
+| R01 | 2 (published) | `8025fd5b1a959b1e76fa9a738176071b418fd411aa2ba6ad5c6e4bffbd9a018f` | accept | 2026-09-10 | recorded retroactively 2026-09-14; the acceptance predates this table |
+
 ## Dispositions
 
 | item | disposition | rationale | date |
