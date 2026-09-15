@@ -105,6 +105,7 @@ The briefs the owner answered from are in `docs/planning/p02/owner-decisions.md`
 | item | revision | decision sha256 | verdict | date | owner note |
 |---|---|---|---|---|---|
 | R01 | 2 (published) | `8025fd5b1a959b1e76fa9a738176071b418fd411aa2ba6ad5c6e4bffbd9a018f` | accept | 2026-09-10 | recorded retroactively 2026-09-14; the acceptance predates this table |
+| R67 | 4 (published) | `16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497` | accept | 2026-09-14 | W0-R67 option A; consumers R03, R52–R56, R70 admissible |
 
 ## Dispositions
 

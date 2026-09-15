@@ -333,6 +333,21 @@ the conforming alternative.
 **Response that settles both.** "The CLI standard binds, and OV-01 is waived",
 or either half negated.
 
+## 10. The Wave 0 review walk -- IN PROGRESS from 2026-09-14
+
+One question per item, asked in order, each answered before the next is put.
+Every acceptance binds the recommendation at a `DECISION.md` sha256 and is
+recorded in the "Wave 0 owner acceptances" table of `docs/port/OWNER-REVIEW.md`;
+a later revision that changes only reasoning or evidence re-binds it, one that
+moves the recommendation re-asks it. The briefs put to the owner are drafted
+from each item's own decision text (scratchpad `owner-briefs/`), reviewed
+against the cited lines, and presented with options A accept / B hold / C
+reject.
+
+| question | item | answer | date | bound sha256 | note |
+|---|---|---|---|---|---|
+| W0-R67 | R67 error-and-exit-code-contract | A accept | 2026-09-14 | `16947ab1…` | two-layer contract, `thiserror`/`anyhow`/`signal-hook`, exit codes from standard R6.1; `ctrlc` runner-up loses on R9.6 |
+
 ## Retired from this list
 
 Two items previously carried here are not owner decisions.
