@@ -1,12 +1,67 @@
-# R63 — progress-spinner — decision (revision 3, 2026-09-13)
+# R63 — progress-spinner — decision (revision 4, 2026-09-15)
 
 Item R63 (`progress-spinner`, kind `crate`, Focused tier, owns no parameter). Run
-`research/runs/R63/2026-09-05T183003Z-44e034fc1d72`. Revision 3 rewrites revision 2
-(sha256 `3ff1eef29650b765411f10d8d60a7b5a832f1d5172284c2fe3bce9001aa91615`) in place, which
-had rewritten revision 1 (sha256
+`research/runs/R63/2026-09-05T183003Z-44e034fc1d72`. Revision 4 rewrites revision 3
+(sha256 `4da47900a8d5a0629dfaaff644f2773c10fdb6dead454fcc186a41574405469d`) in place,
+which had rewritten revision 2 (sha256
+`3ff1eef29650b765411f10d8d60a7b5a832f1d5172284c2fe3bce9001aa91615`), which had rewritten
+revision 1 (sha256
 `a56ff2ed50059c93b4874c77b236c2cb67130462bceb7ed7b0adcfc1bbfbb069`). There is no
 `## Supersedes` section because no revision of this decision has been published; R63's
 index row is still `open`.
+
+**Revision 4 answers the single finding of the judgment audit `review/audit-fable.md`**
+(actor `audit-fable-2026-09-05T183003Z-44e034fc1d72-r3`, model `claude-opus-5`, family
+anthropic, audit sha256
+`4cc6f4df6dd1442c3e9126a1be0bf9a04a2a3914ce38de6885116a3f97d1b1c0`, verdict reject). The
+empirical audit of the same revision, `review/audit-codex.md` (actor
+`audit-codex-2026-09-05T183003Z-44e034fc1d72-r3`, model `gpt-5.6-terra`, family openai,
+audit sha256 `51117428dac3efa2537141b1191aaf08b9f82505215baf99c00e2453ce941852`),
+**approved** it with no unresolved finding. Everything that audit reproduced is therefore
+byte-identical here and was not rerun: `review/evidence/r63-spinner-claims.sh` and its
+cited log, `review/evidence/r63-crossrun-compare.sh` and its log, the negative-control log
+and the five archived predecessors. Revision 4 adds one new evidence file rather than
+editing any of them.
+
+The finding, quoted by its label: **"Reject — the suppression predicate omits `--quiet`,
+conflicting with the binding CLI Design Standard R7.4 and leaving the prompt's LOW
+question unanswered."** It has three limbs, and revision 4 repairs each:
+
+1. *The standard conflict.* The CLI Design Standard v1.4.14 binds this template (owner
+   ruling 2026-09-14) and R7.4 requires progress to be suppressed "when not a TTY or under
+   `--quiet`". Revision 3 stated the predicate as exactly two clauses. **Repair:**
+   `--quiet` becomes the third input to the one call-site predicate, throughout — the
+   recommendation paragraph, the must-agree list, the essential behaviors, the acceptance
+   criteria (new criterion 6) and the Rust-versus-py rationale. No redesign is needed:
+   design C already owns the render/suppress choice at the call site, and the `uv`
+   `Printer` this decision already cites as its reference implementation folds `quiet`,
+   `verbose` and `no_progress` into exactly that one `target()` method.
+2. *The unanswered LOW question.* **Repair:** the prompt's LOW question is answered
+   explicitly in `### Principles and implementation` — the gating has to live at the call
+   site, because `indicatif` 0.18.6 exposes no runtime flag surface and reads no
+   environment variable — and `--no-input` is answered separately as a prompting concern
+   owned by R61, not a progress input. `## Engines` item 8 records that **both** raw
+   reports had already answered this and that revision 3 dropped the convergence.
+3. *The wrong affirmative baseline statement.* Revision 3 said no `BASELINE-REVIEW:` line
+   was needed because F283's recorded requirement "survives scrutiny unchanged". It does
+   not: the ts implementation the row records defines `-q, --quiet` and never consults it
+   at the spinner gate. **Repair:** that sentence is replaced by the
+   `BASELINE-REVIEW: F283 …` line in the runbook's form, and the ts facts it rests on are
+   asserted in a new, separately archived check —
+   `review/evidence/r63-quiet-baseline-r4.sh` and `review/evidence/r63-quiet-baseline-r4.log`.
+
+**No recommendation, crate, version, design alternative, fitness-gate outcome, exclusion,
+runner-up condition or parameter line changes in revision 4.** The judgment auditor stated
+that the pick follows from the principles and the evidence and should not be disturbed,
+and it is not. What changes is the stated predicate, the acceptance criteria, the
+`## Engines` record and the baseline line, plus the new evidence file that supports the
+last of those.
+
+What follows, down to the `## Decision` heading, is revision 3's own note, retained
+unchanged: none of its repairs is reopened here. Read it as a statement about revision 3.
+Where revision 4 has since changed something — the predicate's third clause, the sixth
+acceptance criterion and the `BASELINE-REVIEW:` line — that note is describing the text as
+it stood on 2026-09-13, not the text below it now.
 
 **Revision 3 answers the three findings of the empirical audit `review/audit-codex.r2.md`**
 (actor `audit-codex-2026-09-05T183003Z-44e034fc1d72-r2`, model `gpt-5.6-terra`, family
@@ -82,9 +137,13 @@ above.
 
 **Recommendation: `indicatif = "0.18"` (Cargo requirement `0.18`, resolving today to
 0.18.6), in the CLI crate only, with the render/suppress decision owned by the call site
-and expressed as a `ProgressDrawTarget`.** The `CI` half of the gate is
-`std::env::var_os("CI")` read directly from `std`, with no helper crate; the TTY half is
-whatever check R65 lands for F290, called once. Add `indicatif` a second time under the
+and expressed as a `ProgressDrawTarget`.** The gate has **three inputs**, all resolved at
+the call site and folded into one predicate: the `CI` clause is `std::env::var_os("CI")`
+read directly from `std`, with no helper crate; the TTY clause is whatever check R65 lands
+for F290, called once; and the `--quiet` clause is the parsed value of the CLI's own
+`--quiet`/`-q` flag, which the binding CLI Design Standard v1.4.14 requires to suppress
+progress (R7.4, and R4.4's verbosity ladder). Progress renders only when stderr is a TTY
+**and** `CI` is absent or empty **and** `--quiet` is not in effect. Add `indicatif` a second time under the
 CLI crate's `[dev-dependencies]` with `features = ["in_memory"]` so the acceptance tests
 can assert rendered output through `InMemoryTerm` without a pseudo-terminal.
 
@@ -102,10 +161,37 @@ scratch. The claims that are not yet proven, and what would prove them, are list
 row's `DIVERGENT` verdict, which correctly records that py ships no progress indicator
 today. No other ledger row is settled here.
 
-**No `BASELINE-REVIEW:` line is emitted.** Neither raw report emitted one, and this
-review found no reason to add one: F283's recorded requirement — a stderr spinner gated
-on stderr TTY-ness and the absence of `CI` — survives scrutiny unchanged. The one element
-of the shipped TypeScript implementation this decision deliberately does not port (the
+**A `BASELINE-REVIEW:` line is emitted.** Revision 3 asserted the opposite — "No
+`BASELINE-REVIEW:` line is emitted … F283's recorded requirement … survives scrutiny
+unchanged" — and that was wrong, which is the third limb of the judgment audit's finding.
+Neither raw report emitted the line, but the requirement F283 records is drawn from a ts
+implementation that defines a quiet flag and then does not consult it at the spinner gate,
+so the inherited requirement itself fails the binding standard's R7.4. The line, in the
+form the runbook fixes (`BASELINE-REVIEW: F### — principle — proposed change — evidence`,
+`RUNBOOK.md:22`), is:
+
+BASELINE-REVIEW: F283 — progress is a diagnostic the user may switch off, so an explicit
+request for quiet output suppresses it exactly as a non-TTY stderr or a CI environment does
+— add a third clause to the row's recorded suppression predicate, so the spinner renders
+only when stderr is a TTY, `CI` is absent or empty, and `--quiet` is not in effect; the
+row's `DIVERGENT` verdict, its `ts-only` origin and its stderr-placement half are unchanged
+— evidence: CLI Design Standard v1.4.14 R7.4, "Progress indicators **MUST** go to stderr
+(R7.1) and **MUST** be suppressed when not a TTY or under `--quiet`", restated inside the
+MUST-labelled R4.4 as "`--quiet`/`-q` suppresses progress and informational diagnostics on
+stderr only"; and, at ts pin `cb1cbcb2`, `src/router.ts:131` defines
+`.option('-q, --quiet', 'only show warnings and errors', false)` and feeds it only to the
+log level (`src/router.ts:105`), while `src/commands/projects.ts:128` gates the spinner on
+`deps.stderrIsTTY && (ci === undefined || ci === '')` alone and neither that file nor
+`src/lib/adapters.ts` contains the string `quiet` at all (zero matching lines, asserted in
+`review/evidence/r63-quiet-baseline-r4.log`, retrieved 2026-09-15).
+
+This challenges the baseline for F283 only. It changes no other item and no ledger file;
+the controller adjudicates it with the affected decision (`RUNBOOK.md:167`). Until it is
+adjudicated, this decision's own recommendation already carries the clause, so a P03
+implementer following this document does not ship a spinner that renders under `--quiet`.
+
+**The zero-column non-port is not a second baseline challenge.** The one element of the
+shipped TypeScript implementation this decision deliberately does not port (the
 D-033 zero-column guard) is an implementation workaround inside `yocto-spinner`, not part
 of F283's recorded requirement; it is recorded as a deliberate non-port with its evidence
 and its evidence's limits below, not as a challenge to the baseline.
@@ -115,12 +201,28 @@ and its evidence's limits below, not as a challenge to the baseline.
 **The shared requirement.** A user-attended run of a command whose wall-clock time is
 dominated by one network call must show that the program is alive; a run that is not user
 attended must emit nothing extra, so that redirected or piped output is byte-identical to
-what a machine consumer expects.
+what a machine consumer expects; and a user who has explicitly asked for quiet output must
+be taken at their word, even at an attended terminal, because progress is a diagnostic and
+`--quiet` is the control that switches diagnostics off.
 
 **Source and agreement level.** The requirement is recorded as ledger row `F283`
 (`docs/port/COMMONALITY.md:287`, verdict `DIVERGENT`, origin ts-only) and in
-`docs/port/areas/cli-framework-ux.md:27`. Its agreement level is **capability and
-standard**, with two halves that must agree across py, ts and rs:
+`docs/port/areas/cli-framework-ux.md:27`. The **standard** half of that agreement level is
+the org's CLI Design Standard v1.4.14
+(`/Users/stevemorin/c/cli-standards/cli-design-standard.md`, sha256
+`9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f`, read 2026-09-15),
+which binds this template by the owner's ruling of 2026-09-14; its **R7.4** is the rule
+that governs this item: "Progress indicators **MUST** go to stderr (R7.1) and **MUST** be
+suppressed when not a TTY or under `--quiet`." One precision about that rule, checked in
+this review rather than assumed: R7.4's heading
+carries the composite label `(SHOULD)` — the rule covers the pager and progress together —
+while the progress sentence quoted above is written at MUST level, and **R4.4**, whose own
+heading is `(MUST)`, states the same obligation from the flag's side ("`--quiet`/`-q`
+suppresses progress and informational diagnostics on stderr only"). This decision carries
+the clause, which conforms under either reading of the label, so nothing here depends on
+resolving it and no waiver is sought. Its agreement level is **capability and
+standard**, with two halves that must agree across py, ts and rs, the second of which has
+three clauses:
 
 1. **Stream placement — must agree.** Progress is diagnostics, so it is written to stderr
    and never to stdout. The TypeScript decision record states the rule and the wart it
@@ -129,7 +231,9 @@ standard**, with two halves that must agree across py, ts and rs:
    (`git -C ~/c/ts-launch-blueprint show cb1cbcb2e88b898e8c081b0abbfabc1630079c00:docs/port/TS_PORT_DECISIONS.md`,
    line 174, read at the pin, retrieved 2026-09-10).
 2. **The suppression predicate — must agree.** Render only when stderr is a TTY **and**
-   `CI` is absent or empty. Verbatim at the pin
+   `CI` is absent or empty **and** `--quiet` is not in effect. The first two clauses are
+   inherited from the ts source; the third is required by the standard and is absent from
+   that source. Verbatim at the pin
    (`git -C ~/c/ts-launch-blueprint show cb1cbcb2e88b898e8c081b0abbfabc1630079c00:src/commands/projects.ts`,
    lines 127-129, retrieved 2026-09-10):
 
@@ -137,16 +241,56 @@ standard**, with two halves that must agree across py, ts and rs:
        const spinnerEnabled = deps.stderrIsTTY && (ci === undefined || ci === '');
        const spinner = spinnerEnabled ? deps.spinner('Fetching projects...') : undefined;
 
-   The exact semantics are: **any non-empty `CI`, whatever its value, suppresses; an
-   empty `CI` does not.**
+   The exact semantics of the `CI` clause are: **any non-empty `CI`, whatever its value,
+   suppresses; an empty `CI` does not.**
+
+   **The `--quiet` clause, and why it is not in the quotation above.** R7.4 requires
+   progress to be suppressed "under `--quiet`", and the MUST-labelled R4.4 states the same
+   obligation from the flag's side: "`--quiet`/`-q` suppresses progress and informational
+   diagnostics on stderr only". At the same ts pin the flag exists and the spinner gate
+   never reads it: `src/router.ts:131` is
+   `.option('-q, --quiet', 'only show warnings and errors', false)`, and the only thing it
+   feeds is the log level at `src/router.ts:105`. That is the gap the `BASELINE-REVIEW:`
+   line above reports, and it is why this decision's predicate has a clause its ts source
+   does not. The flag's own surface — its name and short form, and how it ranks against
+   `-v`/`--verbose` and `--debug` under R4.4's one-ladder rule, including R4.4's rule that
+   an explicit `--debug` overrides `--quiet` — belongs to the CLI's global option set,
+   which R60 (`cli-parsing-framework`) decides. R63 defines no flag; it consumes the
+   resolved boolean, exactly as it consumes R65's resolved TTY answer.
 
 **What may vary.** The rendering crate, the frame set, the tick interval, and the
 mechanism by which "disabled" is expressed are ecosystem-local. Nothing in the principle
 requires Rust to reproduce `yocto-spinner`'s API or frames.
 
+**The prompt's LOW question, answered.** *"Does the candidate crate support being disabled
+entirely via a runtime flag (composing with `--quiet`/`--no-input`), or does that gating
+have to live in the call site rather than the crate?"* — **The gating has to live at the
+call site.** `indicatif` 0.18.6 exposes no flag surface and reads no environment variable
+at all (three greps over every file under `src/` in the published artifact for
+`std::env`, `env::var` and the literal `"CI"` return zero matches; `## Empirical check`,
+log section 16), so no runtime flag can reach it. What it does offer is a *value* that
+means "render nothing": `ProgressDrawTarget::hidden()` (`src/draw_target.rs:123-130`),
+with `is_hidden` to observe it (log section 17). So `--quiet` is resolved by the CLI's
+argument parser, folded into the one call-site predicate beside the TTY and `CI` clauses,
+and expressed to the crate as `hidden()` — which is precisely design C, and the reason
+design C was selected before this clause was known to be required. Both raw reports
+answered this question the same way, and revision 3 dropped the convergence rather than
+recording it; `## Engines` item 8 records it now.
+
+**`--no-input` is a different question, and the answer is that it is not a progress
+input.** The standard lists it among the safety/action options as "Never prompt; fail if
+input would be required" (v1.4.14, line 253), and prompting is R61's subject
+(`interactive-prompts`), not this item's: the fetch this spinner wraps asks the user
+nothing, so `--no-input` neither enables nor suppresses it. If R61's design ever makes the
+two interact, that is R61's decision to record, not a fourth clause added here. The Codex
+raw lists `--no-input` beside `--quiet` in its acceptance criteria (`raw/codex.md:17`);
+this decision adopts the `--quiet` half and declines the `--no-input` half on that ground
+rather than by silence.
+
 **Essential behaviors.** One spinner, on stderr, started before the fetch and cleared on
 both the success and the error path; no renderer constructed at all on any suppressed
-path; stdout untouched by the spinner in every case.
+path — and the suppressed paths are all three of not-a-TTY, `CI` present and non-empty,
+and `--quiet` in effect; stdout untouched by the spinner in every case.
 
 **Observable acceptance criteria.** These are the criteria; the commands that would check
 them are P03's, and none of them has been run (see `## Empirical check` for what *was*
@@ -157,10 +301,19 @@ run).
 2. With `CI` set to any non-empty value and stderr a TTY, stderr carries no spinner
    frames and no cursor-control sequences.
 3. With stderr not a TTY, stderr carries no spinner frames.
-4. With stderr a TTY and `CI` unset or empty, stderr carries spinner frames, and after the
-   command exits no partial spinner line and no hidden cursor remain.
-5. The predicate deciding 2-4 is a single function, and its TTY half is the one function
-   R65 selects for F290 — a search of the workspace finds exactly one TTY test.
+4. With stderr a TTY, `CI` unset or empty and `--quiet` not given, stderr carries spinner
+   frames, and after the command exits no partial spinner line and no hidden cursor remain.
+5. The predicate deciding 2-4 and 6 is a single function, and its TTY clause is the one
+   function R65 selects for F290 — a search of the workspace finds exactly one TTY test.
+6. **New in revision 4, and unproven like the other five.** With stderr a TTY, `CI` unset
+   or empty and `--quiet` given, stderr carries no spinner frames and no cursor-control
+   sequences, while stdout still carries the complete requested result — R4.4 requires
+   `--quiet` to suppress progress on stderr and forbids it from suppressing the result on
+   stdout, so both halves are asserted in one run. *What would prove it*: the same
+   `InMemoryTerm` integration test that proves criteria 2-4, invoked once more with the
+   CLI's `--quiet` flag set and `TERM` pinned to a non-`dumb` value, asserting an empty
+   `InMemoryTerm::contents()` and a stdout body that still parses as the full JSON result.
+   Nothing here proves it: no Rust crate exists in this repository yet.
 
 **Architecture alternatives compared, before any library was picked.**
 
@@ -211,7 +364,10 @@ provider is running. The Opus report's distinction therefore **holds**, and it i
 here as the reason: use `std::env::var_os("CI")` with the predicate
 `is_none_or(|v| v.is_empty())`, which reproduces `ci === undefined || ci === ''` exactly
 and adds no dependency. If the owner later wants provider sniffing, that is a new decision
-on F283, not a silent substitution.
+on F283, not a silent substitution. The `--quiet` clause raises none of this: it is not an
+environment question at all but the parsed value of a flag the CLI already defines, so it
+adds no crate, no environment read and no second source of truth — it is one more boolean
+handed to the same predicate.
 
 **The zero-column question — what the evidence is, and what it is not.** The shipped
 TypeScript implementation adds a guard that treats a stderr width of zero as non-TTY and
@@ -269,16 +425,24 @@ without configuration: `ProgressBar::new_spinner()` is
 progress bars" (`src/draw_target.rs:41-47`). The suppression predicate is *designed* to
 be preserved exactly — it is written in `std` directly against the inherited semantics,
 and the disabled path yields `ProgressDrawTarget::hidden()` (`src/draw_target.rs:123-130`),
-a first-class "render nothing" value, so no second TTY check is consulted. That the
-implementation actually preserves it is not established here; acceptance criteria 2-4,
-including the `CI=""` case, are what would establish it, and they are P03's to run.
+a first-class "render nothing" value, so no second TTY check is consulted. The `--quiet`
+clause reaches the same value by the same route: it is one more input to the one
+predicate, and a predicate that answers "no" for any reason yields `hidden()`. That the
+implementation actually preserves any of this is not established here; acceptance criteria
+2-4 and 6, including the `CI=""` and `--quiet` cases, are what would establish it, and
+they are P03's to run.
 
 **Reference implementations.** `astral-sh/uv` implements design C directly:
 `crates/uv/src/printer.rs` folds every suppression reason into one enum and maps it to
 `ProgressDrawTarget::hidden()` or `::stderr()` in a single `target()` method (cited by the
 Opus raw at `https://raw.githubusercontent.com/astral-sh/uv/main/crates/uv/src/printer.rs`,
 retrieved 2026-09-10 — a moving branch, so P03 should re-read it at a tag if it relies on
-the exact shape). `rust-lang/rustup` declares `indicatif = "0.18"` (Opus raw, same
+the exact shape). **The reasons it folds are exactly the ones this decision needs**: the
+Opus raw records `Printer::new(quiet, verbose, no_progress)` at lines 20-31 of that file
+and `suppresses_progress` at lines 34-43, so `--quiet` is already one arm of the same enum
+in production code (`raw/opus.md:190-200`). The `--quiet` clause is therefore absorbed by
+the selected design with no redesign: rs adds `stderr-is-a-tty` and `CI-is-absent` as two
+further clauses of the same predicate, which is how the Opus raw itself put it. `rust-lang/rustup` declares `indicatif = "0.18"` (Opus raw, same
 retrieval date), which is first-party Rust project practice. Further adopters named in the
 Opus raw from `indicatif`'s reverse-dependency listing: `uutils/coreutils`,
 `nextest-rs/nextest`, `cargo-generate`, `huggingface/tokenizers`, `rerun-io/rerun`,
@@ -334,7 +498,11 @@ tick the progress bar… This is useful to advance progress bars that are very s
 themselves" (`indicatif-0.18.6/src/progress_bar.rs:174-181`, verified here). That a
 spinner without it would render one frame and then sit still for the duration of the
 fetch follows from that documented mechanism; it is an inference from the source, not an
-observed run, and criterion 4 is what would confirm it. *Library*: `indicatif` must not appear in the
+observed run, and criterion 4 is what would confirm it. A second detail P03 must get
+right: whatever global `--quiet` R60 lands is wired **into the one predicate**, never as a
+separate `if quiet { … }` beside the fetch. Two conditionals at one call site is how the
+clause gets missed on the next command that grows a spinner; criterion 5's "single
+function" is what makes that reviewable. *Library*: `indicatif` must not appear in the
 library crate's `[dependencies]`; if a caller ever needs progress, the R01 seam should
 carry a caller-supplied `impl Fn(&str)` rather than an `indicatif` type, so the crate
 never becomes a semver obligation of the library's public API. *Web service*:
@@ -355,10 +523,16 @@ over `*.py` and `*.toml` returns **no matches** (exit 1), while `pyproject.toml`
 therefore *has the capability available* and does not use it: a missing capability, not a
 justified ecosystem difference. The rationale this decision supplies to the follow-on
 project is that py should adopt `rich.Console(stderr=True).status()` under the same
-two-clause gate. This decision changes nothing in py and does not challenge F283's
-`DIVERGENT` verdict.
+three-clause gate. Its third clause needs nothing new there either: at the same py pin the
+CLI already defines the flag — `src/py_launch_blueprint/cli/options.py:82` is
+`"-q", "--quiet", is_flag=True, help="Suppress non-essential stderr output."` (asserted in
+`review/evidence/r63-quiet-baseline-r4.log`, retrieved 2026-09-15) — so in py, as in ts,
+the flag exists and there is simply no progress indicator for it to suppress yet. This
+decision changes nothing in py and does not challenge F283's `DIVERGENT` verdict; the
+`BASELINE-REVIEW:` line above challenges the row's suppression predicate only, and the
+predicate is what all three repositories would share.
 
-re-verify: 2027-03-10, or earlier on any of: R61 (`interactive-prompts`) resolving in favour of `cliclack` (then drop the direct `indicatif` dependency in favour of `cliclack`'s, so two renderers do not contend for the same stderr line); R65 (`color-enablement-chain`) resolving F290 (confirm the predicate consumes R65's check and that acceptance criterion 5 still finds exactly one TTY test); R05 selecting an async runtime (re-evaluate `indicatif`'s optional `tokio` feature, deliberately left off today); `indicatif` publishing 0.19 or raising `rust-version` above the then-current policy floor (it moved 1.71 → 1.85 between 0.18.4 and 0.18.5, so this is a live pattern); any RustSec advisory appearing for `indicatif`, `console` or `libc`; the `console-rs` maintainer concentration changing (all eight measured responses came from one `MEMBER`).
+re-verify: 2027-03-10, or earlier on any of: R61 (`interactive-prompts`) resolving in favour of `cliclack` (then drop the direct `indicatif` dependency in favour of `cliclack`'s, so two renderers do not contend for the same stderr line); R65 (`color-enablement-chain`) resolving F290 (confirm the predicate consumes R65's check and that acceptance criterion 5 still finds exactly one TTY test); R60 (`cli-parsing-framework`) landing the global option set (confirm the resolved `--quiet` feeds the one predicate rather than a second conditional at the fetch, and record how R4.4's `--debug`-overrides-`--quiet` ladder ranks against it); the CLI Design Standard being revised at R7.4 or R4.4, or the owner's 2026-09-14 ruling that it binds this template being changed (the `--quiet` clause is carried on those rules alone, since the ts source does not carry it); R05 selecting an async runtime (re-evaluate `indicatif`'s optional `tokio` feature, deliberately left off today); `indicatif` publishing 0.19 or raising `rust-version` above the then-current policy floor (it moved 1.71 → 1.85 between 0.18.4 and 0.18.5, so this is a live pattern); any RustSec advisory appearing for `indicatif`, `console` or `libc`; the `console-rs` maintainer concentration changing (all eight measured responses came from one `MEMBER`).
 
 ## Parameters
 
@@ -382,10 +556,13 @@ repository's own declared licence expression, which this decision does not touch
 licence terms of dependencies are **not evaluated** (owner ruling 2026-09-12, Q7.B), so
 the pick is unconstrained by that parameter and no compatibility argument is made here. The OS matrix is
 satisfied by `indicatif`'s own CI, which tests both required runners at tag 0.18.6;
-Windows is additionally covered though not required. There is one informal, non-registry
-dependency: R65's F290 TTY-detection mechanism. This decision is written so that whatever
-R65 selects is called once and converted into a `ProgressDrawTarget`; R63 introduces no
-TTY check of its own.
+Windows is additionally covered though not required. There are **two** informal,
+non-registry dependencies: R65's F290 TTY-detection mechanism and, added by revision 4,
+R60's global `--quiet` flag. This decision is written so that whatever R65 selects is
+called once and whatever R60 defines is read once, both converted into the single
+predicate behind one `ProgressDrawTarget`; R63 introduces no TTY check and defines no flag
+of its own. Neither is a registered parameter, so neither appears as an `assumes` line
+above, and revision 4 changes no line in that list.
 
 ## Empirical check
 
@@ -399,6 +576,25 @@ the recorded endpoints, reading both pinned source repositories through their pi
 reading the candidate crates' source from their **published crates.io artifacts** at
 pinned versions. It implements nothing: no crate was scaffolded, no spinner was written,
 no `cargo build`, `cargo test` or `cargo audit` was run, and no terminal was driven.
+
+**Revision 4 adds a second check and changes nothing in the first.**
+`review/evidence/r63-spinner-claims.sh` and its cited log, and
+`review/evidence/r63-crossrun-compare.sh` and its log, are revision 3's; the r3 empirical
+audit reran both and reproduced them (`review/audit-codex.md`, verdict approve).
+**Revision 4 edited neither and reran neither**, because a new claim gets a new file, not
+an edit to a file an auditor has already reproduced. The claim revision 4 adds — that the
+binding standard states the `--quiet` obligation, that ts defines `-q, --quiet` and never
+consults it at the spinner gate, and that py defines the same flag — is asserted by the
+new `review/evidence/r63-quiet-baseline-r4.sh`, described under **The `--quiet` baseline
+check** below. One bookkeeping fact, recorded because a later auditor will re-hash it:
+`review/audit-codex.md` records the classifier log at sha256
+`b38cba4a10c128af08364160ade596b2158fb5d50b7f0fae475dd1083c185742` while the committed
+file hashes
+`cc1fba04ec35060314faf590d2ade846b4232cde3d3d34e2eb44a3297f2a2c16` (identical to
+`git show HEAD:…`, checked 2026-09-15). The controller restored the committed bytes after
+an audit rerun overwrote one ambient-locale line. This decision cites no sha256 for that
+log, so no claim here depends on which of the two is read; revision 4 leaves both the file
+and the audit record exactly as they are.
 
 **Working directory.** The check unpacks downloaded `.crate` artifacts under
 `<scratch>/src` and writes fetched bodies under `<scratch>/fetch`. Revision 3's default
@@ -696,6 +892,16 @@ under `## Engines`, item 5.
   `archived: true`, 10 stars, last pushed 2020-04-20, which is what excludes it.
 - **py pin `b08bccfb`:** the progress-indicator grep returns no matches (exit 1);
   `pyproject.toml` declares `rich>=13.0.0`.
+- **From the new `--quiet` baseline log, not from the log above (retrieved 2026-09-15).**
+  The standard file hashes `9fb05d3d…`, declares version 1.4.14, and carries R7.4's
+  progress sentence and R4.4's quiet sentence once each, plus the scope note excluding
+  colour and `NO_COLOR`. At ts pin `cb1cbcb2`, `router.ts:131` is
+  `.option('-q, --quiet', 'only show warnings and errors', false)`, `quiet` occurs on
+  exactly three lines of that file, and `router.ts:105` passes it to `resolveLevel`;
+  `projects.ts:127-128` are the two gate lines this decision quotes, and `quiet` occurs
+  **zero** times in `projects.ts` and **zero** times in `adapters.ts`. At py pin
+  `b08bccfb`, `options.py:82` is
+  `"-q", "--quiet", is_flag=True, help="Suppress non-essential stderr output."`.
 
 **No error line remains in the log.** Revision 1's section 0 recorded
 `curl: (56) Failure writing output to destination`, which was `curl` writing into a pipe
@@ -703,6 +909,55 @@ closed by `grep -m1`. Under `set -o pipefail` that would now fail the pipeline, 
 fetch writes a file before anything reads it and the message is gone: the regenerated log
 contains no `curl:` error, no `FAIL` line and no non-zero command status other than the
 grep exit codes that are printed deliberately as the raw form of an asserted absence.
+
+**The `--quiet` baseline check — new in revision 4, and it can fail.**
+`review/evidence/r63-quiet-baseline-r4.sh`, run from the run directory as
+
+    bash review/evidence/r63-quiet-baseline-r4.sh \
+      > review/evidence/r63-quiet-baseline-r4.log 2>&1
+
+**Exit status 0**, ending `checks: 21 pass / 0 fail` and `RESULT: PASS` in 78 lines. It
+reads only local files and pinned git blobs; it queries no network endpoint and records no
+host identity, no wall-clock time and no scratch path, so **its log is reproducible
+byte-for-byte and no difference rule applies to it**. That claim was made good before it
+was written: the script was rerun twice after the cited log was generated — once under the
+ambient locale, once under a forced `LC_ALL=en_US.UTF-8` — and `diff` against the cited log
+was empty both times. The script pins `LC_ALL=C` itself, which is why the second rerun
+cannot differ. Its sections:
+
+    0  scope: what it reads and what it refuses to read; the two pins
+    1  the standard at v1.4.14: file sha256, the version row, R7.4's heading and progress
+       sentence, R4.4's heading and quiet sentence, and the scope note that puts colour
+       and NO_COLOR outside the standard (R65 owns those)
+    2  ts pin cb1cbcb2: router.ts:131 defines `-q, --quiet`; `quiet` occurs on exactly
+       three lines; router.ts:105 feeds it to the log level
+    3  ts pin cb1cbcb2: projects.ts:127-128 gate the spinner on stderr TTY-ness and `CI`;
+       `quiet` occurs zero times in projects.ts and zero times in adapters.ts
+    4  py pin b08bccfb: options.py:82 defines `-q, --quiet`
+    5  four controls and the probe tally that asserts their outcome
+    DONE  the pass/fail summary and the process exit status
+
+Every assertion is on content. `lineis` compares a numbered line to the exact text this
+decision quotes and echoes what it read; `has` asserts a match **count**, so the two
+absence claims read `PASS … (matching lines) == 0` rather than "grep exited 1", and an
+unreadable file is a named FAIL instead of a passed absence. **Four controls, because a
+check that cannot fail is not evidence**, each run through a `probe-` wrapper whose
+verdicts are tallied and asserted as `probe tally == 1 pass / 3 fail` — so a control
+cannot quietly stop failing, and a real FAIL cannot hide among them:
+
+| Control | What is done | Asserted outcome |
+|---|---|---|
+| Wrong line text | `router.ts:131` is asserted against text it does not carry | `probe-FAIL`, printing both the line read and the expectation |
+| Absence asserted where the literal is present | `quiet` is asserted absent from `router.ts`, where it occurs three times | `probe-FAIL … (matching lines): expected [0], got [3]` |
+| Missing checkout | a blob is read from `/nonexistent-repo` | `probe-FAIL`, named as a read failure rather than passing |
+| Positive control | the same helper asserts the true count of three | `probe-PASS`, so the controls are not merely showing that every probe is rejected |
+
+What it does **not** establish: anything about Rust behaviour. It reads a standard and two
+pinned source trees, exactly like the rest of this section. Acceptance criterion 6 stays
+unproven, and is listed as such under `## Engines`.
+
+**Full output of the `--quiet` baseline check:**
+`research/runs/R63/2026-09-05T183003Z-44e034fc1d72/review/evidence/r63-quiet-baseline-r4.log`
 
 **Full output of the comparison:**
 `research/runs/R63/2026-09-05T183003Z-44e034fc1d72/review/evidence/r63-crossrun-compare.log`
@@ -716,8 +971,9 @@ grep exit codes that are printed deliberately as the raw form of an asserted abs
 - `opus raw/opus-9c0a786feae86166d2b76da49efa96e32bf0ecec3431b8c61be4c1bbecdcd751.md`: Claude `claude-opus-5` via `claude-agent-tool` (`operations.opus.actual_model`); shape check passed; ran read-only evidence collection of its own (`git show` at both pins, `curl`, `gh api`) and no build or test. Figures retrieved 2026-09-10. Recommends `indicatif = "0.18"` in the CLI crate only, design C, `std` for the `CI` gate; runner-up `cliclack`. No Doxa report is required for the Focused tier.
 
 Both engines converged on `indicatif` at the `0.18` requirement, on stderr-by-default, on
-call-site-owned gating, and on excluding `spinoff` (stdout default) and `spinners`
-(undeclared MSRV). The disagreements and what settled each:
+call-site-owned gating, on excluding `spinoff` (stdout default) and `spinners` (undeclared
+MSRV), and — recorded here for the first time, in item 8 — on `--quiet` as an input to the
+call-site predicate. The disagreements and what settled each:
 
 1. **The `CI` predicate — the one disagreement that would have changed shipped
    behaviour.** Codex recommends `std::env::var_os("CI").is_none()`, explicitly so that
@@ -825,6 +1081,35 @@ call-site-owned gating, and on excluding `spinoff` (stdout default) and `spinner
    repository URL in the check's User-Agent. **No design choice, no gate-2/3/4/5/6 outcome,
    no acceptance criterion and no recommendation changed. One exclusion's stated ground
    changed**, `spinner` 0.5.0, and it remains excluded.
+   **Revision 3 was then audited twice.** The empirical audit `review/audit-codex.md`
+   (actor `audit-codex-2026-09-05T183003Z-44e034fc1d72-r3`, `gpt-5.6-terra`, family
+   openai, audit sha256
+   `51117428dac3efa2537141b1191aaf08b9f82505215baf99c00e2453ce941852`) **approved** it: its
+   rerun matched the cited log at 1071 lines with the single class-V date line differing,
+   the classifier reported `unclassified=0 violations=0` across five comparisons, its
+   controls were verified to reject what they claim to reject, and six cited endpoints were
+   spot-checked. The judgment audit `review/audit-fable.md` (actor
+   `audit-fable-…-r3`, `claude-opus-5`, family anthropic, audit sha256
+   `4cc6f4df6dd1442c3e9126a1be0bf9a04a2a3914ce38de6885116a3f97d1b1c0`) **rejected** it on
+   one finding, quoted in full in this decision's opening note: the suppression predicate
+   omitted `--quiet`, which the binding CLI Design Standard requires; the prompt's LOW
+   question was left unanswered although both raws answered it; and the affirmative "no
+   `BASELINE-REVIEW:` line" claim was wrong, because the ts implementation F283 records
+   defines `-q, --quiet` and does not consult it at the spinner gate. That audit stated
+   that the recommendation itself follows and should not be disturbed.
+   **Revision 4** (2026-09-15) answers that finding in all three limbs: `--quiet` becomes
+   the third input to the one predicate throughout (the recommendation paragraph, the
+   must-agree list, the essential behaviors, new acceptance criterion 6, criterion 5's
+   scope, the design-preservation paragraph, the CLI fit note and the py rationale); the
+   LOW question is answered in `### Principles and implementation`, with `--no-input`
+   answered separately as R61's subject; the wrong baseline sentence is replaced by the
+   `BASELINE-REVIEW: F283` line in the runbook's form; the convergence both raws recorded
+   is written up as item 8 below; and one new evidence file,
+   `review/evidence/r63-quiet-baseline-r4.sh` with its log, asserts the standard's two
+   sentences and the ts and py facts the baseline line rests on. **No recommendation, crate,
+   version, design alternative, gate outcome, exclusion, runner-up condition or parameter
+   line changed.** Revision 3's script, cited log, classifier, classifier log,
+   negative-control log and five archived predecessors were neither edited nor rerun.
 7. **Fitness gate 1, and the enumeration behind striking it.** The owner ruled on
    2026-09-12 (Q4 as superseded by Q7.B) that licence compatibility is not evaluated for
    any dependency or tool, including crates compiled into the shipped artifact. Gate 1 is
@@ -852,6 +1137,40 @@ call-site-owned gating, and on excluding `spinoff` (stdout default) and `spinner
    (archived 2020-04-20, newest unyanked release 2019-11-04), so the candidate set and the
    recommendation are unchanged — but the ground had to be restated, and this decision
    records the discrepancy rather than quietly repairing it.
+8. **The `--quiet` clause — a convergence both raws recorded and revision 3 dropped.**
+   This is not a disagreement; it is the opposite, and its omission was the second limb of
+   the judgment audit's finding, which requires this section to record either the
+   convergence or a deliberate drop. **Opus** answers the prompt's LOW question by name:
+   "This is the whole answer to the LOW question about `--quiet`: the gating lives at the
+   call site, one predicate, one place" (`raw/opus.md:196`), having just read `uv`'s
+   `Printer::new(quiet, verbose, no_progress)` and `suppresses_progress`
+   (`raw/opus.md:194`); its summary repeats it — "LOW: gating lives at the call site as a
+   `ProgressDrawTarget`, which composes cleanly with `--quiet`/`--no-input`"
+   (`raw/opus.md:573`) — and its migration table gives the shape: one
+   `fn target(&self) -> ProgressDrawTarget` folding "not-a-TTY, `CI` set, `--quiet`, and
+   later `--no-progress`" (`raw/opus.md:664`), with the flags themselves defined on
+   "R60's surface" (`raw/opus.md:666`). **Codex** puts `--quiet` and `--no-input` in its
+   acceptance criteria (`raw/codex.md:17`), in its migration plan as "policy inputs (`CI`
+   presence, quiet, and no-input)" (`raw/codex.md:74`), and in its validation strategy,
+   which asserts empty stderr under `CI`, non-TTY, `--quiet` and `--no-input`
+   (`raw/codex.md:89`). **Settled by adopting the convergent half and refusing the
+   Codex-only half with a reason.** `--quiet` is adopted, and it is independently required
+   of this template by the binding standard (R7.4, restated in the MUST-labelled R4.4), so
+   it does not rest on engine agreement — which is the correct order under the research
+   mandate, since agreement alone cannot select a design. `--no-input` is **not** adopted
+   as a progress input: the standard lists it as "Never prompt; fail if input would be
+   required" (v1.4.14, line 253) and prompting is R61's subject, while the fetch this
+   spinner wraps asks nothing; adopting it here would gate progress on a flag that decides
+   a different question. Both facts are now stated in `### Principles and implementation`
+   rather than left silent.
+   **One further Codex-only point, recorded and not escalated.** Codex alone requires
+   cancellation to clear the spinner line (`raw/codex.md:17`). This decision's essential
+   behaviors name the success and error paths, and criterion 4 covers post-exit residue.
+   Cancellation is a signal-handling question governed by R67's exit-code taxonomy
+   (owner-accepted 2026-09-14: `SIGINT` → 130, `SIGTERM` → 143), and R63 introduces no
+   signal handling, so it is not added as an acceptance criterion here. If P03's template
+   installs handlers for those signals, clearing the spinner line on that path belongs to
+   the same guard type this decision already recommends for the `?` early-return case.
 
 **Uncertainty.** The evidence here is registry queries, GitHub API queries, and source
 read from published crate artifacts and from two pinned git trees. **No Rust code was
@@ -861,6 +1180,9 @@ such wherever it appears. Neither revision 2 nor revision 3 changed this: the ne
 controls, the classifier and the pass/fail summaries are shell, `python3` and `curl`
 output, not compiled Rust, and the r1 auditor's own `CI=""` Rust probe is deliberately
 **not** adopted into this check, because running it would falsify the sentence above.
+Revision 4 does not change it either: its new check reads a markdown standard and two
+pinned source trees, so the `--quiet` clause is carried on a normative rule and a source
+reading, and no `--quiet` behaviour has been observed in any language.
 Codex's figures were not re-queried at their own retrieval date (2026-09-05); where the two
 raws differ numerically this decision quotes the 2026-09-13 values for live figures and the
 2026-09-10 values for pinned-source readings, both re-taken by revision 3's log. The
@@ -876,11 +1198,23 @@ forward unconfirmed (see below).
   with `width() == 0` driven through `ProgressDrawTarget::term_like`, and a
   pseudo-terminal reporting `ws_col == 0`. Until then, the decision not to port the D-033
   guard rests on source reading, not on observed behaviour.
-- **Every one of the five observable acceptance criteria.** No Rust crate exists in this
+- **Every one of the six observable acceptance criteria.** No Rust crate exists in this
   repository, so none has been executed. *What would prove them*: the integration tests
   named in `## Decision`, with `TERM` pinned to a non-`dumb` value so `is_dumb()` cannot
   make a test pass for the wrong reason, and `cargo tree -p <library-crate> -i indicatif`
   to prove the library and web crates stay clean.
+- **The `--quiet` clause specifically — new in revision 4, and the least proven thing
+  here.** What *is* established is documentary: the binding standard requires it (R7.4,
+  R4.4), ts defines the flag and does not consult it at the spinner gate, py defines the
+  flag and has no indicator to suppress, and `uv` folds `quiet` into the same `target()`
+  method this design uses (the first three asserted in
+  `review/evidence/r63-quiet-baseline-r4.log`; the fourth carried from `raw/opus.md:194`,
+  read on a moving branch). What is **not** established is that the recommended design
+  suppresses under `--quiet`, because nothing has been built or run: that is acceptance
+  criterion 6, and it is P03's to prove. Two dependent facts are also unsettled and are
+  named rather than assumed: R60 has not yet defined the flag's surface, and R4.4's rule
+  that `--debug` overrides `--quiet` has no resolved ranking here — R63 consumes a boolean
+  it does not compute.
 - **Dependency-tree resolution on the policy floor.** Both raws state, and this review
   confirms, that every declared `rust-version` in the recommended tree is at or below
   1.85. Neither a resolved `Cargo.lock` nor a `cargo +1.96 check` has been run, because
