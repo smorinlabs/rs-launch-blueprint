@@ -1,4 +1,47 @@
-# R81 — docs-delivery-model (bundle, Focused) — DECISION (revision 3, 2026-09-13)
+# R81 — docs-delivery-model (bundle, Focused) — DECISION (revision 4, 2026-09-15)
+
+**Revision note (revision 4) — three recorded repairs, no re-research and no
+change of recommendation.** `review/audit-codex.md` approved revision 3 with no
+unresolved findings; `review/audit-fable.md` rejected it on three findings, all
+of them about what the decision fails to record *around* its recommendation, and
+stated that the recommendation itself follows from the evidence. This revision
+repairs exactly those three and changes nothing else.
+
+- **J1** — "the shipped-site attribution duty is recorded only for Font Awesome
+  icon assets, and the decision gives no reason why one `AND`-conjunct in its own
+  table creates a distribution duty while `elasticlunr-rs`'s does not, although
+  check 14 establishes that search ships by default". **Repair:** a new
+  **shipped-site notice rule** states the test that separates a
+  source-redistribution notice from a shipped-content notice, applies it to
+  `elasticlunr-rs` explicitly, and widens `## Engines` gap 4 from the Font Awesome
+  icons to **every third-party asset the default theme and the default search
+  runtime emit into `book/`**.
+- **J2** — "fitness gate 5 (default features and any async-runtime coupling) has
+  no answer anywhere in the decision, and gates 2, 3, 4 and 6 are answered in
+  substance but never recorded as gate answers". **Repair:** a
+  **Fitness gates, answered for the recommended tool** block records all six in
+  the shape R42 and R67 use — gate 1 keeping its `inapplicable` line verbatim —
+  and gate 5 resolves which install line this template's recipe uses, what that
+  implies for `mdbook serve`, and why no async-runtime coupling reaches R05 or
+  R69.
+- **J3** — "the medium-confidence fit judgement states its reversal cost but never
+  states what would raise its confidence or what P03 signal would show the call
+  wrong, its bolded 'Rust practice splits on exactly that' reaches past the body's
+  own 'the one surveyed Rust project', and it does not draw on the seven further
+  verified `book.toml` adopters `opus`'s raw already carries". **Repair:** the
+  bolded claim is narrowed to the five repositories check 13 surveys; `opus`'s
+  seven further adopters — including `rust-lang/rustup`, a Rust CLI rather than a
+  language book — are cited with their endpoint and retrieval date and marked as
+  carried, not re-verified here; a new **What would raise this above medium, and
+  what would show it wrong** paragraph supplies the missing half of the confidence
+  statement; and the runner-up's "gains nothing in return" is replaced by ground
+  4's own cost list.
+
+**The recommendation, the crate, the version, the corpus figures and the four
+`- assumes` lines are unchanged**, and every evidence artifact revision 3's
+audits reproduced is byte-identical. The revision-3 note that follows is kept
+verbatim, because the recommendation it explains is revision 4's recommendation
+too.
 
 **Revision note — the recommendation changed, and the reason it changed is not
 the reason you would expect.** Revision 2 (sha256
@@ -29,7 +72,10 @@ below as a finding rather than as a gate. The rule forbidding a committed
 `theme/` directory stands, because committing MPL-2.0 files into this repository
 would make them this repository's own source — the one case the ruling preserves.
 The Font Awesome attribution notice stands, because it is a distribution duty on
-shipped content, not a licence-compatibility check.
+shipped content, not a licence-compatibility check. *(That sentence is revision
+3's and is kept as written; revision 4 widens what it covers — the rule it rests
+on reaches every third-party asset the built site carries, not the icons alone.
+See **The shipped-site notice rule** below.)*
 
 Two candidates that revision 2 weighed partly on licence re-enter and were
 re-evaluated on fit alone: `mdbook-mermaid` (a preprocessor, not a competing
@@ -110,7 +156,13 @@ carries.
    full-text search — `[output.html.search] enable` is documented as "on by
    default" (check 14). Nothing was traded away.
 2. **The corpus this template is required to carry is a nested multi-category
-   tree, and Rust practice splits on exactly that.** F342 fixes six Diátaxis
+   tree, and the five Rust projects surveyed here split on exactly that
+   structure — four flat, one nested.** That is the scope of the claim, and it is
+   stated once here for every place this decision refers to the split: **five
+   repositories, one of them on the nested side**, chosen as widely used Rust CLI
+   and library projects rather than by a stated sampling rule, which is the
+   limit this ground carries. It is not a measurement of Rust practice at large.
+   F342 fixes six Diátaxis
    categories as an owner decision already made. Measured at the ts pin
    `cb1cbcb2e88b898e8c081b0abbfabc1630079c00` through the GitHub tree API
    (check 12, retrieved 2026-09-13): **35 `.md` files totalling 171,225 bytes**
@@ -134,6 +186,24 @@ carries.
    navigation for 35 nested files. The one surveyed Rust project that faces the
    same question answered it with a generator; none of the four README-fronted
    projects has a nested tree to navigate.
+
+   **Seven further adopters, carried from `opus`'s raw rather than re-verified
+   here.** A one-of-five sample is thin for the weight this ground carries, and
+   `opus` already recorded more of it. Through
+   `GET https://api.github.com/repos/<o>/<r>/contents/<path>` (retrieved
+   2026-09-10, `raw/opus-a80f5625….md`): `rust-lang/book`, `rust-lang/reference`,
+   `rust-lang/nomicon`, `rust-lang/rust-by-example`, `rust-lang/rustc-dev-guide`
+   and `rust-lang/api-guidelines` each ship a `book.toml`, and **`rust-lang/rustup`
+   ships `doc/user-guide/book.toml`** (plus a second book under `doc/dev-guide`).
+   The first six are the Rust project's own normative documents, so they say what
+   the language's teams do for book-shaped material; `rustup` is the one that bears
+   on ground 2, because it is **a Rust CLI tool with a nested in-repo guide, not a
+   language book** — the same structure `cargo-generate` presents, from a second
+   project. These eight repositories are **not** part of check 13, which pins and
+   walks five trees at immutable commits; they are `opus`'s figures with `opus`'s
+   endpoint and retrieval date, and this run did not re-verify them. Re-verifying
+   `rustup`'s guide at a pinned commit is the cheapest evidence that would raise
+   this judgement's confidence, and it is named as such below.
 3. **It restores a capability the shared principle names and ts lost.** py's
    README pointer resolves for a reader who is not browsing the repository
    (`py README.md:20` → the Read the Docs URL, pin `b08bccfb`); ts's does not
@@ -160,6 +230,41 @@ judgement is a design call at medium confidence**, recorded as such under
 `## Engines`; the facts it rests on are high confidence because they are
 failure-gated in checks 5, 6 and 12–14.
 
+**What would raise this above medium, and what would show it wrong.** Revision 3
+stated the cost of being wrong — four artifacts, one commit, the corpus untouched
+— but not the other half, although every unproven entry in this document carries
+a "what would prove it". Both halves are stated here.
+
+*Raising it.* Two things would, and neither is expensive. (i) **A pinned
+re-verification of `rust-lang/rustup`'s `doc/user-guide` tree** at an immutable
+commit, walked the way check 13 walks its five: a second Rust CLI carrying a
+nested in-repo guide would take ground 2's structural sample from one-of-five to
+two-of-six on the nested side and would answer the selection-rule objection with
+a case nobody picked to win an argument. `opus`'s raw already names the path, so
+the work is one tree read. (ii) **An owner statement of preference about a public
+documentation URL.** Ground 3 is currently recorded as a capability regained
+rather than a requirement satisfied, precisely because no owner has asked for one;
+an owner who says the template should have a hosted site turns ground 3 into a
+requirement and makes this judgement high confidence without any further
+research. No source can supply that: it is an owner input, not a finding.
+
+*Showing it wrong in P03.* Three signals, in the order they would arrive. (i)
+**The corpus does not become nested.** Ground 2 rests on F342's six categories
+producing a nested tree like the 35-file one measured at the ts pin; if the Rust
+template's `docs/` settles as a flat handful of files, the structure the
+generator is justified by is absent and the no-generator runner-up wins on its
+own terms. (ii) **The generator costs the raw-source reader something after
+all.** Ground 1 is a documented-behavior argument, not an observation: if gap 2's
+differential — `mdbook build` output normalized and diffed against GitHub's
+rendering of the same sources — shows the two surfaces disagreeing on syntax
+inside the `GFM ∩ mdBook-0.5-default` set, then the superset claim fails and the
+trade this decision says does not exist does exist. (iii) **The layer costs more
+than a pin.** If the docs job becomes recurring maintenance — `create-missing =
+false` producing false failures, the pinned archive needing attention on a
+cadence, forks broken by the inherited workflow — the bounded-cost ground 4 is
+overstated. Any one of the three is enough to take the one-commit deletion; none
+of them requires re-researching the corpus, which is why the reversal is cheap.
+
 **Fitness gate 1** is recorded, not omitted, and its answer is:
 
 > `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool`
@@ -180,10 +285,102 @@ What the ruling does not reach is the repository's own declared licence
 expression, which stands: `license = MIT OR Apache-2.0` in `## Parameters` is
 this repository's own source, not a dependency.
 
+**Fitness gates, answered for the recommended tool.** The prompt's six gates are
+recorded here as gate answers, in the shape the sibling post-ruling decisions R42
+and R67 use, because revision 3 answered gates 2, 3, 4 and 6 in substance in four
+different places and left gate 5 unanswered. `mdbook` 0.5.4 is a **build-time
+binary executed as a separate process**, linked into nothing, and the gates are
+answered in that light rather than skipped.
+
+**Gate 1 (licence).** `inapplicable — owner ruling 2026-09-12 (Q7.B): licence
+compatibility is not evaluated for any dependency or tool`, exactly as recorded
+above. The declared expressions in the table below are figures, and they exclude
+nothing.
+
+**Gate 2 (crate and dependency-tree MSRV).** **Inapplicable to the workspace
+surface**: `mdbook` enters no `Cargo.toml`, so it contributes nothing to
+`rust-version` and nothing to the CI floor job that `msrv-policy` governs. The
+figure is recorded anyway — `mdbook` 0.5.4 declares `rust_version` 1.88.0 (check
+2), below a floor of 1.96 derived from stable 1.98.1 (`opus` raw, retrieved
+2026-09-10). On this decision's acquisition path nothing is compiled at all
+(gate 5); where a contributor falls through to a source install, the binding
+floor is the *development* toolchain from `rust-toolchain.toml`, not
+`msrv-policy` — the same reading R42 (resolved) records for tools acquired by
+`cargo install`.
+
+**Gate 3 (open advisories; `unsafe` posture).** **Pass on advisories**:
+`rustsec.org/packages/mdbook.html` answers 200 while `mdbook-mermaid.html`
+answers 404 in the same run, so the 200 is a page and not a transport artifact,
+and the single advisory it carries, `RUSTSEC-2021-0001`, records
+`patched = [">= 0.4.5"]` — 0.5.4 is patched, and no open advisory applies (check
+4). **`unsafe` posture: not audited and not asserted.** Neither engine ran a
+source audit or `cargo-geiger`, and neither did this run; it is `## Engines`
+unproven entry 3, bounded — not resolved — by the fact that a separate build-time
+process cannot reach this template's address space. The residual risk is
+supply-chain, and the version pin plus the release-archive checksum are what
+narrow it.
+
+**Gate 4 (builds and is tested on `ubuntu-latest, macos-latest`).** **Pass, by
+published artifact rather than by CI badge**: the v0.5.4 release publishes exactly
+six assets (check 11), mapping `ubuntu-latest` →
+`mdbook-v0.5.4-x86_64-unknown-linux-gnu.tar.gz` and `macos-latest` →
+`mdbook-v0.5.4-aarch64-apple-darwin.tar.gz`. There is **no**
+`aarch64-unknown-linux-gnu` asset, so an aarch64 glibc Linux host — outside this
+matrix — takes the musl archive or a source install. A Windows asset exists
+(`x86_64-pc-windows-msvc.zip`); Windows is noted, not required. The corpus itself
+is platform-independent Markdown.
+
+**Gate 5 (default features and any async-runtime coupling).** Unanswered in
+revision 3 and answered here, because two statements in this decision needed
+reconciling: F351 ships `just docs-dev` running `mdbook serve --open`, while the
+maintainers' CI page — quoted under **Cost** — recommends installing with
+`--no-default-features --features search` because that "Disables features like
+the HTTP server used by `mdbook serve`" (check 5).
+
+- **Default features include the HTTP server.** That is the content of the
+  maintainers' sentence read in the other direction: the flag pair is what
+  *removes* `serve`, so the default set is what F351 needs.
+- **Which install line this template uses: the prebuilt release archive, with
+  default features, for CI and for contributors alike** (check 11's six assets;
+  the maintainers' CI page recommends that path because it "is relatively fast,
+  and does not necessarily require dealing with caching"). The
+  `--no-default-features --features search` line is scoped by that same page to a
+  **source** install (`cargo install`), and **it is not this template's install
+  line**. A contributor must not use it, because it would delete the server F351
+  ships. A docs CI job that only runs `mdbook build` could use it, but has no
+  reason to: taking it means compiling mdBook from source, which is the slower
+  path the maintainers' own guidance advises against, and the prebuilt archive
+  already carries everything `mdbook build` needs.
+- **Not verified by execution, and recorded as such.** No archive was downloaded,
+  nothing was installed, and `mdbook serve` was never run — the role contract
+  forbids implementing the recommendation. "The published archive carries the
+  server" rests on the maintainers scoping the disabling flag to a source
+  install, not on an observation; it is `## Engines` unproven entry 7, and the
+  first `just docs-dev` in P03 proves or refutes it.
+- **Async-runtime coupling: confined to mdBook's own process, and it reaches
+  nothing here.** mdBook's serve path carries an async stack: the resolved lock
+  committed as `review/evidence/mdbook-0.5.4-Cargo.lock` contains `tokio`
+  1.53.1, `axum` 0.8.9 and `tokio-tungstenite` 0.29.0 (check 18). None of those
+  enters this template's `Cargo.toml`, appears in its lock, or constrains it in
+  any way, because mdBook is a separate binary. **R05 (`sync-async-execution-model`)
+  and R69 (`web-framework-stack`) are therefore unconstrained by this item**, and
+  no `CONFLICT:` line follows from this gate.
+
+**Gate 6 (binary-size and compile-time cost, qualitatively).** **Stated, not
+measured.** The template's own binaries are unaffected: mdBook is never linked,
+so it adds nothing to `cargo build --release` output size and nothing to
+`cargo test` compile time, and it adds no `Cargo.toml` entry. What it does cost is
+ground 4's list — one `ubuntu-latest` CI job with an archive download, and a tool
+pin `cargo update` cannot see. **No wall-clock or byte figure is asserted here**;
+nothing was timed, downloaded or built in this run, which is `## Engines`
+unproven entry 5.
+
 **The facts below are retained as findings, not as a gate.** They are kept
 because the ruling changes what is *evaluated*, not what is *true*, and two of
 them carry duties the ruling explicitly does not void — the `theme/` rule and the
-Font Awesome attribution notice.
+attribution notices owed on the shipped site, of which the Font Awesome one is
+the sharpest but, as **The shipped-site notice rule** below states, not the only
+one.
 
 `mdbook` 0.5.4 declares `license: MPL-2.0`
 (`GET https://crates.io/api/v1/crates/mdbook/versions`, newest unyanked `0.5.4`,
@@ -243,6 +440,37 @@ site and therefore did not confirm that the theme emits those assets, so P03 mus
 check it — it is `## Engines` gap 4, and it is now unconditional work because the
 generator ships.
 
+**The shipped-site notice rule, and why the duty is not scoped to icons.**
+Revision 3 recorded the Font Awesome duty and stopped there, without stating why
+one conjunct in the table above creates a duty on the built site while
+`elasticlunr-rs`'s `AND MIT` conjunct is disposed of as source redistribution.
+The rule is this: **a licence expression is owed against an act of
+redistribution, and this template performs two different acts.**
+
+| The act | What it hands to a recipient | Which notices that act owes |
+|---|---|---|
+| publishing this repository | this repository's own source, which contains no third-party file — the `theme/` rule below exists to keep it that way | none of the 218: they are a separate build-time binary's dependencies and no byte of them is in this repository |
+| publishing `book/` to GitHub Pages | the files mdBook's default theme and its default search runtime emit — stylesheets, fonts, icon assets, JavaScript | whatever notices those specific emitted files carry, from whichever upstream they came |
+
+The table of 218 packages answers only the first act, which is what its reading
+("which `MIT OR Apache-2.0` redistribution already does") is about. It cannot
+answer the second, and not merely because this run built no site: **a crate's
+declared licence expression is not a list of the third-party files that crate
+vendors**, so a walk over crate metadata cannot enumerate what lands in `book/`
+even in principle. Only inspecting a built `book/` can.
+
+`elasticlunr-rs` is the case that makes the asymmetry visible, and it is the
+reason the duty is widened rather than merely restated. Check 14 establishes that
+`[output.html.search] enable` is "on by default", so a default build ships a
+search runtime. If any file in that runtime originates in `elasticlunr-rs` or in
+the JavaScript it vendors, its `MIT` notice-retention term is owed **a second
+time** — by whoever publishes the site, not only by whoever redistributes this
+repository's source. **This decision asserts nothing about which files a built
+`book/` actually contains**; what it fixes is that the question is a file-list
+question for P03 rather than a licence-arithmetic question already answered
+above, and that it is asked of every emitted third-party asset rather than of the
+icons alone.
+
 **The generator slot: what else was considered, and why it lost on fit.** With
 gate 1 struck, every candidate is judged on fit alone, and two candidates that
 revision 2 weighed partly on licence are re-evaluated here rather than carried
@@ -252,8 +480,13 @@ forward on their old reasoning.
   `codex`'s recommendation in full and `opus`'s stated runner-up. This is the
   honest runner-up and it remains available as a one-commit deletion. It loses on
   the fit judgement's grounds 1–3 above: it forgoes search, a defined reading
-  order across six categories and an off-repository pointer, and gains nothing in
-  return, because the generator takes nothing away from the raw-source reader.
+  order across six categories and an off-repository pointer. **What it buys back
+  is ground 4's cost list, and revision 3 wrongly said it was nothing**: one
+  `ubuntu-latest` CI job, a tool pin `cargo update` cannot see, a workflow every
+  fork inherits, and a dependence on a tool whose issue triage this decision
+  itself measures as weak. The trade is those four costs against grounds 1–3, not
+  a free choice; it goes to the generator because ground 1 means none of the
+  three capabilities is paid for by the raw-source reader.
 - **`zola`** — re-evaluated on fit alone, and it still loses, for reasons that
   never depended on its licence. Its crates.io entry is a placeholder: one
   version, `0.1.1`, `yanked: true`, so there is **no unyanked registry artifact at
@@ -389,13 +622,14 @@ documented as preserving raw-source fidelity.
 would be unreadable in place until someone built it. (B) *README-centric plain
 tree only* (ts's shape) — **rejected on fit**, and it is the ranked runner-up
 rather than a dismissal: it is the correct answer for a flat handful of root
-files, which is what the Rust projects that adopt it actually carry (check 13),
+files, which is what four of the five Rust projects check 13 pins actually carry,
 and the wrong answer for the six-category nested tree F342 fixes (check 12). Its
 costs are no search, no defined reading order across six categories, and no
-pointer that resolves for a reader who is not browsing the repository — and
-because mdBook takes nothing away from the raw-source reader (check 5, check 6),
-paying those costs buys nothing. The full argument is `## Decision`'s **fit
-judgement**. (C) *Dual-readable tree — one corpus that GitHub renders
+pointer that resolves for a reader who is not browsing the repository; what it
+buys back is ground 4's list — one CI job, a pin, an inherited workflow and a
+dependence on mdBook's maintenance — and because mdBook takes nothing away from
+the raw-source reader (check 5, check 6), none of the three costs buys a reader
+guarantee. The full argument is `## Decision`'s **fit judgement**. (C) *Dual-readable tree — one corpus that GitHub renders
 in place and that mdBook can build* — **recommended**, for the corpus and the
 generator layer alike. (D) *Narrative inside rustdoc*
 (`#![doc = include_str!(…)]`) — rejected: a CLI binary and a web surface have no
@@ -437,7 +671,11 @@ workflow (check 7, blobs pinned by SHA), and `cargo-generate/cargo-generate`,
 which keeps an mdBook guide inside the tool's own repository — `guide/book.toml`
 plus `guide/src/SUMMARY.md` and the subdirectories `templates/` and `usage/`,
 re-verified here at pinned commit `b1def653c6104a5e98024f56208b243dc6294de9`
-(check 13, retrieved 2026-09-13). The rejected alternative (B)'s reference
+(check 13, retrieved 2026-09-13). **A second CLI-shaped analogue is carried from
+`opus`'s raw and not re-verified here**: `rust-lang/rustup` keeps its user guide
+as an in-repo mdBook at `doc/user-guide/book.toml` (`opus` raw, contents API,
+retrieved 2026-09-10), alongside the six `rust-lang` documentation repositories
+listed at ground 2. The rejected alternative (B)'s reference
 implementations are `ts-launch-blueprint` itself at pin `cb1cbcb2` and the flat
 Rust CLI shape — `ripgrep`, `clap`, `serde`, `ratatui`, each re-verified here at
 a pinned commit as carrying **no** `docs/`-like narrative directory and no
@@ -664,6 +902,50 @@ repository root. All three were defects in the check, not in the claims.
 | 15 | Zola's site model | `curl https://www.getzola.org/documentation/getting-started/configuration/`, tag-stripped assertions | 0 | "The base URL of the site; the only required configuration variable." present; **`SUMMARY` occurs 0 times and `chapter` occurs 0 times** on that page — the fit reason for excluding Zola, stated independently of its licence | same |
 | 16 | Revision-3 diff against the revision-2 blob | `git cat-file blob 9f2bcb9ddf5266bf4face766e98b7cd1be3616ad`; region extraction and `difflib.unified_diff` against this file | 0 | revision-2 blob sha256 asserted `5ab7479c…`; **nine regions asserted byte-identical** (the licence-partition table, its reading, the shared-requirement through what-may-vary block, the four `- assumes` lines, check 8's snapshot rationale, the revision-1 check-defect record, disagreement 4, unproven entry 3, and the revision-1 history entry); **five regions the ruling does change** asserted to have changed *and* to carry their marker sentence; five required texts asserted present (the one-line gate-1 record, the `theme/` prohibition, the Font Awesome duty, the "reaches the template's own source" finding, the mermaid exclusion); **the branch vocabulary asserted absent from the live decision and still present in the revision history**; no `## Supersedes`; **whole-file hunk count asserted to be exactly 17** | same |
 
+**What revision 4 ran, what it did not run, and what happened to check 16.**
+Revision 4 answers three judgment findings about what the decision records; it
+re-researches nothing, so **checks 1–15 were not re-run** and the table above,
+`review/evidence/docs-delivery-claims.sh` and
+`review/evidence/docs-delivery-claims.log` are revision 3's artifacts, left
+byte-identical (asserted by sha256 in check 18, together with the three auditors'
+logs, the lock and the licence snapshot). **Check 16 no longer passes, by
+construction, and that is stated rather than hidden**: it compares the live
+`DECISION.md` against the revision-2 blob and gates the whole-file hunk count at
+exactly 17, a tripwire revision 3 installed so that "a later stray edit cannot
+slip in as an unremarked change". Revision 4's edits are exactly such a change —
+an intended one — so a rerun of `docs-delivery-claims.sh` now reports `FAIL` in
+check 16 and exits 1, while its checks 1–15 are unaffected. Rather than edit a
+script two audits reproduced, revision 4 adds a **new** script,
+`review/evidence/docs-delivery-claims-r4.sh`, whose check 17 re-targets the same
+revision-diff mechanism from the revision-2 blob to the **revision-3** blob
+`460e6f9002663f7e00921406c3bd9bc2785328fe` and carries every region assertion
+check 16 made, plus the regions revision 4's brief names as preservation targets.
+Both new checks are **offline and deterministic** — no network, no `gh`, no
+`curl` — and the script writes nothing inside `review/evidence/`, using a
+`mktemp` directory it removes on exit, so a rerun cannot disturb
+`review/evidence/snapshots/` the way the concurrent shared-directory rerun
+recorded in `review/audit-codex.md` did. As run for revision 4 it made **99 failure-gated
+checks: 98 lines reporting `PASS`** — 18 from the shell's own `assert` helper (5
+in check 17, 13 in check 18) and 80 printed by check 17's Python region
+comparison, whose failure path sets the exit status that the shell assertion
+`revision-4 region and text diff` reads — **plus 1 gated
+`ASSERT hunk_count_is_16=True`**. **0 `FAIL` lines; 0 failed assertions; exit
+status 0.** Every line of that log is content-asserted; the script prints no
+unasserted recorded output at all, and it reads no host-dependent or volatile
+value — not even a toolchain banner — so nothing in it drifts. After this
+revision was finalized, the script was rerun twice and each run's output diffed
+against `review/evidence/docs-delivery-claims-r4.log`; both diffs were empty, so
+**that log is the complete output of that script, reproducible byte-for-byte on
+any checkout whose object database holds the revision-3 blob**. The one way it
+can legitimately differ is the one check 16 already documents: a run from a plain
+file copy with no `.git` cannot read the blob, so check 17 reports `FAIL` and the
+script exits 1.
+
+| # | Check | Command | Exit | Result | Log |
+|---|---|---|---:|---|---|
+| 17 | Revision-4 diff against the revision-3 blob | `git cat-file blob 460e6f9002663f7e00921406c3bd9bc2785328fe`; region extraction and `difflib.unified_diff` against this file | 0 | revision-3 blob sha256 asserted `4647372666…`; **26 regions asserted byte-identical** — the nine check 16 carried from revision 2 (the licence-partition table, its reading, the shared-requirement block, the four `- assumes` lines, check 8's snapshot rationale, the revision-1 defect record, disagreement 4, unproven entry 3, the revision-1 history entry) plus seventeen more this revision must not touch (the revision-3 recommendation-change note in two parts, the ledger decision table, the four-artifacts paragraph, the `theme/` rule, the ledger-rows-settled paragraph, both `BASELINE-REVIEW` lines, the minimal example, the `re-verify:` line, the **whole `## Parameters` section**, the 16-row check table, the gated-count paragraph, the reproducibility paragraph, disagreements 2–3, and the revision-2 and revision-3 history entries); **eight regions the findings require changed** asserted to have changed *and* to carry their marker sentence; **31 required texts** asserted present and **11 absent** from the live decision — including the two overreaching practice sentences and both "gains nothing"/"buys nothing" clauses; the title asserted to name revision 4; no `## Supersedes`; **whole-file hunk count asserted to be exactly 16** | `evidence/docs-delivery-claims-r4.log` |
+| 18 | Preserved artifacts, and gate 5's async facts | `shasum -a 256` over seven evidence artifacts; a `[[package]]` reader over `evidence/mdbook-0.5.4-Cargo.lock` | 0 | all seven artifacts asserted **byte-identical** to revision 3 (`docs-delivery-claims.sh`, `docs-delivery-claims.log`, the three auditors' logs, the lock, the licence snapshot); gate 5's async stack read from the lock and asserted by version — `tokio` **1.53.1**, `axum` **0.8.9**, `tokio-tungstenite` **0.29.0** — together with `font-awesome-as-a-crate` **0.3.1** and `elasticlunr-rs` **3.1.0**, the two packages the shipped-site notice rule reasons about; a control asserts that a package absent from the lock reports `NONE`, so the reader can fail | same |
+
 **Reproducibility.** `review/evidence/docs-delivery-claims.log` is **regenerated
 for revision 3** and is the output of the revision-3 script; it necessarily
 differs from revision 2's log, which the revision-2 auditor reproduced
@@ -722,17 +1004,23 @@ show the generator takes nothing away from the raw-source reader — mdBook 0.5'
 own alert syntax are stated by the maintainers, and GitHub's renderer behaves as
 claimed — so adopting it is a superset of `codex`'s shape, not a trade against
 it; (ii) check 12 measures the corpus F342 fixes at the ts pin (35 `.md` files,
-171,225 bytes, six nested category directories) and check 13 shows Rust practice
-splitting on exactly that structure — `ripgrep`, `clap`, `serde` and `ratatui`
-carry flat root files with no `docs/`-like directory and no `book.toml`, while
-`cargo-generate`, the one surveyed Rust CLI with a nested narrative tree, ships
-`guide/book.toml`; (iii) check 14 records that mdBook's HTML renderer enables
+171,225 bytes, six nested category directories) and check 13 shows **the five
+repositories it pins** splitting on exactly that structure — `ripgrep`, `clap`,
+`serde` and `ratatui` carry flat root files with no `docs/`-like directory and no
+`book.toml`, while `cargo-generate`, the one surveyed Rust CLI with a nested
+narrative tree, ships `guide/book.toml`. That sample is one-of-five on the nested
+side and carries no stated selection rule; its scope is stated in full at ground
+2, which also cites the seven further `book.toml` adopters `opus`'s raw carries
+(including `rust-lang/rustup`, a Rust CLI) as figures carried rather than
+re-verified here; (iii) check 14 records that mdBook's HTML renderer enables
 search by default, which is the capability a bullet list cannot supply over 35
 files. `codex`'s "no established requirement" is answered rather than overruled:
 F342 is an established owner requirement for a six-category information
 architecture, and the open question was only whether a hand-maintained bullet
 list is adequate navigation for it. The full statement is `## Decision`'s **fit
-judgement**; its confidence is medium and its reversal is one commit.
+judgement**; its confidence is medium, its reversal is one commit, and
+`## Decision` also states what would raise it above medium and which three P03
+signals would show it wrong.
 
 **Disagreement 2 — Zola's standing.** `codex` records Zola 0.19.1 as a qualified
 general-static-site alternative and notes its crates.io record looks obsolete;
@@ -809,12 +1097,23 @@ conclusion here.
    `cargo-geiger` run in either engine's run or this one; it is bounded only by
    the tool's build-time role. What would prove it: a `cargo-geiger` run over the
    pinned tree, which R06's policy owns the standard for.
-4. **Whether mdBook's default theme emits the CC-BY-4.0 Font Awesome assets** into
-   the built site (check 8 found the crate in the tree; nothing was built). What
-   would prove it: inspecting `book/` after a P03 `mdbook build`. This is now
-   unconditional work, because the generator ships, and the attribution duty it
-   may trigger is a distribution-notice duty on shipped content that the owner's
-   licence ruling does not void.
+4. **Which third-party assets a default `mdbook build` emits into `book/`, and
+   what notice each one carries.** Revision 3 scoped this entry to the CC-BY-4.0
+   Font Awesome icons; revision 4 widens it, under **The shipped-site notice
+   rule** in `## Decision`, to **every** third-party file the default theme and
+   the default search runtime write into `book/` — stylesheets, web fonts, icon
+   assets and JavaScript, the search runtime included, whether or not the crate
+   it came from appears in the 218-package walk. Nothing was built in this run and
+   **no asset list is asserted here**; check 8 found `font-awesome-as-a-crate`
+   0.3.1 (`CC-BY-4.0 AND MIT`) and `elasticlunr-rs` 3.1.0 (`(MIT OR Apache-2.0)
+   AND MIT`) in mdBook's dependency tree, and check 14 found search enabled by
+   default, which is why the question is open rather than answered. What would
+   prove it: `mdbook build` over a sample corpus in P03, then enumerating
+   `book/`'s non-content files and reading each one's upstream notice; the output
+   is a `book/` third-party-notices file, or a finding that none is owed. This is
+   unconditional work because the generator ships, and the duty it may trigger is
+   a distribution-notice duty on shipped content that the owner's licence ruling
+   does not void.
 5. **Wall-clock and byte cost** of installing and running mdBook: nothing was
    timed or measured in this run or in either raw; only the maintainers'
    qualitative wording is carried.
@@ -825,6 +1124,14 @@ conclusion here.
    2026-09-13, recorded and not gated). What would prove it: the owner setting the
    Pages source to "GitHub Actions" — a one-time manual repository setting no
    workflow can perform — and a deploy run publishing a page that answers 200.
+7. **That the published v0.5.4 archive carries the `mdbook serve` HTTP server**
+   (gate 5, new in revision 4). No archive was downloaded, nothing was installed
+   and `mdbook serve` was never run in this run or in either raw; the claim rests
+   on the maintainers scoping `--no-default-features --features search` to a
+   *source* install (check 5), which is an inference about the default feature
+   set, not an observation of the binary. What would prove it: the first
+   `just docs-dev` in P03 opening a served book from an archive-installed
+   `mdbook`.
 
 **What P03 must validate.** Acceptance criteria (a)–(e),
 with (b) handed to R82's checker and (e) enforced by review because it has no
@@ -832,7 +1139,7 @@ executable form. Additionally: that `mdbook build` with
 `[build] create-missing = false` fails on an unregistered page rather than
 fabricating one; that `docs/README.md` and each section `README.md` become
 `index.html`; that the two-job workflow behaves as described upstream and on a
-fork; and gaps 1, 2, 4 and 6 above. Revision 2 split this list across two
+fork; and gaps 1, 2, 4, 6 and 7 above. Revision 2 split this list across two
 branches; with the generator decided, the whole list applies. One item revision 2
 placed on the no-generator side is retained anyway as a belt-and-braces
 requirement for R82: the link walk should treat `docs/SUMMARY.md` as the
@@ -898,14 +1205,57 @@ fork that has not run the book build.
   mermaid support, and GitHub's documentation of it), 15 (Zola's site model) —
   and check 16 replaces revision 2's check 12, diffing this file against the
   revision-2 blob.
+- **Revision 4**, 2026-09-15, this document. Driven by `review/audit-fable.md`
+  (judgment audit, `verdict: reject`, findings J1, J2, J3), while
+  `review/audit-codex.md` (empirical) recorded `verdict: approve` and
+  `unresolved-findings: none` on the same revision. **The recommendation did not
+  change**, and neither did the crate, the version, the ledger-row values, the
+  corpus figures, the four `- assumes` lines or any evidence artifact; the
+  judgment auditor stated that the recommendation follows and that revision 4 is
+  an editing pass. **J1**: a **shipped-site notice rule** is added — a licence
+  expression is owed against an act of redistribution, this template performs two
+  (publishing the repository, publishing `book/`), the 218-package walk answers
+  only the first, and crate metadata cannot enumerate emitted files in any case;
+  `elasticlunr-rs`'s conjunct is disposed of explicitly against check 14's
+  default search; and gap 4 widens from the Font Awesome icons to every
+  third-party asset the default theme and default search runtime emit into
+  `book/`. **J2**: a **Fitness gates, answered for the recommended tool** block
+  records all six gates in R42's and R67's shape, gate 1 keeping its
+  `inapplicable` line verbatim; gate 5 is answered for the first time — default
+  features include the `mdbook serve` HTTP server, the install line is the
+  prebuilt release archive for CI and contributors alike,
+  `--no-default-features --features search` is the maintainers' *source*-install
+  option and is explicitly not this template's line, the unverified half is
+  recorded as new unproven entry 7, and mdBook's `tokio`/`axum`/`tokio-tungstenite`
+  stack is shown to stay inside mdBook's own process so R05 and R69 are
+  unconstrained. **J3**: the bolded practice claim is narrowed to the five
+  repositories check 13 pins, with the sample's scope and its missing selection
+  rule stated once in full at ground 2 and referred to from disagreement 1;
+  `opus`'s seven further `book.toml` adopters — the six `rust-lang` documentation
+  repositories and `rust-lang/rustup` at `doc/user-guide/book.toml`, a Rust CLI
+  rather than a language book — are cited with `opus`'s endpoint and retrieval
+  date and marked as carried, not re-verified; a **What would raise this above
+  medium, and what would show it wrong** paragraph supplies the missing half of
+  the confidence statement; and the runner-up's "gains nothing in return", with
+  its alternative-(B) twin, is replaced by ground 4's own cost list. Two new
+  offline checks, 17 and 18, are added in a **new** script
+  (`review/evidence/docs-delivery-claims-r4.sh`); checks 1–15 were not re-run and
+  revision 3's script and log are untouched.
 
 **Uncertainty.** High confidence in the mechanism facts (checks 2–15 read them
 from the maintainers' documentation, the registry, the advisory database, pinned
 repository trees, or GitHub's own renderer). **Medium confidence in the fit
 judgement itself**, which is the one call this decision makes that no source
-states for it: it weighs a measured corpus shape and a measured practice split
-against an unstated owner preference, and it is the kind of call an owner may
-reverse — which costs one commit, because the corpus does not change. Medium
+states for it: it weighs a measured corpus shape and a **five-repository
+structural sample, one of them on the nested side and chosen without a stated
+selection rule**, against an unstated owner preference, and it is the kind of
+call an owner may reverse — which costs one commit, because the corpus does not
+change. **What would move it off medium, and what would show it wrong, are stated
+in `## Decision`** under *What would raise this above medium*: a pinned
+re-verification of `rust-lang/rustup`'s nested guide or an owner statement about a
+public documentation URL would raise it; a corpus that stays flat, a rendering
+differential inside the agreed dialect (gap 2), or a docs job that turns into
+recurring maintenance would show it wrong. Medium
 confidence likewise in the two content-policy judgements
 `opus` originated and this decision adopts — dropping per-directory page lists in
 favor of a single `SUMMARY.md`, and the differentiate position on F345/F346 —
