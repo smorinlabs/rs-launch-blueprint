@@ -76,7 +76,7 @@ are false now: the controller wrote the ruling into
 `docs/port/OWNER-REVIEW.md:72-91` after revision 4 was drafted, under the
 heading `### 2026-09-14 — the CLI Design Standard binds, and OV-01 is refused`,
 and the reasoning behind it is recorded at
-`docs/planning/p02/owner-decisions.md:261-293` under
+`docs/planning/p02/owner-decisions.md:261-292` under
 `## 9. Whether your CLI Design Standard binds this port -- ANSWERED 2026-09-14`.
 So the ruling is now re-derivable from this repository alone, U8 is no longer an
 unproven claim, and the two checks that asserted its *absence* — `C16h` and
@@ -717,7 +717,7 @@ unproven. Where it is recorded, exactly:
   its argument and options table kept as the record of how the choice was
   reached". That is this block's own disposition, written by the owner's record
   rather than inferred from it.
-- **`docs/planning/p02/owner-decisions.md:261-293`**, section
+- **`docs/planning/p02/owner-decisions.md:261-292`**, section
   `## 9. Whether your CLI Design Standard binds this port -- ANSWERED 2026-09-14`,
   which carries the reasoning and the blast radius: "**DECIDED.** The standard
   BINDS. Override OV-01 is NOT waived; the owner selected R60's own conformant
@@ -731,7 +731,7 @@ on 2026-09-14 before the controller's write; the codesign row is still there and
 still says what the sentence says, but it is no longer the only R60 material in
 the file. **U8 is accordingly re-labelled RESOLVED under `## Engines`**, and the
 two checks that asserted the ruling's absence are inverted to assert its
-presence (`## Empirical check` row E13, `C16h`–`C16n` of
+presence (`## Empirical check` row E13, `C16h`–`C16o2` of
 `r60-standard-pin-r5.sh`).
 
 **One divergence between the owner's record and this decision, reported rather
@@ -1500,7 +1500,7 @@ U1–U7 are unproven and are P03's to prove:
 | U5 | Every acceptance criterion AC1–AC10. None was executed: no Rust CLI exists. AC9 and AC10 were added in revision 2 and are as unexecuted as the rest; what revision 2 *did* verify is that the clap APIs they name exist at 4.6.6 with the documented hidden-vs-visible alias behavior (`## Empirical check` row E8), which is a different and weaker claim than the criteria passing. | P03's integration tests |
 | U6 | Issue responsiveness for every candidate except `clap-rs/clap`. The Opus report measured the 10 most recently opened issues for that one repository (5 of 10 answered, median 1.29 days among those answered, 5 unanswered, retrieved 2026-09-10) and states it measured no other; that figure also covers `clap_complete`, which shares the tracker. For `bpaf`, `built`, `vergen`, `argh`, `lexopt`, `pico-args` and `strsim`, the maintenance verdicts above rest on open-issue `total_count`, `pushed_at`, `archived` and release recency only. | the same 10-issue procedure run per candidate |
 | U7 | That `bpaf` lacks a completion story equivalent to `clap_complete`. Opus asserts it does; Codex asserts a completion feature exists. Neither was verified here, and `bpaf` is excluded on fit (architecture D) rather than on this point, so the disagreement does not change the recommendation. | reading `bpaf 0.9.27`'s published source and feature table |
-| U8 | **RESOLVED 2026-09-14 by revision 5, and kept on this list as the record rather than deleted.** Revision 4 listed the owner's ruling of 2026-09-14 — refusing OV-01's waiver and selecting option (b) — as unproven from this repository, because at the time it reached the item as a task instruction and was written in no file here. **That is no longer true.** The programme controller wrote it into `docs/port/OWNER-REVIEW.md:72-91`, section `### 2026-09-14 — the CLI Design Standard binds, and OV-01 is refused`, and the reasoning is at `docs/planning/p02/owner-decisions.md:261-293`, section `## 9. Whether your CLI Design Standard binds this port -- ANSWERED 2026-09-14`. The ruling is therefore re-derivable from this repository alone and **is no longer an unproven claim**; the revision-4 audit's finding F1 named exactly this staleness. Everything downstream of it was already checkable and is still checked — that F267 takes option (b), that no override is declared, that no waiver is claimed. | nothing further: it is proven. The record's presence, and each clause this decision relies on, is asserted in `## Empirical check` row E13 (`C16h`–`C16n` of `r60-standard-pin-r5.sh`) |
+| U8 | **RESOLVED 2026-09-14 by revision 5, and kept on this list as the record rather than deleted.** Revision 4 listed the owner's ruling of 2026-09-14 — refusing OV-01's waiver and selecting option (b) — as unproven from this repository, because at the time it reached the item as a task instruction and was written in no file here. **That is no longer true.** The programme controller wrote it into `docs/port/OWNER-REVIEW.md:72-91`, section `### 2026-09-14 — the CLI Design Standard binds, and OV-01 is refused`, and the reasoning is at `docs/planning/p02/owner-decisions.md:261-292`, section `## 9. Whether your CLI Design Standard binds this port -- ANSWERED 2026-09-14`. The ruling is therefore re-derivable from this repository alone and **is no longer an unproven claim**; the revision-4 audit's finding F1 named exactly this staleness. Everything downstream of it was already checkable and is still checked — that F267 takes option (b), that no override is declared, that no waiver is claimed. | nothing further: it is proven. The record's presence, and each clause this decision relies on, is asserted in `## Empirical check` row E13 (`C16h`–`C16o2` of `r60-standard-pin-r5.sh`) |
 
 **Uncertainty that is not an evidence gap.** `clap-rs/clap` carries 369 open
 issues against a project led by a single primary maintainer, which is a real
@@ -1662,7 +1662,7 @@ this repository and is carried as **U8**.
 **That last sentence was true when revision 4 wrote it and is false now, and
 revision 5 corrects it here rather than rewriting the paragraph around it.** The
 controller wrote the ruling into `docs/port/OWNER-REVIEW.md:72-91` and
-`docs/planning/p02/owner-decisions.md:261-293` after revision 4 was drafted, so
+`docs/planning/p02/owner-decisions.md:261-292` after revision 4 was drafted, so
 the ruling **is** recorded in this repository and **U8 is resolved** rather than
 carried. The revision-4 audit found the stale claim (F1) and rejected the draft
 for it; the repair is enumerated below under "Audit of revision 4, and what
@@ -1752,7 +1752,9 @@ re-reading afterwards.** The document was searched for every line carrying `U8`,
 `task instruction`, `controller`, `C16h`, `C16i`, `E13`, `E9`, `-r4.sh`,
 `-r4.log`, `revision 4`, `115`, `104`, `twelve`, `E11–E13` and
 `No row below cites`; the resulting line list was the work queue, and the same
-searches were re-run against the edited file. Ten locations moved:
+searches were re-run against the edited file. Eleven locations moved, and the
+list below was checked against the `C9` r4→r5 diff in
+`review/evidence/r60-preservation-diff-r5.log` rather than against memory:
 
 | # | Location | Change |
 |---|---|---|
@@ -1761,11 +1763,12 @@ searches were re-run against the edited file. Ten locations moved:
 | 3 | the OV-01 provenance paragraph ("What the repository can and cannot show") | **kept verbatim** and corrected immediately after, naming both durable records by path, line range and section heading |
 | 4 | `## Empirical check`'s "Three runs, kept separate" paragraph | a fourth execution recorded; E13's second half flagged as rewritten |
 | 5 | the identifier note | `C<n>` ids now name the revision-5 script |
-| 6 | `## Empirical check` | a **Revision-5 run** section: its results table, how the two checks were inverted, the fourth baseline, the observed failures of the two revision-4 scripts, and the reproducibility re-demonstration |
-| 7 | rows E1, E5, E6, E9, E11, E12, E13 | script names r4 → r5 where the row is a revision-5 claim; E9's counts and its `C4k` family; E13's U8 half inverted. **E10 deliberately still cites `r60-snapshot-provenance-r4.sh`**, which is unchanged and reruns byte-identical |
+| 6 | `## Empirical check` | the retained-scripts and reproducibility paragraphs rewritten to cover revisions 3 *and* 4, and a **Revision-5 run** section added: its results table, how the two checks were inverted, the fourth baseline, the observed failures of the two revision-4 scripts, and the one input this revision reads but does not own |
+| 7 | rows E1, E9, E11, E12, E13 | script names r4 → r5 where the row is a revision-5 claim; E9's counts, its fourth baseline and its `C4k` family; E13's U8 half inverted. E5 and E6 name no script and did **not** move. **E10 deliberately still cites `r60-snapshot-provenance-r4.sh`**, which is unchanged and reruns byte-identical |
 | 8 | the headline command line | the revision-5 standard-pin result added beside revision 3's and revision 4's |
 | 9 | the U8 row of the unproven table | re-labelled `RESOLVED`, naming where the record is; the table's preamble now says U1–U7 are what remains unproven |
 | 10 | the closing sentence of "Audit of revision 3, and what revision 4 changed" | the "not recorded in this repository" sentence **kept** and corrected immediately after |
+| 11 | the closing fitness-gate sentence | "nothing revision 4 changed touches any of them" → "nothing revision 4 or revision 5 changed"; the six gate bullets themselves are byte-identical |
 
 **What did not change, and why that is the point.** The recommendation is
 untouched: `clap 4.6.6` with `derive`/`env`/`string`/`wrap_help`,

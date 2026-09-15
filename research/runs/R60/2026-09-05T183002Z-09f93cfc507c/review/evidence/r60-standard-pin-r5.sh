@@ -11,19 +11,23 @@
 # of 2026-09-14 was ABSENT from `docs/port/OWNER-REVIEW.md` (`OV-01` count 0,
 # `2026-09-14` count 0), which was true when revision 4 was written and false by
 # the time it was audited — the programme controller had written the ruling into
-# that file at :72-91. The rerun observed counts 3 and 1.
+# that file at :72-91. The auditor's rerun observed counts 3 and 1.
 #
-#   C16h..C16n now assert the record's PRESENCE, clause by clause, and they do it
-#   by ANCHORING rather than by counting the whole file. A file-wide count of
+#   C16h..C16o2 now assert the record's PRESENCE, clause by clause, and they do
+#   it by ANCHORING rather than by counting the whole file. A file-wide count of
 #   `OV-01` would be the same mistake in mirror image: that file is owned by the
 #   controller and gains sections over time, so the next section it gains would
-#   break the count. Instead the ruling's section is located by its heading,
-#   extracted, and each clause this decision relies on is asserted INSIDE the
-#   extraction. C16m is the control that keeps the extraction honest: a string
-#   that exists elsewhere in the same file must NOT appear inside the extracted
-#   section, so an extraction that silently widened to the whole file fails.
-#   The raw file-wide counts are still PRINTED, beside the grep binary and its
-#   version, as information rather than as checks.
+#   break the count. That is not hypothetical — between the revision-4 audit and
+#   this revision the same file gained a '## Wave 0 owner acceptances' section,
+#   moving its `2026-09-14` count from the 1 the auditor saw to 3. Instead the
+#   ruling's section is located by its heading, extracted, and each clause this
+#   decision relies on is asserted INSIDE the extraction. C16m is the control
+#   that keeps the extraction honest: a string that exists elsewhere in the same
+#   file must NOT appear inside the extracted section, so an extraction that
+#   silently widened to the whole file fails.
+#   NO file-wide count is asserted OR printed, for the same reason: a number read
+#   out of a file this item does not own is neither a stable assertion nor a
+#   stable log line.
 #
 #   `r60-standard-pin-r4.sh` is left BYTE-IDENTICAL beside this file. It is the
 #   artifact the revision-4 audit ran, and its failure is part of the record.
@@ -576,7 +580,7 @@ check "C16n4 and that R60's own conformant option (b) was selected" \
 # ('## Wave 0 owner acceptances') after the revision-4 audit ran, so a file-wide
 # R60 row count is not a stable assertion either. The Dispositions section is
 # extracted and the row is counted inside it.
-DISPOS="$(sed -n '/^## Dispositions/,$p' "$OR")"
+DISPOS="$(sed -n '/^## Dispositions/,/^## [^D]/p' "$OR")"
 out="$(printf '%s\n' "$DISPOS" | "$GREP" -cE '^\| R60 \|' || true)"
 echo "R60 rows inside the Dispositions section ($GREP $GREP_VERSION): $out"
 check "C16o R60 still has exactly one dispositions row, unchanged by the ruling" "count=1" "count=$out"

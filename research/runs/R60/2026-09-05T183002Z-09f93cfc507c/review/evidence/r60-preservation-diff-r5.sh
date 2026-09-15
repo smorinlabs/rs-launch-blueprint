@@ -503,7 +503,7 @@ check "C4k2 the port's durable record is cited by path and line range" \
 check "C4k3 and by its section heading, so the citation survives a line shift" \
   "### 2026-09-14 — the CLI Design Standard binds, and OV-01 is refused" "$FLAT"
 check "C4k4 the planning record is cited by path and line range" \
-  "\`docs/planning/p02/owner-decisions.md:261-293\`" "$FLAT"
+  "\`docs/planning/p02/owner-decisions.md:261-292\`" "$FLAT"
 check "C4k5 and by its section heading" \
   "## 9. Whether your CLI Design Standard binds this port -- ANSWERED 2026-09-14" "$FLAT"
 check "C4k6 the stale paragraph is corrected in place rather than deleted" \
