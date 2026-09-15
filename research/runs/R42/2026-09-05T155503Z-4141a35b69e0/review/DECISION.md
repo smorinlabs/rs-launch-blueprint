@@ -159,9 +159,9 @@ the repair:
   (`evidence/binstall-backend.log:166-167`), while for `cargo-shear@1.13.1`
   **no log records its asset's status at all** — the only 404 recorded for that
   spec is on the `.sig` under `--only-signed`
-  (`evidence/binstall-signing.log:450`), and
+  (`evidence/binstall-signing.log:451`), and
   `download_signature` is spawned as its own task
-  (`quickinstall.rs:110-136`, log `:346-373`), so reaching it establishes
+  (`quickinstall.rs:110-136`, log `:347-373`), so reaching it establishes
   nothing about the tarball in either direction; and the `WARN` line that did
   print names `github.com` with no `third-party source ` prefix, which by
   `resolution.rs:125-127` (log `:387-389`) identifies the crate's own release,
@@ -1447,8 +1447,9 @@ place.
 > cites `evidence/binstall-signing.log:446-453`, and closes on this decision's
 > own accurate formulation, that the flag degrades a tool to revision 6's
 > backend rather than failing the recipe. The word `silently` is gone from the
-> option. Nothing else in the option changed: its cost sentence is correct and
-> asserted, and the three options remain an open ask to the owner.
+> option. Nothing else in the option changed in substance: its cost sentence is
+> correct and asserted, and is rewrapped only — the same words on different
+> lines. The three options remain an open ask to the owner.
 >
 > **J2** — "'its asset 404s for both specs' is supported for `taplo-cli` only,
 > since for `cargo-shear` no log records the QuickInstall asset's status and the
@@ -1457,9 +1458,9 @@ place.
 > `taplo-cli@0.10.0` on both Apple targets
 > (`evidence/binstall-backend.log:166-167`) and that `cargo-shear@1.13.1`'s
 > asset status is **unrecorded**, the only 404 for that spec being the `.sig`
-> under `--only-signed` (`evidence/binstall-signing.log:450`), which
+> under `--only-signed` (`evidence/binstall-signing.log:451`), which
 > `download_signature` fetches as its own spawned task
-> (`quickinstall.rs:110-136`, log `:346-373`) and which therefore establishes
+> (`quickinstall.rs:110-136`, log `:347-373`) and which therefore establishes
 > nothing about the tarball in either direction. The bullet's conclusion is
 > unchanged and now names what carries it: the first leg's
 > `7a-downloaded-from-github` assertion on the literal
@@ -1480,11 +1481,21 @@ row 1 and row 14 are about a Cargo **alias** shadowing an external subcommand,
 already adjudicated `Wrong` and `Holds` respectively; the `silently skipped`
 uses in `## Empirical check` and the gates paragraph are about omitting a gate
 or an assertion; `parameter is silent on Cargo aliases` is a different subject;
-the check-15 and check-16 table rows, the fail-closed-flag bullet at the top of
-this section, gate 3 and unproven item 11 already state the fall-through and the
-`.sig` 404 accurately and never say `silently` or `both specs`; and the
-remaining `404` hits are RustSec, crates.io and `.cargo/config.toml` probe
-results in checks 7, 13 and 14 and the survey table. **What did not change**,
+the check-15 and check-16 table rows in `## Empirical check`, the
+fail-closed-flag bullet in `## Decision`, gate 3 and unproven item 11 carry
+none of the two corrected phrasings — the search shows no `silently`, no
+`both specs` and no `asset` in any of them; and the remaining `404` hits are
+RustSec, crates.io and `.cargo/config.toml` probe results in checks 7, 13 and
+14 and the survey table. **The two claims the repair rests on were enumerated
+across the whole evidence directory rather than read from two windows**:
+matching `cargo-shear` against `404 Not Found` or `quickinstall` over all 28
+files in `evidence/` returns **four** lines in four files, and all four are the
+same `.sig` URL — `binstall-signing.log:451` and three replays of it, in
+`audit-dev-toolchain-provisioning-r8.log:179`,
+`audit-dev-toolchain-provisioning-r8.diff:14` and
+`audit-dev-toolchain-provisioning-r9-meta-count.log:200`. No QuickInstall
+**tarball** line for `cargo-shear@1.13.1` is recorded anywhere in this run, in
+either direction. **What did not change**,
 each re-read rather than assumed: the recommendation and all five layers; the
 integrity comparison table and the substance of all three options, which remain
 an unanswered ask to the owner and are not pre-empted here; the owned
