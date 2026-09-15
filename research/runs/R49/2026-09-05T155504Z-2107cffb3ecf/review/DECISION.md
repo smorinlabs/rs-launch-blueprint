@@ -1,4 +1,86 @@
-# R49 — build-target-declaration (crate, Deep) — DECISION (revision 6, 2026-09-14)
+# R49 — build-target-declaration (crate, Deep) — DECISION (revision 7, 2026-09-14)
+
+**What changed in revision 7, and what did not.** Revision 6 (sha256
+`9d135856d7e9e29c81f09b88f2662780dd3f11218cee6815fb396e3c593ffb2f`) was
+**rejected** by `review/audit-codex.md` (actor
+`audit-codex-2026-09-05T155504Z-2107cffb3ecf-r6`, model `gpt-5.6-terra`, family
+openai) on one unresolved finding, quoted here in full:
+
+> **The universal equivalence sentence is broader than its evidence.**
+> `review/DECISION.md:32-36` says, "Both implementations return the same result
+> for every pattern this decision reports." `check-grep-identity.sh:126-135`
+> compares only four patterns. The decision separately reports the widened SPDX
+> pattern at `review/DECISION.md:203-216`, and `check-licence-enumeration.sh:156-169`
+> tests that pattern only with `/usr/bin/grep`; `check-grep-identity.sh` has no
+> `PAT_ID_FULL` comparison. The four-table claim is proved, but the universal
+> sentence is not. Narrow the sentence to those four tested pattern/blob pairs,
+> or add content assertions that compare the widened pattern under embedded
+> ugrep before accepting the decision.
+
+**The finding is correct and the overstatement was mine.** Four comparisons do
+not prove a claim about "every pattern this decision reports", and the widened
+SPDX pattern was the reported pattern the comparison did not reach. The audit
+offered two remedies; **this revision does both**, so the sentence is true by
+construction rather than true because it was trimmed to fit.
+
+**The repair, first half — the script now compares the widened pattern.**
+`review/evidence/check-grep-identity.sh` gains `PAT_ID_FULL`, byte-identical to
+the pattern of that name in `check-licence-enumeration.sh:59`, and three new
+`compare` calls: the widened pattern on the revision-2 blob `2ac02e1`, the same
+on the revision-4 blob `ddbee6a` — the two blobs this decision reports that
+pattern for at `## Empirical check` and in the revision-5 note — and the same
+against the seven-line negative-control fixture. Each runs under the same
+discipline as the four that were already there: the `/usr/bin/grep` result is
+asserted **unconditionally**, and the embedded ugrep result is compared against
+it only when that implementation is reachable, printing an explicit `SKIP` by
+name when it is not. A `SKIP` still cannot convert a failed `/usr/bin/grep`
+assertion into a pass, and this was re-demonstrated rather than asserted: with
+the asserted revision-2 widened list mutated by
+`sed 's/"53 182 338 342 363 364 582 605 606 607 608 609 610 611 616"/"53 182 338"/'`,
+the script prints `ASSERT FAIL revision-2, widened SPDX pattern (/usr/bin/grep)`
+and exits 1 **both** with the embedded ugrep reachable and with
+`CLAUDE_CODE_EXECPATH` unset and `HOME` pointed at an empty directory, where the
+same run prints 8 `SKIP` lines. The in-script negative control also still holds:
+the widened pattern matches the four real identifiers at fixture lines
+`4 5 6 7` and matches none of `OMIT`, `implementation`, `template`, under both
+implementations.
+
+**The repair, second half — the sentence now names its pairs.** The sentence in
+the revision-6 note that the audit quoted is replaced by a list of the exact
+seven pattern/blob pairs the script compares, with the widened SPDX pattern named
+among them and an explicit statement that nothing outside the list is claimed.
+The revision-6 table below carries three new rows for the same three pairs, and
+the two other places that restated the claim more broadly than the evidence are
+narrowed the same way and marked as such: the "under either implementation"
+sentence beneath that table, and the revision-6 bracketed correction's clause
+"Every list this revision reports is unchanged and holds under both". **Those two
+are corrections beyond the finding the audit named**, found by enumerating the
+document for the claim's subject rather than by re-reading it.
+
+**Counts, all re-measured by running the extended script, none adjusted on
+paper.** With the embedded ugrep reachable: **13** content assertions,
+`RESULT: all assertions passed`, exit status 0. With it absent: **11** content
+assertions and **8** `SKIP` lines, exit status 0. The regenerated log
+`review/evidence/grep-identity.log` was re-run against itself after being saved
+and reproduces byte-for-byte except the `retrieved:` UTC timestamp on line 1; the
+absent-implementation run matches it once `retrieved:`, the `second
+implementation:` block and every `[2/2]`-guarded line — including the two
+`ASSERT` lines that run only inside a `[2/2]` branch — are dropped, which is the
+comparison rule the script's own header states.
+
+**What revision 7 does not change.** The recommendation does not move: declare
+every build target in `Cargo.toml` itself and add no build backend, bundler or
+build-orchestration crate. Fitness gate 1 stays `inapplicable` under the owner's
+2026-09-12 ruling (Q7.B). Every `- owns` and `- assumes` line is byte-identical
+to revisions 2 through 6. `review/evidence/check-lockfile-inclusion.sh` (sha256
+`4ed6818fb64e912d45ab47cbb1e1f7eca43536bfca40f776572d75f1db586ac7`),
+`review/evidence/check-licence-enumeration.sh` and its log
+`review/evidence/licence-enumeration.log` are byte-identical and were not re-run
+or regenerated; the six fitness-gate rows, every enumeration list (40 / 5 / 10 /
+33 and the six revision-2 locations `582 605 606 608 609 611`), every figure in
+`## Empirical check`, and every historical quotation stand as written. No line
+list moves: the three new comparisons re-derive lists this decision already
+reported and found them identical.
 
 **What changed in revision 6, and what did not.** Revision 5 (sha256
 `71ef987941cc2e3c903a16eb242c7ee4b94ecf55497253a337b3ce6b27e65963`) was
@@ -32,9 +114,18 @@ noun.
 **The corrected statement.** *In the authoring shell, a typed `grep` resolves to
 a shell function that routes to `ugrep 7.8.4` embedded in the `claude`
 executable; the PATH binary `/usr/bin/grep` is BSD grep 2.6.0-FreeBSD; a script
-run with `bash` gets the PATH binary in every environment. Both implementations
-return the same result for every pattern this decision reports.* The fact is kept
-rather than deleted because anyone re-running this work needs it.
+run with `bash` gets the PATH binary in every environment. The two
+implementations were run against each other on exactly seven pattern/blob pairs,
+and returned the same result on all seven: the recorded revision-3 pattern on
+blob `2ac02e1`; the corrected word-bounded pattern on `2ac02e1`; the corrected
+word-bounded pattern on `ddbee6a`; `licen` on `ddbee6a`; the widened SPDX pattern
+on `2ac02e1`; the widened SPDX pattern on `ddbee6a`; and the widened SPDX pattern
+on the seven-line negative-control fixture. The last three pairs were added in
+revision 7, so the widened SPDX pattern this decision reports below is now among
+the compared pairs. Outside that list of seven no agreement is claimed — the
+implementations are known to diverge on a recursive search, which the same script
+demonstrates.* The fact is kept rather than deleted because anyone re-running
+this work needs it.
 
 **Both counts under both implementations.** Every list below is
 `/usr/bin/grep` output; the embedded ugrep was then run on the same blob with the
@@ -47,10 +138,15 @@ same arguments and compared. Log `review/evidence/grep-identity.log`, script
 | corrected word-bounded pattern, `2ac02e1` | 5 lines, `182 363 607 610 616` | same 5, same list |
 | corrected word-bounded pattern, `ddbee6a` | 10 lines, `12 29 70 92 298 489 733 736 745 794` | same 10, same list |
 | `licen`, `ddbee6a` | 33 lines | same 33, same list |
+| widened SPDX pattern, `2ac02e1` *(added in revision 7)* | 15 lines, `53 182 338 342 363 364 582 605 606 607 608 609 610 611 616` | same 15, same list |
+| widened SPDX pattern, `ddbee6a` *(added in revision 7)* | 21 lines, `12 29 70 92 102 156 298 464 468 489 490 708 731 732 733 734 735 736 737 745 794` | same 21, same list |
+| widened SPDX pattern, negative-control fixture *(added in revision 7)* | 4 lines, `4 5 6 7` | same 4, same list |
 
-**So revision 5's central claim survives the correction unchanged**: the printed
-list is the raw output of the stated command on the stated blob, under either
-implementation.
+**So revision 5's central claim survives the correction unchanged**: for each of
+the seven pattern/blob pairs in the table above, the printed list is the raw
+output of the stated command on the stated blob under either implementation. That
+is a statement about those seven pairs, not about every search this decision
+ever ran.
 
 **Which binary this item's scripts invoke, and why — the programme-wide
 judgement.** Both of this revision's scripts invoke `/usr/bin/grep` by absolute
@@ -101,7 +197,14 @@ was verified by re-running the script with `CLAUDE_CODE_EXECPATH` unset and
 `HOME` pointed at an empty directory: exit status 0, five `SKIP` lines, and the
 two logs identical once `retrieved:`, the `second implementation:` block and
 every `[2/2]`-guarded line are dropped. The script's header states that
-comparison rule.
+comparison rule. *[Superseded in revision 7 as to those two counts only, because
+revision 7 extends that script. It now makes **13** content assertions where the
+embedded ugrep is reachable and **11** where it is not, and the
+absent-implementation rerun prints **8** `SKIP` lines. Both figures were
+re-measured by running the extended script, not adjusted on paper; see the
+revision-7 note at the top of this decision. Nothing else in this paragraph
+changes: exit status is still 0 in both modes, and the comparison rule is
+unchanged.]*
 
 **What revision 6 does not change.** The recommendation does not move: declare
 every build target in `Cargo.toml` itself and add no build backend, bundler or
@@ -232,7 +335,15 @@ runs. The described second-count check was consequently `/usr/bin/grep` compared
 against itself — a check that could not fail — and revision 6 replaces it with a
 real two-implementation comparison in `review/evidence/check-grep-identity.sh`.
 Every list this revision reports is unchanged and holds under both. See the
-revision-6 note at the top of this decision.]* The script was re-run after its
+revision-6 note at the top of this decision.]* *[Narrowed in revision 7, which
+found "holds under both" broader than its evidence. What is compared under both
+implementations is the enumerated list of seven pattern/blob pairs in the
+revision-6 note's table at the top of this decision, which revision 7 extended —
+the four revision 6 compared, the widened SPDX pattern on each of the two blobs,
+and one negative-control fixture. `licen` on the revision-2 blob, the `-oiE` token
+extractions and the `-ciE` count inside `check-licence-enumeration.sh` are run
+under `/usr/bin/grep` only, and no two-implementation claim is made for them.]*
+The script was re-run after its
 log was saved and reproduces it byte-for-byte except the `retrieved:` UTC
 timestamp on line 1 (raw `diff` differs on that line alone; the same `diff` with
 that line removed exits 0).

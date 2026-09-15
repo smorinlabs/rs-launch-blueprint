@@ -1,6 +1,19 @@
 #!/usr/bin/env bash
-# R49 revision 6 — which `grep` produced this item's line lists, and whether the
+# R49 revision 7 — which `grep` produced this item's line lists, and whether the
 # two reachable implementations agree on them.
+#
+# WHAT REVISION 7 ADDS. Revision 6 compared four pattern/blob pairs and the
+# decision then said the two implementations agree "for every pattern this
+# decision reports". They do not both get tested by four comparisons: the
+# decision separately reports the WIDENED SPDX pattern (`PAT_ID_FULL` below,
+# byte-identical to the one in `check-licence-enumeration.sh`) on both blobs, and
+# that script tests it under /usr/bin/grep alone. Revision 7 therefore adds three
+# comparisons — the widened pattern on the revision-2 blob, the widened pattern on
+# the revision-4 blob, and the widened pattern against a negative-control fixture
+# — each under /usr/bin/grep (asserted unconditionally) and under the embedded
+# ugrep (compared when reachable, SKIPped by name when not). The decision's
+# sentence is narrowed to the list of pairs this script actually compares, so the
+# claim and the evidence have the same width.
 #
 # WHY THIS EXISTS. Revision 5 asserted that `grep` on this machine's PATH is
 # `ugrep 7.8.4`. That is false and the round-5 audit rejected it. The true
@@ -48,6 +61,9 @@ GREP_VERSION_EXPECTED='grep (BSD grep, GNU compatible) 2.6.0-FreeBSD'
 
 PAT_OLD='copyleft|agpl|[^a-z]gpl|mpl|mozilla|patent|permissive'
 PAT_ID='copyleft|AGPL|LGPL|GPL|MPL|Mozilla|PERMISSIVE|permissive|patent'
+# The widened pattern the decision reports at `review/DECISION.md:203-216`,
+# byte-identical to `PAT_ID_FULL` in `check-licence-enumeration.sh`.
+PAT_ID_FULL='copyleft|AGPL|LGPL|GPL|MPL|Mozilla|PERMISSIVE|permissive|patent|Apache-2\.0|MIT|BSD|ISC|Unlicense|CC0'
 
 TMP="$(mktemp -d)" || exit 1
 trap 'rm -rf "$TMP"' EXIT
@@ -133,6 +149,24 @@ compare "revision-4, corrected word-bounded pattern" \
 compare "revision-4, licen" \
   "8 9 11 24 29 30 39 63 67 70 72 85 87 102 104 156 260 264 294 308 374 437 464 468 488 490 559 723 726 729 741 744 794" \
   "$TMP/rev4.md" -ni 'licen'
+
+echo
+echo '## the widened SPDX pattern, under both implementations (new in revision 7)'
+echo "pattern: $PAT_ID_FULL"
+compare "revision-2, widened SPDX pattern" \
+  "53 182 338 342 363 364 582 605 606 607 608 609 610 611 616" \
+  "$TMP/rev2.md" -nwE "$PAT_ID_FULL"
+compare "revision-4, widened SPDX pattern" \
+  "12 29 70 92 102 156 298 464 468 489 490 708 731 732 733 734 735 736 737 745 794" \
+  "$TMP/rev4.md" -nwE "$PAT_ID_FULL"
+# Negative control, the same seven-line fixture `check-licence-enumeration.sh`
+# uses: the widened pattern must match the four real identifiers and must NOT
+# match `OMIT`, `implementation` or `template`. Run through `compare`, so the
+# control is asserted under /usr/bin/grep and compared under the embedded ugrep
+# with the same SKIP discipline as every other pair.
+printf 'a F217 (OMIT)\nb implementation\nc template\nd GPL-3.0-only\ne MPL-2.0\nf LICENSE-MIT\ng C-PERMISSIVE\n' > "$TMP/control.txt"
+compare "negative control: only the four real identifiers match" \
+  "4 5 6 7" "$TMP/control.txt" -nwE "$PAT_ID_FULL"
 
 echo
 echo '## where the two implementations genuinely disagree'

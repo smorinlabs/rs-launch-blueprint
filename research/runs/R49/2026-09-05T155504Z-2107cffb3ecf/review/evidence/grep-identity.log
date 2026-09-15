@@ -1,4 +1,4 @@
-retrieved: 2026-09-14T23:30:33Z
+retrieved: 2026-09-15T01:03:20Z
 repo: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
 
 ## which programs are reachable here
@@ -30,6 +30,21 @@ ASSERT ok   revision-4, corrected word-bounded pattern (/usr/bin/grep)
       /usr/bin/grep -> 8 9 11 24 29 30 39 63 67 70 72 85 87 102 104 156 260 264 294 308 374 437 464 468 488 490 559 723 726 729 741 744 794
 ASSERT ok   revision-4, licen (/usr/bin/grep)
 [2/2] revision-4, licen -> SAME under the embedded ugrep
+
+## the widened SPDX pattern, under both implementations (new in revision 7)
+pattern: copyleft|AGPL|LGPL|GPL|MPL|Mozilla|PERMISSIVE|permissive|patent|Apache-2\.0|MIT|BSD|ISC|Unlicense|CC0
+[1/1] revision-2, widened SPDX pattern
+      /usr/bin/grep -> 53 182 338 342 363 364 582 605 606 607 608 609 610 611 616
+ASSERT ok   revision-2, widened SPDX pattern (/usr/bin/grep)
+[2/2] revision-2, widened SPDX pattern -> SAME under the embedded ugrep
+[1/1] revision-4, widened SPDX pattern
+      /usr/bin/grep -> 12 29 70 92 102 156 298 464 468 489 490 708 731 732 733 734 735 736 737 745 794
+ASSERT ok   revision-4, widened SPDX pattern (/usr/bin/grep)
+[2/2] revision-4, widened SPDX pattern -> SAME under the embedded ugrep
+[1/1] negative control: only the four real identifiers match
+      /usr/bin/grep -> 4 5 6 7
+ASSERT ok   negative control: only the four real identifiers match (/usr/bin/grep)
+[2/2] negative control: only the four real identifiers match -> SAME under the embedded ugrep
 
 ## where the two implementations genuinely disagree
 [1/1] recursive search, /usr/bin/grep -> ignored/licence.md visible.md
