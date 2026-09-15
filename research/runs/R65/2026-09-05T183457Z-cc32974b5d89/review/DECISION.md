@@ -1,10 +1,52 @@
-# R65 — color-enablement-chain — DECISION (revision 3, 2026-09-13)
+# R65 — color-enablement-chain — DECISION (revision 4, 2026-09-15)
 
-**Revision note.** Revision 3 rewrites revision 2 (sha256
-`4d428b87131988a74f8d1d4216ff2ac264d38f46733f3bad6c29031f027e150d`) in place. No revision of
-this decision has been published, so there is no `## Supersedes`.
+**Revision note.** Revision 4 rewrites revision 3 (sha256
+`31164f3d13e4df56826548bd74de5fa448ae6e111a5273e807c3d8a5774bbd22`) in place. No revision of
+this decision has been published, so there is no `## Supersedes`. **The recommendation, the
+stack table, the resolved chain, the answers to F287–F290 and every `- assumes` parameter
+line are unchanged**: no finding in this round touched them, and the judgment audit says so
+in terms ("none of my findings touches the stack table, the resolved chain's shape, or the
+answers to F287–F290").
 
-Revision 2 answered the five findings of the revision-1 audit (`review/audit-codex.md`, actor
+Revision 3 was approved by the round-3 empirical audit (`review/audit-codex.md`, actor
+`audit-codex-2026-09-05T183457Z-cc32974b5d89-r3`, model `gpt-5.6-terra`, family openai,
+verdict approve, 207/207 assertions reproduced twice) and rejected by the round-3 judgment
+audit (`review/audit-fable.md`, actor `audit-fable-2026-09-05T183457Z-cc32974b5d89-r3`,
+model `claude-opus-5`, family anthropic, verdict reject) on three findings. Revision 4
+answers each:
+
+- **J1** — *"a composite behaviour is claimed as verified from an isolated proof; the
+  decision's own evidence refutes it"*: acceptance criterion 9 (`TERM=dumb` on a TTY ⇒ no
+  colour) was stated unconditionally and called verified, while tier 7 is a **disjunction**
+  (`raw.is_terminal() && (term_supports_color() || clicolor_enabled || is_ci())`) in which
+  `is_ci()` is `std::env::var_os("CI").is_some()` — set on both runners of
+  `target-os-matrix`. **Repair:** criterion 9 is re-scoped to the environment in which it
+  holds (`CI` unset and `CLICOLOR` unset or `0`), a template-owned `TERM` tier is
+  considered and **declined** with its ground stated, the harness condition is made
+  explicit in `## Engines` items 1 and 2, and Disagreement 2's tie-break sentence is
+  replaced by what the source actually shows.
+- **J2** — *"the one order interaction this decision adds has no observable acceptance
+  criterion"*: tier 2 (the config key) settles Disagreement 1 against the Codex raw and
+  inverts py's implemented order, and none of criteria 1–10 exercised it. **Repair:** two
+  new criteria, 11 and 12, state inputs and expected outcome for the config tier against
+  `NO_COLOR` and against `FORCE_COLOR`; both are marked unproven and listed among the
+  unit-provable set in `## Engines` item 1 with what would prove them.
+- **J3** — *"a resolved consumer and its two stated assumptions are not named"*: R85
+  (`rich-terminal-row-niceties`, resolved) records two non-registry assumptions on this
+  item, one of them an input R85 says this chain "may not have scoped". **Repair:** a new
+  paragraph in `## Decision` names R85, quotes both assumptions and disposes of each —
+  assumption 1 satisfied through `AutoStream::current_choice()`
+  (`crates/anstream/src/auto.rs:187` at tag `anstream-v1.0.0`) rather than through
+  `resolve_color`'s return; `FORCE_HYPERLINK` ruled **out** of this chain, with the ground
+  stated — plus a P03 validation item.
+
+Twelve `file:line` citations are new in revision 4. The primary check script and its log are
+**unchanged byte-for-byte** from revision 3 — the round-3 empirical audit reproduced them,
+and nothing in these findings requires editing a check that already passed — so the new
+citations are asserted by a **supplementary** script, `check-color-enablement-chain-r4.sh`,
+described in `## Empirical check` under **The supplementary check added in revision 4**.
+
+**Revision history.** Revision 2 answered the five findings of the revision-1 audit (`review/audit-codex.md`, actor
 `audit-codex-2026-09-05T183457Z-cc32974b5d89-r1`, model `gpt-5.6-terra`, family openai, verdict
 reject) and passed its own empirical audit. Revision 3 exists for one reason that arrived
 afterwards: the **owner's licence ruling of 2026-09-12 (Q4 as superseded by Q7.B)** — *"We
@@ -114,6 +156,46 @@ fixes its position in the chain (tier 2). Defining the field's type, validating 
 deciding how a bad value is reported belong to R53 (`config-schema-validation`) and R55
 (`config-error-tolerance`).
 
+**What a resolved consumer asked of this chain, and the answer to each (R85).** R85
+(`rich-terminal-row-niceties`, resolved,
+`research/topics/85-rich-terminal-row-niceties/DECISION.md`) is a consumer of this decision
+and states two non-registry assumptions about it. Revision 3 named R63, R64, R04, R32, R53,
+R55, R60 and R66 as touched items and named neither R85 nor either assumption; revision 4
+disposes of both (judgment finding J3). R85's words, quoted:
+
+1. *"**R65** must expose something the CLI can read as 'this stream will accept escape
+   codes'; either an `anstream`-style color choice or a plain boolean satisfies this item,
+   and in the boolean case the hyperlink capability is
+   `color_enabled && supports_hyperlinks::on(Stdout)`."*
+   **Satisfied, but not by `resolve_color`'s return value** — and this is worth stating
+   because the obvious reading is wrong. Under the shape settled in `## Engines`,
+   Disagreement 2, `resolve_color` returns `anstream::ColorChoice::Auto` in the ordinary
+   case, which is a *request*, not an answer: it says "let the adapter decide", so a caller
+   reading it learns nothing about whether escape codes will survive. The answer is on the
+   constructed stream: `pub fn current_choice(&self) -> ColorChoice`
+   (`crates/anstream/src/auto.rs:187` at tag `anstream-v1.0.0`, gated
+   `#[cfg(feature = "auto")]` at `:186`, and the recommended default features keep `auto`
+   on) reports "not what is requested but what is currently active", returning `Never` for
+   a stripping stream and `AlwaysAnsi`/`Always` otherwise. So R85's `color_enabled` is
+   `!matches!(stdout_stream.current_choice(), ColorChoice::Never)`, read from the stdout
+   `AutoStream` after construction. The citation is asserted by the supplementary check in
+   `## Empirical check`; that the CLI actually exposes this to a table renderer is P03's to
+   build, and is listed under `## Engines`.
+2. *"R65 additionally acquires an input it may not have scoped: `FORCE_HYPERLINK`, which
+   `supports-hyperlinks` honors independently of `NO_COLOR`/`FORCE_COLOR`
+   (`src/lib.rs:14,66`)."* — repeated as R85's own P03 validation item 4.
+   **Ruled out of this chain, explicitly.** `FORCE_HYPERLINK` is **not** a tier of F287 and
+   does not appear in the resolved chain above. The ground: this item settles *whether ANSI
+   colour is emitted*, and `FORCE_HYPERLINK` gates a different capability — whether OSC 8
+   hyperlink sequences are emitted — which R85 owns, on a crate (`supports-hyperlinks`) that
+   is not in this decision's stack table and was not evaluated here. Adding it to this chain
+   would let a hyperlink variable change colour output, which no source repo, standard or
+   candidate crate read here does. The interaction R85 names is preserved without a tier:
+   because R85 composes its capability as colour-choice **and** `supports_hyperlinks`,
+   colour resolving to `Never` suppresses hyperlinks whatever `FORCE_HYPERLINK` says, while
+   `FORCE_HYPERLINK` can never turn colour on. **Nothing in this decision changes as a
+   result**, which is why this is a recording repair and not a design change.
+
 **Ledger rows this settles:** F287 (precedence chain), F288 (`FORCE_COLOR` forces colour
 on), F289 (gated once for both streams versus per-stream), F290 (TTY-detection mechanism).
 F286 (that a `--no-color` flag exists) is inherited `COMMON → REUSE` and is **not** settled
@@ -171,11 +253,55 @@ asserted against these files. What this costs: a quotation is only as current as
 6. `NO_COLOR=1` **and** `FORCE_COLOR=1` ⇒ no colour.
 7. Both streams piped, nothing else set ⇒ no colour on either.
 8. stdout piped, stderr a TTY, nothing else set ⇒ stderr coloured, **stdout not**.
-9. `TERM=dumb` on a TTY ⇒ no colour.
+9. `TERM=dumb` on a TTY, **with `CI` unset and `CLICOLOR` either unset or `0`**, nothing else set ⇒ no colour.
 10. The library crate exposes no function that reads the process environment or writes a process global; a caller can construct a fully-determined renderer.
+11. Config file `color = "always"`, `NO_COLOR=1` set, no `--color` flag, both streams piped ⇒ SGR sequences on both streams (tier 2 beats tier 3).
+12. Config file `color = "never"`, `FORCE_COLOR=1` and `CLICOLOR_FORCE=1` set, no `--color` flag, both streams TTYs ⇒ no `ESC [` byte on either stream (tier 2 beats tiers 4 and 5); and the same config value with `--color=always` given ⇒ SGR sequences (tier 1 beats tier 2).
 
 Criterion 8 is the one that separates the three candidate architectures. Criterion 9 is the
-one that separates the two candidate resolver shapes (see `## Engines`, Disagreement 2).
+one that separates the two candidate resolver shapes (see `## Engines`, Disagreement 2), and
+its qualification is load-bearing rather than cosmetic: **tier 7 is a disjunction, not a
+`TERM` test**. Verbatim at tag `anstream-v1.0.0`, `crates/anstream/src/auto.rs:211-214`:
+
+```
+} else if raw.is_terminal()
+    && (anstyle_query::term_supports_color()
+        || clicolor_enabled
+        || anstyle_query::is_ci())
+```
+
+`anstyle_query::is_ci()` is `std::env::var_os("CI").is_some()`
+(`crates/anstyle-query/src/lib.rs:128,134` at tag `anstyle-query-v1.1.5`), `CI` is set by
+both runners in `target-os-matrix`, and `clicolor_enabled` is `clicolor().unwrap_or(false)`
+(`crates/anstream/src/auto.rs:203`), true when `CLICOLOR` is set to a non-`0` value. So
+`term_supports_color()` — which returns `false` for `TERM=dumb` and for `TERM` unset
+(`crates/anstyle-query/src/lib.rs:55,61,63`) — is **one operand of three**, and either of the
+other two re-enables colour on a `TERM=dumb` TTY. Every `file:line` citation in this paragraph
+is re-read at its tag by the supplementary check described in `## Empirical check`. **The
+criteria themselves — 9 as re-scoped, and 11 and 12 as added — are not proven by that check
+and are not proven anywhere in this decision**: they are behaviours of a template that does
+not exist, and they are listed under `## Engines` with what would prove each.
+
+**A template-owned `TERM` tier was considered and is declined.** Making criterion 9
+unconditional would require the template to test `TERM` itself, above `anstream`'s tiers 5–7.
+It is declined on three grounds, and the alternative is left on the record for P03 rather
+than hidden: (a) the `is_ci()` operand exists precisely so that a CI job, which is commonly
+not a terminal and often has `TERM` unset or `dumb`, still gets coloured logs — `anstyle-query`
+says so in the doc comment above `is_ci()`, *"CI is a common environment where, despite being
+piped, ansi color codes are supported"* (`crates/anstyle-query/src/lib.rs:123`) — and a
+template `TERM` tier placed above the force tiers would suppress exactly that; (b) placed
+above tier 5 it would also beat `CLICOLOR_FORCE`, which contradicts F288's force-on
+capability, and placed below tier 5 it would not make criterion 9 unconditional anyway, since
+`CI` is read at tier 7 — and none of the three candidates whose ordering was read here puts
+`TERM` above a force tier: `anstream` reads it at tier 7 below `CLICOLOR_FORCE`,
+`supports-color` reads `FORCE_COLOR` first (`src/lib.rs:91`), and `termcolor` has no force
+tier at all; (c) the standards this decision quotes define no `TERM` tier, and `no-color.org`
+argues against making one — *"Why not just set $TERM to dumb or xterm without color support?
+… The terminal is capable of color and should be able to print color when instructed"*
+(snapshot `snapshot-no-color.org.txt`). **What P03 builds is therefore the
+resolver of tiers 1–4 as tabled, with no `TERM` tier**, and criterion 9 is left for P03 to
+prove in the environment it names — nothing here proves it. If P03 finds unconditional `TERM=dumb` suppression is wanted, that is a
+new tier and a new decision against this recorded research, not a silent addition.
 
 **Architectural alternatives, compared before any library was chosen.**
 
@@ -504,11 +630,20 @@ sections, `## 0` through `## 11`: section 0 is the toolchain block quoted above,
 9. **Parameters**: the four `- assumes` lines are *generated* by `awk` from
    `docs/port/PARAMETERS.md` into `review/evidence/params-generated.txt` and `diff`ed against
    the lines in this file; the diff must be empty.
-10. **Line-number ledger**: every `file:line` citation appearing in this decision — 49 of
-    them, across the two source pins and ten upstream tags — is re-read at that exact line
+10. **Line-number ledger**: every `file:line` citation this decision made in revision 3 — 49
+    of them, across the two source pins and ten upstream tags — is re-read at that exact line
     number and asserted to carry the expected text. This is what makes the sentence "every
     line number cited here is a tag or pin offset" a claim an auditor can rerun rather than a
-    claim to be taken on trust.
+    claim to be taken on trust. **Revision 4's text adds twelve further line citations**:
+    `crates/anstream/src/auto.rs` `:212`, `:213`, `:214` (tier 7's three operands; `:211` was
+    already in this ledger), `:203` (`clicolor_enabled`), `:186` and `:187`
+    (`current_choice` and its feature gate), and `crates/anstyle-query/src/lib.rs` `:55`,
+    `:61`, `:63`, `:123`, `:128`, `:134`. They are **not** in this
+    ledger, because this script is unchanged from revision 3. They are asserted instead by the
+    supplementary script described immediately below, so the sentence holds across the two
+    scripts together and neither alone. The two file:line citations that appear inside the
+    quotation from R85 (`src/lib.rs:14,66` in `supports-hyperlinks`) are R85's own and are
+    quoted, not adopted: this decision reads neither file and claims nothing about them.
 11. **Why `colored` 3.1.1 is excluded, now that gate 1 is inapplicable** (added in revision
     3). Read at tag `colored-rs/colored@v3.1.1`: that every `Colorize` method returns
     `ColoredString`, that `ColoredString` is `pub`, that its `Display` impl calls
@@ -523,13 +658,57 @@ sections, `## 0` through `## 11`: section 0 is the toolchain block quoted above,
     Codex raw, many in the Opus raw. The manifest is never printed wholesale — it carries an author e-mail address
     — so `license` and `rust-version` are asserted as individual lines.
 
+**The supplementary check added in revision 4.** The primary script above is unchanged
+byte-for-byte from revision 3, and so is its log: the round-3 empirical audit reproduced that
+script twice at 207/207 in an isolated copy, and nothing in the three judgment findings
+requires editing a check that already passed. What revision 4's text adds — twelve new line
+citations and one quotation from a published sibling decision — is therefore asserted by a
+**second, standalone script**:
+
+```
+cd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R65/2026-09-05T183457Z-cc32974b5d89
+bash review/evidence/check-color-enablement-chain-r4.sh
+```
+
+**Exit status:** `0` (all 35 assertions passed, 0 failed).
+**Full output:** `review/evidence/check-color-enablement-chain-r4.log`.
+**Script:** `review/evidence/check-color-enablement-chain-r4.sh`.
+
+It starts with `set -o pipefail`, asserts on content rather than on exit codes, counts passes
+and failures, and returns non-zero if any failed. It implements nothing. Its seven sections
+are: `R4.0` toolchain; `R4.1` the two tags asserted to exist before any file is read from
+them; `R4.2` finding J1 — `crates/anstream/src/auto.rs:211-214` printed verbatim and asserted
+line by line, the count of `||` tokens across `:212-214` asserted to be exactly **2** (so the
+three operands are a disjunction, which is the whole of J1), `:203` for `clicolor_enabled`,
+and `crates/anstyle-query/src/lib.rs` `:55`, `:61`, `:63`, `:123`, `:128`, `:134`, plus an
+assertion that `is_ci()`'s body compares `CI` against **no** value, which is what makes
+`CI=false` still count as CI; `R4.3` finding J3 — `current_choice`'s doc line, its
+`#[cfg(feature = "auto")]` gate, its signature, and the two arms that make it readable as a
+yes/no; `R4.4` the two assumptions quoted from R85's published decision, asserted as
+substrings of `research/topics/85-rich-terminal-row-niceties/DECISION.md` so the quotation
+cannot drift from what R85 actually wrote; `R4.5` the one standards sentence revision 4 newly
+quotes, read from the committed snapshot `review/evidence/snapshot-no-color.org.txt` with its
+sha256 printed beside the assertion and **no** network fetch, exactly as the primary script's
+§5 does; and `R4.6` six assertions that **this file** carries the qualifications the revision
+note claims for it — the scoped criterion 9, criteria 11 and 12, R85 named, `FORCE_HYPERLINK`
+ruled out, and the declined `TERM` tier. `R4.4`, `R4.5` and `R4.6` read committed files in
+this repository; the rest reads two files at two immutable tags. Nothing in
+it is volatile, so its log has no equivalent of the volatile table below: a rerun that differs
+means a tag moved or a committed file changed. It was run twice in succession after the final
+edit to this file and the two outputs were diffed with `diff -u`: empty, and the saved log is
+the output of the second run.
+
 **Reproducibility, stated exactly.** The cited log was regenerated from the script as it now
 stands — this is what the revision-1 audit's F1 found wrong, the script having grown 16
 assertions after the previous log was saved, and revision 3 grew it again by 30 (177 → 207),
 so the log was regenerated a second time. The script was then run twice in succession on
 2026-09-13 and the two logs were diffed with `diff -u`: the diff is empty, they are
 byte-for-byte identical, and the saved log is the output of the second run. It was re-run once
-more after the final edit to this file and diffed against the saved log: empty again. So the
+more after the final edit to this file and diffed against the saved log: empty again. **In
+revision 4 neither the script nor the log was touched, and the claim was re-established rather
+than inherited:** the script was run again on 2026-09-15 and diffed against the committed log
+with `diff -u` — empty, 207 passed, 0 failed — so the log still reproduces five days after it
+was saved and across the round-3 audit's own independent rerun. So the
 log cited here is the output of the script as committed, against this file as committed. Reruns stay
 byte-identical **while the six live inputs in the table below hold their current values**,
 and a rerun that differs is evidence one of them moved, not that the log was mis-saved. The
@@ -580,7 +759,8 @@ classes, and nothing sits outside them:
    P03's lockfile settles which one the template actually gets.
 
 **What the check does not establish.** It does not run any Rust code, because the template
-does not exist. Acceptance criteria 1–10 are therefore **proposed, not executed**; so are the
+does not exist. Acceptance criteria 1–12 are therefore **proposed, not executed** — including
+criteria 11 and 12, added in revision 4, and criterion 9 as re-scoped there; so are the
 `cargo tree` graph-hygiene assertions and the pty-based per-stream test. Those are listed
 under `## Engines` as what P03 must prove.
 
@@ -606,7 +786,13 @@ implements exactly that (`let color = color.or_else(|| term.color.as_deref());`)
 no counter-evidence, only a preference for fewer inputs. Two consequences are recorded rather
 than smoothed over: this inverts py's implemented order, which is why the departure is written
 out in full in `### Principles and implementation`; and it adds one config key whose type,
-validation and error reporting are R53's and R55's, not this item's.
+validation and error reporting are R53's and R55's, not this item's. **Revision 4 adds the
+criteria that make this settlement falsifiable (judgment finding J2):** criteria 11 and 12
+state the inputs and the expected outcome for tier 2 against `NO_COLOR`, against
+`FORCE_COLOR`/`CLICOLOR_FORCE`, and under a `--color` flag. Revision 3 settled the order and
+left no criterion exercising it, so a P03 implementation could have ordered config below
+`NO_COLOR` — py's order, the order this decision deliberately departs from — and passed every
+criterion the decision listed.
 
 **Disagreement 2 — the resolver's return type and its test seam.** Codex's resolver takes
 injected `stdout_is_terminal` / `stderr_is_terminal` booleans and returns `Always` or `Never`
@@ -614,10 +800,21 @@ per stream, *deliberately excluding* `CLICOLOR`, `CLICOLOR_FORCE`, `TERM` and `C
 whole chain is unit-testable without touching the process environment. Opus's resolver returns
 `Auto` for anything it cannot decide and lets `AutoStream` resolve tiers 5–7 against the real
 environment and the real descriptor. Both produce identical observable behaviour for tiers
-1–4. Settled for Opus's shape, because Codex's excludes `TERM=dumb` handling, and acceptance
-criterion 9 — no colour on a `TERM=dumb` terminal — is behaviour the recommended stack
-already implements for free (`anstream` via `anstyle_query::term_supports_color()`), and so
-does the runner-up adapter (`termcolor` via its own `TERM` check); both were verified. **The cost of that choice is recorded plainly: tiers 5, 6 and 7
+1–4. Settled for Opus's shape, because Codex's resolver reads `TERM` nowhere at all, while
+the recommended stack reads it as **one operand of tier 7's three-way disjunction**
+(`crates/anstream/src/auto.rs:211-214`, quoted verbatim in
+`### Principles and implementation`), and so does the runner-up adapter (`termcolor`, via its
+own `TERM` check); both were verified. **What that buys is stated exactly, because revision 3
+overstated it (judgment finding J1):** what is verified is that
+`anstyle_query::term_supports_color()` participates in tier 7 and returns `false` for
+`TERM=dumb`, so the stack suppresses colour on a `TERM=dumb` TTY **when `CI` is unset and
+`CLICOLOR` is unset or `0`** — which is what re-scoped criterion 9 now says. It is **not**
+verified, and is not true, that `TERM=dumb` suppresses colour unconditionally: `is_ci()` is
+`std::env::var_os("CI").is_some()` and `CI` is set on both runners of `target-os-matrix`, so
+a pty test of criterion 9 must clear `CI` and `CLICOLOR` from the child environment or it
+will observe colour and fail. Under Codex's shape the same case yields colour in *every*
+environment, since nothing reads `TERM`; that difference, narrower than revision 3 claimed,
+is the tie-break. **The cost of that choice is recorded plainly: tiers 5, 6 and 7
 are then provable only end-to-end, against a real pipe and a real pty, because
 `resolve_color` returns `Auto` and `anstream` reads the real environment from there.** Codex's
 alternative buys unit-testability of the TTY tier and pays for it with `TERM` and `CI`
@@ -655,7 +852,9 @@ five other default-branch reads disclosed under (c) — `console`, `owo-colors`,
 line is `context/mod.rs:1209`, not `1207`; `colorchoice`'s global is `static USER: AtomicChoice`
 at `lib.rs:41` over `AtomicChoice(AtomicUsize)` at `:44`, not "`AtomicUsize` at `:31-38,41`";
 `color-eyre`'s `owo-colors` dependency is at `Cargo.toml:25` and is workspace-inherited, not `:26`).
-Every line number cited in this decision is a tag offset, verified by the check.
+Every line number cited in this decision is a tag offset, verified by the checks — the
+primary script's §10 ledger for the 49 citations revision 3 made, and the supplementary
+script for the twelve revision 4 added.
 
 **A raw exclusion ground struck by the owner's ruling, and what replaced it (revision 3).**
 The **Opus** raw excluded `colored` 3.1.1 under *Excluded by gate* on gate 1 (`MPL-2.0`). The
@@ -687,14 +886,30 @@ a value rather than a boolean, and the parser's own enum is tri-state.
 **Where evidence is incomplete, and what P03 must validate.** Every item below is unproven
 here because no Rust template exists to run it against; none is treated as established.
 
-1. **Acceptance criteria 1–10** as executed tests. Criteria 1–4, 6 and the `FORCE_COLOR` half
-   of 5 are unit-provable over `resolve_color` with an injected environment source. Criteria 7,
-   9 and the `CLICOLOR_FORCE` half of 5 are not, for the reason recorded under Disagreement 2.
+1. **Acceptance criteria 1–12** as executed tests. Criteria 1–4, 6, **11 and 12** and the
+   `FORCE_COLOR` half of 5 are unit-provable over `resolve_color` with an injected environment
+   source and an injected config value: each is a single call asserting the returned
+   `ColorChoice`, with `Always`/`Never` read directly and `Auto` meaning "falls through to
+   `anstream`". Criteria 11 and 12 are what prove tier 2's position — 11 that an explicit
+   config `always` beats `NO_COLOR=1` (returns `Always`), 12 that an explicit config `never`
+   beats `FORCE_COLOR=1` and `CLICOLOR_FORCE=1` (returns `Never`) and that `--color=always`
+   in turn beats the config value (returns `Always`) — and nothing here proves them today,
+   because no `resolve_color` exists to call. Criteria 7, 9 and the `CLICOLOR_FORCE` half of 5
+   are **not** unit-provable, for the reason recorded under Disagreement 2: the resolver
+   returns `Auto` and `anstream` reads the real environment and the real descriptor from
+   there. **Criterion 9 additionally requires the child process to run with `CI` and
+   `CLICOLOR` removed from its environment** (finding J1): `CI` is set on both runners of
+   `target-os-matrix`, and with it set the criterion is false, not merely unproven.
 2. **Criterion 8 end-to-end**, the only check in this list that distinguishes a per-stream
    gate from a shared one: run the built binary with stdout redirected to a file and stderr attached
    to a pty, assert no `0x1b` in the file and `0x1b` in the captured stderr, then the reverse.
    The pty harness is R32's decision, and **allocating a pty portably on both `ubuntu-latest`
    and `macos-latest` is the one part of this plan with real portability risk**; pilot it early.
+   The same harness proves criterion 9 (`TERM=dumb` on the pty) and criterion 7 (both streams
+   piped); for criterion 9 the child's environment must have `CI` and `CLICOLOR` **removed**,
+   not merely set to `0` — `is_ci()` tests presence, not value
+   (`crates/anstyle-query/src/lib.rs:128,134`), while `CLICOLOR=0` is separately a tier-6
+   "never" and so would pass the assertion for the wrong reason.
 3. **Graph hygiene**: `cargo tree -i anstyle` yielding exactly one version, `cargo tree -i atty`
    and `cargo tree -i is-terminal` yielding "package not found", and `cargo deny check advisories`
    clean for the colour stack.
@@ -710,3 +925,12 @@ here because no Rust template exists to run it against; none is treated as estab
    (both verified), so the template would have to force its own decision onto it through
    `console::set_colors_enabled` / `set_colors_enabled_stderr`. That is R63's decision to make,
    handed over as evidence, not decided here.
+8. **R85's readable capability**, added in revision 4 (finding J3). R85
+   (`rich-terminal-row-niceties`, resolved) needs "something the CLI can read as 'this stream
+   will accept escape codes'". This decision answers *where* that value lives —
+   `AutoStream::current_choice()` on the constructed stdout stream, not `resolve_color`'s
+   return, which is `Auto` in the ordinary case — and the citation is verified at the tag.
+   What is **unproven** is that the template exposes it: P03 must give the table renderer the
+   stdout stream's effective choice and assert, on a piped stdout with a decorated cell, that
+   the rendered row carries neither SGR nor OSC 8 bytes. `FORCE_HYPERLINK` stays out of this
+   chain, on the ground stated in `## Decision`; the input itself remains R85's.
