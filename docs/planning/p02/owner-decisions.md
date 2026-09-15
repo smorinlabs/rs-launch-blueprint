@@ -349,6 +349,8 @@ reject.
 | W0-R67 | R67 error-and-exit-code-contract | A accept | 2026-09-14 | `16947ab1…` | two-layer contract, `thiserror`/`anyhow`/`signal-hook`, exit codes from standard R6.1; `ctrlc` runner-up loses on R9.6 |
 | W0-R42 | R42 dev-toolchain-provisioning | A accept | 2026-09-15 | `a2504aa7…` | first put 2026-09-14 as one combined question and withdrawn at the owner's request; re-put split in two with the keyboard-level table and the controller's reasoning for its recommendation made explicit |
 | W0-R42i | R42 install-integrity posture | A = decision's option 3, signed/unsigned column | 2026-09-15 | — | recorded as a binding ruling in `docs/port/OWNER-REVIEW.md`; options 1 (as written) and 2 (`--only-signed`) declined |
+| W0-R49 | R49 build-target-declaration | A accept | 2026-09-15 | `319a5356…` | first put 2026-09-15 and withdrawn at the owner's request; re-put as a full brief with the cross-platform implications (Linux, macOS, occasional Windows) and a four-way comparison of the architectural alternatives |
+| W0-R49n | R49 binary name | B = direct a short name (name pending) | 2026-09-15 | — | the decision kept `rs-launch-blueprint` as owner-reviewable; the owner directs a short command name; the name itself is being asked |
 
 ## Retired from this list
 
