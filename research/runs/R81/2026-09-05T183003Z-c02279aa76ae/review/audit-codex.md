@@ -1,5 +1,5 @@
-decision-sha256: 4647372666b7e94537d75fb684c6ca5ec5cca6929841330bab8832ddb6e7328e
-actor: audit-codex-2026-09-05T183003Z-c02279aa76ae-r3
+decision-sha256: ebcbe236064e05558895d2acc2ee5f6b7f9a6c712f6527c76c9fb92fdeecbf51
+actor: audit-codex-2026-09-05T183003Z-c02279aa76ae-r4
 model: gpt-5.6-terra
 family: openai
 verdict: approve
@@ -7,13 +7,14 @@ unresolved-findings: none
 
 ## Rerun
 
-- argv: `bash review/evidence/docs-delivery-claims.sh`
-- cwd: isolated Git checkout `/private/tmp/r81-audit-r3.Der0e8/repo/research/runs/R81/2026-09-05T183003Z-c02279aa76ae`; it contains revision-2 blob `9f2bcb9ddf5266bf4face766e98b7cd1be3616ad`, so check 16 ran under its stated precondition.
-- toolchain: macOS 26.4; Darwin 25.4.0 arm64; `rustc 1.98.0`; `cargo 1.98.0`; `gh 2.98.0`.
-- exit: 0; 154 `PASS` lines, 8 gated `ASSERT ...=True` lines, 0 `FAIL` lines, and `failed assertions: 0`.
-- log: `review/evidence/audit-docs-delivery-model-r3.log`.
-- match: yes. The raw rerun output is byte-identical to `review/evidence/docs-delivery-claims.log`; both have SHA-256 `152ddb42429b3b72646cb24bf9fd6d5cd103adb099784a7865630a6fbeb0981c`.
-- shared-run note: an earlier shared-directory rerun failed only after another writer removed `review/evidence/snapshots/.norm.py` during the run; the isolate avoids that documented shared-snapshot race. It is not a decision defect.
+- argv: `bash review/evidence/docs-delivery-claims-r4.sh > review/evidence/audit-docs-delivery-model-r4.log 2>&1`
+- cwd: isolated Git clone `/private/tmp/r81-r4-audit.TIK9Et/repo/research/runs/R81/2026-09-05T183003Z-c02279aa76ae`; its object database contains revision-3 blob `460e6f9002663f7e00921406c3bd9bc2785328fe`, which is check 17's stated precondition.
+- toolchain: GNU bash 3.2.57; Python 3.14.7; Git 2.50.1; Darwin 25.4.0 arm64.
+- exit: 0; 101 `PASS` lines, 0 `FAIL` lines, and `failed assertions: 0`.
+- log: `review/evidence/audit-docs-delivery-model-r4.log`.
+- output match: yes. The rerun log is byte-identical to `review/evidence/docs-delivery-claims-r4.log`; both SHA-256 values are `2ca46e1812beb805e89c52db8e5d1b89c8fac1fdb23c9e3549b1948be1a75c4a`.
+
+I also ran the preserved revision-3 command, `bash review/evidence/docs-delivery-claims.sh`, in that same isolated clone. It exited 1 exactly as revision 4 discloses. Checks 1--15 produced 119 `PASS` lines and 0 `FAIL` lines. Check 16 produced one failed assertion (reported as two `FAIL` lines: its changed-region message and the shell wrapper) and caused the exit 1. The old script's revision-2 hunk-count assertion still passes at 17; the changed-region assertion is the direct failure. No command wrote to the shared `review/evidence/snapshots/` directory.
 
 ## Findings
 
@@ -21,8 +22,8 @@ None.
 
 ## Assessment
 
-Revision 3 answers the structural finding rather than flipping revision 2's branch by implication. `## Decision` states the fit judgement and grounds it in raw-source fidelity, the measured six-category corpus, the practice-structure comparison, and default search; checks 5, 6, and 12--15 reproduce those claims. The practice sample is asymmetric (four flat README cases and one nested-tree case), but the decision states that limit and does not treat it as independent proof of broad Rust practice; grounds 1 and 4 do not depend on it.
+Checks 17 and 18 reproduce the stated revision-4 evidence: 26 preservation regions are byte-identical to revision 3, all eight required repair regions changed with their required markers, and the seven preserved artifacts retain their recorded hashes. Check 18 also reads the three claimed async-runtime versions and the two notice-rule packages from the committed lock, with an absent-package control.
 
-The four shipping rows F341, F346, F351, and F352, F343's Mermaid exclusion, and F344's unconditional build-drift rule are all explicit; F357's placement question is live and the two `justfile` recipes are present. Check 16 also verifies the surviving fixed parameters, the own-source licence expression, the 218-package non-reach finding, the committed-`theme/` prohibition, and the conditional Font Awesome content-attribution duty. `zola` and `mdbook-mermaid` are re-evaluated on fit alone, not licence. The hosted Pages URL is correctly recorded as derived and unproven, not live.
+The decision does not hide the legacy script failure, and the rerun confirms its narrower claim that checks 1--15 still pass. It records the shipped-site notice scope as unproven pending a P03 build, records the default-feature `mdbook serve` statement as unproven pending execution, and does not treat either as an implemented result. Gate 1 is verbatim `inapplicable` for the owner ruling; gates 2--6 are recorded rather than silently omitted.
 
-The rerun spot-checked more than five cited endpoints with `curl`: RustSec, six mdBook guide pages, the published goals site, Mozilla's MPL FAQ, GitHub's Mermaid documentation, and Zola's configuration page. No book was built and no GitHub web UI Mermaid rendering was asserted, consistently with the P02 research-only contract.
+Five current cited endpoints were independently fetched with `curl` and content-checked: mdBook Markdown conversion, `SUMMARY.md` requirement, default search, GitHub Mermaid guidance, and Mozilla's MPL FAQ. All five matched the decision's cited content. The audit did not build, install, or deploy the proposed template, consistent with the research-only contract.

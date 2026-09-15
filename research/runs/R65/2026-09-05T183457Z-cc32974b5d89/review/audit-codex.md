@@ -1,5 +1,5 @@
-decision-sha256: 31164f3d13e4df56826548bd74de5fa448ae6e111a5273e807c3d8a5774bbd22
-actor: audit-codex-2026-09-05T183457Z-cc32974b5d89-r3
+decision-sha256: 4b9b21a1454461ce691976580f07d8df73e89323d2a17c1df79dc7526ac70956
+actor: audit-codex-2026-09-05T183457Z-cc32974b5d89-r4
 model: gpt-5.6-terra
 family: openai
 verdict: approve
@@ -7,28 +7,30 @@ unresolved-findings: none
 
 ## Rerun
 
-argv: `bash review/evidence/check-color-enablement-chain.sh`
+argv: `bash review/evidence/check-color-enablement-chain.sh`; `bash review/evidence/check-color-enablement-chain-r4.sh`
 
-cwd: an isolated copy at `/private/tmp/r65-audit-r3.AQ5pHz/rs-launch-blueprint-p02-plan/research/runs/R65/audit`. It contained the R65 run inputs, decision, evidence script, raw reports, and its own `docs/port/PARAMETERS.md`; the check wrote its generated parameter files only inside that copy.
+cwd: an isolated copy at `/private/tmp/r65-audit-r4.8wWDIH/rs-launch-blueprint-p02-plan/research/runs/R65/audit`. It contained the R65 run, its evidence, `docs/port/PARAMETERS.md`, and R85's published decision at `research/topics/85-rich-terminal-row-niceties/DECISION.md`. The primary check therefore wrote the five volatile crates.io snapshots and generated parameter files only in that copy.
 
 toolchain: `rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)`; `cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)`; macOS 26.4, Darwin arm64.
 
-exit code: 0 for each of two consecutive clean reruns. Each ended `TOTAL: 207 passed, 0 failed`. The complete first output is `review/evidence/audit-color-enablement-chain-r3.log`, SHA-256 `cac6720c982c009f5f977de45f7cc3edd41ab0415b12bed5f9a311240fd78fa2`. The repeat output has the identical hash; `diff -u` is empty in `review/evidence/audit-color-enablement-chain-r3-repeat.diff`.
+exit code: `0` for the primary check (`207 passed, 0 failed`) and `0` for the revision-4 supplementary check (`35 passed, 0 failed`). Complete rerun output: `review/evidence/audit-color-enablement-chain-r4-primary.log` and `review/evidence/audit-color-enablement-chain-r4.log`; exit record: `review/evidence/audit-color-enablement-chain-r4-exit.txt`.
 
-output matches the decision: yes. It has twelve sections, `## 0` through `## 11`, and 207 passing assertions. A diff against `review/evidence/check-color-enablement-chain.log` contains exactly one non-assertion difference: section 9 prints the isolated copy's `docs/port/PARAMETERS.md` pathname rather than the original worktree pathname. `review/evidence/audit-color-enablement-chain-r3-decision.diff` records that single-line difference.
-
-Nine direct curl spot-check assertions passed; their complete content-based results are in `review/evidence/audit-color-enablement-chain-r3-citations.log`.
+output matches the decision: yes. The primary rerun diff in `review/evidence/audit-color-enablement-chain-r4-primary.diff` has exactly one non-assertion difference: the generated-parameters heading names the isolated copy rather than the original `docs/port/PARAMETERS.md`. The supplementary rerun diff in `review/evidence/audit-color-enablement-chain-r4.diff` likewise has exactly one non-assertion difference: the found-R85-decision heading names the isolated copy. All asserted content is identical.
 
 ## Findings
 
 No unresolved findings.
 
-The owner's 2026-09-12 Q7.B ruling is recorded correctly: fitness gate 1 is `inapplicable` with its reason, while dependency licence fields are retained as facts and cause no exclusion.
+Revision 4 repairs J1 without overclaiming. The supplementary rerun proves the cited `anstream` tier is the stated three-way disjunction, with `CI` tested by presence; the decision scopes criterion 9 to `CI` and `CLICOLOR` absent and labels that criterion unproven pending P03's pty test. Its declined template-owned `TERM` tier is explicitly considered and grounded.
 
-At `colored-rs/colored@v3.1.1`, section 11 and the independent tagged-source curl checks establish each new ground: `SHOULD_COLORIZE` is one `LazyLock` initialized from an environment computation containing `io::stdout().is_terminal()`; `stderr` occurs zero times in both `src/control.rs` and `src/lib.rs`; `src/lib.rs` contains 81 `-> ColoredString` returns; and all seven named `src/` files have zero `io::Write` or `Write`-implementation occurrences. Those facts support the decision's criterion-8, library-public-surface, and missing-stream-adapter grounds without relying on the struck licence gate.
+Revision 4 repairs J2. Criteria 11 and 12 specify both config-order interactions, and the decision records them as planned tests rather than established behavior.
 
-The statement that `colored` fails no gate evaluated by this decision is accurate rather than a hedge: gate 1 is struck, gate 2 passes at `rust-version = "1.80"`, gate 3 passes at the RustSec HTTP-404 result, and gates 4–6 are expressly not evaluated because architectural exclusion precedes them. The Codex raw has zero case-insensitive `colored` matches; the decision correctly calls that a coverage gap, not disagreement.
+Revision 4 repairs J3. The R85 quotation is read from the published sibling decision; `AutoStream::current_choice()` is verified as the effective per-stream choice; and `FORCE_HYPERLINK` is explicitly outside the color chain, with exposing the capability deferred to P03.
+
+Six independent content-based `curl` spot checks passed in `review/evidence/audit-color-enablement-chain-r4-citations.log`: the tier-7 stream and CI operands, presence-based `CI`, `current_choice`, Cargo's flag-before-config line, and `colored`'s stdout TTY gate.
+
+The revision-3 core is intact. The recommended stack through config scope, including F288-F290, is byte-identical to revision 3. The primary script remains SHA-256 `433c750b8c852a013e122c4db997267cf7e21a8275a77b691506ce5b21995503` and its committed log remains SHA-256 `ed810ee6b93be7ab0d32b0690c4dc0cde97d7614599f022d5a6daf610b1aaf81`, both equal to revision-3 artifacts. Gate 1 is correctly `inapplicable` under Q7.B; dependency licence values remain facts, not exclusion grounds.
 
 ## Assessment
 
-Revision 3's renewed `colored` exclusion is reproducible, sourced at the stated tag, and based on grounds independent of licence compatibility. The decision claims proposed P03 validation rather than a built template. Approve.
+The decision's new revision-4 claims reproduce, the prior recommendation and primary evidence are unchanged, and all new template behaviors are presented as unproven P03 work rather than demonstrated implementation. Approve.

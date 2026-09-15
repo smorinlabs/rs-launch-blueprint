@@ -1,32 +1,32 @@
-decision-sha256: 9d135856d7e9e29c81f09b88f2662780dd3f11218cee6815fb396e3c593ffb2f
-actor: audit-codex-2026-09-05T155504Z-2107cffb3ecf-r6
+decision-sha256: 319a535665318a120c9be3bdf61037f9f4ea8214d972de724dafe16902bec41d
+actor: audit-codex-2026-09-05T155504Z-2107cffb3ecf-r7
 model: gpt-5.6-terra
 family: openai
-verdict: reject
-unresolved-findings: unsupported universal two-implementation-equivalence claim
+verdict: approve
+unresolved-findings: none
 
 ## Rerun
 
-argv: `bash research/runs/R49/2026-09-05T155504Z-2107cffb3ecf/review/evidence/check-grep-identity.sh`
+argv: `CLAUDE_CODE_EXECPATH=/Users/stevemorin/.local/bin/claude bash review/evidence/check-grep-identity.sh`; `env -u CLAUDE_CODE_EXECPATH HOME=/private/tmp/r49-empty-home.F1BshS bash review/evidence/check-grep-identity.sh`; and the recorded `sed` mutation of the revision-2 widened expected list, in both modes.
 
-cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan`
+cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R49/2026-09-05T155504Z-2107cffb3ecf` (the script resolves the real repository root with `git rev-parse --show-toplevel`).
 
-toolchain: `cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)`; `rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)`; `/usr/bin/grep` is `grep (BSD grep, GNU compatible) 2.6.0-FreeBSD`; the reachable embedded implementation is `ugrep 7.8.4`.
+toolchain: `bash 3.2.57`; `/usr/bin/grep` is `grep (BSD grep, GNU compatible) 2.6.0-FreeBSD`; the reachable embedded implementation is `ugrep 7.8.4`.
 
-exit code: 0
+exit code: 0 with embedded ugrep reachable; 0 with it unavailable; 1 for the widened-list mutation in each mode.
 
-log path: `review/evidence/audit-build-target-declaration-r6.log`
+log path: `review/evidence/audit-build-target-declaration-r7.log`
 
-output matches the cited `review/evidence/grep-identity.log`: yes, except the UTC `retrieved:` timestamp; the normalized diff exits 0. All ten content assertions passed. The four recorded comparisons agree: old pattern 40 lines on revision 2; corrected pattern `182 363 607 610 616` on revision 2; corrected pattern `12 29 70 92 298 489 733 736 745 794` on revision 4; and `licen` 33 lines on revision 4. The recursive fixture produced `ignored/licence.md visible.md` for `/usr/bin/grep` and `visible.md` for embedded ugrep. Its explicitly named ignored file was read by both.
+output matches the cited `review/evidence/grep-identity.log`: yes after the script's documented normalization: remove `retrieved:` and the environment-specific two-line `second implementation:` block. The normalized diff exits 0 (`review/evidence/audit-grep-identity-r7.normalized.diff`). The reachable run made 13 content assertions. It compared all seven named pairs: four pre-existing pairs, widened SPDX on immutable blobs `2ac02e1` and `ddbee6a`, and the seven-line negative-control fixture. The unavailable run made 11 content assertions and printed exactly eight explicit `SKIP` lines: seven embedded-ugrep comparisons plus the recursive-divergence comparison. Each `compare` first asserts `/usr/bin/grep`; a SKIP cannot reset `fail`. The mutation produced `ASSERT FAIL revision-2, widened SPDX pattern (/usr/bin/grep)` and exit 1 in both modes.
 
-The shell-snapshot function is real: a clean zsh sourced from `snapshot-zsh-1788931442953-1w0j16.sh` reports `grep` as a shell function and its `grep --version` reports `ugrep 7.8.4`; the bare PATH command is `/usr/bin/grep`, and `ugrep` is not a PATH command. With `CLAUDE_CODE_EXECPATH` unset and `HOME` empty, the rerun exits 0 with five explicit `SKIP` lines and no `SAME` line (`review/evidence/audit-grep-identity-skip-r6.log`). Mutating the asserted revision-2 corrected list under that same absent-implementation setup exits 1 with `ASSERT FAIL` (`review/evidence/audit-grep-identity-skip-negative-r6.log`), so a SKIP cannot turn a failed `/usr/bin/grep` assertion into a pass.
+The decision's seven-pair sentence at `review/DECISION.md:124-133`, its seven-row table at `:143-149`, and the seven `compare` calls at `review/evidence/check-grep-identity.sh:145-172` agree one-for-one. `PAT_ID_FULL` is byte-identical in the identity and licence-enumeration scripts. The script demonstrates the documented recursive divergence separately and the decision explicitly claims no agreement outside the seven pairs.
 
-`check-licence-enumeration.sh` also reran with exit 0 and matched its cited log except `retrieved:`. Its thirteen assertions re-established the 40-line raw old result, the two corrected lists, the proved bare-`mpl` filter, and the six revision-2 locations `582 605 606 608 609 611` (`review/evidence/audit-licence-enumeration-r6.log`). Five Cargo-source/documentation citations passed direct content spot-checks with `curl` (`review/evidence/audit-citations-r6.log`). `check-lockfile-inclusion.sh` has SHA-256 `4ed6818fb64e912d45ab47cbb1e1f7eca43536bfca40f776572d75f1db586ac7` at revisions 4, 5 and 6; the parameter lines are byte-identical at those revisions. The six gates are present; gate 1 is one line and correctly records Q7.B as `inapplicable`; there is no `Supersedes` section.
+`check-lockfile-inclusion.sh` and `check-licence-enumeration.sh` reran with exit 0 and reproduce their cited logs after removing only `retrieved:` (`review/evidence/audit-lockfile-inclusion-r7.diff` and `review/evidence/audit-licence-enumeration-r7.diff`, both empty). Their SHA-256 values are respectively `4ed6818fb64e912d45ab47cbb1e1f7eca43536bfca40f776572d75f1db586ac7`, `1f3ea090b3ff9f716049e11a354cb8281c440938abb114f40cb21d0c150b2fcd`, and the enumeration log is `3ddcf82fea525769b441065b796dcabd35e7a7e107f6a396bc8b615142299b90`. The 40 / 5 / 10 / 33 lists and `582 605 606 608 609 611` reproduced under `/usr/bin/grep`. The `- owns`/`- assumes` lines are byte-identical from revision 2 through commit `bc1794b`; all four assumed values equal `docs/port/PARAMETERS.md`. The six gates are present and gate 1 correctly says `inapplicable` under Q7.B. There is no `## Supersedes` heading. Five pinned Cargo citations passed direct `curl` content checks (`review/evidence/audit-citations-r7.log`).
 
 ## Findings
 
-1. **The universal equivalence sentence is broader than its evidence.** `review/DECISION.md:32-36` says, “Both implementations return the same result for every pattern this decision reports.” `check-grep-identity.sh:126-135` compares only four patterns. The decision separately reports the widened SPDX pattern at `review/DECISION.md:203-216`, and `check-licence-enumeration.sh:156-169` tests that pattern only with `/usr/bin/grep`; `check-grep-identity.sh` has no `PAT_ID_FULL` comparison. The four-table claim is proved, but the universal sentence is not. Narrow the sentence to those four tested pattern/blob pairs, or add content assertions that compare the widened pattern under embedded ugrep before accepting the decision.
+None.
 
 ## Assessment
 
-Revision 6 correctly repairs the PATH-versus-shell-function identity claim. It demonstrates the ignore-rule divergence, correctly limits the revision-3 census failure to `head -30`, removes the vacuous PATH comparison, preserves the prior enumeration/provenance repairs, and reasonably leaves the byte-identical bash lockfile check alone. The one unsupported universal statement must be narrowed or tested; therefore the verdict is reject.
+Revision 7 repairs the round-6 overstatement at both required points. The widened SPDX pattern is now content-asserted by `/usr/bin/grep`, compared against embedded ugrep when reachable, explicitly skipped only when it is not, and fails under a deliberately wrong expected list in both modes. The decision now restricts its equivalence statement to exactly those seven tested pairs. No decision change is required; therefore the verdict is approve.

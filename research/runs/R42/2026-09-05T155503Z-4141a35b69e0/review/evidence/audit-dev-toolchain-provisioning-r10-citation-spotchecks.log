@@ -1,0 +1,6 @@
+audit=R42 revision-10 citation spot checks
+args.rs curl-exit=0 http=200 sha256=4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783
+quickinstall.rs curl-exit=0 http=200 sha256=821621cadc4528e0e1486a17345adbce191874a16428a63b51e0b5b1257128a7
+resolution.rs curl-exit=0 http=200 sha256=2c829e3756f08791ecab3b4d7e9862d2c982ab951f8fc41567c73668b0777bc2
+cargo-shear-1.13.1.crate curl-exit=0 http=200 sha256=6f87c8d4905560b357e0e57b59f6578f38edfbb272e35a145fae2dde0fa1ab1d
+cargo-binstall-1.23.0.crate curl-exit=0 http=200 sha256=f4cf36393215c9ab9b00f4efbb579538a8328a34e4e899ae2e3ee3b9a38cbecb

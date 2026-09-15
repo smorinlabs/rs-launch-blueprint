@@ -1,0 +1,11 @@
+--- review/evidence/check-color-enablement-chain.log	2026-09-13 00:38:29
++++ review/evidence/audit-color-enablement-chain-r4-primary.log	2026-09-15 00:46:38
+@@ -253,7 +253,7 @@
+ PASS  anstyle 1.0.14 manifest: [dependencies] entries (it is dependency-free)  [count=0]
+ 
+ ## 9. Fixed parameters — generated from docs/port/PARAMETERS.md and diffed against DECISION.md
+-     generated from /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/PARAMETERS.md:
++     generated from /private/tmp/r65-audit-r4.8wWDIH/rs-launch-blueprint-p02-plan/docs/port/PARAMETERS.md:
+        - assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+        - assumes rust-edition = 2024
+        - assumes target-os-matrix = ubuntu-latest, macos-latest

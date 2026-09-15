@@ -1,0 +1,50 @@
+--- /dev/fd/11	2026-09-15 00:34:47
++++ /dev/fd/12	2026-09-15 00:34:47
+@@ -180,9 +180,9 @@
+   cargo-binstall:  INFO resolve: Resolving package: 'cargo-shear@=1.13.1'
+   cargo-binstall:  WARN The package cargo-shear v1.13.1 (aarch64-apple-darwin) has been downloaded from github.com
+   cargo-binstall:  INFO This will install the following binaries:
+-  cargo-binstall:  INFO   - cargo-shear => /Users/stevemorin/.cargo/bin/cargo-shear
++  cargo-binstall:  INFO   - cargo-shear => /private/tmp/r42-audit-r10-archive.svIGYe/home/.cargo/bin/cargo-shear
+   cargo-binstall:  INFO Dry-run: Not proceeding to install fetched binaries
+-  cargo-binstall:  INFO Done in 2.316482375s
++  cargo-binstall:  INFO Done in 2.703756625s
+ ASSERT-OK   7a-status = 0
+ 7a 'Verified signature' occurrences: 0
+ ASSERT-OK   7a-verified-signature-count = 0
+@@ -193,10 +193,9 @@
+   cargo-binstall:  WARN resolve: Error while downloading and extracting from fetcher github.com: No signature present
+   cargo-binstall:  WARN resolve: Error while downloading and extracting from fetcher github.com: No signature present
+   cargo-binstall:  WARN resolve: Error while downloading and extracting from fetcher github.com: No signature present
+-  cargo-binstall: ERROR Failed to download signature: Failed to download from remote: could not GET https://github.com/cargo-bins/cargo-quickinstall/releases/download/cargo-shear-1.13.1/cargo-shear-1.13.1-aarch64-apple-darwin.tar.gz.sig: HTTP status client error (404 Not Found) for url (https://github.com/cargo-bins/cargo-quickinstall/releases/download/cargo-shear-1.13.1/cargo-shear-1.13.1-aarch64-apple-darwin.tar.gz.sig)
+   cargo-binstall:  WARN The package cargo-shear v1.13.1 will be installed from source (with cargo)
+-  cargo-binstall:  INFO Dry-run: running `/opt/homebrew/bin/cargo install cargo-shear --version 1.13.1 --locked --root /Users/stevemorin/.cargo`
+-  cargo-binstall:  INFO Done in 2.136533666s
++  cargo-binstall:  INFO Dry-run: running `/opt/homebrew/bin/cargo install cargo-shear --version 1.13.1 --locked --root /private/tmp/r42-audit-r10-archive.svIGYe/home/.cargo`
++  cargo-binstall:  INFO Done in 2.589696792s
+ ASSERT-OK   7b-status = 0
+ ASSERT-OK   7b-no-signature-present
+ ASSERT-OK   7b-falls-through-to-cargo-install
+@@ -206,9 +205,9 @@
+   cargo-binstall:  INFO resolve: Verified signature for package 'cargo-binstall': gh=cargo-bins/cargo-binstall git=b874e25ea559687bec77e281e9b271aa1367b624 ts=2026-09-05T16:59:07.371Z run=33978884356
+   cargo-binstall:  WARN The package cargo-binstall v1.23.0 (x86_64-apple-darwin) has been downloaded from github.com
+   cargo-binstall:  INFO This will install the following binaries:
+-  cargo-binstall:  INFO   - cargo-binstall => /Users/stevemorin/.cargo/bin/cargo-binstall
++  cargo-binstall:  INFO   - cargo-binstall => /private/tmp/r42-audit-r10-archive.svIGYe/home/.cargo/bin/cargo-binstall
+   cargo-binstall:  INFO Dry-run: Not proceeding to install fetched binaries
+-  cargo-binstall:  INFO Done in 2.735364375s
++  cargo-binstall:  INFO Done in 3.058971042s
+ ASSERT-OK   7c-status = 0
+ 7c 'Verified signature' occurrences: 1
+ ASSERT-OK   7c-verified-signature-count = 1
+@@ -220,8 +219,8 @@
+   
+ ASSERT-OK   7d-status = 76
+ ASSERT-OK   7d-crate-not-found
+-listing sha256 after (/Users/stevemorin/.cargo/bin): <unchanged-baseline>
+-ASSERT-OK   cargo-bin-listing-unchanged = 01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed  -
++listing sha256 after (/private/tmp/r42-audit-r10-archive.svIGYe/home/.cargo/bin): <unchanged-baseline>
++ASSERT-OK   cargo-bin-listing-unchanged = e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  -
+ 
+ --- Assertion summary
+ assertions passed: 45  failed: 0  total: 45  expected total: 45

@@ -1,0 +1,11 @@
+--- review/evidence/check-color-enablement-chain-r4.log	2026-09-15 00:11:57
++++ review/evidence/audit-color-enablement-chain-r4.log	2026-09-15 00:46:40
+@@ -40,7 +40,7 @@
+ PASS  anstream current_choice: a stripping stream reports Never (line 190)  [matched: StreamInner::Strip(_) => ColorChoice::Never,]
+ 
+ ## R4.4 J3 — the two assumptions R85 records on this item, quoted from its published decision
+-PASS  R85 published decision found at /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/topics/85-rich-terminal-row-niceties/DECISION.md
++PASS  R85 published decision found at /private/tmp/r65-audit-r4.8wWDIH/rs-launch-blueprint-p02-plan/research/topics/85-rich-terminal-row-niceties/DECISION.md
+ PASS  R85 assumption 1 — R65 must expose a readable 'accepts escape codes' value  [matched: **R65** must expose something the CLI can read as "this stream will accept escape codes"]
+ PASS  R85 assumption 1 — the boolean composition R85 would use  [matched: color_enabled && supports_hyperlinks::on(Stdout)]
+ PASS  R85 assumption 2 — FORCE_HYPERLINK, which R65 may not have scoped  [matched: R65 additionally acquires an input it may not have scoped: `FORCE_HYPERLINK`]

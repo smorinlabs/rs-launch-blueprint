@@ -1,0 +1,8 @@
+audit=R42 revision-10 check-16 clean-archive rerun
+archive=/private/tmp/r42-audit-r10-archive.svIGYe
+shasum: /private/tmp/r42-audit-r10-archive.svIGYe/research/runs/R42/2026-09-05T155503Z-4141a35b69e0/review/DECISION.md: No such file or directory
+archive-decision-sha256=
+argv=extract recorded check16.sh from archived evidence/binstall-signing.log; SCRATCH=/private/tmp/r42-audit-r10-archive.svIGYe/scratch PERTURB= /bin/bash
+grep=/usr/bin/grep
+sed: 1: "/^# ---8<--- check16.sh ...": bad flag in substitute command: '}'
+script-exit=0

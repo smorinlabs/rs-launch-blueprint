@@ -1,0 +1,13 @@
+audit: audit-codex-2026-09-12T204004Z-d02022bf6f42-r2
+decision-sha256: 9a8d825d0e204bcf6eed2185409c183ae27903ebd5614ec0245ed2a9537b8723
+cwd: /private/tmp
+toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) / cargo 1.98.0 (797e8a9bc 2026-08-05)
+state-bound-check: exit=0 diff=0
+assert-figures: exit=0 diff=0
+issue-responsiveness: exit=0 diff=0
+bacon-install-check: exit=0 diff=0
+parameters-check: exit=0 diff=0
+feature-shape-check: exit=1; cited-log diff=1; reason=read-only advisory-db lock
+feature-shape-check-private-db: exit=0; cited-log diff=1; observed=1246 advisories; cited=1243 advisories
+revision-1 comparison: all six scripts and the six revision-1 cited logs identical to 492d9b2
+parameters-check-r2: auditor rerun byte-identical to cited revision-2 log

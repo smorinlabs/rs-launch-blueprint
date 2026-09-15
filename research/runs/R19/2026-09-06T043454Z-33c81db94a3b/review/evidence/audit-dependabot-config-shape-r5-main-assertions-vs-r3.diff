@@ -1,0 +1,10 @@
+--- /private/tmp/r19-main-old.assertions	2026-09-15 01:15:05
++++ /private/tmp/r19-main-new.assertions	2026-09-15 01:15:05
+@@ -20,6 +20,7 @@
+ PASS  cargo's default requirements strategy is BumpVersionsIfNecessary (= increase-if-necessary)
+ PASS  file_parser requires the workspace root
+ PASS  exactly one dependabot config file at ratatui (no yml/yaml collision)
++PASS  open cargo PRs exceed the configured limit of 3 — that key is not in force
+ PASS  ratatui proposed releases younger than its configured 7-day cooldown — that value is not in force either
+ PASS  at least 5 cargo PRs were open at the revision-1 retrieval, above the configured limit of 3 — that key was not in force
+ PASS  ratatui's PRs carry the DEFAULT dependencies+rust and dependencies+github_actions labels with no labels key configured
