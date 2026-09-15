@@ -1,0 +1,10 @@
+== recorded-artifact hashes ==
+494e545185064ac9e550912b43a63580814a48d52f6783a64ac243c896583c1b  review/evidence/r19-check-5f.sh
+67fb79b33b021a2a1d62d30a830df7e6cafdb762394fc093d7abe4a0e71f08d4  review/evidence/r19-check-5f-negative-control.sh
+8c8cf11f7d3a3bd1e7757cb8f58406dd2a0f3ca518fa2f11c4737e113ca51bea  review/evidence/dependabot-rust-version-pinned.log
+3cee7d8fcad8263bfb18508cf8f0d7d052b1ea5fccf27dcf52f969dfb3afa994  review/evidence/dependabot-rust-version-pinned.repeat.log
+f22d569641cde8cc6aaa62593692165bd7fbe3f70cba73db5677cca004609dbd  review/evidence/dependabot-rust-version-negative-control.log
+== normalized checker diff ==
+normalized-diff: identical (allowed dynamic runtime lines excluded)
+== source-body diff ==
+script-source-diff: identical

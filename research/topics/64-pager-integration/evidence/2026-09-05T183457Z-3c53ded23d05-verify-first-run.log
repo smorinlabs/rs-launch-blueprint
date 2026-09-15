@@ -1,0 +1,1085 @@
+R64 verify.sh — FIRST run, before two defects in the check itself were fixed.
+Retained as the evidence that these assertions are capable of failing: it reports
+3 failures and exits 3. The two defects were in the check, not in the findings:
+  S08 — the grep pattern for py's load-bearing lines did not emit the height gate
+  S27/S29 — the pseudo-terminal prefixes the first captured line, so an anchored
+            '^(LESS|LV)=' match missed LV= in both git captures
+Both were fixed by changing the check; no finding changed. This log is NOT the
+output of the retained verify.sh (sha256 aa90cdc9feba9fae760f2d952fd63a24116ff37e516f8ad3a621d16fe6daaa48).
+
+
+
+========== 0. toolchain and host ==========
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+ProductName:		macOS ProductVersion:		26.4 BuildVersion:		25E246 
+arm64
+current published stable channel:
+[HTTP 200] https://static.rust-lang.org/dist/channel-rust-stable.toml
+[pkg.rustc]
+version = "1.98.1 (48a229cea 2026-09-01)"
+git_commit_hash = "48a229ceaefd4985c50990b14116b6d856af0985"
+[S00 PASS] stable channel manifest reachable = 200
+[S01 PASS] current stable rustc is a 1.9x release (the MSRV floor is computed from it)
+also of record, because sections 4 and 5 depend on them:
+less 668 (POSIX regular expressions)
+git version 2.50.1 (Apple Git-155)
+
+
+========== 1. py-launch-blueprint at pin b08bccfb55d05f15e46a83b52c5660b1881d19f5 — the two BASELINE-REVIEW subjects ==========
+[S02 PASS] py output.py readable at the pin = 0
+
+--- 1a. output.py, numbered, the pager region (lines 50-110) ---
+    50	    TEXT = "text"
+    51	    JSON = "json"
+    52	    MARKDOWN = "markdown"
+    53	
+    54	
+    55	#: ``-F`` quit if one screen, ``-R`` pass ANSI colors, ``-X`` no screen clear.
+    56	DEFAULT_PAGER = "less -FRX"
+    57	
+    58	#: True on Windows. Module-level so tests can exercise both tokenization
+    59	#: branches by monkeypatching (same pattern as ``core.paths._WINDOWS``).
+    60	_WINDOWS = sys.platform == "win32"
+    61	
+    62	
+    63	def _pager_argv(pager: str) -> list[str]:
+    64	    """Tokenize the pager command per-platform.
+    65	
+    66	    POSIX shlex rules eat backslashes, mangling Windows paths like
+    67	    ``C:\\tools\\less.exe``. On Windows, split with ``posix=False`` (which
+    68	    preserves backslashes) and strip the surrounding quotes that mode keeps.
+    69	    Quoting is the supported spelling for a path with spaces; an unquoted
+    70	    one still tokenizes wrong, fails to launch, and falls back to plain
+    71	    output via the caller's error handling.
+    72	    """
+    73	    if not _WINDOWS:
+    74	        return shlex.split(pager)
+    75	    argv = shlex.split(pager, posix=False)
+    76	    return [
+    77	        arg[1:-1] if len(arg) >= 2 and arg[0] == arg[-1] and arg[0] in "'\"" else arg
+    78	        for arg in argv
+    79	    ]
+    80	
+    81	
+    82	def _resolve_pager_command() -> str:
+    83	    """Pager precedence: ``PLBP_PAGER`` > ``PAGER`` > ``less -FRX``.
+    84	
+    85	    A variable that is set but empty *disables* paging (git convention) —
+    86	    only an unset variable falls through to the next layer.
+    87	    """
+    88	    for var in ("PLBP_PAGER", "PAGER"):
+    89	        if var in os.environ:
+    90	            return os.environ[var].strip()
+    91	    return DEFAULT_PAGER
+    92	
+    93	
+    94	def _isatty(console: Console) -> bool:
+    95	    """True when the console's underlying stream is a real TTY.
+    96	
+    97	    ``Console.is_terminal`` is forced True by ``color="always"`` — right for
+    98	    styling, wrong for paging: a piped run must never block on a pager, no
+    99	    matter how color was resolved.
+   100	    """
+   101	    isatty = getattr(console.file, "isatty", None)
+   102	    if isatty is None:
+   103	        return False
+   104	    try:
+   105	        return bool(isatty())
+   106	    except ValueError:  # closed/replaced stream
+   107	        return False
+   108	
+   109	
+   110	def _console_color_args(color: str) -> tuple[bool | None, bool | None]:
+
+--- 1b. output.py, numbered, the paging gate + height gate + subprocess (lines 165,205) ---
+   165	                self._render_text_paged(result)
+   166	            case _:  # pragma: no cover — unreachable while the match is exhaustive
+   167	                assert_never(self.mode)
+   168	
+   169	    def _render_text_paged(self, result: CLIResult) -> None:
+   170	        """Text mode: pipe through the user's pager when output won't fit.
+   171	
+   172	        Paging happens only when results go to an interactive terminal —
+   173	        never when piped, redirected to a file, in JSON/Markdown mode, or
+   174	        under ``--no-input`` (``paging=False``). The pager resolves from
+   175	        ``PLBP_PAGER`` > ``PAGER`` > ``less -FRX``; an empty value disables.
+   176	        """
+   177	        if not (self.paging and self.out.is_terminal and _isatty(self.out)):
+   178	            self._render_text(result, self.out)
+   179	            return
+   180	        pager = _resolve_pager_command()
+   181	        if not pager:
+   182	            self._render_text(result, self.out)
+   183	            return
+   184	        with self.out.capture() as capture:
+   185	            self._render_text(result, self.out)
+   186	        text = capture.get()
+   187	        if text.count("\n") < self.out.size.height:
+   188	            self.out.file.write(text)
+   189	            self.out.file.flush()
+   190	            return
+   191	        try:
+   192	            # argv comes from the user's own PAGER environment — running it
+   193	            # is the feature, same trust model as git/less.
+   194	            subprocess.run(  # noqa: S603 # nosec B603
+   195	                _pager_argv(pager), input=text, text=True, check=False
+   196	            )
+   197	        except (OSError, ValueError):
+   198	            # Missing pager binary or unparsable command: never lose output.
+   199	            self.out.file.write(text)
+   200	            self.out.file.flush()
+   201	
+   202	    def _render_to_file(self, result: CLIResult) -> None:
+   203	        """R4: --output-file changes the destination, never the format."""
+   204	        if self.output_file is None:  # pragma: no cover — guarded by render()
+   205	            return
+
+--- 1c. exact line numbers of the load-bearing statements ---
+56:DEFAULT_PAGER = "less -FRX"
+83:    """Pager precedence: ``PLBP_PAGER`` > ``PAGER`` > ``less -FRX``.
+88:    for var in ("PLBP_PAGER", "PAGER"):
+91:    return DEFAULT_PAGER
+175:        ``PLBP_PAGER`` > ``PAGER`` > ``less -FRX``; an empty value disables.
+177:        if not (self.paging and self.out.is_terminal and _isatty(self.out)):
+184:        with self.out.capture() as capture:
+194:            subprocess.run(  # noqa: S603 # nosec B603
+[S03 PASS] py default pager string at output.py:56
+[S04 PASS] py two-tier resolution at output.py:88
+[S05 PASS] the only path to the -FRX default is output.py:91
+[S06 PASS] py paging gate at output.py:177
+[S07 PASS] py capture buffer at output.py:184
+[S08 FAIL] py height gate at output.py:187 — expected to find: 187:        if text.count("\n") < self.out.size.height:
+[S09 PASS] py pager invocation at output.py:194
+the value returned for a user-set variable, read at output.py:90:
+            return os.environ[var].strip()
+[S10 PASS] py returns the bare user value, unflagged
+
+--- 1d. ADR 0008 — the recorded reason for the height check ---
+25:The pager command resolves `PLBP_PAGER` > `PAGER` > `less -FRX`, where a
+36:  for the height check, the pager, and the fallback.
+45:- **Always page on TTY (no height check)** — rejected: `less -F` would
+[S11 PASS] ADR 0008 concedes the less -F half of the height check
+[S12 PASS] ADR 0008's stated reason for the height gate
+
+--- 1e. does py inject LESS/LV into the pager child? (expect: no match) ---
+[grep exit=1, expected=1 (no env injection in py)]
+[S13 PASS] py injects nothing into the pager child
+
+
+========== 2. ts-launch-blueprint at pin cb1cbcb2e88b898e8c081b0abbfabc1630079c00 — the py-only claim ==========
+[git grep exit=1, expected=1 (ts ships no pager integration)]
+[S14 PASS] ts files matching pager/less -F at the pin = 0
+
+
+========== 3. less on this host, and the flag semantics the default command depends on ==========
+/usr/bin/less
+less 668 (POSIX regular expressions)
+Copyright (C) 1984-2024  Mark Nudelman
+
+
+--- 3a. man less: -F, -R, -X, -K and the LESS environment variable ---
+       -F or --quit-if-one-screen
+	      Causes less to automatically exit if the entire file can be
+	      displayed on the first screen.
+
+--
+       -K or --quit-on-intr
+	      Causes less to exit immediately (with status 2) when an interrupt
+	      character (usually ^C) is typed.	Normally, an interrupt character
+	      causes less to stop whatever it is doing and return to its command
+--
+       -R or --RAW-CONTROL-CHARS
+	      Like -r, but only ANSI "color" escape sequences and OSC 8
+	      hyperlink sequences are output in "raw" form.  Unlike -r, the
+	      screen appearance is maintained correctly, provided that there are
+--
+       -X or --no-init
+	      Disables sending the termcap initialization and deinitialization
+	      strings to the terminal.	This is sometimes desirable if the
+	      deinitialization string does something unnecessary, like clearing
+[S15 PASS] less(1) defines -F as quit-if-one-screen
+[S16 PASS] the -F long name
+[S17 PASS] the -R long name
+[S18 PASS] the -K long name, the jj-default fallback
+[S19 PASS] the -X long name
+
+
+========== 4. OBSERVED: does a bare pager assignment lose colour, and does LESS= restore it? ==========
+Each capture below is taken under a pseudo-terminal with script(1), with the exact argv
+printed above it, and rendered through cat -v. These are the argv the revision-1 audit
+published in review/evidence/audit-pager-integration-r1.log.
+
+--- 4a. control: the bytes we are paging ---
+A^[[31mRED^[[0m B
+
+--- 4b. 'less -F' with LESS unset — what the user sees (cat -v of the pty capture) ---
+argv: env -u LESS script -q /dev/null sh -c 'printf "A\033[31mRED\033[0m B\n" | less -F'
+exit: 0
+^D^H^H^M^M^[[K^GA^[[7mESC^[[27m[31mRED^[[7mESC^[[27m[0m B^M
+^M^[[K[S20 PASS] bare less -F renders the escape byte visibly instead of acting on it
+[S21 PASS] bare less -F leaves [31m as literal text
+[S22 PASS] bare less -F does NOT pass the raw SGR sequence through
+
+--- 4c. 'less -FR' — -R given on the command line ---
+argv: env -u LESS script -q /dev/null sh -c 'printf "A\033[31mRED\033[0m B\n" | less -FR'
+exit: 0
+^D^H^H^M^M^[[K^GA^[[31mRED^[[0m B^[[m^M
+^M^[[K[S23 PASS] less -FR passes the raw SGR sequence through
+[S24 PASS] less -FR does not render an escape placeholder
+
+--- 4d. bare 'less', no arguments, with LESS=FRX injected (git's mechanism) ---
+argv: LESS=FRX script -q /dev/null sh -c 'printf "A\033[31mRED\033[0m B\n" | less'
+exit: 0
+^D^H^H^[[?1h^[=^MA^[[31mRED^[[0m B^[[m^M
+^M^[[K^[[?1l^[>[S25 PASS] a bare less under LESS=FRX passes the raw SGR sequence through
+
+
+========== 5. OBSERVED: what git's environment injection actually does ==========
+git version 2.50.1 (Apple Git-155)
+
+--- 5a. the pager child's own environment, git run under a pty with core.pager=env ---
+argv: env -i PATH=$PATH HOME=$HOME TERM=xterm-256color LANG=C script -q /dev/null sh -c "git -c core.pager='env | grep -E \"^(LESS|LV)=\"' log -1"
+LESS=FRX
+[grep exit=0, expected=0]
+[S26 PASS] git injects LESS=FRX into the pager child when the parent leaves it unset
+[S27 FAIL] git injects LV=-c on the same condition — expected to find: LV=-c
+
+--- 5b. and with LESS already set in the parent — is it overridden? ---
+argv: same, with LESS=Q LV=Z added to the parent environment
+LESS=Q
+[grep exit=0, expected=0]
+[S28 PASS] git does not override a parent-set LESS
+[S29 FAIL] git does not override a parent-set LV — expected to find: LV=Z
+[S30 PASS] no FRX appears when the parent set LESS
+
+--- 5c. git's own source at tag v2.51.0 ---
+[HTTP 200] https://raw.githubusercontent.com/git/git/v2.51.0/Makefile
+350:# Define PAGER_ENV to a SP separated VAR=VAL pairs to define
+353:#    PAGER_ENV = LESS=FRX LV=-c
+2287:ifndef PAGER_ENV
+2288:PAGER_ENV = LESS=FRX LV=-c
+2551:PAGER_ENV_SQ = $(subst ','\'',$(PAGER_ENV))
+2552:PAGER_ENV_CQ = "$(subst ",\",$(subst \,\\,$(PAGER_ENV)))"
+2553:PAGER_ENV_CQ_SQ = $(subst ','\'',$(PAGER_ENV_CQ))
+2555:	-DPAGER_ENV='$(PAGER_ENV_CQ_SQ)'
+2585:	$(gitwebdir_SQ):$(PERL_PATH_SQ):$(PAGER_ENV):\
+3224:		-e "s|@PAGER_ENV@|\'$(PAGER_ENV)\'|" \
+[HTTP 200] https://raw.githubusercontent.com/git/git/v2.51.0/pager.c
+    80		if (!strcmp(var, "core.pager"))
+    81			return git_config_string(&pager_program, var, value);
+    82		return 0;
+    83	}
+    84	
+    85	const char *git_pager(struct repository *r, int stdout_is_tty)
+    86	{
+    87		const char *pager;
+    88	
+    89		if (!stdout_is_tty)
+    90			return NULL;
+    91	
+    92		pager = getenv("GIT_PAGER");
+    93		if (!pager) {
+    94			if (!pager_program)
+    95				read_early_config(r,
+    96						  core_pager_config, NULL);
+    97			pager = pager_program;
+    98		}
+    99		if (!pager)
+   100			pager = getenv("PAGER");
+   101		if (!pager)
+   102			pager = DEFAULT_PAGER;
+   103		if (!*pager || !strcmp(pager, "cat"))
+   104			pager = NULL;
+   105	
+   106		return pager;
+   107	}
+   108	
+   109	static void setup_pager_env(struct strvec *env)
+   110	{
+   111		const char **argv;
+   112		int i;
+   113		char *pager_env = xstrdup(PAGER_ENV);
+   114		int n = split_cmdline(pager_env, &argv);
+   115	
+   116		if (n < 0)
+   117			die("malformed build-time PAGER_ENV: %s",
+   118				split_cmdline_strerror(n));
+   119	
+   120		for (i = 0; i < n; i++) {
+   121			char *cp = strchr(argv[i], '=');
+   122	
+   123			if (!cp)
+   124				die("malformed build-time PAGER_ENV");
+   125	
+   126			*cp = '\0';
+   127			if (!getenv(argv[i])) {
+   128				*cp = '=';
+   129				strvec_push(env, argv[i]);
+   130			}
+   131		}
+   132		free(pager_env);
+[S31 PASS] git Makefile at v2.51.0 reachable = 200
+[S32 PASS] git pager.c at v2.51.0 reachable = 200
+[S33 PASS] git's build-time PAGER_ENV value
+[S34 PASS] git applies PAGER_ENV only when the variable is unset
+[S35 PASS] git treats an empty value and cat as no pager
+[S36 PASS] git's built-in default command is the bare string less
+[S37 PASS] git returns no pager when stdout is not a tty
+
+
+========== 6. crates.io figures (GET https://crates.io/api/v1/crates/<name>, retrieved today) ==========
+
+--- shell-words ---
+crate.recent_downloads = 37393238
+crate.downloads = 144826399
+crate.max_stable_version = 1.1.1
+crate.repository = https://github.com/tmiasko/shell-words
+newest unyanked: 1.1.1 2025-12-10T20:48:28.942402Z | license: MIT/Apache-2.0 | rust_version: None | edition: None
+features: {'default': ['std'], 'std': []}
+
+--- shlex ---
+crate.recent_downloads = 239394882
+crate.downloads = 815707385
+crate.max_stable_version = 2.0.1
+crate.repository = https://github.com/comex/rust-shlex
+newest unyanked: 2.0.1 2026-05-17T18:56:12.775983Z | license: MIT OR Apache-2.0 | rust_version: 1.46.0 | edition: 2018
+features: {'default': ['std'], 'std': []}
+
+--- pager ---
+crate.recent_downloads = 116439
+crate.downloads = 842168
+crate.max_stable_version = 0.16.1
+crate.repository = https://gitlab.com/imp/pager-rs.git
+newest unyanked: 0.16.1 2022-09-22T15:56:55.250446Z | license: Apache-2.0/MIT | rust_version: None | edition: 2018
+features: {'pedantic': []}
+
+--- minus ---
+crate.recent_downloads = 436236
+crate.downloads = 1603141
+crate.max_stable_version = 5.7.2
+crate.repository = https://github.com/AMythicDev/minus
+newest unyanked: 5.7.2 2026-07-15T06:58:43.195787Z | license: MIT OR Apache-2.0 | rust_version: None | edition: 2024
+features: {'clipboard': ['arboard'], 'dynamic_output': [], 'search': ['regex'], 'static_output': []}
+
+--- sapling-streampager ---
+crate.recent_downloads = 1146228
+crate.downloads = 2943290
+crate.max_stable_version = 0.12.0
+crate.repository = None
+newest unyanked: 0.12.0 2026-01-15T18:58:13.235965Z | license: MIT | rust_version: None | edition: 2024
+features: {'keymap-file': [], 'load_file': ['notify'], 'toml_config': ['toml']}
+
+--- terminal_size ---
+crate.recent_downloads = 38531925
+crate.downloads = 202655785
+crate.max_stable_version = 0.4.4
+crate.repository = https://github.com/eminence/terminal-size
+newest unyanked: 0.4.4 2026-03-23T16:39:14.510986Z | license: MIT OR Apache-2.0 | rust_version: 1.71 | edition: 2021
+features: {}
+
+--- grep-cli ---
+crate.recent_downloads = 2056809
+crate.downloads = 9526176
+crate.max_stable_version = 0.1.12
+crate.repository = https://github.com/BurntSushi/ripgrep/tree/master/crates/cli
+newest unyanked: 0.1.12 2025-10-16T02:58:44.141819Z | license: Unlicense OR MIT | rust_version: None | edition: 2024
+features: {}
+
+--- bat ---
+crate.recent_downloads = 781615
+crate.downloads = 4581131
+crate.max_stable_version = 0.26.1
+crate.repository = https://github.com/sharkdp/bat
+newest unyanked: 0.26.1 2025-12-02T20:52:06.448773Z | license: MIT OR Apache-2.0 | rust_version: 1.87 | edition: 2021
+features: {'application': ['bugreport', 'build-assets', 'minimal-application'], 'build-assets': ['syntect/yaml-load', 'syntect/plist-load', 'regex', 'walkdir'], 'default': ['application', 'git'], 'git': ['git2'], 'lessopen': ['execute'], 'minimal-application': ['clap', 'etcetera', 'paging', 'regex-onig', 'wild'], 'paging': ['shell-words', 'grep-cli', 'minus'], 'regex-fancy': ['syntect/regex-fancy'], 'regex-onig': ['syntect/regex-onig'], 'vendored-libgit2': ['git2/vendored-libgit2']}
+[S38 PASS] shell-words newest unyanked version is 1.1.1
+[S39 PASS] shell-words 1.1.1 declares NO rust-version on crates.io
+[S40 PASS] shlex newest unyanked version is 2.0.1
+[S41 PASS] shlex 2.0.1 declares rust-version 1.46.0 on crates.io
+[S42 PASS] shlex 2.0.1 licence expression
+[S43 PASS] shell-words 1.1.1 licence expression (old slash spelling)
+
+
+========== 7. GitHub figures (via gh api — authenticated with the user token, not anonymous) ==========
+
+--- tmiasko/shell-words ---
+{"archived":false,"license":"Apache-2.0","pushed_at":"2025-12-10T20:50:02Z","stars":86}
+{"open_issues_total_count":3}
+
+--- comex/rust-shlex ---
+{"archived":false,"license":"NOASSERTION","pushed_at":"2026-06-12T19:38:35Z","stars":157}
+{"open_issues_total_count":4}
+
+--- sharkdp/bat ---
+{"archived":false,"license":"Apache-2.0","pushed_at":"2026-09-04T19:10:30Z","stars":60432}
+{"open_issues_total_count":331}
+
+--- dandavison/delta ---
+{"archived":false,"license":"MIT","pushed_at":"2026-09-12T19:18:44Z","stars":32162}
+{"open_issues_total_count":310}
+
+--- jj-vcs/jj ---
+{"archived":false,"license":"Apache-2.0","pushed_at":"2026-09-12T19:22:55Z","stars":31543}
+{"open_issues_total_count":810}
+
+--- AMythicDev/minus ---
+{"archived":false,"license":"Apache-2.0","pushed_at":"2026-08-21T09:01:02Z","stars":372}
+{"open_issues_total_count":10}
+[S44 PASS] shell-words repository is not archived
+[S45 PASS] shlex repository is not archived
+
+--- shell-words repository tree — is there any CI at all? ---
+.gitignore
+Cargo.toml
+LICENSE-APACHE
+LICENSE-MIT
+README.md
+rustfmt.toml
+src
+src/lib.rs
+[S46 PASS] shell-words has no .github directory, so no CI is evidenced
+
+--- shlex CI workflow read INSIDE the published 2.0.1 artifact (not at a moving branch) ---
+[HTTP 200] https://static.crates.io/crates/shlex/shlex-2.0.1.crate
+the release commit the artifact was cut from:
+{
+  "git": {
+    "sha1": "e82b1411beb7c92871c2c078c9ab415bbcf207ef"
+  },
+  "path_in_vcs": ""
+}
+files the published artifact ships (note the workflow):
+shlex-2.0.1/.cargo_vcs_info.json
+shlex-2.0.1/.github/workflows/test.yml
+shlex-2.0.1/.gitignore
+shlex-2.0.1/CHANGELOG.md
+shlex-2.0.1/Cargo.lock
+shlex-2.0.1/Cargo.toml
+shlex-2.0.1/Cargo.toml.orig
+shlex-2.0.1/LICENSE-APACHE
+shlex-2.0.1/LICENSE-MIT
+shlex-2.0.1/README.md
+shlex-2.0.1/src/bytes.rs
+shlex-2.0.1/src/lib.rs
+shlex-2.0.1/src/quoting_warning.md
+name: Rust
+
+on:
+  pull_request:
+  push:
+
+jobs:
+  stable:
+    name: Test + Clippy (stable)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: rustup toolchain install stable --no-self-update
+      - run: rustup default stable
+      - run: rustup component add clippy
+      - run: RUSTFLAGS=-Dwarnings cargo test
+      - run: cargo clippy -- -Dwarnings
+      - run: cargo doc
+      - run: RUSTFLAGS=-Dwarnings cargo build --manifest-path fuzz/Cargo.toml --all
+
+  beta:
+    name: Test + Clippy (beta)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: rustup toolchain install beta --no-self-update
+      - run: rustup default beta
+      - run: rustup component add clippy
+      - run: RUSTFLAGS=-Dwarnings cargo test
+      - run: cargo clippy -- -Dwarnings
+      - run: RUSTFLAGS=-Dwarnings cargo build --manifest-path fuzz/Cargo.toml --all
+
+  stable-no-default-features:
+    name: Test + Clippy (stable, no default features)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: rustup toolchain install stable --no-self-update
+      - run: rustup default stable
+      - run: rustup component add clippy
+      - run: RUSTFLAGS=-Dwarnings cargo test --no-default-features && cargo clippy --no-default-features -- -Dwarnings
+
+  msrv:
+    name: Test (MSRV)
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - run: rustup toolchain install 1.46 --no-self-update
+      - run: rustup default 1.46
+      # We expect an unknown_lints warning on 1.46.
+      # Any new warnings added should be flagged because they might indicate
+      # a bug, but feel free to add them to -A below if they are harmless and
+      # don't happen on newer Rust versions.
+      # Also, no Clippy because we probably don't care what old Clippy
+      # thinks.
+      - run: RUSTFLAGS='-Dwarnings -Aunknown_lints' cargo test
+
+[S47 PASS] the 2.0.1 artifact records its own release commit
+[S48 PASS] shlex's CI installs toolchain 1.46 — at 2.0.1 the declared MSRV is tested in CI, read from the release artifact
+[S49 PASS] shlex 2.0.1 ships a named MSRV job
+[S50 PASS] shlex's CI at 2.0.1 has NO macOS job
+runs-on values in that workflow:
+4
+[S51 PASS] shlex CI jobs running on ubuntu-latest (and that is every job) = 4
+
+
+========== 8. RustSec (gate 3), with a control proving 404 means 'no advisory page' ==========
+shell-words            HTTP 404  RUSTSEC- mentions: 0
+shlex                  HTTP 200  RUSTSEC- mentions: 2
+pager                  HTTP 404  RUSTSEC- mentions: 0
+minus                  HTTP 404  RUSTSEC- mentions: 0
+sapling-streampager    HTTP 404  RUSTSEC- mentions: 0
+terminal_size          HTTP 404  RUSTSEC- mentions: 0
+time                   HTTP 200  RUSTSEC- mentions: 4
+[S52 PASS] no RustSec advisory page for shell-words = 404
+[S53 PASS] shlex HAS a RustSec advisory page = 200
+[S54 PASS] control: the time crate's advisory page is HTTP 200, so 404 means absence and not a failed retrieval = 200
+
+--- every advisory listed on the shlex package page ---
+advisory ids on the page: ['RUSTSEC-2024-0006']
+[S55 PASS] the shlex page lists exactly one advisory id = RUSTSEC-2024-0006
+
+--- RUSTSEC-2024-0006 — affected range and affected functions (does it touch shlex::split?) ---
+[HTTP 200] https://raw.githubusercontent.com/rustsec/advisory-db/main/crates/shlex/RUSTSEC-2024-0006.md
+```toml
+[advisory]
+id = "RUSTSEC-2024-0006"
+package = "shlex"
+date = "2024-01-21"
+url = "https://github.com/comex/rust-shlex/security/advisories/GHSA-r7qv-8r2h-pg27"
+categories = ["code-execution", "file-disclosure"]
+keywords = []
+aliases = ["CVE-2024-58266", "GHSA-r7qv-8r2h-pg27"]
+
+[versions]
+patched = [">= 1.3.0"]
+
+[affected.functions]
+"shlex::quote" = ["< 1.2.1"]
+"shlex::join" = ["< 1.2.1"]
+"shlex::bytes::quote" = ["< 1.2.1"]
+"shlex::bytes::join" = ["< 1.2.1"]
+```
+
+# Multiple issues involving quote API
+
+## Issue 1: Failure to quote characters
+
+Affected versions of this crate allowed the bytes `{` and `\xa0` to appear
+unquoted and unescaped in command arguments.
+
+If the output of `quote` or `join` is passed to a shell, then what should be a
+single command argument could be interpreted as multiple arguments.
+
+This does not *directly* allow arbitrary command execution (you can't inject a
+command substitution or similar).  But depending on the command you're running,
+being able to inject multiple arguments where only one is expected could lead
+to undesired consequences, potentially including arbitrary command execution.
+
+The flaw was corrected in version 1.2.1 by escaping additional characters.
+Updating to 1.3.0 is recommended, but 1.2.1 offers a more minimal fix if
+desired.
+
+Workaround: Check for the bytes `{` and `\xa0` in `quote`/`join` input or
+[S56 PASS] the advisory's own TOML is readable = 200
+[S57 PASS] the advisory is patched at >= 1.3.0, so 2.0.1 is outside the affected range
+[S58 PASS] affected function quote
+[S59 PASS] affected function join
+[S60 PASS] shlex::split — the only function this design calls — is NOT in the advisory's affected set
+
+
+========== 9. published crate artifacts, read from static.crates.io (read-only; nothing built) ==========
+
+--- shell-words 1.1.1 ---
+[HTTP 200] https://static.crates.io/crates/shell-words/shell-words-1.1.1.crate
+-- Cargo.toml (published manifest) --
+12:[package]
+13:name = "shell-words"
+14:version = "1.1.1"
+31:license = "MIT/Apache-2.0"
+32:repository = "https://github.com/tmiasko/shell-words"
+34:[features]
+38:[lib]
+39:name = "shell_words"
+-- every rust-version line in the published manifest (gate 2) --
+[grep exit=1; count=0]
+-- crate-level attributes --
+11:#![cfg_attr(not(feature = "std"), no_std)]
+12:#![forbid(unsafe_code)]
+-- occurrences of the token 'unsafe' in src/ --
+shell-words-1.1.1/src/lib.rs:12:#![forbid(unsafe_code)]
+-- [dependencies] in the published manifest (expect: none for either crate) --
+[if nothing printed, the manifest declares no dependencies]
+-- the split entry point --
+126:pub fn split(s: &str) -> Result<Vec<String>, ParseError> {
+282:pub fn quote(s: &str) -> Cow<str> {
+334:pub fn join<I, S>(words: I) -> String
+-- line count of the whole crate source --
+     508 src/shell-words-1.1.1/src/lib.rs
+
+--- shlex 2.0.1 ---
+[HTTP 200] https://static.crates.io/crates/shlex/shlex-2.0.1.crate
+-- Cargo.toml (published manifest) --
+12:[package]
+13:edition = "2018"
+14:rust-version = "1.46.0"
+15:name = "shlex"
+16:version = "2.0.1"
+37:license = "MIT OR Apache-2.0"
+38:repository = "https://github.com/comex/rust-shlex"
+40:[features]
+44:[lib]
+45:name = "shlex"
+48:[lints.rust.unexpected_cfgs]
+-- every rust-version line in the published manifest (gate 2) --
+14:rust-version = "1.46.0"
+[grep exit=0; count=1]
+-- crate-level attributes --
+38:#![cfg_attr(not(feature = "std"), no_std)]
+-- occurrences of the token 'unsafe' in src/ --
+shlex-2.0.1/src/lib.rs:68:    pub unsafe fn from_bytes(bytes: bytes::Shlex<'a>) -> Self {
+shlex-2.0.1/src/lib.rs:75:    pub unsafe fn as_bytes_mut(&mut self) -> &mut bytes::Shlex<'a> {
+shlex-2.0.1/src/lib.rs:85:            unsafe { String::from_utf8_unchecked(byte_word) }
+shlex-2.0.1/src/lib.rs:114:/// like nul bytes, are fundamentally unsafe to quote even for non-interactive shells, the risk
+shlex-2.0.1/src/lib.rs:167:            .map(|bytes| unsafe { String::from_utf8_unchecked(bytes) })
+shlex-2.0.1/src/lib.rs:175:                unsafe { core::str::from_utf8_unchecked(out) }.into()
+shlex-2.0.1/src/lib.rs:179:                unsafe { String::from_utf8_unchecked(out) }.into()
+-- [dependencies] in the published manifest (expect: none for either crate) --
+[if nothing printed, the manifest declares no dependencies]
+-- the split entry point --
+100:pub fn split(in_str: &str) -> Option<Vec<String>> {
+164:    pub fn join<'a, I: IntoIterator<Item = &'a str>>(&self, words: I) -> Result<String, QuoteError> {
+171:    pub fn quote<'a>(&self, in_str: &'a str) -> Result<Cow<'a, str>, QuoteError> {
+-- line count of the whole crate source --
+     516 src/shlex-2.0.1/src/bytes.rs
+     324 src/shlex-2.0.1/src/lib.rs
+     840 total
+[S61 PASS] shell-words 1.1.1 artifact downloaded = 200
+[S62 PASS] shlex 2.0.1 artifact downloaded = 200
+[S63 PASS] rust-version lines in shell-words 1.1.1's published manifest = 0
+[S64 PASS] rust-version lines in shlex 2.0.1's published manifest = 1
+[S65 PASS] shlex 2.0.1's declared rust-version, read from the published manifest
+[S66 PASS] shell-words forbids unsafe outright
+[S67 PASS] shell-words' split signature
+[S68 PASS] shlex's split signature — the one call-site difference
+[S69 PASS] the one unchecked UTF-8 conversion on shlex's split path
+[S70 PASS] shell-words declares no dependencies
+[S71 PASS] shlex declares no dependencies
+[S72 PASS] shlex's declared edition
+[S73 PASS] shell-words declares no edition (the 2015 ruleset)
+
+
+========== 10. reference implementations at pinned tags — do they do what the raws say? ==========
+
+--- bat v0.26.1 Cargo.toml: shell-words, and the paging feature ---
+36:paging = [ "shell-words", "grep-cli", "minus"] # Support applying a pager on the output
+54:shell-words = { version = "1.1.0", optional = true }
+55:minus = { version = "5.6", optional = true, features = [
+69:grep-cli = { version = "0.1.11", optional = true }
+[S74 PASS] bat's paging feature pulls shell-words in
+[S75 PASS] bat's shell-words requirement
+
+--- bat v0.26.1 src/output.rs: spawn, fallback, Drop-time wait ---
+[HTTP 200] https://raw.githubusercontent.com/sharkdp/bat/v0.26.1/src/output.rs
+137:                // Passing '--no-init' fixes a bug with '--quit-if-one-screen' in older
+142:                // For newer versions (530 or 558 on Windows), we omit '--no-init' as it
+147:                            p.arg("--no-init");
+152:                            p.arg("--no-init");
+169:        Ok(p.stdin(Stdio::piped())
+172:            .unwrap_or_else(|_| OutputType::stdout()))
+207:    fn drop(&mut self) {
+210:                let _ = command.wait();
+[S76 PASS] bat falls through to stdout in the same expression as the spawn
+[S77 PASS] bat closes and waits in Drop
+
+--- bat: does it measure terminal HEIGHT before paging? (expect: no match) ---
+[grep exit=1, expected=1]
+[S78 PASS] bat src/output.rs measures no terminal height
+
+--- delta 0.19.2 src/utils/bat/output.rs ---
+[HTTP 200] https://raw.githubusercontent.com/dandavison/delta/0.19.2/src/utils/bat/output.rs
+57:    fn drop(&mut self) {
+59:            let _ = command.wait();
+120:        let pager_cmd = shell_words::split(
+146:                        .stdin(Stdio::piped())
+[grep exit=1, expected=1]
+[S79 PASS] delta tokenizes the resolved pager command with shell_words::split
+[S80 PASS] delta's pager file measures no terminal height
+
+--- delta 0.19.2 Cargo.toml + src/env.rs chain ---
+51:shell-words = "1.0.0"
+11:const DELTA_PAGER: &str = "DELTA_PAGER";
+42:            env::var(DELTA_PAGER).ok(),
+43:            // We're using `bat::config::get_pager_executable` here instead of just returning
+47:            bat::config::get_pager_executable(None),
+94:        env::set_var("PAGER", "bat");
+107:        env::set_var("PAGER", "more");
+115:        env::set_var("PAGER", "most");
+[S81 PASS] delta's shell-words requirement
+[S82 PASS] delta's app-specific pager variable sits above PAGER
+
+--- jj v0.45.1 cli/src/ui.rs — spawn, wait, fallback; and its documented chain ---
+[HTTP 200] https://raw.githubusercontent.com/jj-vcs/jj/v0.45.1/cli/src/ui.rs
+62:        pager_thread: JoinHandle<streampager::Result<()>>,
+77:        tracing::info!(?cmd, "spawning pager");
+78:        let mut child = cmd.stdin(Stdio::piped()).spawn()?;
+83:    fn new_builtin_paged(config: &StreampagerConfig) -> streampager::Result<Self> {
+84:        let streampager_config = streampager::config::Config {
+86:            interface_mode: config.streampager_interface_mode(),
+98:            streampager::Pager::new_using_system_terminal_with_config(streampager_config)?;
+123:                if let Err(err) = child.wait() {
+289:impl From<StreampagerWrappingMode> for streampager::config::WrappingMode {
+311:    fn streampager_interface_mode(&self) -> streampager::config::InterfaceMode {
+313:        use streampager::config::InterfaceMode;
+336:            Ok(Self::Builtin(config.get("ui.streampager")?))
+384:            PagerConfig::Builtin(streampager_config) => {
+385:                UiOutput::new_builtin_paged(streampager_config)
+[grep exit=1, expected=1]
+39:pager = { command = ["less", "-FRXK"], env = { LESSCHARSET = "utf-8" } }
+895:The `JJ_PAGER` environment variable overrides `ui.pager`, and is useful for
+897:`PAGER` environment variable is ignored.
+906:$ jj config set --user ui.pager :builtin
+1120:`:builtin` is used. It launches a built-in TUI tool (known as [scm-diff-editor])
+[S83 PASS] jj spawns its pager with a piped stdin
+[S84 PASS] jj waits on the pager child
+[S85 PASS] jj's default pager command, the -FRXK fallback this decision names
+[S86 PASS] jj deliberately ignores the generic PAGER — the one dissenter on the chain
+
+--- git v2.51.0 pager.c — does it measure terminal height? (expect: no match) ---
+[grep exit=1, expected=1]
+11:#ifndef DEFAULT_PAGER
+12:#define DEFAULT_PAGER "less"
+54:	unsetenv("GIT_PAGER_IN_USE");
+92:	pager = getenv("GIT_PAGER");
+100:		pager = getenv("PAGER");
+102:		pager = DEFAULT_PAGER;
+103:	if (!*pager || !strcmp(pager, "cat"))
+147:	const char *pager = git_pager(r, isatty(1));
+164:	setenv("GIT_PAGER_IN_USE", "true", 1);
+171:	strvec_push(&pager_process.env, "GIT_PAGER_IN_USE");
+178:	if (isatty(2)) {
+194:	return git_env_bool("GIT_PAGER_IN_USE", 0);
+238:	if (!isatty(2))
+[S87 PASS] git pager.c measures no terminal height
+
+
+========== 11. is 'less' present on the CI runners? (target-os-matrix = ubuntu-latest, macos-latest) ==========
+
+--- 11a. this macOS host — OBSERVED ---
+/usr/bin/less
+less 668 (POSIX regular expressions)
+
+--- 11b. actions/runner-images Ubuntu 24.04 README — any mention of less? ---
+[HTTP 200] https://raw.githubusercontent.com/actions/runner-images/main/images/ubuntu/Ubuntu2404-Readme.md
+0
+[match count above; expected=0 => README is SILENT on less]
+1
+[the README does carry an apt-package section, so the silence is informative]
+[S88 PASS] mentions of less in the Ubuntu 24.04 runner-image README = 0
+[S89 PASS] that README does enumerate apt packages, so its silence is informative
+
+--- 11c. actions/runner-images macOS 15 README — any mention of less? ---
+[HTTP 200] https://raw.githubusercontent.com/actions/runner-images/main/images/macos/macos-15-Readme.md
+0
+[match count above; expected=0 => README is SILENT on less]
+[S90 PASS] mentions of less in the macOS 15 runner-image README = 0
+
+--- 11d. does the Ubuntu image's own toolset install less explicitly? ---
+[HTTP 200] https://raw.githubusercontent.com/actions/runner-images/main/images/ubuntu/toolsets/toolset-2404.json
+vital_packages -> lists less: False
+common_packages -> lists less: False
+cmd_packages -> lists less: False
+[S91 PASS] the Ubuntu image toolset does not install less explicitly
+
+--- 11e. is less packaged for Ubuntu noble at all? ---
+[HTTP 200] https://packages.ubuntu.com/noble/less
+packages.ubuntu.com noble says: Package: less (590-2ubuntu2.1 and others)
+[S92 PASS] packages.ubuntu.com/noble/less is HTTP 200 = 200
+[S93 PASS] less is packaged for Ubuntu noble — packaged is not the same as installed on a runner
+
+
+========== 12. this repository — ledger rows, owner direction, couplings ==========
+288:| F284 | Text-mode output paged through the user's pager | cli-framework-ux | py-only | DIVERGENT | R64 | bundle; whether Rust pages long text output through the user's pager — decides F285 |
+289:| F285 | Pager command resolution precedence | cli-framework-ux | py-only | DIVERGENT | R64 | bundle |
+28:| F284 | Text-mode output paged through the user's pager | `src/py_launch_blueprint/cli/output.py:177` — `if not (self.paging and self.out.is_terminal and _isatty(self.out)):` | — | py-only | — | ADR 0008. |
+29:| F285 | Pager command resolution precedence | `src/py_launch_blueprint/cli/output.py:88` — `for var in ("PLBP_PAGER", "PAGER"):` | — | py-only | — | Falls back to `less -FRX` (`src/py_launch_blueprint/cli/output.py:56`). |
+105:| R64 | accept | Codesign `b`, confirms the recommendation. Class D (one-sided, language-neutral), harmonize partly (`docs/port/DIVERGENCE-ANALYSIS.md`, R64 rows). Owner: Looking at architectural pattern, not the exact library. We'd like a similar pager pattern for TypeScript and Rust. Effect: cross-repo question appended to the prompt, scoped to the shared part; owner direction appended to the prompt Context. | 2026-09-04 |
+202:| R64 pager-integration | item | pager for text output `output.py:177`; precedence `PLBP_PAGER`>`PAGER`>`less -FRX` fallback `output.py:88,56`; ADR 0008 | absent | no recorded reason; prompt notes no ts decision record even considered paging — could be oversight or a deliberate scope call | D | Is paging worth adopting given rs's typically short output? If yes: subprocess-pipe preserving ANSI color, plus the pager env-var precedence | partly |
+303:- R64 (pager) and R66/F291 (3rd output format) are classified D and F respectively, but both are defensible as class F (genuine design disagreement/owner call) instead — neither area evidence nor the decision log states *why* ts omitted paging or picked csv over markdown, so the D-vs-F line rests on my inference that these are scope gaps rather than deliberate rejections.
+
+--- does any registered parameter own an app env-var prefix? (expect: no match) ---
+[grep exit=1, expected=1]
+[S94 PASS] no registered parameter owns the application env-var prefix
+
+--- R64 couplings — owns/consumes ---
+## Couplings
+- id: R64
+- owns:
+- consumes:
+- effort: focused
+- engines: codex, opus
+- evidence-checks:
+- acceptance-after:
+- related (not a registry dependency): R65 (`color-enablement-chain`) decides F290's TTY-detection mechanism; this item's paging gate ("is stdout a terminal") should reuse whatever check R65 lands on rather than implementing a second, divergent TTY check, but R65 registers no parameter this item formally consumes.
+
+If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
+
+--- the four fixed parameters, compared byte-for-byte with the registry ---
+msrv-policy       registry=[stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI]
+                  decision=[stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI]
+[S95-msrv-policy PASS] assumes msrv-policy matches the registry byte-for-byte = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+rust-edition      registry=[2024]
+                  decision=[2024]
+[S95-rust-edition PASS] assumes rust-edition matches the registry byte-for-byte = 2024
+target-os-matrix  registry=[ubuntu-latest, macos-latest]
+                  decision=[ubuntu-latest, macos-latest]
+[S95-target-os-matrix PASS] assumes target-os-matrix matches the registry byte-for-byte = ubuntu-latest, macos-latest
+license           registry=[MIT OR Apache-2.0]
+                  decision=[MIT OR Apache-2.0]
+[S95-license PASS] assumes license matches the registry byte-for-byte = MIT OR Apache-2.0
+
+
+========== 13. done ==========
+2026-09-12T19:25:16Z
+
+
+========== 14. appendix: platform-conditional code in the two tokenizers, and the exact unsafe site on shlex::split ==========
+
+--- shell-words-1.1.1: every cfg( in src/ ---
+shell-words-1.1.1/src/lib.rs:14:#[cfg(feature = "std")]
+shell-words-1.1.1/src/lib.rs:20:#[cfg(not(feature = "std"))]
+shell-words-1.1.1/src/lib.rs:24:#[cfg(not(feature = "std"))]
+shell-words-1.1.1/src/lib.rs:26:#[cfg(not(feature = "std"))]
+shell-words-1.1.1/src/lib.rs:29:#[cfg(not(feature = "std"))]
+shell-words-1.1.1/src/lib.rs:31:#[cfg(feature = "std")]
+shell-words-1.1.1/src/lib.rs:44:#[cfg(feature = "std")]
+shell-words-1.1.1/src/lib.rs:349:#[cfg(test)]
+[grep exit=0]
+
+--- shell-words-1.1.1: any windows/unix token in src/ ---
+shell-words-1.1.1/src/lib.rs:6://! Process command line according to parsing rules of Unix shell as specified
+shell-words-1.1.1/src/lib.rs:66:/// Splits command line into separate arguments, in much the same way Unix shell
+shell-words-1.1.1/src/lib.rs:69:/// The split functionality is compatible with behaviour of Unix shell, but with
+shell-words-1.1.1/src/lib.rs:73:/// The result is exactly the same as one obtained from Unix shell as long as
+shell-words-1.1.1/src/lib.rs:278:/// meaning when used as a part of command in Unix shell.
+shell-words-1.1.1/src/lib.rs:304:/// Joins arguments into a single command line suitable for execution in Unix
+shell-words-1.1.1/src/lib.rs:308:/// parsed by Unix shell.
+[grep exit=0; every hit above is prose, not a cfg]
+[S96 PASS] shell-words has no platform-conditional code
+
+--- shlex-2.0.1: every cfg( in src/ ---
+shlex-2.0.1/src/lib.rs:44:#[cfg(test)]
+shlex-2.0.1/src/lib.rs:46:#[cfg(test)]
+shlex-2.0.1/src/lib.rs:50:#[cfg(all(doc, not(doctest)))]
+shlex-2.0.1/src/lib.rs:135:#[cfg(feature = "std")]
+shlex-2.0.1/src/lib.rs:220:#[cfg(test)]
+shlex-2.0.1/src/lib.rs:308:            #[cfg(not(feature = "std"))]
+shlex-2.0.1/src/lib.rs:311:            #[cfg(feature = "std")]
+shlex-2.0.1/src/bytes.rs:13://! #[cfg(unix)] {
+shlex-2.0.1/src/bytes.rs:29:#[cfg(test)]
+shlex-2.0.1/src/bytes.rs:31:#[cfg(all(doc, not(doctest)))]
+shlex-2.0.1/src/bytes.rs:466:#[cfg(test)]
+shlex-2.0.1/src/bytes.rs:476:#[cfg(test)]
+[grep exit=0]
+
+--- shlex-2.0.1: any windows/unix token in src/ ---
+shlex-2.0.1/src/bytes.rs:13://! #[cfg(unix)] {
+shlex-2.0.1/src/bytes.rs:16://!     use std::os::unix::ffi::OsStrExt;
+shlex-2.0.1/src/bytes.rs:24://! (On Windows, `OsStr` uses 16 bit wide characters so this will not work.)
+shlex-2.0.1/src/quoting_warning.md:36:In Unix, nul bytes can't appear in command arguments, environment variables, or filenames.  It's
+shlex-2.0.1/src/quoting_warning.md:37:not a question of proper quoting; they just can't be used at all.  This is a consequence of Unix's
+shlex-2.0.1/src/quoting_warning.md:322:Windows/MSVC).  First, the other systems don't allow bytes in the range [0x80, 0xFF] to pass
+[grep exit=0; the unix/windows hits are prose and one doc-comment cfg]
+[S97 PASS] shlex lib.rs has no platform-conditional code
+[S98 PASS] shlex bytes.rs has no platform-conditional code
+
+--- shlex 2.0.1: split (lib.rs:100-104) and the Iterator::next it collects from (lib.rs:80-88) ---
+}
+
+impl Iterator for Shlex<'_> {
+    type Item = String;
+    fn next(&mut self) -> Option<String> {
+        self.0.next().map(|byte_word| {
+            // Safety: given valid UTF-8, bytes::Shlex will always return valid UTF-8.
+            unsafe { String::from_utf8_unchecked(byte_word) }
+        })
+    }
+}
+
+impl<'a> core::ops::Deref for Shlex<'a> {
+    type Target = bytes::Shlex<'a>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+/// Convenience function that consumes the whole string at once.  Returns None if the input was
+/// erroneous.
+pub fn split(in_str: &str) -> Option<Vec<String>> {
+    let mut shl = Shlex::new(in_str);
+    let res = shl.by_ref().collect();
+    if shl.had_error { None } else { Some(res) }
+}
+
+
+--- shell-words 1.1.1: crate attributes and split signature ---
+#![cfg_attr(not(feature = "std"), no_std)]
+#![forbid(unsafe_code)]
+///     .args(&["-c", "a.c", "-o", "a.out"])
+///     .spawn()
+///     .expect("failed to start subprocess")
+///     .wait()
+///     .expect("failed to wait for subprocess");
+/// ```
+pub fn split(s: &str) -> Result<Vec<String>, ParseError> {
+    use State::*;
+
+    let mut words = Vec::new();
+    let mut word = String::new();
+    let mut chars = s.chars();
+    let mut state = Delimiter;
+
+
+========== 15. gate 2 under the strict reading — the declared versions, at the versions named ==========
+Fitness gate 2 quotes msrv-policy in full: 'declared as rust-version in Cargo.toml and
+tested in CI'. The controller's ruling of 2026-09-11 reads it strictly, so a candidate
+that declares nothing cannot clear it. Both candidates' declarations, at the exact
+versions this decision names, from two independent sources each:
+
+candidate              published Cargo.toml         crates.io versions endpoint
+shell-words 1.1.1      0 rust-version lines         rust_version: None 
+shlex 2.0.1            rust-version="1.46.0"        rust_version: 1.46.0 
+
+and the CI half of the same clause, read at the 2.0.1 release commit rather than master:
+10:    runs-on: ubuntu-latest
+23:    runs-on: ubuntu-latest
+35:    runs-on: ubuntu-latest
+44:    name: Test (MSRV)
+45:    runs-on: ubuntu-latest
+48:      - run: rustup toolchain install 1.46 --no-self-update
+49:      - run: rustup default 1.46
+
+the floor the policy resolves to today, from the published stable channel:
+version = "1.98.1 (48a229cea 2026-09-01)"
+(stable minus 2 minor versions; 1.46.0 sits far below it, and gate 2 asks for the
+ declaration and the CI job, both of which shlex 2.0.1 has.)
+
+--- the controller ruling this reading comes from ---
+414:RULING WITHDRAWN: fitness gate 2 is read strictly. I ruled provisionally that an undeclared rust-version makes a candidate UNPROVEN at gate 2 rather than failed, weighed against it but not excluding, on the ground that the gate compares a version against a window and the declaration and continuous-integration clauses belong to the template's own obligations. I put that ruling to both affected items' auditors and said that if either argued for the strict reading it would be withdrawn. BOTH argued for it, independently, and their argument is better than mine. The prompt's gate 2 quotes the policy in full, declaration and CI testing included, and the instruction that follows says every candidate is gate-checked before popularity is weighed and that a failed gate excludes the candidate. So an unknown effective version is not evidence of incompatibility, as I said, but it is insufficient evidence to PASS a gate the prompt says must be passed. That distinction is the part I got wrong: I treated the gate as a test the candidate could fail, when the prompt writes it as a bar the candidate must clear.
+[S99 PASS] the strict gate-2 reading is recorded in the execution ledger
+
+
+========== 16. assertion summary ==========
+S00 PASS stable channel manifest reachable = 200
+S01 PASS current stable rustc is a 1.9x release (the MSRV floor is computed from it)
+S02 PASS py output.py readable at the pin = 0
+S03 PASS py default pager string at output.py:56
+S04 PASS py two-tier resolution at output.py:88
+S05 PASS the only path to the -FRX default is output.py:91
+S06 PASS py paging gate at output.py:177
+S07 PASS py capture buffer at output.py:184
+S08 FAIL py height gate at output.py:187 — expected to find: 187:        if text.count("\n") < self.out.size.height:
+S09 PASS py pager invocation at output.py:194
+S10 PASS py returns the bare user value, unflagged
+S11 PASS ADR 0008 concedes the less -F half of the height check
+S12 PASS ADR 0008's stated reason for the height gate
+S13 PASS py injects nothing into the pager child
+S14 PASS ts files matching pager/less -F at the pin = 0
+S15 PASS less(1) defines -F as quit-if-one-screen
+S16 PASS the -F long name
+S17 PASS the -R long name
+S18 PASS the -K long name, the jj-default fallback
+S19 PASS the -X long name
+S20 PASS bare less -F renders the escape byte visibly instead of acting on it
+S21 PASS bare less -F leaves [31m as literal text
+S22 PASS bare less -F does NOT pass the raw SGR sequence through
+S23 PASS less -FR passes the raw SGR sequence through
+S24 PASS less -FR does not render an escape placeholder
+S25 PASS a bare less under LESS=FRX passes the raw SGR sequence through
+S26 PASS git injects LESS=FRX into the pager child when the parent leaves it unset
+S27 FAIL git injects LV=-c on the same condition — expected to find: LV=-c
+S28 PASS git does not override a parent-set LESS
+S29 FAIL git does not override a parent-set LV — expected to find: LV=Z
+S30 PASS no FRX appears when the parent set LESS
+S31 PASS git Makefile at v2.51.0 reachable = 200
+S32 PASS git pager.c at v2.51.0 reachable = 200
+S33 PASS git's build-time PAGER_ENV value
+S34 PASS git applies PAGER_ENV only when the variable is unset
+S35 PASS git treats an empty value and cat as no pager
+S36 PASS git's built-in default command is the bare string less
+S37 PASS git returns no pager when stdout is not a tty
+S38 PASS shell-words newest unyanked version is 1.1.1
+S39 PASS shell-words 1.1.1 declares NO rust-version on crates.io
+S40 PASS shlex newest unyanked version is 2.0.1
+S41 PASS shlex 2.0.1 declares rust-version 1.46.0 on crates.io
+S42 PASS shlex 2.0.1 licence expression
+S43 PASS shell-words 1.1.1 licence expression (old slash spelling)
+S44 PASS shell-words repository is not archived
+S45 PASS shlex repository is not archived
+S46 PASS shell-words has no .github directory, so no CI is evidenced
+S47 PASS the 2.0.1 artifact records its own release commit
+S48 PASS shlex's CI installs toolchain 1.46 — at 2.0.1 the declared MSRV is tested in CI, read from the release artifact
+S49 PASS shlex 2.0.1 ships a named MSRV job
+S50 PASS shlex's CI at 2.0.1 has NO macOS job
+S51 PASS shlex CI jobs running on ubuntu-latest (and that is every job) = 4
+S52 PASS no RustSec advisory page for shell-words = 404
+S53 PASS shlex HAS a RustSec advisory page = 200
+S54 PASS control: the time crate's advisory page is HTTP 200, so 404 means absence and not a failed retrieval = 200
+S55 PASS the shlex page lists exactly one advisory id = RUSTSEC-2024-0006
+S56 PASS the advisory's own TOML is readable = 200
+S57 PASS the advisory is patched at >= 1.3.0, so 2.0.1 is outside the affected range
+S58 PASS affected function quote
+S59 PASS affected function join
+S60 PASS shlex::split — the only function this design calls — is NOT in the advisory's affected set
+S61 PASS shell-words 1.1.1 artifact downloaded = 200
+S62 PASS shlex 2.0.1 artifact downloaded = 200
+S63 PASS rust-version lines in shell-words 1.1.1's published manifest = 0
+S64 PASS rust-version lines in shlex 2.0.1's published manifest = 1
+S65 PASS shlex 2.0.1's declared rust-version, read from the published manifest
+S66 PASS shell-words forbids unsafe outright
+S67 PASS shell-words' split signature
+S68 PASS shlex's split signature — the one call-site difference
+S69 PASS the one unchecked UTF-8 conversion on shlex's split path
+S70 PASS shell-words declares no dependencies
+S71 PASS shlex declares no dependencies
+S72 PASS shlex's declared edition
+S73 PASS shell-words declares no edition (the 2015 ruleset)
+S74 PASS bat's paging feature pulls shell-words in
+S75 PASS bat's shell-words requirement
+S76 PASS bat falls through to stdout in the same expression as the spawn
+S77 PASS bat closes and waits in Drop
+S78 PASS bat src/output.rs measures no terminal height
+S79 PASS delta tokenizes the resolved pager command with shell_words::split
+S80 PASS delta's pager file measures no terminal height
+S81 PASS delta's shell-words requirement
+S82 PASS delta's app-specific pager variable sits above PAGER
+S83 PASS jj spawns its pager with a piped stdin
+S84 PASS jj waits on the pager child
+S85 PASS jj's default pager command, the -FRXK fallback this decision names
+S86 PASS jj deliberately ignores the generic PAGER — the one dissenter on the chain
+S87 PASS git pager.c measures no terminal height
+S88 PASS mentions of less in the Ubuntu 24.04 runner-image README = 0
+S89 PASS that README does enumerate apt packages, so its silence is informative
+S90 PASS mentions of less in the macOS 15 runner-image README = 0
+S91 PASS the Ubuntu image toolset does not install less explicitly
+S92 PASS packages.ubuntu.com/noble/less is HTTP 200 = 200
+S93 PASS less is packaged for Ubuntu noble — packaged is not the same as installed on a runner
+S94 PASS no registered parameter owns the application env-var prefix
+S95-msrv-policy PASS assumes msrv-policy matches the registry byte-for-byte = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+S95-rust-edition PASS assumes rust-edition matches the registry byte-for-byte = 2024
+S95-target-os-matrix PASS assumes target-os-matrix matches the registry byte-for-byte = ubuntu-latest, macos-latest
+S95-license PASS assumes license matches the registry byte-for-byte = MIT OR Apache-2.0
+S96 PASS shell-words has no platform-conditional code
+S97 PASS shlex lib.rs has no platform-conditional code
+S98 PASS shlex bytes.rs has no platform-conditional code
+S99 PASS the strict gate-2 reading is recorded in the execution ledger
+
+assertions: 103   failures: 3
+retrieved: 2026-09-12T19:25:16Z

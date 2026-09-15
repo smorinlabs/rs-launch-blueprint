@@ -1,0 +1,363 @@
+R01 empirical audit round 3 — corrected complete rerun
+utc=2026-09-13T08:03:34Z
+--- decision digest and independent parameter parity ---
+44bf9ae9f55060ed56256dbad4d9a0814b3bd63112602dabe932acb7bfb12d82  /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/DECISION.md
+revision2_sha256=8025fd5b1a959b1e76fa9a738176071b418fd411aa2ba6ad5c6e4bffbd9a018f
+owned-lines=1/1
+owned-byte-identical=true
+owned-bytes=803
+--- true licence-repair enumeration ---
+void locations (9): fitness-gate paragraph; crate-table header; excluded-by-gate patent clause; serde applicable-gate claim; compatibility evidence; validation strategy; check-3 claim row; check-3 heading; check-3 finding
+required addition (1): Parameters prose defining the repository-own license boundary
+total=10 (not the ledger review’s four named lines)
+--- check 1 from independent fixture copy ---
+check1_fmt_exit=0
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.10s
+check1_clippy_exit=0
+--- check 2 from independent scratch copies ---
+error[E0046]: not all trait items implemented, missing: `get`
+ --> src/main.rs:5:1
+  |
+5 | impl ProjectsPort for Incomplete {
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ missing `get` in implementation
+  |
+  = help: implement the missing item: `fn get(&self, _: &str) -> Result<Option<Project>, PortError> { todo!() }`
+
+For more information about this error, try `rustc --explain E0046`.
+error: could not compile `negcheck` (bin "negcheck") due to 1 previous error
+check2_missing_get_exit=101
+error[E0038]: the trait `NotDynCompatible` is not dyn compatible
+  --> src/main.rs:14:36
+   |
+14 |     let erased: std::sync::Arc<dyn NotDynCompatible> = std::sync::Arc::new(A);
+   |                                    ^^^^^^^^^^^^^^^^ `NotDynCompatible` is not dyn compatible
+   |
+note: for a trait to be dyn compatible it needs to allow building a vtable
+      for more information, visit <https://doc.rust-lang.org/reference/items/traits.html#dyn-compatibility>
+  --> src/main.rs:3:8
+   |
+ 1 | trait NotDynCompatible: Send + Sync {
+   |       ---------------- this trait is not dyn compatible...
+ 2 |     fn name(&self) -> String;
+ 3 |     fn pick<T>(&self, value: T) -> T;
+   |        ^^^^ ...because method `pick` has generic type parameters
+   = help: consider moving `pick` to another trait
+   = help: only type `A` implements `NotDynCompatible`; consider using it directly instead.
+
+For more information about this error, try `rustc --explain E0038`.
+error: could not compile `negcheck` (bin "negcheck") due to 1 previous error
+check2_generic_dyn_exit=101
+--- check 3 from independent fixture copy ---
+atomic-waker	1.1.2	1.36	Apache-2.0 OR MIT
+axum	0.8.9	1.80	MIT
+axum-core	0.5.6	1.78	MIT
+bytes	1.12.1	1.57	MIT
+form_urlencoded	1.2.2	1.51	MIT OR Apache-2.0
+futures-channel	0.3.34	1.71	MIT OR Apache-2.0
+futures-core	0.3.34	1.36	MIT OR Apache-2.0
+futures-task	0.3.34	1.71	MIT OR Apache-2.0
+futures-util	0.3.34	1.71	MIT OR Apache-2.0
+http	1.5.0	1.57.0	MIT OR Apache-2.0
+http-body	1.1.0	1.61	MIT
+http-body-util	0.1.5	1.61	MIT
+httparse	1.10.1	none	MIT OR Apache-2.0
+httpdate	1.0.3	1.56	MIT OR Apache-2.0
+hyper	1.11.1	1.63	MIT
+hyper-util	0.1.20	1.64	MIT
+itoa	1.0.18	1.68	MIT OR Apache-2.0
+libc	0.2.189	1.65	MIT OR Apache-2.0
+log	0.4.34	1.71.0	MIT OR Apache-2.0
+matchit	0.8.4	none	MIT AND BSD-3-Clause
+memchr	2.8.3	1.61	Unlicense OR MIT
+mime	0.3.17	none	MIT OR Apache-2.0
+mio	1.2.3	1.71	MIT
+once_cell	1.21.4	1.65	MIT OR Apache-2.0
+percent-encoding	2.3.2	1.51	MIT OR Apache-2.0
+pin-project-lite	0.2.17	1.37	Apache-2.0 OR MIT
+proc-macro2	1.0.107	1.71	MIT OR Apache-2.0
+quote	1.0.47	1.71	MIT OR Apache-2.0
+ryu	1.0.23	1.71	Apache-2.0 OR BSL-1.0
+serde	1.0.229	1.56	MIT OR Apache-2.0
+serde_core	1.0.229	1.56	MIT OR Apache-2.0
+serde_derive	1.0.229	1.71	MIT OR Apache-2.0
+serde_json	1.0.151	1.71	MIT OR Apache-2.0
+serde_path_to_error	0.1.20	1.61	MIT OR Apache-2.0
+serde_urlencoded	0.7.1	none	MIT/Apache-2.0
+slab	0.4.12	1.51	MIT
+smallvec	1.16.0	none	MIT OR Apache-2.0
+socket2	0.6.5	1.70	MIT OR Apache-2.0
+syn	3.0.5	1.71	MIT OR Apache-2.0
+sync_wrapper	1.0.2	none	Apache-2.0
+tokio	1.53.1	1.71	MIT
+tokio-macros	2.7.2	1.71	MIT
+tower	0.5.3	1.64.0	MIT
+tower-layer	0.3.3	none	MIT
+tower-service	0.3.3	none	MIT
+tracing	0.1.44	1.65.0	MIT
+tracing-core	0.1.36	1.65.0	MIT
+unicode-ident	1.0.24	1.71	(MIT OR Apache-2.0) AND Unicode-3.0
+wasi	0.11.1+wasi-snapshot-preview1	none	Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT
+windows-link	0.2.1	1.71	MIT OR Apache-2.0
+windows-sys	0.61.2	1.71	MIT OR Apache-2.0
+zmij	1.0.23	1.71	MIT
+check3_metadata_exit=0
+seam_fixture v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/evidence/audit-r3-input/seam_fixture)
+├── axum v0.8.9
+│   ├── axum-core v0.5.6
+│   │   ├── bytes v1.12.1
+│   │   ├── futures-core v0.3.34
+│   │   ├── http v1.5.0
+│   │   │   ├── bytes v1.12.1
+│   │   │   └── itoa v1.0.18
+│   │   ├── http-body v1.1.0
+│   │   │   ├── bytes v1.12.1
+│   │   │   └── http v1.5.0 (*)
+│   │   ├── http-body-util v0.1.5
+│   │   │   ├── bytes v1.12.1
+│   │   │   ├── futures-core v0.3.34
+│   │   │   ├── http v1.5.0 (*)
+│   │   │   ├── http-body v1.1.0 (*)
+│   │   │   └── pin-project-lite v0.2.17
+│   │   ├── mime v0.3.17
+│   │   ├── pin-project-lite v0.2.17
+│   │   ├── sync_wrapper v1.0.2
+│   │   ├── tower-layer v0.3.3
+│   │   ├── tower-service v0.3.3
+│   │   └── tracing v0.1.44
+│   │       ├── log v0.4.34
+│   │       ├── pin-project-lite v0.2.17
+│   │       └── tracing-core v0.1.36
+│   │           └── once_cell v1.21.4
+│   ├── bytes v1.12.1
+│   ├── form_urlencoded v1.2.2
+│   │   └── percent-encoding v2.3.2
+│   ├── futures-util v0.3.34
+│   │   ├── futures-core v0.3.34
+│   │   ├── futures-task v0.3.34
+│   │   ├── pin-project-lite v0.2.17
+│   │   └── slab v0.4.12
+│   ├── http v1.5.0 (*)
+│   ├── http-body v1.1.0 (*)
+│   ├── http-body-util v0.1.5 (*)
+│   ├── hyper v1.11.1
+│   │   ├── atomic-waker v1.1.2
+│   │   ├── bytes v1.12.1
+│   │   ├── futures-channel v0.3.34
+│   │   │   └── futures-core v0.3.34
+│   │   ├── futures-core v0.3.34
+│   │   ├── http v1.5.0 (*)
+│   │   ├── http-body v1.1.0 (*)
+│   │   ├── httparse v1.10.1
+│   │   ├── httpdate v1.0.3
+│   │   ├── itoa v1.0.18
+│   │   ├── pin-project-lite v0.2.17
+│   │   ├── smallvec v1.16.0
+│   │   └── tokio v1.53.1
+│   │       ├── libc v0.2.189
+│   │       ├── mio v1.2.3
+│   │       │   └── libc v0.2.189
+│   │       ├── pin-project-lite v0.2.17
+│   │       ├── socket2 v0.6.5
+│   │       │   └── libc v0.2.189
+│   │       └── tokio-macros v2.7.2 (proc-macro)
+│   │           ├── proc-macro2 v1.0.107
+│   │           │   └── unicode-ident v1.0.24
+│   │           ├── quote v1.0.47
+│   │           │   └── proc-macro2 v1.0.107 (*)
+│   │           └── syn v3.0.5
+│   │               ├── proc-macro2 v1.0.107 (*)
+│   │               ├── quote v1.0.47 (*)
+│   │               └── unicode-ident v1.0.24
+│   ├── hyper-util v0.1.20
+│   │   ├── bytes v1.12.1
+│   │   ├── http v1.5.0 (*)
+│   │   ├── http-body v1.1.0 (*)
+│   │   ├── hyper v1.11.1 (*)
+│   │   ├── pin-project-lite v0.2.17
+│   │   ├── tokio v1.53.1 (*)
+│   │   └── tower-service v0.3.3
+│   ├── itoa v1.0.18
+│   ├── matchit v0.8.4
+│   ├── memchr v2.8.3
+│   ├── mime v0.3.17
+│   ├── percent-encoding v2.3.2
+│   ├── pin-project-lite v0.2.17
+│   ├── serde_core v1.0.229
+│   ├── serde_json v1.0.151
+│   │   ├── itoa v1.0.18
+│   │   ├── memchr v2.8.3
+│   │   ├── serde_core v1.0.229
+│   │   └── zmij v1.0.23
+│   ├── serde_path_to_error v0.1.20
+│   │   ├── itoa v1.0.18
+│   │   └── serde_core v1.0.229
+│   ├── serde_urlencoded v0.7.1
+│   │   ├── form_urlencoded v1.2.2 (*)
+│   │   ├── itoa v1.0.18
+│   │   ├── ryu v1.0.23
+│   │   └── serde v1.0.229
+│   │       ├── serde_core v1.0.229
+│   │       └── serde_derive v1.0.229 (proc-macro)
+│   │           ├── proc-macro2 v1.0.107 (*)
+│   │           ├── quote v1.0.47 (*)
+│   │           └── syn v3.0.5 (*)
+│   ├── sync_wrapper v1.0.2
+│   ├── tokio v1.53.1 (*)
+│   ├── tower v0.5.3
+│   │   ├── futures-core v0.3.34
+│   │   ├── futures-util v0.3.34 (*)
+│   │   ├── pin-project-lite v0.2.17
+│   │   ├── sync_wrapper v1.0.2
+│   │   ├── tokio v1.53.1 (*)
+│   │   ├── tower-layer v0.3.3
+│   │   ├── tower-service v0.3.3
+│   │   └── tracing v0.1.44 (*)
+│   ├── tower-layer v0.3.3
+│   ├── tower-service v0.3.3
+│   └── tracing v0.1.44 (*)
+├── serde v1.0.229 (*)
+├── serde_json v1.0.151 (*)
+└── tokio v1.53.1 (*)
+check3_tree_exit=0
+--- check 4: recorded command then isolated advisory-db fallback ---
+    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+error: couldn't fetch advisory database: I/O operation failed: failed to obtain lock file '/Users/stevemorin/.cargo/advisory-db..lock'
+Caused by:
+  -> failed to obtain lock file '/Users/stevemorin/.cargo/advisory-db..lock'
+  -> attempted to take an exclusive lock on a read-only path
+check4_recorded_audit_exit=1
+    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+      Loaded 1243 security advisories (from ../advisory-db)
+    Updating crates.io index
+warning: couldn't update crates.io index: I/O operation failed: failed to obtain lock file '/Users/stevemorin/.cargo/.package-cache'
+    Scanning Cargo.lock for vulnerabilities (53 crate dependencies)
+check4_isolated_db_audit_exit=0
+--- check 5 from /private/tmp; output diff against cited log ---
+check5_primary_exit=0
+R01 revision 3 — licence-repair assertions
+decision   research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/DECISION.md
+baseline   revision 2, extracted from that file own history, pinned sha256 8025fd5b1a959b1e76fa9a738176071b418fd411aa2ba6ad5c6e4bffbd9a018f
+
+check  1  PASS  supersedes-bytes-are-rev2              history tail hashes to the published revision-2 digest
+check  2  PASS  supersedes-heading-once                1 heading line
+check  3  PASS  current-h2-sequence                    ## Decision|## Parameters|## Empirical check|## Engines|
+check  4  PASS  current-entry-dated                    # 2026-09-13 — R01 ports-and-adapters-seam — decision (revision 3)
+check  5  PASS  owns-line-byte-identical               http-transport-injection-seam identical to revision 2 (803 bytes)
+check  6  PASS  assumes-lines-byte-identical           4 lines unchanged: msrv-policy, rust-edition, target-os-matrix, license
+check  7  detail (void phrases, repaired text)
+  gate-list              ok   absent
+  table-header           ok   absent
+  serde-clause           ok   absent
+  compatibility          ok   absent
+  validation-strategy    ok   absent
+  check-3-claim          ok   absent
+  check-3-heading        ok   absent
+  check-3-finding        ok   absent
+  patent-grant-clause    ok   quoted once and struck
+check  7  PASS  void-phrases-struck                    9 of 9 phrases repaired
+check  8  PASS  gate-1-recorded-inapplicable           gate row present with the ruling verbatim
+check  9  PASS  resolved-pins-criterion-recorded       permissive-licence criterion marked inapplicable in check 3
+check 10  PASS  independent-grounds-present            test-case, faux and nject each keep two stated grounds
+check 11  PASS  checks-1-to-4-logs-unchanged           4 logs match their recorded sha256
+check 12  detail (same phrases, superseded revision-2 text)
+  gate-list              ok   present 1x
+  table-header           ok   present 1x
+  serde-clause           ok   present 1x
+  compatibility          ok   present 1x
+  validation-strategy    ok   present 1x
+  check-3-claim          ok   present 1x
+  check-3-heading        ok   present 1x
+  check-3-finding        ok   present 1x
+  patent-grant-clause    ok   present 1x
+check 12  PASS  negative-control-phrases-found         all 9 phrases found in revision 2, as expected
+
+checks=12 failures=0
+check5_primary_log_diff_exit=0
+--- simulated post-publication tree (topic copied as revision 3) ---
+check5_simulated_publication_exit=0
+R01 revision 3 — licence-repair assertions
+decision   research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/DECISION.md
+baseline   revision 2, extracted from that file own history, pinned sha256 8025fd5b1a959b1e76fa9a738176071b418fd411aa2ba6ad5c6e4bffbd9a018f
+
+check  1  PASS  supersedes-bytes-are-rev2              history tail hashes to the published revision-2 digest
+check  2  PASS  supersedes-heading-once                1 heading line
+check  3  PASS  current-h2-sequence                    ## Decision|## Parameters|## Empirical check|## Engines|
+check  4  PASS  current-entry-dated                    # 2026-09-13 — R01 ports-and-adapters-seam — decision (revision 3)
+check  5  PASS  owns-line-byte-identical               http-transport-injection-seam identical to revision 2 (803 bytes)
+check  6  PASS  assumes-lines-byte-identical           4 lines unchanged: msrv-policy, rust-edition, target-os-matrix, license
+check  7  detail (void phrases, repaired text)
+  gate-list              ok   absent
+  table-header           ok   absent
+  serde-clause           ok   absent
+  compatibility          ok   absent
+  validation-strategy    ok   absent
+  check-3-claim          ok   absent
+  check-3-heading        ok   absent
+  check-3-finding        ok   absent
+  patent-grant-clause    ok   quoted once and struck
+check  7  PASS  void-phrases-struck                    9 of 9 phrases repaired
+check  8  PASS  gate-1-recorded-inapplicable           gate row present with the ruling verbatim
+check  9  PASS  resolved-pins-criterion-recorded       permissive-licence criterion marked inapplicable in check 3
+check 10  PASS  independent-grounds-present            test-case, faux and nject each keep two stated grounds
+check 11  PASS  checks-1-to-4-logs-unchanged           4 logs match their recorded sha256
+check 12  detail (same phrases, superseded revision-2 text)
+  gate-list              ok   present 1x
+  table-header           ok   present 1x
+  serde-clause           ok   present 1x
+  compatibility          ok   present 1x
+  validation-strategy    ok   present 1x
+  check-3-claim          ok   present 1x
+  check-3-heading        ok   present 1x
+  check-3-finding        ok   present 1x
+  patent-grant-clause    ok   present 1x
+check 12  PASS  negative-control-phrases-found         all 9 phrases found in revision 2, as expected
+
+checks=12 failures=0
+check5_simulated_publication_log_diff_exit=0
+--- reverted-repair negative control (table header restored) ---
+check5_reverted_repair_exit=1
+R01 revision 3 — licence-repair assertions
+decision   research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/DECISION.md
+baseline   revision 2, extracted from that file own history, pinned sha256 8025fd5b1a959b1e76fa9a738176071b418fd411aa2ba6ad5c6e4bffbd9a018f
+
+check  1  PASS  supersedes-bytes-are-rev2              history tail hashes to the published revision-2 digest
+check  2  PASS  supersedes-heading-once                1 heading line
+check  3  PASS  current-h2-sequence                    ## Decision|## Parameters|## Empirical check|## Engines|
+check  4  PASS  current-entry-dated                    # 2026-09-13 — R01 ports-and-adapters-seam — decision (revision 3)
+check  5  PASS  owns-line-byte-identical               http-transport-injection-seam identical to revision 2 (803 bytes)
+check  6  PASS  assumes-lines-byte-identical           4 lines unchanged: msrv-policy, rust-edition, target-os-matrix, license
+check  7  detail (void phrases, repaired text)
+  gate-list              ok   absent
+  table-header           FAIL STILL PRESENT 1x
+  serde-clause           ok   absent
+  compatibility          ok   absent
+  validation-strategy    ok   absent
+  check-3-claim          ok   absent
+  check-3-heading        ok   absent
+  check-3-finding        ok   absent
+  patent-grant-clause    ok   quoted once and struck
+check  7  FAIL  void-phrases-struck                    1 phrase(s) still reason from a licence
+check  8  PASS  gate-1-recorded-inapplicable           gate row present with the ruling verbatim
+check  9  PASS  resolved-pins-criterion-recorded       permissive-licence criterion marked inapplicable in check 3
+check 10  PASS  independent-grounds-present            test-case, faux and nject each keep two stated grounds
+check 11  PASS  checks-1-to-4-logs-unchanged           4 logs match their recorded sha256
+check 12  detail (same phrases, superseded revision-2 text)
+  gate-list              ok   present 1x
+  table-header           ok   present 1x
+  serde-clause           ok   present 1x
+  compatibility          ok   present 1x
+  validation-strategy    ok   present 1x
+  check-3-claim          ok   present 1x
+  check-3-heading        ok   present 1x
+  check-3-finding        ok   present 1x
+  patent-grant-clause    ok   present 1x
+check 12  PASS  negative-control-phrases-found         all 9 phrases found in revision 2, as expected
+
+checks=12 failures=1
+--- five source spot checks ---
+curl_exit=0 http=200 https://doc.rust-lang.org/reference/items/traits.html
+curl_exit=0 http=200 https://rust-lang.github.io/api-guidelines/flexibility.html
+curl_exit=0 http=200 https://serde.rs/data-model.html
+curl_exit=0 http=200 https://docs.rs/mockall/latest/mockall/
+curl: (56) The requested URL returned error: 404
+curl_exit=56 http=404 https://raw.githubusercontent.com/jj-vcs/jj/main/lib/src/backend.rs

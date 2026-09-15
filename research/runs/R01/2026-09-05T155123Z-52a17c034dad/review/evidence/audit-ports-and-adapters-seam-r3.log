@@ -1,0 +1,293 @@
+R01 empirical audit round 3
+utc=2026-09-13T08:02:33Z
+--- decision digest and independent parameter parity ---
+44bf9ae9f55060ed56256dbad4d9a0814b3bd63112602dabe932acb7bfb12d82  review/DECISION.md
+revision2_sha256=8025fd5b1a959b1e76fa9a738176071b418fd411aa2ba6ad5c6e4bffbd9a018f
+owned-lines=1/1
+owned-byte-identical=true
+owned-bytes=803
+--- true licence-repair enumeration ---
+void locations (9): fitness-gate paragraph; crate-table header; excluded-by-gate patent clause; serde applicable-gate claim; compatibility evidence; validation strategy; check-3 claim row; check-3 heading; check-3 finding
+required addition (1): Parameters prose defining the repository-own license boundary
+total=10 (not the ledger review’s four named lines)
+--- check 1 from independent fixture copy ---
+check1_fmt_exit=0
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.24
+    Checking itoa v1.0.18
+    Checking pin-project-lite v0.2.17
+   Compiling libc v0.2.189
+    Checking futures-core v0.3.34
+    Checking bytes v1.12.1
+   Compiling serde_core v1.0.229
+    Checking once_cell v1.21.4
+   Compiling httparse v1.10.1
+    Checking log v0.4.34
+    Checking tower-service v0.3.3
+   Compiling serde v1.0.229
+   Compiling zmij v1.0.23
+    Checking sync_wrapper v1.0.2
+    Checking futures-channel v0.3.34
+   Compiling serde_json v1.0.151
+    Checking tracing-core v0.1.36
+    Checking futures-task v0.3.34
+    Checking percent-encoding v2.3.2
+    Checking slab v0.4.12
+    Checking tower-layer v0.3.3
+    Checking smallvec v1.16.0
+    Checking httpdate v1.0.3
+    Checking atomic-waker v1.1.2
+    Checking http v1.5.0
+    Checking futures-util v0.3.34
+    Checking form_urlencoded v1.2.2
+    Checking ryu v1.0.23
+    Checking memchr v2.8.3
+    Checking tracing v0.1.44
+    Checking mime v0.3.17
+    Checking matchit v0.8.4
+    Checking http-body v1.1.0
+    Checking http-body-util v0.1.5
+    Checking axum-core v0.5.6
+   Compiling syn v3.0.5
+    Checking mio v1.2.3
+    Checking socket2 v0.6.5
+    Checking serde_path_to_error v0.1.20
+   Compiling tokio-macros v2.7.2
+   Compiling serde_derive v1.0.229
+    Checking tokio v1.53.1
+    Checking serde_urlencoded v0.7.1
+    Checking hyper v1.11.1
+    Checking tower v0.5.3
+    Checking hyper-util v0.1.20
+    Checking axum v0.8.9
+    Checking seam_fixture v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/evidence/audit-r3-input/seam_fixture)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.67s
+check1_clippy_exit=0
+--- check 2 from independent scratch copies ---
+error[E0046]: not all trait items implemented, missing: `get`
+ --> src/main.rs:5:1
+  |
+5 | impl ProjectsPort for Incomplete {
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ missing `get` in implementation
+  |
+  = help: implement the missing item: `fn get(&self, _: &str) -> Result<Option<Project>, PortError> { todo!() }`
+
+For more information about this error, try `rustc --explain E0046`.
+error: could not compile `negcheck` (bin "negcheck") due to 1 previous error
+check2_missing_get_exit=101
+error[E0038]: the trait `NotDynCompatible` is not dyn compatible
+  --> src/main.rs:14:36
+   |
+14 |     let erased: std::sync::Arc<dyn NotDynCompatible> = std::sync::Arc::new(A);
+   |                                    ^^^^^^^^^^^^^^^^ `NotDynCompatible` is not dyn compatible
+   |
+note: for a trait to be dyn compatible it needs to allow building a vtable
+      for more information, visit <https://doc.rust-lang.org/reference/items/traits.html#dyn-compatibility>
+  --> src/main.rs:3:8
+   |
+ 1 | trait NotDynCompatible: Send + Sync {
+   |       ---------------- this trait is not dyn compatible...
+ 2 |     fn name(&self) -> String;
+ 3 |     fn pick<T>(&self, value: T) -> T;
+   |        ^^^^ ...because method `pick` has generic type parameters
+   = help: consider moving `pick` to another trait
+   = help: only type `A` implements `NotDynCompatible`; consider using it directly instead.
+
+For more information about this error, try `rustc --explain E0038`.
+error: could not compile `negcheck` (bin "negcheck") due to 1 previous error
+check2_generic_dyn_exit=101
+--- check 3 from independent fixture copy ---
+atomic-waker	1.1.2	1.36	Apache-2.0 OR MIT
+axum	0.8.9	1.80	MIT
+axum-core	0.5.6	1.78	MIT
+bytes	1.12.1	1.57	MIT
+form_urlencoded	1.2.2	1.51	MIT OR Apache-2.0
+futures-channel	0.3.34	1.71	MIT OR Apache-2.0
+futures-core	0.3.34	1.36	MIT OR Apache-2.0
+futures-task	0.3.34	1.71	MIT OR Apache-2.0
+futures-util	0.3.34	1.71	MIT OR Apache-2.0
+http	1.5.0	1.57.0	MIT OR Apache-2.0
+http-body	1.1.0	1.61	MIT
+http-body-util	0.1.5	1.61	MIT
+httparse	1.10.1	none	MIT OR Apache-2.0
+httpdate	1.0.3	1.56	MIT OR Apache-2.0
+hyper	1.11.1	1.63	MIT
+hyper-util	0.1.20	1.64	MIT
+itoa	1.0.18	1.68	MIT OR Apache-2.0
+libc	0.2.189	1.65	MIT OR Apache-2.0
+log	0.4.34	1.71.0	MIT OR Apache-2.0
+matchit	0.8.4	none	MIT AND BSD-3-Clause
+memchr	2.8.3	1.61	Unlicense OR MIT
+mime	0.3.17	none	MIT OR Apache-2.0
+mio	1.2.3	1.71	MIT
+once_cell	1.21.4	1.65	MIT OR Apache-2.0
+percent-encoding	2.3.2	1.51	MIT OR Apache-2.0
+pin-project-lite	0.2.17	1.37	Apache-2.0 OR MIT
+proc-macro2	1.0.107	1.71	MIT OR Apache-2.0
+quote	1.0.47	1.71	MIT OR Apache-2.0
+ryu	1.0.23	1.71	Apache-2.0 OR BSL-1.0
+serde	1.0.229	1.56	MIT OR Apache-2.0
+serde_core	1.0.229	1.56	MIT OR Apache-2.0
+serde_derive	1.0.229	1.71	MIT OR Apache-2.0
+serde_json	1.0.151	1.71	MIT OR Apache-2.0
+serde_path_to_error	0.1.20	1.61	MIT OR Apache-2.0
+serde_urlencoded	0.7.1	none	MIT/Apache-2.0
+slab	0.4.12	1.51	MIT
+smallvec	1.16.0	none	MIT OR Apache-2.0
+socket2	0.6.5	1.70	MIT OR Apache-2.0
+syn	3.0.5	1.71	MIT OR Apache-2.0
+sync_wrapper	1.0.2	none	Apache-2.0
+tokio	1.53.1	1.71	MIT
+tokio-macros	2.7.2	1.71	MIT
+tower	0.5.3	1.64.0	MIT
+tower-layer	0.3.3	none	MIT
+tower-service	0.3.3	none	MIT
+tracing	0.1.44	1.65.0	MIT
+tracing-core	0.1.36	1.65.0	MIT
+unicode-ident	1.0.24	1.71	(MIT OR Apache-2.0) AND Unicode-3.0
+wasi	0.11.1+wasi-snapshot-preview1	none	Apache-2.0 WITH LLVM-exception OR Apache-2.0 OR MIT
+windows-link	0.2.1	1.71	MIT OR Apache-2.0
+windows-sys	0.61.2	1.71	MIT OR Apache-2.0
+zmij	1.0.23	1.71	MIT
+check3_metadata_exit=0
+seam_fixture v0.1.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/evidence/audit-r3-input/seam_fixture)
+├── axum v0.8.9
+│   ├── axum-core v0.5.6
+│   │   ├── bytes v1.12.1
+│   │   ├── futures-core v0.3.34
+│   │   ├── http v1.5.0
+│   │   │   ├── bytes v1.12.1
+│   │   │   └── itoa v1.0.18
+│   │   ├── http-body v1.1.0
+│   │   │   ├── bytes v1.12.1
+│   │   │   └── http v1.5.0 (*)
+│   │   ├── http-body-util v0.1.5
+│   │   │   ├── bytes v1.12.1
+│   │   │   ├── futures-core v0.3.34
+│   │   │   ├── http v1.5.0 (*)
+│   │   │   ├── http-body v1.1.0 (*)
+│   │   │   └── pin-project-lite v0.2.17
+│   │   ├── mime v0.3.17
+│   │   ├── pin-project-lite v0.2.17
+│   │   ├── sync_wrapper v1.0.2
+│   │   ├── tower-layer v0.3.3
+│   │   ├── tower-service v0.3.3
+│   │   └── tracing v0.1.44
+│   │       ├── log v0.4.34
+│   │       ├── pin-project-lite v0.2.17
+│   │       └── tracing-core v0.1.36
+│   │           └── once_cell v1.21.4
+│   ├── bytes v1.12.1
+│   ├── form_urlencoded v1.2.2
+│   │   └── percent-encoding v2.3.2
+│   ├── futures-util v0.3.34
+│   │   ├── futures-core v0.3.34
+│   │   ├── futures-task v0.3.34
+│   │   ├── pin-project-lite v0.2.17
+│   │   └── slab v0.4.12
+│   ├── http v1.5.0 (*)
+│   ├── http-body v1.1.0 (*)
+│   ├── http-body-util v0.1.5 (*)
+│   ├── hyper v1.11.1
+│   │   ├── atomic-waker v1.1.2
+│   │   ├── bytes v1.12.1
+│   │   ├── futures-channel v0.3.34
+│   │   │   └── futures-core v0.3.34
+│   │   ├── futures-core v0.3.34
+│   │   ├── http v1.5.0 (*)
+│   │   ├── http-body v1.1.0 (*)
+│   │   ├── httparse v1.10.1
+│   │   ├── httpdate v1.0.3
+│   │   ├── itoa v1.0.18
+│   │   ├── pin-project-lite v0.2.17
+│   │   ├── smallvec v1.16.0
+│   │   └── tokio v1.53.1
+│   │       ├── libc v0.2.189
+│   │       ├── mio v1.2.3
+│   │       │   └── libc v0.2.189
+│   │       ├── pin-project-lite v0.2.17
+│   │       ├── socket2 v0.6.5
+│   │       │   └── libc v0.2.189
+│   │       └── tokio-macros v2.7.2 (proc-macro)
+│   │           ├── proc-macro2 v1.0.107
+│   │           │   └── unicode-ident v1.0.24
+│   │           ├── quote v1.0.47
+│   │           │   └── proc-macro2 v1.0.107 (*)
+│   │           └── syn v3.0.5
+│   │               ├── proc-macro2 v1.0.107 (*)
+│   │               ├── quote v1.0.47 (*)
+│   │               └── unicode-ident v1.0.24
+│   ├── hyper-util v0.1.20
+│   │   ├── bytes v1.12.1
+│   │   ├── http v1.5.0 (*)
+│   │   ├── http-body v1.1.0 (*)
+│   │   ├── hyper v1.11.1 (*)
+│   │   ├── pin-project-lite v0.2.17
+│   │   ├── tokio v1.53.1 (*)
+│   │   └── tower-service v0.3.3
+│   ├── itoa v1.0.18
+│   ├── matchit v0.8.4
+│   ├── memchr v2.8.3
+│   ├── mime v0.3.17
+│   ├── percent-encoding v2.3.2
+│   ├── pin-project-lite v0.2.17
+│   ├── serde_core v1.0.229
+│   ├── serde_json v1.0.151
+│   │   ├── itoa v1.0.18
+│   │   ├── memchr v2.8.3
+│   │   ├── serde_core v1.0.229
+│   │   └── zmij v1.0.23
+│   ├── serde_path_to_error v0.1.20
+│   │   ├── itoa v1.0.18
+│   │   └── serde_core v1.0.229
+│   ├── serde_urlencoded v0.7.1
+│   │   ├── form_urlencoded v1.2.2 (*)
+│   │   ├── itoa v1.0.18
+│   │   ├── ryu v1.0.23
+│   │   └── serde v1.0.229
+│   │       ├── serde_core v1.0.229
+│   │       └── serde_derive v1.0.229 (proc-macro)
+│   │           ├── proc-macro2 v1.0.107 (*)
+│   │           ├── quote v1.0.47 (*)
+│   │           └── syn v3.0.5 (*)
+│   ├── sync_wrapper v1.0.2
+│   ├── tokio v1.53.1 (*)
+│   ├── tower v0.5.3
+│   │   ├── futures-core v0.3.34
+│   │   ├── futures-util v0.3.34 (*)
+│   │   ├── pin-project-lite v0.2.17
+│   │   ├── sync_wrapper v1.0.2
+│   │   ├── tokio v1.53.1 (*)
+│   │   ├── tower-layer v0.3.3
+│   │   ├── tower-service v0.3.3
+│   │   └── tracing v0.1.44 (*)
+│   ├── tower-layer v0.3.3
+│   ├── tower-service v0.3.3
+│   └── tracing v0.1.44 (*)
+├── serde v1.0.229 (*)
+├── serde_json v1.0.151 (*)
+└── tokio v1.53.1 (*)
+check3_tree_exit=0
+--- check 4 from independent fixture copy ---
+    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+error: couldn't fetch advisory database: I/O operation failed: failed to obtain lock file '/Users/stevemorin/.cargo/advisory-db..lock'
+Caused by:
+  -> failed to obtain lock file '/Users/stevemorin/.cargo/advisory-db..lock'
+  -> attempted to take an exclusive lock on a read-only path
+check4_audit_exit=1
+--- check 5 from /private/tmp; output diff against cited log ---
+check5_primary_exit=127
+bash: /private/tmp/review/empirical/r01-revision3-checks.sh: No such file or directory
+diff: review/evidence/revision3-licence-repair.log: No such file or directory
+check5_primary_log_diff_exit=2
+--- simulated post-publication tree (topic copied as revision 3) ---
+check5_simulated_publication_exit=127
+bash: /private/tmp/review/evidence/audit-r3-sim/research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/empirical/r01-revision3-checks.sh: No such file or directory
+diff: review/evidence/revision3-licence-repair.log: No such file or directory
+check5_simulated_publication_log_diff_exit=2
+--- reverted-repair negative control (table header restored) ---
+check5_reverted_repair_exit=127
+bash: /private/tmp/review/evidence/audit-r3-reverted/research/runs/R01/2026-09-05T155123Z-52a17c034dad/review/empirical/r01-revision3-checks.sh: No such file or directory
+--- five source spot checks ---
+zsh:70: read-only variable: status
