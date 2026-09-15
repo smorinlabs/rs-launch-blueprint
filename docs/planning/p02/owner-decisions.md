@@ -347,6 +347,8 @@ reject.
 | question | item | answer | date | bound sha256 | note |
 |---|---|---|---|---|---|
 | W0-R67 | R67 error-and-exit-code-contract | A accept | 2026-09-14 | `16947ab1…` | two-layer contract, `thiserror`/`anyhow`/`signal-hook`, exit codes from standard R6.1; `ctrlc` runner-up loses on R9.6 |
+| W0-R42 | R42 dev-toolchain-provisioning | A accept | 2026-09-15 | `a2504aa7…` | first put 2026-09-14 as one combined question and withdrawn at the owner's request; re-put split in two with the keyboard-level table and the controller's reasoning for its recommendation made explicit |
+| W0-R42i | R42 install-integrity posture | A = decision's option 3, signed/unsigned column | 2026-09-15 | — | recorded as a binding ruling in `docs/port/OWNER-REVIEW.md`; options 1 (as written) and 2 (`--only-signed`) declined |
 
 ## Retired from this list
 

@@ -90,6 +90,20 @@ exists because none is owed. R60 carries zero overrides; OV-01 is retired as
 refused rather than deleted, its argument and options table kept as the record of
 how the choice was reached.
 
+### 2026-09-15 — R42 install-integrity posture: record signedness per tool (W0-R42i)
+
+R42 revision 10 recorded three integrity postures for the `cargo binstall`
+recipe "rather than chosen" and asked the owner to choose. The owner chose the
+decision's **option 3**: the recipe body stays `cargo binstall --locked
+--no-confirm <name>@<version>` with no extra flag, and P03 adds a signed/unsigned
+column to the declared tool table so a tool whose author publishes no signing
+key is a deliberate entry rather than an invisible one. Options 1 (recipe as
+written, no column) and 2 (`--only-signed`) were declined. The choice rests on
+two unmeasured facts the decision records as unproven — the signed fraction of
+the real tool table and the time cost of a source build — and is to be
+re-put if P03's measurement shows a signed fraction high enough to make
+`--only-signed` nearly free. R42's republication revision cites this ruling.
+
 ## Wave 0 owner acceptances (recorded from 2026-09-14)
 
 An acceptance binds the **recommendation** of one decision at one
@@ -106,6 +120,7 @@ The briefs the owner answered from are in `docs/planning/p02/owner-decisions.md`
 |---|---|---|---|---|---|
 | R01 | 2 (published) | `8025fd5b1a959b1e76fa9a738176071b418fd411aa2ba6ad5c6e4bffbd9a018f` | accept | 2026-09-10 | recorded retroactively 2026-09-14; the acceptance predates this table |
 | R67 | 4 (published) | `16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497` | accept | 2026-09-14 | W0-R67 option A; consumers R03, R52–R56, R70 admissible |
+| R42 | 10 | `a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c` | accept | 2026-09-15 | W0-R42 option A; install-integrity posture chosen under W0-R42i (see the ruling below); the eight items consuming `package-manager-invocation` admissible |
 
 ## Dispositions
 
