@@ -104,6 +104,20 @@ the real tool table and the time cost of a source build — and is to be
 re-put if P03's measurement shows a signed fraction high enough to make
 `--only-signed` nearly free. R42's republication revision cites this ruling.
 
+### 2026-09-15 — R49 binary name: `rslbp` (W0-R49n)
+
+R49 revision 7 kept the template's command name equal to its crate name,
+`rs-launch-blueprint`, and marked the choice owner-reviewable. The owner chose
+a short command name: **`rslbp`** (the Opus engine's proposal). The crate and
+distribution name stay `rs-launch-blueprint`; `cargo install rs-launch-blueprint`
+installs the command `rslbp`. Consequences the decision itself recorded for a
+divergent pair: the `[[bin]] name` row changes; R32 resolves the built binary
+through `env!("CARGO_BIN_EXE_rslbp")`; R68 uploads `target/release/rslbp`; and if
+R68 later adopts `cargo-binstall` metadata, the `bin-dir` template must
+interpolate `{ bin }` rather than `{ name }`. Five of the nine cross-platform
+CLIs R49 surveyed use a shorter command than their crate name. R49 revision 8
+implements this ruling.
+
 ## Wave 0 owner acceptances (recorded from 2026-09-14)
 
 An acceptance binds the **recommendation** of one decision at one
@@ -121,7 +135,7 @@ The briefs the owner answered from are in `docs/planning/p02/owner-decisions.md`
 | R01 | 2 (published) | `8025fd5b1a959b1e76fa9a738176071b418fd411aa2ba6ad5c6e4bffbd9a018f` | accept | 2026-09-10 | recorded retroactively 2026-09-14; the acceptance predates this table |
 | R67 | 4 (published) | `16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497` | accept | 2026-09-14 | W0-R67 option A; consumers R03, R52–R56, R70 admissible |
 | R42 | 10 | `a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c` | accept | 2026-09-15 | W0-R42 option A; install-integrity posture chosen under W0-R42i (see the ruling below); the eight items consuming `package-manager-invocation` admissible |
-| R49 | 7 | `319a535665318a120c9be3bdf61037f9f4ea8214d972de724dafe16902bec41d` | accept | 2026-09-15 | W0-R49 option A; W0-R49n: the owner directs a SHORT binary name in place of `rs-launch-blueprint` (name recorded in the ruling below once supplied); re-bound at revision 8, which also makes the round-7 judgment audit's three clause repairs; consumers R22, R32, R68, R50 admissible |
+| R49 | 7 | `319a535665318a120c9be3bdf61037f9f4ea8214d972de724dafe16902bec41d` | accept | 2026-09-15 | W0-R49 option A; W0-R49n: the owner directs the short binary name `rslbp` in place of `rs-launch-blueprint` (ruling below); re-bound at revision 8, which also makes the round-7 judgment audit's three clause repairs; consumers R22, R32, R68, R50 admissible |
 
 ## Dispositions
 
