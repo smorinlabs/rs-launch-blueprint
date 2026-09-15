@@ -120,7 +120,11 @@ REGIONS=[
  ("reproducibility paragraph",     "**Reproducibility.**",                        ["## Engines"]),
  ("disagreements 2 and 3",         "**Disagreement 2 — Zola's standing.**",       ["**Disagreement 4"]),
  ("revision-2 history entry",      "- **Revision 2**, 2026-09-12, sha256",        ["- **Revision 3**"]),
- ("revision-3 history entry",      "- **Revision 3**, 2026-09-13, this document.",["- **Revision 4**","**Uncertainty.**"]),
+ # anchored on the entry's body: revision 4 replaces its "this document" opener
+ # with revision 3's sha256, the way revision 3 did for revision 2's entry, and
+ # the MUST_CARRY list below gates that replacement line.
+ ("revision-3 history entry, body","  of 2026-09-12 (Q4 as superseded by Q7.B), not by an audit finding",
+                                                                                  ["- **Revision 4**","**Uncertainty.**"]),
 ]
 bad=0
 for name,start,ends in REGIONS:
@@ -218,7 +222,14 @@ MUST_CARRY=[
  ("J2 gate 4 recorded", "**Gate 4 (builds and is tested on `ubuntu-latest, macos-latest`).**"),
  ("J2 gate 5 recorded", "**Gate 5 (default features and any async-runtime coupling).**"),
  ("J2 gate 6 recorded", "**Gate 6 (binary-size and compile-time cost, qualitatively).**"),
- ("J2 gate 5 resolves the install line", "it is not this template's install\n  line"),
+ ("J2 gate 5 resolves the contributor install line",
+  "neither body passes a feature\n  flag, so both take mdBook's **default** features"),
+ ("J2 gate 5 declines the trimming flag pair",
+  "is therefore not this\n  template's install line**"),
+ ("gate 3 claims no checksum asset that does not exist",
+  "there is no published checksum asset to verify against"),
+ ("the revision-3 history entry carries its sha256",
+  "- **Revision 3**, 2026-09-13, sha256\n  `4647372666b7e94537d75fb684c6ca5ec5cca6929841330bab8832ddb6e7328e`."),
  ("J2 gate 5 states the async runtime is confined", "`tokio-tungstenite` 0.29.0 (check 18)"),
  ("J2 gate 5 frees R05 and R69", "are therefore unconstrained by this item"),
  ("J2 the serve claim is recorded as unproven", "unproven entry 7"),
@@ -265,7 +276,7 @@ else: print("FAIL  revision history has no revision-4 entry"); bad+=1
 hunks=[l for l in difflib.unified_diff(r3,r4,n=3) if l.startswith('@@')]
 print("whole-file unified-diff hunks: %d"%len(hunks))
 for h in hunks: print("      %s"%h.strip())
-EXPECTED_HUNKS=16
+EXPECTED_HUNKS=17
 if len(hunks)==EXPECTED_HUNKS: print("ASSERT hunk_count_is_%d=True"%EXPECTED_HUNKS)
 else: print("ASSERT hunk_count_is_%d=False actual=%d"%(EXPECTED_HUNKS,len(hunks))); bad+=1
 sys.exit(1 if bad else 0)

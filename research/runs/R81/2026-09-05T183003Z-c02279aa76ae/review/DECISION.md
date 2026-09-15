@@ -317,8 +317,10 @@ and the single advisory it carries, `RUSTSEC-2021-0001`, records
 source audit or `cargo-geiger`, and neither did this run; it is `## Engines`
 unproven entry 3, bounded — not resolved — by the fact that a separate build-time
 process cannot reach this template's address space. The residual risk is
-supply-chain, and the version pin plus the release-archive checksum are what
-narrow it.
+supply-chain, and what narrows it is the **version pin alone**: check 11 asserts
+that the v0.5.4 release publishes exactly six assets and every one of them is an
+archive, so **there is no published checksum asset to verify against**. Recording
+a digest at first download is a P03 step, not something this release supplies.
 
 **Gate 4 (builds and is tested on `ubuntu-latest, macos-latest`).** **Pass, by
 published artifact rather than by CI badge**: the v0.5.4 release publishes exactly
@@ -340,23 +342,34 @@ the HTTP server used by `mdbook serve`" (check 5).
 - **Default features include the HTTP server.** That is the content of the
   maintainers' sentence read in the other direction: the flag pair is what
   *removes* `serve`, so the default set is what F351 needs.
-- **Which install line this template uses: the prebuilt release archive, with
-  default features, for CI and for contributors alike** (check 11's six assets;
-  the maintainers' CI page recommends that path because it "is relatively fast,
-  and does not necessarily require dealing with caching"). The
-  `--no-default-features --features search` line is scoped by that same page to a
-  **source** install (`cargo install`), and **it is not this template's install
-  line**. A contributor must not use it, because it would delete the server F351
-  ships. A docs CI job that only runs `mdbook build` could use it, but has no
-  reason to: taking it means compiling mdBook from source, which is the slower
-  path the maintainers' own guidance advises against, and the prebuilt archive
-  already carries everything `mdbook build` needs.
-- **Not verified by execution, and recorded as such.** No archive was downloaded,
-  nothing was installed, and `mdbook serve` was never run — the role contract
-  forbids implementing the recommendation. "The published archive carries the
-  server" rests on the maintainers scoping the disabling flag to a source
-  install, not on an observation; it is `## Engines` unproven entry 7, and the
-  first `just docs-dev` in P03 proves or refutes it.
+- **Which install line the contributor recipe uses: R42's, unchanged, with no
+  feature flag — and that is the resolution.** R81 defines **no** install recipe;
+  acquisition belongs to R42 (`dev-toolchain-provisioning`, resolved), which
+  routes every crates.io-published tool through one generic `install-tool <spec>`
+  recipe. R42's published decision (revision 6) gives that recipe the body
+  `cargo install --locked <name>@<version>`; its current unpublished revision
+  gives it `cargo binstall --locked --no-confirm <name>@<version>`, which takes a
+  prebuilt artifact where one exists for the target and falls through to
+  `cargo install --locked` otherwise. **This item does not depend on which body
+  R42 lands**, and states nothing about that choice: neither body passes a feature
+  flag, so both take mdBook's **default** features, and `mdbook serve` survives on
+  either path. **`--no-default-features --features search` is therefore not this
+  template's install line**, and adding it to the contributor path would delete
+  the server F351 ships.
+- **CI is the one place the trimmed feature set is available, and it changes
+  nothing.** The docs job runs `mdbook build` and never `mdbook serve`, so it may
+  take either of the two paths mdBook's own CI page offers — the prebuilt release
+  archive, which that page recommends because it "is relatively fast, and does not
+  necessarily require dealing with caching" (check 5, and check 11's six assets
+  give the two matrix targets), or a source install with
+  `--no-default-features --features search`. Which one the docs job takes is a P03
+  choice with **no consequence for F351**, because F351 is a contributor recipe.
+- **Not verified by execution, and recorded as such.** Nothing was installed and
+  `mdbook serve` was never run — the role contract forbids implementing the
+  recommendation. That a default-feature mdBook, however acquired, yields a
+  working `serve` rests on the maintainers scoping the disabling flag pair to an
+  install that opts out of defaults, not on an observation; it is `## Engines`
+  unproven entry 7, and the first `just docs-dev` in P03 proves or refutes it.
 - **Async-runtime coupling: confined to mdBook's own process, and it reaches
   nothing here.** mdBook's serve path carries an async stack: the resolved lock
   committed as `review/evidence/mdbook-0.5.4-Cargo.lock` contains `tokio`
@@ -924,12 +937,12 @@ Both new checks are **offline and deterministic** — no network, no `gh`, no
 `curl` — and the script writes nothing inside `review/evidence/`, using a
 `mktemp` directory it removes on exit, so a rerun cannot disturb
 `review/evidence/snapshots/` the way the concurrent shared-directory rerun
-recorded in `review/audit-codex.md` did. As run for revision 4 it made **99 failure-gated
-checks: 98 lines reporting `PASS`** — 18 from the shell's own `assert` helper (5
-in check 17, 13 in check 18) and 80 printed by check 17's Python region
+recorded in `review/audit-codex.md` did. As run for revision 4 it made **102 failure-gated
+checks: 101 lines reporting `PASS`** — 18 from the shell's own `assert` helper (5
+in check 17, 13 in check 18) and 83 printed by check 17's Python region
 comparison, whose failure path sets the exit status that the shell assertion
 `revision-4 region and text diff` reads — **plus 1 gated
-`ASSERT hunk_count_is_16=True`**. **0 `FAIL` lines; 0 failed assertions; exit
+`ASSERT hunk_count_is_17=True`**. **0 `FAIL` lines; 0 failed assertions; exit
 status 0.** Every line of that log is content-asserted; the script prints no
 unasserted recorded output at all, and it reads no host-dependent or volatile
 value — not even a toolchain banner — so nothing in it drifts. After this
@@ -943,7 +956,7 @@ script exits 1.
 
 | # | Check | Command | Exit | Result | Log |
 |---|---|---|---:|---|---|
-| 17 | Revision-4 diff against the revision-3 blob | `git cat-file blob 460e6f9002663f7e00921406c3bd9bc2785328fe`; region extraction and `difflib.unified_diff` against this file | 0 | revision-3 blob sha256 asserted `4647372666…`; **26 regions asserted byte-identical** — the nine check 16 carried from revision 2 (the licence-partition table, its reading, the shared-requirement block, the four `- assumes` lines, check 8's snapshot rationale, the revision-1 defect record, disagreement 4, unproven entry 3, the revision-1 history entry) plus seventeen more this revision must not touch (the revision-3 recommendation-change note in two parts, the ledger decision table, the four-artifacts paragraph, the `theme/` rule, the ledger-rows-settled paragraph, both `BASELINE-REVIEW` lines, the minimal example, the `re-verify:` line, the **whole `## Parameters` section**, the 16-row check table, the gated-count paragraph, the reproducibility paragraph, disagreements 2–3, and the revision-2 and revision-3 history entries); **eight regions the findings require changed** asserted to have changed *and* to carry their marker sentence; **31 required texts** asserted present and **11 absent** from the live decision — including the two overreaching practice sentences and both "gains nothing"/"buys nothing" clauses; the title asserted to name revision 4; no `## Supersedes`; **whole-file hunk count asserted to be exactly 16** | `evidence/docs-delivery-claims-r4.log` |
+| 17 | Revision-4 diff against the revision-3 blob | `git cat-file blob 460e6f9002663f7e00921406c3bd9bc2785328fe`; region extraction and `difflib.unified_diff` against this file | 0 | revision-3 blob sha256 asserted `4647372666…`; **26 regions asserted byte-identical** — the nine check 16 carried from revision 2 (the licence-partition table, its reading, the shared-requirement block, the four `- assumes` lines, check 8's snapshot rationale, the revision-1 defect record, disagreement 4, unproven entry 3, the revision-1 history entry) plus seventeen more this revision must not touch (the revision-3 recommendation-change note in two parts, the ledger decision table, the four-artifacts paragraph, the `theme/` rule, the ledger-rows-settled paragraph, both `BASELINE-REVIEW` lines, the minimal example, the `re-verify:` line, the **whole `## Parameters` section**, the 16-row check table, the gated-count paragraph, the reproducibility paragraph, disagreements 2–3, the revision-2 history entry, and the revision-3 entry's body below the sha256 line revision 4 substitutes for its "this document" opener); **eight regions the findings require changed** asserted to have changed *and* to carry their marker sentence; **34 required texts** asserted present and **11 absent** from the live decision — including the two overreaching practice sentences and both "gains nothing"/"buys nothing" clauses; the title asserted to name revision 4; no `## Supersedes`; **whole-file hunk count asserted to be exactly 17** | `evidence/docs-delivery-claims-r4.log` |
 | 18 | Preserved artifacts, and gate 5's async facts | `shasum -a 256` over seven evidence artifacts; a `[[package]]` reader over `evidence/mdbook-0.5.4-Cargo.lock` | 0 | all seven artifacts asserted **byte-identical** to revision 3 (`docs-delivery-claims.sh`, `docs-delivery-claims.log`, the three auditors' logs, the lock, the licence snapshot); gate 5's async stack read from the lock and asserted by version — `tokio` **1.53.1**, `axum` **0.8.9**, `tokio-tungstenite` **0.29.0** — together with `font-awesome-as-a-crate` **0.3.1** and `elasticlunr-rs` **3.1.0**, the two packages the shipped-site notice rule reasons about; a control asserts that a package absent from the lock reports `NONE`, so the reader can fail | same |
 
 **Reproducibility.** `review/evidence/docs-delivery-claims.log` is **regenerated
@@ -1124,14 +1137,14 @@ conclusion here.
    2026-09-13, recorded and not gated). What would prove it: the owner setting the
    Pages source to "GitHub Actions" — a one-time manual repository setting no
    workflow can perform — and a deploy run publishing a page that answers 200.
-7. **That the published v0.5.4 archive carries the `mdbook serve` HTTP server**
-   (gate 5, new in revision 4). No archive was downloaded, nothing was installed
-   and `mdbook serve` was never run in this run or in either raw; the claim rests
-   on the maintainers scoping `--no-default-features --features search` to a
-   *source* install (check 5), which is an inference about the default feature
-   set, not an observation of the binary. What would prove it: the first
-   `just docs-dev` in P03 opening a served book from an archive-installed
-   `mdbook`.
+7. **That an mdBook acquired by R42's recipe carries a working `mdbook serve`**
+   (gate 5, new in revision 4). Nothing was installed and `mdbook serve` was never
+   run in this run or in either raw; the claim rests on the maintainers scoping
+   `--no-default-features --features search` to an install that opts out of
+   defaults (check 5), which is an inference about the default feature set, not an
+   observation of a binary — and it must hold on both of R42's candidate recipe
+   bodies, the prebuilt artifact and the `cargo install --locked` fallback. What
+   would prove it: the first `just docs-dev` in P03 opening a served book.
 
 **What P03 must validate.** Acceptance criteria (a)–(e),
 with (b) handed to R82's checker and (e) enforced by review because it has no
@@ -1178,7 +1191,11 @@ fork that has not run the book build.
   because no local renderer matching the host's dialect was identified) are
   carried unaltered, and `## Empirical check` check 12 proves the untouched
   regions by diff against the revision-1 blob.
-- **Revision 3**, 2026-09-13, this document. Driven by the owner's licence ruling
+- **Revision 3**, 2026-09-13, sha256
+  `4647372666b7e94537d75fb684c6ca5ec5cca6929841330bab8832ddb6e7328e`. **Approved**
+  by `review/audit-codex.md` (empirical, `unresolved-findings: none`) and
+  **rejected** by `review/audit-fable.md` (judgment, findings J1, J2, J3), which
+  confirmed that the recommendation follows from the evidence. Driven by the owner's licence ruling
   of 2026-09-12 (Q4 as superseded by Q7.B), not by an audit finding: revision 2's
   audit recorded `verdict: approve`, `unresolved-findings: none`. **The
   recommendation changed.** Revision 2 decided the generator layer conditionally
@@ -1222,10 +1239,11 @@ fork that has not run the book build.
   `book/`. **J2**: a **Fitness gates, answered for the recommended tool** block
   records all six gates in R42's and R67's shape, gate 1 keeping its
   `inapplicable` line verbatim; gate 5 is answered for the first time — default
-  features include the `mdbook serve` HTTP server, the install line is the
-  prebuilt release archive for CI and contributors alike,
-  `--no-default-features --features search` is the maintainers' *source*-install
-  option and is explicitly not this template's line, the unverified half is
+  features include the `mdbook serve` HTTP server, the contributor install line is
+  R42's generic recipe with no feature flag (so `serve` survives on either of
+  R42's candidate bodies), `--no-default-features --features search` is available
+  only to a CI job that never serves and is explicitly not this template's install
+  line, the unverified half is
   recorded as new unproven entry 7, and mdBook's `tokio`/`axum`/`tokio-tungstenite`
   stack is shown to stay inside mdBook's own process so R05 and R69 are
   unconstrained. **J3**: the bolded practice claim is narrowed to the five

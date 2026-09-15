@@ -29,7 +29,7 @@ PASS  region byte-identical to revision 3: the gated-count paragraph            
 PASS  region byte-identical to revision 3: reproducibility paragraph                36 lines
 PASS  region byte-identical to revision 3: disagreements 2 and 3                    33 lines
 PASS  region byte-identical to revision 3: revision-2 history entry                 24 lines
-PASS  region byte-identical to revision 3: revision-3 history entry                 27 lines
+PASS  region byte-identical to revision 3: revision-3 history entry, body           26 lines
 PASS  finding region updated and carries its marker: J1 — the CC-BY-4.0 reading widens beyond icons
 PASS  finding region updated and carries its marker: J1 — gap 4 widens to every emitted asset
 PASS  finding region updated and carries its marker: J2 — the six gates are recorded as gate answers
@@ -60,7 +60,10 @@ PASS  present verbatim: J2 gate 3 recorded
 PASS  present verbatim: J2 gate 4 recorded
 PASS  present verbatim: J2 gate 5 recorded
 PASS  present verbatim: J2 gate 6 recorded
-PASS  present verbatim: J2 gate 5 resolves the install line
+PASS  present verbatim: J2 gate 5 resolves the contributor install line
+PASS  present verbatim: J2 gate 5 declines the trimming flag pair
+PASS  present verbatim: gate 3 claims no checksum asset that does not exist
+PASS  present verbatim: the revision-3 history entry carries its sha256
 PASS  present verbatim: J2 gate 5 states the async runtime is confined
 PASS  present verbatim: J2 gate 5 frees R05 and R69
 PASS  present verbatim: J2 the serve claim is recorded as unproven
@@ -84,24 +87,25 @@ PASS  revision history still describes the branch structure
 PASS  no ## Supersedes heading
 PASS  title names revision 4
 PASS  revision history carries a revision-4 entry
-whole-file unified-diff hunks: 16
+whole-file unified-diff hunks: 17
       @@ -1,4 +1,47 @@
       @@ -29,7 +72,10 @@
       @@ -110,7 +156,13 @@
       @@ -134,6 +186,24 @@
       @@ -160,6 +230,41 @@
-      @@ -180,10 +285,102 @@
-      @@ -243,6 +440,37 @@
-      @@ -252,8 +480,13 @@
-      @@ -389,13 +622,14 @@
-      @@ -437,7 +671,11 @@
-      @@ -663,6 +901,50 @@
-      @@ -722,17 +1004,23 @@
-      @@ -809,12 +1097,23 @@
-      @@ -825,6 +1124,14 @@
-      @@ -832,7 +1139,7 @@
-      @@ -898,14 +1205,57 @@
-ASSERT hunk_count_is_16=True
+      @@ -180,10 +285,115 @@
+      @@ -243,6 +453,37 @@
+      @@ -252,8 +493,13 @@
+      @@ -389,13 +635,14 @@
+      @@ -437,7 +684,11 @@
+      @@ -663,6 +914,50 @@
+      @@ -722,17 +1017,23 @@
+      @@ -809,12 +1110,23 @@
+      @@ -825,6 +1137,14 @@
+      @@ -832,7 +1152,7 @@
+      @@ -871,7 +1191,11 @@
+      @@ -898,14 +1222,58 @@
+ASSERT hunk_count_is_17=True
 PASS  revision-4 region and text diff                            0
 
 === check 18 — preserved evidence artifacts, and the gate-5 facts in the committed lock ===
