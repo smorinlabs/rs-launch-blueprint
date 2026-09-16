@@ -385,6 +385,7 @@ reject.
 | W0-R63 | R63 progress-spinner | A accept | 2026-09-15 | `0ce8e437…` | `indicatif`; `--quiet` per standard R7.4 |
 | W0-R65 | R65 color-enablement-chain | A accept | 2026-09-15 | `4b9b21a1…` | seven-tier chain; `NO_COLOR` beats force variables |
 | W0-R66 | R66 output-format-surface (decision) | A accept | 2026-09-15 | `a7958d3f…` | the surface rests on standard MUSTs plus the stale-port finding; `tabled` medium with a named swap trigger; `table` kept as the default's name |
+| W0-R69 | R69 web-framework-stack | DECLINED as put (2026-09-15/16): the owner rejected the first ask and supplied the reference architecture with "Include things like bacon, and here is a bunch of information of things to fold in" | 2026-09-16 | — | recorded as the standing input of section 11; revisions 6-9 reconcile it row by row; re-put pending both round-9 audits |
 
 ## 11. Owner-supplied reference architecture (2026-09-16) -- STANDING INPUT
 
