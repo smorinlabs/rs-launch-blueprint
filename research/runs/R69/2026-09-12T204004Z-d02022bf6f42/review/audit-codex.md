@@ -1,24 +1,27 @@
-decision-sha256: 1814883d3d4b83333ea145c6dae0e02d86ba058b46b512c4bdfeac00afca23c3
-actor: audit-codex-2026-09-12T204004Z-d02022bf6f42-r4
+decision-sha256: 0fc0ed8a9c4a6daac900e23524c1c3ba0ef1707aeb44833c0ca2b2b57eb4cf4c
+actor: audit-codex-2026-09-12T204004Z-d02022bf6f42-r5
 model: gpt-5.6-terra
 family: openai
-verdict: reject
-unresolved-findings: the empty-CARGO_HOME yanked-lookup control reports 54 error lines, not the asserted 55
+verdict: approve
+unresolved-findings: none
 
 ## Rerun
 
-- argv: `./state-bound-check.sh`, `./feature-shape-check-r4.sh`, `./assert-figures.sh`, `./issue-responsiveness.sh`, `./bacon-install-check.sh`, and `./parameters-check.sh`, from the directories named by `## Empirical check`; plus two further in-place check-2 runs, temporary-index and `HEAD` `git archive` extractions, and a check-2 rerun while a separate Perl process held `flock(LOCK_EX)` on `~/.cargo/.package-cache`.
-- cwd: `research/runs/R69/2026-09-12T204004Z-d02022bf6f42`, with the five ordinary scripts run from `review/empirical/`, check 2 from `review/evidence/`, and archive copies from their archive roots. Toolchain: `rustc 1.98.0`, `cargo 1.98.0`, `cargo-audit-audit 0.22.1`, Darwin arm64 / macOS 26.4.
-- exit code: all six recorded checks exited `0`; all three in-place check-2 reruns, both archive reruns, and the lock-held check-2 rerun exited `0`.
-- log path: `review/evidence/audit-codex-r4.log`; individual outputs and exact-diff results are alongside it under `review/evidence/`.
-- output matches the decision: yes for the six cited logs and for the five successful check-2 reproductions. The attempted default-yanked control does not match its 55-line historical claim.
+- cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42`
+- toolchain: macOS 26.4 Darwin arm64; rustc 1.98.0; cargo 1.98.0; cargo-audit 0.22.1; `/usr/bin/grep`; shellcheck at `/opt/homebrew/bin/shellcheck`.
+- argv: `bash review/empirical/state-bound-check.sh`; `bash review/evidence/feature-shape-check-r4.sh`; `bash review/empirical/assert-figures.sh`; `bash review/empirical/issue-responsiveness.sh`; `bash review/empirical/bacon-install-check.sh`; `bash review/empirical/parameters-check.sh`; and `bash review/evidence/yanked-control-r5.sh` three times in place and once from a clean `git archive HEAD` extraction.
+- exit code: 0 for each of the six decision checks and all four yanked-control runs.
+- logs: `review/evidence/audit-*-r5.log`, `review/evidence/audit-yanked-control-r5-inplace-{1,2,3}.log`, and `review/evidence/audit-yanked-control-r5-archive.log`.
+- output match: all six checks are byte-identical to their cited logs. Each in-place yanked-control rerun and the clean-archive rerun is byte-identical to `review/evidence/yanked-control-r5.log`; the archive decision hash is the bound hash above.
 
 ## Findings
 
-1. **Reject — the claimed yanked-lookup control has the wrong observed count.** Revision 4 states at `review/DECISION.md:84-90`, and its own script repeats at `review/evidence/feature-shape-check-r4.sh:72-80`, that an empty isolated `CARGO_HOME` with yanked lookup enabled prints 55 `couldn't check if the package is yanked` errors. I recreated that variant with the same pinned advisory-db commit, an otherwise empty cargo home, and only the `cargo-audit` symlink required for Cargo to discover the subcommand. It loaded 1,243 advisories, scanned 55 dependencies, exited `0`, and emitted **54** such errors (`review/evidence/audit-codex-r4-empty-cargo-home-yanked.log:59`). The decision must correct the count before acceptance.
-2. The revision-4 repair itself reproduces. Each normal, temporary-index archive, `HEAD` archive, and lock-held run of `feature-shape-check-r4.sh` is byte-identical to `feature-shape-check-r4.log`. Its isolated `CARGO_HOME` scan loaded 1,243 advisories, scanned 55 dependencies, emitted exactly two normalised cargo-audit lines, and contained neither index warning. The `audit.toml` routing and `yanked.enabled == false` branch were also checked against cargo-audit 0.22.1 source by curl.
-3. The retained r3 script/log and the other five scripts and cited logs are unchanged from `a735e88^` through `HEAD`; all five unchanged checks matched their cited logs. Five or more cited upstream sources were spot-checked successfully by curl, including axum and tokio CI files, bacon CI, Cargo feature documentation, and cargo-audit source.
+None requiring a decision change.
+
+1. Revision 5's count repair is established. My independent raw `cargo audit` invocation used the pinned advisory-db commit and an empty isolated `CARGO_HOME`; it exited 0. My `/usr/bin/grep -cF "couldn't check if the package is yanked"` counted 54 lines (`review/evidence/audit-yanked-control-r5-own-count.txt`). The control script separately verified 55 lockfile package entries, 54 registry sources, an empty name-set diff, and the sole skipped path package `r69_feature_shape`; its 55-count negative control passed by rejecting 55.
+2. The revision-5 commit changes only this run's decision plus the new yanked-control script and log (`review/evidence/audit-codex-r5-revision-paths.log`). `feature-shape-check-r4.sh` and `feature-shape-check-r4.log` retain their parent hashes exactly (`review/evidence/audit-codex-r5-integrity.log`). The yanked-control shellcheck directive leaves no findings; without it shellcheck reports only the documented informational SC2015, SC2016, and SC2329 instances (`review/evidence/audit-codex-r5-yanked-shellcheck-without-directive.log`).
+3. Five cited immutable upstream files returned HTTP 200 and content hashes equal to their recorded source copies (`review/evidence/audit-codex-r5-citations.log`). The deliberate failing assertion in `assert-figures.sh` is the recorded control, not an audit failure: the complete script exited 0 and its log matched.
 
 ## Assessment
 
-The isolated-home repair removes the cached-index code path and the full empirical suite reproduces. However, revision 4 presents the empty-home default-yanked variant as an exact, observed 55-line result. The executable control produces 54. This is a narrow but decision-changing empirical overclaim: correct the count (and any dependent wording) before acceptance.
+The revised arithmetic is now asserted by a failure-capable control and independently reproduced in-place and from a clean archive. The decision's retained check-2 repair, parameter contract, recommendation, R67 request and exit contract, R4.1 core, and Q7.B gate-1 `inapplicable` status did not require a change and remain supported by the reruns and recorded evidence. Approve.
