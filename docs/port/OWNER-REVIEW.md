@@ -118,6 +118,21 @@ interpolate `{ bin }` rather than `{ name }`. Five of the nine cross-platform
 CLIs R49 surveyed use a shorter command than their crate name. R49 revision 8
 implements this ruling.
 
+### 2026-09-15 — R17 secret scanner: TruffleHog CLI, pinned binary (W0-R17b)
+
+The owner directed that the template use the secret scanner the sibling
+projects use. Validated at the programme pins: py (`b08bccfb`) runs TruffleHog
+in CI (`.github/workflows/secret-scan.yml`, `trufflesecurity/trufflehog@v3.95.9`
+on `ubuntu-latest`, `--only-verified`); ts (`cb1cbcb2`) has no secret-scan CI.
+R17 revision 6 recommended the Kingfisher CLI with the TruffleHog CLI as its
+ranked runner-up. The owner chose the **TruffleHog OSS CLI, `>= 3.97.0, < 4.0.0`,
+installed as a pinned release binary in a `run:` step with `--only-verified
+--fail`** — the runner-up's form, which runs on both owner-fixed runners — over
+py's Action form, which is `docker`-based, `ubuntu-latest`-only and carries the
+`BASE and HEAD commits are the same` first-push failure. Part 1 of R17 (one job
+on `pull_request` and `push` to `main` that fails on a live credential) stands;
+Kingfisher becomes the runner-up. R17 revision 7 implements this ruling.
+
 ## Wave 0 owner acceptances (recorded from 2026-09-14)
 
 An acceptance binds the **recommendation** of one decision at one
@@ -142,6 +157,8 @@ The briefs the owner answered from are in `docs/planning/p02/owner-decisions.md`
 | R07 | 1 (published) | `0b3dde8f9a15f22e60a01542065c53c122881e8c48bf3ee6c172ba5b70499346` | accept | 2026-09-15 | W0-R07 option A: push trigger accepted AND the owner directs revision 2 to add the monthly backstop `schedule: - cron: '17 6 1 * *'` (the decision's own runner-up condition was met when R21 settled on an expiring credential); re-bound at revision 2 |
 | R15 | 1 (published) | `7dd84b81f27b3d3fe20118958e71310b9f011e889372d8266ae4f161419dc45e` | accept | 2026-09-15 | W0-R15 option A; `template-press` 4.0.1, two workflows, three Rust additions; `app_name` settled as `rslbp` by W0-R49n |
 | R16 | 4 (published) | `d7946ed6a687834ee19530f49c27dad033f06eebd571aa77d30d0f2b7a3b9ca2` | accept | 2026-09-15 | W0-R16 option A; repository-local CodeQL config, `security-extended`, `paths-ignore`, `codeql-action` v4.37.9 |
+| R18 | 7 | `c9e44318abbdf4131d0d8b575d318c442c8a89ff9fc8c573c8d92c5ecb441f2e` | accept | 2026-09-15 | W0-R18 option A; the owner's 2026-09-12 design as implemented (`anthropics/claude-code-action` v1.0.220, credential preflight, no enable variable); published copy is revision 5, republication pending |
+| R19 | 5 | `178547307ca6000e9527fcea08af6c89fb5f23f25ef8e17938c0e5457791006d` | accept | 2026-09-15 | W0-R19 option A; two-entry catch-all-group Dependabot configuration; first publication pending |
 
 ## Dispositions
 

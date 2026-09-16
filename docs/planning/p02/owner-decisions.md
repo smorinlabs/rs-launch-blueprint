@@ -360,7 +360,10 @@ reject.
 | W0-R07 | R07 contributors-bot-trigger-cadence | A accept + add the monthly backstop | 2026-09-15 | `0b3dde8f…` → revision 2 | the decision's runner-up E condition (R21 settles on an expiring credential) was already met; owner directs the two-line backstop now |
 | W0-R15 | R15 template-drift-receipt-guard | A accept | 2026-09-15 | `7dd84b81…` | one press mechanism for the family; substring rule forced by run-1 failure |
 | W0-R16 | R16 codeql-config-customization | A accept | 2026-09-15 | `d7946ed6…` | config file with `paths-ignore`; inline runner-up cannot express the exclusion |
-| W0-R17 | R17 secret-scanning-ci-workflow | REDIRECT: "do what the other projects do; validate that py/ts use TruffleHog and if so use it" | 2026-09-15 | — | controller validating the py and ts pins; re-asked after |
+| W0-R17 | R17 secret-scanning-ci-workflow | REDIRECT: "do what the other projects do; validate that py/ts use TruffleHog and if so use it" | 2026-09-15 | — | superseded by W0-R17b after validation (py runs TruffleHog in CI; ts has no secret-scan CI) |
+| W0-R17b | R17 secret scanner form | A = TruffleHog CLI as a pinned binary on both runners | 2026-09-15 | → revision 7 | ruling recorded in `docs/port/OWNER-REVIEW.md`; py's Action form declined (ubuntu-only, docker, first-push failure) |
+| W0-R18 | R18 ai-assisted-review-workflows | A accept | 2026-09-15 | `c9e44318…` | the owner's own 2026-09-12 design as implemented |
+| W0-R19 | R19 dependabot-config-shape | A accept | 2026-09-15 | `17854730…` | catch-all groups; runner-up filtered groups is the recorded successor |
 
 ## Retired from this list
 
