@@ -717,7 +717,23 @@ inside a `git archive` extraction.
 | Script | Log | Command | Exit | Result |
 |---|---|---|---|---|
 | `review/evidence/r66-sources.sh` | `review/evidence/r66-sources.log` | `bash review/evidence/r66-sources.sh` | **0** | `CHECKS RUN: 89   FAILURES: 0` |
-| `review/evidence/r66-figures.sh` | `review/evidence/r66-figures.log` | `bash review/evidence/r66-figures.sh` | **0** | `CHECKS RUN: 91   FAILURES: 0` |
+| `review/evidence/r66-figures.sh` | `review/evidence/r66-figures.log` | `GH_TOKEN="$(gh auth token)" bash review/evidence/r66-figures.sh` | **0** | `CHECKS RUN: 91   FAILURES: 0   INDETERMINATE: 0` |
+
+**Why the second command carries a token, and what happens without one.** `api.github.com`
+allows **60 unauthenticated requests per hour per IP** and this script spends 13 of them, so two
+or three runs in the same hour exhaust the quota and every GitHub check then receives HTTP
+`403`. That is neither a pass nor a content failure, and the script says so: it prints those
+sixteen checks as `INDET`, keeps `FAILURES: 0`, and exits **2** with the reset-time lookup and
+the token instruction. That path was executed, not described — an unauthenticated run made
+immediately after the quota was spent produced exactly `CHECKS RUN: 91   FAILURES: 0
+INDETERMINATE: 16` and exit `2`, and `GET https://api.github.com/rate_limit` at that moment
+reported `x-ratelimit-limit: 60`, `x-ratelimit-remaining: 0`. **An auditor who sees exit `2`
+with `FAILURES: 0` has not found a false claim**; they have hit the quota, and they should
+either wait for the reset the script prints or set `GH_TOKEN`/`GITHUB_TOKEN`. The token is sent
+only as an `Authorization` header and never reaches the log — the committed log was grepped for
+the token value and for `ghp_`/`gho_`/`github_pat_` and contains none. Every non-GitHub check —
+crates.io, RustSec, `raw.githubusercontent.com` and the `tabled` tarball — is unaffected by that
+quota and runs unauthenticated.
 
 Both scripts begin with `set -o pipefail`. Neither uses a pipeline whose exit status could mask
 a failed producer: `git show` writes to a file and its status is tested separately, and every
@@ -767,14 +783,29 @@ table maintainers' MSRV and semver statements are asserted verbatim (`A6*`). Eac
 CI matrix is checked for `macos-latest`, with a `ubuntu-latest` control on the same file so a
 zero macOS count cannot come from an empty or wrong file (`A7*`).
 
-**Reproduction, actually re-run rather than asserted.** Both scripts were re-run after their
-logs were written and diffed against them: `diff` reports **no differences** for either, so both
-logs are reproducible **byte-for-byte** as of 2026-09-16. Both were then run again from a clean
-`git archive HEAD` extraction in a temporary directory, with only the two scripts copied in:
-each again exited `0` with the same check counts, and the **only** differing line in either log
-is the printed `ROOT:` path, which is the extraction directory rather than the worktree. That
-is the rule for comparing across environments: `ROOT:` is environment-dependent by design;
-every other line is not.
+**Reproduction, actually re-run rather than asserted — including the run that failed.** Both
+scripts were re-run after their logs were written and diffed against them: `diff` reports **no
+differences** for either, so both logs are reproducible **byte-for-byte** as of 2026-09-16,
+under the one condition named below. Both were then run again from a clean `git archive HEAD`
+extraction in a temporary directory, with only the two scripts copied in.
+
+The rule for comparing across environments, stated exactly rather than generally:
+
+1. **`ROOT:`** is the extraction directory rather than the worktree, and is the only line that
+   differs in an otherwise identical run. It is environment-dependent by design.
+2. **The sixteen `A2*` GitHub lines** read `PASS` when the REST quota is available and `INDET`
+   when it is not. Nothing else varies.
+
+Point 2 is recorded because it **actually happened**: the first post-commit rerun from a clean
+archive extraction exited `1` with twelve `A2*` failures, because by then the unauthenticated
+quota was spent and the script — as first written — could not tell a quota refusal from a
+content failure. That is a defect in the check, not in the claim, and it was repaired rather
+than explained away: the script now classifies a rate-limit `403` as `INDET` and exits `2`, the
+committed log was regenerated authenticated, and the repaired script was re-run twice
+(`diff`: no differences) and once more from a clean archive extraction. Recording the failed run
+rather than only the successful one is the point: an evidence script that cannot distinguish
+"the world changed" from "I ran out of quota" produces exactly the kind of false negative this
+programme rejects decisions for.
 
 **Volatility, and what is deliberately not asserted.** Download counters, star counts and
 `pushed_at` move continuously, so `r66-figures.sh` never prints them and never asserts them.

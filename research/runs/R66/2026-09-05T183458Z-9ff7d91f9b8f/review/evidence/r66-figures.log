@@ -112,4 +112,4 @@ PASS A7h-BurntSushi/rust-csv/master GET BurntSushi/rust-csv/master/.github/workf
 PASS A7-BurntSushi/rust-csv/master BurntSushi/rust-csv/master CI declares macos-latest == yes
 PASS A7u-BurntSushi/rust-csv/master control: BurntSushi/rust-csv/master CI names ubuntu-latest
 
-CHECKS RUN: 91   FAILURES: 0
+CHECKS RUN: 91   FAILURES: 0   INDETERMINATE: 0

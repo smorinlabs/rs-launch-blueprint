@@ -33,6 +33,7 @@ RECORD=0
 
 RUN=0
 FAIL=0
+INDET=0
 pass() { RUN=$((RUN + 1)); printf 'PASS %-6s %s\n' "$1" "$2"; }
 fail() { RUN=$((RUN + 1)); FAIL=$((FAIL + 1)); printf 'FAIL %-6s %s\n' "$1" "$2"; }
 assert_eq() {
@@ -42,10 +43,36 @@ assert_eq() {
 WORK=$(mktemp -d) || exit 1
 trap 'rm -rf "$WORK"' EXIT
 
+# api.github.com allows 60 unauthenticated requests per hour per IP. This script
+# spends 13 of them, so two or three runs in the same hour exhaust the quota and
+# every GitHub check then sees HTTP 403. That is neither a pass nor a content
+# failure, so it is reported as INDETERMINATE and the script exits 2 — a state an
+# auditor can tell apart from "the claim is false". Exporting GH_TOKEN or
+# GITHUB_TOKEN raises the limit to 5,000/hour; the token is sent as a header and
+# is never written to the log.
+GH_AUTH=""
+if [ -n "${GH_TOKEN:-}" ]; then GH_AUTH="${GH_TOKEN}"; elif [ -n "${GITHUB_TOKEN:-}" ]; then GH_AUTH="${GITHUB_TOKEN}"; fi
+
 # get <url> <outfile> -> prints the HTTP status, non-zero on transport failure
 get() {
-  curl -sS -H "User-Agent: $UA" --max-time 60 -o "$2" -w '%{http_code}' "$1"
+  case "$1" in
+    https://api.github.com/*)
+      if [ -n "$GH_AUTH" ]; then
+        curl -sS -H "User-Agent: $UA" -H "Authorization: Bearer $GH_AUTH" --max-time 60 -o "$2" -w '%{http_code}' "$1"
+      else
+        curl -sS -H "User-Agent: $UA" --max-time 60 -o "$2" -w '%{http_code}' "$1"
+      fi
+      ;;
+    *) curl -sS -H "User-Agent: $UA" --max-time 60 -o "$2" -w '%{http_code}' "$1" ;;
+  esac
 }
+
+# gh_quota_exhausted <outfile> — true when a 403 body is GitHub's rate-limit
+# refusal rather than a real denial.
+gh_quota_exhausted() {
+  /usr/bin/grep -q -F 'rate limit exceeded' "$1"
+}
+indet() { RUN=$((RUN + 1)); INDET=$((INDET + 1)); printf 'INDET %-6s %s\n' "$1" "$2"; }
 
 echo "=== R66 figure and fitness-gate check — live endpoints ==="
 echo "host:      $(uname -srm)"
@@ -90,6 +117,11 @@ echo
 echo "--- A2 GitHub repository state (archived is a gate; counters are not printed) ---"
 for r in serde-rs/serde serde-rs/json zhiburt/tabled Nukesor/comfy-table Stebalien/tempfile BurntSushi/rust-csv nushell/nushell sharkdp/hyperfine; do
   code=$(get "https://api.github.com/repos/$r" "$WORK/gh.json") || { fail "A2-$r" "transport failure"; continue; }
+  if [ "$code" = "403" ] && gh_quota_exhausted "$WORK/gh.json"; then
+    indet "A2h-$r" "GET /repos/$r — GitHub REST quota exhausted for this IP; not a content result"
+    indet "A2a-$r" "$r archived — not determined, see above"
+    continue
+  fi
   assert_eq "A2h-$r" "200" "$code" "GET /repos/$r HTTP"
   assert_eq "A2a-$r" "false" "$(jq -r '.archived' "$WORK/gh.json")" "$r archived"
 done
@@ -258,6 +290,14 @@ if [ "$RECORD" -eq 1 ]; then
   echo "recorded snapshot: ${OUT#"$ROOT"/}"
 fi
 
-echo "CHECKS RUN: $RUN   FAILURES: $FAIL"
+echo "CHECKS RUN: $RUN   FAILURES: $FAIL   INDETERMINATE: $INDET"
 [ "$FAIL" -eq 0 ] || exit 1
+if [ "$INDET" -gt 0 ]; then
+  echo "INDETERMINATE: $INDET GitHub REST checks could not run because this IP's"
+  echo "unauthenticated quota (60 requests/hour) is exhausted. This is NOT a content"
+  echo "failure. Retry after the reset reported by"
+  echo "  curl -sS -D - -o /dev/null https://api.github.com/rate_limit | grep -i x-ratelimit-reset"
+  echo "or export GH_TOKEN / GITHUB_TOKEN and rerun. Every non-GitHub check above stands."
+  exit 2
+fi
 exit 0
