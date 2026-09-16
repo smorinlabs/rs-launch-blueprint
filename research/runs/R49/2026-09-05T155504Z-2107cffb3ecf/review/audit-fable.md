@@ -1,284 +1,284 @@
-decision-sha256: 319a535665318a120c9be3bdf61037f9f4ea8214d972de724dafe16902bec41d
-actor: audit-fable-2026-09-05T155504Z-2107cffb3ecf-r7
+decision-sha256: 86b7f925ef89ac682ea00bb0b6fea8a809c1abc712d9e0e0ced8e5082990d948
+actor: audit-fable-2026-09-05T155504Z-2107cffb3ecf-r8
 model: claude-opus-5
 family: anthropic
-verdict: reject
-unresolved-findings: F1 — `## Parameters` at `:882-883` claims R22 takes `env!("CARGO_PKG_VERSION")` "from the owned parameter above", a value the owned parameter does not carry and this item does not decide, contradicting the same decision's correct statement at `:560-562` that R22 reads the target directory layout; F2 — `### Principles and implementation` records no ranked runner-up, yet the re-verify trigger at `:842` refers to "the runner-up" with no antecedent, and the five raws name three different runner-ups (workspace split, `dist`, auto-discovery), so the reference has no determinate referent and the disagreement is absent from `## Engines`; F3 — the agreement-level summary at `:593` says agreement is required at the "capability and policy" level, naming two of the three levels its own B1-B4 table assigns, since B2 is labelled architectural pattern
+verdict: approve
+unresolved-findings: none
 
 ## Principle and agreement level
 
-The shared requirement is stated with its source and read at the programme pins.
-F211 (`docs/port/COMMONALITY.md:215`, `COMMON → REUSE`) is the tool-free pattern
-and F212 (`:216`, `COMMON → SUBSTITUTE`, owned by this item) is the tool row
-under it; I read both lines and the decision quotes `:216` verbatim
+The shared requirement is stated with its source and read at the programme pins,
+and revision 8 repairs the one defect the round-7 audit found here. F211
+(`docs/port/COMMONALITY.md:215`, `COMMON → REUSE`) is the tool-free pattern and
+F212 (`:216`, `COMMON → SUBSTITUTE`, owned by this item) is the tool row under
+it; I read both lines this round and the decision's quotation of `:216`
 (*"Cargo is Rust's native build system with no separate backend/bundler crate
-needed"*). The F017 quotation at `COMMONALITY.md:23` is likewise verbatim.
+needed"*) is verbatim, as is the F017 quotation at `COMMONALITY.md:23`.
+`docs/port/BASELINE-REVIEW.md:102` classifies parent F211 `retained`, which
+revision 8 does not disturb.
 
-The decomposition into four behaviors B1–B4 with a per-behavior agreement level
-(B1 capability, B2 architectural pattern, B3 policy, B4 policy) matches the
-three-level table in the spec's §2 governing rule, and each behavior carries py
-and ts evidence read through `git show` at the pins `b08bccfb…` and `cb1cbcb2…`
-rather than from a working tree (check 5, log
-`review/evidence/source-pins.log`). §2's instruction that a shared architectural
-pattern be fitness-tested in the target ecosystem is discharged explicitly:
-*"B1, B2 and B4 do, unchanged. B3 survives but its mechanism collapses"*, with
-the collapse argued from Cargo's own target reference — a `[[bin]]` `name` is
-the output filename, so py's callable-reference wrapper and ts's shebang-bearing
-built-file path have no Rust referent, which is why F217 (`OMIT`) is confirmed
-rather than replaced.
+**F3 is closed exactly as its remedy specified.** The summary sentence now reads
+*"Agreement is required at the **capability, architectural-pattern and policy**
+levels — the three the B1–B4 table below assigns, B1 capability, B2
+architectural pattern, B3 and B4 policy — and not at the level of sharing a
+backend library."* That names all three levels the table beside it assigns and,
+beyond the remedy, spells out the per-behavior mapping so the summary and the
+table cannot drift apart again. The B1–B4 decomposition, its py and ts evidence
+read through `git show` at the pins `b08bccfb…` and `cb1cbcb2…` (check 5), and
+the §2 fitness test of the shared architectural pattern (*"B1, B2 and B4 do,
+unchanged. B3 survives but its mechanism collapses"*) are untouched by this
+revision and stand as the round-7 audit confirmed them.
 
-The summary sentence that names the required level is nonetheless narrower than
-the table it summarizes, and that is **F3** below.
-
-`BASELINE-REVIEW:` handling is what `research/RUNBOOK.md` §4 requires: the
-controller adjudicates such findings, and the decision carries both of them
-unresolved in the prescribed
+`BASELINE-REVIEW:` handling is unchanged and still what `research/RUNBOOK.md` §4
+requires: both lines are carried unresolved in the prescribed
 `F### — principle — proposed change — evidence` shape with affected items named,
-stating that neither the ledger, index, prompt nor registry was edited. I
-confirmed the provenance it claims: `raw/codex….md` raised F218 and
-`raw/opus….md` raised F212, doxa/openai independently raised the same two
-identifiers and no other, and no raw raised a third — so the carried set is
-complete. `docs/port/BASELINE-REVIEW.md:102` classifies parent F211 `retained`,
-which the decision does not disturb. The `CONFLICT:` position is correct: the
-prompt's `- consumes:` line is empty, no raw raised one, and the decision says so
-rather than leaving the reader to infer absence.
+and neither the ledger, index, prompt nor registry was edited. I confirmed
+against the revision-7 blob (`bc1794b`) that neither line moved a byte. The
+`CONFLICT:` position is unchanged and correct.
 
 ## Design and evidence
 
-**The target matrix is argued from principles and against agreement, not from
-it.** This is the test the item exists to pass, and on the three sub-decisions
-where practice or the engines lean the other way the decision goes its own way
-with a stated reason:
+**F2 is closed by the first of the two remedies offered, and A4 is genuinely the
+ranked runner-up rather than a label attached to fill the gap.** Three things had
+to hold and each does.
 
-- `include` allow-list — decided **against** a measured 7:2 practice majority for
-  `exclude` (check 7). Three grounds carry it: B4 fidelity (an allow-list is the
-  literal form of the behavior ts encodes as `files: ["dist"]`), a difference in
-  repository shape (the seven `exclude` users prune large asset trees; this
-  template's non-shipping list grows while its shipping list does not), and the
-  fail-open direction — under `exclude` or the default, a committed `.github/`,
-  `docs/` or `research/` reaches every consumer, which is the F218 finding. The
-  accepted failure mode is named plainly, bounded by check 4's verification
-  rebuild for compile-time inputs, and the `include`-specific footgun (gitignore
-  rules stop applying) is recorded from check A. Confidence is marked medium and
-  the reversal cost is stated. This is the opposite of selection by agreement.
-- names matching — decided **against** the 5-of-9 divergence rate, on a
-  template-specific ground (a placeholder every fork replaces; a value carrying
-  an open owner naming call cannot be published), with check 8 establishing that
-  divergence costs no install-time flag in either direction, so the choice is not
-  dressed up as a Cargo constraint. Both engine-proposed names (`rslbp`, `rsbp`)
-  are correctly identified as naming proposals and declined.
-- `autobins = false` — stated honestly as *"a policy choice rather than as
-  documented advice"*, acknowledging that Cargo's reference calls disabling
-  discovery a specialized need, and the asymmetry against `build = false` is
-  argued from this item's own subject (an unreviewed `src/bin/*.rs` becomes a
-  published, installed command; an accidental `build.rs` does not).
+- *The rank is stated where the alternatives are compared.* A new paragraph,
+  *"The ranked runner-up is A4, and its winning condition is stated rather than
+  implied"*, sits immediately below the A1–A4 comparison and names A4 (Cargo plus
+  a `dist` orchestration layer) as second, with the two costs that keep it from
+  first — a third-party dependency taken on for a decision that is R68's, and the
+  documented pull toward `dist-workspace.toml`, which is what behavior B1 forbids.
+- *The winning condition is sourced, not invented.* It is the opus raw's own, and
+  I read the raw rather than the decision's summary of it: that report carries an
+  explicit `### Ranked runner-up` heading at
+  `raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:521`,
+  names `cargo-dist` 0.32.x at `:523-524`, and states the condition at `:526-531`
+  in the words the decision quotes — *"if **R68 resolves F214 to 'cross-compiled
+  binaries attached to GitHub Releases, with generated installer scripts'** …
+  the alternative — hand-writing a release matrix that duplicates the target
+  list — is worse. It does **not** win if R68 chooses crates.io-only
+  distribution"*. The give-up list quoted at `:569-570` is verbatim. So the
+  runner-up is opus's ranking, adopted with attribution, which is what the
+  round-7 finding said was missing.
+- *The condition is consistent with the re-verify trigger.* The trigger list now
+  reads *"R68 resolves F214 to cross-compiled release binaries, which is the
+  condition under which the ranked runner-up **A4** … wins"*, replacing the
+  bare "the runner-up" that had no antecedent. Trigger and ranking state the
+  same condition in the same words, and the trigger points the reader at the
+  paragraph that ranks it.
 
-`[lib]` plus exactly one `[[bin]]` follows from B2 but is chosen among four
-costed architectural alternatives with maintained reference implementations —
-A1 mdBook (22,127 stars), A3 atuin (31,579) and typos (4,125), A2's cost being
-the `required-features` skip verified in check 3, A4's being a third-party
-dependency for a decision that is R68's plus `dist`'s documented pull toward a
-second configuration file (check 10, read at the `v0.32.0` tag and refined from
-the raw's "deprecated" to "deprecated but still supported"). A1 is selected and
-the selection is shown to be shape-neutral to R02 and R69. The coupling
-boundaries to R68 (F214), R50 (F221/F222), R26 (F039/F078), R69 and R82 are
-respected, and check 3's verified fact is handed to R69 as input rather than
-used to pre-empt it.
+**The three-way engine split is now recorded, and the counts are right.** I
+checked Disagreement 6 against the five raws rather than against the decision's
+summary. Three name the workspace split — doxa/openai (`### Ranked runner-up` at
+`:251`, *"Cargo workspace split"* at `:253`), doxa/perplexity (`:170-174`,
+winning *"where modularity or independent versioning is required"*) and
+doxa/gemini (`:92-96`, winning on a divergent MSRV or edition for the web
+surface); opus names `dist` (`:521-525`); codex names Cargo automatic target
+discovery (`:79-82`, *"only if the implementation intentionally adopts Cargo's
+conventional … layout, forbids `src/bin/`, and accepts automatic discovery as the
+package boundary"*). Every attribution is correct and every quotation verbatim.
+The settlement is argued on ownership rather than on the 3:1:1 vote — the
+majority's workspace split is R02's question and is routed to its own trigger,
+codex's auto-discovery is the counter-position inside the `autobins = false`
+sub-decision — which is the same ground Disagreement 4 is settled on, so the
+document is internally consistent about when a majority is set aside.
 
-**MSRV.** `rust-version` in `[package]` is the mechanism the fixed `msrv-policy`
-parameter names, so there is no alternative to compare — the policy is
-owner-fixed and binding. The decision computes "stable minus 2 minor versions"
-against the recorded `rustc 1.98.0` as **1.96**, which is arithmetically right,
-and it keeps that number as a value computed at a date rather than baking it into
-the owned parameter, because it moves every six weeks. That is why doxa/openai's
-literal `rust-version = "1.96"` is correctly not adopted. The floor is consistent
-with `edition = "2024"` (Rust 1.85.0 or newer), and gate 2's statement that the
-recommended manifest *fields* impose no floor above the edition is true as
-written and does not conflict with the declared 1.96.
+One ellipsis in that argument, recorded rather than faulted: *"A4 is therefore
+the only one of the four costed alternatives this item could itself have chosen
+second"* is supportable, because A2 (a second binary carrying
+`required-features`) is R69's to choose under Disagreement 4 and the
+optional-web-surface paragraph, but the local paragraph explains only A3 and
+codex's proposal and leaves A2 to be recovered from elsewhere in the document.
+The statement is true; its support is two sections away.
 
-**The lockfile condition (press point 2) is established exactly, and claimed
-exactly.** I read `review/evidence/lockfile-inclusion-conditions.log` line by
-line. It carries 13 content assertions and `RESULT all assertions passed`,
-matching the figure the decision cites. The condition is proved in both
-directions: `manifest.md@rust-1.98.0` scopes *"A minimized `Cargo.lock` is
-automatically included"* to the `include`/`exclude` list, so no manifest field
-can drop it; `cargo-package.md@rust-1.98.0` and the installed cargo's own
-`--help` show `--exclude-lockfile` present and un-`-Z`-gated; `package.rs:89`
-maps the flag to `include_lockfile`, `mod.rs:513/559/561` drop and re-add the
-entry and generate an absent lockfile, `publish.rs:171` hardcodes
-`include_lockfile: true`, and `cargo publish --help` yields 0 matching lines
-asserted as an absence. The word *only* is discharged exhaustively rather than by
-sampling: the whole tag tarball is searched, `include_lockfile` appears in
-exactly three files and is assigned in exactly two, both sets asserted as exact
-string equality. Three negative controls exit 1, so the check fails in both
-directions. The decision's row-5 sentence, the owned parameter and AC3 claim
-precisely this and no more, and defer the full statement to check L by reference.
-The claim is scoped to cargo 1.98.0 by `## Empirical check` and governed by the
-re-verify triggers; I do not fault the row for not repeating the version.
+**F1 is closed, and the repair goes past the remedy in the right direction.** The
+`## Parameters` consuming clause now says R22 reads *"the **target directory
+layout and the target names** — library crate `rs_launch_blueprint`, binary
+`rslbp`, artifacts under `target/debug/` and `target/release/`"*, quotes R22's own
+prompt for the registered scope, and states that `env!("CARGO_PKG_VERSION")`
+derives from the `[package] version` field, which this item does not decide. I
+read `research/topics/22-runtime-version-accessor/prompts/runtime-version-accessor.prompt.md:18`
+directly: the quotation is byte-exact and the line the decision cites is the line
+that carries it. The clause now agrees with `### Principles and implementation`
+(*"the target directory layout in `## Parameters` is the input R22's version
+accessor reads"*) instead of contradicting it, and the contradiction is disclosed
+rather than quietly removed.
 
-**Census discipline (press point 4).** I spot-checked three counts against their
-logs and each is the recorded output of the named command, with the produced
-lines shown rather than summarized. (1) Check 7's tallies —
-`exclude` 7 of 9, `include` 2 of 9, Cargo default 0 of 9, explicit `[[bin]]` 7 of
-9, explicit `[lib]` 2 of 9, name divergence 5 of 9 — all reproduce from
-`practice-manifests.log`, including the per-project matched lines, the `[lib]`
-block dump and a correction the author recorded rather than quietly fixed (the
-first pass grepped only `crates/typos-cli/Cargo.toml` and would have contradicted
-the Opus raw; the workspace root showed the allow-list is inherited). (2) Check
-L's 13 assertions and the three-file / two-assignment enumeration, above. (3)
-Check 6's one load-bearing figure, `cargo-make`'s absent `rust_version`, appears
-in `registry-figures.log` as `rust_version field: None` on the newest non-yanked
-0.37.24, and the decision's whole table reproduces that log row for row. Check
-9's derived figures (logins 26/6 beside dependabot 63; 6 of 10 answered, median
-0.190 days; 297 open issues from the search endpoint, as the prompt requires, not
-`open_issues_count`) likewise reproduce. Where a source is live rather than
-pinned — the nine default-branch manifests — the decision dates the fetch and the
-log snapshots the matched lines, and byte-for-byte reproducibility is claimed
-only for the three scripted artifacts where it was demonstrated. That
-distinction is drawn correctly.
+**Everything the round-7 audit cleared, re-confirmed against this revision.** I
+diffed revision 7 (`bc1794b`, sha256 `319a5356…`) against revision 8 and read
+every changed hunk, so "unchanged" here is a diff result, not a re-reading.
 
-The licence apparatus is history, not ground. I checked every place a licence
-fact appears and none functions as a ground for the recommendation: gate 1 is
-`inapplicable` with the owner's 2026-09-12 (Q7.B) ruling named, `cargo-binstall`
-is excluded by scope alone with the gate-1 half explicitly voided, check 6's
-`license` column is stated as measured metadata *"evaluated against no gate"*,
-and the Engines line records the Opus raw's two grounds while adopting only the
-scope one. I read `raw/opus….md:353-356` and `:359-362` directly; both
-quotations are verbatim and both line ranges are accurate.
-
-`## Engines` names one line per raw with retrieval dates, and I verified the
-vote counts against the raws rather than against the decision's summary of them.
-Disagreement 2 (`include`: codex, doxa/openai, doxa/gemini; `exclude`: opus;
-neither: doxa/perplexity), Disagreement 3 (match: codex, doxa/openai,
-doxa/perplexity; diverge: opus `rslbp`, doxa/gemini `rsbp`) and Disagreement 4
-(second `[[bin]]` now: doxa/perplexity, doxa/gemini; not now: codex, opus,
-doxa/openai — doxa/openai's `rs-launch-blueprint-web` block being conditional on
-R69) each match the raws exactly.
-
-The programme's research-not-implementation boundary is kept: nothing was
-scaffolded, built or published, the only `cargo package`/`cargo publish`
-invocations were `--help` printings, AC1–AC6 are marked as not executed with the
-reason, and what P03 must validate is listed. No latency, throughput,
-binary-size or compile-time figure is asserted anywhere, and the absence is
-recorded as an evidence gap rather than filled.
+- The `include` allow-list argument and its three grounds — B4 fidelity, the
+  difference in repository shape, and the fail-open direction of a deny-list —
+  are byte-identical, as are the named accepted failure mode, the `include`
+  gitignore footgun from check A, the medium confidence and the stated reversal
+  cost. The decision still goes against the measured 7:2 practice majority.
+- `autobins = false` is byte-identical, still stated as *"a policy choice rather
+  than as documented advice"*, with the asymmetry against `build = false` intact.
+- The MSRV treatment is byte-identical: `rust-version` in `[package]` as the
+  mechanism the fixed `msrv-policy` names, "stable minus 2 minor versions"
+  computed against `rustc 1.98.0` as 1.96 and kept as a value at a date rather
+  than baked into the owned parameter, consistent with `edition = "2024"`.
+- The lockfile condition at cargo 1.98.0 is byte-identical — check L, its script
+  (sha256 `4ed6818f…`), its log, the 13 content assertions, the three-file /
+  two-assignment exhaustive enumeration and the three negative controls. No
+  evidence script and no evidence log changed in this revision; I confirmed that
+  from the diff, not from the decision's claim about itself.
+- Gate 1 stays `inapplicable` under the owner's 2026-09-12 ruling (Q7.B), the
+  settled position, and the other five gate rows are byte-identical.
 
 ## Completeness
 
-Present and correct: the four H2 sections in order with no others and no
-`## Supersedes`; the recommendation (correctly *absent* rather than a crate and
-version range, with the reason); the ledger rows settled (F212, F213, F216,
-F218, F219, with F217 confirmed); the `### Principles and implementation` H3
-carrying shared requirement, source, agreement level, essential behaviors,
-must-agree versus may-vary, architectural alternatives, reference
-implementations and acceptance criteria; the final line
+**Every required field is present.** The four H2 sections in order with no others
+and no `## Supersedes`; the recommendation (correctly *absent* rather than a
+crate and version range); the ledger rows settled (F212, F213, F216, F218, F219,
+with F217 confirmed), F219 now recording divergence *"by the owner's ruling
+W0-R49n rather than by a research finding"*; the `### Principles and
+implementation` H3 with shared requirement, source, agreement level, essential
+behaviors, must-agree versus may-vary, architectural alternatives, reference
+implementations and acceptance criteria; the closing line
 `re-verify: 2027-03-10, or any earlier event listed immediately above`; all six
-fitness gates answered before any popularity figure, each `inapplicable` one
-carrying its reason; every prompt question answered; toolchain, working
+fitness gates answered before any popularity figure; toolchain, working
 directory, commands, observed output and evidence log paths in
-`## Empirical check`; retrieval dates on the live sources and pinned tags or
-commits on the rest.
+`## Empirical check`.
 
-Parameter lines: I extracted the text after `= ` on each of the four `- assumes`
-lines and compared it against `docs/port/PARAMETERS.md` rows 7–10. All four are
-byte-identical, with no backticks, citations or commentary on the value lines.
-The owned `build-tool-output-shape` registry cell is still `—`, so there is
-nothing yet to compare it against; the line's format matches the same rule.
+**Parameters.** I extracted the text after `= ` on each of the four `- assumes`
+lines and compared it byte-for-byte against `docs/port/PARAMETERS.md` rows 7–10:
+all four match, and all four are byte-identical to revision 7. The owned
+`build-tool-output-shape` line carries a value with no backticks, citation or
+commentary; a word-level diff against revision 7 shows it changed in exactly one
+clause — `name rs-launch-blueprint, matching the package name` became `name
+rslbp, a different string from the package name rs-launch-blueprint` — with
+`CARGO_BIN_EXE_rs-launch-blueprint` becoming `CARGO_BIN_EXE_rslbp` and the
+installed-command string following. The registry cell for that parameter is still
+`—`, so there is nothing yet to compare the owned value against; publication is
+what fills it.
 
-The `audit-codex.md` rerun binds the same sha256 I bind, reports exit 0 in both
-modes and exit 1 under the recorded mutation, and its narrative agrees with the
-decision: seven pattern/blob pairs, 13 and 11 content assertions, eight `SKIP`
-lines, the byte-identical `PAT_ID_FULL`, the reproduced 40 / 5 / 10 / 33 lists
-and `582 605 606 608 609 611`, and the byte-identical `- owns`/`- assumes` lines.
-I found no statement in it that the decision contradicts.
+**The rename, enumerated with `/usr/bin/grep` by this audit rather than taken
+from the decision's account of itself.** `rslbp` occurs 34 times. Every one of
+the enumerated locations the decision claims carries it does carry it:
+decision-table row 3 (`:693`) and row 6 (`:696`), the F219 ledger sentence
+(`:703-705`), the rewritten names paragraph (`:953-988`), AC2 (`:1022`), AC6
+(`:1034`), the `- owns` line (`:1059`), the R22/R32/R68 consumer clauses
+(`:1091`, `:1104`, `:1105`), the re-verify trigger list (`:1050`), Disagreement 3
+(`:1427-1441`) and the P03-validation paragraph (`:1488-1496`).
 
-Not present, and the two findings below turn on it: no ranked runner-up, and one
-downstream-facing consumption line that states a value the owned parameter does
-not carry.
+**Nothing that must stay `rs-launch-blueprint` was renamed.** The 16 remaining
+occurrences are each accounted for by the decision's own left-unchanged list and
+I checked them one at a time: the crate, package and distribution name (row 6,
+the F219 sentence, the names paragraph, the owned parameter); the planning
+repository's name at `:666` and its working-directory path at `:1118`;
+doxa/perplexity's proposed second binary `rs-launch-blueprint-web` at `:1405`;
+and the revision-note prose that quotes the ruling. The `[lib]` crate name
+`rs_launch_blueprint` is unchanged in decision-table row 2, in the owned
+parameter and in the R22 clause; py's `module-name = "py_launch_blueprint"` is
+unchanged in the B1–B4 table and in check 5; and every generic
+`CARGO_BIN_EXE_<name>` in a quoted Cargo-reference string is untouched
+(`:729`, `:1198`, `:1449`).
+
+**Every consequence the decision itself listed for a divergent pair is carried.**
+The README sentence (*"the README must say `cargo install rs-launch-blueprint`
+installs the command `rslbp`"*, `:982-984`); the `cargo-binstall` `bin-dir`
+`{ bin }`-rather-than-`{ name }` note (`:984-987`), which is sourced — the opus
+raw states it at `:411-412` and `:486-487`, so it is a carried research fact, not
+a new claim; R32's `env!("CARGO_BIN_EXE_rslbp")` (`:1104`, AC6, and the P03
+negative control at `:1496`); and R68's `target/release/rslbp` (`:1105`, AC2, and
+the P03 paragraph at `:1488`).
+
+**The claim that the rename touches no executed check is true, and I proved it
+rather than accepting it.** No `review/evidence/check-*.sh` script contains
+`rs-launch-blueprint`, `rslbp` or `CARGO_BIN_EXE` at all (zero matches). The
+three cited script logs contain `rs-launch-blueprint` only in their `repo:`
+header path. Searching the whole evidence directory for the string with the
+repository path excluded returns exactly two lines, both auditor-produced and
+both exactly the ones the decision names: `audit-provenance-r4.log:111`, which
+quotes the revision-4 `- owns` line, and `audit-six-locations-r5.log:219`, which
+matches only through `rs-launch-blueprint-web`. So the decision's census of its
+own evidence tree is exact, and leaving those two round-4 and round-5 artifacts
+unedited is right — they were accurate for the revisions they bound.
+
+**The owner record says what the decision says it says.** `docs/port/OWNER-REVIEW.md`
+section *"2026-09-15 — R49 binary name: `rslbp` (W0-R49n)"* (`:107-119`) is quoted
+in full and verbatim. The Wave 0 acceptances row at `:153` records revision 7 at
+sha256 `319a5356…`, `accept`, 2026-09-15, *"W0-R49 option A; W0-R49n … re-bound
+at revision 8"* — so the decision's statement that the acceptance re-binds at
+revision 8 reports the controller's record rather than declaring it, and the
+status paragraph's replacement of *"No owner acceptance is claimed or implied"*
+is required rather than optional. That correction is disclosed as a fourth change
+rather than made quietly.
+
+**The audit-codex rerun is consistent with the decision.** `review/audit-codex.md`
+(actor `audit-codex-2026-09-05T155504Z-2107cffb3ecf-r8`, model `gpt-5.6-terra`)
+binds the same sha256 I bind, approves with no unresolved finding, reports exit 0
+for both check scripts with empty normalized diffs, and independently reaches the
+conclusions I reach on the revision scope (one changed path), the two-log stale
+match, the byte-identical `- assumes` values, the R22 clause repair, the A4
+ranking and Disagreement 6, and the three-level summary. I found no statement in
+it that the decision contradicts, and no statement of mine that contradicts it.
+
+**Two citation imprecisions, recorded because I found them and judged them, not
+because they change anything.** Under Disagreement 6, doxa/openai is cited as
+`:251` for the quoted phrase *"Cargo workspace split"*, which is at `:253`;
+`:251` is that section's `### Ranked runner-up` heading. Every sibling citation in
+the same sentence starts at the same heading and gives a range, so this is a
+range with its end omitted, not a wrong line: the attribution is correct, the
+quotation verbatim and the referent unambiguous. Likewise the opus condition is
+cited `:525-531` where `:525` is blank and the quoted text begins at `:526`; the
+range contains the quotation. Neither is a claim whose truth-value is wrong,
+which is the class every finding in this chain has belonged to, so neither is a
+finding.
 
 ## Findings
 
-**F1 — `## Parameters` hands R22 a value the owned parameter does not contain,
-and omits the one it does.** `review/DECISION.md:882-883` reads *"Consuming
-items get concrete values from the owned parameter above. R22
-(`runtime-version-accessor`) reads `env!("CARGO_PKG_VERSION")`"*. That macro
-appears nowhere in the owned parameter at `:852`; it derives from the
-`[package] version` field, which this item does not decide. What R22's own
-prompt registers as consuming is *"what the binary/library targets are called,
-where `cargo build` places them"*
-(`research/topics/22-runtime-version-accessor/prompts/runtime-version-accessor.prompt.md:18`),
-and the owned parameter does supply exactly that — library crate name
-`rs_launch_blueprint`, binary name `rs-launch-blueprint`, artifacts under
-`target/debug/` and `target/release/`. So the sentence's claim is false for the
-one item of the three where it matters: the parallel clauses for R32
-(`env!("CARGO_BIN_EXE_rs-launch-blueprint")`) and R68
-(`target/release/rs-launch-blueprint`) are both drawn from the owned parameter
-and are correct. The decision already states R22's consumption correctly
-elsewhere — `:560-562` reads *"the target directory layout in `## Parameters` is
-the input R22's version accessor reads"*, which is exactly what R22's prompt
-registers — so `:882-883` contradicts `:560-562` rather than merely being loose.
-Remedy: make `:882` say what `:560` says.
+None. The three findings the round-7 judgment audit raised are closed, each by
+the remedy it named:
 
-**F2 — the decision records no ranked runner-up, then refers to "the runner-up"
-as though it had.** The phrase occurs exactly once, at `:842`: *"R68 resolves
-F214 to cross-compiled release binaries, which is the condition under which the
-runner-up wins…"*. The four architectural alternatives at `:710-731` are costed
-but never ranked, and `**A1 is selected**` is the only ordering statement in the
-document; no other line in the file names a second choice. The referent is not
-recoverable from the raws either, because they disagree about it: three of five
-name the workspace split (doxa/openai `:251`, doxa/perplexity `:170-174`,
-doxa/gemini `:92-96`), opus names `dist` 0.32.x (`:521-525`), and codex names
-Cargo automatic target discovery (`:79-82`). Reading `dist` in the same clause
-points at A4, which is opus's minority answer, while the decision routes the
-majority's workspace split through a *different* trigger on the same line
-(*"R02 resolves to a workspace"*) — so the sentence silently adopts one engine's
-ranking without saying so. This also leaves a real engine disagreement out of
-`## Engines`, which must record the disagreements and what settled each; five
-are recorded and this sixth is not. The substance of each proposed runner-up is
-engaged elsewhere (A3's cost is that it pre-empts R02; auto-discovery is the
-`autobins = false` argument; A4 is costed with check 10), so this is a recording
-defect, not a gap in the analysis. Remedy, either way and one clause long: name
-the runner-up and its winning condition explicitly, or state that none is
-recorded because the field is a dominant choice and restate the trigger without
-the phrase.
-
-**F3 — the agreement-level summary names two of the three levels its own table
-assigns.** `:593` reads *"Agreement is required at the **capability and policy**
-level, not at the level of sharing a backend library"*, but the B1–B4 table
-immediately below assigns B2 (*"The consumable library and the executable are
-declared as separate, named outputs"*) the level **architectural pattern**, which
-the spec's §2 table defines as a distinct level with its own fitness obligation.
-The per-behavior assignments in the table are correct and the fitness test §2
-demands for a shared architectural pattern is carried out at `:609`, so no
-analysis is missing; the summary sentence simply states less than the table
-beside it. That is the same defect class as F1 — a sentence narrower than the
-correct statement next to it — and this audit applies the standard evenly rather
-than exempting it because the table carries the binding value. Remedy, one
-clause: *"at the capability, architectural-pattern and policy levels"*.
+- **F1 closed.** The `## Parameters` clause no longer hands R22
+  `env!("CARGO_PKG_VERSION")`; it hands R22 the target directory layout and the
+  target names, quotes R22's registering prompt line, and states where the
+  version macro actually comes from. The prompt quotation checks out at the cited
+  line.
+- **F2 closed by the first remedy, both halves.** A4 is recorded as the ranked
+  runner-up with its winning condition sourced to the opus raw's own
+  `### Ranked runner-up` section, the trigger sentence names A4 instead of an
+  antecedentless "the runner-up", and the three-way engine split is recorded as
+  Disagreement 6 with each raw's proposal and line reference, all of which I
+  verified against the raws.
+- **F3 closed verbatim.** The sentence now reads *"at the capability,
+  architectural-pattern and policy levels"* and adds the per-behavior mapping.
 
 ## Assessment
 
-**The recommendation itself follows from the evidence, and neither finding moves
+**The recommendation follows from the evidence, and revision 8 does not move
 it.** Declaring every build target in `Cargo.toml` and adding no build backend,
 bundler or orchestration crate is established by the structure of the field
-rather than by engine agreement: only one of the three bins contains a candidate
+rather than by engine agreement: only one of the three bins holds a candidate
 that declares a target at all, and checks 2, 4 and A show Cargo's manifest
-already expresses B1–B4. The three sub-decisions that could have been taken from
-agreement — the allow-list, the matching names, `autobins = false` — are each
-taken *against* a measured majority or against Cargo's own general advice, with
-the reason carrying the weight, the confidence marked, the accepted failure mode
-named and the reversal cost stated. The MSRV treatment is the owner-fixed policy
-expressed through the one field Cargo provides, computed rather than baked. The
-lockfile condition is proved at the pinned toolchain in both directions and
-claimed at exactly its proved width. The three counts I spot-checked reproduce
-from their logs, and where a source is live the decision says so instead of
-claiming a reproducibility it did not demonstrate.
+already expresses B1–B4. The sub-decisions that could have been taken from
+agreement are still taken against a measured majority or against Cargo's own
+general advice — the `include` allow-list against 7:2 practice, `autobins = false`
+against the reference's "specialized situations" caveat — with the reason
+carrying the weight, the confidence marked, the accepted failure mode named and
+the reversal cost stated. The research-not-implementation boundary is kept:
+nothing was scaffolded, built or published, AC1–AC6 are recorded as not executed
+with the reason, and what P03 must validate is listed. That treatment is correct
+for this programme and is not a defect.
 
-Both findings sit in the recording layer around that conclusion: one line tells a
-downstream item it receives something the owned parameter does not carry, and one
-line invokes a ranked runner-up the document never ranks while the raws rank
-three different ones. Neither touches the recommendation, the owned or assumed
-parameter values, the gates, the empirical checks or the two carried
-`BASELINE-REVIEW:` lines, and each is repairable in a single clause without
-re-running anything. The role contract admits no partial verdict —
-`approve` requires no unresolved findings — so the verdict is **reject**, with
-the expectation that revision 8 changes two sentences and nothing else.
+The two things revision 8 does are both recording work, and both are done to the
+standard this chain has been rejected for missing. The owner's ruling on the
+binary name is an owner direction, so the moved value inside the owned parameter
+is authorised rather than a departure; the decision implements it at every
+enumerated location, keeps the crate, package, distribution and `[lib]` names
+where the ruling leaves them, carries all four consequences it had itself
+recorded for a divergent pair, and proves — rather than asserts — that no
+executed check made any assertion about the name. It also separates what the
+research established from what the owner decided instead of retro-fitting the
+research to the ruling, which is why Disagreement 3 can record the majority's
+*ground* as answered rather than overturned. The three clause repairs are each
+made as their remedy specified, and the one correction beyond them, the stale
+"no owner acceptance is claimed" sentence, is disclosed rather than fixed
+silently. The two citation imprecisions I found are range-end omissions around
+correct attributions of verbatim quotations, of a different class from anything
+this item has been rejected for, and are recorded above rather than raised.
+
+No unresolved finding remains. The verdict is **approve**.
