@@ -1,7 +1,80 @@
-# R69 web-framework-stack — decision (revision 6, 2026-09-16)
+# R69 web-framework-stack — decision (revision 7, 2026-09-16)
 
-**Revision note (revision 6). No owned value moves, and the reason is a finding rather than
-caution.** Revision 6 rewrites revision 5 (sha256
+**Revision note (revision 7). Prose only: one judgment finding, three locations, and neither
+the recommendation nor any owned value moves.** Revision 7 rewrites revision 6 (sha256
+`d4d6a8d2a3297a6db488580142de6d651f33b8109e9023994f6cb9f5ecfd6a17`) in place. No revision of
+this decision has been published, so there is still no `## Supersedes`. The one
+`- owns web-extra-surface` line and the five `- assumes` lines are **byte-identical to revisions
+2, 3, 4, 5 and 6**, and so are the recommendation, every version pin, every exclusion, every
+fitness-gate answer including gate 1's `inapplicable` row, the R67 exit contract and the request
+to R67, the CLI Design Standard's R4.1 required global core, the H2 set, and every evidence
+script, cited log and committed snapshot. **No evidence file is added, edited or replaced.**
+`review/empirical/parameters-check.sh` asserts only on lines beginning `- assumes `, `- owns `
+and `## `, none of which this revision touches; it was nevertheless re-run against this file as
+a confirmation, exited `0`, and its output `diff`s **empty** against the cited
+`review/evidence/parameters-check-r2.log`, which is therefore left unchanged rather than
+superseded by an r7 copy of the same bytes. The other six checks read no part of this file.
+
+Revision 6 was **approved** by the round-6 empirical audit (`review/audit-codex.md`, family
+openai, `unresolved-findings: none`) and **rejected** by the round-6 judgment audit
+(`review/audit-fable.md`, actor `audit-fable-2026-09-12T204004Z-d02022bf6f42-r6`, model
+`claude-opus-5`, family anthropic) on **one** finding — that audit records JF-1, JF-2 and JF-3
+as closed and marks its three observations explicitly as *not* findings. Revision 7 answers the
+one finding and changes nothing else:
+
+- **JF-4** — *"the decision states twice, as present fact, that the CLI parser its serve
+  binary's required global core is parsed with is still R60's open choice, and keys a
+  `re-verify:` trigger on that selection — but R60's parser selection (`clap` 4.6.6, derive
+  API) was owner-accepted on 2026-09-15 as W0-R60, one day before revision 6, so the statement
+  is false and the trigger has already fired"*. Repaired at the three locations the finding
+  names, cited by **revision 6's line numbers**: the flag-surface paragraph of
+  `### Principles and implementation` (**line 908**) and the global-core row of the unproven
+  table (**line 2105**), each of which now quotes revision 6's wording, labels it superseded by
+  the acceptance, and states the accepted fact in its place; and the `re-verify:` line (**line
+  1378**), whose R60 clause is **replaced, not deleted**, because a watchable event remains.
+
+**The accepted fact, cited rather than asserted.** `docs/port/OWNER-ACCEPTANCES.md` records
+`R60 | 7 | 67d7a7d2a76c7d10c88edf9cd309c46484ada95a00074d902943a94410b8b9f2 | accept |
+2026-09-15 | W0-R60 option A; clap 4.6.6 derive, clap_complete 4.6.9, dependency-free build.rs;
+OV-01 refused per the 2026-09-14 ruling; first publication pending`. R60's parser is therefore
+**selected and owner-accepted, and unpublished as yet** — a pair of states this decision's own
+vocabulary already keeps apart, since it cites R49 as having selected alternative A1 while
+labelling that revision unpublished. Read on **2026-09-16**, together with
+`research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/DECISION.md`, whose current revision 8
+still selects `clap` 4.6.6 with the `derive` API and `clap_complete` 4.6.9. **No clap feature
+list is named anywhere in this decision**, deliberately: R60 revision 8 is still moving that
+set, and nothing here reads it. **The design consequence does not move, and the accepted answer
+strengthens it** — `clap` is a non-optional dependency of the package for the CLI binary, so the
+serve binary reuses it, the `web` feature adds no parser crate, and check 2's measured 12 → 52
+package delta stands by construction.
+
+**The `re-verify:` R60 clause is replaced, not deleted, and narrowed to what is still
+watchable.** *"when R60 selects the CLI parser the serve binary's global core is parsed with"*
+names an event that occurred on 2026-09-15. What remains worth watching is the gap between the
+accepted text and the published one — R60's file has already moved after its acceptance — so the
+clause now reads *"when R60's published decision moves off its owner-accepted `clap` 4.6.6
+derive selection"*. The other eight triggers on that line are byte-identical.
+
+**Mechanical enumeration, run before any edit and re-run after it.** Two `/usr/bin/grep -n`
+passes over this file: one for `R60`, and a separate case-insensitive one for `parser`, so that
+a sentence about the parser's state which never says "R60" could not escape. The union, by
+revision 6's line numbers, is **469, 894, 895, 908, 1244, 1378, 1382, 1835, 2105**. **Edited:
+908, 1378, 2105.** **Deliberately left byte-identical, each with its ground:** 469, which sits
+inside the retained revision-2 note and records what revision 2 did, which is still true; 894
+and 895, which attribute who binds a behavior ("help layout is R60's parser") rather than
+asserting a selection state; 1244, the migration table's `src/bin/<app>-serve.rs` row, and 1382,
+the `- owns web-extra-surface` line, which share the wording *"the parser crate R60 selects for
+the CLI binary"* — wording the round-6 judgment audit ruled "survives the correction verbatim",
+true of a selected parser exactly as of an unselected one, and inside an owned value that 19
+consumers read and check 6 validates; and 1835, which is an evidence script's JSON parser and
+has nothing to do with R60. The `**Sources.**` paragraph is **not** extended, on the revision
+brief's explicit instruction that no other sentence changes; the two files revision 7 read are
+named in this note instead.
+
+**Revision note (revision 6), retained as the record of that revision. It was approved by the
+round-6 empirical audit and rejected by the round-6 judgment audit on JF-4 alone, which the
+revision-7 note above repairs; its body is retained verbatim and nothing else in it is
+withdrawn.** Revision 6 rewrites revision 5 (sha256
 `0fc0ed8a9c4a6daac900e23524c1c3ba0ef1707aeb44833c0ca2b2b57eb4cf4c`) in place. No revision of
 this decision has been published, so there is still no `## Supersedes`. The one
 `- owns web-extra-surface` line and the five `- assumes` lines are **byte-identical to
@@ -489,7 +562,9 @@ audits, 2026-09-15; revision 5 by a fifth fresh Claude Opus 5 context that produ
 this item's raws, audits, revisions or their audits, 2026-09-15; revision 6 by a sixth fresh
 Claude Opus 5 context that produced none of this item's raws, audits, revisions or their
 audits, 2026-09-16, folding in the owner-supplied reference architecture under owner decision
-11; run
+11; revision 7 by a seventh fresh Claude Opus 5 context that produced none of this item's raws,
+audits, revisions or their audits, 2026-09-16, repairing the round-6 judgment audit's single
+finding and nothing else; run
 `research/runs/R69/2026-09-12T204004Z-d02022bf6f42`. This item was admitted ahead of the
 Wave 0 review gate by owner decision Q3.A (2026-09-12) because it consumes only R01, which
 the owner accepted on 2026-09-10, and because 19 items consume its owned parameter directly.
@@ -904,10 +979,18 @@ no result set — it serves HTTP and logs to stderr. No safety/action option app
 deletes and confirms nothing. Every *service* knob — host, port, log format, drain deadline —
 remains an environment variable, as py's `__main__.py` has it and as R77 will name them; the
 standard's R5.1 precedence (flag > env > config > default) is satisfied vacuously where no flag
-exists for a knob. This adds **no crate to the `web` feature**, on a condition rather than
-as a present fact: the parser is R60's open choice, and whichever crate R60 selects for the CLI
-binary is a non-optional dependency of the package, so the serve binary reuses it instead of
-introducing one. Check 2's measured 12 → 52 package delta stands unchanged **by construction,
+exists for a knob. This adds **no crate to the `web` feature**. Revision 6 put that on a
+condition — *"on a condition rather than as a present fact: the parser is R60's open choice, and
+whichever crate R60 selects for the CLI binary is a non-optional dependency of the package"* —
+and **that wording is superseded by the owner's acceptance of R60**: `docs/port/OWNER-ACCEPTANCES.md`
+records R60 revision 7, sha256
+`67d7a7d2a76c7d10c88edf9cd309c46484ada95a00074d902943a94410b8b9f2`, accepted on **2026-09-15**
+as "W0-R60 option A; `clap` 4.6.6 derive, `clap_complete` 4.6.9, dependency-free `build.rs`",
+with first publication pending. So the parser is **selected, and unpublished as yet**, not open:
+`clap` 4.6.6 with its `derive` API is a non-optional dependency of the package for the CLI
+binary, and the serve binary parses R4.1's core with it instead of introducing one. The design
+consequence is the one revision 6 stated, and the accepted answer strengthens rather than
+weakens it. Check 2's measured 12 → 52 package delta stands unchanged **by construction,
 not by re-measurement** — a non-optional dependency appears in both counts, so it cancels out
 of the delta that is the feature's marginal cost. The CLI binary keeps its own flags. A `serve` subcommand on the existing
 CLI binary is the ranked runner-up shape, rejected as primary because it would put `tokio` and
@@ -1375,7 +1458,7 @@ input, in full) and `docs/planning/p02/owner-decisions.md` section 11;
 **unpublished**, for its selected alternative A1) and R67's published `## Parameters` block for
 the envelope shape named under *Minimal realistic endpoint*.
 
-re-verify: when axum publishes 0.9, when R58 (logging-pipeline-contract) or R02 (crate-boundary-enforcement) publishes, when watchexec-cli declares a rust-version or the owner rules on whether the MSRV gate reaches non-linked developer tools, when R67 dispositions this item's request for a drain-deadline catalog row or revises the 130/143 reading of its boundary precedence, when R60 selects the CLI parser the serve binary's global core is parsed with, when the CLI Design Standard revises R4.1's required global core past v1.4.14, at the next msrv-policy floor advance past 1.96, or by 2027-03-13, whichever comes first
+re-verify: when axum publishes 0.9, when R58 (logging-pipeline-contract) or R02 (crate-boundary-enforcement) publishes, when watchexec-cli declares a rust-version or the owner rules on whether the MSRV gate reaches non-linked developer tools, when R67 dispositions this item's request for a drain-deadline catalog row or revises the 130/143 reading of its boundary precedence, when R60's published decision moves off its owner-accepted clap 4.6.6 derive selection for the CLI binary the serve binary's global core is parsed with, when the CLI Design Standard revises R4.1's required global core past v1.4.14, at the next msrv-policy floor advance past 1.96, or by 2027-03-13, whichever comes first
 
 ## Parameters
 
@@ -2102,7 +2185,7 @@ research.
 | `build_router(state)` is the only constructor, and a handler asking for an unregistered substate fails to compile | **Partly proven.** The state bound itself is verified (check 1); the compile-failure demonstration is not. | A `compile_fail` doctest in the template showing a handler requesting a substate `AppState` has no `FromRef` impl for, and asserting the error. |
 | The entrypoint drains in-flight work on SIGTERM and exits **143** within the configured window, exits **130** on the SIGINT path, and exits **1** when a request never completes | **Unproven.** The enabling fact — axum supplies no deadline — is read at source (check 3); the three behaviors are not exercised, and neither is the signal-kind threading the exit integers need. R67's own unproven list carries the same item ("*The web surface's `SIGTERM` drain to 143* … only the exit integer is shared, so the risk is low but the path is unbuilt"). | Three template tests: one that begins a slow request, sends SIGTERM, and asserts both the response completing and exit **143** inside the window; its SIGINT twin asserting exit **130**; and one with a permanently blocked request asserting the `GracefulShutdownTimedOut` branch and exit **1**. The opus raw reports a passing test for the unbounded-drain half only, and names no exit code. |
 | The serve binary's shutdown future reports **which** signal fired, so `main` can map 130 versus 143 | **Unproven, and not implementable as the recorded snippet is written** — it takes `S: Future<Output = ()>`. The enabling fact is the two-source mechanism already recorded under F338: `tokio::signal::ctrl_c()` and `tokio::signal::unix::signal(SignalKind::terminate())` are separate listeners selected over, as the reference implementation does (`src/bin/crates-io/server.rs` at `3df99c2`, asserted in `assert-figures.log` section F as "selects over SIGTERM via tokio::signal::unix"). **No check in this run asserts that the two futures are distinguishable at the type level**; that is why this row exists. | A template test asserting the two integers (row above), which fails if the signal kind is erased; P03 threads the kind (or R67's `Exit` value) out of `shutdown_signal()` instead of `()`. |
-| The serve binary satisfies the CLI Design Standard's required global core | **Unproven.** The rule and its scope are read at the standard (R4.1, its header scope line, Appendix A's "§4 … unchanged"); no binary exists to run, and R60 has not selected the parser. | The R9.14 conformance fixture named under *Validation strategy*: `<app>-serve --help` and `<app>-serve -V` each printing to stdout and exiting `0`, `-V` printing the single `<app>-serve <semver>` line R4.6 fixes, and the four remaining core options accepted. |
+| The serve binary satisfies the CLI Design Standard's required global core | **Unproven.** The rule and its scope are read at the standard (R4.1, its header scope line, Appendix A's "§4 … unchanged"); no binary exists to run, and the R9.14 conformance fixture has not been written. *(Revision 6 gave the second ground as "**R60 has not selected the parser**"; that wording is superseded by the owner's acceptance of R60 revision 7 on 2026-09-15 — `clap` 4.6.6 with the `derive` API, recorded in `docs/port/OWNER-ACCEPTANCES.md`, publication pending — and the row stays unproven on the grounds that remain true.)* | The R9.14 conformance fixture named under *Validation strategy*: `<app>-serve --help` and `<app>-serve -V` each printing to stdout and exiting `0`, `-V` printing the single `<app>-serve <semver>` line R4.6 fixes, and the four remaining core options accepted. |
 | The stack compiles and tests on both `target-os-matrix` legs and at the MSRV floor | **Unproven.** Only the macOS host at rustc 1.98.0 was exercised here; the Linux leg and the 1.96 leg were not. | The template's CI matrix (R11): `cargo test --workspace --locked --features web` on `ubuntu-latest` and `macos-latest`, plus a `cargo check` leg pinned to the declared `rust-version`. |
 | The web feature's wall-clock build cost and binary size | **Unproven and not measured here** — measuring them honestly means building the recommendation. The opus raw's figures (5.69 s → 9.28 s wall, 7.12 s → 25.61 s user CPU, release binary 2,001,600 bytes / 1,574,392 stripped) are engine-reported. Only the dependency-count half (12 → 52 packages) is reproduced here. | A timed clean and incremental build of the real template on each CI runner, and `cargo build --release` plus a size measurement of the stripped serve binary. |
 | The dev recipe serves with console-formatted logs and restarts on a source edit | **Unproven, and blocked on R58.** The tool's capabilities are verified (check 5); the recipe's behavior is not, because the environment variable's name and semantics are R58's and unpublished. | Once R58 publishes: `just serve` answering `GET /healthz` with console-formatted logs on stderr, a source edit producing one restart, and the same binary outside the recipe emitting the production structured profile. |
