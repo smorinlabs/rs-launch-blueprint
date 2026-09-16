@@ -48,10 +48,16 @@
 # file (so the search is demonstrably live) and requires every occurrence to sit
 # on a comment line.
 #
-# THE ONE COST OF NAMING, STATED HERE RATHER THAN LEFT FOR AN AUDITOR. The
-# CURRENT round's report lives at the fixed path `review/audit-codex.md`, and
-# this run's controller renames it to `audit-codex.r5.md` when the round-6 audit
-# lands. So `C1t`'s location will fail once a round-7 audit exists. That is the
+# THE ONE COST OF NAMING, STATED HERE RATHER THAN LEFT FOR AN AUDITOR, AND AT
+# THE PRECISION THE OBSERVED CONVENTION SUPPORTS. The CURRENT round's report
+# lives at the fixed path `review/audit-codex.md`. The controller's observed
+# sequence in round 5 was: copy the outgoing report to its round name at the
+# audit's start (`review/audit-codex.r4.md`, 00:01), then overwrite
+# `review/audit-codex.md` with the incoming one at the audit's end (00:10). So
+# `review/audit-codex.md` still binds revision 5 for the whole of a round-6
+# audit and C1t-C1v pass while that audit runs; the moment the round-6 report
+# LANDS, that path binds revision 6's hash instead and C1t2, C1u2, C1u3 and C1v
+# fail. C1t itself does not: the file is still present at that path. That is the
 # same expected historical-control failure as `C4h`'s title check, and it is why
 # every superseded script in this directory is kept byte-identical beside this
 # one instead of being edited. A candidate list of both possible names was
@@ -330,9 +336,12 @@ check "C1q the rejecting actor is the revision-4 auditor" \
 echo "-- the fifth baseline: the REJECTED revision-5 text, and the report that rejected it --"
 # The current round's report is the one file here whose path is a convention
 # rather than an archive: the controller keeps it at `review/audit-codex.md` and
-# renames it when the NEXT audit lands. C1t will therefore fail on location once
-# a round-7 audit exists — an expected historical-control failure, like C4h's
-# title check, and the reason this script is superseded rather than edited. The
+# overwrites it when the NEXT audit's report lands. C1t2, C1u2, C1u3 and C1v
+# will therefore fail the moment the round-6 report lands and that path binds
+# revision 6's hash instead — an expected historical-control failure, like C4h's
+# title check, and the reason this script is superseded rather than edited. C1t
+# itself keeps passing: the file is still there, it is the BYTES that move, which
+# is exactly why this family asserts content and not presence alone. The
 # alternative — accepting either name — is what F2 rejected.
 out="$([ -f "$R5" ] && echo present || echo MISSING)"
 echo "revision-5 baseline file: $out"
@@ -690,7 +699,7 @@ check "C4m8 the revision-5 results row is kept rather than rewritten" "count=1" 
 check "C4m9 the beyond-brief correction is reported: C1i carried the same defect" \
   "\`C1i\` carried the identical defect" "$FLAT"
 check "C4m10 the new lookup's own cost is stated rather than left for an auditor" \
-  "will fail on location once a round-7 audit exists" "$FLAT"
+  "will fail once the round-6 audit lands and \`review/audit-codex.md\` binds revision 6's hash instead" "$FLAT"
 check "C4m11 the revision note states revision 6's scope" \
   "revision 6's scope is finding F2 and the evidence apparatus it names, and nothing else" "$FLAT"
 echo "-- gate 1 is recorded as inapplicable, not deleted (owner ruling 2026-09-12) --"
