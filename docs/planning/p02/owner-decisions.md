@@ -382,6 +382,7 @@ reject.
 | W0-R85 | R85 rich-terminal-row-niceties | A accept | 2026-09-15 | `1a81ae3a…` | `rows_rich` opt-in; requirement on R66's table crate ANSI-width feature |
 | W0-R63 | R63 progress-spinner | A accept | 2026-09-15 | `0ce8e437…` | `indicatif`; `--quiet` per standard R7.4 |
 | W0-R65 | R65 color-enablement-chain | A accept | 2026-09-15 | `4b9b21a1…` | seven-tier chain; `NO_COLOR` beats force variables |
+| W0-R66 | R66 output-format-surface (decision) | A accept | 2026-09-15 | `a7958d3f…` | the surface rests on standard MUSTs plus the stale-port finding; `tabled` medium with a named swap trigger; `table` kept as the default's name |
 
 ## Retired from this list
 
