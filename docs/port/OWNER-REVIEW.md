@@ -140,6 +140,8 @@ The briefs the owner answered from are in `docs/planning/p02/owner-decisions.md`
 | R04 | 1 (published) | `0d4f2e60e994439d9261f5169c3fd28e5e76077dacd089d999a51fb67a5f6c5d` | accept | 2026-09-15 | W0-R04 option A; private-module barrel, deny lints, `compile_fail` doctests, `cargo-semver-checks` 0.50.0 on stable |
 | R06 | 1 (published) | `343a7fc555da5ad9d689f27ead710c007fdc9a4228eb4e8d8f49b0c69d55688d` | accept | 2026-09-15 | W0-R06 option A; `unsafe_code = "forbid"` workspace-inherited, clippy safety lints pre-armed |
 | R07 | 1 (published) | `0b3dde8f9a15f22e60a01542065c53c122881e8c48bf3ee6c172ba5b70499346` | accept | 2026-09-15 | W0-R07 option A: push trigger accepted AND the owner directs revision 2 to add the monthly backstop `schedule: - cron: '17 6 1 * *'` (the decision's own runner-up condition was met when R21 settled on an expiring credential); re-bound at revision 2 |
+| R15 | 1 (published) | `7dd84b81f27b3d3fe20118958e71310b9f011e889372d8266ae4f161419dc45e` | accept | 2026-09-15 | W0-R15 option A; `template-press` 4.0.1, two workflows, three Rust additions; `app_name` settled as `rslbp` by W0-R49n |
+| R16 | 4 (published) | `d7946ed6a687834ee19530f49c27dad033f06eebd571aa77d30d0f2b7a3b9ca2` | accept | 2026-09-15 | W0-R16 option A; repository-local CodeQL config, `security-extended`, `paths-ignore`, `codeql-action` v4.37.9 |
 
 ## Dispositions
 

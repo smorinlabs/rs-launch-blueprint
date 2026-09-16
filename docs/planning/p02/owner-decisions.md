@@ -358,6 +358,9 @@ reject.
 | W0-R04 | R04 public-api-surface-enforcement | A accept | 2026-09-15 | `0d4f2e60…` | runner-up `cargo-public-api` needs a pinned nightly; method-level gap accepted |
 | W0-R06 | R06 unsafe-code-policy | A accept | 2026-09-15 | `343a7fc5…` | runner-up `deny` + `#[expect]` wins only for FFI/systems forks |
 | W0-R07 | R07 contributors-bot-trigger-cadence | A accept + add the monthly backstop | 2026-09-15 | `0b3dde8f…` → revision 2 | the decision's runner-up E condition (R21 settles on an expiring credential) was already met; owner directs the two-line backstop now |
+| W0-R15 | R15 template-drift-receipt-guard | A accept | 2026-09-15 | `7dd84b81…` | one press mechanism for the family; substring rule forced by run-1 failure |
+| W0-R16 | R16 codeql-config-customization | A accept | 2026-09-15 | `d7946ed6…` | config file with `paths-ignore`; inline runner-up cannot express the exclusion |
+| W0-R17 | R17 secret-scanning-ci-workflow | REDIRECT: "do what the other projects do; validate that py/ts use TruffleHog and if so use it" | 2026-09-15 | — | controller validating the py and ts pins; re-asked after |
 
 ## Retired from this list
 
