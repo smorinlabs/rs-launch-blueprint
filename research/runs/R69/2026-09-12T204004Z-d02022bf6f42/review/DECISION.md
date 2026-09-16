@@ -9,14 +9,16 @@ this decision has been published, so there is still no `## Supersedes`. The one
 fitness-gate answer including gate 1's `inapplicable` row, the R67 exit contract and the request
 to R67, the CLI Design Standard's R4.1 required global core, the H2 set, and every evidence
 script, cited log and committed snapshot. **No evidence file is added, edited or replaced.**
-`review/empirical/parameters-check.sh` asserts only on lines beginning `- assumes `, `- owns `
-and `## `, none of which this revision touches; it was nevertheless re-run against this file as
-a confirmation, exited `0`, and its output `diff`s **empty** against the cited
+Check 6, `review/empirical/parameters-check.sh`, asserts only on lines beginning `- assumes `,
+`- owns ` and `## `, none of which this revision touches; it was nevertheless re-run against
+this file as a confirmation, exited `0`, and its output `diff`s **empty** against the cited
 `review/evidence/parameters-check-r2.log`, which is therefore left unchanged rather than
-superseded by an r7 copy of the same bytes. The other six checks read no part of this file.
+superseded by an r7 copy of the same bytes. Checks 1 through 5, and `yanked-control-r5.sh`,
+read no part of this file.
 
-Revision 6 was **approved** by the round-6 empirical audit (`review/audit-codex.md`, family
-openai, `unresolved-findings: none`) and **rejected** by the round-6 judgment audit
+Revision 6 was **approved** by the round-6 empirical audit (`review/audit-codex.md`, actor
+`audit-codex-2026-09-12T204004Z-d02022bf6f42-r6`, model `gpt-5.6-terra`, family openai, verdict
+`approve`, `unresolved-findings: none`) and **rejected** by the round-6 judgment audit
 (`review/audit-fable.md`, actor `audit-fable-2026-09-12T204004Z-d02022bf6f42-r6`, model
 `claude-opus-5`, family anthropic) on **one** finding — that audit records JF-1, JF-2 and JF-3
 as closed and marks its three observations explicitly as *not* findings. Revision 7 answers the
@@ -42,8 +44,9 @@ vocabulary already keeps apart, since it cites R49 as having selected alternativ
 labelling that revision unpublished. Read on **2026-09-16**, together with
 `research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/DECISION.md`, whose current revision 8
 still selects `clap` 4.6.6 with the `derive` API and `clap_complete` 4.6.9. **No clap feature
-list is named anywhere in this decision**, deliberately: R60 revision 8 is still moving that
-set, and nothing here reads it. **The design consequence does not move, and the accepted answer
+set beyond `derive` is transcribed anywhere in this decision**, deliberately: R60 revision 8 is
+still moving that set, and nothing here reads it. Only the `derive` API is named, because it is
+part of what the owner accepted. **The design consequence does not move, and the accepted answer
 strengthens it** — `clap` is a non-optional dependency of the package for the CLI binary, so the
 serve binary reuses it, the `web` feature adds no parser crate, and check 2's measured 12 → 52
 package delta stands by construction.
@@ -52,8 +55,10 @@ package delta stands by construction.
 watchable.** *"when R60 selects the CLI parser the serve binary's global core is parsed with"*
 names an event that occurred on 2026-09-15. What remains worth watching is the gap between the
 accepted text and the published one — R60's file has already moved after its acceptance — so the
-clause now reads *"when R60's published decision moves off its owner-accepted `clap` 4.6.6
-derive selection"*. The other eight triggers on that line are byte-identical.
+clause now reads, in full and unbackticked as that line is written, "when R60's published
+decision moves off its owner-accepted clap 4.6.6 derive selection for the CLI binary the serve
+binary's global core is parsed with". Every other clause on that line is byte-identical, which
+a `diff` of the line shows rather than a count.
 
 **Mechanical enumeration, run before any edit and re-run after it.** Two `/usr/bin/grep -n`
 passes over this file: one for `R60`, and a separate case-insensitive one for `parser`, so that
@@ -67,9 +72,11 @@ the `- owns web-extra-surface` line, which share the wording *"the parser crate 
 the CLI binary"* — wording the round-6 judgment audit ruled "survives the correction verbatim",
 true of a selected parser exactly as of an unselected one, and inside an owned value that 19
 consumers read and check 6 validates; and 1835, which is an evidence script's JSON parser and
-has nothing to do with R60. The `**Sources.**` paragraph is **not** extended, on the revision
-brief's explicit instruction that no other sentence changes; the two files revision 7 read are
-named in this note instead.
+has nothing to do with R60. Both passes were re-run against the edited file: outside this note,
+every hit is one of those nine locations at its shifted line number, and no new hit appeared
+anywhere else. The `**Sources.**` paragraph is **not** extended, on the revision brief's
+explicit instruction that no other sentence changes; the two files revision 7 read are named in
+this note instead.
 
 **Revision note (revision 6), retained as the record of that revision. It was approved by the
 round-6 empirical audit and rejected by the round-6 judgment audit on JF-4 alone, which the
