@@ -1,4 +1,144 @@
-# R49 — build-target-declaration (crate, Deep) — DECISION (revision 7, 2026-09-14)
+# R49 — build-target-declaration (crate, Deep) — DECISION (revision 8, 2026-09-15)
+
+**What changed in revision 8, and what did not.** Two things, and the first one
+moves an owned-parameter value. **The owner ruled on the binary name.**
+`docs/port/OWNER-REVIEW.md`, section *"2026-09-15 — R49 binary name: `rslbp`
+(W0-R49n)"*, records it in full:
+
+> R49 revision 7 kept the template's command name equal to its crate name,
+> `rs-launch-blueprint`, and marked the choice owner-reviewable. The owner chose
+> a short command name: **`rslbp`** (the Opus engine's proposal). The crate and
+> distribution name stay `rs-launch-blueprint`; `cargo install rs-launch-blueprint`
+> installs the command `rslbp`. Consequences the decision itself recorded for a
+> divergent pair: the `[[bin]] name` row changes; R32 resolves the built binary
+> through `env!("CARGO_BIN_EXE_rslbp")`; R68 uploads `target/release/rslbp`; and if
+> R68 later adopts `cargo-binstall` metadata, the `bin-dir` template must
+> interpolate `{ bin }` rather than `{ name }`. Five of the nine cross-platform
+> CLIs R49 surveyed use a shorter command than their crate name. R49 revision 8
+> implements this ruling.
+
+The same file's Wave 0 acceptances table records that the owner **accepted**
+revision 7 at sha256 `319a535665318a120c9be3bdf61037f9f4ea8214d972de724dafe16902bec41d`
+(W0-R49 option A, 2026-09-15) and directed this change on top of it, so the
+acceptance **re-binds at revision 8** rather than being staled by the moved
+value. The recommendation itself does not move: declare every build target in
+`Cargo.toml` itself and add no build backend, bundler or build-orchestration
+crate. What moves is the `[[bin]]` `name` string inside the owned parameter
+`build-tool-output-shape`, from `rs-launch-blueprint` to `rslbp`, and every
+place in this decision that named the binary. The `[lib]` crate name stays
+`rs_launch_blueprint`; the package, crate and distribution name stays
+`rs-launch-blueprint`. The four `- assumes` lines are byte-identical.
+
+**Where the name was changed, enumerated mechanically rather than by reading.**
+Before editing, `/usr/bin/grep -n` was run over the revision-7 file for
+`rs-launch-blueprint`, `CARGO_BIN_EXE`, `target/release/`, `name =`, `match` and
+`diverge`, and the union of those hits was the work queue. The value now reads
+`rslbp` in: decision-table row 3 (`[[bin]] name`), decision-table row 6
+(distribution name vs. binary name, now **DIVERGE** by the ruling), the **F219**
+ledger-row sentence, the paragraph that argued the matching pair (rewritten and
+retitled *"Why the binary name is `rslbp`, what the research found, and what the
+owner decided"*), AC2, AC6, the `- owns build-tool-output-shape` line, the
+consuming-item clauses under `## Parameters`, the re-verify trigger list,
+Disagreement 3 in
+`## Engines`, and the `What P03 must validate` paragraph. Left deliberately
+unchanged, each for a stated reason: the repository name in the status paragraph
+and the working-directory path in `## Empirical check` (they name this planning
+repository, not the template's binary); the `[lib]` crate name
+`rs_launch_blueprint` in decision-table row 2 and in the owned parameter (the
+ruling does not touch it); py's `module-name = "py_launch_blueprint"` in the
+B1–B4 table and in check 5 (source evidence read at a pin); doxa/perplexity's
+proposed second binary `rs-launch-blueprint-web` in `## Engines` (a verbatim
+report of what that raw proposed); and every generic `CARGO_BIN_EXE_<name>` and
+quoted Cargo-reference string, which carry no project name at all.
+
+**The rename touches no executed check.** No `review/evidence/check-*.sh` script
+and none of the three cited script logs — `grep-identity.log`,
+`licence-enumeration.log`, `lockfile-inclusion-conditions.log` — contains the
+string `rs-launch-blueprint` in any form other than the repository path, so no
+assertion in this run was made about the binary name and nothing was re-run or
+regenerated. Two **auditor-produced** logs do print the old name, both as
+quotations of earlier decision text rather than as assertions about it:
+`review/evidence/audit-provenance-r4.log:111` quotes the revision-4 `- owns`
+line and `review/evidence/audit-six-locations-r5.log:219` quotes the revision-5
+`## Engines` line for doxa/perplexity. **Neither is edited**: they are round-4
+and round-5 audit artifacts and their quoted text was accurate for the revision
+each bound. What P03 re-runs is not those logs — they assert nothing about the
+name — but AC1, AC2 and AC6 against the real template, where `rslbp` is the
+string `cargo metadata`, `target/release/` and `CARGO_BIN_EXE_` must carry.
+
+**The second thing: three clause repairs from the round-7 judgment audit.**
+`review/audit-fable.md` (actor
+`audit-fable-2026-09-05T155504Z-2107cffb3ecf-r7`, model `claude-opus-5`, family
+anthropic) **rejected** revision 7 on three findings, each quoted here by its
+label. Every line number inside these quotations is **revision-7 numbering**,
+that is, the blob at sha256
+`319a535665318a120c9be3bdf61037f9f4ea8214d972de724dafe16902bec41d`; revision 8
+inserts this note above them, so those numbers do not address the current file.
+
+> **F1 — `## Parameters` hands R22 a value the owned parameter does not contain,
+> and omits the one it does.** `review/DECISION.md:882-883` reads *"Consuming
+> items get concrete values from the owned parameter above. R22
+> (`runtime-version-accessor`) reads `env!("CARGO_PKG_VERSION")`"*. That macro
+> appears nowhere in the owned parameter at `:852`; it derives from the
+> `[package] version` field, which this item does not decide. … The decision
+> already states R22's consumption correctly elsewhere — `:560-562` … Remedy:
+> make `:882` say what `:560` says.
+
+**Repaired**, and the finding is correct. The clause under `## Parameters` now
+says what `:560` says — R22 reads the target directory layout and the target
+names — quotes R22's own prompt for the registered scope, and states explicitly
+that `env!("CARGO_PKG_VERSION")` derives from the `[package] version` field and
+is not decided here. The R32 and R68 clauses beside it were already drawn from
+the owned parameter and keep their shape, with the name updated to `rslbp`.
+
+> **F2 — the decision records no ranked runner-up, then refers to "the runner-up"
+> as though it had.** The phrase occurs exactly once, at `:842` … The four
+> architectural alternatives at `:710-731` are costed but never ranked … The
+> referent is not recoverable from the raws either, because they disagree about
+> it … This also leaves a real engine disagreement out of `## Engines` …
+> Remedy, either way and one clause long: name the runner-up and its winning
+> condition explicitly, or state that none is recorded because the field is a
+> dominant choice and restate the trigger without the phrase.
+
+**Repaired by the first remedy, both halves.** A ranked runner-up is now recorded
+where the alternatives are compared: **A4**, Cargo plus an orchestration layer
+(`dist`), winning under the condition the trigger already named — R68 resolving
+F214 to cross-compiled release binaries. The trigger sentence now names A4
+instead of saying "the runner-up". The paragraph also says *why* A4 rather than
+the majority's answer: A3 (the workspace split) is a **trigger owned by R02**,
+which the same sentence already routes separately, not an alternative this item
+is free to rank; and codex's automatic target discovery is the `autobins = false`
+sub-decision, not an architecture. And the three-way engine disagreement the
+audit named is now recorded as **Disagreement 6** in `## Engines`, with each
+raw's proposal and line reference.
+
+> **F3 — the agreement-level summary names two of the three levels its own table
+> assigns.** `:593` reads *"Agreement is required at the **capability and
+> policy** level, not at the level of sharing a backend library"*, but the B1–B4
+> table immediately below assigns B2 … the level **architectural pattern** …
+> Remedy, one clause: *"at the capability, architectural-pattern and policy
+> levels"*.
+
+**Repaired** exactly as the remedy states: the sentence now reads *"at the
+capability, architectural-pattern and policy levels"*, which is what the table
+beside it assigns.
+
+**One correction beyond the three findings.** Revision 7's status paragraph
+ended *"No owner acceptance is claimed or implied."* That sentence was true when
+it was written and is false now that this revision cites W0-R49 and W0-R49n, so
+it is replaced by a statement of what the owner actually accepted and directed,
+with the file and section named. This is the same defect class as F1 and F3 — a
+sentence contradicting the record beside it — and it is reported here rather
+than fixed quietly.
+
+**What revision 8 does not change.** The recommendation, the `include`
+allow-list and its three grounds, `autobins = false`, the MSRV treatment, the
+declined `build = false` and `default-run`, the six fitness-gate rows with gate 1
+`inapplicable` under the owner's 2026-09-12 ruling (Q7.B), the two carried
+`BASELINE-REVIEW:` lines, all four `- assumes` lines, every evidence script and
+every evidence log, every enumeration list, every figure in `## Empirical check`,
+and every historical quotation in the revision notes below. Nothing was re-run,
+because nothing this revision changes is something a check asserted.
 
 **What changed in revision 7, and what did not.** Revision 6 (sha256
 `9d135856d7e9e29c81f09b88f2662780dd3f11218cee6815fb396e3c593ffb2f`) was
@@ -525,7 +665,14 @@ what the research found, what this run verified against the toolchain and the
 registry, and what it could not verify; the unverified parts are listed under
 `## Engines` as what P03 must validate. A recommendation that does not survive
 implementation is **revised against this recorded research**, not researched
-again from scratch. No owner acceptance is claimed or implied.
+again from scratch. **The owner has acted on this item.** `docs/port/OWNER-REVIEW.md`
+accepts revision 7 at sha256
+`319a535665318a120c9be3bdf61037f9f4ea8214d972de724dafe16902bec41d` (Wave 0
+acceptances table, W0-R49 option A, 2026-09-15) and, in the section
+*"2026-09-15 — R49 binary name: `rslbp` (W0-R49n)"*, directs the short binary
+name this revision implements; the acceptance re-binds at revision 8. An
+acceptance binds the recommendation and makes it P03's proposal; publication
+still waits on this item's two approving audits.
 
 **Recommendation — declare every build target in `Cargo.toml` itself; add no
 build backend, bundler, or build-orchestration crate.** Rust has no pluggable
@@ -539,17 +686,20 @@ range.
 |---|---|---|---|
 | 1 | Build backend / bundler | **None.** No `[build-dependencies]` entry, no `build.rs`, no `cargo-make`, no `dist`, no `xtask`. Cargo's own manifest is the whole declaration surface. The compatibility contract is expressed as `edition = "2024"` plus `rust-version` in `[package]`, per the fixed `rust-edition` and `msrv-policy` parameters. | **F212** |
 | 2 | Library target | Exactly one, declared explicitly as `[lib]`, `path = "src/lib.rs"`, crate name `rs_launch_blueprint` (Cargo's default: the package name with dashes replaced by underscores). This is the crate downstream users depend on, and the crate R01's port trait and R67's `thiserror` error catalog live in. `doctest` is **not** set here — that value is R82's (`docs-correctness-gate`). | **F213** |
-| 3 | Binary target | Exactly one, declared explicitly as `[[bin]]`, `path = "src/main.rs"`, `name = "rs-launch-blueprint"` — the same string as the package name. Plus `autobins = false`, so no `src/bin/*.rs` file can become a second published command without a manifest edit. `default-run` stays unset while there is one binary. | **F213**, **F216** |
+| 3 | Binary target | Exactly one, declared explicitly as `[[bin]]`, `path = "src/main.rs"`, `name = "rslbp"` — **not** the package name, by the owner's ruling W0-R49n (`docs/port/OWNER-REVIEW.md`, section *"2026-09-15 — R49 binary name: `rslbp`"*). Plus `autobins = false`, so no `src/bin/*.rs` file can become a second published command without a manifest edit. `default-run` stays unset while there is one binary. | **F213**, **F216** |
 | 4 | Console-script / bin entry | The `[[bin]]` `name` field, and nothing else. Rust has no entry-point abstraction to declare: `cargo build` emits a native executable whose filename **is** `name`, with no wrapper script to generate and no shebang to preserve. This confirms F217 (`OMIT`) rather than adding to it. | **F216** |
 | 5 | Packaged-file scope | An explicit `[package] include` allow-list — `["/src", "/README.md", "/LICENSE-MIT", "/LICENSE-APACHE", "/CHANGELOG.md"]` — reviewed whenever a file that must ship is added. Not `exclude`; the two fields are mutually exclusive. `Cargo.toml` and any `license-file` are included by Cargo whatever `include` or `exclude` says. A minimized `Cargo.lock` is outside that selection too — `cargo package` adds it, generating one when none is on disk — but it is not unconditional: `cargo package --exclude-lockfile` omits it, and `cargo publish` has no such flag. Stated in full in `## Empirical check`, check L. | **F218** |
-| 6 | Distribution name vs. binary name | **They match.** `cargo install rs-launch-blueprint` installs the command `rs-launch-blueprint`; no `uvx --from` analogue and no `--bin` flag is needed. Divergence is idiomatic in Rust and costs no install-time flag, so a fork that wants a short command changes one `name =` line. | **F219** |
+| 6 | Distribution name vs. binary name | **They diverge, by the owner's ruling W0-R49n.** The crate and distribution name stays `rs-launch-blueprint`; the command is `rslbp`. `cargo install rs-launch-blueprint` installs the command `rslbp` — no `uvx --from` analogue and no `--bin` flag is needed in either direction, because `cargo install` installs a package's binaries whatever they are named (check 8). Divergence is idiomatic in Rust (5 of 9 surveyed manifests, check 7) and costs no install-time flag, so a fork that wants a different command changes one `name =` line. | **F219** |
 
 **Ledger rows settled** (the verdict strings remain the controller's to set, per
 `docs/port/README.md`): **F212** — substituted by the Cargo toolchain itself,
 with no crates.io dependency; **F213** — `[lib]` + one `[[bin]]`, the Rust
 analogue of ts's two-entry `entry: ['src/cli.ts', 'src/lib.ts']`; **F216** — the
 `[[bin]]` `name` field; **F218** — an explicit `include` allow-list; **F219** —
-no divergence in the template as shipped.
+divergence in the template as shipped: distribution name `rs-launch-blueprint`,
+command `rslbp`, by the owner's ruling W0-R49n rather than by a research finding
+(the research recommended a matching pair; see *"Why the binary name is `rslbp`"*
+below).
 
 **Coupling boundaries respected, and what is deliberately not decided here.**
 This item decides the manifest-level declaration of build targets and entry
@@ -590,8 +740,10 @@ tool-free pattern: the project's build system turns source into a distributable
 package whose contents are declared, not incidental. F212 (line 216,
 `COMMON → SUBSTITUTE`, owned by this item) is the tool row under it. Read at
 their pins, the two source repos agree on four behaviors and differ on the
-mechanism of each. Agreement is required at the **capability and policy** level,
-not at the level of sharing a backend library.
+mechanism of each. Agreement is required at the **capability,
+architectural-pattern and policy** levels — the three the B1–B4 table below
+assigns, B1 capability, B2 architectural pattern, B3 and B4 policy — and not at
+the level of sharing a backend library.
 
 | # | Behavior that must agree | py evidence (pin `b08bccfb`) | ts evidence (pin `cb1cbcb2`) | Level | Rust realization |
 |---|---|---|---|---|---|
@@ -730,6 +882,25 @@ the one-file declaration that behavior B1 names. **A1 is selected**, and the sel
 a workspace, every field above moves to the member manifests unchanged, exactly
 as `typos` and `atuin` do it.
 
+**The ranked runner-up is A4, and its winning condition is stated rather than
+implied.** A4 — Cargo plus an orchestration layer, `dist` specifically — wins if
+**R68 resolves F214 to cross-compiled release binaries**, because that is the
+artifact set whose matrix, checksums and installer script `dist` exists to
+generate and which A1 would otherwise have to hand-write in CI. It is ranked
+second, and not first today, for the two costs above: a maintained third-party
+dependency taken on for a decision that is R68's to make, and the documented pull
+toward `dist-workspace.toml` as a second declaration file, which is what behavior
+B1 forbids. **Why A4 and not the alternative three of the five raws name.** A3,
+the workspace split, is not an alternative this item may rank at all: the
+workspace shape is **R02's** (`crate-boundary-enforcement`), and R02 resolving to
+a workspace is recorded below as its own re-verify trigger rather than as this
+item choosing second-best. Codex's proposal, Cargo's automatic target discovery,
+is not an architecture but the other side of the `autobins = false`
+sub-decision, argued on its own terms below. A4 is therefore the only one of the
+four costed alternatives this item could itself have chosen second. The
+three-way engine split on this question is recorded as Disagreement 6 in
+`## Engines`.
+
 **Why `include` rather than `exclude`, stated with the practice evidence that
 runs the other way.** An independent sweep of nine well-regarded manifests this
 run (check 7; log `evidence/practice-manifests.log`) measured **7 of 9 using
@@ -764,27 +935,42 @@ this sub-decision is medium**, and it is cheap to reverse: it is one manifest
 field, and R26 (F039/F078) owns the CI guard that would catch a wrong value
 either way.
 
-**Why the names match, and what that claim does and does not assert.** The
-divergence py needs — `uvx --from py-launch-blueprint plbp`, annotated in py's
-own README at pin `b08bccfb` as needed *"because the distribution name differs
-from the console-script name"* (check 5) — **has no Rust analogue**:
-`cargo install`'s `--bins` option is documented *"Install all binaries. This is
-the default behavior"*, and the installed cargo 1.98.0 prints the same
-(check 8). So `cargo install <package>` installs the package's binaries whatever
-they are named, and `--bin` selects a *subset* rather than resolving a name
-divergence. **Divergence is therefore free in Rust and common** — 5 of the 9
-manifests swept diverge (`ripgrep`/`rg`, `wasmtime-cli`/`wasmtime`,
-`typos-cli`/`typos`, `fd-find`/`fd`, `helix-term`/`hx`). This decision still
-makes them match, for a reason that is about templates rather than about Cargo:
-`rs-launch-blueprint` is a placeholder every fork replaces, the five divergent
-projects diverge because a short *product* name was already established or taken,
-and a matching pair is the value that needs no owner naming call to publish.
-`raw/opus…` proposes `rslbp` and Doxa's Gemini provider proposes `rsbp`; **both
-label the string as a naming proposal rather than a research finding**, and this
-decision does not adopt either. **The name remains owner-reviewable**: changing
-it is one `name =` line plus one README sentence, and if R68 later adopts
-`cargo-binstall` metadata a divergent pair additionally requires the `bin-dir`
-template to interpolate `{ bin }` rather than `{ name }`.
+**Why the binary name is `rslbp`, what the research found, and what the owner
+decided.** These are two different things and the decision records both. **What
+the research established, and it still stands:** the divergence py needs —
+`uvx --from py-launch-blueprint plbp`, annotated in py's own README at pin
+`b08bccfb` as needed *"because the distribution name differs from the
+console-script name"* (check 5) — **has no Rust analogue**: `cargo install`'s
+`--bins` option is documented *"Install all binaries. This is the default
+behavior"*, and the installed cargo 1.98.0 prints the same (check 8). So
+`cargo install <package>` installs the package's binaries whatever they are
+named, and `--bin` selects a *subset* rather than resolving a name divergence.
+**Divergence is therefore free in Rust and common** — 5 of the 9 manifests swept
+diverge (`ripgrep`/`rg`, `wasmtime-cli`/`wasmtime`, `typos-cli`/`typos`,
+`fd-find`/`fd`, `helix-term`/`hx`). **What this decision recommended through
+revision 7:** a matching pair, on a ground about templates rather than about
+Cargo — `rs-launch-blueprint` is a placeholder every fork replaces, the five
+divergent projects diverge because a short *product* name was already established
+or taken, and a matching pair is the value that needs **no owner naming call** to
+publish. `raw/opus…` proposed `rslbp` and Doxa's Gemini provider proposed
+`rsbp`; both labelled the string a naming proposal rather than a research
+finding, so neither was adopted, and the decision recorded the name as
+**owner-reviewable** instead. **What the owner ruled, and it binds:** on
+2026-09-15 the owner made that call and chose `rslbp`, the Opus proposal
+(`docs/port/OWNER-REVIEW.md`, section *"2026-09-15 — R49 binary name: `rslbp`
+(W0-R49n)"*). The crate and distribution name stays `rs-launch-blueprint`. The
+research ground the matching pair rested on is the one the ruling consumes — a
+naming call that was open is now made — and nothing the research measured argues
+against the chosen value: check 8 shows the divergence costs no install-time flag
+in either direction, and check 7 shows 5 of 9 surveyed projects already diverge.
+**The consequences this decision recorded for a divergent pair, now live:** the
+change itself is one `name =` line plus one README sentence — the README must say
+`cargo install rs-launch-blueprint` installs the command `rslbp`, because the two
+strings no longer teach each other — and **if R68 later adopts `cargo-binstall`
+metadata, the `bin-dir` template must interpolate `{ bin }` rather than
+`{ name }`**, since with a divergent pair `{ name }` would name the crate and
+miss the executable. R32's and R68's concrete strings move with the name and are
+recorded under `## Parameters`.
 
 **Why `autobins = false`, at the strength the evidence supports.** Cargo's own
 reference says *"Disabling automatic discovery should only be needed for
@@ -818,7 +1004,7 @@ to run them against, and this run did not create one.
 - AC1 — `cargo metadata --no-deps --format-version 1` reports exactly one target
   of kind `lib` and exactly one of kind `bin`, and the bin's `name` equals the
   value recorded in `build-tool-output-shape`.
-- AC2 — `cargo build --release` produces `target/release/rs-launch-blueprint`.
+- AC2 — `cargo build --release` produces `target/release/rslbp`.
 - AC3 — `cargo package --list`, invoked with no `--exclude-lockfile` (check L —
   that flag is the one thing that drops the lockfile, and neither this check nor
   the release lane passes it), prints `Cargo.toml`, `Cargo.lock`, `src/**`,
@@ -830,7 +1016,7 @@ to run them against, and this run did not create one.
 - AC5 — with the web feature off and on, the produced binary set is unchanged in
   count, so R68's artifact list does not change shape with the feature flag.
 - AC6 — an integration test resolves the executable through
-  `env!("CARGO_BIN_EXE_rs-launch-blueprint")` with no non-default feature enabled.
+  `env!("CARGO_BIN_EXE_rslbp")` with no non-default feature enabled.
 
 Where AC3 and AC4 are wired is **R26's and R11's**, not this item's; AC4 is a
 full clean rebuild and belongs in a release lane.
@@ -839,17 +1025,23 @@ full clean rebuild and belongs in a release lane.
 a separate server process, which adds a second `[[bin]]` and a `default-run` line
 to the owned parameter; R02 resolves to a workspace, which moves these fields to
 member manifests under `[workspace.package]` inheritance; R68 resolves F214 to
-cross-compiled release binaries, which is the condition under which the runner-up
-wins and which requires re-checking whether `dist`'s `[workspace.metadata.dist]`
-deprecation has become a removal at the version R68 would adopt; a Rust edition
-beyond 2024 is adopted, since edition changes have altered `Cargo.toml` semantics
-before; or the owner rules on the binary name.
+cross-compiled release binaries, which is the condition under which the ranked
+runner-up **A4** (Cargo plus a `dist` orchestration layer, ranked under
+*"Architectural alternatives compared before libraries"* above) wins and which
+requires re-checking whether `dist`'s `[workspace.metadata.dist]` deprecation has
+become a removal at the version R68 would adopt; or a Rust edition beyond 2024 is
+adopted, since edition changes have altered `Cargo.toml` semantics before. **One
+trigger has fired and is resolved: the owner ruled on the binary name.** On
+2026-09-15 the owner chose `rslbp` (`docs/port/OWNER-REVIEW.md`, section
+*"2026-09-15 — R49 binary name: `rslbp` (W0-R49n)"*); revision 8 implements it
+throughout, so the trigger is discharged rather than pending and is not carried
+forward in the list above.
 
 re-verify: 2027-03-10, or any earlier event listed immediately above
 
 ## Parameters
 
-- owns build-tool-output-shape = no build backend or bundler crate; Cargo's own manifest is the entire declaration surface. Artifacts land in Cargo's default workspace-root target/ directory - target/debug/ for the dev and test profiles, target/release/ for release and bench, target/<name>/ for a user-defined profile, gaining a target/<triple>/<profile>/ level whenever --target is passed - relocatable by CARGO_TARGET_DIR, build.target-dir or --target-dir. Library target: exactly one, declared explicitly as [lib] with path src/lib.rs and Cargo's default crate name rs_launch_blueprint (the package name with dashes replaced by underscores); doctest is not set here and is R82's. Binary target: exactly one, declared explicitly as [[bin]] with path src/main.rs and name rs-launch-blueprint, matching the package name, so cargo install rs-launch-blueprint installs the command rs-launch-blueprint and integration tests resolve it through CARGO_BIN_EXE_rs-launch-blueprint; autobins = false so no src/bin/*.rs file becomes a second published command without a manifest edit; default-run unset while there is one binary; no build.rs and no build-orchestration crate. Packaged-file scope: an explicit [package] include allow-list - /src, /README.md, /LICENSE-MIT, /LICENSE-APACHE, /CHANGELOG.md - never exclude, the two being mutually exclusive; Cargo.toml and any license-file are included whatever include or exclude says, and a minimized Cargo.lock is likewise outside include/exclude selection - cargo package adds it, generating one when none is on disk - but not unconditionally: cargo package --exclude-lockfile omits it, an override cargo publish has no flag for and this template never passes. The optional web surface adds no target here: it is a Cargo feature per F017, and whether it also gets a second [[bin]] carrying required-features is R69's
+- owns build-tool-output-shape = no build backend or bundler crate; Cargo's own manifest is the entire declaration surface. Artifacts land in Cargo's default workspace-root target/ directory - target/debug/ for the dev and test profiles, target/release/ for release and bench, target/<name>/ for a user-defined profile, gaining a target/<triple>/<profile>/ level whenever --target is passed - relocatable by CARGO_TARGET_DIR, build.target-dir or --target-dir. Library target: exactly one, declared explicitly as [lib] with path src/lib.rs and Cargo's default crate name rs_launch_blueprint (the package name with dashes replaced by underscores); doctest is not set here and is R82's. Binary target: exactly one, declared explicitly as [[bin]] with path src/main.rs and name rslbp, a different string from the package name rs-launch-blueprint, so cargo install rs-launch-blueprint installs the command rslbp and integration tests resolve it through CARGO_BIN_EXE_rslbp; autobins = false so no src/bin/*.rs file becomes a second published command without a manifest edit; default-run unset while there is one binary; no build.rs and no build-orchestration crate. Packaged-file scope: an explicit [package] include allow-list - /src, /README.md, /LICENSE-MIT, /LICENSE-APACHE, /CHANGELOG.md - never exclude, the two being mutually exclusive; Cargo.toml and any license-file are included whatever include or exclude says, and a minimized Cargo.lock is likewise outside include/exclude selection - cargo package adds it, generating one when none is on disk - but not unconditionally: cargo package --exclude-lockfile omits it, an override cargo publish has no flag for and this template never passes. The optional web surface adds no target here: it is a Cargo feature per F017, and whether it also gets a second [[bin]] carrying required-features is R69's
 - assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
 - assumes rust-edition = 2024
 - assumes target-os-matrix = ubuntu-latest, macos-latest
@@ -880,11 +1072,24 @@ root `LICENSE-MIT` + `LICENSE-APACHE` pair that the `include` allow-list names.
 the same command on both runners.
 
 **Consuming items get concrete values from the owned parameter above.** R22
-(`runtime-version-accessor`) reads `env!("CARGO_PKG_VERSION")`; R32's
-built-binary tier resolves the executable through
-`env!("CARGO_BIN_EXE_rs-launch-blueprint")` rather than hardcoding a path or a
-profile; R68's release matrix uploads the filename
-`target/release/rs-launch-blueprint`.
+(`runtime-version-accessor`) reads the **target directory layout and the target
+names** — library crate `rs_launch_blueprint`, binary `rslbp`, artifacts under
+`target/debug/` and `target/release/` — which is exactly what R22's own prompt
+registers as consumed from this item: *"The build tool's output-artifact naming
+and layout (what the binary/library targets are called, where `cargo build`
+places them); R49 (`build-target-declaration`) owns `build-tool-output-shape` —
+assume its answer as a consumed parameter"*
+(`research/topics/22-runtime-version-accessor/prompts/runtime-version-accessor.prompt.md:18`).
+R22's accessor macro `env!("CARGO_PKG_VERSION")` derives from the `[package]
+version` field, which this item does **not** decide and which the owned parameter
+does not carry; that choice is R22's own. This restates what
+`### Principles and implementation` already says — *"the target directory layout
+in `## Parameters` is the input R22's version accessor reads"* — and an earlier
+revision of this clause contradicted it. R32's built-binary tier resolves the
+executable through `env!("CARGO_BIN_EXE_rslbp")` rather than hardcoding a path or
+a profile; R68's release matrix uploads the filename `target/release/rslbp`.
+Both strings carry the owner's ruling W0-R49n and both are drawn from the owned
+parameter above.
 
 ## Empirical check
 
@@ -1205,12 +1410,20 @@ reverse, and R26 (F039/F078) owns the CI guard that catches a wrong value.
 
 **Disagreement 3 — does the binary name diverge from the package name?** Three
 say match (codex, doxa/openai, doxa/perplexity), two say diverge (opus `rslbp`,
-doxa/gemini `rsbp`). Settled for **match**, on the ground that both divergent
-proposals label their string as a naming proposal rather than a research finding,
-that a value carrying an open owner call cannot be published to the registry, and
-that check 8 shows divergence costs no install-time flag in either direction, so
-a fork adopts it for one `name =` line. **Residual uncertainty:** the name itself
-is owner-reviewable, and check 7 shows 5 of 9 surveyed projects diverge.
+doxa/gemini `rsbp`). The research settled for **match**, on the ground that both
+divergent proposals label their string as a naming proposal rather than a
+research finding, that a value carrying an open owner call cannot be published to
+the registry, and that check 8 shows divergence costs no install-time flag in
+either direction, so a fork adopts it for one `name =` line — and it recorded the
+name as owner-reviewable. **The owner then made that call and the decision now
+carries it: `rslbp`, the Opus proposal** (`docs/port/OWNER-REVIEW.md`, section
+*"2026-09-15 — R49 binary name: `rslbp` (W0-R49n)"*), with the crate and
+distribution name unchanged. So the engine that measured divergence as the
+common practice is the one the value follows, while the majority's *ground* — a
+matching pair needs no naming call — is answered rather than overturned, the call
+having been made. **No residual uncertainty on the name**: check 8 shows the
+divergence costs no install-time flag, and check 7 shows 5 of 9 surveyed projects
+already diverge.
 
 **Disagreement 4 — does the web surface get a second `[[bin]]` now?** Two say yes
 (doxa/perplexity, doxa/gemini), three say no (codex, opus, doxa/openai). Settled
@@ -1230,19 +1443,42 @@ accidental `build.rs` does not, and `default-run` is dead metadata with one
 binary. **Low residual uncertainty**; both are one-line additions if a second
 binary or a build script ever appears.
 
+**Disagreement 6 — which alternative is the ranked runner-up?** The five raws
+name three different ones. Three name the **workspace split**: doxa/openai
+(`raw/doxa-openai.normalized.md:251`, *"Cargo workspace split"*),
+doxa/perplexity (`raw/doxa-perplexity.normalized.md:170-174`, winning *"where
+modularity or independent versioning is required"*) and doxa/gemini
+(`raw/doxa-gemini.normalized.md:92-96`, winning on a divergent MSRV or edition
+for the web surface). Opus names **`dist` 0.32.x as a manifest-level
+orchestration layer** (`raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:521-525`).
+Codex names **Cargo automatic target discovery**
+(`raw/codex-cd14ccfbbefdabb73358b9b75dd288f863c9984100d6d5e3d21f796e3c37f183.md:79-82`,
+winning *"only if the implementation intentionally adopts Cargo's conventional …
+layout, forbids `src/bin/`, and accepts automatic discovery as the package
+boundary"*). Settled for **opus's answer, A4**, and not by vote — by ownership,
+which is the same ground Disagreement 4 is settled on. The majority's workspace
+split is **R02's** question, not this item's, so it is carried as a re-verify
+trigger rather than ranked here; codex's auto-discovery is the counter-position
+in the `autobins = false` sub-decision, not an architecture; A4 is the only one
+of the four costed alternatives this item is free to choose second, and its
+winning condition — R68 resolving F214 to cross-compiled release binaries — is
+recorded with it. **Residual uncertainty is low and is R68's:** if F214 resolves
+that way, check 10's `dist` deprecation reading is re-run at the version R68
+would adopt.
+
 **What P03 must validate, because this run could not.** AC1–AC6 in
 `### Principles and implementation`, every one of which needs a Rust source tree
 that does not exist: that `cargo metadata` reports exactly one `lib` and one
 `bin` target with the recorded names; that `cargo build --release` produces
-`target/release/rs-launch-blueprint`; that `cargo package --list` contains the
+`target/release/rslbp`; that `cargo package --list` contains the
 allow-listed files **and** nothing under `.github/`, `docs/` or `research/`; that
 `cargo publish --dry-run` exits 0, which is the check that fails if the `include`
 list omitted a compile-time input; that the binary count is unchanged with the
 web feature on and off; and that an integration test resolves
-`env!("CARGO_BIN_EXE_rs-launch-blueprint")` with no non-default feature enabled.
+`env!("CARGO_BIN_EXE_rslbp")` with no non-default feature enabled.
 A useful negative control for P03, proposed here and not run: temporarily adding
 `required-features` to the `[[bin]]` block must make the AC6 test fail to
-compile with an unset `CARGO_BIN_EXE_rs-launch-blueprint`, which is the executable
+compile with an unset `CARGO_BIN_EXE_rslbp`, which is the executable
 form of the Disagreement 4 argument. **No performance figure of any kind is
 claimed in this decision**, and none should be inferred from it; measuring build
 or package wall-clock cost is P03's, against the real template.
