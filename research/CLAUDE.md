@@ -83,7 +83,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R78 | opentelemetry-integration | crate | py-only | DIVERGENT | — | [prompt](topics/78-opentelemetry-integration/prompts/opentelemetry-integration.prompt.md) | open |
 | R79 | prometheus-metrics | crate | py-only | DIVERGENT | — | [prompt](topics/79-prometheus-metrics/prompts/prometheus-metrics.prompt.md) | open |
 | R80 | health-probe-endpoints | bundle | py-only | DIVERGENT | — | [prompt](topics/80-health-probe-endpoints/prompts/health-probe-endpoints.prompt.md) | open |
-| R81 | docs-delivery-model | bundle | different | DIVERGENT | — | [prompt](topics/81-docs-delivery-model/prompts/docs-delivery-model.prompt.md) | open |
+| R81 | docs-delivery-model | bundle | different | DIVERGENT | — | [prompt](topics/81-docs-delivery-model/prompts/docs-delivery-model.prompt.md) | resolved |
 | R82 | docs-correctness-gate | bundle | different | DIVERGENT | — | [prompt](topics/82-docs-correctness-gate/prompts/docs-correctness-gate.prompt.md) | open |
 | R83 | openapi-contract-fuzzing | crate | py-only | DIVERGENT | — | [prompt](topics/83-openapi-contract-fuzzing/prompts/openapi-contract-fuzzing.prompt.md) | open |
 | R84 | openapi-typed-client-generation | crate | py-only | DIVERGENT | — | [prompt](topics/84-openapi-typed-client-generation/prompts/openapi-typed-client-generation.prompt.md) | open |
