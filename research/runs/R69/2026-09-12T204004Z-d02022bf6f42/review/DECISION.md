@@ -1,6 +1,71 @@
-# R69 web-framework-stack — decision (revision 5, 2026-09-15)
+# R69 web-framework-stack — decision (revision 6, 2026-09-16)
 
-**Revision note (revision 5).** Revision 5 rewrites revision 4 (sha256
+**Revision note (revision 6). No owned value moves, and the reason is a finding rather than
+caution.** Revision 6 rewrites revision 5 (sha256
+`0fc0ed8a9c4a6daac900e23524c1c3ba0ef1707aeb44833c0ca2b2b57eb4cf4c`) in place. No revision of
+this decision has been published, so there is still no `## Supersedes`. The one
+`- owns web-extra-surface` line and the five `- assumes` lines are **byte-identical to
+revisions 2, 3, 4 and 5**, and so is everything the owned value fixes: `axum` 0.8.9 on `tokio`
+1.53.1 behind an off-by-default `web` feature, `tower` 0.5.3 as a dev-dependency, `bacon`
+3.25.0 as the dev watcher, the exclusions, the R67 exit contract (SIGTERM →143, SIGINT →130,
+drain-deadline expiry →1) and the request to R67, the CLI Design Standard's R4.1 required
+global core, gate 1's `inapplicable` answer under owner ruling Q7.B, and every evidence script
+and cited log of the six checks and of `yanked-control-r5.sh`. **The specific question that
+could have moved the owned value was asked and answered on evidence.** The owner-supplied
+document advises `axum = "=0.8.9"` — an exact-equality requirement — and this item is not
+owner-accepted, so changing the value was permitted. It is not warranted: **neither the owned
+value nor the migration table states a requirement operator at all**, and Cargo's default for a
+bare version string is the caret requirement, under which `"0.8.9"` *is* `>=0.8.9, <0.9.0` and
+therefore already cannot resolve to 0.9 — which is the document's only stated reason for the
+`=` form. Read at the Cargo Book and asserted in
+`review/evidence/owner-reference-check-r6.log`, section B. The ground for *not* adopting `=` is
+recorded under *Compatibility* below. So the value stays byte-identical, and
+`review/empirical/parameters-check.sh` was re-run against this file with `diff` reporting no
+differences against `review/evidence/parameters-check-r2.log`.
+
+**What revision 6 is.** Revision 5 was **approved** by the round-5 empirical audit
+(`review/audit-codex.md`, actor `audit-codex-2026-09-12T204004Z-d02022bf6f42-r5`, model
+`gpt-5.6-terra`, family openai, verdict `approve`, `unresolved-findings: none`), which reran
+all six checks plus `yanked-control-r5.sh` three times in place and once from a clean
+`git archive HEAD` extraction, all byte-identical, and independently counted 54 yanked errors.
+Revision 6 therefore repairs no defect. It carries out **owner decision 11 of 2026-09-16**
+(`docs/planning/p02/owner-decisions.md`, *Owner-supplied reference architecture — STANDING
+INPUT*), which rules that R69 "reconciles with it row by row where they overlap … and records
+agreement or a ground for differing; rows belonging to other items are recorded as hand-offs,
+not decided." The document is recorded as an owner-supplied **input** under `## Engines`, with
+its provenance and overlap map; each row's reconciliation is placed where that row's topic
+already lives, and **no new H2 heading is added** — the H2 set is the one the role contract
+fixes and the audits have checked.
+
+**The document is an input, not an authority, and every fact taken from it was re-verified.**
+It says so itself: its closing caveat records that its code patterns were "compiled in my head,
+not against the toolchain", and it flags several versions "verify". Owner-fixed parameters in
+`docs/port/PARAMETERS.md` override it where they differ — **edition 2024 over its
+`edition = "2021"`, and `msrv-policy` over its `rust-version = "1.85"`** — and those two `-
+assumes` lines are unchanged. Two new scripts do the verification:
+`review/evidence/fetch-owner-reference-r6.sh` (a fetcher, not a check, the sibling of
+`fetch-figures.sh`) writes reduced snapshots under `review/evidence/snapshots/r6/`, which are
+committed; `review/evidence/owner-reference-check-r6.sh` asserts against those snapshots, never
+touches the network, carries a control that must report a present string, and is cited as
+`review/evidence/owner-reference-check-r6.log`. It was run three times and runs 2 and 3 were
+byte-identical to run 1; a scratch copy with one expectation mutated to `9.9.9` exited `1`, so
+the assertions can fail.
+
+**Every row's disposition, one line each.** The document is cited by its own section headings.
+
+| # | Row | Disposition |
+|---|---|---|
+| 1 | Framework and runtime — axum 0.8.9 / tokio 1 (TL;DR, Key Finding 1, Recent-Bugs register) | **Agree** on the members and the version. **Differ with ground** on the `=0.8.9` pin (a bare requirement is already caret-bounded) and on "a 3-year horizon on 0.8 safe" (the primary source is weaker than the paraphrase, and 0.9 work is live on `axum::serve`). Owned value unmoved. Recorded under *Compatibility* and under F338. |
+| 2 | Features — the document enables `ws`, `http2`, `macros` (reference `Cargo.toml`) | **Additive later-layer territory, not enabled here**, under the owned parameter's own "heavier opt-ins nest on top rather than widening it" clause. Recorded at Disagreement 4. |
+| 3 | Dev loop — `bacon` over `cargo-watch` (C14) | **Agree**, and this item's finding is the stronger one: the document does not mention that bacon's default Unix job interruption is SIGKILL. The `bacon.toml` `kill` override stands. `cargo-chef` and `mold` are **hand-offs** (R51, R68). Recorded under F339. |
+| 4 | Graceful shutdown — Cloud Run's 10-second SIGTERM window; axum issue #3003 (Cloud Run Runbook, C7) | **Verified at Google's own page and at the GitHub API.** The 10 s window is recorded as a **datum handed to R77** for its drain-deadline default; #3003 is recorded as a **hazard for a later WebSocket layer**, which has no P02 item. Neither changes anything here. Recorded under F338. |
+| 5 | Test idiom — `axum-test` ranked over `tower::ServiceExt::oneshot` (C12) | **Differ with ground**, and the document's figure is stale: the `18` line is three majors behind. `oneshot` is kept, `axum-test` is recorded as the alternative with the condition under which it wins, and the harness tier remains **R32's**. Recorded at Disagreement 3. |
+| 6 | Layout — single crate, feature-vertical modules, workspace later (C13) | **Agree**, and it matches R49's selected alternative A1. Which crate carries the feature is **R02's**, still open. Recorded under *Migration implications*. |
+| 7 | Error contract — RFC 9457 Problem Details (C4) | **Hand-off to R70**, not decided here, with the note that owner-accepted R67's envelope differs in shape and R70 must reconcile them. Recorded under *Minimal realistic endpoint*. |
+| 8 | Everything else — templating, static assets, OpenAPI, validation, database, sessions/auth, WebSocket fan-out, jobs, config/secrets, observability, middleware, container, Cloud Run deployment | **Hand-offs**, one line each, by item or as "no P02 item; pending owner scoping". Listed once under `## Engines`. No research was done on them and none is decided. |
+
+**Revision note (revision 5), retained as the record of that revision. It was approved by the
+round-5 empirical audit and nothing in it is withdrawn.** Revision 5 rewrites revision 4 (sha256
 `1814883d3d4b83333ea145c6dae0e02d86ba058b46b512c4bdfeac00afca23c3`) in place. No revision of
 this decision has been published, so there is still no `## Supersedes`. **Nothing about the
 recommendation, the parameters, the checks or the evidence moves.** `axum` 0.8.9 on `tokio`
@@ -421,7 +486,10 @@ second fresh Claude Opus 5 context that produced none of this item's raws, audit
 item's raws, audits, revisions or their audits, 2026-09-15; revision 4 by a fourth fresh
 Claude Opus 5 context that produced none of this item's raws, audits, revisions or their
 audits, 2026-09-15; revision 5 by a fifth fresh Claude Opus 5 context that produced none of
-this item's raws, audits, revisions or their audits, 2026-09-15; run
+this item's raws, audits, revisions or their audits, 2026-09-15; revision 6 by a sixth fresh
+Claude Opus 5 context that produced none of this item's raws, audits, revisions or their
+audits, 2026-09-16, folding in the owner-supplied reference architecture under owner decision
+11; run
 `research/runs/R69/2026-09-12T204004Z-d02022bf6f42`. This item was admitted ahead of the
 Wave 0 review gate by owner decision Q3.A (2026-09-12) because it consumes only R01, which
 the owner accepted on 2026-09-10, and because 19 items consume its owned parameter directly.
@@ -624,6 +692,45 @@ and SIGTERM (asserted in `review/evidence/assert-figures.log`, section F). **No 
 `target-os-matrix`; `signal-hook` and `ctrlc` add a dependency for something already present,
 and `hyper-util`'s `GracefulShutdown` is the layer `axum::serve` exists to wrap.
 
+**The unreleased 0.9 line lands on exactly this mechanism, which sharpens the existing
+`re-verify` trigger rather than changing the recommendation** (owner-reference *Key Finding 1*
+and *Recent-Bugs-vs-Plan Register*; owner decision 11, row 1). The document's factual half is
+confirmed: **axum has published nothing at or above 0.9**. Its registry `max_version`,
+`max_stable_version` and `newest_version` all read `0.8.9`, and the set of published versions
+starting `0.9`, `1.` or `2.` is **empty** across all 94 published versions
+(`review/evidence/owner-reference-check-r6.log`, section A). The **inference** the document
+draws from that — "This makes a 3-year horizon on 0.8 safe", with the pending breaking changes
+"concentrated in **axum-extra**" — is stated more absolutely than its source, and this item
+records the source instead:
+
+- The statement the document paraphrases as "There isn't a timeline yet" is a comment by
+  `mladedav` (`author_association: COLLABORATOR`) on `tokio-rs/axum` issue **#3809**
+  (*Inquiry about the release timeline and features for axum 0.9.0*, closed 2026-06-30), and
+  it reads, verbatim: *"There isn't any set timeline. We'd like to do it soon, but no promises
+  and it could mean pretty much anything."* The second sentence is the half the document drops,
+  and it is the half that bears on a three-year horizon.
+- The breaking changes are **not** confined to `axum-extra`. The `release-plz` pull request
+  **#3745** (*chore: release main (0.9)*, opened 2026-05-05, **closed without being merged** —
+  `merged: false`, `merged_at: null`, which is why the registry still shows no 0.9.0) proposes
+  `axum`: `0.8.9 -> 0.9.0` and lists its `cargo-semver-checks` failures against
+  `axum/src/serve/mod.rs`: **`function serve` (3 → 4 generic types)**, **`trait Serve` (3 → 4
+  required generic types)** and **`trait WithGracefulShutdown` (4 → 5 required generic
+  types)**.
+- Pull request **#3819** (*Extract `axum::serve` and friends into new `axum-serve` crate*) is
+  **open** in milestone **0.9**.
+
+All four facts are asserted in `review/evidence/owner-reference-check-r6.log`, section C.
+**What this changes here: nothing, and that is the finding.** `axum::serve(..)
+.with_graceful_shutdown(..)` is the F338 mechanism at 0.8.9, the version this decision
+recommends and the only one published; a caret requirement cannot cross into 0.9 (see
+*Compatibility*); and this decision's `re-verify:` line already fires **when axum publishes
+0.9**. What is added is the shape of the work that trigger implies — the migration surface is
+`serve_until`'s own call site, not a peripheral crate — and a caution against reading the
+document's three-year horizon as a reason to build more on that surface than F338 needs. The
+claim that the repository's "highest tag is `axum-v0.8.9`" was **not** re-verified: the GitHub
+tags endpoint returns an unordered page, and the registry — the authority this decision already
+uses for version facts — settles the same question.
+
 What the framework does not give you is py's `timeout_graceful_shutdown`. **axum's drain is
 unbounded by construction**: after the signal it stops accepting and then awaits
 `close_tx.closed()` with no deadline. This run verified that by reading the published source
@@ -672,6 +779,51 @@ variation to take if a consumer wants the narrower feature set. Gemini's proposa
 shutdown with `tower_http::timeout::TimeoutLayer` is a **per-request** bound, not a drain
 deadline; the two are complementary, and the per-request layer is R75's to decide (axum's own
 example uses it for exactly that adjacent problem).
+
+**A deployment datum for R77's drain-deadline default, verified at Google's own page and handed
+off rather than decided here** (owner-reference *Cloud Run Runbook*, the *Graceful shutdown*
+caveat; owner decision 11, row 4). This item fixes the deadline's **mechanism** — a
+settings-driven `tokio::time::timeout` whose clock starts at the signal — and leaves its
+**value** to R77 (`web-env-settings`), which owns the environment variable. One published
+platform constraint bears on that value strongly enough to record. Google's *Container runtime
+contract*, requested at `https://cloud.google.com/run/docs/container-contract` and served
+HTTP 200 from `https://docs.cloud.google.com/run/docs/container-contract`, says under
+*Container instance lifecycle → Shutdown*, **for services**, verbatim:
+
+> Before shutting down an instance, Cloud Run sends a SIGTERM signal to all the containers in
+> an instance, indicating the start of a 10 second period before the actual shutdown occurs, at
+> which point Cloud Run sends a SIGKILL signal.
+
+Asserted in `review/evidence/owner-reference-check-r6.log`, section E, which also asserts the
+neighbouring sentence *"If the instance doesn't shut down on its own within a few seconds after
+receiving SIGTERM, Cloud Run sends a SIGKILL signal for a forced termination"* — that one sits
+under **For jobs**, a different surface, and is asserted alongside so the two cannot be read as
+contradicting each other. **The hand-off to R77, stated as a datum and not as a default:** on
+that platform a drain deadline is honoured only if it is strictly shorter than 10 seconds
+**measured from SIGTERM**, because the SIGKILL is unconditional at the deadline and the process
+never reaches its own exit path — so R67's 143 would never be observed. **This is precisely the
+distinction the clock-start rule above makes**, which is why that rule is not a fine point: a
+whole-lifetime wrapper — the shape the opus and perplexity raws propose — bounds the server's
+lifetime rather than the drain, and therefore answers nothing about a window that begins at the
+signal. R51 (`container-image`) is the other consumer. **Cloud Run is not adopted as a target
+by this item**: `target-os-matrix` is `ubuntu-latest, macos-latest`, this template ships no
+deployment, and the document's Cloud Run rows are listed among the hand-offs under
+`## Engines`.
+
+**A hazard recorded for a later WebSocket layer, verified and not acted on here**
+(owner-reference *C7*, "Known Axum issue … issue #3003"). The issue exists and says what the
+document says it says: `tokio-rs/axum` issue **#3003**, *Graceful Shutdown ignores Websocket
+handler task*, opened 2024-10-21 against **axum 0.7.4** and still **open**, reporting that
+*"The task spawned in `ws.on_upgrade` is not connected to the graceful shutdown future at
+all."* (`review/evidence/owner-reference-check-r6.log`, section F). **It changes nothing in
+this decision.** The `web` feature recommended here enables axum's default features, which do
+**not** include `ws`; nothing in this item's scope performs a WebSocket upgrade; and
+`serve_until`'s deadline behaves identically either way. The hazard is real for whoever adds
+that surface — an upgraded connection's task outliving the drain is exactly what the
+ten-second window above converts into a SIGKILL — and the document's mitigation (`TaskTracker`
+plus `CancellationToken`, and a close frame on SIGTERM) is recorded with it as that layer's
+starting point, unverified here. **This programme has no P02 item for WebSockets**; the row is
+listed under `## Engines` as pending owner scoping.
 
 **The serve binary's process contract — R67's integers, not this item's.** R67
 `error-and-exit-code-contract` is published and owner-accepted (2026-09-14, at
@@ -814,6 +966,24 @@ not obviously able to serve a long-running process with plain console logs
   the container does. The opus raw's migration list states that no `bacon.toml` is needed;
   that is wrong on this point, and the correction is recorded here.
 
+**The owner-supplied document agrees on the tool and this item's finding is the stronger one**
+(owner-reference *C14*, "bacon (or cargo-watch) for reload … bacon better UX"; owner decision
+11, row 3). The document's stack table picks `bacon` over `cargo-watch` on developer
+experience. This decision reaches the same pick on a different and harder ground — gate 2 plus
+`cargo-watch`'s own end-of-life notice at tag `v8.5.3`, with gate 1 struck by owner ruling
+Q7.B — so agreement is recorded and nothing moves. **What the document does not carry is the
+SIGKILL finding above**, which is the one fact that makes the recommendation usable: a `bacon`
+recipe without the `bacon.toml` `kill` override never exercises the production drain path, and
+the document's C14 row prescribes no `bacon.toml` at all. The override stands as recorded, and
+its unproven row in the table under `## Engines` is unchanged. **Two of that row's three tools
+are hand-offs, not this item's:** `cargo-chef` is a Docker dependency-layer cache and belongs
+to **R51** (`container-image`); `mold`/`lld` is a linker selection that reaches the release
+build and belongs to **R68** (`release-binary-artifacts`), with R42's published
+`package-manager-invocation` governing how either is invoked. Neither is researched here and
+neither is recommended or excluded by this item. The document's fourth C14 element, pinning the
+toolchain with `rust-toolchain.toml`, is `msrv-policy`'s and R42's territory and is likewise
+not decided here.
+
 Recommended recipes, following R42's published `package-manager-invocation` (bare executables
 resolved on PATH, no provisioner prefix; presence tested with `command -v bacon`, the rule
 that parameter sets for a tool installed from crates.io):
@@ -853,6 +1023,25 @@ needs no kill override; it becomes the recommendation the moment it declares a
 **Minimal realistic endpoint at the R01 boundary.** The handler names R01's types and nothing
 of its own; the error envelope is R70's, the middleware ordering R75's, the trace and metrics
 layers R78's and R79's, and none is preselected here.
+
+**The error contract is R70's, and revision 6 hands it one open question rather than answering
+it** (owner-reference *C4*, "One `AppError` enum (`thiserror`) implementing `IntoResponse` …
+RFC 9457 Problem Details JSON (`type`/`title`/`status`/`detail`/`errors`)"; owner decision 11,
+row 7). **This item decides nothing about it** — `WebError` above is a placeholder naming
+R70's type, and owner decision 11 rules that rows belonging to other items are recorded as
+hand-offs, not decided. What is recorded for **R70** (`http-problem-envelope`) is the one
+tension a later reader would otherwise have to discover: the owner-supplied document proposes
+RFC 9457 Problem Details for the HTTP body, while **R67 is published and owner-accepted
+(2026-09-14) and its owned `error-taxonomy-exit-codes` fixes a different envelope shape** — a
+single JSON object `{"error":{"code","message","hint"?}}` with `hint` omitted rather than
+`null` when absent. The two are not in conflict as they stand, because **R67's envelope is the
+CLI process's stderr contract, not an HTTP response body**, and R67 states that it "defines
+exactly those three keys and defines no trace, cause-array or diagnostic field" while R7.8
+permits documented additions owned by the item that needs them. **R70's question, stated so it
+is not lost:** whether the HTTP surface mirrors R67's three keys, adopts RFC 9457's member
+names, or carries both — and, if RFC 9457, how `code` survives, since a stable catalog token is
+what R67's `RSLB` rows exist to provide. Nothing here constrains that answer; the owner
+document is an input to it under owner decision 11, which places C4 in R70's overlap set.
 
 ```rust
 #[derive(Clone)]
@@ -1015,6 +1204,33 @@ by the resolver rather than by independent choices. The one cross-member constra
 stating is the `axum::serve` cfg above. `bacon` sits outside that compiled graph entirely: it
 is a process wrapper with no Rust ABI or dependency-resolution relationship to the service.
 
+**The requirement operator, which the owner-supplied document raises and this item does not
+adopt** (owner-reference *Recent-Bugs-vs-Plan Register*, "pin `axum = "=0.8.9"`,
+`axum-extra = "=0.12.6"`"; owner decision 11, row 1). The `rust-lang/crates.io` pins quoted
+above are an **application** convention — that repository ships a service with a committed
+`Cargo.lock`, so an `=` requirement costs it nothing and documents an exactly reproduced build.
+This template is the opposite case: it is a repository people copy, and a requirement it ships
+travels into their manifests. Three facts decide it, the first read at a primary source and
+asserted in `review/evidence/owner-reference-check-r6.log`, section B:
+
+- **A bare requirement is already caret-bounded, so the document's stated reason is already
+  satisfied.** The Cargo Book's *Version requirement syntax* gives `0.2.3 := >=0.2.3, <0.3.0`,
+  states that "Caret requirements are the default version requirement strategy", and that
+  "Leaving off the caret is a simplified equivalent syntax to using caret requirements". A
+  manifest reading `axum = { version = "0.8.9", … }` therefore means `>=0.8.9, <0.9.0` and
+  **cannot** resolve to 0.9 when 0.9 is published. The document's mitigation buys nothing
+  against 0.9 that the default already gives.
+- **What `=` would additionally cost is real.** It blocks 0.8.10 and every later 0.8 patch,
+  including a security patch, until a template release moves the literal; and in a consumer's
+  tree it conflicts with any other crate requiring a later 0.8.x — `axum-test` 21.1.0 already
+  declares `^0.8.9`, and a future `^0.8.10` would be unsatisfiable beside `=0.8.9`.
+- **Nothing in this decision's owned value or migration table states an operator**, so this is
+  a ground recorded for P03 rather than a change: the owned parameter says "axum 0.8.9 optional
+  and its default features on", the `Cargo.toml` migration row says "optional `axum` 0.8.9
+  (defaults on)", and both render as Cargo's default caret requirement. **The owned value is
+  byte-identical to revisions 2 through 5.** Reproducibility comes from the committed
+  `Cargo.lock` and `--locked` in CI, which is where this programme already puts it.
+
 **Migration implications** (file-level; crate placement is R02's, and `<app>` is R49's
 `build-tool-output-shape`):
 
@@ -1035,6 +1251,29 @@ is a process wrapper with no Rust ABI or dependency-resolution relationship to t
 Not created by this item: `problems.rs` (R70), `openapi.rs` (R71), `pagination.rs` (R72),
 `idempotency.rs` (R73), `rate_limit.rs` (R74), `middleware.rs` (R75), `cors.rs` (R76),
 `settings.rs` (R77), `telemetry.rs` (R78/R79), `Dockerfile` (R51).
+
+**Layout: agreement with the owner-supplied document, and the item that actually owns it**
+(owner-reference *C13*, "Start **single crate, feature-vertical modules** … promote to a
+workspace only when compile times or team boundaries demand it"; owner decision 11, row 6).
+**Agreed, on three counts already recorded above.** The file table is a single crate with
+feature-vertical modules — `src/web/routes/projects.rs`, `src/web/routes/ops.rs`, and R70
+through R80's later layers nested inside the same gated `src/web/` tree, which the owned
+parameter's clause (4) fixes. `AppState` holding shared members with `FromRef` substates is the
+document's own `AppState` + `FromRef` prescription, chosen here on the compile-time ground
+under alternative B. Dependency injection "via traits behind concrete types" is R01's published
+`http-transport-injection-seam`, which this item consumes unchanged. The same shape is selected
+independently by **R49** (`build-target-declaration`), whose unpublished decision revision 8
+(`research/runs/R49/2026-09-05T155504Z-2107cffb3ecf/review/DECISION.md`) compares four
+alternatives and selects **A1 — "single package, one binary, web behind a Cargo feature"**,
+recording that the selection "is shape-neutral: if R02 chooses a workspace, every field above
+moves to the member manifests unchanged". **What is not decided here, and by whom:** whether
+the template stays a single crate is **R02**'s (`crate-boundary-enforcement`, open), exactly as
+the sentence above this table says; the owned value is phrased to survive either answer. The
+document's own "promote to a workspace only when compile times or team boundaries demand it" is
+a trigger for R02's question, not an answer to it, and no `CONFLICT:` line arises. The
+document's reference repositories for C13 are Variant-A and Variant-B application samples; this
+item names `rust-lang/crates.io` as its reference implementation for the reasons under
+*Authorities*, and neither set was re-read for this row.
 
 **Validation strategy.** *Verified in this run:* the six checks under `## Empirical check` —
 the R01 state-bound coupling with two negative twins, the feature's gating shape and
@@ -1118,6 +1357,23 @@ binds, and OV-01 is refused*. Repository context:
 `docs/port/PARAMETERS.md`; `docs/port/COMMONALITY.md` rows F017, F303, F330, F331, F338, F339;
 `docs/port/DIVERGENCE-ANALYSIS.md` line 217; `docs/port/BASELINE-REVIEW.md` (the F331
 reclassification); `docs/port/OWNER-REVIEW.md` (the 2026-09-04 owner direction).
+Retrieved by **revision 6 on 2026-09-16** and by no earlier revision, each reduced into
+`review/evidence/snapshots/r6/` by `fetch-owner-reference-r6.sh` and asserted by
+`owner-reference-check-r6.sh`: `https://crates.io/api/v1/crates/axum` and `/versions`;
+`https://crates.io/api/v1/crates/axum-test` and
+`/axum-test/{18.0.0,18.3.0,18.7.0,21.1.0,22.0.0-rc.1}/dependencies`;
+`https://api.github.com/repos/tokio-rs/axum/issues/3809` and its `/comments`;
+`https://api.github.com/repos/tokio-rs/axum/issues/3003`;
+`https://api.github.com/repos/tokio-rs/axum/pulls/3745` and `/pulls/3819`;
+`https://cloud.google.com/run/docs/container-contract`, served HTTP 200 from
+`https://docs.cloud.google.com/run/docs/container-contract`; and
+`https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html`. Read by revision 6
+and by no earlier revision:
+`docs/planning/p02/owner-reference-axum-companion-stack-2026-09-16.md` (the owner-supplied
+input, in full) and `docs/planning/p02/owner-decisions.md` section 11;
+`research/runs/R49/2026-09-05T155504Z-2107cffb3ecf/review/DECISION.md` (R49 revision 8,
+**unpublished**, for its selected alternative A1) and R67's published `## Parameters` block for
+the envelope shape named under *Minimal realistic endpoint*.
 
 re-verify: when axum publishes 0.9, when R58 (logging-pipeline-contract) or R02 (crate-boundary-enforcement) publishes, when watchexec-cli declares a rust-version or the owner rules on whether the MSRV gate reaches non-linked developer tools, when R67 dispositions this item's request for a drain-deadline catalog row or revises the 130/143 reading of its boundary precedence, when R60 selects the CLI parser the serve binary's global core is parsed with, when the CLI Design Standard revises R4.1's required global core past v1.4.14, at the next msrv-policy floor advance past 1.96, or by 2027-03-13, whichever comes first
 
@@ -1194,7 +1450,43 @@ control assertion that must fail, so that a check which cannot fail is visible a
 check 2 now carries three, the MSRV-floor control, revision 3's advisory-count control, and
 revision 4's control showing the warning-absence test reports a line that *is* present.
 
-**One further script, which is not a seventh check.** Revision 5 adds
+**Three further scripts, none of which is a seventh check.** Two of them are revision 6's and
+are described first; the third is revision 5's and follows.
+
+Revision 6 adds `review/evidence/fetch-owner-reference-r6.sh` and
+`review/evidence/owner-reference-check-r6.sh`, with the cited log
+`review/evidence/owner-reference-check-r6.log`. They exist because owner decision 11 folds an
+owner-supplied reference architecture into this item as an **input**, and that document's own
+caveat says its patterns were "compiled in my head, not against the toolchain" — so the facts
+revision 6 takes from it are asserted rather than narrated. **The division between them is the
+point.** `fetch-owner-reference-r6.sh` is a **fetcher, not a check**, the sibling of
+`fetch-figures.sh`: it performs the retrievals, records each one's HTTP status and effective
+URL, and writes a **reduced** snapshot of each — only the fields this decision cites — under
+`review/evidence/snapshots/r6/`, **which is committed**. Its User-Agent names the repository
+(`https://github.com/smorinlabs/rs-launch-blueprint`) and no personal email address appears in
+any request, per R42 revision 7's precedent. `owner-reference-check-r6.sh` then **asserts
+against those committed snapshots and never touches the network**, which is what makes it
+rerunnable offline and byte-identical after this decision is committed rather than only from
+the author's checkout on the day the sources were live. It asserts on content in seven
+sections — axum's published release list, Cargo's default version-requirement rule, the
+axum-0.9 state in `tokio-rs/axum`, axum-test's versions and declared axum requirements, the
+Cloud Run shutdown sentences for services and for jobs, axum issue #3003, and a control — and
+**the control must report a present string**, so the emptiness assertion it mirrors is capable
+of failing. It was run **three times in a row** and runs 2 and 3 were **byte-identical** to run
+1, which is the cited log; separately, a scratch copy produced with `cp` and `sed`, with the
+single assertion `must "axum newest non-yanked num" "0.8.9"` rewritten to `"9.9.9"`, printed
+`FAIL … expected=9.9.9 actual=0.8.9` and exited `1`. The scratch copy was deleted; the
+committed script is unmodified. Both scripts set `set -o pipefail`, resolve their paths from
+`${BASH_SOURCE[0]}`, invoke `/usr/bin/grep` by absolute path with the binary named in the log,
+never write inside this run directory except into `snapshots/r6/`, and pass the repository's
+`shellcheck` pre-commit hook carrying the same file-level
+`# shellcheck disable=SC2015,SC2016,SC2329` directive, with the same per-code justification,
+that `feature-shape-check-r4.sh` and `yanked-control-r5.sh` carry. **Neither is a check**: no
+claim in the recommendation rests on either, and their exit status decides nothing about it.
+What they establish is which of the owner-supplied document's statements this decision may
+repeat — which is why the reconciliation rows above cite this log and not the document.
+
+**One further script, which is not a seventh check either.** Revision 5 adds
 `review/evidence/yanked-control-r5.sh` and its log `yanked-control-r5.log`. It tests **no claim
 this decision makes**: it exists only to make the error-line count reported in the revision-4
 note — the figure the round-4 audit rejected — an **executed assertion** rather than a
@@ -1275,7 +1567,14 @@ exactly what was established, by whom, and under which conditions.
   again**, against revision 5's text, and `diff` again reported no differences against
   `parameters-check-r2.log`: revision 5 edits prose and adds one control script, and moves
   neither a parameter line nor an H2 heading, so revision 2's log remains the cited one and no
-  new log is written for it either.
+  new log is written for it either. **Revision 6 re-ran it a third time**, against revision 6's
+  text, and `diff` reported no differences against `parameters-check-r2.log` again. That result
+  is this revision's own evidence for two of its claims: the one `- owns` line and the five
+  `- assumes` lines are byte-identical to revisions 2 through 5 — so the owner-supplied
+  document moved no owned value — and the H2 section list is still exactly the five headings
+  the role contract fixes, which is the constraint revision 6 worked under in placing each
+  reconciled row inside an existing section rather than adding a heading. Revision 2's log
+  therefore remains the cited one and no new log is written for it.
 - **Checks 1, 3, 4 and 5** were **not** re-run by revision 4, and that is not asserted here.
   None of them reads this file and none of their inputs changed. What stands for them is the
   round-3 empirical audit's own rerun, recorded in `review/audit-codex.md`: its finding 4
@@ -1288,6 +1587,15 @@ exactly what was established, by whom, and under which conditions.
   `feature-shape-check-r4.sh` reproduced `feature-shape-check-r4.log` byte-for-byte in all five
   modes tried and that the other five scripts and their cited logs were unchanged from `a735e88^`
   through `HEAD` and matched. Revision 5's own run is the separate control script named above.
+  **Revision 6 re-ran none of checks 1 to 5 either, and does not assert that it did.** It
+  changes no script, no probe input, no snapshot and no log among them; the two scripts and one
+  snapshot directory it adds are new paths that no existing check reads. What stands for checks
+  1 to 5 is the **round-5** empirical audit's own rerun, recorded in `review/audit-codex.md`
+  (verdict `approve`, `unresolved-findings: none`): it reran all six decision checks and
+  `yanked-control-r5.sh` — the latter three times in place and once from a clean
+  `git archive HEAD` extraction — reporting exit `0` for each and every output byte-identical to
+  its cited log, and it independently counted the 54 yanked errors with its own
+  `/usr/bin/grep -cF`. Revision 6's own runs are check 6 above and the two new scripts.
 - **Checks 3 and 4** read the committed reduced snapshots rather than live endpoints, because
   download counters, `pushed_at` and star counts move hourly and a live re-run could never be
   byte-identical; `fetch-figures.sh` refreshes them and records its retrieval timestamp in
@@ -1302,7 +1610,13 @@ exactly what was established, by whom, and under which conditions.
 An auditor therefore runs the six scripts, five from `review/empirical/` and check 2 from
 `review/evidence/`, plus — since revision 5 — the one control script named above,
 `review/evidence/yanked-control-r5.sh`, which decides nothing about the recommendation and is
-run only to reproduce the count in the revision-4 note. Nothing else. **The five locations
+run only to reproduce the count in the revision-4 note, plus — since revision 6 —
+`review/evidence/owner-reference-check-r6.sh`, which reads only the committed snapshots under
+`review/evidence/snapshots/r6/` and likewise decides nothing about the recommendation.
+`review/evidence/fetch-owner-reference-r6.sh` is **not** rerun as part of an audit: it is the
+fetcher that wrote those snapshots, it goes to the network, and rerunning it would move the
+snapshot contents under the check that reads them — the same reason `fetch-figures.sh` is not
+rerun for checks 3 and 4. Nothing else. **The five locations
 revision 3 edited in this section and
 above it, enumerated rather than left to a reader's diff:** (1) acceptance criterion 1's
 citation, now `feature-shape-check-r3.log`; (2) the gate-3 paragraph, which now names the
@@ -1361,6 +1675,48 @@ and their five other scripts and logs; the gate-3 paragraph and every `55 crate 
 figure, which is the *correct* use of that number; the `## Parameters` block in full; the
 recommendation, the R67 exit contract and request, the R4.1 global core, gate 1's
 `inapplicable` row; and the retained revision-2 and revision-3 note bodies.
+
+**The locations revision 6 edited, enumerated from a mechanical search rather than from a
+re-reading.** Revision 6 differs from revisions 2 through 5 in that it repairs no audit
+finding: it folds in an owner-supplied input, so the search had to find every place each
+reconciled row's **topic** already lives rather than every occurrence of a rejected figure. The
+search was one pass of `/usr/bin/grep -n -E` over this file, run **before any edit was made**,
+with the alternation
+`'axum-test|oneshot|0\.9|=0\.8\.9|SIGKILL|bacon\.toml|Cloud Run|WebSocket|Websocket|http2|macros|R70|R32|R02|R49|workspace|single crate|cargo-chef|mold|synthesizer|revision 5|six checks|control script|re-verify'`;
+every hit was classified against the eight rows before any text was written, and the same
+search was re-run against the edited file. The complete edit list, in file order: (1) the
+title, now revision 6; (2) the new revision-6 note, whose first paragraph states that no owned
+value moves and why, and whose table gives all eight rows' dispositions; (3) the revision-5
+note's heading, which now records that the note is retained as that revision's record and was
+approved — its body is left **verbatim**; (4) the preamble's synthesizer line, which adds
+revision 6's context; (5) under F338, a new paragraph on the unreleased 0.9 line (row 1's
+second half); (6) under F338, two new paragraphs — the Cloud Run ten-second datum handed to R77
+and the axum #3003 WebSocket hazard (row 4); (7) under F339, a new paragraph recording
+agreement on `bacon`, this item's stronger SIGKILL finding, and the `cargo-chef`/`mold`
+hand-offs (row 3); (8) after *Minimal realistic endpoint*, a new paragraph handing the RFC 9457
+question to R70 with R67's differing envelope named (row 7); (9) under *Compatibility*, a new
+block on the requirement operator (row 1's first half); (10) after *Migration implications*, a
+new paragraph on layout, R49's A1 and R02's open boundary (row 6); (11) inside Disagreement 3,
+a new block grounding the `oneshot` idiom and recording `axum-test` as the alternative with its
+winning condition and corrected figures (row 5); (12) inside Disagreement 4, a new block
+recording `ws`/`http2`/`macros` as additive later-layer territory (row 2); (13) under
+`## Engines`, the owner-supplied input's provenance, its standing, and the overlap-map table
+carrying every remaining row as a hand-off (row 8); (14) in `## Empirical check`, the
+further-scripts paragraph, which now introduces revision 6's two scripts before revision 5's;
+(15) the auditor sentence, which now names `owner-reference-check-r6.sh` and says why the
+fetcher is not rerun; (16) the check-6 bullet and (17) the checks-1-to-5 bullet, which record
+revision 6's parameters rerun and that it reran no other check; (18) this enumeration.
+**Deliberately left byte-identical, and why:** the `## Parameters` block in full — the one
+`- owns` line and the five `- assumes` lines — because the one question that could have moved
+it, the document's `=0.8.9` advice, is answered by the fact that neither the value nor the
+migration table states an operator at all (revision-6 note, first paragraph; *Compatibility*);
+the recommendation, every version pin, every exclusion, the gate answers including gate 1's
+`inapplicable` row, the R67 exit contract and the request to R67, and the R4.1 required global
+core, none of which the document reaches; the `re-verify:` line, because the 0.9 finding
+**confirms** its existing "when axum publishes 0.9" trigger rather than adding one; the six
+checks and all seven of their scripts and logs, `yanked-control-r5.sh` and its log, and every
+committed snapshot outside the new `snapshots/r6/` directory; and the retained revision-2,
+revision-3, revision-4 and revision-5 note bodies.
 
 **Check 1 — the R01 coupling.** Three dependency-free packages under
 `review/empirical/state-bound/`. Each declares R01's published seam shape transcribed from
@@ -1511,6 +1867,59 @@ unproven.
   - `raw/doxa-gemini.normalized.md` — Gemini deep-research-preview-04-2026 (sha256 `6b0772ed4e79cca4e8e100aa6bfaaa20a49b9ccc239baa72933af309d0e5d85c`), shape OK. Members: `axum`, `axum::extract::State`, `tokio::signal` combined with `with_graceful_shutdown`, `bacon`. **Alone among the five it declined to exclude `bacon` on licence**, reasoning that an external, developer-installed tool that is never linked into the shipped binary does not engage the gate — which is the position owner ruling Q7.B has since made binding, so this raw's dev-reload recommendation survives the ruling unchanged and is adopted. Against that, **its figures are not endpoint-collected and are not used anywhere in this decision**: it reports axum at ">15k" stars (actual 27,100), "~150-200" open issues (actual 34), bacon 90-day downloads as ">1,500,000 (Proxy estimate based on tooling adoption)" (actual 21,763) and bacon's all-time downloads as "Data unavailable … assumed highly active", and it gives `rocket`'s MSRV as 1.89.0 where the registry says 1.64. Most of its inline citations are Vertex redirect URLs. It also proposes bounding shutdown with `tower_http::timeout::TimeoutLayer`, which is a per-request bound and R75's to decide.
   - `raw/doxa-perplexity.normalized.md` — Perplexity sonar-deep-research (sha256 `666031a08615390c89d5a834f5b2c6e119f02e79d3649ffce838ef7534e0382d`), shape OK. Members: `axum`, `tokio`, `hyper`, `tower-http`, and dev tooling as `Just` + `cargo-watch`. Agrees on the framework, the feature shape, `State` injection and native composition, and raises `BASELINE-REVIEW: F330`. Three of its positions are not adopted: `cargo-watch` is archived with a maintainer end-of-life notice; `tower-http` is explicitly out of scope (R75 owns it); and its drain wrapper carries the same clock-start defect as opus's. It carries no crate figures and states so, citing comparative articles rather than endpoints.
 
+**An owner-supplied input, which is not an engine and is listed apart from the five raws.**
+`docs/planning/p02/owner-reference-axum-companion-stack-2026-09-16.md` — "The Axum Companion
+Stack — Reference Architecture (September 2026)", supplied verbatim by the owner on 2026-09-16
+during the Wave 0 review walk. It produced no raw report, ran no engine and answered no prompt
+field; it is recorded here because **owner decision 11 of 2026-09-16** requires revision 6 to
+reconcile with it row by row where the two overlap, and its own provenance note fixes its
+standing: *"an owner-supplied research input, not a binding standard and not a decision: each
+research item that overlaps it must either agree with it on the record or say why it differs."*
+
+**Its weight, stated exactly, because agreement with it is not evidence.** It carries no
+executed check and says so: *"The code patterns are illustrative and compiled in my head, not
+against the toolchain — validate them locally before relying on them"*, and it marks several
+versions "verify". So **every fact revision 6 relies on from it was re-verified at a primary
+source and asserted**, in `review/evidence/owner-reference-check-r6.log` — crates.io for axum's
+release list and axum-test's versions and requirements, the GitHub REST API for issues #3809 and
+#3003 and pull requests #3745 and #3819, Google Cloud's *Container runtime contract* for the
+ten-second shutdown window, and the Cargo Book for the default version-requirement rule. Where
+the document and a **fixed parameter** differ, the parameter governs and the document is not
+followed: its `edition = "2021"` against `rust-edition` **2024**, and its
+`rust-version = "1.85"` against `msrv-policy`, whose floor today is **1.96**. Its sole
+recommendation on this item's own members — `axum` 0.8.9 on `tokio` 1 / `hyper` 1 / `tower`
+0.5 — agrees with what revisions 1 through 5 already recommended on the evidence recorded
+above, and **agreement is recorded as agreement, not treated as confirmation**: nothing in this
+decision now rests on the document.
+
+**Its overlap map, as the controller recorded it, and what revision 6 did with each row.** The
+eight rows that overlap this item are reconciled where their topic lives — rows 1 through 7 in
+the revision-6 note's table name the location of each. The remaining rows belong to other items
+or to nothing yet, and owner decision 11 rules them **not decided and not researched here**.
+One line each, with no position taken on any:
+
+| Document row | Subject | Where it goes |
+|---|---|---|
+| C1, C2 | Templating (`askama`), static assets and the frontend build (`ServeDir` + `rust-embed`, or Vite) | **No P02 item; pending owner scoping.** The HTMX-versus-SPA head is an owner question, not a research one. |
+| C3 | OpenAPI generation (`utoipa`, `utoipa-axum`) | **R71** (`openapi-generation-pipeline`); the typed-client half is **R84**. |
+| C3 | TypeScript client generation (`openapi-typescript`, `openapi-fetch`, `ts-rs`) | **R84** (`openapi-typed-client-generation`). |
+| C4 | Validation (`garde` + `axum-valid`) | **No P02 item; pending owner scoping.** It reaches the handler signature R70 and R71 shape. |
+| C4 | Error contract, RFC 9457 | **R70** — see *Minimal realistic endpoint* above for the one question handed to it. |
+| C5 | Database access, migrations, Cloud SQL connection (`sqlx`) | **No P02 item; pending owner scoping.** |
+| C6 | Sessions, auth, password hashing, CSRF, OIDC, JWT | **No P02 item; pending owner scoping.** |
+| C7 | WebSocket fan-out (`axum ws` + Redis Pub/Sub) | **No P02 item; pending owner scoping.** Issue #3003 is recorded under F338 as that layer's inherited hazard. |
+| C8 | Background and scheduled work (`apalis`, Cloud Tasks) | **No P02 item; pending owner scoping.** |
+| C9 | Config layering (`figment`) and secrets | **R77** (`web-env-settings`), with **R53**–**R56** owning config schema, discovery, tolerance and secret policy. The ten-second datum under F338 is R77's. |
+| C10 | Logs and traces (`tracing`, `tracing-stackdriver`), error reporting | **R58** (`logging-pipeline-contract`) for the pipeline, **R78** for OpenTelemetry, **R79** for metrics. |
+| C11 | Middleware order, rate limiting, security headers | **R75** (stack), **R74** (rate limiting), **R76** (CORS), **R72**/**R73** for pagination and idempotency. |
+| C12 | Testing — harness, fixtures, mocks, snapshots, CI order | **R32** (harness and tiers), **R33** (property and snapshot), **R48** (mocking), **R11** (CI job structure). The in-process idiom is settled at Disagreement 3. |
+| C13 | Project structure | Reconciled above under *Migration implications*; the crate boundary is **R02**'s. |
+| C14 | `cargo-chef`, `mold`/`lld`, `rust-toolchain.toml` | **R51** (container), **R68** (release binaries), **R42** (toolchain provisioning). `bacon` is settled above under F339. |
+| C15 | Container image, distroless base, `PORT`, probes | **R51** (image), **R80** (`/healthz`, `/readyz`). |
+| Cloud Run Runbook | `gcloud run deploy` flags, affinity, migrations on deploy, pool sizing | **No P02 item; pending owner scoping.** The template ships no deployment and `target-os-matrix` names no cloud. |
+| Variants A / B | HTMX head versus SPA head, and the hybrid | **No P02 item; pending owner scoping.** Owner decision 11 lists it explicitly among the rows it does not admit. |
+| Level One, `tokio` throughout | Whether the library and CLI join the web surface's async world | **R05** (`sync-async-execution-model`, open), which `## Parameters` above already records as a coupling this decision survives either way. |
+
 **What the owner's licence ruling changed versus the raws.** Every licence-based exclusion in
 every raw was enumerated and re-evaluated. Gate 1 is recorded throughout this decision as
 `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any
@@ -1581,6 +1990,45 @@ enters this repository.
    `cargo tree --invert tower` shows it already in the non-dev tree through `axum`, so a direct
    entry buys only the `ServiceExt` import in tests and must not be inside the `web` feature as
    openai and perplexity have it.
+
+   **The in-process test idiom, reconciled with the owner-supplied document** (owner-reference
+   *C12*, which picks "**axum-test + `#[sqlx::test]` + wiremock + insta**", version "axum-test
+   18", over runner-up "tower `oneshot`" on the ground that "oneshot lower-level, more
+   boilerplate", and its *Agent Enablement Notes*, "Use `TestServer::new(app)`; requires axum ≥
+   0.8.7"; owner decision 11, row 5). **The `oneshot` choice above is kept, and the document's
+   authority is not what settles it** — owner decision 11 makes the document an input, not a
+   pre-decision. The ground, stated positively rather than as a rejection:
+   - **It adds no crate to the template.** `cargo tree --invert tower` (check 2) shows `tower`
+     0.5.3 is already in the **non-dev** tree through `axum` itself, so the `[dev-dependencies]`
+     entry buys only the `ServiceExt` import — measured, not assumed, and the reason this
+     member sits outside the `web` feature. `axum-test` would be a new crate in a template whose
+     whole cost argument is the 12 → 52 package delta that check 2 measures.
+   - **It exercises the production object.** `oneshot` is called on the same `Router`
+     `build_router(state)` returns and `axum::serve` consumes, which is what makes acceptance
+     criterion 3 — "`build_router(state)` is the only constructor" — testable rather than
+     merely asserted.
+   - **What the document's "more boilerplate" objection buys is real but out of scope here.**
+     `axum-test`'s `TestServer` wraps request construction, cookies and a WebSocket client; its
+     value rises with the surface under test, and most of that surface (`#[sqlx::test]`,
+     `wiremock`, `insta`, WS) belongs to items this one does not own.
+
+   **The alternative is recorded with the condition under which it wins, and with corrected
+   figures.** `axum-test`'s registry state, asserted in
+   `review/evidence/owner-reference-check-r6.log`, section D: its newest non-yanked version
+   under this item's field rule — the same literal reading applied to `ntex` and `tide` in
+   Disagreement 8 — is **22.0.0-rc.1 (2026-08-24)**, a prerelease; its newest **stable** version
+   is **21.1.0 (2026-08-20)**, `rust_version` **1.89**, licence MIT, and it declares
+   `axum ^0.8.9`. **The document's "axum-test 18" is three majors stale**, and its "requires
+   axum ≥ 0.8.7" holds only from **18.3.0** onward — `18.0.0` declares `^0.8.4`, `18.7.0`
+   declares `^0.8.8`. No fitness gate is answered for it here, because it is not selected; a
+   gate pass would have to be established by whoever selects it. **The condition under which it
+   wins:** when the template's test surface grows past a single in-process request — a database
+   fixture, a cookie-carrying session, or a WebSocket client — the boilerplate `oneshot` leaves
+   in each test outweighs one dev-dependency. **That call is R32's** (`test-harness-and-execution`,
+   open), which owns the harness and the tiers, as *Validation strategy* above already states;
+   this item owns only the idiom its own acceptance criterion needs, and R32 adding `axum-test`
+   as a harness crate would not disturb the `tower` member or the owned value. Owner decision
+   11 places C12 in R32's overlap set, so the document reaches R32 as an input in its own right.
 4. **The axum feature set.** Codex proposes `default-features = false` with
    `["http1", "json", "tokio"]`; openai `default-features = false` with seven named features;
    opus leaves the defaults on. **Settled for defaults on.** Codex's minimal set drops
@@ -1592,6 +2040,32 @@ enters this repository.
    silent drift when the crate changes it, and the reference implementation keeps the defaults
    on and adds to them rather than disabling them. `http2` stays off; it is off by default and
    no consumer has asked for it.
+
+   **The owner-supplied document's feature list is additive later-layer territory, and is not
+   enabled here** (owner-reference *Reference `Cargo.toml`*,
+   `axum = { version = "0.8.9", features = ["macros", "ws", "http2"] }`; owner decision 11,
+   row 2). The three are **additions to** axum's defaults, not replacements for them, so this
+   row is not a disagreement about the default set settled above; it is a question about
+   opt-ins, and the owned parameter already answers that question in general terms: **"heavier
+   opt-ins nest on top rather than widening it, as separate features that require `web`"**. Each
+   of the three is taken by the layer that needs it, not by this item:
+   - **`ws`** — the WebSocket upgrade surface. No item in this programme owns it (see the
+     hand-offs under `## Engines`), and axum issue #3003 under F338 is the hazard whoever takes
+     it inherits. Enabling it here would ship an unbuilt, untested surface inside the `web`
+     feature.
+   - **`http2`** — already answered two sentences above on its own merits, and unchanged: off
+     by default, no consumer has asked for it, and `axum::serve` needs only *one* of `http1` or
+     `http2`, which the defaults supply as `http1`. A Cloud Run deployment would want it off in
+     any case; the document's own *C11* caution says "no end-to-end HTTP/2 for WebSockets".
+   - **`macros`** — `#[debug_handler]` and friends, an ergonomic aid for handler authors. It is
+     a template-authoring convenience with no effect on the shipped surface, and adding it would
+     widen the base feature for something no acceptance criterion needs.
+
+   **Nothing about the owned value or the recommended feature list changes**, and no gate is
+   re-answered: the base stays axum's published defaults `form, http1, json, matched-path,
+   original-uri, query, tokio, tower-log, tracing`, the pattern for anything heavier stays the
+   separate-feature form the owned value names (`otel = ["web", …]` for R78, `metrics` for
+   R79), and a later item wanting `ws` follows that same pattern rather than editing this one.
 5. **The tokio feature set.** Codex `["macros", "rt-multi-thread", "net", "signal"]`; gemini
    `["rt-multi-thread", "net", "signal"]`; opus adds `time`; openai adds `time` and `sync`.
    **Settled for openai's set.** `time` is not optional — without it there is no
