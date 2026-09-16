@@ -1,4 +1,46 @@
-# R81 — docs-delivery-model (bundle, Focused) — DECISION (revision 4, 2026-09-15)
+# R81 — docs-delivery-model (bundle, Focused) — DECISION (revision 5, 2026-09-15)
+
+**Revision note (revision 5) — one recorded repair to the decision's account of
+its own evidence, written from a run. No re-research and no change of
+recommendation.** `review/audit-codex.md` approved revision 4 with no unresolved
+findings; `review/audit-fable.md` rejected it on a single finding, J4, and stated
+that "the recommendation follows from the evidence, and J4 does not touch it".
+This revision repairs exactly that finding and changes nothing else.
+
+- **J4** — "the disclosed failure of `review/evidence/docs-delivery-claims.sh`
+  names the wrong assertion — the decision attributes check 16's `FAIL` to the
+  whole-file hunk-count tripwire, but that assertion still passes
+  (`ASSERT hunk_count_is_17=True`) and the failing one is check 16's
+  byte-identical-region assertion for unproven entry 3, whose end anchor
+  `4. **Whether mdBook` no longer matches because revision 4 rewrote unproven
+  entry 4's opener; `review/audit-codex.md` states the correct mechanism and the
+  decision contradicts it, and the decision does not record that check 17
+  re-anchors that same region on `4. **Wh` in order to keep asserting it".
+  **Repair:** both scripts were rerun in an isolated clone before this paragraph
+  was written, and the disclosure below now quotes the assertion names that
+  actually printed — `FAIL  region marker not found: unproven entry 3 (unsafe
+  posture)  r2=True r3=False` and the shell assertion it sets,
+  `FAIL  revision-3 untouched-region diff  expected=0 actual=1`, with
+  `ASSERT hunk_count_is_17=True` recorded as still passing. The re-anchoring is
+  recorded in the prose **and** in check 17's own table row. The false causal
+  clause ("Revision 4's edits are exactly such a change … **so** a rerun … now
+  reports `FAIL` in check 16") and the overstated "carries every region assertion
+  check 16 made" are both gone.
+
+**Revision 5 trips check 17's title assertion the way revision 4 tripped check
+16's entry-3 anchor, and the failure is disclosed from a run rather than
+predicted — the run showing that check 17's hunk-count gate, contrary to
+expectation, still passes.** `review/evidence/docs-delivery-claims-r4.sh`
+and its log are left byte-identical as history, their sha256 values asserted by
+the new check 20, and the new script `review/evidence/docs-delivery-claims-r5.sh`
+re-targets the revision-diff mechanism at the **revision-4** blob.
+
+**The recommendation, the crate, the version, the corpus figures, the shipped-site
+notice rule, the six-gate block, the confidence statement and the four
+`- assumes` lines are unchanged**, and every evidence artifact revision 3's and
+revision 4's audits reproduced is byte-identical. The revision-4 and revision-3
+notes that follow are kept verbatim, because the recommendation they explain is
+revision 5's recommendation too.
 
 **Revision note (revision 4) — three recorded repairs, no re-research and no
 change of recommendation.** `review/audit-codex.md` approved revision 3 with no
@@ -915,49 +957,124 @@ repository root. All three were defects in the check, not in the claims.
 | 15 | Zola's site model | `curl https://www.getzola.org/documentation/getting-started/configuration/`, tag-stripped assertions | 0 | "The base URL of the site; the only required configuration variable." present; **`SUMMARY` occurs 0 times and `chapter` occurs 0 times** on that page — the fit reason for excluding Zola, stated independently of its licence | same |
 | 16 | Revision-3 diff against the revision-2 blob | `git cat-file blob 9f2bcb9ddf5266bf4face766e98b7cd1be3616ad`; region extraction and `difflib.unified_diff` against this file | 0 | revision-2 blob sha256 asserted `5ab7479c…`; **nine regions asserted byte-identical** (the licence-partition table, its reading, the shared-requirement through what-may-vary block, the four `- assumes` lines, check 8's snapshot rationale, the revision-1 check-defect record, disagreement 4, unproven entry 3, and the revision-1 history entry); **five regions the ruling does change** asserted to have changed *and* to carry their marker sentence; five required texts asserted present (the one-line gate-1 record, the `theme/` prohibition, the Font Awesome duty, the "reaches the template's own source" finding, the mermaid exclusion); **the branch vocabulary asserted absent from the live decision and still present in the revision history**; no `## Supersedes`; **whole-file hunk count asserted to be exactly 17** | same |
 
-**What revision 4 ran, what it did not run, and what happened to check 16.**
-Revision 4 answers three judgment findings about what the decision records; it
-re-researches nothing, so **checks 1–15 were not re-run** and the table above,
-`review/evidence/docs-delivery-claims.sh` and
+**What revision 5 ran, what it did not run, and what actually fails in checks 16
+and 17.** Revision 5 answers one judgment finding about how this decision reports
+its own evidence; it re-researches nothing, so **checks 1–15 were not re-run**
+and the table above, `review/evidence/docs-delivery-claims.sh` and
 `review/evidence/docs-delivery-claims.log` are revision 3's artifacts, left
-byte-identical (asserted by sha256 in check 18, together with the three auditors'
-logs, the lock and the licence snapshot). **Check 16 no longer passes, by
-construction, and that is stated rather than hidden**: it compares the live
-`DECISION.md` against the revision-2 blob and gates the whole-file hunk count at
-exactly 17, a tripwire revision 3 installed so that "a later stray edit cannot
-slip in as an unremarked change". Revision 4's edits are exactly such a change —
-an intended one — so a rerun of `docs-delivery-claims.sh` now reports `FAIL` in
-check 16 and exits 1, while its checks 1–15 are unaffected. Rather than edit a
-script two audits reproduced, revision 4 adds a **new** script,
-`review/evidence/docs-delivery-claims-r4.sh`, whose check 17 re-targets the same
-revision-diff mechanism from the revision-2 blob to the **revision-3** blob
-`460e6f9002663f7e00921406c3bd9bc2785328fe` and carries every region assertion
-check 16 made, plus the regions revision 4's brief names as preservation targets.
+byte-identical (asserted by sha256 in check 20, together with the three auditors'
+logs, the lock, the licence snapshot, and revision 4's script and log).
+
+**Check 16 no longer passes, and this is what a rerun actually prints.** Both
+preserved scripts were rerun for this revision in an isolated `git clone` of this
+repository at `research/p02-execution`, before this paragraph was written; nothing
+in the working repository was touched and nothing was written inside
+`review/evidence/`. `bash review/evidence/docs-delivery-claims.sh` exits 1 with
+**152 `PASS` lines — 119 in checks 1–15 and 33 in check 16 — 2 `FAIL` lines, and
+`failed assertions: 1`**. The failing assertion is **not** the whole-file
+hunk-count tripwire: that assertion still passes and still prints
+`ASSERT hunk_count_is_17=True` for the revision-2-to-live diff. It is check 16's
+**byte-identical-region assertion for unproven entry 3**, and the two `FAIL`
+lines it prints are, verbatim:
+
+```
+FAIL  region marker not found: unproven entry 3 (unsafe posture)      r2=True r3=False
+FAIL  revision-3 untouched-region diff                           expected=0 actual=1
+```
+
+the second being the shell assertion whose status the Python region comparison
+sets. The cause is an end anchor, not a line count: check 16 extracts that region
+with the end marker `"4. **Whether mdBook"`
+(`review/evidence/docs-delivery-claims.sh:514`), which was revision 3's opener for
+unproven entry 4, and revision 4's J1 repair rewrote that entry to open on
+**Which third-party assets a default `mdbook build` emits into `book/`** instead
+of **Whether mdBook…**. So revision 4's intended edit to entry **4** left check 16
+unable to *evaluate* its preservation assertion for entry **3**; it did not report
+that entry 3 had changed. Checks 1–15 are unaffected. This paragraph is the repair
+for finding J4, and `review/audit-codex.md` recorded the same mechanism
+independently on revision 4: "The old script's revision-2 hunk-count assertion
+still passes at 17; the changed-region assertion is the direct failure."
+
+**The preservation claim survives because check 17 re-anchored that region.**
+Rather than edit a script two audits reproduced, revision 4 added a **new**
+script, `review/evidence/docs-delivery-claims-r4.sh`, whose check 17 re-targets
+the same revision-diff mechanism from the revision-2 blob to the **revision-3**
+blob `460e6f9002663f7e00921406c3bd9bc2785328fe`. Check 17 carries the nine
+regions check 16 asserted from revision 2, but **unproven entry 3 is carried on a
+deliberately looser end marker — `"4. **Wh"`
+(`review/evidence/docs-delivery-claims-r4.sh:98`) in place of check 16's
+`"4. **Whether mdBook"`** — which is why check 17 can still assert that region
+byte-identical to revision 3, and does, and passes. One of check 16's nine region
+assertions therefore had to be re-anchored to keep asserting the same region; the
+other eight are carried as written, alongside the regions revision 4's brief named
+as preservation targets.
+
+**Check 17 now fails by construction as well, and that is disclosed from a run
+rather than predicted.** Check 17 asserts that the title names revision 4, and it
+also gates the hunk count of the revision-3-to-live diff at 17; a revision 5
+necessarily moves the title, and whether it moves the hunk count is a question
+only a run answers. In the same isolated clone, with revision 5's
+`DECISION.md` in place, `bash review/evidence/docs-delivery-claims-r4.sh` exits 1
+with **99 `PASS` lines — 86 in check 17 and 13 in check 18 — 2 `FAIL` lines, and
+`failed assertions: 1`**. Exactly one region-or-text assertion fails, and it is
+the title:
+
+```
+FAIL  title does not name revision 4
+FAIL  revision-4 region and text diff                            expected=0 actual=1
+```
+
+Every preservation region check 17 asserts still passes. **The hunk-count gate
+does not move**, contrary to what an author writing this paragraph by
+construction would have predicted: check 17 still prints
+`ASSERT hunk_count_is_17=True` for the revision-3-to-live diff, because revision
+5's edits fall inside hunks revision 4 had already opened. That is finding J4's
+lesson applied rather than repeated — the assertion named here is the one that
+printed. Revision 5 therefore takes the handling revision 4 chose:
+`review/evidence/docs-delivery-claims-r4.sh` and
+`review/evidence/docs-delivery-claims-r4.log` are left **byte-identical** as the
+record of the revision-4 run — their sha256 values asserted by the new check 20,
+so the r4 log stands as the complete output of that script *as run against
+revision 4*, not as a claim about what it prints now — and a new script,
+`review/evidence/docs-delivery-claims-r5.sh`, re-targets the mechanism at the
+**revision-4** blob `ec356a0d8492a349292807db6cf888aac53619a1`. Its check 19
+re-asserts each region check 17 asserted — the twenty-six preservation
+regions on their check-17 anchors, plus the eight regions check 17 required
+revision 4 to *change*, which revision 5 must now leave alone — and adds the
+regions and texts this revision must not touch.
+
 Both new checks are **offline and deterministic** — no network, no `gh`, no
 `curl` — and the script writes nothing inside `review/evidence/`, using a
 `mktemp` directory it removes on exit, so a rerun cannot disturb
-`review/evidence/snapshots/` the way the concurrent shared-directory rerun
-recorded in `review/audit-codex.md` did. As run for revision 4 it made **102 failure-gated
-checks: 101 lines reporting `PASS`** — 18 from the shell's own `assert` helper (5
-in check 17, 13 in check 18) and 83 printed by check 17's Python region
-comparison, whose failure path sets the exit status that the shell assertion
-`revision-4 region and text diff` reads — **plus 1 gated
-`ASSERT hunk_count_is_17=True`**. **0 `FAIL` lines; 0 failed assertions; exit
-status 0.** Every line of that log is content-asserted; the script prints no
-unasserted recorded output at all, and it reads no host-dependent or volatile
-value — not even a toolchain banner — so nothing in it drifts. After this
-revision was finalized, the script was rerun twice and each run's output diffed
-against `review/evidence/docs-delivery-claims-r4.log`; both diffs were empty, so
-**that log is the complete output of that script, reproducible byte-for-byte on
-any checkout whose object database holds the revision-3 blob**. The one way it
-can legitimately differ is the one check 16 already documents: a run from a plain
-file copy with no `.git` cannot read the blob, so check 17 reports `FAIL` and the
+`review/evidence/snapshots/`. That risk is not hypothetical: rerunning the **old**
+script in the isolated clone rewrote three files under that directory
+(`github-creating-diagrams.html`, `mpl-2.0-faq.html`, `n_github-diagrams.txt`)
+without moving a single assertion — which both shows those assertions survive
+upstream byte drift and shows why the `mktemp` design matters. As run for revision
+5, `docs-delivery-claims-r5.sh` made **127 failure-gated checks: 126 lines
+reporting `PASS`** — 21 from the shell's own `assert` helper (5 in check 19, 16 in
+check 20) and 105 printed by check 19's Python region comparison, whose failure
+path sets the exit status that the shell assertion
+`revision-5 region and text diff` reads — **plus 1 gated
+`ASSERT r5_hunk_count_is_4=True`**. **0 `FAIL` lines; 0 failed assertions; exit
+status 0.** Every line of that log is
+content-asserted; the script prints no unasserted recorded output at all, and it
+reads no host-dependent or volatile value — not even a toolchain banner — so
+nothing in it drifts. After this revision was finalized, the script was rerun
+twice and each run's output diffed against
+`review/evidence/docs-delivery-claims-r5.log`; both diffs were empty, so **that
+log is the complete output of that script, reproducible byte-for-byte on any
+checkout whose object database holds the revision-4 blob**. The one way it can
+legitimately differ is the one check 16 already documents: a run from a plain file
+copy with no `.git` cannot read the blob, so check 19 reports `FAIL` and the
 script exits 1.
 
 | # | Check | Command | Exit | Result | Log |
 |---|---|---|---:|---|---|
-| 17 | Revision-4 diff against the revision-3 blob | `git cat-file blob 460e6f9002663f7e00921406c3bd9bc2785328fe`; region extraction and `difflib.unified_diff` against this file | 0 | revision-3 blob sha256 asserted `4647372666…`; **26 regions asserted byte-identical** — the nine check 16 carried from revision 2 (the licence-partition table, its reading, the shared-requirement block, the four `- assumes` lines, check 8's snapshot rationale, the revision-1 defect record, disagreement 4, unproven entry 3, the revision-1 history entry) plus seventeen more this revision must not touch (the revision-3 recommendation-change note in two parts, the ledger decision table, the four-artifacts paragraph, the `theme/` rule, the ledger-rows-settled paragraph, both `BASELINE-REVIEW` lines, the minimal example, the `re-verify:` line, the **whole `## Parameters` section**, the 16-row check table, the gated-count paragraph, the reproducibility paragraph, disagreements 2–3, the revision-2 history entry, and the revision-3 entry's body below the sha256 line revision 4 substitutes for its "this document" opener); **eight regions the findings require changed** asserted to have changed *and* to carry their marker sentence; **34 required texts** asserted present and **11 absent** from the live decision — including the two overreaching practice sentences and both "gains nothing"/"buys nothing" clauses; the title asserted to name revision 4; no `## Supersedes`; **whole-file hunk count asserted to be exactly 17** | `evidence/docs-delivery-claims-r4.log` |
+| 17 | Revision-4 diff against the revision-3 blob | `git cat-file blob 460e6f9002663f7e00921406c3bd9bc2785328fe`; region extraction and `difflib.unified_diff` against this file | 0 | revision-3 blob sha256 asserted `4647372666…`; **26 regions asserted byte-identical** — the nine check 16 carried from revision 2 (the licence-partition table, its reading, the shared-requirement block, the four `- assumes` lines, check 8's snapshot rationale, the revision-1 defect record, disagreement 4, unproven entry 3, the revision-1 history entry) — **unproven entry 3 re-anchored** on the deliberately looser end marker `4. **Wh` (`docs-delivery-claims-r4.sh:98`) in place of check 16's `4. **Whether mdBook`, which revision 4's J1 rewrite of unproven entry 4's opener invalidated, so check 17 asserts the same region check 16 could no longer locate — plus seventeen more revision 4 must not touch (the revision-3 recommendation-change note in two parts, the ledger decision table, the four-artifacts paragraph, the `theme/` rule, the ledger-rows-settled paragraph, both `BASELINE-REVIEW` lines, the minimal example, the `re-verify:` line, the **whole `## Parameters` section**, the 16-row check table, the gated-count paragraph, the reproducibility paragraph, disagreements 2–3, the revision-2 history entry, and the revision-3 entry's body below the sha256 line revision 4 substitutes for its "this document" opener); **eight regions the findings require changed** asserted to have changed *and* to carry their marker sentence; **34 required texts** asserted present and **11 absent** from the live decision — including the two overreaching practice sentences and both "gains nothing"/"buys nothing" clauses; the title asserted to name revision 4; no `## Supersedes`; **whole-file hunk count asserted to be exactly 17**. Recorded as run against **revision 4**; against revision 5 the title and hunk-count assertions fail by construction, as disclosed above and re-asserted by check 19 | `evidence/docs-delivery-claims-r4.log` |
 | 18 | Preserved artifacts, and gate 5's async facts | `shasum -a 256` over seven evidence artifacts; a `[[package]]` reader over `evidence/mdbook-0.5.4-Cargo.lock` | 0 | all seven artifacts asserted **byte-identical** to revision 3 (`docs-delivery-claims.sh`, `docs-delivery-claims.log`, the three auditors' logs, the lock, the licence snapshot); gate 5's async stack read from the lock and asserted by version — `tokio` **1.53.1**, `axum` **0.8.9**, `tokio-tungstenite` **0.29.0** — together with `font-awesome-as-a-crate` **0.3.1** and `elasticlunr-rs` **3.1.0**, the two packages the shipped-site notice rule reasons about; a control asserts that a package absent from the lock reports `NONE`, so the reader can fail | same |
+| 19 | Revision-5 diff against the revision-4 blob | `git cat-file blob ec356a0d8492a349292807db6cf888aac53619a1`; region extraction and `difflib.unified_diff` against this file | 0 | revision-4 blob sha256 asserted `ebcbe23606…`; **37 regions asserted byte-identical** — every one of check 17's twenty-six preservation regions on its check-17 anchor (including unproven entry 3 on the re-anchored `4. **Wh`), plus the eight regions check 17 required revision 4 to change and revision 5 must now leave alone (the shipped-site notice rule, gap 4, the six-gate block, ground 2, the confidence statement, the runner-up, disagreement 1, and `**Uncertainty.**` to end of file), plus the check-18 table row and the revision-4 history entry's body below its new sha256 line; **3 regions the finding requires changed** asserted to have changed *and* to carry their marker sentence (the disclosure paragraph, check 17's table row, the revision-4 history entry's opener); **46 required texts** asserted present — including the two verbatim `FAIL` lines this revision quotes, `ASSERT hunk_count_is_17=True`, both end anchors, and the revision-4 sha256 — and **15 absent** from the live decision, the four false or overstated clauses J4 names among them; the title asserted to name **revision 5**; no `## Supersedes`; **whole-file hunk count asserted to be exactly 4** | `evidence/docs-delivery-claims-r5.log` |
+| 20 | Preserved artifacts under revision 5, and the gate-5 facts re-read | `shasum -a 256` over nine evidence artifacts; a `[[package]]` reader over `evidence/mdbook-0.5.4-Cargo.lock` | 0 | all nine artifacts asserted **byte-identical**: check 18's seven (`docs-delivery-claims.sh`, `docs-delivery-claims.log`, the three auditors' logs, the lock, the licence snapshot) **plus `docs-delivery-claims-r4.sh` and `docs-delivery-claims-r4.log`**, which revision 5 preserves as history exactly as revision 4 preserved revision 3's pair; gate 5's async stack re-read from the lock and re-asserted by version — `tokio` **1.53.1**, `axum` **0.8.9**, `tokio-tungstenite` **0.29.0** — with `font-awesome-as-a-crate` **0.3.1** and `elasticlunr-rs` **3.1.0**, and the same absent-package control, so those five figures stay gated by a script that exits 0 | same |
 
 **Reproducibility.** `review/evidence/docs-delivery-claims.log` is **regenerated
 for revision 3** and is the output of the revision-3 script; it necessarily
@@ -1222,10 +1339,15 @@ fork that has not run the book build.
   mermaid support, and GitHub's documentation of it), 15 (Zola's site model) —
   and check 16 replaces revision 2's check 12, diffing this file against the
   revision-2 blob.
-- **Revision 4**, 2026-09-15, this document. Driven by `review/audit-fable.md`
-  (judgment audit, `verdict: reject`, findings J1, J2, J3), while
-  `review/audit-codex.md` (empirical) recorded `verdict: approve` and
-  `unresolved-findings: none` on the same revision. **The recommendation did not
+- **Revision 4**, 2026-09-15, sha256
+  `ebcbe236064e05558895d2acc2ee5f6b7f9a6c712f6527c76c9fb92fdeecbf51`. **Approved**
+  by `review/audit-codex.md` (empirical, `unresolved-findings: none`) and
+  **rejected** by `review/audit-fable.md` (judgment, finding J4), which confirmed
+  that the recommendation follows from the evidence and that J4 does not touch it.
+  Driven by the judgment audit of revision 3
+  (`verdict: reject`, findings J1, J2, J3), while the empirical audit of revision 3
+  recorded `verdict: approve` and
+  `unresolved-findings: none` on that revision. **The recommendation did not
   change**, and neither did the crate, the version, the ledger-row values, the
   corpus figures, the four `- assumes` lines or any evidence artifact; the
   judgment auditor stated that the recommendation follows and that revision 4 is
@@ -1259,6 +1381,32 @@ fork that has not run the book build.
   offline checks, 17 and 18, are added in a **new** script
   (`review/evidence/docs-delivery-claims-r4.sh`); checks 1–15 were not re-run and
   revision 3's script and log are untouched.
+- **Revision 5**, 2026-09-15, this document. Driven by `review/audit-fable.md`
+  (judgment audit of revision 4, `verdict: reject`, single finding J4), while
+  `review/audit-codex.md` (empirical) recorded `verdict: approve` and
+  `unresolved-findings: none` on the same revision. **Nothing about the
+  recommendation moved**: not the crate, the version, the ledger-row values, the
+  corpus figures, the four `- assumes` lines, the shipped-site notice rule, the
+  six-gate block, the confidence statement, or any evidence artifact. **J4**: the
+  paragraph disclosing `review/evidence/docs-delivery-claims.sh`'s failure named
+  the wrong assertion — it blamed check 16's whole-file hunk-count tripwire, which
+  in fact still passes and prints `ASSERT hunk_count_is_17=True`, when the failing
+  assertion is check 16's byte-identical-region assertion for unproven entry 3,
+  whose end anchor `4. **Whether mdBook` stopped matching once revision 4 rewrote
+  unproven entry 4's opener. Both preserved scripts were rerun in an isolated
+  clone before the paragraph was rewritten, and the paragraph now quotes the two
+  `FAIL` lines verbatim, records the `PASS`/`FAIL` tallies, and records that check
+  17 keeps asserting that same region only because it re-anchors it on the looser
+  end marker `4. **Wh` — a fact check 17's table row now carries as well. The
+  false causal clause and the overstated "carries every region assertion check 16
+  made" are gone. Revision 5 trips check 17's title assertion the same way
+  revision 4 tripped check 16's entry-3 anchor — a rerun shows that assertion is
+  the only one that fails, and that check 17's hunk-count gate still passes — so
+  `docs-delivery-claims-r4.sh` and its log
+  are preserved byte-identical as the record of the revision-4 run and two new
+  offline checks, 19 and 20, are added in a **new** script
+  (`review/evidence/docs-delivery-claims-r5.sh`) that re-targets the revision-diff
+  mechanism at the revision-4 blob; checks 1–15 were not re-run.
 
 **Uncertainty.** High confidence in the mechanism facts (checks 2–15 read them
 from the maintainers' documentation, the registry, the advisory database, pinned

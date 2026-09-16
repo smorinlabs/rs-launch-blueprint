@@ -1,0 +1,139 @@
+
+=== check 19 — revision-5 diff against the revision-4 blob ===
+PASS  revision-4 blob read exit                                  0
+PASS  revision-4 blob sha256                                     ebcbe236064e05558895d2acc2ee5f6b7f9a6c712f6527c76c9fb92fdeecbf51
+PASS  revision-4 blob is non-empty                               yes
+PASS  revision-5 decision file present                           yes
+PASS  region byte-identical to revision 4: licence partition table                          7 lines
+PASS  region byte-identical to revision 4: what each class means                            14 lines
+PASS  region byte-identical to revision 4: shared requirement -> what may vary              43 lines
+PASS  region byte-identical to revision 4: the four fixed - assumes lines                   4 lines
+PASS  region byte-identical to revision 4: check-8 snapshot rationale                       19 lines
+PASS  region byte-identical to revision 4: revision-1 check-defect record                   6 lines
+PASS  region byte-identical to revision 4: disagreement 4 (figures)                         7 lines
+PASS  region byte-identical to revision 4: unproven entry 3 (unsafe posture), on the re-anchored end marker 4 lines
+PASS  region byte-identical to revision 4: revision-1 history entry                         6 lines
+PASS  region byte-identical to revision 4: revision-3 note, opening (the recommendation change) 20 lines
+PASS  region byte-identical to revision 4: revision-3 note, candidates re-entering on fit   8 lines
+PASS  region byte-identical to revision 4: the ledger decision table                        9 lines
+PASS  region byte-identical to revision 4: the generator layer is four artifacts            15 lines
+PASS  region byte-identical to revision 4: the theme/ rule                                  13 lines
+PASS  region byte-identical to revision 4: ledger rows settled                              12 lines
+PASS  region byte-identical to revision 4: BASELINE-REVIEW F357 line                        1 lines
+PASS  region byte-identical to revision 4: BASELINE-REVIEW F358 line                        1 lines
+PASS  region byte-identical to revision 4: minimal realistic example                        21 lines
+PASS  region byte-identical to revision 4: re-verify line                                   1 lines
+PASS  region byte-identical to revision 4: the whole ## Parameters section                  57 lines
+PASS  region byte-identical to revision 4: the 16-row check table                           18 lines
+PASS  region byte-identical to revision 4: the gated-count paragraph                        10 lines
+PASS  region byte-identical to revision 4: reproducibility paragraph                        36 lines
+PASS  region byte-identical to revision 4: disagreements 2 and 3                            33 lines
+PASS  region byte-identical to revision 4: revision-2 history entry                         24 lines
+PASS  region byte-identical to revision 4: revision-3 history entry, body                   26 lines
+PASS  region byte-identical to revision 4: J1 repair: the shipped-site notice rule          41 lines
+PASS  region byte-identical to revision 4: J1 repair: gap 4 widened to every emitted asset  17 lines
+PASS  region byte-identical to revision 4: J2 repair: the six-gate block                    122 lines
+PASS  region byte-identical to revision 4: J3 repair: ground 2 narrowed to the surveyed sample 49 lines
+PASS  region byte-identical to revision 4: J3 repair: the confidence statement              48 lines
+PASS  region byte-identical to revision 4: J3 repair: the runner-up's cost list             11 lines
+PASS  region byte-identical to revision 4: J3 repair: disagreement 1 names the sample       33 lines
+PASS  region byte-identical to revision 4: J3 repair: the uncertainty entry (to end of file) 18 lines
+PASS  region byte-identical to revision 4: the revision-4 note, kept verbatim as history    42 lines
+PASS  region byte-identical to revision 4: the check-18 table row                           1 lines
+PASS  region byte-identical to revision 4: revision-4 history entry, body                   33 lines
+PASS  finding region updated and carries its marker: J4 — the disclosure paragraph is rewritten from a run
+PASS  finding region updated and carries its marker: J4 — check 17's table row records the re-anchoring
+PASS  finding region updated and carries its marker: the revision-4 history entry gains its sha256
+PASS  present verbatim: gate 1 recorded on one line, verbatim
+PASS  present verbatim: the theme/ prohibition survives the ruling
+PASS  present verbatim: the Font Awesome duty sentence is preserved, not deleted
+PASS  present verbatim: no surveyed licence reaches the template's own source
+PASS  present verbatim: mermaid fences are forbidden by F343
+PASS  present verbatim: no adopter of the exact Pages-action majors is claimed
+PASS  present verbatim: no local renderer matches the host's dialect
+PASS  present verbatim: identical rendering rests on inspection
+PASS  present verbatim: the measured corpus figure
+PASS  present verbatim: the per-category tallies
+PASS  present verbatim: the licence partition arithmetic
+PASS  present verbatim: J1 the rule is named and reachable
+PASS  present verbatim: J1 the two acts are separated
+PASS  present verbatim: J1 elasticlunr is disposed of explicitly
+PASS  present verbatim: J1 crate metadata cannot enumerate emitted files
+PASS  present verbatim: J1 no asset list is asserted
+PASS  present verbatim: J2 the gates block exists
+PASS  present verbatim: J2 gate 2 recorded
+PASS  present verbatim: J2 gate 3 recorded
+PASS  present verbatim: J2 gate 4 recorded
+PASS  present verbatim: J2 gate 5 recorded
+PASS  present verbatim: J2 gate 6 recorded
+PASS  present verbatim: J2 gate 5 resolves the contributor install line
+PASS  present verbatim: J2 gate 5 declines the trimming flag pair
+PASS  present verbatim: gate 3 claims no checksum asset that does not exist
+PASS  present verbatim: the revision-3 history entry carries its sha256
+PASS  present verbatim: J2 gate 5 states the async runtime is confined
+PASS  present verbatim: J2 gate 5 frees R05 and R69
+PASS  present verbatim: J2 the serve claim is recorded as unproven
+PASS  present verbatim: J3 rustup is used, with its path
+PASS  present verbatim: J3 the adopters are marked carried, not re-verified
+PASS  present verbatim: J3 the opus endpoint is cited
+PASS  present verbatim: J3 what would raise the confidence
+PASS  present verbatim: J3 the P03 signal that would show it wrong
+PASS  present verbatim: J4 the old script's failing region assertion is quoted verbatim
+PASS  present verbatim: J4 the shell assertion it sets is quoted verbatim
+PASS  present verbatim: J4 the hunk-count tripwire is recorded as still PASSING
+PASS  present verbatim: J4 the old script's PASS/FAIL tallies are recorded
+PASS  present verbatim: J4 the broken end anchor is named with its script line
+PASS  present verbatim: J4 the cause is named as an anchor, not a line count
+PASS  present verbatim: J4 the re-anchoring is recorded in prose, with its script line
+PASS  present verbatim: J4 the empirical audit's concurring sentence is quoted
+PASS  present verbatim: J4 the r4 script and log are preserved as history
+PASS  present verbatim: the revision-4 history entry carries its sha256
+PASS  present verbatim: the new script is named
+PASS  present verbatim: the revision-4 blob is named
+PASS  absent from the live decision: the false causal clause about check 16's failure
+PASS  absent from the live decision: the wrong attribution of the failure to the hunk-count gate
+PASS  absent from the live decision: the overstated claim about what check 17 carries
+PASS  absent from the live decision: the mis-cited snapshot-emptying rerun
+PASS  absent from the live decision: the overreaching practice claim (ground 2)
+PASS  absent from the live decision: the overreaching practice claim (disagreement 1)
+PASS  absent from the live decision: the runner-up's contradicted sentence
+PASS  absent from the live decision: the alternative-(B) version of it
+PASS  absent from the live decision: branch vocabulary A
+PASS  absent from the live decision: branch vocabulary B
+PASS  absent from the live decision: branch vocabulary A (capitalised)
+PASS  absent from the live decision: branch vocabulary B (capitalised)
+PASS  absent from the live decision: branch vocabulary hyphenated A
+PASS  absent from the live decision: branch vocabulary hyphenated B
+PASS  absent from the live decision: two-branch vocabulary
+PASS  revision history still describes the branch structure
+PASS  no ## Supersedes heading
+PASS  title names revision 5
+PASS  revision history carries a revision-5 entry
+whole-file unified-diff hunks: 4
+      @@ -1,4 +1,46 @@
+      @@ -915,49 +957,124 @@
+      @@ -1222,10 +1339,15 @@
+      @@ -1259,6 +1381,32 @@
+ASSERT r5_hunk_count_is_4=True
+PASS  revision-5 region and text diff                            0
+
+=== check 20 — preserved evidence artifacts, and the gate-5 facts in the committed lock ===
+PASS  unchanged: docs-delivery-claims.sh                         c2c69fb47e36792a56813b86de41e66ea49d78bea092abbf55c077202747a63c
+PASS  unchanged: docs-delivery-claims.log                        152ddb42429b3b72646cb24bf9fd6d5cd103adb099784a7865630a6fbeb0981c
+PASS  unchanged: docs-delivery-claims-r4.sh                      ba915596e5cfc7bc9b8355f9781101d5eb9267cbf634061257fd24b854cc0a34
+PASS  unchanged: docs-delivery-claims-r4.log                     2ca46e1812beb805e89c52db8e5d1b89c8fac1fdb23c9e3549b1948be1a75c4a
+PASS  unchanged: audit-docs-delivery-model-r1.log                6d8da82b7b814743ce9ffc0c641e84968849d7da53a0fb42107601e2c87f9a7e
+PASS  unchanged: audit-docs-delivery-model-r2.log                2da86bff14dde7678e93bd642e9219ca90ef26e4f5f6bf26234556c3c3975216
+PASS  unchanged: audit-docs-delivery-model-r3.log                152ddb42429b3b72646cb24bf9fd6d5cd103adb099784a7865630a6fbeb0981c
+PASS  unchanged: audit-docs-delivery-model-r4.log                2ca46e1812beb805e89c52db8e5d1b89c8fac1fdb23c9e3549b1948be1a75c4a
+PASS  unchanged: mdbook-0.5.4-Cargo.lock                         0fa8a0e93acfcf6a93f39df0c091b961abd04d36bbebf8c725e75ffac4a2abc4
+PASS  unchanged: mdbook-0.5.4-licences.json                      f4afe93fe5b7d487d9efa943c79900aa1346add9e7195f4f3d8045afb8a266b9
+PASS  gate 5: tokio locked in mdBook's own tree                  1.53.1
+PASS  gate 5: axum locked in mdBook's own tree                   0.8.9
+PASS  gate 5: tokio-tungstenite locked in mdBook's own tree      0.29.0
+PASS  J1: font-awesome-as-a-crate in mdBook's own tree           0.3.1
+PASS  J1: elasticlunr-rs in mdBook's own tree                    3.1.0
+PASS  control: a package absent from the tree reports NONE       NONE
+
+=== result ===
+failed assertions: 0
