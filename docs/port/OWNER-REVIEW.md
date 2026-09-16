@@ -161,6 +161,9 @@ The briefs the owner answered from are in `docs/planning/p02/owner-decisions.md`
 | R19 | 5 | `178547307ca6000e9527fcea08af6c89fb5f23f25ef8e17938c0e5457791006d` | accept | 2026-09-15 | W0-R19 option A; two-entry catch-all-group Dependabot configuration; first publication pending |
 | R20 | 2 (published) | `02fee7a4d48220fc32187fd8ff43bdb70611907f2f9fbf64ae672b9e609ec772` | accept | 2026-09-15 | W0-R20 option A; SHA-pin every non-GitHub action with a release comment; `zizmor` 1.30.1 plus a comment check |
 | R21 | 2 (published) | `66d566a55330e2417a2e5227bcac64e3312fc56280db09d7b74a13425aa346c1` | accept | 2026-09-15 | W0-R21 option A; App credentials primary, `CONTRIBUTORS_PLEASE_PAT` fine-grained fallback |
+| R23 | 1 (published) | `ea269dd6ac3342672f48e69e6c2cb2645c7f73d1e476e5306a20803d1a6598ed` | accept | 2026-09-15 | W0-R23 option A; release-please `release-type: rust` bumps `Cargo.lock` in the release commit |
+| R25 | 7 (published) | `978ec7075e1f33f9f186815ea2a2154a52ad52eb53b970aebe1a38ed69def4e8` | accept | 2026-09-15 | W0-R25 option A; launch at `0.1.0` with pre-major dampening |
+| R26 | 3 (published) | `013fe4c3fc992d7e3755822cd08fe134cafebf83ecff509000b3a98780e8e7f3` | accept | 2026-09-15 | W0-R26 option A; four first-party packed-content checks in the publish verify job |
 
 ## Dispositions
 

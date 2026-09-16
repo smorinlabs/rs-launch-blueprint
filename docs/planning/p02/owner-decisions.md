@@ -367,6 +367,9 @@ reject.
 | W0-R07b | R07 backstop, re-put on a corrected fact | A revert to push-only | 2026-09-15 | → revision 3 | supersedes W0-R07: GitHub keeps one state per workflow file, so a `schedule` key exposes the whole file to the 60-idle-day / fork switch-off; the backstop was declined for converting a bounded lag into a silent-off state |
 | W0-R20 | R20 third-party-action-pinning-policy | A accept | 2026-09-15 | `02fee7a4…` | hash-pin plus release comment, two disjoint checks |
 | W0-R21 | R21 contributors-bot-credential-source | A accept | 2026-09-15 | `66d566a5…` | dedicated fine-grained PAT fallback; ts's GITHUB_TOKEN shape rejected on approval-required runs |
+| W0-R23 | R23 lockfile-version-sync | A accept | 2026-09-15 | `ea269dd6…` | native Rust release strategy; jsonpath runner-up silently no-ops |
+| W0-R25 | R25 semver-bump-strategy | A accept | 2026-09-15 | `978ec707…` | `0.1.0` with dampening; `1.0.0` runner-up waits on R04's surface |
+| W0-R26 | R26 packed-artifact-content-guard | A accept | 2026-09-15 | `013fe4c3…` | first-party diff/assert/dry-run guard |
 
 ## Retired from this list
 
