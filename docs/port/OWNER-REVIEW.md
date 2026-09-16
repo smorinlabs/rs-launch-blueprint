@@ -167,6 +167,9 @@ The briefs the owner answered from are in `docs/planning/p02/owner-decisions.md`
 | R33 | 5 | `39a5e39ce225fba3a23a7543865a3bcc537290b8d18322ca9b900491729336f2` | accept | 2026-09-15 | W0-R33 option A; `proptest` 1.11.0, `insta` 1.48.0, `cargo-insta` 1.48; published copy is revision 2, republication pending |
 | R34 | 1 (published) | `14d3526106bb7e670fe648fe3bad9e858a92ddb196603fb49d9090bdc08fee4e` | accept | 2026-09-15 | W0-R34 option A; weekly schedule-only canary workflow, three legs |
 | R41 | 8 (published) | `efc7614a4bcdb2b253a7537730daff0b44b3e9568da36b81324f1beb14f3f1ea` | accept | 2026-09-15 | W0-R41 option A; conditional unlocked resolve, Git comparison and restore |
+| R43 | 2 (published) | `b9c8303647a8098971ff9fec7116fba041c85f5db8a4c869960e9e18c89c8057` | accept | 2026-09-15 | W0-R43 option A; no vendor rule directories; one `companyAnnouncements` entry |
+| R45 | 2 (published) | `1e7fe24926e11fa5b40bedb3c42f187af05e161e4bec0b7ad4ea548b0fae6816` | accept | 2026-09-15 | W0-R45 option A: PR template carries no bot mention; the owner directs revision 3 to rewrite the `CONTRIBUTING.md` precondition to R18 revision 7's credential-presence rule (the `vars.ENABLE_CLAUDE_ASSISTANT` variable no longer exists); re-bound at revision 3 |
+| R46 | 6 (published) | `a95cbbfae000d539bb57aaf3d67b71510c22c62457f6e215a219d9640a6808bd` | accept | 2026-09-15 | W0-R46 option A; no per-file licence header; manifest plus root licence files |
 
 ## Dispositions
 
