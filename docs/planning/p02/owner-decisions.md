@@ -380,6 +380,8 @@ reject.
 | W0-R64 | R64 pager-integration | A accept | 2026-09-15 | `39f0df04…` | `shlex` over `shell-words` on the strict MSRV gate |
 | W0-R81 | R81 docs-delivery-model | A accept | 2026-09-15 | `4329ce48…` | generator shipped at medium confidence; plain-tree runner-up wins for a flat corpus |
 | W0-R85 | R85 rich-terminal-row-niceties | A accept | 2026-09-15 | `1a81ae3a…` | `rows_rich` opt-in; requirement on R66's table crate ANSI-width feature |
+| W0-R63 | R63 progress-spinner | A accept | 2026-09-15 | `0ce8e437…` | `indicatif`; `--quiet` per standard R7.4 |
+| W0-R65 | R65 color-enablement-chain | A accept | 2026-09-15 | `4b9b21a1…` | seven-tier chain; `NO_COLOR` beats force variables |
 
 ## Retired from this list
 
