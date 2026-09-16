@@ -191,4 +191,4 @@ the alternative is explicitly left open for P03 as a new tier requiring a new de
 the decline is the right call, the surviving grounds are sound, and the `TERM=dumb`-on-a-TTY
 -with-`CI`-set case is disclosed accurately rather than glossed.
 
-Verdict: approve.
+The verdict is approve.
