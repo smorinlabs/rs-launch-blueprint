@@ -1,5 +1,5 @@
-decision-sha256: 0fc0ed8a9c4a6daac900e23524c1c3ba0ef1707aeb44833c0ca2b2b57eb4cf4c
-actor: audit-codex-2026-09-12T204004Z-d02022bf6f42-r5
+decision-sha256: d4d6a8d2a3297a6db488580142de6d651f33b8109e9023994f6cb9f5ecfd6a17
+actor: audit-codex-2026-09-12T204004Z-d02022bf6f42-r6
 model: gpt-5.6-terra
 family: openai
 verdict: approve
@@ -7,21 +7,22 @@ unresolved-findings: none
 
 ## Rerun
 
+- argv: `bash review/evidence/owner-reference-check-r6.sh`
 - cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42`
-- toolchain: macOS 26.4 Darwin arm64; rustc 1.98.0; cargo 1.98.0; cargo-audit 0.22.1; `/usr/bin/grep`; shellcheck at `/opt/homebrew/bin/shellcheck`.
-- argv: `bash review/empirical/state-bound-check.sh`; `bash review/evidence/feature-shape-check-r4.sh`; `bash review/empirical/assert-figures.sh`; `bash review/empirical/issue-responsiveness.sh`; `bash review/empirical/bacon-install-check.sh`; `bash review/empirical/parameters-check.sh`; and `bash review/evidence/yanked-control-r5.sh` three times in place and once from a clean `git archive HEAD` extraction.
-- exit code: 0 for each of the six decision checks and all four yanked-control runs.
-- logs: `review/evidence/audit-*-r5.log`, `review/evidence/audit-yanked-control-r5-inplace-{1,2,3}.log`, and `review/evidence/audit-yanked-control-r5-archive.log`.
-- output match: all six checks are byte-identical to their cited logs. Each in-place yanked-control rerun and the clean-archive rerun is byte-identical to `review/evidence/yanked-control-r5.log`; the archive decision hash is the bound hash above.
+- toolchain: GNU bash 3.2.57, `/opt/homebrew/bin/jq` 1.8.2, `/usr/bin/grep`, Git 2.50.1.
+- exit code: 0 in place and 0 from a clean `git archive HEAD` extraction with no `.git` directory.
+- log path: `review/evidence/audit-owner-reference-check-r6-inplace.log`; archive log: `review/evidence/audit-owner-reference-check-r6-head-archive.log`.
+- output match: both 92-line outputs are byte-identical to `review/evidence/owner-reference-check-r6.log` (`audit-owner-reference-check-r6-*.diff` are empty). Neither run reported `SKIP` or `FAIL`.
 
 ## Findings
 
 None requiring a decision change.
 
-1. Revision 5's count repair is established. My independent raw `cargo audit` invocation used the pinned advisory-db commit and an empty isolated `CARGO_HOME`; it exited 0. My `/usr/bin/grep -cF "couldn't check if the package is yanked"` counted 54 lines (`review/evidence/audit-yanked-control-r5-own-count.txt`). The control script separately verified 55 lockfile package entries, 54 registry sources, an empty name-set diff, and the sole skipped path package `r69_feature_shape`; its 55-count negative control passed by rejecting 55.
-2. The revision-5 commit changes only this run's decision plus the new yanked-control script and log (`review/evidence/audit-codex-r5-revision-paths.log`). `feature-shape-check-r4.sh` and `feature-shape-check-r4.log` retain their parent hashes exactly (`review/evidence/audit-codex-r5-integrity.log`). The yanked-control shellcheck directive leaves no findings; without it shellcheck reports only the documented informational SC2015, SC2016, and SC2329 instances (`review/evidence/audit-codex-r5-yanked-shellcheck-without-directive.log`).
-3. Five cited immutable upstream files returned HTTP 200 and content hashes equal to their recorded source copies (`review/evidence/audit-codex-r5-citations.log`). The deliberate failing assertion in `assert-figures.sh` is the recorded control, not an audit failure: the complete script exited 0 and its log matched.
+1. The check asserted all claimed revision-6 facts: axum 0.8.9 and no published 0.9; Cargo caret semantics; issue #3809's collaborator statement; closed-unmerged #3745; open milestone-0.9 #3819; axum-test's 22.0.0-rc.1/21.1.0 and requirements; the distinct Cloud Run services and jobs sentences; and open issue #3003 against 0.7.4. A mutated scratch snapshot exited 1 on the named max-version assertion (`review/evidence/audit-owner-reference-check-r6-mutation.log`).
+2. I refreshed the fetcher in an isolated temporary directory. All eight reduced live primary-source snapshots exactly match their committed counterparts; no fallback was needed (`review/evidence/audit-owner-reference-r6-live.log`).
+3. The parameter checker exited 0 and is byte-identical to `parameters-check-r2.log` (`review/evidence/audit-parameters-check-r6.diff`). The five `- assumes` lines, the single `- owns web-extra-surface` line, 19 retained scripts/logs including `yanked-control-r5.*`, and no change under `review/empirical` all match revision 5 (`review/evidence/audit-retained-evidence-r6.log`).
+4. The exact H2 set is `Decision`, `Parameters`, `Empirical check`, and `Engines`. The revision-6 diff records all non-R69 rows as named hand-offs or pending owner scoping; it does not decide them. Gate 1 remains correctly inapplicable under Q7.B.
 
 ## Assessment
 
-The revised arithmetic is now asserted by a failure-capable control and independently reproduced in-place and from a clean archive. The decision's retained check-2 repair, parameter contract, recommendation, R67 request and exit contract, R4.1 core, and Q7.B gate-1 `inapplicable` status did not require a change and remain supported by the reruns and recorded evidence. Approve.
+Revision 6 reconciles the owner-supplied input without moving the owned parameter or overclaiming its evidence. The owner-reference checker is deterministic, failure-capable, archive-safe, and independently corroborated against live primary sources. Approve.

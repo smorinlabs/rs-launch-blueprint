@@ -1,0 +1,25 @@
+R69 r6 retained-evidence identity audit
+baseline: 704231c
+OK   review/empirical/state-bound-check.sh 01eaaacfaca59893a3943bb878b8c88d77b6c8e863516a76c7863692846753eb
+OK   review/evidence/state-bound-check.log f984bb8461bdefea8d09e79dba31bae7ec0e5a76d786b3d178698bd827a9a2ea
+OK   review/empirical/feature-shape-check.sh f3f568b9d29da5840a251195609946df308c9605526bbf29a1d8e9f260fbb54e
+OK   review/evidence/feature-shape-check.log de5080779a2823308386037f6ae1fdbe17b9259e08ad73791b61d30091d09437
+OK   review/evidence/feature-shape-check-r3.sh 024c0d1a902dcc9c9c0ac70528d965077022a6f62eb55b9fec3ca44972d2df0e
+OK   review/evidence/feature-shape-check-r3.log ab19d0cb482bc52bc0ab929c952320d245401080ca546139ce01d4746b34ecdd
+OK   review/evidence/feature-shape-check-r4.sh 5a5d8b89006001ee584e9d124c2b1e1e9c800e122d837df919e46d3005828965
+OK   review/evidence/feature-shape-check-r4.log f9bec8b0ea550e0a176eecdf201c18bd6bd3cdf94e366f952785d106ccfb555d
+OK   review/empirical/assert-figures.sh 390134cbb09b34be84a240f9b14e29f833fa3dc0d6b2136bf1b7bc2f97861b4e
+OK   review/evidence/assert-figures.log 8803b1f6c661f83809cb1aec7500f67fb69dd38387948f73ba3c73ba0b758799
+OK   review/empirical/issue-responsiveness.sh a14deb261f231789e5a873810a6e3bc1b8db588c2e5455f242a0a5031673adbd
+OK   review/evidence/issue-responsiveness.log 1e3294f5af9de271fa04b71b6f8c99eb52fff0cb4d8381b023386efe754f1f8c
+OK   review/empirical/bacon-install-check.sh 9ac7af9bcb7de6a4d883899ce6377da556e1ac13a7afdfdb19697bd79f991871
+OK   review/evidence/bacon-install-check.log 58c6e4bfa1f2e87af3f0b14fa1910ab0bd961fd25a6381f26788f3f5e6e4e964
+OK   review/empirical/parameters-check.sh 33f230f83aec1bca40132e746c62ab27209a8d50b1b8b63f13417796d61e43b3
+OK   review/evidence/parameters-check.log 39a18be9016eca52c6f6e37e64ff98b9998214854d03d744ddce8ce6f346cc90
+OK   review/evidence/parameters-check-r2.log 89b2e1cc04919e0423932f61ccbc8b6b3492654efb11fdc10526c73a3b79cba1
+OK   review/evidence/yanked-control-r5.sh f762307359c2b49405d818434178b47abf9d5bddd1fcd5965faac6ab7f8821ce
+OK   review/evidence/yanked-control-r5.log 357ccbd58c77483aaef388f97d7226977c063c81d6fc6520c391b6044d281b86
+OK   decision - owns web-extra-surface line is byte-identical to revision 5
+OK   decision five - assumes lines are byte-identical to revision 5
+OK   no revision-6 commit changes under review/empirical
+retained-evidence-identity rc=0
