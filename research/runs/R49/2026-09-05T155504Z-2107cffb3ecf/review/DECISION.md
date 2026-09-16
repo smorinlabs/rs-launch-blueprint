@@ -56,15 +56,19 @@ and none of the three cited script logs — `grep-identity.log`,
 `licence-enumeration.log`, `lockfile-inclusion-conditions.log` — contains the
 string `rs-launch-blueprint` in any form other than the repository path, so no
 assertion in this run was made about the binary name and nothing was re-run or
-regenerated. Two **auditor-produced** logs do print the old name, both as
-quotations of earlier decision text rather than as assertions about it:
-`review/evidence/audit-provenance-r4.log:111` quotes the revision-4 `- owns`
-line and `review/evidence/audit-six-locations-r5.log:219` quotes the revision-5
-`## Engines` line for doxa/perplexity. **Neither is edited**: they are round-4
-and round-5 audit artifacts and their quoted text was accurate for the revision
-each bound. What P03 re-runs is not those logs — they assert nothing about the
-name — but AC1, AC2 and AC6 against the real template, where `rslbp` is the
-string `cargo metadata`, `target/release/` and `CARGO_BIN_EXE_` must carry.
+regenerated. Two **auditor-produced** logs matched the same grep, both because
+they quote earlier decision text rather than because they assert anything about
+the name. `review/evidence/audit-provenance-r4.log:111` quotes the revision-4
+`- owns` line, which did carry the old command name.
+`review/evidence/audit-six-locations-r5.log:219` quotes the revision-5
+`## Engines` line for doxa/perplexity and matches only through
+`rs-launch-blueprint-web`, that raw's proposed second binary — the string this
+note already lists as deliberately kept — so it prints no old command name at
+all. **Neither is edited**: they are round-4 and round-5 audit artifacts and
+their quoted text was accurate for the revision each bound. What P03 re-runs is
+not those logs — they assert nothing about the name — but AC1, AC2 and AC6
+against the real template, where `rslbp` is the string `cargo metadata`,
+`target/release/` and `CARGO_BIN_EXE_` must carry.
 
 **The second thing: three clause repairs from the round-7 judgment audit.**
 `review/audit-fable.md` (actor
@@ -884,9 +888,20 @@ as `typos` and `atuin` do it.
 
 **The ranked runner-up is A4, and its winning condition is stated rather than
 implied.** A4 — Cargo plus an orchestration layer, `dist` specifically — wins if
-**R68 resolves F214 to cross-compiled release binaries**, because that is the
-artifact set whose matrix, checksums and installer script `dist` exists to
-generate and which A1 would otherwise have to hand-write in CI. It is ranked
+**R68 resolves F214 to cross-compiled release binaries**, and the argument is the
+opus raw's rather than this decision's: *"if R68 resolves F214 to 'cross-compiled
+binaries attached to GitHub Releases, with generated installer scripts', then a
+second declaration surface becomes the place where the shipped output shape is
+actually described … and the alternative — hand-writing a release matrix that
+duplicates the target list — is worse. It does not win if R68 chooses
+crates.io-only distribution"*
+(`raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:525-531`,
+retrieved 2026-09-10). What that raw records `dist` as giving up when it is
+declined — *"generated cross-platform installer scripts, a generated release
+workflow, and checksum and attestation plumbing"* (`:569-570`) — is the artifact
+set the condition names, and this decision reports it at that raw's width rather
+than measuring `dist`'s output itself, which this run did not do: check 10 read
+`dist`'s configuration-location documentation only. It is ranked
 second, and not first today, for the two costs above: a maintained third-party
 dependency taken on for a decision that is R68's to make, and the documented pull
 toward `dist-workspace.toml` as a second declaration file, which is what behavior
@@ -1078,7 +1093,7 @@ names** — library crate `rs_launch_blueprint`, binary `rslbp`, artifacts under
 registers as consumed from this item: *"The build tool's output-artifact naming
 and layout (what the binary/library targets are called, where `cargo build`
 places them); R49 (`build-target-declaration`) owns `build-tool-output-shape` —
-assume its answer as a consumed parameter"*
+assume its answer as a consumed parameter, do not re-decide it here."*
 (`research/topics/22-runtime-version-accessor/prompts/runtime-version-accessor.prompt.md:18`).
 R22's accessor macro `env!("CARGO_PKG_VERSION")` derives from the `[package]
 version` field, which this item does **not** decide and which the owned parameter
