@@ -1,64 +1,260 @@
-decision-sha256: e2c3d588eaf1a098027b4c9ced4fa01ef1341fd27ef4cfdfa012bfc44a8321ec
-actor: audit-fable-2026-09-05T163018Z-d7ade3a111f8-r2
+decision-sha256: 90628ace220ffdacb6170763c894342718e335e3d84e7bce4f405a8e8e1bd69e
+actor: audit-fable-2026-09-05T163018Z-d7ade3a111f8-r6
 model: claude-opus-5
 family: anthropic
 verdict: reject
-unresolved-findings: F1: the gate rule covers only exits 0, 200 and 205, so a literal implementation of "test for exit 205" passes the job when the scanner fails to run — a fail-open gate, and the direction the rule's "never on non-zero exit" clause pushes an implementer
+unresolved-findings: F1: the star counts 27,756 (TruffleHog) and 1,226 (Kingfisher) are stated as read "at the cited log's retrieval instant" and "verified, evidence log section 04/05", and none of revision 6's four cited logs contains either number — they read 27,898 and 1,232; F2: the `GITLEAKS_LICENSE` organization-key requirement is the only ground for excluding `gitleaks/gitleaks-action` that survives the owner's Q7.B ruling, and it is labelled "verified, evidence log section 04" when no executed check in this run reads it — section 04's grep pattern cannot match the README text, so the quotation has never appeared in a cited log; F3 (minor, same class): "a current stable of 1.98.1" carries no endpoint and no retrieval date and appears in no cited log
 
 ## Principle and agreement level
 
-The shared requirement is stated as an outcome, not as a mechanism: *a credential that is live at merge time must not reach the default branch without a server-side check failing first* (line 42), sourced to ledger row F050 (`docs/port/COMMONALITY.md:56`, read and quoted) and to py's `.github/workflows/secret-scan.yml` at pin `b08bccfb`, reproduced in evidence log section 01. The agreement level — **capability and policy, not tool and not configuration** — is recorded before alternatives are compared, as spec §2 requires, and it is argued rather than asserted: the scanner is an executed build tool that enters no repository's public API and no repository's dependency graph (line 44). The must-agree / may-vary table (lines 46–51) is the operative test and it is drawn at the right line — *that* a non-bypassable CI-tier check exists and fails on a validated credential must agree; *which binary* produces the verdict, *how* it reaches the runner, and *whether* the scan is diff-scoped or full-history may vary. Spec §2's pattern-versus-tool boundary is honoured: changing TruffleHog for Kingfisher is a substitution under an unchanged pattern, and the decision correctly does not label it an `OVERRIDE`.
+The shared requirement is stated as an outcome and not as a mechanism: *a credential that is
+live at merge time must not reach the default branch without a server-side check failing first*
+(line 78), sourced to ledger row F050 (`docs/port/COMMONALITY.md:56`, which I read and which
+reads as quoted) and to py's `.github/workflows/secret-scan.yml` at pin `b08bccfb`, reproduced
+in the evidence log's section 01. The agreement level — **capability and policy, not tool and
+not configuration** (line 80) — is recorded before alternatives are compared, as spec §2
+requires, and it is argued rather than asserted: the scanner is an executed build tool that
+enters no repository's public API and no repository's dependency graph.
 
-The strongest contrary evidence in the item is confronted rather than buried. Zero of ten surveyed well-regarded Rust projects run a dedicated secret-scan job (Opus raw, `### Landscape`). The decision does not dismiss this; it names the disanalogy — all ten are public repositories where GitHub's native scanning is free, whereas a template's principal deployment is a clone into a private repository where the free tier stops, and native scanning raises alerts rather than a pull-request status check that branch protection or R12 can require (line 15, sourced to the GitHub Docs secret-scanning page, retrieved 2026-09-10). That is a fitness argument against practice evidence, which is what §2 and the prompt's survey method ask for. Part 1 is correctly separated from Part 2 and correctly carries higher confidence.
+The must-agree / may-vary table (lines 82–87) is the operative test and it is drawn at the right
+line. *That* a non-bypassable CI-tier check exists and fails on a validated credential must
+agree; *which binary* produces the verdict, *how* it reaches the runner, and *whether* the scan
+is diff-scoped or full-history may vary. Spec §2's pattern-versus-tool boundary (spec lines
+78–82) is honoured in both directions: swapping TruffleHog for Kingfisher is a **substitution**
+under an unchanged pattern and is correctly not labelled `OVERRIDE`; and dropping py's
+diff/full split is not an override either, because that split is not a recorded shared pattern —
+F050's row note records only "distinct tool and tier", the prompt's `## Context` presents the
+split as evidence, and the decision verified at the pinned tag that it exists to dodge the
+Action's equal-base/head guard (`03a`, guard at `action.yml:70-72`, entered only via line 59 —
+both reproduced in the log I read). The stronger claim that only a different tool can drop it is
+explicitly refused at line 107.
 
-`BASELINE-REVIEW: F050` is carried through verbatim from the Opus raw (line 97, byte-identical to `raw/opus.md:233`), the ledger is not edited, affected items (R17, R39) are named, and the decision states that its own recommendation is unaffected either way because Kingfisher differs from any gitleaks-family hook scanner R39 might pick. That matches RUNBOOK.md §1 and the controller-adjudication rule at §4. No `CONFLICT:` line is warranted: the recommendation requires no registered parameter to change, and the decision says so (line 120).
+The strongest contrary evidence in the item is confronted rather than buried: 0 of 10 surveyed
+well-regarded Rust projects run such a job. The decision names the disanalogy — all ten are
+public repositories where GitHub's native scanning is free, whereas a template's principal
+deployment is a clone into a private repository — and adds that native scanning raises alerts
+rather than a status check branch protection or R12 can require. That is a fitness argument
+against practice evidence, which is what §2 and the prompt's survey method ask for.
+
+Part 1 (keep the workflow) and Part 2 (the tool) are separated and carry different stated
+confidence. That separation is the decision's best structural feature and it survives both
+findings below, which touch Part 2's supporting citations and not Part 1.
 
 ## Design and evidence
 
-**The tool change is justified by evidence, not novelty — and the decision says exactly how thin the margin is.** Four architectural alternatives are compared before any tool is weighed (lines 74–79), and the table's verdicts turn on the requirement, not on preference: A is rejected because native scanning does not cover private clones; B is rejected on executed evidence (TruffleHog's Action at `v3.95.9` ends in `docker run`, read at the tag; `gitleaks/gitleaks-action` is `NOASSERTION`-licensed and needs a `GITLEAKS_LICENSE` key for organizations — a secret added to CI in order to run a secret scanner); C is recommended with its two costs recorded. Crucially, the macOS exclusion is qualified once in full (line 87) and every later mention points back to it: it removes the TruffleHog **Action**, not TruffleHog, and the decision states plainly that R11 could pin the scan job to `ubuntu-latest` and moot the exclusion entirely. That qualification is the difference between an argument and a rhetorical win, and the decision makes it against its own recommendation's interest.
+**Architecture before library, and the library choice does not rest on agreement.** Four
+architectures (A–D) are compared before any tool is weighed (lines 111–116) and each verdict
+turns on the requirement rather than on preference: A fails in private clones; B inherits the
+vendor's runtime constraints; D is left open under the `BASELINE-REVIEW:`. The selection is
+demonstrably *not* from popularity or repository agreement — py runs TruffleHog, TruffleHog has
+23× the stars, and the decision picks Kingfisher anyway, over the engine (codex) that
+recommended the incumbent.
 
-Once shape C is chosen, both tools are equally integrable, and the decision does not pretend otherwise. What actually discriminates is two things, and both are labelled: maintainer responsiveness (9 of 10 issues answered at a 2.48-day median for Kingfisher versus 0 of 10 for TruffleHog and Gitleaks — carried from the Opus raw, explicitly **not re-executed**, with the raw's own possible-undercount caveat preserved), and validation egress (17 versus 15,624 network requests — **vendor-authored**, MongoDB's own `docs/COMPARISON.md`, on one repository, labelled as such at every use). Against the recommendation the decision records, without prompting: no third-party well-regarded Rust project running Kingfisher was found, and no global adoption count exists for any candidate because GitHub's code-search API rejects the unscoped query; the executed rule count is **485 total** with no validator flag in the listing, so it is *not* comparable to TruffleHog's stated 700+ actively-verifying detectors, and the decision says parity is "unproven in both directions" (line 165) rather than claiming a win; Kingfisher is 16 months old against a 27,756-star incumbent, and the decision concedes "on raw maturity TruffleHog wins, and that is the strongest argument against Part 2" (line 89). This is not novelty-seeking. It is a medium-confidence proposal whose cost of being wrong is priced (one workflow-file edit, because both tools consume the same repository and emit SARIF), with a ranked runner-up and six falsifiable re-verify triggers — including one, "P03 measures a live credential that TruffleHog catches and Kingfisher misses", that would flip it. The three recorded gaps are load-bearing for Part 2 and the decision routes them to P03 rather than resolving them by assertion. Under §2 that is a correct result: the evidence does not select a winner, so the decision recommends with stated uncertainty and names what would settle it.
+**Does the recommendation follow? Yes, at the medium confidence it claims, and it says where
+the margin is thin.** The chain is: no gate excludes either candidate (line 168); the prompt's
+macOS constraint excludes TruffleHog's *Action* only, on primary evidence I re-read in the log
+(`docker run` at `action.yml:101`, `using: "composite"`), and that exclusion is itself qualified
+as conditional on R11 in a paragraph that governs every later mention of it (line 124); under
+shape C the two CLIs are equally integrable, which the decision states rather than hides; the
+residual discriminators are therefore two — maintainer responsiveness (9/10 vs 0/10, explicitly
+**carried** from the Opus raw and not re-executed, with the raw's own undercount caveat
+repeated) and validation egress (17 vs 15,624 network requests, explicitly labelled
+vendor-authored wherever used). The egress discriminator is principled rather than a
+performance preference, and the decision says why: "each validation request transmits a
+candidate string to a third party". A 900× difference in third-party transmission by a
+secret-scanning tool is a data-minimisation argument, and its direction is structural (verify
+every candidate versus pre-filter) rather than an artifact of the vendor's benchmark host.
+Against that stand maturity and adoption, and the decision does not smooth them: line 126 says
+"On raw maturity TruffleHog wins, and that is the strongest argument against Part 2", line 128
+records that **no third-party well-regarded Rust project running Kingfisher in CI was found**,
+and line 225 concedes "a reasonable reviewer could prefer the mature incumbent's CLI on those
+grounds". The cost of being wrong is bounded and stated: one workflow-file edit, because both
+tools consume the same repository and emit SARIF.
 
-**The provenance repair is honest, and the decision now claims only what the check establishes.** Revision 1 recorded assertion `07a-slsa-provenance-verifies` as an executed pass; `review/audit-codex.r1.md` F1 showed it does not rerun, because `gh attestation verify` builds its Sigstore verifier from TUF trusted-root metadata refreshed into `$XDG_CACHE_HOME/gh/.sigstore` and exits `1` with `no valid Sigstore verifiers could be initialized` when that path is unwritable — before it reads the artifact at all. Revision 2 does four things, in the order that makes the repair credible rather than cosmetic. It names the defect in its own words and without hedging: "revision 1 presented an environment-dependent command as an unconditional executed fact" (line 5). It diagnoses the mechanism rather than attributing the failure to "the environment". It reproduces the failure **deliberately** — the cited log was produced with the outer cache set to mode `0500`, the exact condition that broke revision 1 (line 124) — and adds both prerequisites as negative controls: `07f` (unwritable cache → exit `1`, with an honest uid-0 skip rather than a pass it did not earn) and `07g` (unauthenticated → exit `4`). And it states which of the two available repairs it took and why the other was rejected, instead of presenting the chosen path as the only one.
+**The runner-up's winning condition follows.** The TruffleHog OSS CLI `>= 3.97.0, < 4.0.0` is
+ranked with its install shape, and the switch is made testable rather than re-arguable:
+trigger (1) — `archived: true`, no release for six months, or a maintainer notice — and trigger
+(6) — P03 measures a live credential TruffleHog catches and Kingfisher misses. Both are
+observable, both name the flip. The transfer rule is stated with the right asymmetry and it is
+the part I pressed hardest on: the gate's *values* do not transfer (TruffleHog's documented exit
+codes were never executed here, so a switch re-derives the allow-list at its own pin), while the
+gate's *three conditions* do transfer unchanged, because they are properties of the GitHub
+runner rather than of the scanner. That is correct, and it is the difference between a runner-up
+that can actually be taken up and a name in a table.
 
-The claim is then correctly narrowed in two independent directions. First, scope: "**what section 07 establishes is a developer-machine fact, not a CI fact**" (line 83), with the CI case in the unproven table carrying the exact three prerequisites and the runner pair that would prove it. Second, and this is the narrowing that shows the sweep was mechanical rather than impressionistic, the decision also retracted a claim the audit never challenged — `--repo mongodb/kingfisher` constrains **repository identity only**, so `buildSignerURI` and `runnerEnvironment` are "read from the certificate, not enforced by the flags this check passes", and pinning the signer requires `--signer-workflow` or `--cert-identity`, "which this check does not pass and which P03's install step should" (line 81). I enumerated every mention of provenance or attestation in the file (lines 19, 36, 78, 81, 83, 93, 103, 105, 142, 148, 160, 167); each either states the qualification in full or explicitly refers to the paragraph that does. The qualification-once-and-reference pattern the synthesizer role permits is genuinely satisfied, not claimed. `review/audit-codex.md` independently reproduced `07a` passing under an unwritable outer cache and both negative controls, and confirmed the Part 2 recommendation, the F050 row, the `BASELINE-REVIEW:` line, the base/head narrowing, the validity-filter finding and all four `assumes` lines byte-identical to revision 1 — so the rerun is consistent with the decision, and revision 2 qualifies only the provenance claim.
+**The gate rule, and what round 5's fail-open left.** The rule is an allow-list (`0` and `200`
+pass, `205` fails, anything outside the documented set fails as a tool error) resting on an
+executed set (`10a`, with `10b`–`10d` establishing that the table *is* the documented set and
+not one file's contents) and two reachable codes outside it (`10e` = 2, `10f` = 1, `10g`). Its
+second condition is the one that is genuinely earned rather than argued: section 12 runs the
+rule's literal implementation under both shell command lines extracted from a pinned
+`github/docs` commit and shows the gate **passing a job in which nothing was scanned** when the
+scanner sits upstream of an unguarded pipe under `bash -e` (`12c`, `12f`), with four negative
+controls isolating the pipeline as the mechanism (`12d`, `12e`, `12g`, `12h`). I read those
+eight assertions in the script and in the log; they do what the prose says. The third condition
+— the report as an additional condition and never a substitute — is reasoned, not executed, and
+its reasoning ("a scanner that never ran wrote no report, and an absent or stale report reads as
+zero findings") is sound on its face; it is the one part of the rule whose status the decision
+does not label, which I note without making it a finding.
 
-The other executed work holds. The py diff/full split is verified at the exact tag py pins and then *narrowed against the raw that proposed it*: the decision refuses the stronger claim that only a different tool can drop the split, because py's own push path already passes an empty `base` and produces a full-history scan through the same Action — so what the recommendation buys is dropping two conditional GitHub expressions, not a capability (lines 70, 161). The crates.io trap (an unrelated `kingfisher` 0.1.2 from `mongrov`, while MongoDB sets `publish = false`) is executed and recorded as a "**P03 must never run `cargo install kingfisher`**" warning. The ts gap is verified at pin `cb1cbcb2` — eight workflow files, zero scanner references, and `manual-pr-security-scan.yml` is an OSV dependency scan — and correctly classified as a missing capability rather than a justified ecosystem difference. The evidence log carries 27 `RESULT` assertion lines matching the decision's count, the reproducibility rule is stated honestly (the log is *not* byte-for-byte reproducible; three volatile regions named, the diff actually run, the comparison rule given as "all 27 `RESULT` lines match"), and ten credential-shaped patterns return zero matches against it.
+**What the workflow does on a finding, and whether that is verified.** The behaviour is: the
+step fails, so the job fails, so the pull-request check is red. Merge-blocking is explicitly
+**not** claimed — it is branch protection, deferred to R12, and the decision claims only that
+"the job is an ordinary workflow job, so R11 and R12 can fold it in". Annotation is not claimed
+anywhere; SARIF is mentioned only as a report shape the gate may read, never as an upload to
+code scanning. The behaviour on a *live* credential is recorded as **unproven with what would
+prove it** (acceptance criterion 3, and the unproven table's first two rows, both owned by P03),
+and the gate-as-a-CI-job is acceptance criterion 5, "Proposed, not executed as a workflow". That
+is the correct P03 posture and I do not fault it. **No `CONFLICT:` line is owed.** I checked the
+two neighbours named to me: R16's decision recommends a separate `.github/workflows/codeql.yml`
+and nowhere touches secret scanning; R34's decision defines a three-leg `canary.yml` for
+toolchain and dependency freshness. R17's line 142 offers "a scheduled lane under R34, or a
+documented maintenance note" as P03's version-refresh path — that is a correctly-scoped handoff
+and not a claim about R34's content, and no registered parameter changes, which is what a
+`CONFLICT:` line is for. R17 consumes nothing (`inputs/prompt.md` lines 19–20 are both empty),
+so line 170's "No `CONFLICT:` line" is right.
+
+**Environment dependence, read from the script rather than the prose — this is where five
+rounds were spent, and revision 6 closes it.** I read all 923 lines of
+`review/empirical/run-checks-r6.sh`. Every environmental dependency is declared in the header
+block, probed in section 00, and either exercised or `SKIP`ped by name. `HOME` is replaced by a
+fresh empty directory under `$TMPDIR` and the replacement is *asserted* (`00a`), not merely
+performed. The API transport's branch is asserted per branch, and the anonymous branch's
+assertion — core rate limit exactly `60` — is the executed statement that no ambient credential
+reached the transport; I confirmed both branch labels appear in the logs that claim them. `gh`
+authentication is a declared token or nothing, and with no token `07a`/`07d`/`07e`/`07f` `SKIP`
+by name rather than passing on a login; the bare-mode log shows exactly that, with
+`gh=/opt/homebrew/bin/gh token=none` printed in the skip reason. `07g` is redefined to something
+that can still fail on a real host (the realpath's basename is `gh` and `--version` begins
+`gh version` under the control's own empty environment), and `07i` reads the refusal code from
+the resolved binary's own `gh help exit-codes` rather than from a literal. Section 13 resolves
+every path from `dirname "$0"`, and `13p` is the single assertion that needs Git history and
+skips by name. **I found no assertion that passes only because of something on the
+synthesizer's machine.** One residual, recorded as an observation and not a finding: `bash`
+itself — which section 12 invokes for both shells and section 00 prints the version of — is
+taken from `PATH` and is neither in the declared ten nor in the probed helper toolchain. It
+cannot mask anything: the version in force is printed in every log, `12a`/`12b` read the argv
+from the pinned docs rather than from the host, the behaviours asserted are pipeline-status
+invariants of any bash, and a broken `bash` would fail the assertions loudly rather than pass
+them.
+
+**Where the evidence does not reach the claim.** Two citations in this document point at
+executed evidence that does not carry them, and they are in the one place a `RESULT`-line rerun
+is structurally blind to: printed-never-asserted regions. They are F1 and F2 below.
 
 ## Completeness
 
-The four H2 sections appear exactly once, in the required order, with no extra H2 and no `## Supersedes`; the revision note is prose in the preamble, which is the right place for it. `### Principles and implementation` carries the shared requirement, its source, the agreement level, five essential behaviors, four labelled acceptance criteria, the must-agree/may-vary table, the four-way architecture comparison, the per-principle preservation argument, and reference implementations — including the honest statement that for the *recommended* tool the only reference is vendor-internal (line 91). `re-verify:` is the final line of `## Decision` (line 107).
+| Required item | Status |
+|---|---|
+| `## Decision`, `### Principles and implementation`, `re-verify:` (line 144) | present |
+| `## Parameters`, `## Empirical check`, `## Engines` | present, in order |
+| `## Supersedes` | correctly absent — this is a revision, not a reversal |
+| Owned parameters | none; the prompt's `- owns:` line is empty and the decision says so |
+| The four `- assumes` lines | **byte-identical** to `docs/port/PARAMETERS.md`; I compared them field by field programmatically, and `13i`–`13l` additionally assert them unchanged from revision 2 |
+| Settled ledger row | F050 named with its file and line, with the settled value; the ledger is not edited |
+| `BASELINE-REVIEW:` handling | correct per the runbook: emitted in the four-field form, carried verbatim, unresolved, affected items named (R17, R39), ledger and R39 untouched, adjudication left to the controller. F050 is `py-only`/`DIVERGENT` and so was never in `BASELINE-REVIEW.md`'s REUSE/ADOPT scope — its absence there is right, not an omission |
+| `CONFLICT:` | none owed (see above) |
+| Six fitness gates | all six answered for **both** candidates in one table (lines 159–166), each labelled executed, carried, or `inapplicable` with its reason. Gate 1's `inapplicable` under the owner's 2026-09-12 Q7.B ruling is correct and I do not treat it as a finding |
+| Source dates | present on the cited sources I sampled (GitHub Docs secret scanning, `action.yml@v3.95.9`, `docs/USAGE.md`, the pinned `github/docs` commit, the two community threads, the TruffleHog README) — all 2026-09-10 or 2026-09-12, with the run executed 2026-09-15. The exception is F3 |
+| Unproven material | tabulated with what would prove it and who owns it, six rows, and the P03 test list repeats them |
+| audit-codex r6 | consistent with this decision — see below |
 
-`## Parameters` is correct and correctly formatted. The prompt's `- owns:` and `- consumes:` lines are empty, so there are no `owns` lines and no consumed parameter, and the decision says so. The four `assumes` values are bare — no backticks, no citation, no trailing commentary — and match `docs/port/PARAMETERS.md` byte-for-byte; the bearing of each is explained in prose after the list, as the role requires. `msrv-policy` is stated `inapplicable` **with its reason and with the near-miss recorded** (Kingfisher declares `rust-version = "1.96"` against stable 1.98.1 — exactly the `stable − 2` floor with no headroom, which would matter only if P03 built from source). No `CONFLICT:` line, correctly. Source URLs carry retrieval dates (2026-09-10) throughout, including on the carried-forward Opus figures, which are additionally marked as not re-queried. The fitness gates that bear on this item — license, `target-os-matrix`, MSRV — are answered in the decision; gates 3, 5 and 6 are `inapplicable` to an external binary that enters no Cargo graph and are itemized per candidate in the Opus raw's `### Excluded by gate` and `### Qualified shortlist`. That is adequate, though restating the three `inapplicable` verdicts in `## Parameters` would remove the need for a reader to go to the raw.
+**Figures I verified against the cited logs rather than accepted.** Log digests, line counts and
+byte counts for all four r6 logs; `run-checks-r6.sh` = `479b3ab9…`; `rev2-DECISION.md` =
+`e2c3d588…`, 48,926 bytes; the four recorded rerun modes' `summary:` lines (65/0/0, 64/0/1,
+57/0/8, 65/0/0) and the eight named bare-mode skips; the assertion count (I counted 65 labels in
+the script, and section 13's 15 + `13p`); `action.yml` sha256 `c3847cdb…` with the guard at
+70–72, the entry condition at 59, the `else` branch at 78+, `docker run` at 101;
+`docs/USAGE.md` sha256 `28cbe0ca…` with the whole `0 / 200 / 205` table printed; the eight ts
+workflow files and the 0 scanner references; the tarball digest `4e741aba…` and both byte sizes;
+485 rules; 29 blobs and one finding; `active_findings 0` / `failed_validations 1`; `gh version
+2.98.0 (2026-08-20)` with observed exit 4. Every one of them matches. I also re-ran the email
+sweep over the four new logs: zero matches, so revision 6's correction (1) holds.
 
-The decision does not implement its own recommendation: no workflow file, no scaffold, no seam, and the only fixtures are the two throwaway directories the checks consume. The unproven table names six gaps with what would prove each and who owns it, and `## Engines` closes with a P03 test list. That is the correct posture for a research-phase proposal.
+**audit-codex r6 is consistent with this decision, and its coverage does not overlap mine.** It
+binds the same digest, reran three modes from genuine `git archive HEAD` extractions under
+`env -i`, applied three discriminating mutations that each produced exactly one failure, and
+diffed every `RESULT` line plus `summary:` against the cited logs. Its approval is sound for
+everything it checked. Both findings below live in printed-never-asserted regions that a
+`RESULT`-line diff cannot reach, and its five citation spot-checks did not include the
+`gitleaks/gitleaks-action` README.
 
 ## Findings
 
-### F1 — reject: the gate rule is incomplete in the fail-open direction
+**F1 — two star counts are attributed to logs that do not contain them.** Line 126 gives
+TruffleHog "27,756 stars at the cited log's retrieval instant … (verified, evidence log section
+04)" and Kingfisher "1,226 stars … (verified, evidence log section 05)"; the evidence table
+repeats both at lines 196 and 197; and line 182 states the rule that "the counter figures quoted
+below are read at these logs' retrieval instant", where "these logs" are revision 6's four new
+ones. **All four r6 logs record `stargazers_count` 27898 and 1232.** Revision 5's log recorded
+27853 and 1229. The figures 27,756 and 1,226 trace to the round-1 and round-2 *audit* logs
+(`review/evidence/audit-secret-scanning-ci-workflow-r1.log:110`, `…r2.log:115`) and have been
+carried unchanged since revision 2. This moves no conclusion — the maturity gap is 23× either
+way, and the decision itself marks stars as a drifting counter that is never asserted on — but
+it is the document's own stated rule broken in the one region no rerun can catch, and it is the
+same defect class the empirical rounds rejected five times: a figure presented as verified
+against a named artifact that the artifact does not carry. *Either repair closes it:* replace
+the two numbers with the r6 logs' values, or drop the "at the cited log's retrieval instant" and
+"verified, evidence log section 04/05" attributions and label them as what they are.
 
-**Evidence.** The decision's gate rule appears at lines 17, 53, 103, 146 and 167 and is consistent across all five: gate on exit `205`, **or** on a non-empty `findings` array in the JSON report, "never on 'exit code is non-zero', and never on the human-readable summary." The executed basis is sound — `08a`–`08d` show `--only-valid` emptying the report while the process still exits `200`, so a non-zero gate would fail on the template's own example credentials. Kingfisher's documented exit-code table, recorded by the decision itself at line 140, is `0 / 200 / 205`. **Nothing in the decision says what the job must do with an exit code outside that set** — a missing or corrupt binary, a rejected flag, a panic, a failed download, a network error during validation.
+**F2 — the only surviving ground for excluding `gitleaks/gitleaks-action` is labelled executed
+when it is carried, and the check that would execute it cannot match.** After the owner's Q7.B
+ruling removed licence compatibility from evaluation, the decision restates the exclusion on one
+ground and says so four times — line 37 ("restated on the ground that survives the ruling — it
+requires a purchased `GITLEAKS_LICENSE` key for organizations"), line 114 ("**both verified**,
+evidence log section 04"), line 168 and line 223 ("of their two grounds only the purchased
+organization key survives"). The evidence table at line 196 presents both README quotations as
+section 04's observation. **`GITLEAKS_LICENSE` appears in none of revision 6's four cited logs,
+and in none of revision 5's.** The cause is a pattern bug, not upstream drift: the script's
+section-04 grep (line 383) is `GITLEAKS_LICENSE \(required`, and the README's text is
+`` `GITLEAKS_LICENSE` (required for organizations `` — a closing backtick sits between the
+identifier and the parenthesis, so the alternation only ever matches its second branch. I
+fetched the live README under an empty `HOME` to confirm: the requirement is still there at
+lines 43 and 75, and the script's pattern still yields exactly one line. So the **fact is true
+and current** and the exclusion stands on its merits; what is wrong is the provenance label. The
+correct label is the one the decision defines for itself at line 157: **carried** — Opus raw,
+`gitleaks/gitleaks-action` README lines 43 and 75, `GET
+https://api.github.com/repos/gitleaks/gitleaks-action/readme`, retrieved 2026-09-10 — not
+executed. *Either repair closes it:* relabel the ground as carried with that endpoint and date,
+or fix the one character in the grep pattern and let section 04 execute it.
 
-**Impact.** An implementer following the rule as written, and following the clause that forbids testing the exit's sign, writes the natural form — `[ "$rc" -eq 205 ] && exit 1; exit 0` — and ships a secret-scanning job that reports success whenever the scanner fails to run. That is fail-open on the one gate the decision itself elevates: "that gate rule is not a detail: it is what makes the workflow verified-only" (line 17). It also defeats Part 1, the high-confidence part, whose whole content is that a contributor cannot get a live credential past a server-side check. The two offered routes are not equally exposed — the JSON-report route fails safe, because a scanner that did not run leaves no report to parse — but the exit-code route is offered first, is the one repeated in `## Migration implications` (line 103) and in P03's test list (line 167), and is the one the prose teaches. The P03 acceptance list does not close the gap either: checks 1, 2 and 3 cover a live credential, fake credentials and a first push, and none exercises a scanner that fails to execute. So this survives into the implementation phase uncaught.
+**F3 (minor, same class) — a number with no endpoint.** "against a current stable of 1.98.1"
+(lines 155 and 162) carries no source URL and no retrieval date, and appears in no cited log;
+the host's own `rustc 1.98.0 (Homebrew)` is what section 00 prints, and that is the host's
+toolchain, not a statement about current stable. The prompt's constraint (line 105) is that
+every number carries its endpoint. It decides nothing — gate 2 is `inapplicable` because no
+Rust toolchain compiles the scanner, and the "no headroom" observation survives either value —
+but it is the third uncited-provenance instance in the same document and is cheaper to fix than
+to defend.
 
-**Why this is a defect in the recommendation and not a P03 detail.** The decision is explicitly a proposal P03 validates, and I am not faulting it for declining to build the workflow. I am faulting one sentence of the rule it does state — the rule it identifies as load-bearing — for being incomplete in a way that makes a literal implementation wrong. The task of stating the gate is this item's, not P03's, and the decision took it.
-
-**Required correction (one clause, no new evidence, nothing to re-run).** In the Part 2 gate sentence at line 17, and in the four locations that restate it (53, 103, 146, 167), record that Kingfisher's documented exit codes are `0`, `200` and `205`, that the job fails on `205` and on any exit outside that set, and that only `0` and `200` pass. Adding "scanner fails to execute ⇒ the job fails" to the P03 test list at line 167 would make the rule verifiable rather than merely stated. The existing "never on the exit's sign" clause stays correct and should stay.
-
-### Not a finding — audit-codex transcription error, recorded for the controller
-
-`review/audit-codex.md` cites revision 1's decision sha256 as `6c0a240e6d12f34c106a44d6e7f5cdf02fe4b1825f048226d96297b618b9e18`. That value is **63 hex characters, not 64, so it is not a valid sha256 at all**: it splices revision 1's first twelve hex characters onto the tail of the **script** sha256 quoted in `review/audit-codex.r1.md` (`bb9e1d4a40e12f34c106a44d6e7f5cdf02fe4b1825f048226d96297b618b9e18`). I verified the true value rather than inferring it — `git show 84d321b2…:research/runs/R17/2026-09-05T163018Z-d7ade3a111f8/review/DECISION.md | shasum -a 256` prints `6c0a240e6d12b8858422031921612d790735ced3305e8ea16038547dc0666033`, which matches the r1 audit's own header and the `6c0a240e…` prefix the decision cites at lines 5 and 83.
-
-This is a defect in the empirical audit's citation, not in the decision, and it does not touch that audit's rerun evidence or its byte-identity comparison: `84d321b23200b91447ea6c1fe367fce5ee524aa0` is the revision-1 **commit** (`feat(research): R17 decision, keep the scanning tier and change the tool`), which the audit calls a blob but which identifies revision 1 correctly and independently of the mistyped digest. It is listed here so the controller can correct the record before publication; it is deliberately not carried in `unresolved-findings`, which names defects in the decision.
-
-### Not a finding — observation for the controller's convenience
-
-`## Parameters` explains `msrv-policy`, `rust-edition`, `license` and `target-os-matrix`, but leaves fitness gates 3 (RustSec advisory and `unsafe` posture), 5 (default features and async-runtime coupling) and 6 (binary size and compile-time cost) to the Opus raw, which answers all three per candidate as `inapplicable` for an external binary. The prompt's tier guidance asks for `inapplicable` to be stated rather than omitted silently. The decision's line 124 ("Nothing is compiled by this check — no candidate enters the template's Cargo graph") supplies the reason implicitly. One sentence naming the three gates as `inapplicable` for that reason would close it. I do not treat this as blocking: the gates are answered in the record, and the decision's own text supplies their disposition.
+**All three repairs are section-13-safe.** Lines 37, 114, 126, 155, 162, 196 and 197 are none of
+them anchor lines: `13b`–`13o` read the Part 1 recommendation, the F050 ledger row, the
+`BASELINE-REVIEW:` line, the two equal-base/head lines, the shape-C opener, the four `assumes`
+lines, the provenance-diagnosis opener, the Part 2 recommendation, the ranked runner-up and the
+validity-filter finding. The ten-same / four-differ split cannot move, and no `RESULT` line
+changes.
 
 ## Assessment
 
-**Reject revision 2 on F1, and on nothing else.** The finding is one clause wide and needs no new evidence, no re-run and no change to the recommendation.
+Revision 6 does what round 5 asked and does it well. Ten environmental dependencies are
+declared, probed and branched; the caller's `HOME` is replaced and the replacement asserted; the
+credential is a declared token with the anonymous branch asserted at the 60-request ceiling;
+`gh api` is gone; `07g` is redefined into something that can fail; section 13 carries its own
+evidence and the one assertion that still wants Git history skips by name. Four rerun modes,
+including a deliberately adverse shim-first `PATH`, all exit 0 and all reproduce. On the
+substance six empirical rounds never judged: the principle is stated at the right agreement
+level and preserved by a justified native design, the architectures were compared before the
+tools, the library selection follows from gates and evidence rather than from popularity or
+repository agreement, the runner-up's winning condition follows and transfers correctly, what
+the workflow does on a finding is either executed or recorded unproven with what would prove it,
+and every required field, gate, parameter and `BASELINE-REVIEW:` line is present and correct.
 
-Everything the task set me to weigh, I found sound. The tool change is justified rather than novel: the architecture alternatives were compared before any tool was weighed, the macOS exclusion that does most of the work against the runner-up is qualified against the decision's own interest, and the three recorded gaps — no third-party Rust adopter, vendor-only benchmarks, a rule count that is a total and not a validating subset — are stated by the decision in its own voice, priced at one workflow-file edit, and routed to P03 with falsifiable triggers. A claim recorded as unproven with what would prove it is a correct result, and this decision produces six of them. The provenance repair is honest in the way that matters: the defect is named without euphemism, the mechanism is diagnosed, the failure is reproduced deliberately under the condition that caused the rejection, the claim is confined to a developer machine, and the sweep additionally narrowed a second claim — what `--repo` enforces versus what the certificate merely records — that no auditor had challenged. The `BASELINE-REVIEW: F050` line is argued from py's own workflow comments showing the two-tool split recovers coverage that `--only-verified` discards, is carried verbatim, leaves the ledger unedited, and is explicitly not needed for this decision's own recommendation — evidence, not convenience.
-
-The gate rule is the one place where the decision's care runs out one sentence early. It correctly identifies that testing for a non-zero exit is wrong, proves it, and then leaves the complementary case unstated — so the instruction that protects against a false failure opens the door to a silent pass. Fix that clause and this is a publishable proposal.
+I still reject, on two citations and one uncited number. The recommendation follows and none of
+the three findings moves a conclusion — but all three are the same defect this document has been
+rejected for five times, relocated into the printed-never-asserted regions where an empirical
+rerun is blind by construction. F2 is the one that matters: the sole surviving ground for
+excluding a candidate architecture is presented as executed evidence, and the check written to
+execute it has never matched. A reader who followed the citation to section 04 would find the
+other half of the quotation and nothing else. Relabel it as carried with the Opus raw's endpoint
+and date, or fix the pattern; correct the two star counters or their attribution; give 1.98.1 an
+endpoint. None of it touches an anchor line, a `RESULT` line, or the recommendation.
