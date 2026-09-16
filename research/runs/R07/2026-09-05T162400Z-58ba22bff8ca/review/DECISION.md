@@ -1,4 +1,18 @@
-# R07 — Contributors-bot trigger cadence — DECISION (revision 3, 2026-09-15)
+# 2026-09-16 — R07 — Contributors-bot trigger cadence — DECISION (revision 4)
+
+**What changed in revision 4, and why.** The H1 title line and nothing else:
+`# R07 — Contributors-bot trigger cadence — DECISION (revision 3, 2026-09-15)`
+becomes the date-first line above.
+**Why:** `scripts/research_runner.py`'s `check_history` admits a revision of a
+published decision only when an H1 or H3 heading that *begins* with a date sits
+before the **first substring occurrence** of `## Supersedes`, and at revision 3
+that first occurrence was the prose mention on line 99 — inside the revision-2
+audit-finding list, 1,001 lines above the `## Supersedes` heading itself — so
+the region the check inspected held no dated heading at all; a date-first H1 on
+line 1 is before every mention, this note included.
+**No other byte moved:** the recommendation, the evidence and its scripts and
+logs, the `## Parameters` lines and the `## Supersedes` payload are
+byte-identical to revision 3.
 
 **What changed in revision 3, and why.** One thing, and it is a reversal: the
 recommended `on:` block **loses** the monthly `schedule` backstop revision 2
@@ -170,6 +184,7 @@ property of the recommendation, and "SELECTED" moves from row E back to row A.
 | 1 | 2026-09-08 | First synthesis. Recommended `push` + `paths-ignore` + `workflow_dispatch`, no `schedule`; ranked E (the same block plus a monthly backstop) runner-up with a stated winning condition. Approved by `review/audit-codex.r1.md` (empirical; actor `audit-codex-2026-09-05T162400Z-58ba22bff8ca`, model `gpt-5.6-terra`, family openai, `verdict: approve`) and by `review/audit-fable.md` (judgment; actor `audit-fable-2026-09-05T162400Z-58ba22bff8ca`, model `claude-fable-5-1`, family anthropic, `verdict: approve`), both citing sha256 `0b3dde8f9a15f22e60a01542065c53c122881e8c48bf3ee6c172ba5b70499346`. Published at `research/topics/07-contributors-bot-trigger-cadence/DECISION.md`, byte-identical. Accepted by the owner 2026-09-15 (W0-R07 option A). |
 | 2 | 2026-09-15 | Added the owner-directed monthly `schedule` backstop (option E) to the recommended `on:` block and, against the brief it was given, established that GitHub keeps one `state` per workflow file, so the added key exposed the whole workflow — `push` half included — to the 60-idle-day and fork switch-offs. New evidence: `review/empirical/r2/run-check-r2.sh` → `review/evidence/r07-empirical-r2.log`, plus two documentation snapshots. Never published: `review/audit-codex.md` rejected it at sha256 `85beea99…` on two findings, and the owner withdrew the direction the same day (W0-R07b) once shown the corrected scope. |
 | 3 | 2026-09-15 | This revision. Restores revision 1's `on:` block, essential behaviors and acceptance criteria as the recommendation, on owner ruling W0-R07b; keeps revision 2's auto-disable evidence, snapshots and criterion A7 as the recorded reason the backstop is declined; keeps the 12-of-134 failed-run figure, the visibility correction and option E's corrected silent-off cell; re-ranks E as runner-up on a new winning condition; closes both revision-2 audit findings. New evidence: `review/empirical/r3/run-check-r3.sh` → `review/evidence/r07-empirical-r3.log`. Supersedes the published revision 1, reproduced verbatim and unfenced at the end of `## Supersedes`. |
+| 4 | 2026-09-16 | Title-line-only retitle, made so that `check_history` admits this revision: the H1 becomes date-first and the revision number becomes 4. Row 3 above, not this row, records the last substantive change — no recommendation, evidence, parameter line, script, log or `## Supersedes` byte differs from revision 3. |
 
 Item kind `pattern`, Focused tier. Scope: the `on:` block of the template's
 `.github/workflows/update-contributors.yml` only. The bot tool and its wiring
