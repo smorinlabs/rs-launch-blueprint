@@ -1,6 +1,138 @@
-# R69 web-framework-stack — decision (revision 3, 2026-09-15)
+# R69 web-framework-stack — decision (revision 4, 2026-09-15)
 
-**Revision note (revision 3).** Revision 3 rewrites revision 2 (sha256
+**Revision note (revision 4).** Revision 4 rewrites revision 3 (sha256
+`a9eec9bd3cc3631d61f395f470e0b15a389746f9e26e26a5b2b32a9fc9a7e98f`) in place. No revision of
+this decision has been published, so there is still no `## Supersedes`. **Nothing about the
+recommendation, the parameters or the other five checks moves.** `axum` 0.8.9 on `tokio`
+1.53.1 behind an off-by-default `web` feature, `tower` 0.5.3 as a dev-dependency and `bacon`
+3.25.0 as the dev watcher stand unchanged; the single `- owns web-extra-surface` line and the
+five `- assumes` lines are byte-identical to revision 2 and revision 3; the R67 exit contract
+(SIGTERM →143, SIGINT →130, drain-deadline expiry →1) and the request to R67 are unchanged;
+the CLI Design Standard's R4.1 required global core is unchanged; fitness gate 1 remains
+`inapplicable` under owner ruling Q7.B; the pinned advisory-database commit
+`b50980aad8b8f14f77e25a97b32dd94bf008b0af` and its 1,243-advisory and 55-crate assertions are
+unchanged; and the other five evidence scripts and their cited logs are untouched. Revision 4
+repairs exactly one defect: **the conditions under which check 2's cited log is byte-identical
+on rerun.**
+
+Revision 3 was **rejected** by the round-3 empirical audit (`review/audit-codex.md`, actor
+`audit-codex-2026-09-12T204004Z-d02022bf6f42-r3`, model `gpt-5.6-terra`, family openai) on a
+single finding, quoted verbatim:
+
+> **Reject — the repaired check is still not byte-reproducible under the decision's stated
+> conditions.** Each successful rerun inserted `warning: couldn't open crates.io index: I/O
+> operation failed: failed to obtain lock file '/Users/stevemorin/.cargo/.package-cache'` after
+> `Loaded 1243 security advisories`; `diff -u review/evidence/feature-shape-check-r3.log
+> review/evidence/audit-feature-shape-check-r3-inplace-1.log` shows this sole difference. The
+> decision names a *missing* cached index as the warning condition, but the observed cause is an
+> unavailable package-cache lock on a machine that has the cache. Cargo-audit 0.22.1's
+> `src/auditor.rs:115-167` takes the same `CachedIndex::open` branch for `--no-fetch` and warns
+> on any open failure, including a lock failure. Its stated conditions for cited-log identity
+> must include a readable, unlocked cached crates.io index (or the claim must be narrowed to the
+> deterministic feature-shape sections); otherwise its claim that the two named variations are
+> exhaustive is false.
+
+The finding is correct and is accepted without qualification. Revision 3's note below says, in
+the sentence beginning "The residual environment dependency, named rather than claimed away",
+that a **missing** cached index is the condition for that warning and that the SKIP and the
+missing index are "the second and last documented way this log can vary". Both halves were
+wrong: cargo-audit 0.22.1 warns on **any** `CachedIndex::open` failure, a contended
+`~/.cargo/.package-cache` lock included, and that is what the auditor hit on a machine whose
+index is present. The same auditor's findings 2, 3 and 4 confirmed everything else in revision
+3 — the pinned-database repair, the scoped SKIP and mismatch controls, and the five unchanged
+checks — and revision 4 changes none of it.
+
+**The repair, and why this form.** The finding offered two remedies: make the warning
+impossible, or narrow the byte-identity claim to the deterministic feature-shape sections and
+classify the scan section's environment-dependent lines. Revision 4 takes the **first** form
+for the warning, because it can be made **structurally impossible** rather than merely
+classified. The new check is `review/evidence/feature-shape-check-r4.sh`; its cited log is
+`review/evidence/feature-shape-check-r4.log`. It differs from `feature-shape-check-r3.sh` in
+exactly three ways, and in nothing else:
+
+1. **Section 8 runs `cargo audit` under an isolated `CARGO_HOME` with the yanked-crate lookup
+   disabled, so the warning cannot be emitted.** The isolated home is a `mktemp -d` directory
+   under `${TMPDIR:-/tmp}` containing exactly two things: an `audit.toml` holding
+   `[yanked]` / `enabled = false`, and a `bin/cargo-audit` symlink to the cargo-audit binary
+   already on `PATH`. Read at the published source of `cargo-audit` 0.22.1, `src/commands.rs`
+   sets `CONFIG_FILE = "audit.toml"` and resolves `config_path()` to the project's
+   `./.cargo/audit.toml` if it exists and otherwise to `home::cargo_home().join("audit.toml")`,
+   and `home::cargo_home()` honours `$CARGO_HOME`; the probe directory has no `./.cargo`, so
+   that file is the configuration this invocation loads. With `yanked.enabled` false,
+   `src/auditor.rs:115-167` takes its `} else { None }` arm: **neither `CachedIndex::fetch` nor
+   `CachedIndex::open` is called.** No crates.io index is read, no `.package-cache` lock is
+   taken, and the warning the round-3 audit observed has no code path that can print it. The
+   ambient `~/.cargo` is not consulted at all, so **neither a readable nor an unlocked cached
+   crates.io index is required** to reproduce the log.
+   **What that costs, stated rather than hidden:** the scan no longer reports yanked crates. A
+   crate's yanked status is a **mutable** attribute of the live crates.io registry, not part of
+   the pinned advisory corpus, and is exactly the kind of moving input for which revisions 2 and
+   3 were rejected. No claim in this decision rests on a yanked result — gate 3 is answered on
+   advisories alone, and the gate-2 "newest non-yanked version" figures come from the committed
+   crates.io snapshots read by check 3, not from this scan. Yanked-crate detection against a
+   current index belongs to P03's live CI.
+   The repair is **asserted, not assumed**: the normalised cargo-audit output must contain
+   neither `couldn't open crates.io index` nor `couldn't check if the package is yanked`, and
+   must be **exactly two lines**. The line count is the assertion that catches a line nobody has
+   seen yet; a string blocklist cannot. A control shows the same absence test reports a line
+   that *is* present, so it can fail.
+   **The variant the finding's own wording suggested was tested and rejected on evidence.** An
+   isolated but *unpopulated* `CARGO_HOME` with `yanked.enabled` left at its default `true` does
+   **not** print the warning: `CachedIndex::open` succeeds against a newly created empty index,
+   and cargo-audit then prints 55 lines of
+   `error: couldn't check if the package is yanked: not found: No such crate in crates.io index: <name>`.
+   Asserting the warning's absence would have passed while the log grew 55 lines. Disabling the
+   lookup is the form that makes the claim true by construction.
+2. **One named, anchored classified line class, for a second environment dependency found while
+   repairing the first.** Sections 1, 2, 5 and 7 run cargo under the **real** `CARGO_HOME` —
+   they need the populated registry cache to resolve `--locked` — and capture its stderr. When
+   another process holds `~/.cargo/.package-cache`, and ten agents share this worktree, cargo
+   prints `Blocking waiting for file lock on package cache` (and, for the build-directory lock,
+   `… on build directory`) and then proceeds normally. **This was reproduced deliberately, not
+   inferred:** an exclusive `flock` was held on `~/.cargo/.package-cache` from a separate
+   process while section 1's `cargo tree -e normal --locked --no-default-features` ran in the
+   probe directory; the line appeared and the tree was otherwise identical. Left alone it would
+   have rejected revision 4 for the same overclaim a third time, and unlike the section-8
+   warning it **cannot** be made impossible. It is therefore handled by the R63 classifier
+   discipline: `norm` deletes it with the single anchored pattern
+   `/^[[:space:]]*Blocking waiting for file lock on /d`. **That is the only classified line
+   class in this log, and it is named here, in the script's header and in a header line the log
+   itself prints.** It carries no information about the feature shape; it is deleted before
+   section 7's `tail -3` window is taken, so it cannot shift that window; and when no lock is
+   contended nothing is deleted. Section 7's `cargo clean --quiet` and section 8's
+   `cargo audit --version` now pipe their output through `norm` for the same reason — in
+   revision 3 their stderr reached the log unclassified.
+3. **Two sentinels and two log lines follow from the above.** `norm` also rewrites the isolated
+   home's path to `<isolated-cargo-home>` (a sentinel initialised before first use, as revision
+   3's `DB_DIR` was), the `EXIT` trap removes the isolated home alongside the advisory-database
+   clone, the header prints the classified line class, and section 8 prints the isolated home
+   and its `audit.toml`. Nothing else in the script moved: the pinned commit, the 1,243 and 55
+   assertions, the advisory-count control, the `--db <clone> --no-fetch --stale` form, the
+   scratch clone under `${TMPDIR:-/tmp}` that is never written inside this run directory, the
+   named `SKIP: advisory-scan-skipped-pinned-db-unavailable`, the separate `rc_shape` that
+   always reaches the exit code, and a pinned-hash mismatch being a FAIL and never a SKIP are
+   all carried over unchanged.
+
+**One mechanical, output-free addition, reported rather than left to a diff.** Between
+revision 3's commit and revision 4's, this repository gained a `pre-commit` hook that runs
+`shellcheck` over every staged `*.sh` file under `set -e`. `feature-shape-check-r3.sh` and four
+of the five `review/empirical/` scripts do not pass it — each raises the same three
+**informational** findings, SC2015, SC2016 and SC2329. Rather than bypass the hook,
+`feature-shape-check-r4.sh` carries a file-level `# shellcheck disable=SC2015,SC2016,SC2329`
+directive with a comment justifying each code: SC2015's `A && B || C` pattern is deliberate
+here because `B` is an `echo` that cannot fail, SC2016's single-quoted `jq` and `awk` programs
+must reach those tools unexpanded, and SC2329's `cleanup` is invoked indirectly by
+`trap cleanup EXIT`. The directive is a comment: the script's output is unaffected, and the
+run made before it was added `diff`s empty against the cited log made after.
+
+`review/evidence/feature-shape-check-r3.sh` and its log `review/evidence/feature-shape-check-r3.log`
+are **left byte-identical** as the record of revision 3, exactly as revision 3 left
+`review/empirical/feature-shape-check.sh` and `feature-shape-check.log` as the record of
+revision 1. The locations revision 4 edited are enumerated at the end of `## Empirical check`.
+
+**Revision note (revision 3), retained as the record of that revision. Its "second and last
+documented way this log can vary" claim is the claim the round-3 audit refuted; read it with
+the revision-4 note above.** Revision 3 rewrites revision 2 (sha256
 `9a8d825d0e204bcf6eed2185409c183ae27903ebd5614ec0245ed2a9537b8723`) in place. No revision of
 this decision has been published, so there is still no `## Supersedes`. **Nothing about the
 recommendation, the parameters or the other five checks moves.** `axum` 0.8.9 on `tokio`
@@ -169,7 +301,9 @@ file, saved as the new `review/evidence/parameters-check-r2.log`; revision 1's
 Bundle, Deep tier. Synthesizer: fresh Claude Opus 5 context, 2026-09-13; revision 2 by a
 second fresh Claude Opus 5 context that produced none of this item's raws, audits or revision
 1, 2026-09-15; revision 3 by a third fresh Claude Opus 5 context that produced none of this
-item's raws, audits, revisions or their audits, 2026-09-15; run
+item's raws, audits, revisions or their audits, 2026-09-15; revision 4 by a fourth fresh
+Claude Opus 5 context that produced none of this item's raws, audits, revisions or their
+audits, 2026-09-15; run
 `research/runs/R69/2026-09-12T204004Z-d02022bf6f42`. This item was admitted ahead of the
 Wave 0 review gate by owner decision Q3.A (2026-09-12) because it consumes only R01, which
 the owner accepted on 2026-09-10, and because 19 items consume its owned parameter directly.
@@ -237,7 +371,7 @@ and are carried in the unproven table under `## Engines`.
 1. **The surface is optional and costs nothing when off.** *Observable:* with no features,
    `cargo tree -e normal` lists no `axum`, `tokio`, `hyper` or `tower`, and
    `cargo build --bins` produces no serve binary. *Verified here on a manifest probe*
-   (`review/evidence/feature-shape-check-r3.log`, sections 1, 2, 6 and 7), not on a template.
+   (`review/evidence/feature-shape-check-r4.log`, sections 1, 2, 6 and 7), not on a template.
 2. **The web handler reaches the same erased service the CLI reaches, over the same
    serialisable type, with no mirror struct** (R01 acceptance criterion 6). *Observable:* the
    handler's return type names the library's own `Project`, and a real HTTP GET against a
@@ -933,18 +1067,19 @@ LLVM 22.1.8. `cargo --version` → `cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebre
 
 **Working directory.** Five of the six scripts live in
 `research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/`; the sixth, check 2's
-`feature-shape-check-r3.sh`, lives in the sibling
+`feature-shape-check-r4.sh`, lives in the sibling
 `research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/` and reads the two probe
 packages under `../empirical/`. All six resolve their own paths from `${BASH_SOURCE[0]}`, so
 they rerun unchanged from any directory after this decision is committed. Every script sets
 `set -o pipefail`. Every script asserts on **content**, and three of them carry a deliberate
 control assertion that must fail, so that a check which cannot fail is visible as such —
-check 2 now carries two, the pre-existing MSRV-floor control and a new advisory-count control.
+check 2 now carries three, the MSRV-floor control, revision 3's advisory-count control, and
+revision 4's control showing the warning-absence test reports a line that *is* present.
 
 | # | Claim under test | Script | Exit | Log under `review/evidence/` |
 |---|---|---|---|---|
 | 1 | **the R01 coupling**: the erased service satisfies axum's state bound without `ProjectsService` deriving `Clone`, and the `Arc` and R01's `Send + Sync` supertraits are each load-bearing | `state-bound-check.sh` | 0 | `state-bound-check.log` |
-| 2 | the `web` feature's gating shape, its dependency cost, the resolved-tree MSRV, and that no advisory in a **pinned** RustSec database applies to the resolved lockfile | `feature-shape-check-r3.sh` (in `review/evidence/`; revision 1's `review/empirical/feature-shape-check.sh` is retained unchanged) | 0 | `feature-shape-check-r3.log` (revision 1's `feature-shape-check.log` is retained unchanged) |
+| 2 | the `web` feature's gating shape, its dependency cost, the resolved-tree MSRV, and that no advisory in a **pinned** RustSec database applies to the resolved lockfile | `feature-shape-check-r4.sh` (in `review/evidence/`; revision 3's `feature-shape-check-r3.sh` and revision 1's `review/empirical/feature-shape-check.sh` are retained unchanged) | 0 | `feature-shape-check-r4.log` (revision 3's `feature-shape-check-r3.log` and revision 1's `feature-shape-check.log` are retained unchanged) |
 | 3 | every population figure, gate answer and published-artifact fact this decision cites | `assert-figures.sh` | 0 | `assert-figures.log` |
 | 4 | the issue-responsiveness figure the codex raw recorded as unverified | `issue-responsiveness.sh` | 0 | `issue-responsiveness.log` |
 | 5 | the recommended dev tool's version pin installs on macOS and exposes the two capabilities F339's recipe needs | `bacon-install-check.sh` | 0 | `bacon-install-check.log` |
@@ -966,32 +1101,52 @@ so its advisory count moved from 1,243 to 1,246 between the recorded log and the
 rerun. The sentence is withdrawn and replaced by the following, which says for each check
 exactly what was established, by whom, and under which conditions.
 
-- **Check 2** now reads a **pinned** advisory database and normalises every absolute path it
-  would print, and its log `feature-shape-check-r3.log` is what revision 3 re-established:
-  the script was run three times in a row in this checkout, and runs 2 and 3 were
-  **byte-identical** to run 1, which is the cited log; the same script and its committed probe
-  inputs were then extracted into a scratch directory as `git archive` produces them from the
-  committed tree and run there, and that run was **byte-identical to the cited log as well**.
-  The conditions under which that holds, stated rather than implied: the same toolchain and OS
-  printed in the log's first two lines (`rustc 1.98.0` / `cargo 1.98.0` on Darwin arm64,
-  macOS 26.4), `cargo-audit` 0.22.1, and a reachable copy of the pinned commit. When the
-  pinned commit is reachable from neither the network nor a local mirror, section 8 prints
+- **Check 2** reads a **pinned** advisory database, runs `cargo audit` under an **isolated
+  `CARGO_HOME`** that disables the yanked-crate lookup, normalises every absolute path it would
+  print, and deletes one named class of environment-dependent line. Its log
+  `feature-shape-check-r4.log` is what revision 4 established: the script was run **three times
+  in a row** in this checkout and runs 2 and 3 were **byte-identical** to run 1, which is the
+  cited log; the same script and its committed probe inputs were then extracted into a scratch
+  directory as `git archive` produces them from the tree this revision commits and run there,
+  and that run was **byte-identical to the cited log as well**; and a fifth run, made while a
+  separate process held an exclusive `flock` on `~/.cargo/.package-cache` — the exact condition
+  that made revision 3's log irreproducible — was **byte-identical to the cited log too**.
+  **The reproduction conditions, stated exactly.** `rustc 1.98.0` and `cargo 1.98.0` on Darwin
+  arm64 (macOS 26.4) as printed in the log's first two lines, with `cargo-audit` 0.22.1, `jq`
+  and `git` on `PATH`; the environment variables `R69_ADVISORY_DB_URL`,
+  `R69_ADVISORY_DB_MIRROR` and `R69_NO_LOCAL_MIRROR` unset, so their defaults apply, and
+  `${TMPDIR:-/tmp}` writable; the files read are the two committed probe packages
+  `review/empirical/feature-shape/` and `review/empirical/feature-shape-r01base/` with their
+  committed `Cargo.toml` and `Cargo.lock`, read `--locked`, plus `RustSec/advisory-db` at
+  commit `b50980aad8b8f14f77e25a97b32dd94bf008b0af` obtained from github.com or from a local
+  `~/.cargo/advisory-db` mirror that already contains it; and **cargo-audit is executed under
+  an isolated `CARGO_HOME`** — a `mktemp -d` directory under `${TMPDIR:-/tmp}` holding exactly
+  `audit.toml` with `[yanked] enabled = false` and a `bin/cargo-audit` symlink — **so that
+  neither a readable nor an unlocked cached crates.io index is required, because the branch
+  that opens one is never entered**. Sections 1, 2, 5 and 7 do use the ambient `CARGO_HOME`'s
+  registry cache; when its `.package-cache` lock is contended cargo prints
+  `Blocking waiting for file lock on package cache` (or `… on build directory`), and `norm`
+  deletes exactly that line class with the anchored pattern
+  `/^[[:space:]]*Blocking waiting for file lock on /d`. **That is the only classified line in
+  this log**, it is named in the header line the log itself prints, and the lock-held rerun
+  above is the evidence that classifying it is sufficient. The one remaining documented way the
+  log can differ is the named SKIP: when the pinned commit is reachable from neither the network
+  nor a local mirror, section 8 prints
   `SKIP: advisory-scan-skipped-pinned-db-unavailable` instead of the advisory lines and the rest
   of the log is unchanged; it cannot hide a feature-shape failure, which is asserted by a
-  separate status variable. On a machine with no cached crates.io index, cargo-audit adds a
-  `couldn't open crates.io index: …` warning line, which affects no advisory result. Those two
-  are the only documented ways this log can differ, and both are named in the revision note.
-- **Check 6** was re-run for revision 3 against this revised file, with `diff` reporting no
+  separate status variable.
+- **Check 6** was re-run for revision 4 against this revised file, with `diff` reporting no
   differences against `review/evidence/parameters-check-r2.log`. It is the only one of the six
-  that reads `review/DECISION.md`, and revision 3 moves nothing it measures — the one `- owns`
-  line, the five `- assumes` lines and the H2 section list are byte-identical to revision 2 —
-  so revision 2's log remains the cited one and **no new log is written**. Revision 1's
+  that reads `review/DECISION.md`, and revision 4 moves nothing it measures — the one `- owns`
+  line, the five `- assumes` lines and the H2 section list are byte-identical to revisions 2 and
+  3 — so revision 2's log remains the cited one and **no new log is written**. Revision 1's
   `parameters-check.log` stays unedited as the record of revision 1.
-- **Checks 1, 3, 4 and 5** were **not** re-run by revision 3, and that is not asserted here.
+- **Checks 1, 3, 4 and 5** were **not** re-run by revision 4, and that is not asserted here.
   None of them reads this file and none of their inputs changed. What stands for them is the
-  round-2 empirical audit's own rerun, recorded in `review/audit-codex.md`: it re-ran all six
-  scripts and reported `exit code: 0` and **byte-identical output for checks 1, 3, 4, 5 and 6**,
-  check 2 being the sole exception and the subject of this repair.
+  round-3 empirical audit's own rerun, recorded in `review/audit-codex.md`: its finding 4
+  reports that the five unchanged checks — state bound, figures, issue responsiveness, bacon
+  install and parameters — reran with `exit code: 0` and **byte-identical logs**, check 2 being
+  the sole exception and the subject of this repair.
 - **Checks 3 and 4** read the committed reduced snapshots rather than live endpoints, because
   download counters, `pushed_at` and star counts move hourly and a live re-run could never be
   byte-identical; `fetch-figures.sh` refreshes them and records its retrieval timestamp in
@@ -1013,6 +1168,29 @@ package count and did not belong there; (3) the working-directory sentence, sinc
 scripts no longer share one directory; (4) the check-2 row of the table above; (5) the check-2
 narrative below, which now names the pin. Nothing else in this section or in any other section
 changed.
+
+**The locations revision 4 edited, enumerated from a mechanical search rather than from a
+re-reading.** The search was `/usr/bin/grep -n -i 'yank|crates\.io index|cached|no-fetch|
+auditor\.rs|CachedIndex|package-cache|CARGO_HOME|Blocking'` over this file, plus
+`feature-shape-check-r3` and `revision 3`, and every hit was classified before any edit was
+made: (1) the title; (2) the new revision-4 note, which quotes the round-3 finding verbatim;
+(3) the revision-3 note's heading, which now says the note is retained as that revision's
+record and that its "second and last documented way this log can vary" claim is the one the
+round-3 audit refuted — the note's body is left **verbatim**, because it is the record of what
+revision 3 said; (4) the synthesizer line, which adds revision 4's context; (5) acceptance
+criterion 1's citation, now `feature-shape-check-r4.log`; (6) the working-directory sentence,
+which now names `feature-shape-check-r4.sh`; (7) the control-assertion sentence, since check 2
+now carries three controls rather than two; (8) the check-2 row of the table above; (9) the
+check-2 reproducibility bullet, which carries the exact reproduction conditions; (10) the
+check-6 and checks-1/3/4/5 bullets, which now name revision 4 and the round-3 audit's rerun;
+(11) the check-2 narrative below, whose command form now shows the isolated `CARGO_HOME` and
+whose sentence about the yanked-crate lookup is corrected, because under revision 4 that lookup
+does **not** run. **Deliberately left byte-identical, and why:** the gate-3 paragraph under
+`### Principles and implementation` (it records the advisory answer — the pinned commit, 1,243
+advisories, 55 crate dependencies, exit 0 — none of which revision 4 moves); every gate-2
+"newest non-yanked version" figure in the candidate tables (those come from the committed
+crates.io snapshots read by check 3, never from this scan); the `## Parameters` block in full;
+and the retained revision-2 and revision-3 note bodies.
 
 **Check 1 — the R01 coupling.** Three dependency-free packages under
 `review/empirical/state-bound/`. Each declares R01's published seam shape transcribed from
@@ -1068,16 +1246,23 @@ to bring `ServiceExt` into scope in tests. The resolved non-dev tree's highest d
 excluded); the same test applied against a 1.70 floor reports a failure, so it can fail. Nine
 transitive dependencies declare no `rust-version` at all — the strict gate-2 reading is applied
 to *candidates*, not to every transitive crate, and this figure records that limit. `cargo audit`
-0.22.1, run as `cargo audit --db <clone> --no-fetch --stale` against a scratch clone of
-`RustSec/advisory-db` **pinned** at commit `b50980aad8b8f14f77e25a97b32dd94bf008b0af` and
-asserted to be at that commit, loaded 1,243 advisories, scanned 55 crate dependencies and
-exited 0 with no findings. The count and the crate total are asserted as constants, and a
-control assertion demanding a count the database cannot have shows the test can fail. This scan
-does not refresh the crates.io index and prints no `Updating crates.io index` line; per
-`cargo-audit` 0.22.1's source (`src/auditor.rs:115-167`) the yanked-crate lookup still runs,
-against whatever index is already cached, and no advisory result depends on it. Revision 1 ran
+0.22.1, run as `CARGO_HOME=<isolated> cargo audit --db <clone> --no-fetch --stale` against a
+scratch clone of `RustSec/advisory-db` **pinned** at commit
+`b50980aad8b8f14f77e25a97b32dd94bf008b0af` and asserted to be at that commit, loaded 1,243
+advisories, scanned 55 crate dependencies and exited 0 with no findings. The count and the
+crate total are asserted as constants; a control assertion demanding a count the database
+cannot have shows the test can fail; and the normalised output is asserted to be exactly two
+lines containing neither `couldn't open crates.io index` nor
+`couldn't check if the package is yanked`. This scan does not refresh the crates.io index and
+prints no `Updating crates.io index` line. It also does **not** read a cached index at all: the
+isolated `CARGO_HOME` supplies an `audit.toml` setting `[yanked] enabled = false`, so per
+`cargo-audit` 0.22.1's source (`src/auditor.rs:115-167`) the yanked-crate lookup is skipped
+entirely and neither `CachedIndex::fetch` nor `CachedIndex::open` is called. No advisory result
+depends on that lookup, and no claim in this decision rests on a yanked result. Revision 1 ran
 this scan against the live, self-updating `~/.cargo/advisory-db`, which is why its count was
-not reproducible and why revision 2 was rejected.
+not reproducible and why revision 2 was rejected; revision 3 pinned the corpus but still read
+the ambient cached index, whose `.package-cache` lock inserted a warning line into every rerun,
+which is why revision 3 was rejected.
 With the base set to R01's published members, the non-dev tree is **12 packages with the feature
 off and 52 with it on**; the 52 matches the opus raw exactly, and the base differs by one package
 because that probe carried one further base dependency, so the delta reads 40 here and 39 there.
