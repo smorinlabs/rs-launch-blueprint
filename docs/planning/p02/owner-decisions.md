@@ -386,6 +386,38 @@ reject.
 | W0-R65 | R65 color-enablement-chain | A accept | 2026-09-15 | `4b9b21a1…` | seven-tier chain; `NO_COLOR` beats force variables |
 | W0-R66 | R66 output-format-surface (decision) | A accept | 2026-09-15 | `a7958d3f…` | the surface rests on standard MUSTs plus the stale-port finding; `tabled` medium with a named swap trigger; `table` kept as the default's name |
 
+## 11. Owner-supplied reference architecture (2026-09-16) -- STANDING INPUT
+
+The owner supplied "The Axum Companion Stack — Reference Architecture (September
+2026)", recorded verbatim at `docs/planning/p02/owner-reference-axum-companion-stack-2026-09-16.md`,
+with two instructions: fold it into R69 (`web-framework-stack`) now, and for every
+later item it overlaps, "don't answer our items that haven't been researched yet,
+but just include this ... any places where overlap, include it in that further
+research."
+
+**Ruling as applied.** The document is an owner-supplied research input, not a
+binding standard and not a pre-decision. It binds process, not outcome:
+
+- R69 revision 6 reconciles with it row by row where they overlap (framework,
+  runtime and features, exact pin, dev loop, graceful shutdown and the Cloud Run
+  SIGTERM window, WebSocket task tracking, test idiom, layout) and records
+  agreement or a ground for differing; rows belonging to other items are recorded
+  as hand-offs, not decided.
+- When any overlapping item is prepared, the controller copies the document into
+  that run's `inputs/` as `owner-reference-axum-companion-stack-2026-09-16.md` and
+  every engine and synthesizer task message names it as a required input. Overlap
+  set: R70 (C4 error contract), R71 (C3 OpenAPI), R72–R76 (C11 middleware, rate
+  limiting, security headers), R77 (C9 config and secrets), R78/R79 (C10
+  observability), R80 (C15 probes), R32 (C12 testing), R05 (async model), R58
+  (C10 logging), R51/R68 (C15 container and release). Owner-fixed parameters
+  override any value the document states (edition 2024 over 2021; `msrv-policy`
+  over `rust-version = "1.85"`).
+- Rows with no P02 item — templating, static assets, database and migrations,
+  sessions and auth, WebSockets, background jobs, Cloud Run deployment, the
+  HTMX-versus-SPA head — are NOT decided and NOT researched by this instruction.
+  They are listed in the file's overlap map for a later scoping decision by the
+  owner.
+
 ## Retired from this list
 
 Two items previously carried here are not owner decisions.
