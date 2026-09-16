@@ -1,0 +1,244 @@
+
+===== PHASE A — preconditions and the allowed-position map =====
+Darwin arm64
+ProductName:		macOS ProductVersion:		26.4 BuildVersion:		25E246 
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+ambient locale: LANG=en_US.UTF-8 LC_ALL=unset LC_COLLATE=unset
+review/evidence/r63-spinner-claims.sh                      sha256 160e3cf20826268252fd056d0beb447dc2a41b8ea0772718f5f0110a49ecd331
+review/evidence/r63-spinner-claims.log                     sha256 f025fb86b179b3677cf45c4dbacaf72c92a4176ad1e8e6c34d01104f50163d90
+review/evidence/r63-spinner-claims-negative-control.log    sha256 3fe30c85bb3e969648597cdefe43b2c7d8d361ee597b808a534c7debe00bd87c
+review/evidence/r63-spinner-claims.r2.sh                   sha256 6575b0c3842766e3fb12a93e31a89229fd92fd1ceeadf00e5517fc385bb00117
+review/evidence/r63-spinner-claims.r2.log                  sha256 abd209a155871ef4fe7cceb0d10bb144468049738a4983b6c936748a013c9bbc
+review/evidence/audit-r63-spinner-r2.log                   sha256 110406ab66a97f5830f6f3eb9d75812899faaa98b82b465667e104d2382f61a9
+cited log: 1071 lines; 168 PASS lines
+allowed positions: class V = 126 lines; class H = 4 lines
+PASS pre/cited-line-count (1071)
+PASS pre/cited-pass-count (168)
+PASS pre/cited-fail-count (0)
+PASS pre/class-V-allowed-positions (126)
+PASS pre/class-H-allowed-positions (4)
+PASS pre/check-pins-collation (1)
+PASS pre/check-has-pipefail (1)
+PASS pre/compare-has-pipefail (1)
+PASS pre/no-personal-email-in-check (0)
+PASS pre/check-user-agent-names-the-repository (1)
+PASS pre/cited-against-itself/line-count (1071)
+PASS pre/cited-against-itself/pass-lines (168)
+PASS pre/cited-against-itself/fail-lines (0)
+PASS pre/cited-against-itself/summary-line (1)
+PASS pre/cited-against-itself/unprefixed-block-identical (same)
+
+===== PHASE B — three reruns of the archived check, three environments =====
+run 1: fresh scratch, ambient locale (LANG=en_US.UTF-8)
+PASS run1/exit (0)
+run 2: fresh scratch, LC_ALL=en_US.UTF-8 forced in the environment
+PASS run2/exit (0)
+run 3: fresh scratch, LC_ALL=C with every LC_* and LANG unset in the environment
+PASS run3/exit (0)
+PASS run1/line-count (1071)
+PASS run1/pass-lines (168)
+PASS run1/fail-lines (0)
+PASS run1/summary-line (1)
+PASS run1/unprefixed-block-identical (same)
+PASS run2/line-count (1071)
+PASS run2/pass-lines (168)
+PASS run2/fail-lines (0)
+PASS run2/summary-line (1)
+PASS run2/unprefixed-block-identical (same)
+PASS run3/line-count (1071)
+PASS run3/pass-lines (168)
+PASS run3/fail-lines (0)
+PASS run3/summary-line (1)
+PASS run3/unprefixed-block-identical (same)
+
+===== PHASE C — classify every differing line =====
+--- cited-vs-run1-ambient
+H-host-identity lines=
+V-live-figure lines=9
+classified=1 unclassified=0 violations=0 classes=V-live-figure
+PASS cited-vs-run1-ambient/unclassified (0)
+PASS cited-vs-run1-ambient/violations (0)
+--- cited-vs-run2-en_US.UTF-8
+H-host-identity lines=
+V-live-figure lines=9
+classified=1 unclassified=0 violations=0 classes=V-live-figure
+PASS cited-vs-run2-en_US.UTF-8/unclassified (0)
+PASS cited-vs-run2-en_US.UTF-8/violations (0)
+--- cited-vs-run3-C-locale
+H-host-identity lines=8
+V-live-figure lines=9
+classified=2 unclassified=0 violations=0 classes=H-host-identity,V-live-figure
+PASS cited-vs-run3-C-locale/unclassified (0)
+PASS cited-vs-run3-C-locale/violations (0)
+--- run1-vs-run2
+H-host-identity lines=
+V-live-figure lines=9
+classified=1 unclassified=0 violations=0 classes=V-live-figure
+PASS run1-vs-run2/unclassified (0)
+PASS run1-vs-run2/violations (0)
+--- run2-vs-run3
+H-host-identity lines=8
+V-live-figure lines=9
+classified=2 unclassified=0 violations=0 classes=H-host-identity,V-live-figure
+PASS run2-vs-run3/unclassified (0)
+PASS run2-vs-run3/violations (0)
+
+===== PHASE D — which classes were actually observed =====
+H-host-identity
+V-live-figure
+PASS coverage/V-live-figure-observed (1)
+PASS coverage/H-host-identity-observed (1)
+Both classes were observed, but only at a FEW of their allowed positions,
+and the comparisons above name exactly which. Class V differed only at the
+wall-clock date line, because these runs are minutes apart and no registry
+or GitHub counter moved inside that window; a rerun days later will differ
+at more of its 126 allowed positions, and the rule admits that. Class H
+differed only where run 3's environment differs from this host's ambient
+one. The remaining allowed positions of each class are exercised by the
+synthetic in-position control in phase H2, not by these runs.
+
+===== PHASE E — the revision-2 defect, demonstrated from committed files =====
+Revision 2's rule was: remove VOLATILE:/HOST: lines from both logs, and the
+diff must be empty. Applied to revision 2's OWN cited log and the revision-2
+auditor's archived rerun of revision 2's script, it is not empty:
+191c191
+< APPVEYOR bamboo.buildKey BITBUCKET_DEPLOYMENT BITRISE_IO BUDDY_WORKSPACE_ID BUILDER_OUTPUT BUILDKITE CI_NAME CIRCLECI CIRRUS_CI CODEBUILD_SRC_DIR DRONE DSARI GERRIT_PROJECT GITHUB_ACTION GITLAB_CI GITLAB_DEPLOYMENT GO_PIPELINE_NAME HUDSON_URL JENKINS_URL MAGNUM NETLIFY NEVERCODE NOW_BUILDER NOW_GITHUB_DEPLOYMENT RENDER SAIL_CI SEMAPHORE SHIPPABLE STRIDER SYSTEM_TEAMFOUNDATIONCOLLECTIONURI TASKCLUSTER_ROOT_URL TDDIUM TRAVIS WERCKER 
+---
+> APPVEYOR BITBUCKET_DEPLOYMENT BITRISE_IO BUDDY_WORKSPACE_ID BUILDER_OUTPUT BUILDKITE CIRCLECI CIRRUS_CI CI_NAME CODEBUILD_SRC_DIR DRONE DSARI GERRIT_PROJECT GITHUB_ACTION GITLAB_CI GITLAB_DEPLOYMENT GO_PIPELINE_NAME HUDSON_URL JENKINS_URL MAGNUM NETLIFY NEVERCODE NOW_BUILDER NOW_GITHUB_DEPLOYMENT RENDER SAIL_CI SEMAPHORE SHIPPABLE STRIDER SYSTEM_TEAMFOUNDATIONCOLLECTIONURI TASKCLUSTER_ROOT_URL TDDIUM TRAVIS WERCKER bamboo.buildKey 
+585a586,587
+> src/indicatif-0.18.6/LICENSE
+> src/indicatif-0.18.6/README.md
+604,605d605
+< src/indicatif-0.18.6/LICENSE
+< src/indicatif-0.18.6/README.md
+(filtered diff: 10 lines, diff exit 1)
+PASS r2/filtered-diff-is-non-empty (1)
+PASS r2/variable-list-line-differs (1)
+PASS r2/shipped-file-listing-moved (4)
+Under revision 3's rule those same two logs are rejected explicitly:
+H-host-identity lines=
+V-live-figure lines=8
+UNCLASSIFIED line 197: 'APPVEYOR bamboo.buildKey BITBUCKET_DEPLOYMENT BITRISE_IO BUDDY_WORKSPACE_ID BUILDER_OUTPUT BUILDKITE CI_NAME CIRCLECI CIRRUS_CI CODEBUILD_SRC_DIR DRONE DSARI GERRIT_PROJECT GITHUB_ACTION GITLAB_CI GITLAB_DEPLOYMENT GO_PIPELINE_NAME HUDSON_URL JENKINS_URL MAGNUM NETLIFY NEVERCODE NOW_BUILDER NOW_GITHUB_DEPLOYMENT RENDER SAIL_CI SEMAPHORE SHIPPABLE STRIDER SYSTEM_TEAMFOUNDATIONCOLLECTIONURI TASKCLUSTER_ROOT_URL TDDIUM TRAVIS WERCKER ' -> 'APPVEYOR BITBUCKET_DEPLOYMENT BITRISE_IO BUDDY_WORKSPACE_ID BUILDER_OUTPUT BUILDKITE CIRCLECI CIRRUS_CI CI_NAME CODEBUILD_SRC_DIR DRONE DSARI GERRIT_PROJECT GITHUB_ACTION GITLAB_CI GITLAB_DEPLOYMENT GO_PIPELINE_NAME HUDSON_URL JENKINS_URL MAGNUM NETLIFY NEVERCODE NOW_BUILDER NOW_GITHUB_DEPLOYMENT RENDER SAIL_CI SEMAPHORE SHIPPABLE STRIDER SYSTEM_TEAMFOUNDATIONCOLLECTIONURI TASKCLUSTER_ROOT_URL TDDIUM TRAVIS WERCKER bamboo.buildKey '
+UNCLASSIFIED line 628: 'src/indicatif-0.18.6/deny.toml' -> 'src/indicatif-0.18.6/LICENSE'
+UNCLASSIFIED line 629: 'src/indicatif-0.18.6/examples/cargo.rs' -> 'src/indicatif-0.18.6/README.md'
+UNCLASSIFIED line 630: 'src/indicatif-0.18.6/examples/cargowrap.rs' -> 'src/indicatif-0.18.6/deny.toml'
+UNCLASSIFIED line 631: 'src/indicatif-0.18.6/examples/download-continued.rs' -> 'src/indicatif-0.18.6/examples/cargo.rs'
+UNCLASSIFIED line 632: 'src/indicatif-0.18.6/examples/download-speed.rs' -> 'src/indicatif-0.18.6/examples/cargowrap.rs'
+PASS r2/rejected-as-unclassified (21)
+Revision 3's cited log has no such region: both are now C-collated.
+PASS r3/variable-list-is-C-collated (1)
+PASS r2/variable-list-was-not-C-collated (1)
+
+===== PHASE F — the mechanism: the two pipelines, with and without the fix =====
+The two regions revision 2 got wrong are the only sort-ordered output in
+the check. Run each pipeline UNFIXED under two locales, from run 1's
+unpacked artifacts, and the orders differ; run it with LC_ALL=C pinned, as
+revision 3's check does, and they agree.
+PASS mech/artifact-present-is_ci (1)
+PASS mech/artifact-present-indicatif (1)
+unfixed variable list, en_US.UTF-8 (first 90 bytes): APPVEYOR bamboo.buildKey BITBUCKET_DEPLOYMENT BITRISE_IO BUDDY_WORKSPACE_ID BUILDER_OUTPUT
+unfixed variable list, C locale    (first 90 bytes): APPVEYOR BITBUCKET_DEPLOYMENT BITRISE_IO BUDDY_WORKSPACE_ID BUILDER_OUTPUT BUILDKITE CIRCL
+PASS mech/varlist-differs-across-locales (differs)
+unfixed file listing, positions of LICENSE and README.md:
+  files-utf8.txt LICENSE=26 README.md=27
+  files-c.txt  LICENSE=8 README.md=9
+PASS mech/filelist-differs-across-locales (differs)
+and the SAME pipelines with LC_ALL=C pinned inside, as revision 3's check does:
+PASS mech/varlist-agrees-once-pinned (same)
+which is why run 2 (en_US.UTF-8) and run 3 (C) agree on every unprefixed line.
+PASS mech/run2-vs-run3-unprefixed-identical (same)
+
+===== PHASE G — negative control 1: an UNCLASSIFIED difference is rejected =====
+Mutate one PASS line of run 1 — a line that carries neither prefix — and
+the classifier must refuse to place it.
+PASS neg1/mutation-applied (1)
+--- neg1-unclassified-difference
+H-host-identity lines=
+V-live-figure lines=
+UNCLASSIFIED line 244: 'PASS  indicatif 0.18.6 rust-version' -> 'PASS  indicatif 0.18.6 rust-version MUTATED'
+classified=0 unclassified=1 violations=0 classes=
+PASS neg1-unclassified-difference/unclassified (1)
+PASS neg1-unclassified-difference/violations (0)
+and the same mutation defeats the plain filtered-diff form of the rule too:
+PASS neg1/filtered-diff-differs (differs)
+
+===== PHASE G2 — negative control 2: a line-count change is rejected =====
+PASS neg2/one-line-shorter (1)
+--- neg2-line-count-change
+UNCLASSIFIED line-count 1072 vs 1071
+H-host-identity lines=
+V-live-figure lines=
+classified=0 unclassified=1 violations=1 classes=
+PASS neg2-line-count-change/unclassified (1)
+PASS neg2-line-count-change/violations (1)
+
+===== PHASE H — negative control 3: a CLASS-SHAPED difference OUT OF POSITION =====
+A differing line of the right shape at a line number the rule does not
+allow must be counted as a violation, not waved through. Pick an
+unprefixed line of the cited log and make two copies differ there, once
+with class-V shape and once with class-H shape.
+chosen line 202 of the cited log (carries neither prefix):
+PASS  indicatif 0.18.6 published artifact (fetched, non-empty body)
+PASS negH/chosen-line-is-unprefixed (0)
+--- negH-class-V-out-of-position
+H-host-identity lines=
+V-live-figure lines=202 OUTSIDE-ALLOWED-POSITIONS=202
+classified=1 unclassified=0 violations=1 classes=V-live-figure
+PASS negH-class-V-out-of-position/unclassified (0)
+PASS negH-class-V-out-of-position/violations (1)
+--- negH-class-H-out-of-position
+H-host-identity lines=202 OUTSIDE-ALLOWED-POSITIONS=202
+V-live-figure lines=
+classified=1 unclassified=0 violations=1 classes=H-host-identity
+PASS negH-class-H-out-of-position/unclassified (0)
+PASS negH-class-H-out-of-position/violations (1)
+
+===== PHASE H2 — positive control: the SAME shapes IN position are classified =====
+The mirror of phase H. At an allowed position each class must be
+classified with zero violations — otherwise phase H would only be showing
+that the classifier rejects everything.
+class V allowed position 1066: VOLATILE: TheNeikos/spinner archived=true stars=10 pushed_at=2020-04-20T19:13:44Z
+--- negH2-class-V-in-position
+H-host-identity lines=
+V-live-figure lines=1066
+classified=1 unclassified=0 violations=0 classes=V-live-figure
+PASS negH2-class-V-in-position/unclassified (0)
+PASS negH2-class-V-in-position/violations (0)
+class H allowed position 8: HOST: collation pinned by this script: LC_ALL=C (ambient LANG was en_US.UTF-8)
+--- negH2-class-H-in-position
+H-host-identity lines=8
+V-live-figure lines=
+classified=1 unclassified=0 violations=0 classes=H-host-identity
+PASS negH2-class-H-in-position/unclassified (0)
+PASS negH2-class-H-in-position/violations (0)
+
+===== PHASE I — the check itself can still fail (archived negative control) =====
+Reproduced with: R63_WORK=<fresh dir> TS_REPO=/nonexistent-repo bash review/evidence/r63-spinner-claims.sh
+===== DONE =====
+checks: 155 pass / 13 fail
+RESULT: FAIL — 13 assertion(s) did not hold; the decision text that cites them is stale.
+PASS negctl/summary (checks: 155 pass / 13 fail)
+PASS negctl/fail-lines (13)
+PASS negctl/result-line (1)
+
+===== PHASE I2 — nolit rejects an unreadable file instead of passing it =====
+The revision-2 auditor's second finding: an absence must be a zero MATCH
+COUNT, and a read error must fail loudly. Drive revision 3's helper
+directly, against a file that does not exist and against a file that does
+contain the literal.
+probe-PASS  probe: absent literal in a readable file (matching lines) == 0
+probe-FAIL  probe: PRESENT literal must fail (matching lines): expected [0], got [1]
+probe-FAIL  probe: unreadable file must fail: /nonexistent-dir/r63-nolit-probe.txt missing or unreadable
+probe: 1 pass / 2 fail
+PASS nolit/lifted-from-the-archived-check (1)
+PASS nolit/absent-literal-passes (1)
+PASS nolit/present-literal-fails (1)
+PASS nolit/unreadable-file-fails (1)
+PASS nolit-probe/output-is-scratch-path-free (0)
+PASS nolit/probe-summary (probe: 1 pass / 2 fail)
+PASS nolit/no-exit-status-branch-remains (0)
+
+===== DONE =====
+failed assertions: 0
+RESULT: PASS — every rerun conformed to the rule; every negative control was rejected.

@@ -65,7 +65,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R60 | cli-parsing-framework | bundle | different | DIVERGENT | — | [prompt](topics/60-cli-parsing-framework/prompts/cli-parsing-framework.prompt.md) | open |
 | R61 | interactive-prompts | bundle | py-only | DIVERGENT | — | [prompt](topics/61-interactive-prompts/prompts/interactive-prompts.prompt.md) | open |
 | R62 | clipboard-integration | bundle | ts-only | DIVERGENT | — | [prompt](topics/62-clipboard-integration/prompts/clipboard-integration.prompt.md) | open |
-| R63 | progress-spinner | crate | ts-only | DIVERGENT | — | [prompt](topics/63-progress-spinner/prompts/progress-spinner.prompt.md) | open |
+| R63 | progress-spinner | crate | ts-only | DIVERGENT | — | [prompt](topics/63-progress-spinner/prompts/progress-spinner.prompt.md) | resolved |
 | R64 | pager-integration | bundle | py-only | DIVERGENT | — | [prompt](topics/64-pager-integration/prompts/pager-integration.prompt.md) | resolved |
 | R65 | color-enablement-chain | bundle | different | DIVERGENT | — | [prompt](topics/65-color-enablement-chain/prompts/color-enablement-chain.prompt.md) | open |
 | R66 | output-format-surface | bundle | different | DIVERGENT | — | [prompt](topics/66-output-format-surface/prompts/output-format-surface.prompt.md) | open |
