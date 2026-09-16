@@ -1,0 +1,17 @@
+retrieved 2026-09-15T08:16:24Z
+YAML parses and carries exactly the two stated ecosystems
+yaml-ok entries=2
+yaml-check exit 0
+Fixed assumes lines equal PARAMETERS.md values
+assumes msrv-policy exact exit nonzero (registry=owner)
+assumes rust-edition exact exit nonzero (registry=owner)
+assumes target-os-matrix exact exit nonzero (registry=owner)
+assumes license exact exit nonzero (registry=owner)
+py pinned source has the selected github-actions wildcard group
+py-github-actions-patterns-ok
+py-pin-check exit 0
+Decision records py wildcard source and labels cadence carried
+prose-check exit 0
+Gate 1: owner Q7.B makes a license check inapplicable; the decision adds no dependency
+license-inapplicability-support exit 0
+overall-exit 1

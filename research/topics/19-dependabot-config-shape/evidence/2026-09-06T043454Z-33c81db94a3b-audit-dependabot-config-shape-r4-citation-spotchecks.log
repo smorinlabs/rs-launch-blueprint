@@ -1,0 +1,10 @@
+pin=1abafc5ca0900334fd970832e9ef43f2afc78233
+PASS	cargo/lib/dependabot/cargo/file_parser.rb	108488ceb1e470eb14f0667aaea44c06089d9472
+PASS	cargo/lib/dependabot/cargo/package/package_details_fetcher.rb	032ad3e7d703ca0506f3a62cfd48f7e79f9d71fe
+PASS	cargo/lib/dependabot/cargo/update_checker.rb	93fc4b4b5463a7ed4dc598b9a28fdcc60d07d470
+PASS	cargo/lib/dependabot/cargo/update_checker/latest_version_finder.rb	895a6e90cf21bef229cdf53966f4c96d1c89ab8a
+PASS	cargo/lib/dependabot/cargo/update_checker/version_resolver.rb	37ab6d91601aea629ce930367a6207b2a179600e
+PASS	common/lib/dependabot/package/package_latest_version_finder.rb	fc71e88202424a1ad71dcf246887a65c86f083a2
+299:            "cargo update -p #{dependency_spec} -vv",
+PASS	version_resolver shell-out has cargo update -p dependency_spec -vv and no --precise
+citation-spotcheck-failures=0

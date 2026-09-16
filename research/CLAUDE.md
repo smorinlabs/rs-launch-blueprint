@@ -22,7 +22,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R16 | codeql-config-customization | pattern | py-only | DIVERGENT | — | [prompt](topics/16-codeql-config-customization/prompts/codeql-config-customization.prompt.md) | resolved |
 | R17 | secret-scanning-ci-workflow | crate | py-only | DIVERGENT | — | [prompt](topics/17-secret-scanning-ci-workflow/prompts/secret-scanning-ci-workflow.prompt.md) | open |
 | R18 | ai-assisted-review-workflows | bundle | py-only | DIVERGENT | — | [prompt](topics/18-ai-assisted-review-workflows/prompts/ai-assisted-review-workflows.prompt.md) | resolved |
-| R19 | dependabot-config-shape | bundle | different | DIVERGENT | — | [prompt](topics/19-dependabot-config-shape/prompts/dependabot-config-shape.prompt.md) | open |
+| R19 | dependabot-config-shape | bundle | different | DIVERGENT | — | [prompt](topics/19-dependabot-config-shape/prompts/dependabot-config-shape.prompt.md) | resolved |
 | R20 | third-party-action-pinning-policy | pattern | different | DIVERGENT | — | [prompt](topics/20-third-party-action-pinning-policy/prompts/third-party-action-pinning-policy.prompt.md) | resolved |
 | R21 | contributors-bot-credential-source | pattern | different | DIVERGENT | — | [prompt](topics/21-contributors-bot-credential-source/prompts/contributors-bot-credential-source.prompt.md) | resolved |
 | R22 | runtime-version-accessor | pattern | different | DIVERGENT | — | [prompt](topics/22-runtime-version-accessor/prompts/runtime-version-accessor.prompt.md) | open |
