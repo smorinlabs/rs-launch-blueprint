@@ -14,3 +14,6 @@ Read, in order: `README.md`, `docs/port/README.md` (verdict vocabulary),
 
 - Run `bash scripts/check-shell.sh` before opening a PR. Install ShellCheck
   with `bash scripts/install-shellcheck.sh` and add `~/.local/bin` to PATH.
+
+- Install the native pre-commit hook with `bash scripts/install-hooks.sh`.
+  It checks staged shell content; preserve and integrate any existing hooks.

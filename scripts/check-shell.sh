@@ -13,7 +13,7 @@ fi
 files=()
 while IFS= read -r -d '' file; do
     [ ! -f "$file" ] || files+=("$file")
-done < <(git ls-files -z -- '*.sh' '*.bash')
+done < <(git ls-files -z -- '*.sh' '*.bash' '.githooks/pre-commit')
 if [ "${#files[@]}" -gt 0 ]; then
     shellcheck -- "${files[@]}"
 fi
