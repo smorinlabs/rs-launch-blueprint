@@ -48,7 +48,12 @@ classify the scan section's environment-dependent lines. Revision 4 takes the **
 for the warning, because it can be made **structurally impossible** rather than merely
 classified. The new check is `review/evidence/feature-shape-check-r4.sh`; its cited log is
 `review/evidence/feature-shape-check-r4.log`. It differs from `feature-shape-check-r3.sh` in
-exactly three ways, and in nothing else:
+three **substantive** ways. The remaining differences a script-to-script `diff` shows are
+wording and none of them touches an assertion: the rewritten header comment block, the
+`# shellcheck disable=` directive reported after item 3 below, section 8's heading string
+(`… PINNED advisory database, ISOLATED CARGO_HOME`) and the final summary label
+(`advisory scan (section 8, pinned input, isolated CARGO_HOME): …`). The three substantive
+ways:
 
 1. **Section 8 runs `cargo audit` under an isolated `CARGO_HOME` with the yanked-crate lookup
    disabled, so the warning cannot be emitted.** The isolated home is a `mktemp -d` directory
@@ -1123,8 +1128,11 @@ exactly what was established, by whom, and under which conditions.
   an isolated `CARGO_HOME`** — a `mktemp -d` directory under `${TMPDIR:-/tmp}` holding exactly
   `audit.toml` with `[yanked] enabled = false` and a `bin/cargo-audit` symlink — **so that
   neither a readable nor an unlocked cached crates.io index is required, because the branch
-  that opens one is never entered**. Sections 1, 2, 5 and 7 do use the ambient `CARGO_HOME`'s
-  registry cache; when its `.package-cache` lock is contended cargo prints
+  that opens one is never entered**. Sections 1, 2, 5 and 7 do use the ambient `CARGO_HOME`,
+  and its registry cache must already contain every crate in the two `Cargo.lock` files —
+  otherwise `cargo tree --locked` prints `Updating crates.io index` and `Downloaded …` lines
+  into those sections, which are **not** classified and would make the log differ. When that
+  cache's `.package-cache` lock is contended cargo prints
   `Blocking waiting for file lock on package cache` (or `… on build directory`), and `norm`
   deletes exactly that line class with the anchored pattern
   `/^[[:space:]]*Blocking waiting for file lock on /d`. **That is the only classified line in
