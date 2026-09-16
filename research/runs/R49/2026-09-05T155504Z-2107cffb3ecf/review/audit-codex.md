@@ -1,5 +1,5 @@
-decision-sha256: 319a535665318a120c9be3bdf61037f9f4ea8214d972de724dafe16902bec41d
-actor: audit-codex-2026-09-05T155504Z-2107cffb3ecf-r7
+decision-sha256: 86b7f925ef89ac682ea00bb0b6fea8a809c1abc712d9e0e0ced8e5082990d948
+actor: audit-codex-2026-09-05T155504Z-2107cffb3ecf-r8
 model: gpt-5.6-terra
 family: openai
 verdict: approve
@@ -7,26 +7,21 @@ unresolved-findings: none
 
 ## Rerun
 
-argv: `CLAUDE_CODE_EXECPATH=/Users/stevemorin/.local/bin/claude bash review/evidence/check-grep-identity.sh`; `env -u CLAUDE_CODE_EXECPATH HOME=/private/tmp/r49-empty-home.F1BshS bash review/evidence/check-grep-identity.sh`; and the recorded `sed` mutation of the revision-2 widened expected list, in both modes.
-
-cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R49/2026-09-05T155504Z-2107cffb3ecf` (the script resolves the real repository root with `git rev-parse --show-toplevel`).
-
-toolchain: `bash 3.2.57`; `/usr/bin/grep` is `grep (BSD grep, GNU compatible) 2.6.0-FreeBSD`; the reachable embedded implementation is `ugrep 7.8.4`.
-
-exit code: 0 with embedded ugrep reachable; 0 with it unavailable; 1 for the widened-list mutation in each mode.
-
-log path: `review/evidence/audit-build-target-declaration-r7.log`
-
-output matches the cited `review/evidence/grep-identity.log`: yes after the script's documented normalization: remove `retrieved:` and the environment-specific two-line `second implementation:` block. The normalized diff exits 0 (`review/evidence/audit-grep-identity-r7.normalized.diff`). The reachable run made 13 content assertions. It compared all seven named pairs: four pre-existing pairs, widened SPDX on immutable blobs `2ac02e1` and `ddbee6a`, and the seven-line negative-control fixture. The unavailable run made 11 content assertions and printed exactly eight explicit `SKIP` lines: seven embedded-ugrep comparisons plus the recursive-divergence comparison. Each `compare` first asserts `/usr/bin/grep`; a SKIP cannot reset `fail`. The mutation produced `ASSERT FAIL revision-2, widened SPDX pattern (/usr/bin/grep)` and exit 1 in both modes.
-
-The decision's seven-pair sentence at `review/DECISION.md:124-133`, its seven-row table at `:143-149`, and the seven `compare` calls at `review/evidence/check-grep-identity.sh:145-172` agree one-for-one. `PAT_ID_FULL` is byte-identical in the identity and licence-enumeration scripts. The script demonstrates the documented recursive divergence separately and the decision explicitly claims no agreement outside the seven pairs.
-
-`check-lockfile-inclusion.sh` and `check-licence-enumeration.sh` reran with exit 0 and reproduce their cited logs after removing only `retrieved:` (`review/evidence/audit-lockfile-inclusion-r7.diff` and `review/evidence/audit-licence-enumeration-r7.diff`, both empty). Their SHA-256 values are respectively `4ed6818fb64e912d45ab47cbb1e1f7eca43536bfca40f776572d75f1db586ac7`, `1f3ea090b3ff9f716049e11a354cb8281c440938abb114f40cb21d0c150b2fcd`, and the enumeration log is `3ddcf82fea525769b441065b796dcabd35e7a7e107f6a396bc8b615142299b90`. The 40 / 5 / 10 / 33 lists and `582 605 606 608 609 611` reproduced under `/usr/bin/grep`. The `- owns`/`- assumes` lines are byte-identical from revision 2 through commit `bc1794b`; all four assumed values equal `docs/port/PARAMETERS.md`. The six gates are present and gate 1 correctly says `inapplicable` under Q7.B. There is no `## Supersedes` heading. Five pinned Cargo citations passed direct `curl` content checks (`review/evidence/audit-citations-r7.log`).
+- **argv:** `bash research/runs/R49/2026-09-05T155504Z-2107cffb3ecf/review/evidence/check-lockfile-inclusion.sh`; then `bash research/runs/R49/2026-09-05T155504Z-2107cffb3ecf/review/evidence/check-grep-identity.sh`.
+- **cwd:** `/Users/stevemorin/c/rs-launch-blueprint-p02-plan` (the repository root, so `check-grep-identity.sh` read its pinned blobs with `git show`).
+- **toolchain:** `cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)` and `rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)`; the grep check asserted `/usr/bin/grep` as `grep (BSD grep, GNU compatible) 2.6.0-FreeBSD` and compared it with embedded `ugrep 7.8.4`.
+- **exit code:** 0 for each check and for the combined rerun. The lockfile script's SHA-256 was `4ed6818fb64e912d45ab47cbb1e1f7eca43536bfca40f776572d75f1db586ac7`, the required value.
+- **log path:** `review/evidence/audit-build-target-declaration-r8.log`.
+- **output match:** yes. The timestamp-normalized lockfile output has an empty diff at `review/evidence/audit-lockfile-inclusion-r8.diff`. The grep output has an empty diff at `review/evidence/audit-grep-identity-r8.diff` after applying the script header's stated cross-environment normalization: remove `retrieved:`, the embedded-implementation block, and `[2/2]`-guarded lines including their two conditional assertions.
 
 ## Findings
 
-None.
+1. **Revision scope is accurate.** `git diff --name-status fe212aa^ 3ddba54` reports one changed path: this item's `review/DECISION.md`. No check script or cited log changed.
+2. **The owner ruling is quoted exactly and applied consistently.** `docs/port/OWNER-REVIEW.md:107-119` says the owner chose `rslbp`, retains `rs-launch-blueprint` for the crate and distribution, specifies `CARGO_BIN_EXE_rslbp` and `target/release/rslbp`, and says revision 8 implements the ruling. The decision uses those binary forms. The sole stale executable-form match is `review/evidence/audit-provenance-r4.log:111`, a preserved revision-4 quotation; it is not an executed check. Repository paths, distribution/package names, and library crate name `rs_launch_blueprint` remain unchanged as required.
+3. **The rename does not invalidate an executed assertion.** `/usr/bin/grep -n -E 'rs-launch-blueprint|rslbp|CARGO_BIN_EXE|target/release/'` across all three `check-*.sh` scripts and the three cited logs found no binary-name assertion: occurrences of `rs-launch-blueprint` in `grep-identity.log` and `licence-enumeration.log` are repository paths only. The current decision correctly delegates AC1, AC2, and AC6 to P03.
+4. **The parameter and clause repairs are supported.** The four `- assumes` values equal `docs/port/PARAMETERS.md:7-10` and are byte-identical to revision 7. The single `- owns build-tool-output-shape = ...` line has the required nonempty, lowercase-kebab parameter name and value. The current R22 consumer clause names only the target layout and names; it expressly excludes `env!("CARGO_PKG_VERSION")` as a `[package] version` decision. A4 is explicitly ranked runner-up with its R68/F214 cross-compiled-release condition and cited Opus raw; Disagreement 6 records the alternatives. The B1-B4 summary names capability, architectural-pattern, and policy levels.
+5. **The evidence and gates remain within what was proved.** Both reruns made content assertions under `set -o pipefail`, not exit-status-only claims. Five official Cargo source citations were fetched with `curl` and content-asserted in `review/evidence/audit-citations-r8-recheck.log`. Gate 1 is correctly `inapplicable` under Q7.B; this proposal adds no dependency and does not claim a licence evaluation.
 
 ## Assessment
 
-Revision 7 repairs the round-6 overstatement at both required points. The widened SPDX pattern is now content-asserted by `/usr/bin/grep`, compared against embedded ugrep when reachable, explicitly skipped only when it is not, and fails under a deliberately wrong expected list in both modes. The decision now restricts its equivalence statement to exactly those seven tested pairs. No decision change is required; therefore the verdict is approve.
+Revision 8 accurately records the owner-directed binary name, preserves historical evidence without misrepresenting it as current execution, repairs all three judgment clauses, and makes no claim beyond the rerun evidence. Approve.
