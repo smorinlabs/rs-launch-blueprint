@@ -364,6 +364,9 @@ reject.
 | W0-R17b | R17 secret scanner form | A = TruffleHog CLI as a pinned binary on both runners | 2026-09-15 | → revision 7 | ruling recorded in `docs/port/OWNER-REVIEW.md`; py's Action form declined (ubuntu-only, docker, first-push failure) |
 | W0-R18 | R18 ai-assisted-review-workflows | A accept | 2026-09-15 | `c9e44318…` | the owner's own 2026-09-12 design as implemented |
 | W0-R19 | R19 dependabot-config-shape | A accept | 2026-09-15 | `17854730…` | catch-all groups; runner-up filtered groups is the recorded successor |
+| W0-R07b | R07 backstop, re-put on a corrected fact | A revert to push-only | 2026-09-15 | → revision 3 | supersedes W0-R07: GitHub keeps one state per workflow file, so a `schedule` key exposes the whole file to the 60-idle-day / fork switch-off; the backstop was declined for converting a bounded lag into a silent-off state |
+| W0-R20 | R20 third-party-action-pinning-policy | A accept | 2026-09-15 | `02fee7a4…` | hash-pin plus release comment, two disjoint checks |
+| W0-R21 | R21 contributors-bot-credential-source | A accept | 2026-09-15 | `66d566a5…` | dedicated fine-grained PAT fallback; ts's GITHUB_TOKEN shape rejected on approval-required runs |
 
 ## Retired from this list
 
