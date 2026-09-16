@@ -1,0 +1,24 @@
+--- review/evidence/r60-standard-pin-r5.log	2026-09-14 18:17:05
++++ review/evidence/audit-r60-standard-pin-r5-r8.log	2026-09-16 16:00:00
+@@ -316,9 +316,11 @@
+ PASS  C16c the registry carries no output-format parameter for R66 to own
+ R66 rows in the research index: 1
+ PASS  C16d R66 has exactly one index row
+-| R66 | output-format-surface | bundle | different | DIVERGENT | — | [prompt](topics/66-output-format-surface/prompts/output-format-surface.prompt.md) | open |
++| R66 | output-format-surface | bundle | different | DIVERGENT | — | [prompt](topics/66-output-format-surface/prompts/output-format-surface.prompt.md) | resolved |
+ PASS  C16e the index records R66 as owning no parameter
+-PASS  C16f R66 is still open, so its flag spelling is genuinely undecided
++FAIL  C16f R66 is still open, so its flag spelling is genuinely undecided
++      wanted substring: | open |
++      got: | R66 | output-format-surface | bundle | different | DIVERGENT | — | [prompt](topics/66-output-format-surface/prompts/output-format-surface.prompt.md) | resolved |
+ === C16h-C16n. THE OWNER'S RULING IS RECORDED IN THIS REPOSITORY (was U8) ===
+ docs/port/OWNER-REVIEW.md: present
+ PASS  C16g the owner-review file is in this checkout, so the assertions below are real
+@@ -346,5 +348,5 @@
+ | R60 | accept | Codesign `a`, confirms the recommendation. Class B (same pattern, language-bound tool), harmonize no (`docs/port/DIVERGENCE-ANALYSIS.md`, R60 rows). Effect: none; runs as written. | 2026-09-04 |
+ PASS  C16o2 and it is still the 2026-09-04 codesign acceptance, untouched
+ 
+-CHECKS RUN: 128   FAILURES: 0
+-RESULT: all checks passed
++CHECKS RUN: 128   FAILURES: 1
++RESULT: FAILED

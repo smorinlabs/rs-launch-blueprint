@@ -1,5 +1,5 @@
-decision-sha256: 67d7a7d2a76c7d10c88edf9cd309c46484ada95a00074d902943a94410b8b9f2
-actor: audit-codex-2026-09-05T183002Z-09f93cfc507c-r7
+decision-sha256: 9407f1049d6127f4da80c399a2c9925f5a02a14c87e5c82b7050d20cc0b69342
+actor: audit-codex-2026-09-05T183002Z-09f93cfc507c-r8
 model: gpt-5.6-terra
 family: openai
 verdict: approve
@@ -7,16 +7,15 @@ unresolved-findings: none
 
 ## Rerun
 
-argv: `bash review/evidence/r60-preservation-diff-r7.sh`; `bash review/evidence/r60-standard-pin-r5.sh`; `bash review/evidence/r60-snapshot-provenance-r4.sh`
-
-cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R60/2026-09-05T183002Z-09f93cfc507c`; toolchain: Bash with `/usr/bin/grep` 2.6.0-FreeBSD, macOS 26.4 aarch64.
-
-Exit code: 0. Complete output: `review/evidence/audit-cli-parsing-framework-r7.log`. In place, preservation was `183/0`, standard-pin was `128/0`, and provenance was `17/0/0/2`; each output diffed empty against its committed log. From a clean root `git archive 484105c`, preservation was `183/0` and standard-pin was `128/0`, each again with an empty diff; provenance gave its documented `14/0/0/5`. The superseded r6 preservation script exits `5` against this text, with exactly `C1t2`, `C1u2`, `C1u3`, `C1v`, and `C4h` failing. Citation probes are in `review/evidence/audit-cli-parsing-framework-r7-citation-probes-rerun.log`: pinned standard bytes and latest-path commit, clap and clap_complete metadata, clap tarball checksum, Cargo build-script variables, and clap's RustSec 404 all matched the decision's cited evidence.
+- In place: from `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R60/2026-09-05T183002Z-09f93cfc507c`, GNU bash 3.2.57 ran `bash review/evidence/standard-lines-r8.sh`, `bash review/evidence/r60-feature-ground-r8.sh`, and `bash review/evidence/r60-preservation-diff-r8.sh`. All exited `0` at 49/0, 28/0, and 239/0. Their outputs diffed empty against the three committed logs. Complete composite output: `review/evidence/audit-cli-parsing-framework-r8.log`.
+- Clean archive: `git archive HEAD` extracted to a `.git`-free temporary tree whose `review/DECISION.md` hashes to the bound value. The same three commands exited `0` at 49/0, 28/0, and 239/0, each with an empty diff to its committed log. Outputs: `review/evidence/audit-standard-lines-r8-archive.log`, `audit-r60-feature-ground-r8-archive.log`, and `audit-r60-preservation-diff-r8-archive.log`.
+- Declared variance: `r60-standard-pin-r5.sh` exited `1` only on `C16f`, because the live R66 index row is now `resolved`; `r60-snapshot-provenance-r4.sh` exited `2` only on its two anonymous-private-origin controls, because both pinned TypeScript URLs now return HTTP 200. Logs: `audit-r60-standard-pin-r5-r8.log` and `audit-r60-snapshot-provenance-r4-r8.log`. The R66 decision independently records `-o`/`--output` as the global format selector, so the stated fired-and-clear outcome holds.
+- Citation spot checks: six `curl` checks passed in `review/evidence/audit-r60-citations-r8-rerun.log`: pinned-standard bytes and corrected bodies at 221, 238, 271, 484, and 492; the `clap_builder` tarball and `wrap_help` source note; both selected crates.io releases; and both newly public TypeScript snapshots.
 
 ## Findings
 
-None. `C1e`/`C1f`, `C1i`–`C1l`, `C1m`–`C1q`, and `C1t`–`C1v` read only explicit archived report paths. `C1w`/`C1w2` bind the rejected revision-6 baseline by hash without reading its report. `C1x0` fired on its comment control and `C1x` counted zero executable live-path occurrences; the script also contains zero executable audit-report wildcard occurrences. Thus neither overwriting `review/audit-codex.md` nor creating `review/audit-codex.r6.md` changes the r7 script's inputs or result. The `C4n` assertions, unchanged parameter lines, AC2/AC3/AC7, retired OV-01, R66 `related` status, R4.6 `:275-277`, U8's durable owner record, and gate 1's Q7.B `inapplicable` treatment all passed content assertions.
+None. The new standard script reads the cited rule bodies and has a live class control. The F5 cadence and timing triggers are measurable and sourced. The `wrap_help` ground is functional, while the only recorded `string` grounds were removed; its deletion and owner re-ask are explicit. Qualification 5 and U9 correctly limit the six gate-2 passes, while the four exclusions remain independent of the unread CI half. `C3x` confirms exactly four fixed `assumes` lines.
 
 ## Assessment
 
-The recorded commands support the revision-7 repair. It makes the preservation proof invariant to both the live-report overwrite and round-6 archive event, while visibly leaving the revision-6 report unasserted rather than claiming evidence it could not have had.
+The decision claims no result beyond its evidence. The two legacy failures concern only changed external state and no present proposition relies on the failed labels; all cited standard, crate-source, parameter, owner-record, and preservation checks that support the revision remain reproducible.
