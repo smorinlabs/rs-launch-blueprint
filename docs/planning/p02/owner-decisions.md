@@ -83,7 +83,9 @@ admitting it does not pre-empt anything you have not seen.
 
 **Response that settles it.** "Admit R69" or "hold it".
 
-## 3. R66's paid orphan
+## 3. R66's paid orphan -- ANSWERED 2026-09-15
+
+**DECIDED: (b), accept the single-provider result (W0-R66 option A).** No further spend; synthesis proceeds on the Codex, Opus and OpenAI reports, and the decision records that the Perplexity and Gemini engines are missing and claims only what those three reports plus the source reading establish.
 
 **What is being asked.** Whether to spend again on two research providers for
 one item.
@@ -352,6 +354,7 @@ reject.
 | W0-R49 | R49 build-target-declaration | A accept | 2026-09-15 | `319a5356…` | first put 2026-09-15 and withdrawn at the owner's request; re-put as a full brief with the cross-platform implications (Linux, macOS, occasional Windows) and a four-way comparison of the architectural alternatives |
 | W0-R49n | R49 binary name | B = direct a short name: `rslbp` | 2026-09-15 | — | the decision kept `rs-launch-blueprint` as owner-reviewable; the owner chose `rslbp` (the Opus engine's proposal) from `rslbp` / `rsbp`; recorded as a ruling in `docs/port/OWNER-REVIEW.md` |
 | W0-R38 | R38 commit-message-linter | A accept | 2026-09-15 | `7e88ba81…` | `committed` 1.1.11 at commit-msg and in CI; runner-up commitlint wins only if a Node/Bun runtime is provisioned for another tool; footer cap 72 accepted |
+| W0-R66 | R66 output-format-surface spend | A accept one provider | 2026-09-15 | — | section 3 above; no re-run of Perplexity/Gemini; synthesis starts on three reports |
 
 ## Retired from this list
 
