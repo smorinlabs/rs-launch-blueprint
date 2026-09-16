@@ -148,7 +148,12 @@ set -o pipefail
 
 # Resolve the run directory from this script's own location — `review/evidence`
 # is two levels below it — and work there. Every path below stays relative to
-# it, which is also what keeps this script's log free of host paths.
+# it, which is also what keeps this script's log free of host paths. $SELF is
+# taken BEFORE the cd and made absolute: a relative $0 stops resolving the
+# moment the working directory moves, and the one assertion that reads this
+# file would then fail on a "No such file" instead of on its content. $SELF is
+# never printed, so no host path reaches the log.
+SELF="$(cd "$(dirname "$0")" && pwd -P)/$(basename "$0")"
 cd "$(dirname "$0")/../.." || exit 2
 
 FAILS=0
@@ -412,7 +417,7 @@ assert_eq "pre/r6-absolute-path-was-the-C23-diagnostic" 1 \
   "$(grep -cE '^ +[|] .*/[.]work/upper-bad[.]txt: error Disallowed type' "$R6LOG" | tr -d ' ')"
 assert_eq "pre/check-has-pipefail" 1 "$(grep -c 'pipefail' "$CHECK" | tr -d ' ')"
 assert_eq "pre/compare-has-pipefail" 1 \
-  "$(grep -c '^set -o pipefail$' "$0" | tr -d ' ')"
+  "$(grep -c '^set -o pipefail$' "$SELF" | tr -d ' ')"
 # The carried artifact, checked by content before anything reads it. These two
 # assertions are what make the carried copy EVIDENCE rather than a convenience.
 R6CARRIED_SHA=$(shasum -a 256 "$R6CARRIED" | awk '{print $1}')
