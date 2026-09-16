@@ -11,3 +11,6 @@ Read, in order: `README.md`, `docs/port/README.md` (verdict vocabulary),
 - Never assign a verdict from memory; cite the files in both source repos.
 - Run `scripts/check-research-tree.sh` before opening a PR.
 - Work in a worktree branched from `origin/main`; never commit to `main`.
+
+- Run `bash scripts/check-shell.sh` before opening a PR. Install ShellCheck
+  with `bash scripts/install-shellcheck.sh` and add `~/.local/bin` to PATH.

@@ -28,3 +28,12 @@ spec §2 and owner amendment A5.
 ## License
 
 MIT OR Apache-2.0, at your option — see `LICENSE` (Apache-2.0) and `LICENSE-MIT`.
+
+## Shell validation
+
+Install the pinned analyzer with `bash scripts/install-shellcheck.sh` and add
+`~/.local/bin` to PATH. Run `bash scripts/check-shell.sh` to check all tracked
+`.sh` and `.bash` files, or pass explicit paths to check selected scripts.
+CI runs the same check alongside the research validator and its regression
+suite. This checks the research repository's scripts; it does not choose a
+hook manager or development toolchain for the future Rust template.
