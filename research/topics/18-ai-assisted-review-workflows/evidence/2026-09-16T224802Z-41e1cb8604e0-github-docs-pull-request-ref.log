@@ -1,0 +1,54 @@
+# R18 revision 3 — what actions/checkout puts in the workspace on a pull_request event,
+# and the documented pull_request activity-type set (JA-05 draft clause, checkout residual).
+# Captured 2026-09-10T06:28:31Z. Read-only fetches.
+
+$ curl -sS -o events.md -w 'HTTP %{http_code} %{size_download}B' https://raw.githubusercontent.com/github/docs/main/content/actions/reference/workflows-and-actions/events-that-trigger-workflows.md
+HTTP 200 67638B
+exit: 0
+
+# ---- D1. pull_request checks out the MERGE branch, not the base branch ----
+$ sed -n "455,459p" events.md   # the `## pull_request` section header and its GITHUB_REF row
+## `pull_request`
+
+| Webhook event payload | Activity types | `GITHUB_SHA` | `GITHUB_REF` |
+| --------------------- | -------------- | ------------ | -------------|
+| [`pull_request`](/webhooks/webhook-events-and-payloads#pull_request) | {% data reusables.actions.workflow-triggers-pull-request-activity-types %} | Last merge commit on the `GITHUB_REF` branch | PR merge branch `refs/pull/PULL_REQUEST_NUMBER/merge` |
+exit: 0
+$ grep -n -A6 "How the merge branch affects your workflow" events.md
+472:### How the merge branch affects your workflow
+473-
+474-For open, mergeable pull requests, workflows triggered by the `pull_request` event set `GITHUB_REF` to the merge branch. Because `actions/checkout` uses `GITHUB_REF` by default, it checks out the merge branch. Your CI tests run against the merged result, not just the head branch alone:
+475-
+476-* `GITHUB_REF` is set to `refs/pull/PULL_REQUEST_NUMBER/merge`
+477-* `GITHUB_SHA` is the SHA of the merge commit on the merge branch
+478-
+479-To test only the head branch commits without simulating a merge, check out the head branch using `github.event.pull_request.head.sha` in your workflow.
+480-
+exit: 0
+
+# ---- D2. the documented pull_request activity types include opened, ready_for_review
+#         and converted_to_draft (the set the draft double-fire argument reads) ----
+$ grep -n "converted_to_draft" events.md
+663:| [`pull_request`](/webhooks/webhook-events-and-payloads#pull_request) | - `assigned`<br/>- `unassigned`<br/>- `labeled`<br/>- `unlabeled`<br/>- `opened`<br/>- `edited`<br/>- `closed`<br/>- `reopened`<br/>- `synchronize`<br/>- `converted_to_draft`<br/>- `ready_for_review`<br/>- `locked`<br/>- `unlocked` <br/>{% ifversion fpt or ghec %}- `enqueued`<br/>- `dequeued`<br/>{% endif %}- `review_requested` <br/>- `review_request_removed` <br/>- `auto_merge_enabled` <br/>- `auto_merge_disabled` | Last commit on the PR base branch | PR base branch |
+exit: 0
+
+# ---- D3. actions/checkout v7 ref default ----
+$ curl -sS .../actions/checkout/v7/action.yml | sed -n "7,12p"
+  ref:
+    description: >
+      The branch, tag or SHA to checkout. When checking out the repository that
+      triggered a workflow, this defaults to the reference or SHA for that
+      event.  Otherwise, uses the default branch.
+  token:
+exit: 0
+
+# ---- D4. practice corroboration for a draft guard (github/docs own workflows) ----
+$ gh api "search/code?q=repo:github/docs+%22pull_request.draft%22" --jq ".total_count, (.items[]?.path)"
+6
+.github/workflows/reviewers-dependabot.yml
+.github/workflows/reviewers-legal.yml
+.github/workflows/reviewers-content-systems.yml
+.github/workflows/first-responder-v2-prs-collect.yml
+.github/workflows/auto-add-ready-for-doc-review.yml
+.github/workflows/reviewers-docs-engineering.yml
+exit: 0

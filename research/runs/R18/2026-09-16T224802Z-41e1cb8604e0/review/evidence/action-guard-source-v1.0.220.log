@@ -1,0 +1,126 @@
+# R18 revision 3 — the origin-repository guard chain, read in source at v1.0.220 (JA-01, JA-02)
+# Captured 2026-09-10T06:27:56Z. Read-only fetches; no credential, no workflow, no run.
+# Purpose: stop relying on docs/security.md prose and on the disclosure's narrative for what
+# actually gates an @claude run, and check whether the four remediations the disclosure
+# describes are present at the recommended pin.
+
+$ curl -sS -o permissions.ts -w 'HTTP %{http_code} %{size_download}B' https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/src/github/validation/permissions.ts
+HTTP 200 5716B
+exit: 0
+$ curl -sS -o actor.ts -w 'HTTP %{http_code} %{size_download}B' https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/src/github/validation/actor.ts
+HTTP 200 2829B
+exit: 0
+$ curl -sS -o index.ts -w 'HTTP %{http_code} %{size_download}B' https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/src/modes/tag/index.ts
+HTTP 200 6544B
+exit: 0
+$ curl -sS -o index.ts -w 'HTTP %{http_code} %{size_download}B' https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/src/modes/agent/index.ts
+HTTP 200 5228B
+exit: 0
+$ curl -sS -o fetcher.ts -w 'HTTP %{http_code} %{size_download}B' https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/src/github/data/fetcher.ts
+HTTP 200 21832B
+exit: 0
+$ curl -sS -o security.md -w 'HTTP %{http_code} %{size_download}B' https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/docs/security.md
+HTTP 200 14238B
+exit: 0
+
+# ---- G1. checkWritePermissions STILL trusts any actor whose login ends in [bot] ----
+$ grep -n -A6 "actor.endsWith" permissions.ts
+114:    if (actor.endsWith("[bot]")) {
+115-      core.info(`Actor is a GitHub App: ${actor}`);
+116-      return true;
+117-    }
+118-
+119-    // For all other actors, resolve the account via the collaborator
+120-    // permission endpoint. allowed_bots is only consulted in the catch
+exit: 0
+$ grep -n -A6 "getCollaboratorPermissionLevel" permissions.ts
+124:    const response = await octokit.repos.getCollaboratorPermissionLevel({
+125-      owner: repository.owner,
+126-      repo: repository.repo,
+127-      username: actor,
+128-    });
+129-
+130-    const permissionLevel = response.data.permission;
+131-    core.info(`Permission level retrieved: ${permissionLevel}`);
+132-
+133-    if (permissionLevel === "admin" || permissionLevel === "write") {
+134-      core.info(`Actor has write access: ${permissionLevel}`);
+exit: 0
+
+# ---- G2. checkHumanActor is the layer that refuses non-User actors ----
+$ grep -n -A4 "if (actorType !== " actor.ts
+70:  if (actorType !== "User") {
+71-    // GitHub Apps and other bot accounts.
+72-    if (isAllowedBot(actor, allowedBots)) {
+73-      console.log(
+74-        `Actor ${actor} is in allowed_bots list, skipping human actor check`,
+exit: 0
+$ grep -n -A3 "Regular User account" actor.ts
+84:  // Regular User account. allowed_bots is only for bot actors and is not
+85-  // consulted here; write-access enforcement for users happens separately
+86-  // in checkWritePermissions.
+87-  console.log(`Verified human actor: ${actor}`);
+exit: 0
+
+# ---- G3. BOTH modes call it at v1.0.220 (the disclosure says agent mode lacked it) ----
+$ for m in tag agent; do curl -sS -o $m.ts .../src/modes/$m/index.ts; echo "src/modes/$m/index.ts:"; grep -n checkHumanActor $m.ts; done
+src/modes/tag/index.ts:
+1:import { checkHumanActor } from "../../github/validation/actor";
+43:  await checkHumanActor(octokit.rest, context);
+src/modes/agent/index.ts:
+9:import { checkHumanActor } from "../../github/validation/actor";
+30:  await checkHumanActor(octokit.rest, context);
+exit: 0
+
+# ---- G4. the edit-after-trigger mitigation (kills the disclosure's Phase 2 edit vector) ----
+$ grep -n -B2 -A22 "edited after the trigger time" fetcher.ts
+302-
+303-/**
+304: * Checks if the issue/PR body was edited after the trigger time.
+305- * This prevents a race condition where an attacker could edit the issue/PR body
+306- * between when an authorized user triggered Claude and when Claude processes the request.
+307- *
+308- * @param contextData - The PR or issue data containing body and edit timestamps
+309- * @param triggerTime - ISO timestamp of when the trigger event occurred
+310- * @returns true if the body is safe to use, false if it was edited after trigger
+311- */
+312-export function isBodySafeToUse(
+313-  contextData: { createdAt: string; updatedAt?: string; lastEditedAt?: string },
+314-  triggerTime: string | undefined,
+315-): boolean {
+316-  // If no trigger time is available, we can't validate - allow the body
+317-  // This maintains backwards compatibility for triggers that don't have timestamps
+318-  if (!triggerTime) return true;
+319-
+320-  const triggerTimestamp = new Date(triggerTime).getTime();
+321-
+322-  // Check if the body was edited after the trigger
+323-  // Use lastEditedAt if available (more accurate for body edits), otherwise fall back to updatedAt
+324-  const lastEditTime = contextData.lastEditedAt || contextData.updatedAt;
+325-  if (lastEditTime) {
+326-    const lastEditTimestamp = new Date(lastEditTime).getTime();
+exit: 0
+$ grep -n "submitted or edited after the trigger" fetcher.ts
+530:    // Drop reviews submitted or edited after the trigger, then filter by actor.
+exit: 0
+
+# ---- G5. env scrub + run-summary channel, from docs/security.md at v1.0.220 ----
+$ grep -n "SUBPROCESS_ENV_SCRUB" security.md
+16:  - When set, Claude does a best-effort scrub of Anthropic, cloud, and GitHub Actions secrets from subprocess environments. On Linux runners with bubblewrap available, subprocesses additionally run with PID-namespace isolation. This reduces but does not eliminate prompt injection risk — keep workflow permissions minimal and validate all outputs. Set `CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: 0` in your workflow or job `env:` block to opt out.
+$ grep -n "show_full_output" security.md
+181:The `show_full_output` option is **disabled by default** for security reasons. When enabled, it outputs ALL Claude Code messages including:
+196:Only enable `show_full_output: true` or GitHub Actions debug mode when:
+205:For debugging, prefer using `show_full_output: false` (the default) and rely on Claude Code's sanitized output, which shows only essential information like errors and completion status without exposing sensitive data.
+$ grep -n "Allowed bots are not checked" security.md
+7:  - **⚠️ Allowed bots are not checked for repository permissions.** A bot that matches an entry does **not** need to be installed on your repository or have write access. On a **public repository**, external parties — including GitHub Apps created by anyone — may be able to trigger workflow events such as opening issues, commenting, or reviewing pull requests. If your workflow listens on those events and `allowed_bots` is set to `'*'`, any such App can invoke this action with a prompt it controls.
+
+# ---- G6. the vendor checkout guidance this decision must NOT copy verbatim ----
+$ grep -n -A3 "Do not check out an untrusted ref" security.md
+29:**Do not check out an untrusted ref into the workspace root before this action.** Use one of these patterns instead:
+30-
+31-```yaml
+32-# Preferred — check out the base ref (default).
+33-- uses: actions/checkout@v6 # no `ref:` → base branch
+34-- uses: anthropics/claude-code-action@v1
+35-```
+exit: 0

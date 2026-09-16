@@ -1,0 +1,62 @@
+# LINT FIXTURE ONLY — not a shipped workflow. Revision 3 of the review-lane
+# candidate. P02 is research; P03 builds the template. This file exists so
+# `actionlint` can decide whether the revision-3 configuration in
+# review/DECISION.md is syntactically valid. It deliberately lives under
+# research/runs/.../review/evidence/, never under .github/workflows/, so GitHub
+# Actions never loads it. The revision-2 fixture
+# (candidate-claude-code-review.yml) is left byte-for-byte as it was linted.
+#
+# Change from revision 2: one added clause, `draft == false`.
+name: Claude Code Review
+
+on:
+  pull_request:
+    types: [opened, ready_for_review, reopened]
+
+jobs:
+  claude-review:
+    # `vars` is one of the four contexts available to jobs.<job_id>.if
+    # (github, needs, vars, inputs); `secrets` is not. The intended effect of
+    # an unset variable is a SKIPPED job rather than a failed one; that runtime
+    # outcome is U2 in review/DECISION.md and is unproven by this research.
+    #
+    # `draft == false` is new at revision 3. Without it, a pull request opened
+    # as a draft and later marked ready fires `opened` and then
+    # `ready_for_review`, i.e. two paid agent sessions for one pull request.
+    # With it the composition fires exactly once. Reasoned from the documented
+    # pull_request activity-type set (github-docs-pull-request-ref.log); no run
+    # was executed, so this is U11.
+    if: >-
+      vars.ENABLE_CLAUDE_REVIEW == 'true'
+      && github.event.pull_request.head.repo.full_name == github.repository
+      && github.event.pull_request.draft == false
+      && github.event.pull_request.user.type != 'Bot'
+      && github.event.sender.type != 'Bot'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: write
+      issues: read
+      id-token: write
+    steps:
+      # NOTE (recorded, not fixed here): on a `pull_request` event GITHUB_REF is
+      # `refs/pull/<n>/merge` and `actions/checkout` uses GITHUB_REF by default,
+      # so this checks out the MERGE branch — which contains pull-request head
+      # content — into the workspace root. The action's own docs/security.md at
+      # v1.0.220 annotates the same pattern as "no `ref:` → base branch", which
+      # is wrong for this event. The fork guard above bounds the exposure to
+      # branches pushed by a write-access author. See U13.
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code Review
+        uses: anthropics/claude-code-action@v1.0.220
+        with:
+          anthropic_federation_rule_id: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+          anthropic_organization_id: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+          anthropic_service_account_id: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+          plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
+          plugins: 'code-review@claude-code-plugins'
+          prompt: '/code-review:code-review ${{ github.repository }}/pull/${{ github.event.pull_request.number }} --comment'

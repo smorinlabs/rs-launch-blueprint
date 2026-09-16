@@ -1,339 +1,399 @@
-decision-sha256: b45a17a342bfa49689c3571e71c14ab55c2fa64e0f9337032876739babdae205
-actor: audit-fable-2026-09-06T043454Z-6f31d86e5b7d-r5
+decision-sha256: c9e44318abbdf4131d0d8b575d318c442c8a89ff9fc8c573c8d92c5ecb441f2e
+actor: audit-fable-2026-09-06T043454Z-6f31d86e5b7d-r7
 model: claude-opus-5
 family: anthropic
 verdict: approve
 unresolved-findings: none
 
+The file under audit still titles itself "revision 6". The controller ruled that
+the number does not matter and the hash does. I bound the hash above: the file
+at `review/DECISION.md` hashes to `c9e44318abbdf4131d0d8b575d318c442c8a89ff9fc8c573c8d92c5ecb441f2e`,
+which is the hash my task named, and every statement below is read from those
+bytes. I refer to the entry as "revision 6" throughout, matching its own title.
+
 ## Principle and agreement level
 
-The shared requirement is stated at the right grain and sourced: *every pull request
-receives a first-pass automated review before a human reads it, and a maintainer can
-summon an agent into an issue or review thread without leaving GitHub*, from `py` at
-pinned commit `b08bccfb` plus ledger rows F051/F052.
+Unchanged from revision 6 and unchanged by the JA-06 correction, which touched
+no part of the principle argument. The level is **policy or mechanism** under
+spec §2, cited to the §2 table with its definition quoted and argued from §2's
+"with its owner decision or evidence" clause rather than from a rank. My
+predecessor examined that assignment at the revision-6 hash and found it
+defensible: the owner's 2026-09-12 direction settles how the `rs` template gates
+the two files without registering the pair as a value deliberately shared across
+`py`, `ts` and `rs`, and `ts-launch-blueprint` still ships neither file. The
+correction's fifteen hunks are fully enumerated below and none of them lies in
+that argument, so the assignment and observation 1 that depends on it stand as
+approved.
 
-**JA-04 is closed, and I checked the closure rather than accepting the claim.** Revision 2
-called policy-or-mechanism "the weakest of the three levels in `docs/port/README.md`". The
-decision now withdraws that on both counts and cites spec §2 instead. I read
-`docs/superpowers/specs/2026-09-01-rs-port-research-program-design.md:47` directly: the row
-reads "Policy or mechanism | Any deliberately shared value, protocol detail or tool, with
-its owner decision or evidence | Only the aspects outside that agreement; low-level choices
-can be shared when that level is intentional". The decision's quotation is verbatim, its
-"unordered" characterisation matches a table that carries no rank, and its observation that
-this level permits the *narrowest* variation of the three is correct against the third
-column. The miscitation is named rather than quietly dropped.
-
-The assignment itself is argued from §2's text, not from a rank, and the argument holds.
-§2 requires a policy-or-mechanism agreement to carry "its owner decision or evidence"; no
-owner decision registers this pair, and the decision says so plainly ("the owner has
-reviewed R01 only"). The three supporting observations are each evidence-backed rather than
-asserted: `ts` ships eight workflow files and zero `claude` paths at `cb1cbcb2` (check 6,
-with both exits named including the `grep -c` exit 1 that *is* the zero result); nothing in
-the capability is ecosystem-shaped, so no architectural pattern's Rust fitness is at stake;
-and the reviewing entity is a paid third party reached with an organization credential,
-which is exactly what §2 says needs an owner decision.
-
-That last point is what makes the recommendation's conditional form coherent rather than
-evasive: the level assignment and the recommendation are the same argument. If the
-agreement level requires an owner decision and no owner decision exists, a decision that
-asserted enablement would be contradicting its own §2 analysis.
-
-**BASELINE-REVIEW.md.** F051 and F052 are `py-only`/`DIVERGENT`; `docs/port/BASELINE-REVIEW.md`
-adjudicates only `COMMON → REUSE` and `ADOPT` rows, and `grep -n 'F051\|F052'` returns
-nothing. There are no baseline-review rows this item touches, and the decision correctly
-cites none.
-
-**The verdict abstention is right.** The decision declines to assign `ADOPT` and states why
-against `docs/port/README.md:70`'s definition ("taken as-is"), enumerating seven departures
-from `py`'s configuration. Assigning the final verdict and editing the ledger are left to
-the controller. That is the correct boundary.
+The guard contract is still the thing held to agree. Clause (b) is true of both
+lanes; clause (d) is the owner's deliberate choice of `author_association` over
+a write-permission check, and what `author_association` does not do is still
+stated alongside it. The correction adds one clause to what an adopter is told —
+that the guard contract can be entered with no act of acceptance at all — which
+strengthens rather than weakens the honesty of that handling.
 
 ## Design and evidence
 
-**The four architectures were genuinely compared, and before the vendor choice.** A/B/C/D
-are discriminated on a stated test — does the capability travel through "Use this
-template"? — which is the right test because it is the prompt's own value test. B and C are
-rejected on fit with the reason stated (repository *state*, not tree content), D on
-maintenance cost. Inside A, `claude-code-action` is selected on three criteria, each with a
-check behind it, not on popularity: it is the only candidate covering both members with one
-component/credential/App installation; `v2` returns HTTP 404 across 287 tag refs; and the
-maintainer runs both shapes against its own repository in a form readable at a tag. Adoption
-figures appear *after* the fitness gates, which is the required order.
+**Does the JA-06 fix close the gap it names, or only document it?** It does both,
+in the only division of labour this programme permits, and it is explicit about
+which half is which.
 
-**The guard table is accurate as read in source.** I verified the load-bearing rows against
-`review/evidence/action-entrypoint-plugins-v1.0.220.log` rather than accepting the
-decision's summary:
+What it closes: the decision no longer *claims* the gap is absent. Round 6
+rejected on three claims that were false for an adopter whose repository already
+carries `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` for an unrelated
+purpose. All three are now qualified in place, and the qualifications are
+accurate:
 
-- E2 quotes `sed -n '36,55p' src/entrypoints/prepare.ts` (exit 0): `setupGitHubToken()` at
-  `:37`, `checkWritePermissions(` at `:44`. The ordering is read, not inferred.
-- E2's `grep -c checkWritePermissions` returns 0 for both `src/modes/tag/index.ts` and
-  `src/modes/agent/index.ts`; `checkHumanActor` is called per mode at `tag:43` and
-  `agent:30`. The revision-4 topology correction (F1) is right and revision 3's was wrong.
-- E3 quotes `token.ts:69-73` — `DEFAULT_PERMISSIONS` = `contents: "write"`,
-  `pull_requests: "write"`, `issues: "write"` — plus `:100`'s merge,
-  `:115-123`'s "body only when `permissions` is truthy", and `:121`'s exchange URL.
+1. The recommendation's "installing a credential is itself the act of
+   acceptance" now carries, in the same sentence block, "**One case that
+   sentence does not cover** … an adopter whose repository already holds
+   `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` for an unrelated purpose
+   takes no act of acceptance at all, sees nothing printed, and gets both lanes
+   live on the next qualifying event."
+2. "puts that statement where the person installing the credential will see it"
+   is followed, in the same paragraph, by "**One case defeats the two sentences
+   above** … **and it is stated next rather than left implicit.**" I word-diffed
+   that paragraph against the revision-6 bytes: the edit is purely additive, one
+   appended sentence, with nothing removed and nothing softened. The concluding
+   owner-risk sentence — "Whether a bounded, unremovable exposure on a
+   write-capable lane is acceptable is an owner risk judgement, not an
+   engineering-fitness one" — survives untouched.
+3. The preflight description's unconditional "It prints through both channels a
+   reader actually sees" is now scoped: "**On the `shape = none` branch, and only
+   there**", with the other branch's single line of ordinary log text named and a
+   cross-reference to the new paragraph.
 
-**So the central finding is established: on the assistant lane a write-capable Claude GitHub
-App installation token is requested before any actor-trust check inside the action returns.**
-The chain is complete and each link is quoted: `additional_permissions` is set, so
-`parseAdditionalPermissions()` returns a value, so a body is sent carrying the merged
-defaults, and the exchange at `:121` happens at `prepare.ts:37` — ahead of `:44` and ahead
-of both mode calls at `:83`/`:85`. This is a fact neither prior auditor had, it strengthens
-the objection my predecessor raised rather than answering it away, and the decision does not
-soften it. One scope nuance, correctly handled by omission: `setupGitHubToken()` is
-conditional on no `github_token` input being supplied, and the recommended configuration
-supplies none, so the claim is made exactly for the configuration recommended.
+What it documents rather than closes: the exposure itself. That is correct and
+not evasion. The owner's direction is unchanged and this exposure is its
+consequence, so the decision's job is to state it truthfully, not to legislate
+around it. It states it as the **larger of the two new costs** — adopting round
+6's own framing — and names who owns the residual in it: "it is taken **by
+default rather than by choice**, and it is owned by whoever created the
+repository from the template rather than by anyone who made a decision about
+these two files."
 
-**The review lane's unknown is handled in the honest direction.** No `additional_permissions`
-means no body means a server-side scope that is "not readable from this source" — U17. The
-decision refuses the convenient inference that `contents: read` on the job implies a
-read-only token, writes "*unknown is not read-only*", and instructs "Treat the review lane
-as write-capable until U17 says otherwise." An auditor's usual complaint is a gap resolved
-toward the author's recommendation; here it is resolved against it.
+Most creditable, and the reason I do not treat this as documentation-only: the
+decision refuses to pretend its own remedy reaches this adopter. It says in
+plain words that "The only surviving channel is the fixture header, which is the
+one file this adopter has no reason to open," and that "the stated opt-out,
+deleting the file, cannot be chosen by someone who does not know there is
+anything to refuse." A revision that wanted credit for a fix would not write
+that sentence. The actual closing fix — printing on the `else` branch — is
+routed to P03 as "a one-line change to a printed string, changing no gate and no
+permission", which is exactly the form round 6 offered it in and exactly what the
+programme rule requires of a research phase.
 
-**The subprocess scrub is recorded honestly, and the honest treatment cost the decision a
-mitigation.** E4 quotes `action.yml:301` — the flag resolves from
-`env.CLAUDE_CODE_SUBPROCESS_ENV_SCRUB || (inputs.allowed_non_write_users != '' && '1') || ''` —
-and `:228`, with `:250`, `:269` and `:395` carrying the same non-empty gate. With
-`allowed_non_write_users` at `""` and neither fixture setting the `env` variable, the flag is
-empty and `bubblewrap`/`socat` are never installed. The decision states this at three sites,
-removes the scrub from the standing mitigation set (security-claims row 8), and writes that
-it "cannot be counted as an effective control in this configuration".
+**Is it in the place an adopter will actually see?** The fixture headers are what
+gets copied, so I read both. Each gained six comment lines inside the
+`WHAT AN ADOPTER ACCEPTS BY INSTALLING A CREDENTIAL` block, identical in both
+files:
 
-The question in my task is whether that is honest *given the recommendation leaves the
-activating list empty*. It is, for two reasons. First, the decision declines the cheap route
-it was offered: setting `env: CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: '1'` would satisfy `:301` and
-license the claim, while `:228` would still withhold the isolation dependencies — a flag
-without the isolation it names. That half-state is recorded as U16 rather than recommended,
-which trades a claimable control for an accurate one. Second, the empty list is not an
-oversight the decision could costlessly fix: `allowed_non_write_users: "*"` is precisely S2
-Phase 1's precondition, so the supported activation path would open the phase this
-configuration is outside of. The decision names that tension itself at line 144. Three of the
-disclosure's four remediations are claimed as active; the fourth is not; and revision 3's
-"all four present at the pin" is withdrawn as the conflation it was.
+```
+#   AND IF THE CREDENTIAL IS ALREADY THERE, NOBODY ACCEPTS ANYTHING: a
+#   repository that already holds ANTHROPIC_API_KEY or CLAUDE_CODE_OAUTH_TOKEN
+#   as a secret for any other purpose gets this lane live on the next
+#   qualifying event with no act of acceptance taken and nothing printed — the
+#   notice below fires only when NO credential is found — so everything listed
+#   here is accepted by default rather than by choice.
+```
 
-**The marketplace removal is complete and its cost is stated rather than absorbed.** I
-checked the fixtures, not the prose: `grep -c 'plugin_marketplaces\|plugins:'` returns 3 on
-`candidate-claude-code-review.r4.yml` and 0 on `candidate-claude.r4.yml`, and reading the
-file shows all three hits sit in the explanatory header comment — there is no active input.
-`actionlint` is clean on both (check 16), and the assistant lane's YAML is byte-identical to
-revision 3's below the header (`diff` exit 0). The three configuration changes the decision
-claims — `plugin_marketplaces` removed, `plugins` removed, `prompt:` substituted — are
-exactly what the fixtures show, with both prompt values quoted verbatim.
+That is the block's most prominent possible placement for this fact: it sits
+inside the block whose title it contradicts and corrects the title in place. It
+is one entry in each fixture, as round 6's remedy specified.
 
-The mechanism behind the removal is read, not assumed: `MARKETPLACE_URL_REGEX`
-(`install-plugins.ts:7-8`) anchors the string end to `.git`, so no ref, tag, commit or
-fragment is expressible and the reference is *structurally* unpinnable rather than merely
-unpinned; `addMarketplace` clones at run time (`:191-202`); `installPlugins` runs at
-`base-action/src/index.ts:36`, after `setupWorkloadIdentity()` at `:18`, i.e. inside the
-already-credentialed job; and even the marketplace *name* the `plugins:` input binds to lives
-in `anthropics/claude-code@main`. Pinning the action pinned nothing about what the lane
-executed, which is the contradiction the decision names against architecture A's own stated
-virtue.
+**Is the claim reported rather than reasoned?** Yes, and I checked the report
+against the artifact. `actionlint.log` block R6-10 extracts the preflight's
+detecting step from the review-lane fixture and runs it twice under a shell that
+mimics the runner, with separate empty `GITHUB_OUTPUT` and `GITHUB_STEP_SUMMARY`
+files per case so both are measured rather than inferred. With no credential:
+`credential=none`, one `::notice` line, 544-byte step summary. With a
+pre-existing `ANTHROPIC_API_KEY`: `credential=static`, **zero** notice lines,
+**zero** bytes of summary. The block's own `diff` proves the extracted script is
+the fixture's step body (exit 0). I confirmed the source lines myself: the step
+body is lines 136–160 of `candidate-claude-code-review.r5.yml`, the
+`if [ "${shape}" = none ]; then` is line 145, the `else` is 158, the ordinary log
+line is 159 and the `fi` is 160 — which is the citation the decision prints and
+the reason its "one line of ordinary log text and nothing else" is exact rather
+than approximate. And I confirmed the gate the fixture body carries:
+`needs.credential-preflight.outputs.credential == 'static' || … == 'federation'`,
+which is true on `static`. The finding was executed, not argued.
 
-The cost is stated at full size: the template owner now authors and maintains
-`.claude/commands/review-pr.md` and its `claude_args` tool allowance instead of inheriting a
-maintained upstream plugin; P03 must write that file before the lane does anything useful;
-and U18 records that *nothing here proves* the replacement resolves as a slash command, can
-post, or is comparable in quality, with a P03 procedure that runs both forms on the same pull
-request before the plugin option is deleted from the documentation. "Revision 4 removes a
-maintained upstream prompt and replaces it with a file that does not yet exist, and says so"
-is an accurate self-description. Only the general pin-form question goes to R20; the
-configuration question is decided here, which repairs exactly the routing-instead-of-deciding
-defect the empirical audit found. The decision also names its own provenance failure: the two
-inputs came from `py` lines 49-51 and revision 3 inherited them unadjudicated — "the same
-'`py` does it' failure the mandate exists to prevent, appearing in a decision that names that
-failure elsewhere."
+**Is there an eighth unqualified copy?** The sweep paragraph claims exactly seven
+locations carry the acceptance claim, that six were edited and that fact (2) was
+deliberately left byte-identical with the qualification naming it instead. That
+is the shape this programme has rejected on before, so I swept independently
+rather than accepting the count, over the current entry only (everything before
+the first `## Supersedes` line), for `act of acceptance`, `whoever installs`,
+`will see it`, `moment they install`, `is itself the acceptance`,
+`installing a credential is`, `the switch` and `ACCEPTS BY INSTALLING`. Ten lines
+match, and every one is accounted for: the recommendation (9), the section
+opening (57), fact (2) (60), the "Given (1) to (4)" paragraph (64), the new JA-06
+paragraph (66), B4 (112), the directory-change paragraph's mention of the header
+block by name (293), change-table row 7 (349), the sweep paragraph itself (357)
+and `## Engines` disagreement 1 (374). The preflight description does not match
+these patterns because its wording is different; I read it directly and it is
+scoped. **No unqualified copy survives.** Fact (2) is byte-identical to its
+revision-6 form, which is what the decision says it did and why.
 
-**JA-05 is closed with the citations checked.** I resolved the decision's raw-report citations
-against the raws by line rather than trusting them: `opus:93`, `:95` (the two
-`BASELINE-REVIEW:` lines), `:105` (the "fires at most once" claim the draft objection
-refutes), `:167` (the ten-issue sample), `:589` (the marketplace trust edge); `codex:21`,
-`:91`; `doxa-openai:138`, `:140`, `:348`, `:350`, `:388`; `doxa-gemini:185`;
-`doxa-perplexity:41`. All resolve to the content claimed. One off-by-two, recorded as
-observation 3 below.
+**Byte-preservation — verified, not accepted.** This programme has rejected two
+decisions for false byte claims, so I ran every one of these rather than reading
+them:
+
+| Claim | How I checked it | Result |
+|---|---|---|
+| Both fixtures' YAML bodies byte-identical from the `name:` line onward | `awk 'f||/^name:/{f=1;print}'` on the current file and on the pre-correction blob `c9bf1c4`, `shasum -a 256` on each | review lane `054ebd1a…` = `054ebd1a…`; assistant lane `da416f18…` = `da416f18…` |
+| Only the comment headers changed | full-file `diff` against the `c9bf1c4` blob | one hunk per file, six added comment lines each, **nothing removed**, no YAML key, expression, permission, trigger or pin touched |
+| The `## Supersedes` block is the published revision verbatim | extracted from the preserved entry's `# R18 …(revision 5, 2026-09-10)` heading to EOF, hashed, and `diff`ed against `research/topics/18-ai-assisted-review-workflows/DECISION.md` | 371 lines, **152,934 bytes**, `b45a17a342bfa49689c3571e71c14ab55c2fa64e0f9337032876739babdae205`, **`diff` exit 0** |
+| The three residual spans are unchanged | extracted from the current entry and from the published revision-5 bytes by the log's own opening and closing anchor text, hashed | span A **1133** bytes `57bc88e3…`, span B **1302** bytes `bdd98b1a…`, span C **328** bytes `6cbb9ac2…` — each **identical** in both, and identical to the pre-correction entry |
+| The four `- assumes` lines are byte-identical and now at 211–214 | `grep -n '^- assumes '` | 211–214 in the current entry and 623–626 in the preserved one, values matching `docs/port/PARAMETERS.md` rows 7–10 |
+| The cited fixture line numbers are post-edit | `sed -n '145p;160p'` on both fixtures | both print `if [ "${shape}" = none ]; then` and `fi` |
+| No stale `<fixture>:<line>` reference survives | `grep -o 'r5\.yml:[0-9-]*'` over the current entry | no output, exit 1 — the zero-match result the decision reports, and it reports it as such rather than as a printed zero |
+
+Every byte-preservation claim in this revision is true. The pin, both `on:`
+lists and both real jobs' `permissions:` blocks follow from the body-hash
+identity above and are re-checked directly in `actionlint.log` R6-9, which also
+reproduces the bot-check counts of 2 and 5 against the edited files.
+
+**What the correction deleted.** A revision that answers a finding by adding
+prose can also quietly remove a caveat, and the residual-span and `## Supersedes`
+checks above would not catch that, because they cover three anchored spans, the
+four `- assumes` lines and the preserved entry — not the fourteen paragraphs the
+correction replaced. So I word-diffed the whole correction rather than reading the
+added text and inferring the rest:
+`git diff --word-diff=porcelain 4a863d8 957d515 -- review/DECISION.md | grep '^-'`
+returns **twelve** deletions across the entire correction. Ten are word-level
+adjustments forced by the additions — `It`→`On the shape = none branch … it`,
+tense changes `stands`→`stood` and `created`→the superseded wording, `rows**,`→
+`rows** at revision 6`, `R6-1–R6-4 and`→the three-capture list, and the comma
+position where the `.r5` explanation was inserted. One is the editorial fix round
+6 named, `**revision-5**`→`**revision-6**`.
+
+The twelfth is the whole of `## Empirical check` row 20, and it is the one
+deletion worth reading. I word-diffed that row in isolation: the only text
+removed is the figure `207–210` and the fragment around it. The old row said the
+four `- assumes` lines "moved from lines 179–182 to 207–210"; the log's own
+`grep -n` prints **209–212**, so the figure written in the revision-6 text did not
+match the evidence it cited. The correction fixes it, states that it was wrong —
+"the figure `207–210` written here before the JA-06 correction did not match its
+own log, which is corrected rather than left standing" — and adds the post-edit
+figure **211–214**, which I confirmed independently. Everything else in that row
+survives: the `b45a17a3…` blob hash, the P1–P8 results, the three span byte
+counts and the P4 whole-file-versus-current-entry explanation with both counts.
+
+**No caveat, quotation, evidence result or limitation was removed anywhere in the
+correction.** The single substantive deletion is a wrong number the decision
+caught in its own text and disclosed as wrong, which is the behaviour this
+programme's byte checks exist to elicit.
+
+**The two new acceptance criteria.** B4's added branch requires a repository that
+"already holds `ANTHROPIC_API_KEY` or `CLAUDE_CODE_OAUTH_TOKEN` as a repository
+secret installed for an unrelated purpose *before* these two files land, and with
+no other configuration performed", and asserts four things on the next qualifying
+event: `credential=static`; the real job at `conclusion == "success"` **rather
+than** `"skipped"`; **no** `::notice` annotation; and **no** `$GITHUB_STEP_SUMMARY`
+block. U2's restatement asks for the same experiment and names it "the opposite
+outcome".
+
+Each of the four assertions is the strict negation of what the no-credential path
+produces — `credential=none`, `skipped`, one notice, a 544-byte summary — as the
+R6-10 execution measured. The criterion is therefore **not satisfiable by the
+no-credential path**, and it is falsifiable in every clause: any one of the four
+coming out otherwise fails it. It is a criterion, not a formality, and it is
+scoped to the path round 6 said B4 did not reach.
+
+**Recommendation, architecture, library selection, evidence handling.** Untouched
+by the correction and approved twice before. The four architectures are still
+compared before the vendor choice on transferability; the runner-up is an
+alternative rather than a demoted option; nothing rests on repository agreement;
+`doxa-gemini`'s "Python is the definitive reference architecture" framing is still
+rejected as the failure the mandate exists to prevent while still being routed.
+Check 21 remains turned on the decision's own attributions. No claim is made from
+memory.
 
 ## Completeness
 
-**Structure.** The four H2s the runbook §5 requires are present and carry what it names:
-`## Decision` with `### Principles and implementation` and a `re-verify:` line;
-`## Parameters`; `## Empirical check` with toolchain, OS, working directory, command and
-observed output; `## Engines` with all five reports, the disagreements and what resolved
-each. No `## Supersedes`, correctly — this is a revision, not a reversal. The runbook's
-"configuration, command and version-pin recommendations must execute" is satisfied within
-P02's limits: `actionlint` executes on the recommended fixtures, and the pin resolves through
-its annotated tag to a commit.
+Required H2s are present, in order, with `re-verify:` the last line of
+`## Decision` and `## Supersedes` last. I read the two governing anchors rather
+than carrying the citation: the spec's line 516 lists `## Supersedes` as the one
+H2 permitted "for reversals", and `RUNBOOK.md` line 190 reads "`## Supersedes`:
+only for a reversal, with the prior dated entry preserved." The prior dated entry
+is preserved verbatim, which is the condition I verified by hash and `diff` above.
 
-**Parameters — the reason revision 5 exists.** R18 owns nothing, matching the empty `owns:`
-in `## Couplings` and the `—` in `research/CLAUDE.md`. The four `assumes` lines now carry the
-registry value bare. I compared them against `docs/port/PARAMETERS.md:7-10` and all four match
-byte-for-byte, including `msrv-policy`'s full sentence. The revision-4 commentary is moved to
-prose below the list and loses nothing. No `CONFLICT:` line is correct: `consumes:` is empty
-and none of the four fixed values is challenged.
+`## Parameters` declares `owns — none`, consistent with R18's empty `owns:`
+column in `research/CLAUDE.md`, and four assumed values that I compared against
+`docs/port/PARAMETERS.md` rows 7–10 this round rather than inheriting the
+comparison: `msrv-policy = stable minus 2 minor versions, raised only in a minor
+release, declared as rust-version in Cargo.toml and tested in CI`,
+`rust-edition = 2024`, `target-os-matrix = ubuntu-latest, macos-latest` and
+`license = MIT OR Apache-2.0` each match the registry's fixed owner value
+byte-for-byte, and match the chosen options recorded at `PARAMETERS.md` lines
+24, 28, 32 and 36.
+**No `CONFLICT:` line is emitted and none is owed**: the item consumes nothing and
+challenges no owner-fixed value, and the decision says so at the point where the
+line would go. R18 owns no parameter, so no descendant needs reopening for this
+republication. Seven `BASELINE-REVIEW:` lines are carried in the required
+`F### — principle — proposed change — evidence` form, including the seventh that
+an anchored grep cannot see because `doxa-gemini` wrote it inside backticks; both
+rejects are routed identically to both adopts; `doxa-openai`'s ledger-split ask is
+routed as a ledger ask against F051 and F052 at `docs/port/COMMONALITY.md:57-58`
+rather than answered. None of these was touched by the correction.
 
-**The eighteen unproven items are honest and complete.** U1 through U18 are contiguous, with
-no gap and no duplicate, and each names a concrete P03 procedure rather than a wish. They
-span the causal claim under the permission grant (U1), the inertness the entire shipping case
-rests on (U2), the skip-not-fail guards (U3), the action-side gate (U4), CI reading (U5), the
-trigger trade (U6), credential billing plus the `classify_inline_comments` behaviour change
-(U7), variable shape (U8), responsiveness as a rate (U9), the adopter disable rate (U10),
-exactly-once firing (U11), the prefilter's runtime effect (U12), the checkout ref against the
-vendor's own wrong annotation (U13), the pre-check window (U14), two unfetched citations
-(U15), the scrub half-state (U16), the review lane's token scope (U17), and the replacement
-prompt (U18).
+The bookkeeping the correction forces is done and each piece is verified rather
+than asserted. The unproven list moves from eighteen rows to **nineteen** with
+U19 added; I counted `U1`–`U19` in the current entry, and with U2 restated as B4
+and U8 closed, **seventeen** remain open, which is what the decision says. The
+`## Empirical check` table now prints rows in order — round 6's editorial defect
+that row 21 preceded row 20 is fixed, and I confirmed rows 8–21 are sequential.
+The minimal-example paragraph now calls the fixtures "the two **revision-6** lint
+fixtures" and explains that "the `.r5` suffix is a fixture-generation counter, not
+a revision number" — the second editorial defect round 6 named, fixed with the
+explanation rather than only the label. Check 19 gains the third capture; check 20
+records the `- assumes` line numbers moving again, to 211–214, which I confirmed.
 
-I tested them for the failure that got revision 1 rejected — a runtime behaviour asserted in
-prose while an unproven row lists it as open. Each site is hedged: the recommendation
-paragraph itself carries the U2 caveat; "What enabling costs" point (1) says the
-consumer-inertness defence "rests entirely on U2" and that if U2 fails "the runner-up would
-then win outright"; the enable-flag paragraph calls the inert effect "a design purpose, not
-an observed one"; and §1 of the disagreements says that if U2 or U12 fails in P03 the
-"neither" case wins outright. The prefilter, the checkout, the scrub and the token scope are
-hedged the same way at every site I checked. B1–B8 are stated as proposed with none executed.
+Nothing implements the recommendation. There is no `.github/workflows/` tree in
+the repository (block P8's failing `ls`), and both fixtures live under
+`review/evidence/` with headers saying so. Declining to build the template is
+correct and is not a deficiency.
 
-**The `re-verify:` line is a real trigger set, not a date.** It fires on the owner recording
-acceptance *or refusal* — the condition the recommendation turns on; on upstream making the
-scrub independent of `allowed_non_write_users` or a marketplace URL pinnable, either of which
-reopens a revision-4 decision; on a disclosure with no advisory, which is the reporting gap
-this item found; and on `#1068` closing. It also states that the pin is stale on a scale of
-days and must be re-resolved unconditionally at implementation time.
+**The empirical audit is consistent with the decision.** `review/audit-codex.md`
+binds the same hash, approves, and its reproduced numbers match `actionlint.log`
+R6-10 exactly: `credential=none` with one `::notice` and 544 bytes, against
+`credential=static` with zero notice lines, a zero-byte summary and a true
+`static || federation` predicate. It independently confirms that both fixture
+changes are leading comments only, that each YAML body from `name:` onward is
+byte-identical, that `check_history` accepts the preserved predecessor, that both
+fixtures lint clean under `actionlint 1.7.12` with one `v1.0.220` pin each and no
+negative predicate, and that the adopter-block entry is present in each copied
+fixture. Its one environment limitation — the Lima VM could not start, so the
+probe ran on macOS — is an environment fact, disclosed, and it bears on no claim
+I rely on; it is the same limitation round 6 accepted. It correctly refuses to
+present the fixture probe as a live GitHub Actions run, which is the distinction
+B4 and U2 exist to preserve.
 
-**Consistency with the empirical audit.** `review/audit-codex.md` records the same decision
-sha256 I computed, `approve`, no findings. Its five points and my independent reads agree on
-every fact: the entrypoint ordering, the merged write permissions, U17's server-side scope,
-the scrub's inactivity, the fixtures' freedom from active marketplace inputs, and the
-registry match on the four `assumes` lines. It notes one GitHub Docs raw URL now 404s as
-documentation-path drift; that touches no decisive claim, since check 11's substance is
-carried by the quoted excerpts in `github-docs-pull-request-ref.log`. I found no conflict
-between the two audits.
-
-**Scope discipline.** The decision claims no file outside this run's `review/` directory was
-created or modified, that no workflow was installed, no credential used and no provider run
-occurred, and that `claude plugin marketplace add` is quoted from source and never executed.
-The evidence log's commands are read-only `curl`/`grep`/`sed`/`git show`/`actionlint`/`diff`
-throughout, consistent with that claim. Both post-capture log corrections — E7's mislabelled
-command line at revision 4, G3's at revision 3 — are disclosed in the decision with the
-statement that no output line was altered, and revision 4 re-ran the affected fetch under its
-real argv as block E9. Disclosing a mislabelled command line that no one would have caught is
-the behaviour that makes the rest of the evidence trustworthy.
+**Role-contract inputs I did not re-read, disclosed rather than left silent.**
+`inputs/prompt.md` beyond its question list, the five raw reports in `raw/`,
+`docs/port/PARAMETERS.md` beyond rows 7–10 and the option lines at 24–36, spec §2
+beyond the level table and line 516, and `docs/port/BASELINE-REVIEW.md`. My
+justification is stronger than a general appeal to the prior round. The
+correction's diff against the twice-approved revision-6 hash is **fully
+enumerated** — fifteen hunks, fourteen replaced lines and twenty added. I read
+every added line in full, and I established the removals not by reading the
+replaced lines but by word-diffing the entire correction, which is the stronger
+instrument: the twelve deletions are itemised above and none of them removes a
+claim, a caveat or an evidence result. No hunk lies in the raw-report synthesis,
+the parameter block, the `BASELINE-REVIEW:` lines or the principle argument; the
+four `- assumes` lines and all seven `BASELINE-REVIEW:` lines are byte-identical
+to the revision-6 text. The correction makes no new claim about any raw report.
+Everything the correction does change, I read from the bytes and checked against
+the artifacts it cites.
 
 ## Findings
 
-No acceptance-blocking finding. Four non-blocking observations, recorded because the record
-should carry them, and none of which changes the recommendation, misstates a risk, or leaves
-the owner unable to decide.
+**None.** Round 6's finding JA-06 is answered, in the form round 6 specified: the
+paragraph under "What installing a credential costs the owner", one entry in each
+fixture's adopter block, and B4 scoped to require the pre-existing-credential
+path. The optional part of that remedy — printing on the `else` branch — is routed
+to P03 with the exact change named, which round 6 offered as an option rather than
+a condition and which the programme rule protects.
 
-1. **B9 quotes a run-log string and a source line this run's evidence does not carry.** B9
-   asks P03 to assert the run log contains `No marketplaces specified, skipping marketplace
-   setup`, attributed to `base-action/src/install-plugins.ts:230`. Neither the string nor line
-   230 appears anywhere in `action-entrypoint-plugins-v1.0.220.log`: E5's `grep` covers `:7-8`
-   and `:191-202` only. E1 fetched the whole file (HTTP 200, 7918 bytes), so the line was
-   plausibly read in the scratch copy, but the decision's own standard — the one that
-   motivated its two disclosed log corrections — is that anything relied on appears in the
-   log. Non-blocking because B9 is a proposed P03 assertion, not a claim about anything
-   observed here, and a wrong string simply fails at P03 and is corrected. Closed by grepping
-   `:230` at the pin and recording the quotation.
+Three non-blocking observations, recorded so the record carries them and **not**
+as conditions of approval.
 
-2. **The residual's consequence ceiling is stated at two sizes and never reconciled.** Line
-   22 quotes the disclosure describing the exchange output as an installation token with write
-   access to "contents, issues, pull requests **and workflows**". Lines 24, 34 and 114 and both
-   fixture headers state the *requested* set from `token.ts:69-73` as contents/pull_requests/issues
-   write, with no `workflows`. Both are accurately sourced and the decision never claims they
-   are the same set, but an adopter reading only the fixture header — which the decision says
-   is what gets copied — takes away the smaller number, and `workflows: write` is materially
-   worse than `contents: write` because it reaches the workflows that gate the token. U17
-   holds the review lane's scope open; nothing holds this open for the assistant lane. One
-   sentence reconciling requested scope with the disclosure's observed scope would close it.
+**(i) U19 and the privileged job's condition — see my explicit judgement in
+`## Assessment` below.** Recording it as unproven and leaving it for P03 is
+adequate.
 
-3. **One corroborating citation is off by two lines.** The decision attributes "a trusted
-   association prefilter where practicable" to `raw/doxa-openai.normalized.md:388`; the quote
-   is at `:386`, and `:388` is "a same-repository check before operating on a PR" — which the
-   decision separately and correctly cites as `:388` in §13. The quotation is verbatim and the
-   engine does make the ask, so the substance is unaffected.
+**(ii) B4's activation assertion is over-strict in the safe direction.** The
+pre-existing-credential branch asserts the real job reaches
+`conclusion == "success"`. A credential installed for an unrelated purpose may be
+expired, scoped elsewhere, or a placeholder; in that case both lanes still go live
+with nothing printed — the finding is confirmed exactly — and the job finishes
+red, so B4 as written fails on a run that demonstrated what B4 exists to
+demonstrate. P03 should assert `conclusion != "skipped"` as the activation test
+and record success or failure separately. This makes the criterion harder to pass
+than the fact it tests, not easier, so it cannot hide the exposure and does not
+change the verdict.
 
-4. **Every named bound on the residual is workflow-side.** The six bounds are the fork guard,
-   the bot guards, the enable flag, the `author_association` prefilter, a pin above both fix
-   versions, and a configuration outside every published phase. No repository-side control —
-   branch protection, rulesets, required reviews, environment protection — is named, and those
-   materially change what a write-capable token can actually land. This does not make the
-   residual undecidable, since "a write-capable App token on this repository" is decidable as
-   stated, and the owner deciding is the same person who controls those settings. Worth naming
-   because P03 will need them.
+**(iii) The fixture block's title and its new entry disagree, by design.** The
+block is titled `WHAT AN ADOPTER ACCEPTS BY INSTALLING A CREDENTIAL` and now
+contains an entry beginning `AND IF THE CREDENTIAL IS ALREADY THERE, NOBODY
+ACCEPTS ANYTHING`. The entry corrects the title in place and in the most visible
+position available to it. Editorial only, and the contradiction arguably does more
+work where it is than a retitled block would.
+
+Both remaining residuals my predecessor recorded are carried forward unchanged and
+neither is reopened: automation running under a User-type machine account is not a
+`Bot` type and is bounded only by clause (d), and `## Engines` §2's "catches every
+bot without enumeration" is true of Bot-type actors only. Both predate revision 6.
 
 ## Assessment
 
-**I now agree the evidence supports this recommendation, and I did not expect to write that
-sentence from this seat.** My predecessor rejected revision 2 and answered "would you ship
-this to strangers" with "not as it stands". Revision 5 is a different recommendation, not a
-better-argued version of the one that was refused.
+Approve, with no unresolved findings.
 
-**The moved recommendation is genuinely supported and does not merely relocate a decision the
-research should have made.** I applied two tests. First: could further research collapse the
-choice? No — the decision establishes that the residual is a property of the *capability*,
-not of the files, so the runner-up inherits it at adoption time rather than removing it, and
-no configuration separates a trusted author's own words from untrusted text that author
-pasted. Both branches carry the same residual and differ only in who accepts it and when.
-That is definitionally an owner risk judgement, and spec §2's own requirement for this
-agreement level — "with its owner decision or evidence" — says so independently. Second: does
-the conditional leave P03 with a buildable state under every branch? It does. Acceptance
-recorded → both files ship and the origin enables. Acceptance withheld → both files are
-deleted and the opt-in recipe ships. Acceptance not yet recorded → the files sit with their
-variables unset, which the decision itself says is functionally equivalent to the runner-up
-because nothing runs either way. All three are stated; none is left for someone to invent.
+**Explicit judgement on U19 — the architectural note is adequately handled as an
+unproven item, and is not a defect that must be fixed before acceptance.** Five
+reasons, in descending weight.
 
-Decisive for me: the research did not decline the questions it *could* settle. Whether the
-guard is expressible at the job level — settled, by the context table and by `actionlint`
-rejecting the alternative. Whether the marketplace admits a pin — settled in source, and then
-*acted on* rather than routed. Whether the scrub is active — settled, against the decision's
-own interest. What the assistant lane's token carries and when it is minted — settled in
-source. What the review lane's token carries — recorded as unreadable, with the unknown
-resolved toward "assume write-capable". The owner is left exactly one question, and it is the
-one only an owner can answer.
+First, **the gate is sound today; U19 is about a future editor, not a live hole.**
+I verified the predicate on both fixtures:
+`needs.credential-preflight.outputs.credential == 'static' || … == 'federation'`.
+It is false for the empty string a skipped job publishes and false for `'none'`,
+so the real job fails closed on a skipped preflight, a failed preflight and a
+preflight that detected nothing — and `needs:` skip-propagation is a second,
+independent leg. Every actor-trust clause does sit on the unprivileged job, and I
+confirmed that directly: the review lane's preflight carries the fork, `draft ==
+false` and two bot clauses, the assistant lane's carries five bot clauses and four
+`author_association` branches, and each privileged job's `if:` carries only the
+credential comparison. That is exactly what U19 says, stated without softening.
+But the protection holds as written. A finding must name something the artifact
+gets wrong now.
 
-Two conditions of different kinds sit under the recommendation, and the decision states both
-where a reader meets them rather than burying one: owner acceptance gates *enablement*, and
-U2 gates whether shipping inert files is defensible at all. Point (1) of "What enabling costs"
-says so plainly — if U2 fails, a stranger gets a red check rather than an inert file, "which
-is precisely the `codex`/`doxa-openai` objection and a reason the runner-up would then win
-outright." A decision that hid that dependency would be the dodge; this one names it inside
-the recommendation paragraph.
+Second, **round 6 classified this as non-blocking observation (i), and no new
+evidence has arrived since.** Its words were "this is a hardening recommendation
+for P03 rather than a defect… Non-blocking; P03 builds the thing." The correction
+did precisely what that observation asked — recorded it where it does not live
+only in an audit — and cited the same evidence round 6 cited, the fixtures' own
+corrected predicate. Escalating an observation to a blocking defect on a later
+round, on the identical evidence, because the decision complied with it, would
+make compliance costly and the classification meaningless.
 
-**The named residual is described precisely enough to accept or decline, which is the hinge.**
-Trigger: text an OWNER, MEMBER or COLLABORATOR writes into any of four surfaces on a public
-repository. Mechanism: nothing separates that author's own words from untrusted content they
-quoted. Capability at stake: an App installation token requested before any actor-trust check
-returns, write-capable on the assistant lane as read in source, unknown-and-assumed-write on
-the review lane. Bounds: six, enumerated. Non-bounds: enumerated too — the prefilter is not a
-permission check, the scrub is inactive, U2 and U12 are unproven. Class evidence: the
-researcher's own "~50 separate vulnerabilities … bypass the permission system", plus S2's
-variants exploited in the wild. Five things an adopter must understand are written into the
-fixture headers, where the copy happens, rather than only into a document nobody carries
-forward; I read both headers and all five are there, distributed across the two lanes they
-apply to. Observations 2 and 4 above would sharpen the ceiling and the repository-side bounds,
-but an owner can answer the question as posed today.
+Third, **duplication is not unambiguously the better fix, so deciding it in P03 is
+the correct disposition rather than a deferral.** Two copies of a four-clause
+actor test can drift silently in either direction — edited on one job and not the
+other — and nothing detects that; `actionlint` can prove the duplicated condition
+legal but, as the decision itself says, "cannot prove it equivalent to the
+preflight's". The accompanying control U19 specifies —
+`grep -c "outputs.credential != "` returning `0` for both files as a gate in the
+template's own CI — fails **loudly**, which is the property the original error
+lacked. U19 records both halves, which is the right shape for a recommendation
+whose better variant is not yet settled.
 
-**On the specific things I was asked to judge:** the guard table is accurate against the
-source the log quotes, including the finding that a write-capable App token is minted before
-either actor check runs — I verified the whole chain link by link rather than accepting the
-summary. Recording the scrub as available-but-inactive is the honest treatment precisely
-because the activating list is empty: the decision refused the half-state that would have let
-it claim the control, and the supported activation path would open the S2 phase this
-configuration is outside of. The marketplace removal is complete in the fixtures, not merely
-in the prose, and its cost is stated at full size — a maintained upstream artifact traded for
-one that does not yet exist, with U18 refusing to claim the replacement works. The eighteen
-unproven items are honest, contiguous and complete, and I found no site where prose asserts
-what an unproven row holds open. Nothing is asserted more strongly than its evidence supports,
-with the four observations above as the exceptions, all of them minor and none load-bearing.
+Fourth, **the mediation is already documented at the edit site**, which partially
+answers the "later hand" concern without any change. The review fixture's comment
+directly above the privileged job's `if:` reads that if the preflight is "SKIPPED
+— which is what a rejected trigger, fork, draft or bot guard does to it — then
+`needs.credential-preflight.outputs.credential` is the EMPTY" string. Someone
+editing that condition is told, in the file, what the condition is load-bearing
+for.
 
-This decision repeatedly resolves ambiguity against its own recommendation — the token scope,
-the scrub, the marketplace, the `py` inheritance it names as its own failure, the two log
-corrections nobody would have caught. That pattern is the reason I credit the conditional
-rather than reading it as hedging.
+Fifth, **the programme rule settles the remainder.** P03 builds the template; a
+claim recorded as unproven with what would prove it is correct, and a decision
+must not implement its own recommendation. U19 asserts nothing as proven. It says
+in terms "**Not implemented in the fixtures at this correction**", gives the
+reason, and names the P03 action and the CI gate that goes with it. Implementing
+it here would be the defect — a design change to each real job's condition, made
+at a phase that cannot validate its equivalence, in fixtures that are not the
+template.
 
-**Ready to publish: yes.** Verdict `approve`, no unresolved findings. Both prior objections
-are answered; the two audit seats now concur; the recommendation stands in a form neither
-prior objector refused. **This approves a P02 research decision and nothing else.** It is not
-approval to implement, to configure a credential, to enable either lane anywhere, or to run a
-live validation — and it does not record the owner acceptance the recommendation turns on.
-That acceptance is the owner's to give or withhold, and until it is on record the shipped
-state and the runner-up are the same inert thing.
+What remains true of this revision overall is what my predecessor found and I
+re-verified: the residual is stated at full strength and its three spans are
+byte-identical to the published predecessor; the bounding list names credential
+presence in the removed flag's place rather than pretending the flag survived;
+the preserved revision-5 entry is the published bytes exactly, 152,934 of them;
+the preflight fails closed through the value as well as through the dependency;
+and B4 and B10 assert the real job's conclusion rather than the preflight's. The
+one thing that was missing is now present, in the decision and in both files that
+get copied, and the decision is candid that the header is a channel this
+particular adopter will not open. A decision that states the cost of the owner's
+design accurately, refuses to overclaim its own remedy, and converts the gap into
+a falsifiable criterion P03 must prove is what this phase is for.

@@ -1,0 +1,81 @@
+# LINT FIXTURE ONLY — not a shipped workflow. Revision 3 of the assistant-lane
+# candidate. See the header of candidate-claude-code-review.r3.yml. The
+# revision-2 fixture (candidate-claude.yml) is left byte-for-byte as it was
+# linted.
+#
+# Change from revision 2: an `author_association` prefilter on every one of the
+# four trigger clauses, in the exact shape asked for by upstream issue
+# anthropics/claude-code-action#1068 ("Default workflow template missing author
+# trust gate — secrets exposed on public repos", open, labels bug /
+# documentation / area:permissions / p1 — issue-1068.log).
+#
+# Why: on the ORIGIN repository the `vars` enable flag is `true` by
+# construction, so it protects nothing here. Without this prefilter any account
+# that can comment on a public repository starts a job that holds
+# `id-token: write`, and ACTIONS_ID_TOKEN_REQUEST_TOKEN /
+# ACTIONS_ID_TOKEN_REQUEST_URL are present in the runner environment from job
+# start — the exact credentials the 2026-06-01 GMO Flatt Security disclosure
+# exfiltrates and exchanges for a Claude GitHub App installation token
+# (flatt-disclosure-2026-06-01.log). Workload identity federation does not
+# address this: it removes the *static* secret, not the OIDC exchange.
+#
+# Limits, stated because this is a security control:
+#   * `author_association` is not the same predicate as write access. An
+#     organization MEMBER without write access passes this filter and is then
+#     refused by the action's own checkWritePermissions
+#     (action-guard-source-v1.0.220.log). It is a prefilter, defence in depth;
+#     the action-side check remains authoritative.
+#   * It would NOT have stopped the disclosure's Phase 2, whose triggering
+#     comment was authored by a trusted user and whose body was tampered with
+#     afterwards. That vector is closed instead by the action's own
+#     `isBodySafeToUse` at v1.0.220, not by anything in this file.
+name: Claude Code
+
+on:
+  issue_comment:
+    types: [created]
+  pull_request_review_comment:
+    types: [created]
+  issues:
+    types: [opened, assigned]
+  pull_request_review:
+    types: [submitted]
+
+jobs:
+  claude:
+    if: |
+      vars.ENABLE_CLAUDE_ASSISTANT == 'true' &&
+      ((github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+       (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+       (github.event_name == 'pull_request_review' && contains(github.event.review.body, '@claude') &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.review.author_association)) ||
+       (github.event_name == 'issues' && (contains(github.event.issue.body, '@claude') || contains(github.event.issue.title, '@claude')) &&
+        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)))
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+      issues: write
+      id-token: write
+      actions: read
+    steps:
+      # None of this lane's four events is a `pull_request` event, so GITHUB_REF
+      # is the default branch and this checkout brings in no pull-request head
+      # content. Guard-contract clause (a), "never runs on a fork pull request",
+      # binds the review lane only; see review/DECISION.md.
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          fetch-depth: 1
+
+      - name: Run Claude Code
+        uses: anthropics/claude-code-action@v1.0.220
+        with:
+          anthropic_federation_rule_id: ${{ vars.ANTHROPIC_FEDERATION_RULE_ID }}
+          anthropic_organization_id: ${{ vars.ANTHROPIC_ORGANIZATION_ID }}
+          anthropic_service_account_id: ${{ vars.ANTHROPIC_SERVICE_ACCOUNT_ID }}
+          additional_permissions: |
+            actions: read
+          # No `prompt:` input — omitting it selects interactive @claude mode.

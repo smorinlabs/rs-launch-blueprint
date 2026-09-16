@@ -1,0 +1,236 @@
+# actionlint.log
+run: 2026-09-10T05:18:23Z (UTC)
+cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence
+actionlint 1.7.12
+NOTE: these three files are lint fixtures under review/evidence/, not shipped workflows.
+
+$ actionlint candidate-claude-code-review.yml candidate-claude.yml
+exit: 0
+
+$ actionlint candidate-secrets-in-job-if-NEGATIVE.yml   (expected to FAIL)
+candidate-secrets-in-job-if-NEGATIVE.yml:14:9: context "secrets" is not allowed here. available contexts are "github", "inputs", "needs", "vars". see https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability for more details [expression]
+   |
+14 |     if: secrets.CLAUDE_CODE_OAUTH_TOKEN != ''
+   |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+exit: 1
+
+# ---- revision-3 addendum ---- 2026-09-10T06:29:17Z
+# Two new fixtures. The revision-1/2 fixtures above are unchanged and their
+# results above still describe them byte-for-byte.
+# candidate-claude-code-review.r3.yml adds `draft == false`.
+# candidate-claude.r3.yml adds the issue-#1068 author_association prefilter.
+# Working directory: research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence
+
+$ actionlint --version
+1.7.12
+installed by building from source
+built with go1.26.1 compiler for darwin/arm64
+exit: 0
+
+$ actionlint candidate-claude-code-review.r3.yml candidate-claude.r3.yml
+exit: 0
+
+# The clean exit above is the finding for revision 3: the author_association
+# prefilter that issue #1068 asks for, and the draft clause, are both
+# expressible in jobs.<job_id>.if — author_association arrives through the
+# `github` context, which check 1's context table lists as available there.
+
+# ---- revision-4 addendum ----
+# captured: 2026-09-10T07:10:37Z
+# cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence
+# Nothing above this line was altered. The revision-1/2/3 entries still describe
+# the three original fixtures and the two r3 fixtures byte-for-byte.
+$ actionlint --version
+1.7.12
+installed by building from source
+built with go1.26.1 compiler for darwin/arm64
+$ actionlint candidate-claude-code-review.r4.yml candidate-claude.r4.yml
+exit=0   # clean; no diagnostics printed
+# candidate-claude-code-review.r4.yml differs from .r3.yml by the removal of the
+# plugin_marketplaces and plugins inputs and the substitution of a template-local
+# '/review-pr' prompt. candidate-claude.r4.yml's YAML is byte-identical to .r3.yml's
+# below the header comment; verified:
+$ diff <(sed -n '/^name: Claude Code$/,$p' candidate-claude.r3.yml) <(sed -n '/^name: Claude Code$/,$p' candidate-claude.r4.yml)
+exit=0   # 0 = identical
+# ---- revision-6 addendum ----
+# captured: 2026-09-12T18:28:15Z
+# cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence
+# Nothing above this line was altered. The revision-1/2/3/4 entries still
+# describe the three original fixtures, the two r3 fixtures and the two r4
+# fixtures byte-for-byte.
+$ actionlint --version
+1.7.12
+installed by building from source
+built with go1.26.1 compiler for darwin/arm64
+exit=0
+$ shellcheck --version
+ShellCheck - shell script analysis tool
+version: 0.11.0
+license: GNU General Public License, version 3
+website: https://www.shellcheck.net
+exit=0   # present, so actionlint lints the preflight run: script too
+
+# R6-1 — the revision-6 fixtures, which carry the credential-presence
+#        preflight, no enable variable, and bot exclusion on BOTH lanes.
+$ actionlint candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+exit=0   # 0 = clean, no diagnostics printed
+
+# R6-2 — the negative control, RE-RUN rather than cited, because the
+#        mechanism this revision turns on is the one it refutes: a job-level
+#        if: cannot read secrets.
+$ actionlint candidate-secrets-in-job-if-NEGATIVE.yml
+candidate-secrets-in-job-if-NEGATIVE.yml:14:9: context "secrets" is not allowed here. available contexts are "github", "inputs", "needs", "vars". see https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability for more details [expression]
+   |
+14 |     if: secrets.CLAUDE_CODE_OAUTH_TOKEN != ''
+   |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+exit=1   # 1 = expected and correct; the diagnostic IS the finding
+
+# R6-3 — the positive half of the same mechanism, established by R6-1 rather
+#        than asserted: both r5 fixtures place secrets in jobs.<job_id>.env,
+#        which is where the context table says secrets are available, and
+#        both lint clean.
+$ grep -c "secrets\." candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+candidate-claude-code-review.r5.yml:4
+candidate-claude.r5.yml:4
+exit=0
+
+# R6-4 — actionlint type-checks the preflight wiring, so the link between
+#        the preflight's declared outputs: and the consumer's
+#        needs.<job>.outputs.<name> is verified, not merely written. A
+#        deliberately misspelled copy is rejected. The mutant is written to
+#        a scratch directory outside the repository and is never a fixture.
+$ sed 's/outputs\.credential /outputs.credentail /' /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence/candidate-claude-code-review.r5.yml > mutant.yml
+exit=0
+$ actionlint mutant.yml     # cwd is the scratch directory
+mutant.yml:161:9: property "credentail" is not defined in object type {credential: string} [expression]
+    |
+161 |     if: needs.credential-preflight.outputs.credentail != 'none'
+    |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+exit=1   # 1 = the linter catching a wiring typo this decision could not
+
+# END of revision-6 addendum
+# ---- revision-6 addendum, second capture ----
+# captured: 2026-09-12T18:51:17Z
+# cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence
+# Nothing above this line was altered. This block exists because the two r5
+# fixtures were CHANGED after the first revision-6 addendum was written, and
+# the earlier block therefore describes the earlier form. The change is one
+# line per lane: the real job's gate moved from the negative predicate
+#   if: needs.credential-preflight.outputs.credential != 'none'
+# to the positive predicate
+#   if: needs.credential-preflight.outputs.credential == 'static'
+#       || needs.credential-preflight.outputs.credential == 'federation'
+# REASON, and it is a correctness fix rather than a style change: a SKIPPED
+# preflight leaves needs.<job>.outputs.<name> as the EMPTY STRING, and
+# '' != 'none' evaluates TRUE, so the negative predicate left the real job's
+# skip resting entirely on the platform's skip-propagation rule. The positive
+# predicate is false on an empty output as well as on 'none'.
+$ actionlint --version
+1.7.12
+installed by building from source
+built with go1.26.1 compiler for darwin/arm64
+exit=0
+
+# R6-5 — the revised fixtures
+$ actionlint candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+exit=0   # 0 = clean, no diagnostics printed
+
+# R6-6 — the gate, quoted from each fixture as it now stands
+$ grep -n -A2 "^    if: >-$" candidate-claude-code-review.r5.yml | grep -A2 credential-preflight
+172-      needs.credential-preflight.outputs.credential == 'static'
+173-      || needs.credential-preflight.outputs.credential == 'federation'
+exit=0
+$ grep -n "outputs.credential ==" candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+candidate-claude-code-review.r5.yml:172:      needs.credential-preflight.outputs.credential == 'static'
+candidate-claude-code-review.r5.yml:173:      || needs.credential-preflight.outputs.credential == 'federation'
+candidate-claude.r5.yml:171:      needs.credential-preflight.outputs.credential == 'static'
+candidate-claude.r5.yml:172:      || needs.credential-preflight.outputs.credential == 'federation'
+exit=0
+$ grep -c "outputs.credential != " candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+candidate-claude-code-review.r5.yml:0
+candidate-claude.r5.yml:0
+exit=1   # two printed zeros with grep -c exit 1 IS the zero-match result:
+#            no negative predicate survives in either fixture.
+
+# R6-7 — the relay type-check, re-run against the revised form so the
+#        wiring claim rests on this capture and not on the earlier one.
+$ sed 's/outputs\.credential ==/outputs.credentail ==/' /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence/candidate-claude-code-review.r5.yml > mutant2.yml
+exit=0
+$ actionlint mutant2.yml     # cwd is the scratch directory
+mutant2.yml:171:9: property "credentail" is not defined in object type {credential: string} [expression]
+    |
+171 |     if: >-
+    |         ^~
+mutant2.yml:171:70: property "credentail" is not defined in object type {credential: string} [expression]
+exit=1   # 1 = the linter catching a wiring typo this decision could not
+
+# END of revision-6 second addendum
+
+# ---- revision-6 addendum, third capture: the JA-06 correction ----
+# captured: 2026-09-12T20:09:07Z
+# cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence
+# Nothing above this line was altered. This block exists because the two r5
+# fixtures were CHANGED again after the second capture: each gained ONE
+# comment entry in its 'WHAT AN ADOPTER ACCEPTS BY INSTALLING A CREDENTIAL'
+# header block, recording that a repository whose credential predates the
+# files gets the lane live with no act of acceptance and nothing printed.
+# No YAML key, expression, permission, trigger or pin was touched; the change
+# is entirely inside the leading comment header, above the 'name:' key.
+
+$ actionlint --version
+1.7.12
+installed by building from source
+built with go1.26.1 compiler for darwin/arm64
+exit=0
+
+# R6-8 — the fixtures as they now stand, re-linted because the bytes the
+#        second capture linted are no longer the bytes on disk.
+$ actionlint candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+exit=0   # 0 = clean, no diagnostics printed
+
+# R6-9 — the regions this correction must not have touched, re-checked
+#        directly rather than assumed.
+$ grep -c "^ *uses: anthropics/claude-code-action@v1.0.220$" candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+candidate-claude-code-review.r5.yml:1
+candidate-claude.r5.yml:1
+exit=0
+$ grep -c "outputs.credential != " candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+candidate-claude-code-review.r5.yml:0
+candidate-claude.r5.yml:0
+exit=1   # two printed zeros with grep -c exit 1 IS the zero-match result
+$ for f in ...r5.yml; do sed -n '/^name: /,$p' $f | grep -c "type != 'Bot'"; done
+  candidate-claude-code-review.r5.yml    2
+  candidate-claude.r5.yml                5
+exit=0   # review lane 2, assistant lane 5 — unchanged by this correction
+
+# R6-10 — THE FINDING ITSELF, executed rather than only read. The preflight's
+#         detecting step is extracted verbatim from the review-lane fixture
+#         and run twice under a bash that mimics the runner: once with no
+#         credential in the environment, once with ANTHROPIC_API_KEY already
+#         present as it would be in a repository that installed it for an
+#         unrelated purpose. GITHUB_OUTPUT and GITHUB_STEP_SUMMARY are
+#         separate empty files per case, so both are measured, not inferred.
+$ python3 -c 'extract the detect step body from candidate-claude-code-review.r5.yml' > detect-step.sh
+exit=0
+$ diff <(sed -n '136,160p' candidate-claude-code-review.r5.yml | cut -c11-) detect-step.sh
+exit=0   # 0 = the extracted script IS the fixture's step body, lines 136-160
+$ ( none ) bash detect-step.sh
+exit=0
+  GITHUB_OUTPUT      : credential=none
+  stdout             : ::notice title=Claude review not configured::No Claude credential is set, so the review job is skipped. This is not an error.
+  ::notice lines     : 1
+  step-summary bytes : 544
+$ ( preexisting-static ) bash detect-step.sh
+exit=0
+  GITHUB_OUTPUT      : credential=static
+  stdout             : Claude credential shape detected: static
+  ::notice lines     : 0
+  step-summary bytes : 0
+# READING: with no credential the step publishes credential=none, prints one
+# ::notice and writes a 544-byte step summary. With a pre-existing
+# ANTHROPIC_API_KEY it publishes credential=static, prints ZERO ::notice
+# lines and writes ZERO bytes of step summary — and each real job's gate,
+# "== 'static' || == 'federation'", is TRUE on that output. That is JA-06:
+# both lanes go live, nothing is printed, and no act of acceptance is taken.
+
+# END of revision-6 third addendum

@@ -1,0 +1,213 @@
+# R18 revision-6 empirical audit
+# actor: audit-codex-2026-09-06T043454Z-6f31d86e5b7d-r6
+# model: gpt-5.6-terra
+# decision sha256: cd3c7add1eba27bae8d1bfe5070d9ebd82761e12dbd876ca6bed99b52577cf99
+# cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d
+
+## Linux VM attempt
+
+```text
+$ limactl shell ubuntu -- bash -lc '<lint command>'
+time="2026-09-12T12:16:42-07:00" level=fatal msg="instance `ubuntu` is stopped, run `limactl start ubuntu` to start the instance"
+exit=1
+$ limactl start ubuntu
+time="2026-09-12T12:16:50-07:00" level=fatal msg="unlinkat /Users/stevemorin/.lima/ubuntu/ha.stdout.log: operation not permitted"
+exit=1
+```
+
+The VM did not execute a repository command. The remaining evidence is the requested macOS fallback.
+
+## Toolchain, lint, and relay typing
+
+```text
+$ uname -srm
+Darwin 25.4.0 arm64
+$ actionlint --version
+1.7.12
+installed by building from source
+built with go1.26.1 compiler for darwin/arm64
+$ shellcheck --version
+ShellCheck - shell script analysis tool
+version: 0.11.0
+
+$ cd review/evidence
+$ actionlint candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+exit=0
+
+$ actionlint candidate-secrets-in-job-if-NEGATIVE.yml
+candidate-secrets-in-job-if-NEGATIVE.yml:14:9: context "secrets" is not allowed here. available contexts are "github", "inputs", "needs", "vars". see https://docs.github.com/en/actions/learn-github-actions/contexts#context-availability for more details [expression]
+   |
+14 |     if: secrets.CLAUDE_CODE_OAUTH_TOKEN != ''
+   |         ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+exit=1
+
+$ actionlint <(sed 's/outputs\.credential ==/outputs.credentail ==/' candidate-claude-code-review.r5.yml)
+../../../../../../../../../../dev/fd/11:171:9: property "credentail" is not defined in object type {credential: string} [expression]
+171 |     if: >-
+    |         ^~
+../../../../../../../../../../dev/fd/11:171:70: property "credentail" is not defined in object type {credential: string} [expression]
+exit=1
+```
+
+## Gate, bot, and author-trust checks
+
+```text
+$ grep -c 'outputs.credential != ' candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+candidate-claude-code-review.r5.yml:0
+candidate-claude.r5.yml:0
+exit=1  # grep -c reports zero matches with exit 1
+
+$ grep -n "outputs.credential == 'static'\|outputs.credential == 'federation'" candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+candidate-claude-code-review.r5.yml:172:      needs.credential-preflight.outputs.credential == 'static'
+candidate-claude-code-review.r5.yml:173:      || needs.credential-preflight.outputs.credential == 'federation'
+candidate-claude.r5.yml:171:      needs.credential-preflight.outputs.credential == 'static'
+candidate-claude.r5.yml:172:      || needs.credential-preflight.outputs.credential == 'federation'
+exit=0
+
+$ python3 - <<'PY'
+for credential in ('', 'none', 'static', 'federation'):
+    print(f"credential={credential!r} real_job_condition={credential == 'static' or credential == 'federation'}")
+PY
+credential='' real_job_condition=False
+credential='none' real_job_condition=False
+credential='static' real_job_condition=True
+credential='federation' real_job_condition=True
+exit=0
+
+$ for f in candidate-claude.yml candidate-claude.r3.yml candidate-claude.r4.yml candidate-claude.r5.yml candidate-claude-code-review.yml candidate-claude-code-review.r3.yml candidate-claude-code-review.r4.yml candidate-claude-code-review.r5.yml; do sed -n '/^name: /,$p' "$f" | grep -c "type != 'Bot'"; done
+candidate-claude.yml=0
+candidate-claude.r3.yml=0
+candidate-claude.r4.yml=0
+candidate-claude.r5.yml=5
+candidate-claude-code-review.yml=2
+candidate-claude-code-review.r3.yml=2
+candidate-claude-code-review.r4.yml=2
+candidate-claude-code-review.r5.yml=2
+exit=0
+
+$ rg -n 'author_association|ENABLE_CLAUDE|allowed_non_write_users|checkWritePermissions' candidate-claude.r5.yml
+25:        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+28:        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.comment.author_association)) ||
+31:        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.review.author_association)) ||
+34:        contains(fromJSON('["OWNER","MEMBER","COLLABORATOR"]'), github.event.issue.author_association)))
+exit=0
+
+$ rg -n 'always\(|continue-on-error|if: >-|needs: credential-preflight' candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+candidate-claude.r5.yml:157:    needs: credential-preflight
+candidate-claude.r5.yml:170:    if: >-
+candidate-claude-code-review.r5.yml:109:    if: >-
+candidate-claude-code-review.r5.yml:157:    needs: credential-preflight
+candidate-claude-code-review.r5.yml:171:    if: >-
+exit=0
+```
+
+## Exact extracted preflight execution
+
+The script at lines 130-154 of `candidate-claude-code-review.r5.yml` was extracted without modification. Its output and summary files were under `/private/tmp/r18-preflight.togq31`, outside the repository.
+
+```text
+$ env -i ... bash -c "$preflight_script"                    # no credential
+::notice title=Claude review not configured::No Claude credential is set, so the review job is skipped. This is not an error.
+credential=none
+exit=0
+### Claude review skipped — no credential configured
+The review job did not run because no Claude credential is set.
+Set **one** of the two shapes, not both:
+- Static credential: repository secret `ANTHROPIC_API_KEY`, or `CLAUDE_CODE_OAUTH_TOKEN` from `claude setup-token`.
+- Workload identity federation: repository variables `ANTHROPIC_FEDERATION_RULE_ID` and `ANTHROPIC_ORGANIZATION_ID` (and optionally `ANTHROPIC_SERVICE_ACCOUNT_ID`).
+If you do not want AI review on this repository, delete `.github/workflows/claude-code-review.yml`.
+
+$ env -i ... ANTHROPIC_API_KEY=present bash -c "$preflight_script"
+Claude credential shape detected: static
+credential=static
+exit=0
+$ env -i ... ANTHROPIC_FEDERATION_RULE_ID=rule ANTHROPIC_ORGANIZATION_ID=organization bash -c "$preflight_script"
+Claude credential shape detected: federation
+credential=federation
+exit=0
+$ env -i ... ANTHROPIC_API_KEY=present ANTHROPIC_FEDERATION_RULE_ID=rule ANTHROPIC_ORGANIZATION_ID=organization bash -c "$preflight_script"
+Claude credential shape detected: static
+credential=static
+exit=0
+```
+
+## Five current primary-source curl checks
+
+```text
+$ curl -fsSL https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/base-action/src/workload-identity.ts | sed -n '43,48p;128,135p'
+export function isWorkloadIdentityConfigured(): boolean {
+  return Boolean(
+    process.env.ANTHROPIC_FEDERATION_RULE_ID?.trim() &&
+      process.env.ANTHROPIC_ORGANIZATION_ID?.trim(),
+  );
+}
+  if (
+    process.env.ANTHROPIC_API_KEY?.trim() ||
+    process.env.CLAUDE_CODE_OAUTH_TOKEN?.trim()
+  ) {
+    core.warning(
+      "Workload identity federation inputs are set alongside anthropic_api_key or claude_code_oauth_token. The API key/OAuth token takes precedence, so federation will not be used.",
+    );
+exit=0
+
+$ curl -fsSL https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/action.yml | sed -n '67,81p;335,339p'
+anthropic_api_key:
+  description: "Anthropic API key (required for direct API, not needed for Bedrock/Vertex/Foundry)"
+  required: false
+claude_code_oauth_token:
+  description: "Claude Code OAuth token (alternative to anthropic_api_key)"
+  required: false
+anthropic_federation_rule_id:
+  description: "Workload identity federation rule ID (fdrl_...). When set with anthropic_organization_id, the action authenticates to the Claude API by exchanging the workflow's GitHub OIDC token instead of using a static API key. Requires `id-token: write` permission."
+  required: false
+anthropic_organization_id:
+  description: "Anthropic organization UUID used for workload identity federation"
+  required: false
+anthropic_service_account_id:
+  description: "Service account ID (svac_...) the federated token acts as (optional, used with workload identity federation)"
+  required: false
+ANTHROPIC_API_KEY: ${{ inputs.anthropic_api_key || env.ANTHROPIC_API_KEY }}
+CLAUDE_CODE_OAUTH_TOKEN: ${{ inputs.claude_code_oauth_token || env.CLAUDE_CODE_OAUTH_TOKEN }}
+ANTHROPIC_FEDERATION_RULE_ID: ${{ inputs.anthropic_federation_rule_id }}
+ANTHROPIC_ORGANIZATION_ID: ${{ inputs.anthropic_organization_id }}
+ANTHROPIC_SERVICE_ACCOUNT_ID: ${{ inputs.anthropic_service_account_id }}
+exit=0
+
+$ curl -fsSL https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/docs/setup.md | rg -n -i 'takes precedence|federation will not be used'
+55:- Do not set `anthropic_api_key` or `claude_code_oauth_token` alongside the federation inputs — a static credential takes precedence and federation will not be used.
+exit=0
+
+$ curl -fsSL https://raw.githubusercontent.com/github/docs/main/data/reusables/actions/jobs/section-using-jobs-in-a-workflow-needs.md | sed -n '1p'
+Use `jobs.<job_id>.needs` to identify any jobs that must complete successfully before this job will run. It can be a string or array of strings. If a job fails or is skipped, all jobs that need it are skipped unless the jobs use a conditional expression that causes the job to continue.
+exit=0
+
+$ curl -fsSL https://docs.github.com/en/actions/reference/workflows-and-actions/contexts | shasum -a 256
+93f95b970b6f080aa0d9874ab4408ea3e8cab6b49cfb9792ab0a74b90ee0a60c  -
+exit=0
+```
+
+The first four source-body SHA-256 digests were, respectively: `0a915dbeedae4db204ca4ad95c8e02b3f2a89903d10be92a22c8a11655883d78`, `87b706489e63483c9c32c12af36467dd34e309becca35f7a8ead4d1e0664c4df`, `7425c2b89b59bc48f9f5449b5e214f4a57538da91845d6c3a7abac9bb2c4ba4d`, and `cbee2b26a5e4f1f63ae514ccf3d9fa01dc8405da04c94364a65263a5e42d5cfa`.
+
+## Published-history and protected-region comparisons
+
+```text
+$ shasum -a 256 review/DECISION.md
+cd3c7add1eba27bae8d1bfe5070d9ebd82761e12dbd876ca6bed99b52577cf99  review/DECISION.md
+$ shasum -a 256 research/topics/18-ai-assisted-review-workflows/DECISION.md
+b45a17a342bfa49689c3571e71c14ab55c2fa64e0f9337032876739babdae205  research/topics/18-ai-assisted-review-workflows/DECISION.md
+$ python3 <history comparison>
+published_bytes_in_supersedes=True
+prior_bytes_in_supersedes=True
+current_h2_before_supersedes=['## Decision', '## Parameters', '## Empirical check', '## Engines']
+exit=0
+$ diff <pin lines r4> <pin lines r5>; diff <review triggers r4> <r5>; diff <assistant triggers r4> <r5>; diff <review permissions r4> <r5>; diff <assistant permissions r4> <r5>
+exit=0 for all five comparisons; no output
+$ python3 <fixed-parameter and residual-span comparisons>
+four_assumes_equal=True count=4
+residual_1_equal=True old_bytes=1133 new_bytes=1133
+residual_2_equal=True old_bytes=1302 new_bytes=1302
+residual_3_equal=True old_bytes=328 new_bytes=328
+exit=0
+```
+
+`scripts/research_runner.py:323-331` requires those exact prior bytes to occur after `## Supersedes` when a published decision is revised; the direct byte comparison above passes.

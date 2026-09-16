@@ -1,0 +1,205 @@
+# R18 revision-5 empirical audit replay
+# actor: audit-codex-2026-09-06T043454Z-6f31d86e5b7d-r5
+# model: gpt-5.6-terra
+# date: 2026-09-10
+# cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d
+# scope: read-only source, API, documentation, fixture, and lint probes. No
+# workflow was installed, no credential was read or used, no provider run was
+# made, and the stopped Ubuntu VM was not started.
+
+## Environment and recovery boundary
+
+```
+$ uv run --offline --no-project --no-python-downloads --no-cache python3 scripts/research_scan.py --todo
+python3: can't open file '/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/scripts/research_scan.py': [Errno 2] No such file or directory
+
+$ limactl list
+ubuntu  Stopped
+
+$ uname -srm
+Darwin 25.4.0 arm64
+
+$ actionlint --version
+1.7.12
+```
+
+`scripts/research_scan.py` is not included in this isolated R18 run bundle.
+`limactl` is callable, but `ubuntu` is stopped; starting it would exceed the
+requested no-action scope. The replay therefore ran on macOS only.
+
+## Replay transcript
+
+The first two shell wrappers used `status` and then `path`, which are zsh
+special variables. They stopped before the relevant probes in each wrapper;
+the corrected wrapper below is the evidence relied on. The first wrapper made
+no network request. The second wrapper completed checks 1--3 before `path`
+overwrote `PATH`; its successful prefix is reproduced here and its invalid
+suffix is not relied on.
+
+```
+$ curl -sS -L -o <tmp>/contexts.md -w 'contexts_http=%{http_code} contexts_bytes=%{size_download} curl_exit=%{exitcode}' <github-docs contexts raw URL>
+contexts_http=200 contexts_bytes=50486 curl_exit=0
+
+$ grep -n -A3 -B2 'jobs.<job_id>.if' <tmp>/contexts.md
+100:| `jobs.<job_id>.if` | `github, needs, vars, inputs` | `always, cancelled, success, failure` |
+grep_exit=0
+
+$ curl -sS -L https://api.github.com/repos/anthropics/claude-code-action/git/ref/tags/v1.0.220 | jq -r ...
+v1.0.220 type=tag sha=020e931323e467e00b803ad64e03410d3796b8f7
+
+$ curl -sS -L https://api.github.com/repos/anthropics/claude-code-action/git/tags/020e931323e467e00b803ad64e03410d3796b8f7 | jq -r ...
+v1.0.220_target type=commit sha=19dda84776b3518d98b8798e591daee763049ed3
+
+$ curl -sS -L https://api.github.com/repos/anthropics/claude-code-action/issues/1068 | jq -r ...
+issue1068 state=open comments=0 labels=bug,documentation,area:permissions,p1
+
+$ curl -sS -L https://api.github.com/repos/anthropics/claude-code | jq -r ...
+claude_default_branch=main private=false archived=false
+
+$ curl -sS -L https://raw.githubusercontent.com/anthropics/claude-code/main/.claude-plugin/marketplace.json | jq -r ...
+marketplace_name=claude-code-plugins has_code_review=true
+```
+
+```
+$ for source_path in action.yml src/entrypoints/prepare.ts src/github/token.ts src/modes/tag/index.ts src/modes/agent/index.ts base-action/src/install-plugins.ts base-action/src/index.ts .github/workflows/claude-review.yml examples/pr-review-comprehensive.yml docs/setup.md docs/security.md docs/faq.md; do curl -sS -L -o <tmp> -w ... https://raw.githubusercontent.com/anthropics/claude-code-action/v1.0.220/$source_path; done
+source_path=action.yml http=200 bytes=23689 curl_exit=0
+source_path=src/entrypoints/prepare.ts http=200 bytes=3432 curl_exit=0
+source_path=src/github/token.ts http=200 bytes=5111 curl_exit=0
+source_path=src/modes/tag/index.ts http=200 bytes=6544 curl_exit=0
+source_path=src/modes/agent/index.ts http=200 bytes=5228 curl_exit=0
+source_path=base-action/src/install-plugins.ts http=200 bytes=7918 curl_exit=0
+source_path=base-action/src/index.ts http=200 bytes=3193 curl_exit=0
+source_path=.github/workflows/claude-review.yml http=200 bytes=1288 curl_exit=0
+source_path=examples/pr-review-comprehensive.yml http=200 bytes=2583 curl_exit=0
+source_path=docs/setup.md http=200 bytes=9794 curl_exit=0
+source_path=docs/security.md http=200 bytes=14238 curl_exit=0
+source_path=docs/faq.md http=200 bytes=11218 curl_exit=0
+
+$ grep -n 'setupGitHubToken()\|checkWritePermissions(\|prepareTagMode\|prepareAgentMode' <prepare.ts>
+37:    const githubToken = await setupGitHubToken();
+44:      const hasWritePermissions = await checkWritePermissions(
+83:      await prepareTagMode({ context, octokit, githubToken });
+85:      await prepareAgentMode({ context, octokit, githubToken });
+
+$ grep -n checkHumanActor <tag/index.ts> <agent/index.ts>
+tag/index.ts:43:  await checkHumanActor(octokit.rest, context);
+agent/index.ts:30:  await checkHumanActor(octokit.rest, context);
+
+$ grep -c checkWritePermissions <tag/index.ts> <agent/index.ts>
+tag/index.ts:0
+agent/index.ts:0
+```
+
+```
+$ sed -n '69,73p;75,81p;96,123p;158,181p' <token.ts>
+const DEFAULT_PERMISSIONS: Record<string, string> = {
+  contents: "write",
+  pull_requests: "write",
+  issues: "write",
+};
+  const raw = process.env.ADDITIONAL_PERMISSIONS;
+  if (!raw || !raw.trim()) {
+    return undefined;
+  }
+  if (Object.keys(additional).length === 0) {
+    return undefined;
+  }
+  return { ...DEFAULT_PERMISSIONS, ...additional };
+  if (permissions) {
+    headers["Content-Type"] = "application/json";
+    fetchOptions.body = JSON.stringify({ permissions });
+  }
+  const response = await fetch(
+    "https://api.anthropic.com/api/github/github-app-token-exchange",
+    fetchOptions,
+  );
+  const permissions = parseAdditionalPermissions();
+  const appToken = await retryWithBackoff(
+    () => exchangeForAppToken(oidcToken, permissions),
+  );
+  core.setSecret(appToken);
+
+$ grep -n -A6 -B3 'ADDITIONAL_PERMISSIONS\|additional_permissions' <action.yml>
+108:  additional_permissions:
+109-    description: "Additional GitHub permissions to request (e.g., 'actions: read')"
+110-    required: false
+111-    default: ""
+315:        ADDITIONAL_PERMISSIONS: ${{ inputs.additional_permissions }}
+```
+
+```
+$ sed -n '225,232p;299,302p' <action.yml>
+    - name: Install subprocess isolation dependencies
+      if: ${{ inputs.allowed_non_write_users != '' && runner.os == 'Linux' }}
+      continue-on-error: true
+        ALLOWED_NON_WRITE_USERS: ${{ inputs.allowed_non_write_users }}
+        CLAUDE_CODE_SUBPROCESS_ENV_SCRUB: ${{ env.CLAUDE_CODE_SUBPROCESS_ENV_SCRUB || (inputs.allowed_non_write_users != '' && '1') || '' }}
+
+$ sed -n '7,8p;191,202p' <install-plugins.ts>
+const MARKETPLACE_URL_REGEX =
+  /^https:\/\/[a-zA-Z0-9\-._~:/?#[\]@!$&'()*+,;=%]+\.git$/;
+    ["plugin", "marketplace", "add", marketplace],
+
+$ grep -n 'setupWorkloadIdentity\|installPlugins(' <base-action/src/index.ts>
+18:    workloadIdentity = await setupWorkloadIdentity();
+36:    await installPlugins(
+
+$ grep -c 'plugin_marketplaces\|plugins:' <maintainer-review.yml> <maintainer-example.yml>
+maintainer-review.yml:0
+maintainer-example.yml:0
+
+$ grep -n prompt: <maintainer-review.yml>
+32:          prompt: "/review-pr REPO: ${{ github.repository }} PR_NUMBER: ${{ github.event.pull_request.number }}"
+```
+
+```
+$ for issue_id in 1121 1068 1482; do curl -sS -L ...; done
+issue=1121 state=open comments=1 labels=bug,area:permissions,p2
+issue=1068 state=open comments=0 labels=bug,documentation,area:permissions,p1
+issue=1482 state=open comments=0 labels=enhancement,feature-request,p3
+
+$ curl -sS -L https://api.github.com/repos/anthropics/claude-code-action/security-advisories | jq -r ...
+published_advisories=1 ids=GHSA-8q5r-mmjf-575q
+
+$ curl -sS -L -o <tmp>/flatt.html -w ... https://flatt.tech/research/posts/poisoning-claude-code-one-github-issue-to-break-the-supply-chain/
+flatt_http=200 bytes=65148 curl_exit=0
+
+$ cd review/evidence && actionlint candidate-claude-code-review.yml candidate-claude.yml
+lint_original_exit=0
+
+$ cd review/evidence && actionlint candidate-secrets-in-job-if-NEGATIVE.yml
+candidate-secrets-in-job-if-NEGATIVE.yml:14:9: context "secrets" is not allowed here. available contexts are "github", "inputs", "needs", "vars".
+lint_negative_exit=1
+
+$ cd review/evidence && actionlint candidate-claude-code-review.r3.yml candidate-claude.r3.yml
+lint_r3_exit=0
+
+$ cd review/evidence && actionlint candidate-claude-code-review.r4.yml candidate-claude.r4.yml
+lint_r4_exit=0
+
+$ git -C /Users/stevemorin/c/py-launch-blueprint show b08bccfb55d05f15e46a83b52c5660b1881d19f5:.github/workflows/claude-code-review.yml | grep -n 'pull-requests\|plugin_marketplaces\|plugins:\|uses:'
+34:      pull-requests: read
+46:        uses: anthropics/claude-code-action@v1.0.175
+49:          plugin_marketplaces: 'https://github.com/anthropics/claude-code.git'
+50:          plugins: 'code-review@claude-code-plugins'
+py_review_pipeline_exit=0
+
+$ git -C /Users/stevemorin/c/ts-launch-blueprint ls-tree -r --name-only cb1cbcb2e88b898e8c081b0abbfabc1630079c00 -- .github/workflows | grep -ci claude
+0
+ts_claude_grep_exit=1
+
+$ rg -n '^\s+(plugin_marketplaces|plugins):' review/evidence/candidate-claude-code-review.r4.yml review/evidence/candidate-claude.r4.yml
+active_marketplace_inputs=absent
+
+$ rg -n '^\| (\*\*)?U[0-9]+' review/DECISION.md | wc -l
+18
+
+$ shasum -a 256 review/DECISION.md
+b45a17a342bfa49689c3571e71c14ab55c2fa64e0f9337032876739babdae205  review/DECISION.md
+```
+
+The then-current raw GitHub Docs event-file path from the decision's older
+capture returned HTTP 404 during this replay. That endpoint drift does not
+contradict the decision's recorded 2026-09-10 evidence or affect its tagged
+action-source conclusions; the historical `github-docs-pull-request-ref.log`
+remains the cited retrieval for the pull-request merge-ref claim.
