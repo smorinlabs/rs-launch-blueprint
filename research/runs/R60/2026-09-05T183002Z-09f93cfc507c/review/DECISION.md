@@ -1,4 +1,4 @@
-# R60 — CLI parsing framework (bundle, Deep) — revision 8, 2026-09-16
+# R60 — CLI parsing framework (bundle, Deep) — revision 9, 2026-09-16
 
 Synthesized 2026-09-10 by a fresh context that produced none of this item's raw
 reports, from three engine reports (five provider bodies) plus the verification
@@ -348,6 +348,42 @@ on a declaration read. The qualification also states what the unread half can an
 cannot do — it can downgrade a pass, and it cannot overturn any of the four
 exclusions, because a candidate that declares no `rust-version` fails a
 both-halves gate whatever its CI does.
+
+Revised again 2026-09-16. The revision-8 draft (sha256
+`9407f1049d6127f4da80c399a2c9925f5a02a14c87e5c82b7050d20cc0b69342`) was
+**approved** on evidence by the round-8 empirical audit with no findings, and its
+round-8 judgment audit (`review/audit-fable.md`,
+`audit-fable-2026-09-05T183002Z-09f93cfc507c-r8`) **closed F4, F5, F6 and F7 —
+confirming that the `string` removal is evidence-grounded — and rejected on one
+new finding, F8**, quoted here in full:
+
+> **F8 — the recorded result of rerunning `r60-preservation-diff-r7.sh` against
+> this text does not reproduce, and the paragraph that records it claims the
+> number came from the run.**
+
+**The finding is correct, and revision 9's scope is that finding and nothing
+else.** No recommendation, crate, version, feature, acceptance criterion,
+re-verify trigger, gate verdict, qualification, table figure or parameter line
+moves; the four `assumes` lines are byte-identical to `docs/port/PARAMETERS.md`.
+Revision 8 recorded that the superseded revision-7 preservation script exits `3`
+with three failures against revision 8's text, naming `C4k9` third and saying
+"The number is taken from the run". It exits **`2`** with two failures: `C4k9`
+**passes**. The reason is this document's own supersession discipline. `C4k9`
+searches the **flattened whole document** for the literal sentence "U1–U7 are
+unproven and are P03's to prove"; revision 8 changed the unproven table's
+preamble, and **also quoted the superseded sentence** in the very paragraph
+reporting the rerun, so the check finds the quotation and passes. The run was
+performed before that quotation was added and the paragraph was not re-run after
+the last edit. **That is finding F3's class in a second appearance, inside the
+sentence claiming the number was measured** — and the fix is the one F3 taught:
+re-run after the last edit, and record what the run says.
+
+So revision 9 re-runs that script against **its own** text, in place and from a
+clean `git archive HEAD` extraction, commits the output as a new log, and
+replaces the false item with the measured one and the mechanism behind it. The
+falsified sentences are kept where they stand and labelled, as every superseded
+claim in this document is. `r60-preservation-diff-r7.sh` and every revision-7
+and revision-8 log are left byte-identical.
 
 ## Decision
 
@@ -2017,6 +2053,73 @@ evidence: nothing revision 8 changed touches anything it pins except the feature
 set, the title and that one preamble sentence. `r60-preservation-diff-r6.sh` and everything older were not
 rerun for this revision; their recorded results stand and they are superseded
 again.
+
+**THE PARAGRAPH ABOVE IS REVISION 8'S, IT IS WRONG IN ITS THIRD ITEM, AND IT IS
+KEPT HERE VERBATIM WITH ITS CORRECTION BESIDE IT — finding F8.** Item 3 is
+false and so is the sentence "The number is taken from the run": `C4k9` does not
+fail. The run below is revision 9's, against revision 9's own text, performed
+after the last edit to this document and diffed rather than recalled.
+
+**REVISION 9'S MEASURED RUN.**
+`bash review/evidence/r60-preservation-diff-r7.sh` on the revision-9 tree →
+**exit 2**, `CHECKS RUN: 183   FAILURES: 2`, complete output committed at
+`review/evidence/r60-preservation-diff-r7-against-r9.log` with the exit status
+captured on its last line. The same script run from a clean, `.git`-free
+`git archive HEAD` extraction gives the identical exit code, counts and labels.
+Exactly two checks fail, and they are the first two of the three above:
+
+1. the `clap 4.6.6 pin and its four features` preservation call, reported as
+   `CHANGED    clap 4.6.6 pin and its four features (1 of 1 revision-1 line(s)
+   no longer verbatim)`, because revision 8 removed `string`. **The reading
+   revision 8 placed on this one stands**: the preservation call failing is the
+   recommendation moving, and it is the only failure in nine revisions that is
+   not a title check or a report path;
+2. `C4h`, which requires the title to read revision 7.
+
+**`C4k9` PASSES, and the mechanism is worth stating because it is the
+supersession discipline defeating a check.** `C4k9`
+(`r60-preservation-diff-r7.sh:799-800`) matches the literal string `U1–U7 are
+unproven and are P03's to prove` against the **flattened whole document**, not
+against the unproven table. That table's preamble did change, to "U1–U7 and the
+new U9 are unproven and are P03's to prove". But this document also **quotes the
+superseded sentence in full**, and it does so **inside item 3 of the very
+paragraph above**, where item 3 names what `C4k9` requires — because the charter
+requires a superseded record to be corrected in place and labelled rather than
+deleted. That is the document's only full occurrence of the string; the flattened
+search finds it there and the check passes. **So `C4k9` is satisfied by a
+quotation of the old wording, not by the live wording**, and it cannot tell the
+two apart. The checks that *can* are both in `r60-preservation-diff-r8.sh`: its
+own `C4k9`, whose expectation was updated to the live sentence
+"U1–U7 and the new U9 are unproven and are P03's to prove", and `C4o28`, which
+requires the superseded wording to remain present as a labelled correction
+("Revisions 1 through 7 said …; that count is corrected"). Between them the live
+preamble and the labelled record are both pinned, and revision 9 changes
+neither.
+
+**The revision-8 preservation script's failure against this text is measured
+too, and reported rather than left for an auditor to find.**
+`bash review/evidence/r60-preservation-diff-r8.sh` on the revision-9 tree →
+**exit 1**, `CHECKS RUN: 239   FAILURES: 1`, failing `C4h` alone, which requires
+the title to read revision 8; complete output at
+`review/evidence/r60-preservation-diff-r8-against-r9.log`. **Its 238 other
+checks pass**, which is revision 9's scope evidence: nothing revision 9 changed
+touches anything that script pins except the title. **One gap, stated rather
+than left to be found:** the two logs this paragraph cites are new in revision 9
+and **no committed check asserts their presence**, because `C5c` of
+`r60-preservation-diff-r8.sh` enumerates the thirty-nine files that existed when
+that script was written and revision 9 issues no script of its own. Both logs are
+committed beside this decision and both reproduce, in place and from a clean
+extraction; a later revision that reissues the preservation script should add
+them to `C5c`. **State the consequence
+exactly rather than leaving it implied:** row E9 cites
+`r60-preservation-diff-r8.sh` at `239/0`, and that is the record of the
+revision-8 run, not a claim that those bytes reappear against revision 9's text.
+`review/evidence/r60-preservation-diff-r8.log` is left byte-identical for the
+same reason every superseded script and log is — it is the artifact the round-8
+audits ran. **No revision-9 preservation script was issued**, because the
+dispatch for this revision scoped its diff to finding F8, the title, this note
+and the new logs; a revision that reopens the apparatus should reissue it as
+`-r9` rather than edit `-r8`.
 
 **TWO SCRIPTS STOPPED REPRODUCING BETWEEN ROUND 7 AND ROUND 8, AND NEITHER
 FAILURE IS THIS ITEM'S DOING. Reported here rather than left for an auditor to
