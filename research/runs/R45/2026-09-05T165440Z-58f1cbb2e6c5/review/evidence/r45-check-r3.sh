@@ -206,29 +206,60 @@ cut -c1-300 "$SCRATCH/row-w0r45.txt"
 echo
 
 echo "=== D16 — how far revision 2's script still reproduces revision 2's log ==="
-echo "R18 published entry (what C1 and C2 read): sha256 $(shasum -a 256 "$R18PUB" | cut -d' ' -f1)"
+R18PUBSHA=$(shasum -a 256 "$R18PUB" | cut -d' ' -f1)
+echo "R18 published entry (what C1 and C2 read): sha256 $R18PUBSHA"
 sed -n '1p' "$R18PUB"
 bash "$R45R2SH" > "$SCRATCH/r2-rerun.log" 2>&1
 echo "revision-2 script exit: $?"
 diff "$R45R2LOG" "$SCRATCH/r2-rerun.log" > "$SCRATCH/r2.diff"
 /usr/bin/grep '^[<>]' "$SCRATCH/r2.diff" > "$SCRATCH/r2-difflines.txt"
-DIFFLINES=$(wc -l < "$SCRATCH/r2-difflines.txt" | tr -d ' ')
-# Revision 2 claimed the only differing line was the capture timestamp, and that
-# held on 2026-09-10/11. It no longer does: C8 fetches a LIVE vendor corpus, and
-# that corpus has since grown. The rule asserted here is therefore the narrower
-# one that is actually true — every differing line is either the capture time or
-# part of C8's live fetch — together with the separate assertion that C8's two
-# load-bearing counts have NOT moved.
-UNEXPLAINED=$(/usr/bin/grep -c -v -E '^[<>] (captured: |GET https://www\.greptile\.com/docs/llms-full\.txt -> |[0-9]+:)' "$SCRATCH/r2-difflines.txt")
 echo "--- every differing line, so the drift is on the record rather than summarised ---"
 cat "$SCRATCH/r2-difflines.txt"
-check   D16a "differing lines outside the capture time and C8's live fetch" "$UNEXPLAINED" "0"
-present D16b "C8 still counts 40 @greptileai in the fresh run" "$SCRATCH/r2-rerun.log" '@greptileai occurrences:   40'
-present D16c "C8 still counts 0 @greptile-apps in the fresh run" "$SCRATCH/r2-rerun.log" '@greptile-apps occurrences: 0'
-present D16d "C1 still reads the published R18 entry"  "$SCRATCH/r2-rerun.log" 'pull_request: types: [opened, ready_for_review, reopened]'
-echo "        total differing lines: $DIFFLINES"
-echo "        rule: line 2 is the capture time; C8 reads a live vendor corpus whose size and internal"
-echo "        line numbers drift. Every other line of the log must match, and C8's two counts must not move."
+echo "--- and then region by region, because a flat diff cannot tell a live corpus from a republished file ---"
+# Revision 2 claimed the only differing line was the capture timestamp, and that
+# held on 2026-09-10/11. It no longer does, and it will stop holding twice over:
+# C8 fetches a LIVE vendor corpus that has already grown, and C1/C2 read the
+# PUBLISHED R18 entry, which the publisher will replace with revision 6 now that
+# W0-R18 has accepted it. A flat line filter cannot separate those two causes, so
+# the log is compared by region, and only the regions that must be stable are
+# asserted.
+region () { # region <file> <first-line-prefix> <stop-line-prefix, "" for EOF>
+  awk -v s="$2" -v e="$3" '
+    index($0, s) == 1 { inr = 1 }
+    e != "" && index($0, e) == 1 { inr = 0 }
+    inr { print }
+  ' "$1"
+}
+for side in old new; do
+  if [ "$side" = old ]; then f="$R45R2LOG"; else f="$SCRATCH/r2-rerun.log"; fi
+  awk 'NR>=3 { if (index($0,"=== C1 —")==1) exit; print }' "$f" > "$SCRATCH/$side-head.txt"
+  region "$f" "=== C1 —" "=== C3 —"          > "$SCRATCH/$side-c1c2.txt"
+  region "$f" "=== C3 —" "=== C8 —"          > "$SCRATCH/$side-c3c7.txt"
+  region "$f" "=== C8 —" "=== end of checks" > "$SCRATCH/$side-c8.txt"
+  region "$f" "=== end of checks" ""         > "$SCRATCH/$side-tail.txt"
+done
+same () { if diff -q "$1" "$2" > /dev/null; then echo identical; else echo "$(diff "$1" "$2" | /usr/bin/grep -c '^[<>]') differing line(s)"; fi; }
+check D16a "log header below the capture time: toolchain and working directory" "$(same "$SCRATCH/old-head.txt" "$SCRATCH/new-head.txt")" "identical"
+check D16b "C3 to C7, which read pinned git objects and a pinned action ref"     "$(same "$SCRATCH/old-c3c7.txt" "$SCRATCH/new-c3c7.txt")" "identical"
+check D16c "everything from '=== end of checks ===' on, emitted source included" "$(same "$SCRATCH/old-tail.txt" "$SCRATCH/new-tail.txt")" "identical"
+present D16d "C8 still counts 40 @greptileai"   "$SCRATCH/new-c8.txt" '@greptileai occurrences:   40'
+present D16e "C8 still counts 0 @greptile-apps" "$SCRATCH/new-c8.txt" '@greptile-apps occurrences: 0'
+echo "--- C8 reads a LIVE vendor corpus, so its byte count is recorded and never asserted ---"
+/usr/bin/grep -h 'llms-full.txt ->' "$SCRATCH/old-c8.txt" "$SCRATCH/new-c8.txt"
+if [ "$R18PUBSHA" = "b45a17a342bfa49689c3571e71c14ab55c2fa64e0f9337032876739babdae205" ]; then
+  check D16f "C1 and C2, while the published R18 entry is still the one they were captured against" "$(same "$SCRATCH/old-c1c2.txt" "$SCRATCH/new-c1c2.txt")" "identical"
+else
+  printf '  %-5s N/A   %s\n' "D16f" "C1 and C2 now read a REPUBLISHED R18 entry, sha256 $R18PUBSHA."
+  echo "        Revision 2's log records what the PUBLISHED entry said on 2026-09-10; R18's own"
+  echo "        '## Supersedes' preserves those bytes verbatim, so nothing is lost and this is not"
+  echo "        a failure. The facts themselves are re-checked against the owner-accepted entry by"
+  echo "        D11, D12 and D14 above."
+  echo "--- what C1 and C2 read now ---"
+  cat "$SCRATCH/new-c1c2.txt"
+fi
+present D16g "C1 reports the review lane's trigger types under either published entry" "$SCRATCH/new-c1c2.txt" 'pull_request: types: [opened, ready_for_review, reopened]'
+echo "        rule: line 2 is the capture time; C8's byte count and corpus line numbers drift because"
+echo "        the corpus is live; C1 and C2 change when R18 is republished. Everything else must match."
 echo
 
 echo "=== D17 — this revision's '## Supersedes' carries the published revision-2 bytes verbatim ==="
