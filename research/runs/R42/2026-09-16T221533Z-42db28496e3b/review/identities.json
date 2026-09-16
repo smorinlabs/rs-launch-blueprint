@@ -1,0 +1,57 @@
+{
+  "engine_reports": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T155503Z-4141a35b69e0",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "raw/codex.md"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T155503Z-4141a35b69e0",
+      "model": "claude-opus-5[1m]",
+      "family": "anthropic",
+      "file": "raw/opus.md"
+    },
+    "doxa": {
+      "actor": "research-doxa-2026-09-05T155503Z-4141a35b69e0",
+      "model": "all_deep_research: openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80) + perplexity sonar-deep-research + gemini deep-research-preview-04-2026, via doxa-research 3.3.0 and scripts/doxa_no_retry.py, operation research-20260909-001318-a42cc10197234031",
+      "family": "openai+perplexity+google",
+      "file": "raw/doxa.md"
+    }
+  },
+  "evidence_checks": {},
+  "synthesis": {
+    "actor": "synth-opus-2026-09-05T155503Z-4141a35b69e0-r10",
+    "model": "claude-opus-5",
+    "family": "anthropic"
+  },
+  "audits": {
+    "empirical": {
+      "actor": "audit-codex-2026-09-05T155503Z-4141a35b69e0-r10",
+      "model": "gpt-5.6-terra",
+      "family": "openai",
+      "file": "review/audit-codex.md"
+    },
+    "judgment": {
+      "actor": "audit-fable-2026-09-05T155503Z-4141a35b69e0-r10",
+      "model": "claude-opus-5",
+      "family": "anthropic",
+      "file": "review/audit-fable.md"
+    }
+  },
+  "empirical": {
+    "argv": [
+      "SCRATCH=/private/tmp/r42-audit-r10-archive.svIGYe/scratch",
+      "PERTURB=",
+      "HOME=/private/tmp/r42-audit-r10-archive.svIGYe/home",
+      "CARGO_HOME=/private/tmp/r42-audit-r10-archive.svIGYe/home/.cargo",
+      "XDG_CACHE_HOME=/private/tmp/r42-audit-r10-archive.svIGYe/cache",
+      "TMPDIR=/private/tmp/r42-audit-r10-archive.svIGYe/tmp",
+      "/bin/bash"
+    ],
+    "cwd": "/private/tmp/r42-audit-r10-archive.svIGYe (clean `git archive HEAD` extraction). The round-10 empirical auditor extracted the check-16 first-leg shell payload unchanged from the archived copy of review/evidence/binstall-signing.log, created SCRATCH and the isolated HOME/.cargo/bin, and ran that payload with /bin/bash under the environment recorded in argv; the log's `argv=` line does not record whether the payload reached bash as a file or on stdin, so no script argument is asserted here.",
+    "toolchain": "/usr/bin/grep and the same downloaded cargo-binstall 1.23.0 release binary, with an isolated writable home (HOME, CARGO_HOME, XDG_CACHE_HOME, TMPDIR inside the archive) required by the audit sandbox; 45 of 45 assertions passed with no ASSERT-FAIL line and CHECK16 RESULT: PASSED.",
+    "output_log": "review/evidence/audit-dev-toolchain-provisioning-r10.log",
+    "exit_code": 0
+  }
+}

@@ -1,0 +1,360 @@
+# R42 revision 9 auditor: meta-assertion controls
+One input changed per copied leg: only EXPECTED_ASSERTIONS is incremented by one.
+
+=== leg 1 expected-count mismatch ===
+PERTURB=<none, clean run>
+
+--- 1. The signature policy, read in the source at the immutable tag v1.23.0
+args.rs HTTP 200 curl-exit 0
+ASSERT-OK   http-args.rs = 0 200
+args.rs sha256 4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783
+ASSERT-OK   sha256-args.rs = 4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783
+407-
+408-    /// Only install packages that are signed
+409-    ///
+410-    /// The default is to verify signatures if they are available, but to allow
+411-    /// unsigned packages as well.
+412-    #[clap(help_heading = "Options", long)]
+413:    pub(crate) only_signed: bool,
+grep exit=0
+ASSERT-OK   grep-only_signed = 0
+416-    ///
+417-    /// The default is to verify signatures if they are available. This option
+418-    /// disables that behaviour entirely, which will also stop downloading
+419-    /// signature files in the first place.
+420-    ///
+421-    /// Note that this is insecure and not recommended outside of testing.
+422-    #[clap(help_heading = "Options", long, conflicts_with = "only_signed")]
+423:    pub(crate) skip_signatures: bool,
+grep exit=0
+ASSERT-OK   grep-skip_signatures = 0
+
+--- 2. What the GitHub-release fetcher does when the crate declares no signing key
+gh_crate_meta.rs HTTP 200 curl-exit 0
+ASSERT-OK   http-gh_crate_meta.rs = 0 200
+gh_crate_meta.rs sha256 15c9b82130a25cdccae0e05bcbde0e947245771108c8a21825264a05b2fa24d2
+ASSERT-OK   sha256-gh_crate_meta.rs = 15c9b82130a25cdccae0e05bcbde0e947245771108c8a21825264a05b2fa24d2
+301:        let verifier = match (self.signature_policy, &self.target_data.meta.signing) {
+302-            (SignaturePolicy::Ignore, _) | (SignaturePolicy::IfPresent, None) => {
+303-                SignatureVerifier::Noop
+304-            }
+305-            (SignaturePolicy::Require, None) => {
+306-                return Err(FetchError::MissingSignature);
+307-            }
+308-            (_, Some(config)) => {
+309-                let template = match config.file.as_deref() {
+310-                    Some(file) => Template::parse(file)?,
+311-                    None => leon_macros::template!("{ url }.sig"),
+312-                };
+313-                trace!(?template, "parsed signature file template");
+314-
+315-                let sign_url = Context::from_data_with_repo(
+grep exit=0
+ASSERT-OK   grep-verifier-match = 0
+357:        trace!("validating signature (if any)");
+358-        if data_verifier.validate() {
+359-            if let Some(info) = verifier.info() {
+360-                info!(
+361-                    "Verified signature for package '{}': {info}",
+grep exit=0
+ASSERT-OK   grep-verified-line = 0
+404:    fn is_third_party(&self) -> bool {
+405-        false
+406-    }
+grep exit=0
+ASSERT-OK   grep-gh-is_third_party = 0
+
+--- 3. Signing metadata is opt-in per crate — the maintainers' own words
+SIGNING.md HTTP 200 curl-exit 0
+ASSERT-OK   http-SIGNING.md = 0 200
+SIGNING.md sha256 9edd332ef41fba6db15a1fc62193526e41f23a609450b405c16e4c81d5dbf8a9
+ASSERT-OK   sha256-SIGNING.md = 9edd332ef41fba6db15a1fc62193526e41f23a609450b405c16e4c81d5dbf8a9
+6:This feature requires adding to the Cargo.toml metadata: no autodiscovery here!
+grep exit=0
+ASSERT-OK   grep-no-autodiscovery = 0
+22:[package.metadata.binstall.signing]
+23-algorithm = "minisign"
+24-pubkey = "RWRnmBcLmQbXVcEPWo2OOKMI36kki4GiI7gcBgIaPLwvxe14Wtxm9acX"
+25-```
+grep exit=0
+ASSERT-OK   grep-signing-stanza = 0
+
+--- 4. The other prebuilt fetcher, QuickInstall, pins its own key instead
+quickinstall.rs HTTP 200 curl-exit 0
+ASSERT-OK   http-quickinstall.rs = 0 200
+quickinstall.rs sha256 821621cadc4528e0e1486a17345adbce191874a16428a63b51e0b5b1257128a7
+ASSERT-OK   sha256-quickinstall.rs = 821621cadc4528e0e1486a17345adbce191874a16428a63b51e0b5b1257128a7
+22:const QUICKINSTALL_SIGN_KEY: Cow<'static, str> =
+23-    Cow::Borrowed("RWTdnnab2pAka9OdwgCMYyOE66M/BlQoFWaJ/JjwcPV+f3n24IRTj97t");
+24-const QUICKINSTALL_SUPPORTED_TARGETS_URL: &str =
+--
+126:                            pubkey: QUICKINSTALL_SIGN_KEY,
+127-                            file: None,
+128-                        };
+grep exit=0
+ASSERT-OK   grep-quickinstall-key = 0
+110:    fn download_signature(
+111-        self: Arc<Self>,
+112-    ) -> AutoAbortJoinHandle<Result<SignatureVerifier, FetchError>> {
+113-        AutoAbortJoinHandle::spawn(async move {
+114-            if self.signature_policy == SignaturePolicy::Ignore {
+115-                Ok(SignatureVerifier::Noop)
+116-            } else {
+117-                debug!(url=%self.signature_url, "Downloading signature");
+118-                match Download::new(self.client.clone(), self.signature_url.clone())
+119-                    .into_bytes()
+120-                    .await
+121-                {
+122-                    Ok(signature) => {
+123-                        trace!(?signature, "got signature contents");
+124-                        let config = PkgSigning {
+125-                            algorithm: SigningAlgorithm::Minisign,
+126-                            pubkey: QUICKINSTALL_SIGN_KEY,
+127-                            file: None,
+128-                        };
+129-                        SignatureVerifier::new(&config, &signature)
+130-                    }
+131-                    Err(err) => {
+132-                        if self.signature_policy == SignaturePolicy::Require {
+133-                            error!("Failed to download signature: {err}");
+134-                            Err(FetchError::MissingSignature)
+135-                        } else {
+136-                            debug!("Failed to download signature, skipping verification: {err}");
+grep exit=0
+ASSERT-OK   grep-qi-download-signature = 0
+297:    fn is_third_party(&self) -> bool {
+298-        true
+299-    }
+grep exit=0
+ASSERT-OK   grep-qi-is_third_party = 0
+
+--- 5. Which fetcher the WARN line names, so the log can be read
+resolution.rs HTTP 200 curl-exit 0
+ASSERT-OK   http-resolution.rs = 0 200
+resolution.rs sha256 2c829e3756f08791ecab3b4d7e9862d2c982ab951f8fc41567c73668b0777bc2
+ASSERT-OK   sha256-resolution.rs = 2c829e3756f08791ecab3b4d7e9862d2c982ab951f8fc41567c73668b0777bc2
+125:            "The package {name} v{new_version} ({target}) has been downloaded from {}{}",
+126-            if fetcher.is_third_party() {
+127-                "third-party source "
+128-            } else {
+129-                ""
+130-            },
+131-            fetcher.source_name()
+132-        );
+133-
+grep exit=0
+ASSERT-OK   grep-warn-line = 0
+
+--- 6. Do the specs check 15 exercised declare signing in their PUBLISHED Cargo.toml?
+cargo-shear-1.13.1.crate HTTP 200 curl-exit 0
+ASSERT-OK   http-cargo-shear-1.13.1.crate = 0 200
+tar exit=0
+ASSERT-OK   tar-cargo-shear-1.13.1 = 0
+cargo-shear@1.13.1 signing: ABSENT
+ASSERT-OK   signing-verdict-cargo-shear@1.13.1 = ABSENT
+taplo-cli-0.10.0.crate HTTP 200 curl-exit 0
+ASSERT-OK   http-taplo-cli-0.10.0.crate = 0 200
+tar exit=0
+ASSERT-OK   tar-taplo-cli-0.10.0 = 0
+taplo-cli@0.10.0 signing: ABSENT
+ASSERT-OK   signing-verdict-taplo-cli@0.10.0 = ABSENT
+cargo-binstall-1.23.0.crate HTTP 200 curl-exit 0
+ASSERT-OK   http-cargo-binstall-1.23.0.crate = 0 200
+tar exit=0
+ASSERT-OK   tar-cargo-binstall-1.23.0 = 0
+cargo-binstall@1.23.0 signing: PRESENT
+[package.metadata.binstall.signing]
+algorithm = "minisign"
+pubkey = "RWTfDqVjpjXv39UdqyI00O/XCg8WJfXdWo6V1YR7sYREAiWINtu7VVUY"
+
+ASSERT-OK   signing-verdict-cargo-binstall@1.23.0 = PRESENT
+
+--- 7. Execute both policies against those specs, --dry-run so nothing is installed
+~/.cargo/bin listing sha256 before: 01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed  -
+asset HTTP 200 curl-exit 0
+ASSERT-OK   http-release-asset = 0 200
+unzip exit=0
+ASSERT-OK   unzip-release-asset = 0
+cargo-binstall binary sha256 5e17743fdc1aeedd3e6982b04f53ee23bc7d5e727454559ab0e2129d15e86188
+command -v cargo-binstall -> /private/tmp/r42-r9-audit.Otmrxt/meta-leg1/bin/cargo-binstall
+cargo binstall -V -> 1.23.0 (exit 0)
+ASSERT-OK   binstall-version = 0 1.23.0
+# 7a. the recipe body exactly as recommended, on an UNSIGNED spec (cargo-shear@1.13.1):
+cargo binstall (7a default) exit=0
+  cargo-binstall:  INFO resolve: Resolving package: 'cargo-shear@=1.13.1'
+  cargo-binstall:  WARN The package cargo-shear v1.13.1 (aarch64-apple-darwin) has been downloaded from github.com
+  cargo-binstall:  INFO This will install the following binaries:
+  cargo-binstall:  INFO   - cargo-shear => /private/tmp/r42-r9-audit.Otmrxt/isolated-cargo/bin/cargo-shear
+  cargo-binstall:  INFO Dry-run: Not proceeding to install fetched binaries
+  cargo-binstall:  INFO Done in 2.583982417s
+ASSERT-OK   7a-status = 0
+7a 'Verified signature' occurrences: 0
+ASSERT-OK   7a-verified-signature-count = 0
+ASSERT-OK   7a-downloaded-from-github
+# 7b. the same spec with --only-signed, to see what the fail-closed policy does (cargo-shear@1.13.1):
+cargo binstall (7b --only-signed) exit=0
+  cargo-binstall:  INFO resolve: Resolving package: 'cargo-shear@=1.13.1'
+  cargo-binstall:  WARN resolve: Error while downloading and extracting from fetcher github.com: No signature present
+  cargo-binstall:  WARN resolve: Error while downloading and extracting from fetcher github.com: No signature present
+  cargo-binstall:  WARN resolve: Error while downloading and extracting from fetcher github.com: No signature present
+  cargo-binstall: ERROR Failed to download signature: Failed to download from remote: could not GET https://github.com/cargo-bins/cargo-quickinstall/releases/download/cargo-shear-1.13.1/cargo-shear-1.13.1-aarch64-apple-darwin.tar.gz.sig: HTTP status client error (404 Not Found) for url (https://github.com/cargo-bins/cargo-quickinstall/releases/download/cargo-shear-1.13.1/cargo-shear-1.13.1-aarch64-apple-darwin.tar.gz.sig)
+  cargo-binstall:  WARN The package cargo-shear v1.13.1 will be installed from source (with cargo)
+  cargo-binstall:  INFO Dry-run: running `/opt/homebrew/bin/cargo install cargo-shear --version 1.13.1 --locked --root /private/tmp/r42-r9-audit.Otmrxt/isolated-cargo`
+  cargo-binstall:  INFO Done in 2.512816709s
+ASSERT-OK   7b-status = 0
+ASSERT-OK   7b-no-signature-present
+ASSERT-OK   7b-falls-through-to-cargo-install
+# 7c. POSITIVE CONTROL: a spec that does declare a signing key, under --only-signed (cargo-binstall@1.23.0):
+cargo binstall (7c --only-signed) exit=0
+  cargo-binstall:  INFO resolve: Resolving package: 'cargo-binstall@=1.23.0'
+  cargo-binstall:  INFO resolve: Verified signature for package 'cargo-binstall': gh=cargo-bins/cargo-binstall git=b874e25ea559687bec77e281e9b271aa1367b624 ts=2026-09-05T16:59:07.371Z run=33978884356
+  cargo-binstall:  WARN The package cargo-binstall v1.23.0 (x86_64-apple-darwin) has been downloaded from github.com
+  cargo-binstall:  INFO This will install the following binaries:
+  cargo-binstall:  INFO   - cargo-binstall => /private/tmp/r42-r9-audit.Otmrxt/isolated-cargo/bin/cargo-binstall
+  cargo-binstall:  INFO Dry-run: Not proceeding to install fetched binaries
+  cargo-binstall:  INFO Done in 2.939277334s
+ASSERT-OK   7c-status = 0
+7c 'Verified signature' occurrences: 1
+ASSERT-OK   7c-verified-signature-count = 1
+ASSERT-OK   7c-verified-package-name
+# 7d. NEGATIVE CONTROL: a spec that cannot resolve must fail with status 76 (rs-launch-blueprint-no-such-crate@9.9.9):
+cargo binstall (7d negative control) exit=76
+    │ crate is not found
+    ╰─▶ rs-launch-blueprint-no-such-crate is not found
+  
+ASSERT-OK   7d-status = 76
+ASSERT-OK   7d-crate-not-found
+listing sha256 after (/Users/stevemorin/.cargo/bin): 01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed  -
+ASSERT-OK   cargo-bin-listing-unchanged = 01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed  -
+
+--- Assertion summary
+assertions passed: 45  failed: 0  total: 45  expected total: 46
+ASSERT-FAIL assertion-count expected [46] got [45]
+CHECK16 RESULT: FAILED (1 assertion(s))
+leg1_exit=1
+
+=== leg 2 expected-count mismatch ===
+PERTURB=<none, clean run>  TAG=v1.23.0
+
+--- 1. Fetch and unpack the whole source tree at v1.23.0
+tarball HTTP 200 curl-exit 0
+ASSERT-OK   http-tarball = 0 200
+tar exit=0
+ASSERT-OK   untar = 0
+
+--- 2. CONTROL: every file either leg of check 16 reads must hash to its recorded value
+crates/bin/src/args.rs sha256 4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783
+ASSERT-OK   tree-control-crates/bin/src/args.rs = 4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783
+crates/binstalk-fetchers/src/gh_crate_meta.rs sha256 15c9b82130a25cdccae0e05bcbde0e947245771108c8a21825264a05b2fa24d2
+ASSERT-OK   tree-control-crates/binstalk-fetchers/src/gh_crate_meta.rs = 15c9b82130a25cdccae0e05bcbde0e947245771108c8a21825264a05b2fa24d2
+crates/binstalk-fetchers/src/quickinstall.rs sha256 821621cadc4528e0e1486a17345adbce191874a16428a63b51e0b5b1257128a7
+ASSERT-OK   tree-control-crates/binstalk-fetchers/src/quickinstall.rs = 821621cadc4528e0e1486a17345adbce191874a16428a63b51e0b5b1257128a7
+crates/binstalk/src/ops/resolve/resolution.rs sha256 2c829e3756f08791ecab3b4d7e9862d2c982ab951f8fc41567c73668b0777bc2
+ASSERT-OK   tree-control-crates/binstalk/src/ops/resolve/resolution.rs = 2c829e3756f08791ecab3b4d7e9862d2c982ab951f8fc41567c73668b0777bc2
+SIGNING.md sha256 9edd332ef41fba6db15a1fc62193526e41f23a609450b405c16e4c81d5dbf8a9
+ASSERT-OK   tree-control-SIGNING.md = 9edd332ef41fba6db15a1fc62193526e41f23a609450b405c16e4c81d5dbf8a9
+crates/binstalk-registry/src/common.rs sha256 c90aa6122d2a0e4c7cbad56ac8cd7fff11a69ea40fc533bebd2b53aa58379f8e
+ASSERT-OK   tree-control-crates/binstalk-registry/src/common.rs = c90aa6122d2a0e4c7cbad56ac8cd7fff11a69ea40fc533bebd2b53aa58379f8e
+crates/binstalk-downloader/src/download.rs sha256 f752cef42feee3d7b18063ce054314cfcebf016998e5fdfec627491aca64c8d5
+ASSERT-OK   tree-control-crates/binstalk-downloader/src/download.rs = f752cef42feee3d7b18063ce054314cfcebf016998e5fdfec627491aca64c8d5
+crates/binstalk-fetchers/src/signing.rs sha256 9a4995c71b0fff73b44a8975f7a75dbff825cdf1d0f8924cf110860bbbff43ba
+ASSERT-OK   tree-control-crates/binstalk-fetchers/src/signing.rs = 9a4995c71b0fff73b44a8975f7a75dbff825cdf1d0f8924cf110860bbbff43ba
+tree control: all 8 files MATCH the sha256 values recorded at checks 15 and 16
+
+--- 3. Every implementation of the DataVerifier trait in the tree
+crates/binstalk-fetchers/src/signing.rs:78:impl DataVerifier for MinisignDataVerifier<'_> {
+crates/binstalk-downloader/src/download.rs:74:impl DataVerifier for () {
+crates/binstalk-registry/src/common.rs:44:impl DataVerifier for Sha256Digest {
+grep exit=0
+ASSERT-OK   dv-grep-status = 0
+impl DataVerifier count: 3 file(s), 3 site(s)
+ASSERT-OK   dv-file-count = 3
+ASSERT-OK   dv-site-count = 3
+impl DataVerifier files: crates/binstalk-downloader/src/download.rs crates/binstalk-fetchers/src/signing.rs crates/binstalk-registry/src/common.rs 
+ASSERT-OK   dv-file-set = crates/binstalk-downloader/src/download.rs crates/binstalk-fetchers/src/signing.rs crates/binstalk-registry/src/common.rs 
+
+--- 4. The trait itself, and what the downloader says about checksums
+58-    }
+59-}
+60-
+61:pub trait DataVerifier: Send + Sync {
+62-    /// Digest input data.
+63-    ///
+64-    /// This method can be called repeatedly for use with streaming messages,
+65-    /// it will be called in the order of the message received.
+66-    fn update(&mut self, data: &Bytes);
+67-
+68-    /// Finalise the data verification.
+69-    ///
+70-    /// Return false if the data is invalid.
+71-    fn validate(&mut self) -> bool;
+72-}
+73-
+grep trait exit=0
+ASSERT-OK   trait-decl-found = 0
+198:    /// This does not support verifying a checksum due to the partial extraction
+grep checksum(download.rs) exit=0
+ASSERT-OK   download-checksum-comment-found = 0
+
+--- 5. Where that third implementation is used, and a paired control
+25-    pub(super) auth_required: bool,
+26-}
+27-
+28:struct Sha256Digest {
+29-    expected: Vec<u8>,
+30-    actual: Option<Vec<u8>>,
+31-    state: Option<Sha256>,
+32-}
+33-
+34-impl Sha256Digest {
+35-    fn new(checksum: Vec<u8>) -> Self {
+36-        Self {
+37-            expected: checksum,
+38-            actual: None,
+39-            state: Some(Sha256::new()),
+40-        }
+41-    }
+42-}
+43-
+44-impl DataVerifier for Sha256Digest {
+45-    fn update(&mut self, data: &Bytes) {
+46-        if let Some(ref mut state) = &mut self.state {
+47-            state.update(data);
+48-        }
+49-    }
+50-
+grep Sha256Digest exit=0
+ASSERT-OK   sha256digest-struct-found = 0
+66:pub(super) async fn parse_manifest(
+67-    client: Client,
+68-    crate_name: &str,
+69-    crate_url: Url,
+70-    MatchedVersion { version, cksum }: MatchedVersion,
+71-    auth: Option<&RegistryAuth>,
+72-) -> Result<Manifest<Meta>, RegistryError> {
+73-    debug!("Fetching crate from: {crate_url} and extracting Cargo.toml from it");
+74-
+grep parse_manifest exit=0
+ASSERT-OK   parse_manifest-found = 0
+Sha256Digest construction sites: 1
+crates/binstalk-registry/src/common.rs:78:    let mut digest = Sha256Digest::new(checksum);
+ASSERT-OK   sha256digest-construction-sites = 1
+# paired control on the same grep key: one form must be found, the other must not
+positive-control file: crates/binstalk-registry/src/common.rs
+positive control: count 1, exit 0
+ASSERT-OK   paired-positive-control = 0 1
+negative control exit=1 (1 = found nothing, as required)
+ASSERT-OK   paired-negative-control = 1
+
+--- 6. Tree-wide: does any fetcher compare a digest against registry metadata?
+sweep directory: crates/binstalk-fetchers/src
+grep exit=1 (1 = no hit anywhere in the swept directory)
+ASSERT-OK   digest-sweep-status = 1
+digest sweep hit count: 0
+ASSERT-OK   digest-sweep-hit-count = 0
+
+--- Assertion summary
+assertions passed: 23  failed: 0  total: 23  expected total: 24
+ASSERT-FAIL assertion-count expected [24] got [23]
+CHECK16B RESULT: FAILED (1 assertion(s))
+leg2_exit=1

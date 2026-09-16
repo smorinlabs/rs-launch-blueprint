@@ -1,0 +1,29 @@
+--- /private/tmp/r42-r8-recorded-normalized.txt	2026-09-13 02:04:28
++++ /private/tmp/r42-r8-rerun-normalized.txt	2026-09-13 02:04:28
+@@ -160,7 +160,7 @@
+   cargo-binstall:  INFO resolve: Resolving package: 'cargo-shear@=1.13.1'
+   cargo-binstall:  WARN The package cargo-shear v1.13.1 (aarch64-apple-darwin) has been downloaded from github.com
+   cargo-binstall:  INFO This will install the following binaries:
+-  cargo-binstall:  INFO   - cargo-shear => <cargo-home>/bin/cargo-shear
++  cargo-binstall:  INFO   - cargo-shear => <scratch>
+   cargo-binstall:  INFO Dry-run: Not proceeding to install fetched binaries
+   cargo-binstall:  INFO Done in <elapsed>
+ 7a 'Verified signature' occurrences: 0
+@@ -173,7 +173,7 @@
+   cargo-binstall:  WARN resolve: Error while downloading and extracting from fetcher github.com: No signature present
+   cargo-binstall: ERROR Failed to download signature: Failed to download from remote: could not GET https://github.com/cargo-bins/cargo-quickinstall/releases/download/cargo-shear-1.13.1/cargo-shear-1.13.1-aarch64-apple-darwin.tar.gz.sig: HTTP status client error (404 Not Found) for url (https://github.com/cargo-bins/cargo-quickinstall/releases/download/cargo-shear-1.13.1/cargo-shear-1.13.1-aarch64-apple-darwin.tar.gz.sig)
+   cargo-binstall:  WARN The package cargo-shear v1.13.1 will be installed from source (with cargo)
+-  cargo-binstall:  INFO Dry-run: running `/opt/homebrew/bin/cargo install cargo-shear --version 1.13.1 --locked --root <cargo-home>`
++  cargo-binstall:  INFO Dry-run: running `/opt/homebrew/bin/cargo install cargo-shear --version 1.13.1 --locked --root <scratch>`
+   cargo-binstall:  INFO Done in <elapsed>
+ # 7c. POSITIVE CONTROL: a spec that does declare a signing key, under --only-signed:
+ cargo binstall (7c --only-signed, cargo-binstall) exit=0
+@@ -181,7 +181,7 @@
+   cargo-binstall:  INFO resolve: Verified signature for package 'cargo-binstall': gh=cargo-bins/cargo-binstall git=b874e25ea559687bec77e281e9b271aa1367b624 ts=2026-09-05T16:59:07.371Z run=<run>
+   cargo-binstall:  WARN The package cargo-binstall v1.23.0 (x86_64-apple-darwin) has been downloaded from github.com
+   cargo-binstall:  INFO This will install the following binaries:
+-  cargo-binstall:  INFO   - cargo-binstall => <cargo-home>/bin/cargo-binstall
++  cargo-binstall:  INFO   - cargo-binstall => <scratch>
+   cargo-binstall:  INFO Dry-run: Not proceeding to install fetched binaries
+   cargo-binstall:  INFO Done in <elapsed>
+ 7c 'Verified signature' occurrences: 1

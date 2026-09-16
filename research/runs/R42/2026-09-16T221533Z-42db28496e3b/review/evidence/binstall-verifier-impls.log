@@ -1,0 +1,349 @@
+# R42 revision 9 — check 16, second leg. The first leg (evidence/binstall-signing.log)
+# read five files and established that a minisign signature is checked only where the
+# crate publishes a key. This leg asks the complementary question over the WHOLE source
+# tree at the immutable tag v1.23.0, rather than over the files that leg happened to open:
+# is a signature the only thing cargo-binstall can verify downloaded bytes against, or does
+# a checksum path exist somewhere too?
+#
+# WHY THIS LEG WAS REWRITTEN FOR REVISION 9. Revision 8's payload asserted only the tree
+# hash; its purported positive control, its negative control and its no-digest sweep merely
+# printed their status, so none of them could fail the script. That was the round-8
+# rejection (finding F1). Every claimed control is now an ASSERTION: it prints
+# `ASSERT-OK <name>` or `ASSERT-FAIL <name>`, and a failure makes the script exit 1. The
+# script also asserts its own assertion COUNT (23), so a silently skipped assertion fails
+# the run.
+#
+# THE TREE CONTROL WAS STRENGTHENED, AND ONE REVISION-8 CLAIM ABOUT IT WAS WRONG. Revision 8
+# hashed ONE file, `crates/bin/src/args.rs`. Demonstrating that control showed it does not
+# separate v1.23.0 from the adjacent v1.22.0 — every file either leg of check 16 reads is
+# byte-identical at those two tags, which section B0 of
+# `evidence/binstall-assertion-controls.log` asserts rather than claims (8 of 8 identical).
+# Two things follow and both are recorded rather than glossed. First, the control
+# authenticates the CONTENT every finding rests on, not the release number; where the
+# content is identical no finding of check 16 would differ, so that is not a gap. Second,
+# one file is still a weaker control than the eight files the findings actually rest on, so
+# this leg now hashes all eight: the five the first leg fetches at the same tag and the
+# three this leg reads. The perturbation used to demonstrate it is tag v1.21.0, whose
+# `args.rs` genuinely differs (`2e77dce1…`), and the perturbed run fails as required.
+#
+# THE OTHER CONTROLS ARE DEMONSTRATED TOO. `PERTURB=<name>` substitutes exactly ONE input.
+# The third leg runs this script once per control and requires the run to exit non-zero AND
+# to print that control's own `ASSERT-FAIL` line: `tree` (v1.21.0), `dvcount` (enumerate
+# `DataVerifier` over one sub-crate instead of the tree), `dupsite` (a second
+# `Sha256Digest::new` call site), `poscntl` (point the positive control at a file that does
+# not carry its pattern), `blake3` (write the negative control's own pattern into the tree)
+# and `sweep` (sweep the registry crate, which does compare a digest, instead of the
+# fetchers). The two perturbations that edit the unpacked tree restore it, and the third leg
+# asserts the restoration by rerunning this script clean afterwards and requiring an output
+# identical to the first clean run.
+#
+# Runs: 2026-09-14T23:01:55Z and 23:01:56Z, which is 2026-09-14 16:01 America/Los_Angeles.
+# The script prints no timestamp of its own, so these stamps are the outputs' mtimes. The
+# execution recorded below is the FIRST of the two.
+#
+# Working directory: the run directory. Scratch directory: <scratch>/r42r9/ctl/leg2, outside
+# the repository. This leg installs nothing and runs no third-party binary: it fetches an
+# archive, unpacks it and greps it. It reads no file inside the repository and writes none,
+# so committing this revision cannot change what it does.
+#
+# RERUN RULE.
+# (a) On THIS host: byte-for-byte identical. Two consecutive clean runs produced a zero-line
+#     diff, which section A of `evidence/binstall-assertion-controls.log` asserts. There are
+#     no timings in this leg and no absolute path is printed.
+# (b) On ANY OTHER host: identical as well, including the final line
+#     `CHECK16B RESULT: PASSED`. The tag is immutable and nothing here reads host state, a
+#     target triple, $CARGO_HOME or the network beyond the one archive.
+#
+# WHAT THIS LEG DOES NOT SHOW. It reads cargo-binstall's own source. It says nothing about
+# what Cargo itself verifies when the compile fallback runs `cargo install --locked`, which
+# is a different program; that remains unproven item 11(b).
+#
+# ---8<--- check16b.sh ---8<---
+# #!/bin/bash
+# # R42 revision 9 — check 16, second leg: is a minisign signature the ONLY thing
+# # cargo-binstall 1.23.0 can verify a downloaded artifact against, or is there a
+# # checksum path as well? Enumerated over the whole source tree at the immutable
+# # tag v1.23.0, not over the five files the first leg reads.
+# # EVERY claimed control is an ASSERTION: a wrong status, a wrong count or a wrong
+# # path set prints `ASSERT-FAIL <name>` and makes the script exit 1. PERTURB
+# # substitutes exactly ONE input so each control can be shown to discriminate;
+# # a perturbation that edits the unpacked tree restores it before the script ends.
+# set -o pipefail
+# SCRATCH="${SCRATCH:?set SCRATCH}"
+# PERTURB="${PERTURB:-}"
+# UA='rs-launch-blueprint-research (+https://github.com/smorinlabs/rs-launch-blueprint)'
+# TAG=v1.23.0
+# EXPECTED_ASSERTIONS=23
+# PASS=0
+# FAIL=0
+# say() { printf '\n--- %s\n' "$*"; }
+# ok()   { PASS=$((PASS+1)); echo "ASSERT-OK   $*"; }
+# fail() { FAIL=$((FAIL+1)); echo "ASSERT-FAIL $*"; }
+# expect_eq() { if [ "$2" = "$3" ]; then ok "$1 = $3"; else fail "$1 expected [$2] got [$3]"; fi; }
+#
+# # --- the one input each PERTURB value substitutes -----------------------------
+# #  tree    : unpack tag v1.21.0, whose args.rs differs from v1.23.0's. NOTE: v1.22.0
+# #            would NOT fire this control — every file either leg reads is byte-identical
+# #            in v1.22.0 and v1.23.0 (each of the eight sha256 values below was fetched at
+# #            both tags and compared). The control authenticates the CONTENT each finding
+# #            rests on, not the release number; where the content is identical no finding
+# #            would differ, which is why that is not a gap.
+# #  dvcount : enumerate DataVerifier over one sub-crate instead of the whole tree
+# #  dupsite : copy the registry module, so Sha256Digest::new has a second call site
+# #  poscntl : point the positive control at a file that does not carry its pattern
+# #  blake3  : write the negative control's own pattern into the tree
+# #  sweep   : sweep the registry crate, which does compare a digest, not the fetchers
+# case "$PERTURB" in
+#   ''|tree|dvcount|dupsite|poscntl|blake3|sweep) ;;
+#   *) echo "unknown PERTURB=$PERTURB"; exit 2 ;;
+# esac
+# [ "$PERTURB" = tree ] && TAG=v1.21.0
+# SRC="$SCRATCH/src/cargo-binstall-${TAG#v}"
+# DV_ROOT_DEFAULT="$SRC/crates"
+# DV_ROOT="$DV_ROOT_DEFAULT"
+# [ "$PERTURB" = dvcount ] && DV_ROOT="$SRC/crates/binstalk-fetchers"
+# SWEEP_DIR="$SRC/crates/binstalk-fetchers/src"
+# [ "$PERTURB" = sweep ] && SWEEP_DIR="$SRC/crates/binstalk-registry/src"
+# POS_FILE="$SRC/crates/binstalk-registry/src/common.rs"
+# [ "$PERTURB" = poscntl ] && POS_FILE="$SRC/crates/binstalk-downloader/src/download.rs"
+# echo "PERTURB=${PERTURB:-<none, clean run>}  TAG=$TAG"
+#
+# say "1. Fetch and unpack the whole source tree at $TAG"
+# rm -rf "$SCRATCH/src"
+# code=$(curl -sSL -H "User-Agent: $UA" -o "$SCRATCH/cb.tar.gz" -w '%{http_code}' \
+#   "https://codeload.github.com/cargo-bins/cargo-binstall/tar.gz/refs/tags/$TAG"); cstat=$?
+# echo "tarball HTTP $code curl-exit $cstat"
+# expect_eq "http-tarball" "0 200" "$cstat $code"
+# mkdir -p "$SCRATCH/src"; tar -xzf "$SCRATCH/cb.tar.gz" -C "$SCRATCH/src"; tstat=$?
+# echo "tar exit=$tstat"
+# expect_eq "untar" 0 "$tstat"
+#
+# say "2. CONTROL: every file either leg of check 16 reads must hash to its recorded value"
+# # A gzip archive is not byte-stable, so the tarball is not hashed. The eight files any
+# # finding of check 16 rests on are: the five the first leg fetches at the same tag, whose
+# # sha256 values this decision already cites, and the three this leg reads.
+# TREEBAD=0
+# tf() { # tf <path-under-tree> <expected-sha256>
+#   local sum
+#   sum=$(shasum -a 256 "$SRC/$1" 2>/dev/null | awk '{print $1}')
+#   echo "$1 sha256 ${sum:-<absent>}"
+#   expect_eq "tree-control-$1" "$2" "$sum"
+#   [ "$sum" = "$2" ] || TREEBAD=$((TREEBAD+1))
+# }
+# tf crates/bin/src/args.rs                       4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783
+# tf crates/binstalk-fetchers/src/gh_crate_meta.rs 15c9b82130a25cdccae0e05bcbde0e947245771108c8a21825264a05b2fa24d2
+# tf crates/binstalk-fetchers/src/quickinstall.rs  821621cadc4528e0e1486a17345adbce191874a16428a63b51e0b5b1257128a7
+# tf crates/binstalk/src/ops/resolve/resolution.rs 2c829e3756f08791ecab3b4d7e9862d2c982ab951f8fc41567c73668b0777bc2
+# tf SIGNING.md                                    9edd332ef41fba6db15a1fc62193526e41f23a609450b405c16e4c81d5dbf8a9
+# tf crates/binstalk-registry/src/common.rs        c90aa6122d2a0e4c7cbad56ac8cd7fff11a69ea40fc533bebd2b53aa58379f8e
+# tf crates/binstalk-downloader/src/download.rs    f752cef42feee3d7b18063ce054314cfcebf016998e5fdfec627491aca64c8d5
+# tf crates/binstalk-fetchers/src/signing.rs       9a4995c71b0fff73b44a8975f7a75dbff825cdf1d0f8924cf110860bbbff43ba
+# if [ "$TREEBAD" -ne 0 ]; then
+#   echo "tree control: $TREEBAD of 8 files DO NOT MATCH — every finding below would be void"
+#   echo "CHECK16B RESULT: FAILED ($FAIL assertion(s))"; exit 1
+# fi
+# echo "tree control: all 8 files MATCH the sha256 values recorded at checks 15 and 16"
+#
+# # --- tree-editing perturbations, applied here and undone at the end -----------
+# RESTORE=''
+# if [ "$PERTURB" = dupsite ]; then
+#   cp "$SRC/crates/binstalk-registry/src/common.rs" \
+#      "$SRC/crates/binstalk-registry/src/common_r42_perturb.rs"
+#   RESTORE="$SRC/crates/binstalk-registry/src/common_r42_perturb.rs"
+#   echo "perturbation applied: copied common.rs to common_r42_perturb.rs"
+# fi
+# if [ "$PERTURB" = blake3 ]; then
+#   printf '\nimpl DataVerifier for Blake3Digest {}\n' \
+#     >> "$SRC/crates/binstalk-downloader/src/download.rs"
+#   RESTORE=tree
+#   echo "perturbation applied: appended an impl DataVerifier for Blake3Digest line to download.rs"
+# fi
+#
+# say "3. Every implementation of the DataVerifier trait in the tree"
+# grep -rn 'impl DataVerifier' "$DV_ROOT" | sed "s#$SRC/##"; g3=$?
+# echo "grep exit=$g3"
+# expect_eq "dv-grep-status" 0 "$g3"
+# dvfiles=$(grep -rl 'impl DataVerifier' "$DV_ROOT" | wc -l | tr -d ' ')
+# dvsites=$(grep -rn 'impl DataVerifier' "$DV_ROOT" | wc -l | tr -d ' ')
+# echo "impl DataVerifier count: $dvfiles file(s), $dvsites site(s)"
+# expect_eq "dv-file-count" 3 "$dvfiles"
+# expect_eq "dv-site-count" 3 "$dvsites"
+# dvset=$(grep -rn 'impl DataVerifier' "$DV_ROOT" | sed "s#$SRC/##" | cut -d: -f1 | sort | tr '\n' ' ')
+# echo "impl DataVerifier files: $dvset"
+# expect_eq "dv-file-set" \
+#   "crates/binstalk-downloader/src/download.rs crates/binstalk-fetchers/src/signing.rs crates/binstalk-registry/src/common.rs " \
+#   "$dvset"
+#
+# say "4. The trait itself, and what the downloader says about checksums"
+# grep -n -B3 -A12 'pub trait DataVerifier' "$SRC/crates/binstalk-downloader/src/download.rs"; g4=$?
+# echo "grep trait exit=$g4"
+# expect_eq "trait-decl-found" 0 "$g4"
+# grep -n -i 'checksum' "$SRC/crates/binstalk-downloader/src/download.rs"; g4b=$?
+# echo "grep checksum(download.rs) exit=$g4b"
+# expect_eq "download-checksum-comment-found" 0 "$g4b"
+#
+# say "5. Where that third implementation is used, and a paired control"
+# grep -n -B3 -A22 'struct Sha256Digest {' "$SRC/crates/binstalk-registry/src/common.rs"; g5=$?
+# echo "grep Sha256Digest exit=$g5"
+# expect_eq "sha256digest-struct-found" 0 "$g5"
+# grep -n -A8 'pub(super) async fn parse_manifest' "$SRC/crates/binstalk-registry/src/common.rs"; g5b=$?
+# echo "grep parse_manifest exit=$g5b"
+# expect_eq "parse_manifest-found" 0 "$g5b"
+# sites=$(grep -rn 'Sha256Digest::new' "$SRC/crates" | wc -l | tr -d ' ')
+# echo "Sha256Digest construction sites: $sites"
+# grep -rn 'Sha256Digest::new' "$SRC/crates" | sed "s#$SRC/##"
+# expect_eq "sha256digest-construction-sites" 1 "$sites"
+# echo "# paired control on the same grep key: one form must be found, the other must not"
+# echo "positive-control file: ${POS_FILE#$SRC/}"
+# posc=$(grep -c 'impl DataVerifier for Sha256Digest' "$POS_FILE"); gp=$?
+# echo "positive control: count $posc, exit $gp"
+# expect_eq "paired-positive-control" "0 1" "$gp $posc"
+# grep -rn 'impl DataVerifier for Blake3Digest' "$SRC/crates"; gn=$?
+# echo "negative control exit=$gn (1 = found nothing, as required)"
+# expect_eq "paired-negative-control" 1 "$gn"
+#
+# say "6. Tree-wide: does any fetcher compare a digest against registry metadata?"
+# echo "sweep directory: ${SWEEP_DIR#$SRC/}"
+# grep -rn -i 'cksum\|sha256\|sha-256\|digest' "$SWEEP_DIR" | sed "s#$SRC/##"; g6=$?
+# echo "grep exit=$g6 (1 = no hit anywhere in the swept directory)"
+# expect_eq "digest-sweep-status" 1 "$g6"
+# hits=$(grep -rn -i -c 'cksum\|sha256\|sha-256\|digest' "$SWEEP_DIR" | awk -F: '{s+=$NF} END {print s+0}')
+# echo "digest sweep hit count: $hits"
+# expect_eq "digest-sweep-hit-count" 0 "$hits"
+#
+# if [ -n "$RESTORE" ]; then
+#   if [ "$RESTORE" = tree ]; then rm -rf "$SCRATCH/src"; else rm -f "$RESTORE"; fi
+#   echo "perturbation restored"
+# fi
+#
+# say "Assertion summary"
+# echo "assertions passed: $PASS  failed: $FAIL  total: $((PASS+FAIL))  expected total: $EXPECTED_ASSERTIONS"
+# if [ "$((PASS+FAIL))" != "$EXPECTED_ASSERTIONS" ]; then
+#   echo "ASSERT-FAIL assertion-count expected [$EXPECTED_ASSERTIONS] got [$((PASS+FAIL))]"
+#   FAIL=$((FAIL+1))
+# fi
+# if [ "$FAIL" -ne 0 ]; then echo "CHECK16B RESULT: FAILED ($FAIL assertion(s))"; exit 1; fi
+# echo "CHECK16B RESULT: PASSED"
+# ---8<--- end of check16b.sh ---8<---
+PERTURB=<none, clean run>  TAG=v1.23.0
+
+--- 1. Fetch and unpack the whole source tree at v1.23.0
+tarball HTTP 200 curl-exit 0
+ASSERT-OK   http-tarball = 0 200
+tar exit=0
+ASSERT-OK   untar = 0
+
+--- 2. CONTROL: every file either leg of check 16 reads must hash to its recorded value
+crates/bin/src/args.rs sha256 4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783
+ASSERT-OK   tree-control-crates/bin/src/args.rs = 4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783
+crates/binstalk-fetchers/src/gh_crate_meta.rs sha256 15c9b82130a25cdccae0e05bcbde0e947245771108c8a21825264a05b2fa24d2
+ASSERT-OK   tree-control-crates/binstalk-fetchers/src/gh_crate_meta.rs = 15c9b82130a25cdccae0e05bcbde0e947245771108c8a21825264a05b2fa24d2
+crates/binstalk-fetchers/src/quickinstall.rs sha256 821621cadc4528e0e1486a17345adbce191874a16428a63b51e0b5b1257128a7
+ASSERT-OK   tree-control-crates/binstalk-fetchers/src/quickinstall.rs = 821621cadc4528e0e1486a17345adbce191874a16428a63b51e0b5b1257128a7
+crates/binstalk/src/ops/resolve/resolution.rs sha256 2c829e3756f08791ecab3b4d7e9862d2c982ab951f8fc41567c73668b0777bc2
+ASSERT-OK   tree-control-crates/binstalk/src/ops/resolve/resolution.rs = 2c829e3756f08791ecab3b4d7e9862d2c982ab951f8fc41567c73668b0777bc2
+SIGNING.md sha256 9edd332ef41fba6db15a1fc62193526e41f23a609450b405c16e4c81d5dbf8a9
+ASSERT-OK   tree-control-SIGNING.md = 9edd332ef41fba6db15a1fc62193526e41f23a609450b405c16e4c81d5dbf8a9
+crates/binstalk-registry/src/common.rs sha256 c90aa6122d2a0e4c7cbad56ac8cd7fff11a69ea40fc533bebd2b53aa58379f8e
+ASSERT-OK   tree-control-crates/binstalk-registry/src/common.rs = c90aa6122d2a0e4c7cbad56ac8cd7fff11a69ea40fc533bebd2b53aa58379f8e
+crates/binstalk-downloader/src/download.rs sha256 f752cef42feee3d7b18063ce054314cfcebf016998e5fdfec627491aca64c8d5
+ASSERT-OK   tree-control-crates/binstalk-downloader/src/download.rs = f752cef42feee3d7b18063ce054314cfcebf016998e5fdfec627491aca64c8d5
+crates/binstalk-fetchers/src/signing.rs sha256 9a4995c71b0fff73b44a8975f7a75dbff825cdf1d0f8924cf110860bbbff43ba
+ASSERT-OK   tree-control-crates/binstalk-fetchers/src/signing.rs = 9a4995c71b0fff73b44a8975f7a75dbff825cdf1d0f8924cf110860bbbff43ba
+tree control: all 8 files MATCH the sha256 values recorded at checks 15 and 16
+
+--- 3. Every implementation of the DataVerifier trait in the tree
+crates/binstalk-fetchers/src/signing.rs:78:impl DataVerifier for MinisignDataVerifier<'_> {
+crates/binstalk-downloader/src/download.rs:74:impl DataVerifier for () {
+crates/binstalk-registry/src/common.rs:44:impl DataVerifier for Sha256Digest {
+grep exit=0
+ASSERT-OK   dv-grep-status = 0
+impl DataVerifier count: 3 file(s), 3 site(s)
+ASSERT-OK   dv-file-count = 3
+ASSERT-OK   dv-site-count = 3
+impl DataVerifier files: crates/binstalk-downloader/src/download.rs crates/binstalk-fetchers/src/signing.rs crates/binstalk-registry/src/common.rs 
+ASSERT-OK   dv-file-set = crates/binstalk-downloader/src/download.rs crates/binstalk-fetchers/src/signing.rs crates/binstalk-registry/src/common.rs 
+
+--- 4. The trait itself, and what the downloader says about checksums
+58-    }
+59-}
+60-
+61:pub trait DataVerifier: Send + Sync {
+62-    /// Digest input data.
+63-    ///
+64-    /// This method can be called repeatedly for use with streaming messages,
+65-    /// it will be called in the order of the message received.
+66-    fn update(&mut self, data: &Bytes);
+67-
+68-    /// Finalise the data verification.
+69-    ///
+70-    /// Return false if the data is invalid.
+71-    fn validate(&mut self) -> bool;
+72-}
+73-
+grep trait exit=0
+ASSERT-OK   trait-decl-found = 0
+198:    /// This does not support verifying a checksum due to the partial extraction
+grep checksum(download.rs) exit=0
+ASSERT-OK   download-checksum-comment-found = 0
+
+--- 5. Where that third implementation is used, and a paired control
+25-    pub(super) auth_required: bool,
+26-}
+27-
+28:struct Sha256Digest {
+29-    expected: Vec<u8>,
+30-    actual: Option<Vec<u8>>,
+31-    state: Option<Sha256>,
+32-}
+33-
+34-impl Sha256Digest {
+35-    fn new(checksum: Vec<u8>) -> Self {
+36-        Self {
+37-            expected: checksum,
+38-            actual: None,
+39-            state: Some(Sha256::new()),
+40-        }
+41-    }
+42-}
+43-
+44-impl DataVerifier for Sha256Digest {
+45-    fn update(&mut self, data: &Bytes) {
+46-        if let Some(ref mut state) = &mut self.state {
+47-            state.update(data);
+48-        }
+49-    }
+50-
+grep Sha256Digest exit=0
+ASSERT-OK   sha256digest-struct-found = 0
+66:pub(super) async fn parse_manifest(
+67-    client: Client,
+68-    crate_name: &str,
+69-    crate_url: Url,
+70-    MatchedVersion { version, cksum }: MatchedVersion,
+71-    auth: Option<&RegistryAuth>,
+72-) -> Result<Manifest<Meta>, RegistryError> {
+73-    debug!("Fetching crate from: {crate_url} and extracting Cargo.toml from it");
+74-
+grep parse_manifest exit=0
+ASSERT-OK   parse_manifest-found = 0
+Sha256Digest construction sites: 1
+crates/binstalk-registry/src/common.rs:78:    let mut digest = Sha256Digest::new(checksum);
+ASSERT-OK   sha256digest-construction-sites = 1
+# paired control on the same grep key: one form must be found, the other must not
+positive-control file: crates/binstalk-registry/src/common.rs
+positive control: count 1, exit 0
+ASSERT-OK   paired-positive-control = 0 1
+negative control exit=1 (1 = found nothing, as required)
+ASSERT-OK   paired-negative-control = 1
+
+--- 6. Tree-wide: does any fetcher compare a digest against registry metadata?
+sweep directory: crates/binstalk-fetchers/src
+grep exit=1 (1 = no hit anywhere in the swept directory)
+ASSERT-OK   digest-sweep-status = 1
+digest sweep hit count: 0
+ASSERT-OK   digest-sweep-hit-count = 0
+
+--- Assertion summary
+assertions passed: 23  failed: 0  total: 23  expected total: 23
+CHECK16B RESULT: PASSED

@@ -1,0 +1,123 @@
+# R42 revision 9 empirical auditor rerun
+cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R42/2026-09-05T155503Z-4141a35b69e0
+extraction directory: /private/tmp/r42-r9-audit.Otmrxt
+note: CARGO_HOME is isolated under /private/tmp because the sandbox blocks cargo-binstall from reading the host mutable Cargo cache; the script continues to hash the recorded ~/.cargo/bin listing.
+argv: SCRATCH=<temporary> LEG1=<extracted check16.sh> LEG2=<extracted check16b.sh> CARGO_HOME=<temporary> bash <extracted check16-controls.sh>
+
+=== complete third-leg replay ===
+
+--- A. Both legs pass CLEAN, twice, and the reruns obey the stated rerun rule
+leg1 clean run 1 exit 0
+ASSERT-OK   leg1-clean-1 exit 0
+leg1 clean run 2 exit 0
+ASSERT-OK   leg1-clean-2 exit 0
+leg2 clean run 1 exit 0
+ASSERT-OK   leg2-clean-1 exit 0
+leg2 clean run 2 exit 0
+ASSERT-OK   leg2-clean-2 exit 0
+# leg 1: two clean runs in one scratch may differ ONLY in 'INFO Done in' timings
+leg1 clean diff:
+    185c185
+    <   cargo-binstall:  INFO Done in 1.66033225s
+    ---
+    >   cargo-binstall:  INFO Done in 1.681293083s
+    199c199
+    <   cargo-binstall:  INFO Done in 1.802353792s
+    ---
+    >   cargo-binstall:  INFO Done in 1.843368083s
+    211c211
+    <   cargo-binstall:  INFO Done in 1.764718708s
+    ---
+    >   cargo-binstall:  INFO Done in 2.722376917s
+leg1 differing lines that are not timings: 0
+ASSERT-OK   leg1-rerun-rule (only 'INFO Done in' lines differ)
+# leg 2: two clean runs in one scratch must be byte-identical
+leg2 clean diff lines: 0
+ASSERT-OK   leg2-rerun-rule (byte-identical)
+
+--- B0. Why the tree control's perturbation is tag v1.21.0 and not the adjacent v1.22.0
+v1.22.0 crates/bin/src/args.rs -> same
+v1.22.0 crates/binstalk-fetchers/src/gh_crate_meta.rs -> same
+v1.22.0 crates/binstalk-fetchers/src/quickinstall.rs -> same
+v1.22.0 crates/binstalk/src/ops/resolve/resolution.rs -> same
+v1.22.0 SIGNING.md -> same
+v1.22.0 crates/binstalk-registry/src/common.rs -> same
+v1.22.0 crates/binstalk-downloader/src/download.rs -> same
+v1.22.0 crates/binstalk-fetchers/src/signing.rs -> same
+files byte-identical at v1.22.0 and v1.23.0: 8 of 8
+ASSERT-OK   v1.22.0-content-identical (so the control need not, and does not, separate those two tags)
+v1.21.0 crates/bin/src/args.rs sha256 2e77dce1e9848bcfba5b921870d9917b49c7f4132cac5e07763c8495010f0788
+ASSERT-OK   v1.21.0-content-differs (a tree the control must reject)
+
+--- B. Leg 2's controls, each shown failing when its input is perturbed
+PERTURB=tree -> exit 1
+ASSERT-OK   leg2/tree exits non-zero (1)
+    ASSERT-FAIL tree-control-crates/bin/src/args.rs expected [4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783] got [2e77dce1e9848bcfba5b921870d9917b49c7f4132cac5e07763c8495010f0788]
+ASSERT-OK   leg2/tree names its own control [tree-control-crates/bin/src/args.rs]
+PERTURB=dvcount -> exit 1
+ASSERT-OK   leg2/dvcount exits non-zero (1)
+    ASSERT-FAIL dv-file-count expected [3] got [1]
+ASSERT-OK   leg2/dvcount names its own control [dv-file-count]
+PERTURB=dupsite -> exit 1
+ASSERT-OK   leg2/dupsite exits non-zero (1)
+    ASSERT-FAIL sha256digest-construction-sites expected [1] got [2]
+ASSERT-OK   leg2/dupsite names its own control [sha256digest-construction-sites]
+PERTURB=poscntl -> exit 1
+ASSERT-OK   leg2/poscntl exits non-zero (1)
+    ASSERT-FAIL paired-positive-control expected [0 1] got [1 0]
+ASSERT-OK   leg2/poscntl names its own control [paired-positive-control]
+PERTURB=blake3 -> exit 1
+ASSERT-OK   leg2/blake3 exits non-zero (1)
+    ASSERT-FAIL paired-negative-control expected [1] got [0]
+ASSERT-OK   leg2/blake3 names its own control [paired-negative-control]
+PERTURB=sweep -> exit 1
+ASSERT-OK   leg2/sweep exits non-zero (1)
+    ASSERT-FAIL digest-sweep-status expected [1] got [0]
+ASSERT-OK   leg2/sweep names its own control [digest-sweep-status]
+
+--- C. Leg 2 still passes clean after the tree-editing perturbations were restored
+leg2 clean run 3 exit 0
+ASSERT-OK   leg2-clean-3 exit 0 (restore is complete)
+leg2 post-restore diff lines: 0
+ASSERT-OK   leg2-restore-identical
+
+--- D. Leg 1's controls, each shown failing when its input is perturbed
+PERTURB=sha -> exit 1
+ASSERT-OK   leg1/sha exits non-zero (1)
+    ASSERT-FAIL sha256-args.rs expected [4e179aaa7993121b1c33d000a3bbc4619b49fb384bf322af19b797dd038b3783] got [87bcbe2f57cd66c37407cb6407a1864cad2e3178d39b7cb3674c5b428c840cd9]
+ASSERT-OK   leg1/sha names its own control [sha256-args.rs]
+PERTURB=signing -> exit 1
+ASSERT-OK   leg1/signing exits non-zero (1)
+    ASSERT-FAIL signing-verdict-cargo-binstall@1.23.0 expected [ABSENT] got [PRESENT]
+ASSERT-OK   leg1/signing names its own control [signing-verdict-cargo-binstall@1.23.0 expected [ABSENT] got [PRESENT]]
+PERTURB=p7a -> exit 1
+ASSERT-OK   leg1/p7a exits non-zero (1)
+    ASSERT-FAIL 7a-verified-signature-count expected [0] got [1]
+ASSERT-OK   leg1/p7a names its own control [7a-verified-signature-count]
+PERTURB=p7b -> exit 1
+ASSERT-OK   leg1/p7b exits non-zero (1)
+    ASSERT-FAIL 7b-falls-through-to-cargo-install missing [cargo install cargo-shear --version 1.13.1 --locked]
+ASSERT-OK   leg1/p7b names its own control [7b-falls-through-to-cargo-install]
+PERTURB=p7c -> exit 1
+ASSERT-OK   leg1/p7c exits non-zero (1)
+    ASSERT-FAIL 7c-verified-signature-count expected [1] got [0]
+ASSERT-OK   leg1/p7c names its own control [7c-verified-signature-count]
+PERTURB=p7d -> exit 1
+ASSERT-OK   leg1/p7d exits non-zero (1)
+    ASSERT-FAIL 7d-status expected [76] got [0]
+ASSERT-OK   leg1/p7d names its own control [7d-status]
+PERTURB=cargohome -> exit 1
+ASSERT-OK   leg1/cargohome exits non-zero (1)
+    ASSERT-FAIL cargo-bin-listing-unchanged expected [01a2cddcc8ceeb3c17d93fc7bec5d3cbf440ee7416dd81374e4b982acfa389ed  -] got [9409fb25ecfdc3df4bc5ed51ecc82713f773d650969bcdd1cf578644e5a4152d  -]
+ASSERT-OK   leg1/cargohome names its own control [cargo-bin-listing-unchanged]
+
+--- E. Leg 1 still passes clean after every perturbation
+leg1 clean run 3 exit 0
+ASSERT-OK   leg1-clean-3 exit 0
+
+--- Control summary
+controls demonstrated: 13 (7 in leg 1, 6 in leg 2)
+assertions passed: 37  failed: 0  void: 0  total: 37
+CONTROLS RESULT: PASSED — every control fails the script when its input is wrong
+
+COMPLETE_RERUN_EXIT=0

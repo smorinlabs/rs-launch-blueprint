@@ -1,0 +1,225 @@
+# R42 empirical-auditor rerun
+# Actor: audit-codex-2026-09-05T155503Z-4141a35b69e0
+# Model: gpt-5.6-terra
+# Run UTC: 2026-09-10T05:29:45Z
+# CWD: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R42/2026-09-05T155503Z-4141a35b69e0
+# Runner: limactl shell ubuntu -- bash -lc '<command>'; $HOME/.cargo/env sourced.
+# The temporary stub and temporary rust-toolchain.toml were created under /tmp
+# in the Linux VM and removed by the command's EXIT trap. No template files
+# were created or changed.
+
+## Decision identity
+
+$ sha256sum review/DECISION.md
+5935af16e9b1ba082099b20fa8ca84ee7aea49965feab702eb97477f484d6239  review/DECISION.md
+
+## Toolchain, component availability, and dispatch
+
+$ command -v cargo; rustup which cargo
+/home/stevemorin.guest/.cargo/bin/cargo
+/home/stevemorin.guest/.rustup/toolchains/stable-aarch64-unknown-linux-gnu/bin/cargo
+exit=0
+$ rustc --version
+rustc 1.98.1 (48a229cea 2026-09-01)
+exit=0
+$ cargo --version
+cargo 1.98.1 (797e8a9bc 2026-08-05)
+exit=0
+$ rustup --version
+info: This is the version for the rustup toolchain manager, not the rustc compiler.
+rustup 1.29.1 (d95a37b6a 2026-08-13)
+info: the currently active `rustc` version is `rustc 1.98.1 (48a229cea 2026-09-01)`
+exit=0
+$ uname -a
+Linux lima-ubuntu 6.17.0-41-generic #41-Ubuntu SMP PREEMPT_DYNAMIC Sat Jun 20 17:41:03 UTC 2026 aarch64 GNU/Linux
+exit=0
+$ rustup show active-toolchain (scratch rust-toolchain.toml: stable, minimal, rustfmt, clippy)
+stable-aarch64-unknown-linux-gnu (overridden by '/tmp/tmp.ALLzfndiPM/rust-toolchain.toml')
+exit=0
+$ cargo fmt --version; cargo clippy --version (scratch)
+rustfmt 1.9.0-stable (48a229ceae 2026-09-01)
+clippy 0.1.98 (48a229ceae 2026-09-01)
+exit=0
+$ rustup which cargo-fmt; rustup which cargo-clippy
+/home/stevemorin.guest/.rustup/toolchains/stable-aarch64-unknown-linux-gnu/bin/cargo-fmt
+/home/stevemorin.guest/.rustup/toolchains/stable-aarch64-unknown-linux-gnu/bin/cargo-clippy
+exit=0
+$ rustup component list --installed
+cargo-aarch64-unknown-linux-gnu
+clippy-aarch64-unknown-linux-gnu
+rust-std-aarch64-unknown-linux-gnu
+rustc-aarch64-unknown-linux-gnu
+rustfmt-aarch64-unknown-linux-gnu
+exit=0
+$ PATH=<scratch>/bin:$PATH cargo demo --flag 1
+cargo-demo invoked argv: demo --flag 1
+exit=0
+$ PATH=<scratch>/bin:$PATH command -v cargo-demo
+/tmp/tmp.ALLzfndiPM/bin/cargo-demo
+exit=0
+$ command -v cargo-demo  # negative control, scratch omitted from PATH
+exit=1
+
+## GitHub root-file survey
+
+$ GET https://api.github.com/repos/<owner>/<repo>/contents/ for the recorded 17 repositories
+denoland/deno: rust-toolchain.toml flake.nix
+zed-industries/zed: rust-toolchain.toml flake.nix
+astral-sh/uv: rust-toolchain.toml
+BurntSushi/ripgrep: (none)
+starship/starship: (none)
+typst/typst: (none)
+astral-sh/ruff: rust-toolchain.toml
+helix-editor/helix: rust-toolchain.toml flake.nix
+nushell/nushell: rust-toolchain.toml
+casey/just: justfile flake.nix
+tokio-rs/tokio: (none)
+tokio-rs/axum: (none)
+biomejs/biome: rust-toolchain.toml justfile
+oxc-project/oxc: rust-toolchain.toml justfile
+rust-lang/cargo: (none)
+rust-lang/rustup: flake.nix
+cargo-bins/cargo-binstall: rust-toolchain.toml justfile
+COUNTS total=17 rust-toolchain.toml=9 justfile=4 Makefile=0 mise.toml=0 .mise.toml=0 .tool-versions=0 .flox=0 flake.nix=5
+exit=0
+
+## crates.io figures and licenses
+
+# Initial default-curl request: HTTP 403. Retried unchanged endpoints with:
+# curl -A 'rs-launch-blueprint empirical audit/1.0'. All successful requests below exited 0.
+=== cargo-binstall
+{"recent_downloads":125152,"downloads":3482994}
+{"num":"1.23.0","created_at":"2026-09-05T16:59:01.959145Z","license":"GPL-3.0-only","rust_version":"1.79.0"}
+=== cargo-quickinstall
+{"recent_downloads":7802,"downloads":501029}
+{"num":"0.3.53","created_at":"2026-07-12T05:43:44.651230Z","license":"MIT OR Apache-2.0","rust_version":null}
+=== cargo-run-bin
+{"recent_downloads":82261,"downloads":293046}
+{"num":"1.7.5","created_at":"2025-07-14T14:31:29.007910Z","license":"MIT","rust_version":"1.70.0"}
+=== ubi
+{"recent_downloads":83205,"downloads":304322}
+{"num":"0.12.0","created_at":"2026-08-31T03:45:16.743966Z","license":"MIT OR Apache-2.0","rust_version":"1.88"}
+=== mise
+{"recent_downloads":9199,"downloads":443403}
+{"num":"2026.9.4","created_at":"2026-09-09T19:23:59.559952Z","license":"MIT","rust_version":"1.95"}
+=== just
+{"recent_downloads":511896,"downloads":2540667}
+{"num":"1.58.0","created_at":"2026-08-03T20:29:15.411846Z","license":"CC0-1.0","rust_version":"1.89.0"}
+=== cargo-make
+{"recent_downloads":246864,"downloads":3670537}
+{"num":"0.37.24","created_at":"2025-01-18T15:20:30.588642Z","license":"Apache-2.0","rust_version":null}
+=== flox (expected missing crate)
+{"errors":[{"detail":"crate `flox` does not exist"}]}
+exit=0
+
+## GitHub figures and RustSec controls
+
+$ GET https://api.github.com/repos/<owner>/<repo> and search/issues total_count
+=== cargo-bins/cargo-binstall
+{"archived":false,"license":"GPL-3.0","pushed_at":"2026-09-10T01:22:53Z","stars":2864}
+{"open_issues_total_count":93}
+=== houseabsolute/ubi
+{"archived":false,"license":"Apache-2.0","pushed_at":"2026-09-07T21:12:11Z","stars":595}
+{"open_issues_total_count":11}
+=== jdx/mise
+{"archived":false,"license":"MIT","pushed_at":"2026-09-10T00:53:53Z","stars":33724}
+{"open_issues_total_count":26}
+=== flox/flox
+{"archived":false,"license":"GPL-2.0","pushed_at":"2026-09-09T21:20:03Z","stars":4123}
+{"open_issues_total_count":380}
+=== casey/just
+{"archived":false,"license":"CC0-1.0","pushed_at":"2026-09-01T20:47:57Z","stars":35716}
+{"open_issues_total_count":171}
+=== dustinblackman/cargo-run-bin
+{"archived":false,"license":"MIT","pushed_at":"2025-12-19T02:30:12Z","stars":237}
+{"open_issues_total_count":7}
+=== rust-lang/rustup
+{"archived":false,"license":"Apache-2.0","pushed_at":"2026-09-09T14:33:39Z","stars":7034}
+{"open_issues_total_count":392}
+=== taiki-e/install-action
+{"archived":false,"license":"Apache-2.0","pushed_at":"2026-09-09T11:24:03Z","stars":537}
+{"open_issues_total_count":15}
+$ curl -s -o /dev/null -w '%{http_code}' https://rustsec.org/packages/<name>.html
+cargo-binstall 404
+ubi 404
+mise 404
+just 404
+cargo-run-bin 404
+time 200
+atty 200
+exit=0
+
+## Reference implementation source reads
+
+$ GET https://raw.githubusercontent.com/<repo>/HEAD/rust-toolchain.toml
+=== oxc-project/oxc
+[toolchain]
+channel = "1.98.1"
+profile = "default"
+=== biomejs/biome
+[toolchain]
+# The default profile includes rustc, rust-std, cargo, rust-docs, rustfmt and clippy.
+profile = "default"
+channel = "1.98.1"
+targets = ["wasm32-unknown-unknown"]
+=== cargo-bins/cargo-binstall
+[toolchain]
+channel = "stable"
+profile = "minimal"
+components = ["rustfmt", "clippy"]
+=== zed-industries/zed
+[toolchain]
+channel = "1.97.1"
+profile = "minimal"
+components = [ "rustfmt", "clippy", "rust-analyzer", "rust-src" ]
+
+$ GET https://raw.githubusercontent.com/<repo>/HEAD/justfile (relevant lines)
+=== oxc-project/oxc
+17 init:
+19   cargo binstall watchexec-cli cargo-insta typos-cli cargo-shear@1.13.1 -y
+39   typos
+69   cargo fmt
+84   typos -w
+366  cargo binstall cargo-autoinherit
+=== biomejs/biome
+13 install-tools:
+14     cargo install cargo-binstall
+15     cargo binstall cargo-insta wasm-opt cargo-deny
+16     cargo binstall wasm-bindgen-cli --version 0.2.117
+21     cargo install cargo-binstall --force
+22     cargo binstall cargo-insta wasm-opt cargo-deny --force
+23     cargo binstall wasm-bindgen-cli --version 0.2.117 --force
+=== casey/just
+19   cargo lclippy --all --all-targets --all-features -- --deny warnings
+20   cargo fmt --all -- --check
+37   cargo fmt --all
+40 shellcheck:
+41   shellcheck www/install.sh
+110  cargo install -f just
+117  cargo install cargo-limit
+118  cargo install cargo-watch
+119  cargo install --locked mdbook@0.4.52
+120  cargo install --locked mdbook-linkcheck@0.7.7
+=== cargo-bins/cargo-binstall
+266     cargo fmt --all -- --check
+
+$ wrapper-prefix grep: mise exec | cargo bin | nix develop -c | flox activate
+oxc-project/oxc wrapper-prefix lines: 0
+biomejs/biome wrapper-prefix lines: 0
+casey/just wrapper-prefix lines: 0
+cargo-bins/cargo-binstall wrapper-prefix lines: 0
+exit=0
+
+## Source-record consistency checks
+
+$ doxa/normalization.json, perplexity field gaps
+missing fields: ['Parameters', 'Migration implications', 'Validation strategy', 'Confidence & re-verify trigger']
+
+$ raw/doxa-perplexity.normalized.md, recommendation prose
+first-party Rust tools via cargo subcommands; all non-cargo dev tools via provisioned binaries on PATH; installation via rustup components, cargo-binstall, and mise according to mise.toml
+
+$ raw/doxa-gemini.normalized.md
+two conflicting owns package-manager-invocation lines; citations are bare [cite: N] markers without URLs or retrieval dates
+
+$ review/DECISION.md, unproven heading
+10 numbered P03-only items, each with a proof path; no implementation claim.
