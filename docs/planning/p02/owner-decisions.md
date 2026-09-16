@@ -355,6 +355,9 @@ reject.
 | W0-R49n | R49 binary name | B = direct a short name: `rslbp` | 2026-09-15 | — | the decision kept `rs-launch-blueprint` as owner-reviewable; the owner chose `rslbp` (the Opus engine's proposal) from `rslbp` / `rsbp`; recorded as a ruling in `docs/port/OWNER-REVIEW.md` |
 | W0-R38 | R38 commit-message-linter | A accept | 2026-09-15 | `7e88ba81…` | `committed` 1.1.11 at commit-msg and in CI; runner-up commitlint wins only if a Node/Bun runtime is provisioned for another tool; footer cap 72 accepted |
 | W0-R66 | R66 output-format-surface spend | A accept one provider | 2026-09-15 | — | section 3 above; no re-run of Perplexity/Gemini; synthesis starts on three reports |
+| W0-R04 | R04 public-api-surface-enforcement | A accept | 2026-09-15 | `0d4f2e60…` | runner-up `cargo-public-api` needs a pinned nightly; method-level gap accepted |
+| W0-R06 | R06 unsafe-code-policy | A accept | 2026-09-15 | `343a7fc5…` | runner-up `deny` + `#[expect]` wins only for FFI/systems forks |
+| W0-R07 | R07 contributors-bot-trigger-cadence | A accept + add the monthly backstop | 2026-09-15 | `0b3dde8f…` → revision 2 | the decision's runner-up E condition (R21 settles on an expiring credential) was already met; owner directs the two-line backstop now |
 
 ## Retired from this list
 

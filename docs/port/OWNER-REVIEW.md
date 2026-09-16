@@ -137,6 +137,9 @@ The briefs the owner answered from are in `docs/planning/p02/owner-decisions.md`
 | R42 | 10 | `a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c` | accept | 2026-09-15 | W0-R42 option A; install-integrity posture chosen under W0-R42i (see the ruling below); the eight items consuming `package-manager-invocation` admissible |
 | R49 | 7 | `319a535665318a120c9be3bdf61037f9f4ea8214d972de724dafe16902bec41d` | accept | 2026-09-15 | W0-R49 option A; W0-R49n: the owner directs the short binary name `rslbp` in place of `rs-launch-blueprint` (ruling below); re-bound at revision 8, which also makes the round-7 judgment audit's three clause repairs; consumers R22, R32, R68, R50 admissible |
 | R38 | 8 | `7e88ba81e5ce0ea7ae997cba7da199ece85acde3573fed2fcea9f039629a7a58` | accept | 2026-09-15 | W0-R38 option A; `committed` 1.1.11, hook plus CI, the eleven-type 50/72/72 soft-line convention; recommendation byte-identical to the published revision 5; consumers R24 and the release-please rows admissible |
+| R04 | 1 (published) | `0d4f2e60e994439d9261f5169c3fd28e5e76077dacd089d999a51fb67a5f6c5d` | accept | 2026-09-15 | W0-R04 option A; private-module barrel, deny lints, `compile_fail` doctests, `cargo-semver-checks` 0.50.0 on stable |
+| R06 | 1 (published) | `343a7fc555da5ad9d689f27ead710c007fdc9a4228eb4e8d8f49b0c69d55688d` | accept | 2026-09-15 | W0-R06 option A; `unsafe_code = "forbid"` workspace-inherited, clippy safety lints pre-armed |
+| R07 | 1 (published) | `0b3dde8f9a15f22e60a01542065c53c122881e8c48bf3ee6c172ba5b70499346` | accept | 2026-09-15 | W0-R07 option A: push trigger accepted AND the owner directs revision 2 to add the monthly backstop `schedule: - cron: '17 6 1 * *'` (the decision's own runner-up condition was met when R21 settled on an expiring credential); re-bound at revision 2 |
 
 ## Dispositions
 
