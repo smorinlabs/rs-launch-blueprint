@@ -75,6 +75,25 @@ PASS A4d    GET hyperfine src/export/markdown.rs HTTP == 200
 PASS A4e    hyperfine joins cells with ' | ' verbatim (positive control on the file's identity)
 PASS A4f    hyperfine markdown exporter performs no replace/escape (/usr/bin/grep -c -F) == 0
 
+--- A8 gate 3, second half: declared and actual `unsafe` posture ---
+PASS A8-serde serde-1.0.229.crate extracted
+PASS A8c-serde positive control: serde-1.0.229/src/lib.rs present
+PASS A8u-serde serde src contains `unsafe` (/usr/bin/grep -rn -E, lines=2) — posture: uses unsafe, audit required
+PASS A8n-serde negative control: serde src has no synthetic token == 0
+PASS A8-serde_json serde_json-1.0.151.crate extracted
+PASS A8c-serde_json positive control: serde_json-1.0.151/src/lib.rs present
+PASS A8u-serde_json serde_json src contains `unsafe` (/usr/bin/grep -rn -E, lines=15) — posture: uses unsafe, audit required
+PASS A8n-serde_json negative control: serde_json src has no synthetic token == 0
+PASS A8-tempfile tempfile-3.27.0.crate extracted
+PASS A8c-tempfile positive control: tempfile-3.27.0/src/lib.rs present
+PASS A8u-tempfile tempfile src contains `unsafe` (/usr/bin/grep -rn -E, lines=4) — posture: uses unsafe, audit required
+PASS A8n-tempfile negative control: tempfile src has no synthetic token == 0
+PASS A8-csv csv-1.4.0.crate extracted
+PASS A8c-csv positive control: csv-1.4.0/src/lib.rs present
+PASS A8u-csv csv src contains `unsafe` (/usr/bin/grep -rn -E, lines=4) — posture: uses unsafe, audit required
+PASS A8n-csv negative control: csv src has no synthetic token == 0
+PASS A8u-tabled tabled src contains `unsafe` (/usr/bin/grep -rn -E, lines=1) — posture: uses unsafe, audit required
+
 --- A5 practice evidence (adopter manifests read directly) ---
 PASS A5     GET nushell crates/nu-table/Cargo.toml HTTP == 200
 PASS A5a    nushell's nu-table enables tabled's ansi feature with default-features = false
@@ -112,4 +131,4 @@ PASS A7h-BurntSushi/rust-csv/master GET BurntSushi/rust-csv/master/.github/workf
 PASS A7-BurntSushi/rust-csv/master BurntSushi/rust-csv/master CI declares macos-latest == yes
 PASS A7u-BurntSushi/rust-csv/master control: BurntSushi/rust-csv/master CI names ubuntu-latest
 
-CHECKS RUN: 91   FAILURES: 0   INDETERMINATE: 0
+CHECKS RUN: 108   FAILURES: 0   INDETERMINATE: 0

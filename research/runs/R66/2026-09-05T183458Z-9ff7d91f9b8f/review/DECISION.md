@@ -64,7 +64,11 @@ closed required set. `jsonl` has no streaming command to serve in a `list`-shape
 `yaml` would add a second machine schema and a parser dependency for no evidenced job;
 `wide` needs a second column set that no source repo defines. Each is a one-variant addition
 later, which is the point of the exporter seam below. **No `OVERRIDE` is declared by this
-item: every applicable `MUST` in the standard is met, and no `SHOULD` is waived.**
+item: every `MUST` in the standard that applies to this surface is met, and **no `SHOULD` within
+this surface is waived**. That claim is scoped deliberately. This item cannot speak for the
+standard's `SHOULD`s that belong to other items — R7.3's presentation clause is R65's, R3.9's
+input-side clauses are R52/R53's, R7.4's pager clause is R64's — and the sentence should not be
+read as a template-wide conformance statement.**
 
 ### The flag contract
 
@@ -409,7 +413,7 @@ tree*, which needs `cargo audit` against a real lockfile — recorded as unprove
   abstraction and no competing crate changes the Markdown-versus-CSV or flag-naming answer.
 - **Tradeoffs.** Proc-macro compile time; the source contains `unsafe`, so the resolved tree
   needs an audit rather than an unsafe-free claim.
-- **Fitness gates.** 1: `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool` (declared `MIT OR Apache-2.0`, recorded). 2: declared `rust_version = 1.56`, forty minors below the 1.96 floor; the *resolved tree's* MSRV is P03's check. 3: RustSec 404 with controls; `unsafe` present in the crate's own source. 4: **not demonstrated by upstream CI** — `serde-rs/serde`'s `ci.yml` names `ubuntu-latest` and `windows-latest` and **no** `macos-latest` (check `A7-serde-rs/serde/master`, with `A7u-serde-rs/serde/master` confirming the file really is a matrix). Judged a qualified pass on Apple platforms being Rust tier 1 and on `serde` being a transitive dependency of essentially every macOS Rust build; the template's own `macos-latest` leg is the verification, and this is recorded as a caveat, not converted into a positive. 5: default feature `std`; `derive` opted in; no async-runtime coupling. 6: compile cost is the proc-macro expansion, paid once per DTO; binary-size impact is small and dominated by `serde_json`.
+- **Fitness gates.** 1: `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool` (declared `MIT OR Apache-2.0`, recorded). 2: declared `rust_version = 1.56`, forty minors below the 1.96 floor; the *resolved tree's* MSRV is P03's check. 3: RustSec 404 with controls (`A3-serde`, with the `atty`/`time` positive controls). **`unsafe` posture:** the published `serde-1.0.229` tarball's `src/` carries `unsafe` on **2** lines, counted from the crate's own source rather than carried from a raw report (check `A8u-serde`, with `A8c-serde` confirming the extracted tree is the right one and `A8n-serde` a negative control on the same tree); the crate is therefore not unsafe-free, and the resolved tree needs `cargo audit` plus a review of those sites in P03. 4: **not demonstrated by upstream CI** — `serde-rs/serde`'s `ci.yml` names `ubuntu-latest` and `windows-latest` and **no** `macos-latest` (check `A7-serde-rs/serde/master`, with `A7u-serde-rs/serde/master` confirming the file really is a matrix). Judged a qualified pass on Apple platforms being Rust tier 1 and on `serde` being a transitive dependency of essentially every macOS Rust build; the template's own `macos-latest` leg is the verification, and this is recorded as a caveat, not converted into a positive. 5: default feature `std`; `derive` opted in; no async-runtime coupling. 6: compile cost is the proc-macro expansion, paid once per DTO; binary-size impact is small and dominated by `serde_json`.
 - **Maintenance state.** `active` — release 1.0.229 on 2026-07-18 (raw, 2026-09-05), repository
   pushed 2026-08-25, not archived (check `A2a-serde-rs/serde`).
 - **Migration implications.** Add the dependency; derive `Serialize` on the DTO that backs the
@@ -445,7 +449,7 @@ tree*, which needs `cargo audit` against a real lockfile — recorded as unprove
 - **Ranked runner-up.** Inapplicable: JSON is the required machine contract and no competing
   Rust JSON library offers a benefit this item can use.
 - **Tradeoffs.** Parser/serializer compile cost; `unsafe` present in its own source.
-- **Fitness gates.** 1: `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool` (declared `MIT OR Apache-2.0`, recorded). 2: declared `rust_version = 1.71`, below the 1.96 floor. 3: RustSec 404 with controls; `unsafe` present. 4: **not demonstrated by upstream CI** — `serde-rs/json`'s `ci.yml` names `ubuntu-latest` and no `macos-latest` (check `A7-serde-rs/json/master`); same qualified-pass reasoning and same caveat as `serde`. 5: default `std`; optional features off; no async coupling. 6: the largest single compile-time and binary-size contributor in this stack, still small in absolute terms for a CLI.
+- **Fitness gates.** 1: `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool` (declared `MIT OR Apache-2.0`, recorded). 2: declared `rust_version = 1.71`, below the 1.96 floor. 3: RustSec 404 with controls (`A3-serde_json`). **`unsafe` posture:** `serde_json-1.0.151`'s `src/` carries `unsafe` on **15** lines — the highest count in this stack, which is what a hand-tuned parser is expected to contain — counted from the crate's own source (check `A8u-serde_json`, controls `A8c-serde_json` and `A8n-serde_json`). 4: **not demonstrated by upstream CI** — `serde-rs/json`'s `ci.yml` names `ubuntu-latest` and no `macos-latest` (check `A7-serde-rs/json/master`); same qualified-pass reasoning and same caveat as `serde`. 5: default `std`; optional features off; no async coupling. 6: the largest single compile-time and binary-size contributor in this stack, still small in absolute terms for a CLI.
 - **Maintenance state.** `active` — release 1.0.151 on 2026-07-20 (raw, 2026-09-05), pushed
   2026-08-08, not archived (check `A2a-serde-rs/json`).
 - **Migration implications.** Route the `json` branch through `to_writer`; document the JSON
@@ -502,7 +506,7 @@ tree*, which needs `cargo audit` against a real lockfile — recorded as unprove
   (check `A5c`, whose value is printed as a note, not asserted) and `0.22.0` was published only
   on 2026-09-05. This decision recommends the current max stable rather than the
   adopter-proven minor, and records the gap as a P03 verification rather than hiding it.
-- **Fitness gates.** 1: `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool` (declared `MIT`, recorded — note it is MIT-only, so unlike the rest of the stack it carries no Apache-2.0 patent grant; recorded as a fact with no verdict). 2: **declares no `rust_version` at all** (check `A1m-tabled`: `null`), as do `papergrid 0.18.0` and `tabled_derive 0.12.0`. The floor is met in fact but **not declared**; the compensating controls are the exact pin (which freezes it) and the template's own CI MSRV job, which `msrv-policy` requires independently. This is a **qualified** pass, and it is the weakest gate result in the stack. 3: RustSec 404 with controls; exactly one `unsafe` occurrence in the crate's own `src/` (counted during the ALT-2 inspection). 4: **CI-verified** — `zhiburt/tabled`'s `ci.yml` names `macos-latest`, `ubuntu-latest` and `windows-latest` (check `A7-zhiburt/tabled/master`). 5: `default-features = false` disables `derive`, `macros` and `assert`; only `ansi` and `std` are on; no async coupling. 6: the largest *new* compile-time cost in the stack after `serde_json` — three crates (`tabled`, `papergrid`, `tabled_derive`), reduced by disabling the derive feature; binary-size impact modest.
+- **Fitness gates.** 1: `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool` (declared `MIT`, recorded — note it is MIT-only, so unlike the rest of the stack it carries no Apache-2.0 patent grant; recorded as a fact with no verdict). 2: **declares no `rust_version` at all** (check `A1m-tabled`: `null`), as do `papergrid 0.18.0` and `tabled_derive 0.12.0`. The floor is met in fact but **not declared**; the compensating controls are the exact pin (which freezes it) and the template's own CI MSRV job, which `msrv-policy` requires independently. This is a **qualified** pass, and it is the weakest gate result in the stack. 3: RustSec 404 with controls (`A3-tabled`). **`unsafe` posture:** exactly **1** `unsafe` line in `tabled-0.22.0`'s own `src/`, the lowest count in the stack (check `A8u-tabled`, counted over the tree the ALT-2 inspection extracted and `A4a` verified). 4: **CI-verified** — `zhiburt/tabled`'s `ci.yml` names `macos-latest`, `ubuntu-latest` and `windows-latest` (check `A7-zhiburt/tabled/master`). 5: `default-features = false` disables `derive`, `macros` and `assert`; only `ansi` and `std` are on; no async coupling. 6: the largest *new* compile-time cost in the stack after `serde_json` — three crates (`tabled`, `papergrid`, `tabled_derive`), reduced by disabling the derive feature; binary-size impact modest.
 - **Maintenance state.** `active` — 0.22.0 published 2026-09-05, repository pushed
   2026-09-05, not archived (check `A2a-zhiburt/tabled`). The 101 open issues are recorded and
   are the reason `comfy-table` remains the ranked runner-up.
@@ -546,7 +550,7 @@ tree*, which needs `cargo audit` against a real lockfile — recorded as unprove
 - **Tradeoffs.** One small dependency against a correctness property that is easy to get
   subtly wrong. Note the coordination point in `## Parameters`: R52 needs the same mechanism
   for py's atomic config write, and R59 may need it for a log sink.
-- **Fitness gates.** 1: `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool` (declared `MIT OR Apache-2.0`, recorded). 2: declared `rust_version = 1.63`, below the 1.96 floor (check `A1m-tempfile`). 3: RustSec 404 with controls. 4: **CI-verified** — `Stebalien/tempfile`'s `ci.yml` names `macos-latest`, `ubuntu-latest` and `windows-latest` (check `A7-Stebalien/tempfile/master`). 5: default features; no async coupling. 6: negligible compile and binary cost.
+- **Fitness gates.** 1: `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool` (declared `MIT OR Apache-2.0`, recorded). 2: declared `rust_version = 1.63`, below the 1.96 floor (check `A1m-tempfile`). 3: RustSec 404 with controls (`A3-tempfile`). **`unsafe` posture:** `tempfile-3.27.0`'s `src/` carries `unsafe` on **4** lines, which is what a crate making platform file-system calls is expected to contain; counted from the crate's own source (check `A8u-tempfile`, controls `A8c-tempfile` and `A8n-tempfile`). 4: **CI-verified** — `Stebalien/tempfile`'s `ci.yml` names `macos-latest`, `ubuntu-latest` and `windows-latest` (check `A7-Stebalien/tempfile/master`). 5: default features; no async coupling. 6: negligible compile and binary cost.
 - **Maintenance state.** `active` — pushed 2026-09-11, not archived, 5 open issues
   (check `A2a-Stebalien/tempfile`, snapshot).
 - **Migration implications.** One `Destination` module in the CLI crate.
@@ -584,7 +588,7 @@ tree*, which needs `cargo audit` against a real lockfile — recorded as unprove
   table. It does not today.
 - **Tradeoffs.** ~20 lines this repository maintains and must test adversarially, against zero
   dependency, zero compile cost and bytes that cannot change under it.
-- **Fitness gates.** 1: `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool` (no third-party licence involved; the code is this repository's own, under its declared `MIT OR Apache-2.0`). 2: `std` only; no MSRV beyond the edition's 1.85 and the template's 1.96 floor. 3: no advisory surface; `#![forbid(unsafe_code)]` is expected in the CLI crate and costs nothing here. 4: `std::io` and `std::fmt` are portable across both runners; nothing platform-specific is used. 5: no features, no async coupling. 6: negligible on both compile time and binary size.
+- **Fitness gates.** 1: `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool` (no third-party licence involved; the code is this repository's own, under its declared `MIT OR Apache-2.0`). 2: `std` only; no MSRV beyond the edition's 1.85 and the template's 1.96 floor. 3: no advisory surface, because there is no third-party package to carry one. **`unsafe` posture:** none — these renderers are `write!` over `&mut dyn Write` and need no `unsafe`, so `#![forbid(unsafe_code)]` on the CLI crate costs nothing and is recommended. This is the only member in the item whose posture is unsafe-free; the five crate members each carry some, with counts stated in their own rows. 4: `std::io` and `std::fmt` are portable across both runners; nothing platform-specific is used. 5: no features, no async coupling. 6: negligible on both compile time and binary size.
 - **Maintenance state.** `inapplicable` — this member is template-owned code, not a third-party
   crate, so the maintenance rubric has no subject.
 - **Migration implications.** Two small CLI-crate modules plus the shared columns/rows
@@ -616,7 +620,7 @@ tree*, which needs `cargo audit` against a real lockfile — recorded as unprove
   a second flat-schema contract, a fourth renderer, and a formula-injection policy for
   untrusted cells that no other format needs. Two of the three raws reach the same conclusion;
   the third argues for shipping it, and `## Engines` records that disagreement.
-- **Fitness gates, answered anyway so the trigger needs no new research.** 1: `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool` (declared `Unlicense/MIT`, recorded). 2: declared `rust_version = 1.73`, below the 1.96 floor (check `A1m-csv`). 3: RustSec 404 with controls. 4: **CI-verified** — `BurntSushi/rust-csv`'s `ci.yml` names `macos-latest`, `ubuntu-latest` and `windows-latest` (check `A7-BurntSushi/rust-csv/master`). 5: no declared feature set; no async coupling. 6: small compile and binary cost.
+- **Fitness gates, answered anyway so the trigger needs no new research.** 1: `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool` (declared `Unlicense/MIT`, recorded). 2: declared `rust_version = 1.73`, below the 1.96 floor (check `A1m-csv`). 3: RustSec 404 with controls (`A3-csv`). **`unsafe` posture:** `csv-1.4.0`'s `src/` carries `unsafe` on **4** lines; counted from the crate's own source rather than carried from the Codex raw, which reported the same qualitative finding on 2026-09-05 (check `A8u-csv`, controls `A8c-csv` and `A8n-csv`). 4: **CI-verified** — `BurntSushi/rust-csv`'s `ci.yml` names `macos-latest`, `ubuntu-latest` and `windows-latest` (check `A7-BurntSushi/rust-csv/master`). 5: no declared feature set; no async coupling. 6: small compile and binary cost.
 - **Maintenance state.** `stable-quiet` — last release 1.4.0 on 2025-10-17 (raw, 2026-09-05),
   which is more than six months ago and so triggers investigation rather than a verdict; the
   repository was pushed 2026-08-04 and is not archived (check `A2a-BurntSushi/rust-csv`), and
@@ -639,18 +643,7 @@ that gap is recorded as unproven in `## Engines` rather than papered over; the r
 proof is a `cargo generate-lockfile` plus `cargo tree -d` in P03, exactly as R60 and R67 ran
 for their own stacks.
 
-re-verify: 2027-03-16, or earlier on any of — the org CLI Design Standard moving off the pinned
-blob `f9de0437baece3383e73ca2c5f48b7ab399b51c7`, which check `C0c` detects and which would
-invalidate every `:<line>` citation here; an amendment to R3.2, R3.9, R4.1, R4.2, R7.1, R7.2,
-R7.3, R7.7, R7.8 or R10.3; `tabled` publishing 0.23 or declaring a `rust_version` above the
-then-current floor, or `nushell` migrating away from it; a RustSec advisory opening against
-`serde`, `serde_json`, `tabled`, `papergrid`, `tabled_derive` or `tempfile`; Rust stable
-advancing far enough that the floor rises above 1.71, the highest declared `rust_version` in
-the stack; `msrv-policy` changing to "latest stable only", which hands the table member to
-`comfy-table`; a recorded requirement for spreadsheet import, which adds `csv 1.4.0` as a
-fifth format; R85 resolving in a way that needs a row accessor this contract does not provide;
-or R60 being reopened, which would happen only if this item had left no format-selection flag
-acceptable at the root — it has not.
+re-verify: 2027-03-16, or earlier on any of — the org CLI Design Standard moving off the pinned blob `f9de0437baece3383e73ca2c5f48b7ab399b51c7`, which check `C0c` detects and which would invalidate every `:<line>` citation here; an amendment to R3.2, R3.9, R4.1, R4.2, R7.1, R7.2, R7.3, R7.7, R7.8 or R10.3; `tabled` publishing 0.23 or declaring a `rust_version` above the then-current floor, or `nushell` migrating away from it; a RustSec advisory opening against `serde`, `serde_json`, `tabled`, `papergrid`, `tabled_derive` or `tempfile`; Rust stable advancing far enough that the floor rises above 1.71, the highest declared `rust_version` in the stack; `msrv-policy` changing to "latest stable only", which hands the table member to `comfy-table`; a recorded requirement for spreadsheet import, which adds `csv 1.4.0` as a fifth format; R85 resolving in a way that needs a row accessor this contract does not provide; or R60 being reopened, which would happen only if this item had left no format-selection flag acceptable at the root — it has not.
 
 ## Parameters
 
@@ -717,17 +710,26 @@ inside a `git archive` extraction.
 | Script | Log | Command | Exit | Result |
 |---|---|---|---|---|
 | `review/evidence/r66-sources.sh` | `review/evidence/r66-sources.log` | `bash review/evidence/r66-sources.sh` | **0** | `CHECKS RUN: 89   FAILURES: 0` |
-| `review/evidence/r66-figures.sh` | `review/evidence/r66-figures.log` | `GH_TOKEN="$(gh auth token)" bash review/evidence/r66-figures.sh` | **0** | `CHECKS RUN: 91   FAILURES: 0   INDETERMINATE: 0` |
+| `review/evidence/r66-figures.sh` | `review/evidence/r66-figures.log` | `GH_TOKEN="$(gh auth token)" bash review/evidence/r66-figures.sh` | **0** | `CHECKS RUN: 108   FAILURES: 0   INDETERMINATE: 0` |
 
 **Why the second command carries a token, and what happens without one.** `api.github.com`
-allows **60 unauthenticated requests per hour per IP** and this script spends 13 of them, so two
-or three runs in the same hour exhaust the quota and every GitHub check then receives HTTP
-`403`. That is neither a pass nor a content failure, and the script says so: it prints those
+allows **60 unauthenticated requests per hour per IP**. This script makes **8** of them in a
+default run — one per repository in the `A2*` family — and `--record` adds 16 more, so a handful of
+runs in the same hour exhaust the quota and every GitHub check then receives HTTP `403`. (This
+decision's authoring spent that quota in exactly this way, which is how the problem was found.)
+That is neither a pass nor a content failure, and the script says so: it prints those
 sixteen checks as `INDET`, keeps `FAILURES: 0`, and exits **2** with the reset-time lookup and
-the token instruction. That path was executed, not described — an unauthenticated run made
-immediately after the quota was spent produced exactly `CHECKS RUN: 91   FAILURES: 0
-INDETERMINATE: 16` and exit `2`, and `GET https://api.github.com/rate_limit` at that moment
-reported `x-ratelimit-limit: 60`, `x-ratelimit-remaining: 0`. **An auditor who sees exit `2`
+the token instruction. That path was executed twice, not described. First for real: an
+unauthenticated run made immediately after the quota was spent produced exit `2` with
+`FAILURES: 0` and sixteen `INDET` lines, and `GET https://api.github.com/rate_limit` at that
+moment reported `x-ratelimit-limit: 60`, `x-ratelimit-remaining: 0` (that run was against the
+91-check version of the script, before gate 3's `A8*` family was added). Then as a **controlled
+repeat against the committed 108-check script**, so the numbers quoted here are the ones an
+auditor would see: a copy whose `api.github.com` branch returns a canned
+`{"message":"API rate limit exceeded for …"}` with status `403` was run in place and produced
+exactly `CHECKS RUN: 108   FAILURES: 0   INDETERMINATE: 16` and exit `2`; the copy was then
+deleted and is not committed. The canned body was used instead of spending the live quota a
+second time. **An auditor who sees exit `2`
 with `FAILURES: 0` has not found a false claim**; they have hit the quota, and they should
 either wait for the reset the script prints or set `GH_TOKEN`/`GITHUB_TOKEN`. The token is sent
 only as an `Authorization` header and never reaches the log — the committed log was grepped for
@@ -765,7 +767,7 @@ standard are asserted verbatim, plus one negative control that the standard does
 compatibility requirements and the registry's silence on an output-format row are each asserted
 (`C10`–`C10j`), as are the prompt's empty `- owns:` and `- consumes:` lines (`C11a`, `C11b`).
 
-**What the figure check establishes** (`r66-figures.sh`, 91 checks, live endpoints). In this
+**What the figure check establishes** (`r66-figures.sh`, 108 checks, live endpoints). In this
 paragraph only, a trailing `*` names a **family** of check ids rather than one id: `A1*` means
 every check id printed with that prefix, each of which carries its own subject in full — for
 example `A1m-tabled`. Everywhere else in this decision a check id is quoted in full and can be
@@ -781,7 +783,12 @@ quotes and performs no replacement (`A4*`). `nushell` still configures `tabled` 
 `hyperfine` still declares `csv` and `serde_json` and no table or Markdown crate (`A5*`). Both
 table maintainers' MSRV and semver statements are asserted verbatim (`A6*`). Each crate's own
 CI matrix is checked for `macos-latest`, with a `ubuntu-latest` control on the same file so a
-zero macOS count cannot come from an empty or wrong file (`A7*`).
+zero macOS count cannot come from an empty or wrong file (`A7*`). Finally, gate 3's second half:
+each of the five candidate crates' published tarballs is downloaded and its `src/` searched for
+`unsafe`, giving the counts stated in each member's gate row — `serde` 2, `serde_json` 15,
+`tabled` 1, `tempfile` 4, `csv` 4 — each paired with a positive control that the extracted tree
+is the right one and a negative control on the same tree (`A8*`). Those counts are read from the
+crates' own source rather than carried from a raw report.
 
 **Reproduction, actually re-run rather than asserted — including the run that failed.** Both
 scripts were re-run after their logs were written and diffed against them: `diff` reports **no
@@ -917,15 +924,22 @@ most contestable member**, and its runner-up and reversal condition are stated i
 Opus.** Codex proposes renaming the default to `table`; Opus explicitly declines, arguing
 `text` is the one spelling both sources already use and that R4.2's `MUST` concerns the
 *selector* rather than the enum values, and it routes the deviation to a conformance note.
-Doxa keeps `text` without discussing the point. `table` is adopted because R4.1's result-output
-row names the enum members with the tier's `MUST` wording — "each with exactly these names and
-meanings" — and gives `table` as the default human format (check `C9c`), and because R7.2 and
-R7.8 are both written in terms of that vocabulary: `-o table` is named as the human default at
-`:385` and `-o name` as a machine format at `:257`. Choosing `text` would require a conformance
-note and an `OVERRIDE`; choosing `table` costs one string in documentation that does not yet
-exist, since this template has no released invocations to break. **Settled by:** the standard's
-own vocabulary, and the fact that the cost of conformance here is zero for a template that
-has not shipped.
+Doxa keeps `text` without discussing the point. `table` is adopted for two reasons of unequal
+strength, and they are separated here rather than merged. The **weaker** one is a reading of
+R4.1: its result-output row names the enum members inside a tier whose wording is "each with
+exactly these names and meanings", and gives `table` as the default human format (check `C9c`),
+while R7.2 and R7.8 are written in that same vocabulary — `-o table` as the human default at
+`:385`, `-o name` as a machine format at `:257`. **Opus's counter-reading is not unreasonable**:
+R4.1's `MUST` could be read to bind the *option* names, with the enum values sitting in a
+Meaning column that R4.2 then calls "extensible". On that reading `text` is conformant and needs
+no waiver, and this decision does not claim to have refuted it. The **stronger** reason, and the
+one that actually carries the choice, is cost: `table` costs one string in documentation that
+does not yet exist, because this template has never shipped and has no released invocation to
+break, whereas `text` costs a standing divergence note that every future reader of the template
+has to reconcile against the standard's own vocabulary. **Settled by:** the zero cost of
+conformance for an unshipped template, with the R4.1 reading recorded as supporting rather than
+decisive. If the owner reads R4.1 Opus's way and prefers source parity, `text` is a one-word
+change here and needs no other part of this decision revisited.
 
 **Disagreement 6 — what does a RustSec 404 mean? Settled as "no advisory", against Codex.**
 Codex records the 404s as leaving advisory state **unverified** and declines to treat them as

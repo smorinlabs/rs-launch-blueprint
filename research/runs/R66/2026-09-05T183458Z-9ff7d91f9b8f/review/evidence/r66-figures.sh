@@ -7,12 +7,14 @@
 # repository is archived, and the RustSec advisory state (gate 3). It also
 # re-runs, against the crate's own published source, the two claims that decide
 # an architectural alternative: that `tabled`'s `Style::markdown()` escapes no
-# pipe, and that `hyperfine`'s Markdown exporter escapes none either.
+# pipe, and that `hyperfine`'s Markdown exporter escapes none either. The A8
+# family answers gate 3's second half by counting `unsafe` in each candidate
+# crate's own published `src/`.
 #
 # What varies between runs, and the rule for comparing across it. Download
 # counters, star counts and `pushed_at` move continuously, so this script never
 # prints them and never asserts on them: the dated figures quoted in the
-# decision come from `snapshots/crates-2026-09-15.json`, captured once by
+# decision come from `snapshots/crates-2026-09-16.json`, captured once by
 # `--record` and committed beside this script. Everything this script prints is
 # a stable field, so its log reproduces byte-for-byte until an upstream release,
 # a yank, an advisory, or a licence change moves one — each of which is a
@@ -20,7 +22,10 @@
 #
 # Usage: bash r66-figures.sh            assert live stable fields (default)
 #        bash r66-figures.sh --record   additionally rewrite the dated snapshot
-# Exit 0 = every check passed. Exit 1 = at least one failed.
+# Exit 0 = every check passed.
+# Exit 1 = at least one content check failed.
+# Exit 2 = no content check failed, but the GitHub REST quota was exhausted so
+#          the A2 family could not be determined. See the note below.
 
 set -u
 set -o pipefail
@@ -44,8 +49,9 @@ WORK=$(mktemp -d) || exit 1
 trap 'rm -rf "$WORK"' EXIT
 
 # api.github.com allows 60 unauthenticated requests per hour per IP. This script
-# spends 13 of them, so two or three runs in the same hour exhaust the quota and
-# every GitHub check then sees HTTP 403. That is neither a pass nor a content
+# makes 8 of them in a default run — one per repository in the A2 loop — and
+# `--record` adds 16 more. So a handful of runs in the same hour exhaust the
+# quota and every GitHub check then sees HTTP 403. That is neither a pass nor a content
 # failure, so it is reported as INDETERMINATE and the script exits 2 — a state an
 # auditor can tell apart from "the claim is false". Exporting GH_TOKEN or
 # GITHUB_TOKEN raises the limit to 5,000/hour; the token is sent as a header and
@@ -174,6 +180,56 @@ else
 fi
 NHF=$(/usr/bin/grep -c -F 'replace' "$WORK/hf-md.rs" 2>/dev/null || true)
 assert_eq A4f "0" "${NHF:-0}" "hyperfine markdown exporter performs no replace/escape (/usr/bin/grep -c -F)"
+echo
+
+# ------------- A8: gate 3's second half — the `unsafe` posture of each crate
+# Gate 3 is "no open RustSec advisory; `unsafe` posture stated". A3 answers the
+# first half; this answers the second from each crate's own published source
+# rather than from a raw report's assertion. Each count is paired with a
+# positive control that the extracted tree is the right one, so a zero cannot
+# come from an empty or wrong directory.
+echo "--- A8 gate 3, second half: declared and actual \`unsafe\` posture ---"
+# crate|version|expected unsafe-line count|control path
+UNSAFE='serde|1.0.229|GT0|src/lib.rs
+serde_json|1.0.151|GT0|src/lib.rs
+tempfile|3.27.0|GT0|src/lib.rs
+csv|1.4.0|GT0|src/lib.rs'
+while IFS='|' read -r crate ver want control; do
+  [ -n "$crate" ] || continue
+  curl -sS -L -H "User-Agent: $UA" --max-time 120 -o "$WORK/$crate.crate" \
+    "https://crates.io/api/v1/crates/$crate/$ver/download" || { fail "A8-$crate" "download failed"; continue; }
+  if tar xzf "$WORK/$crate.crate" -C "$WORK"; then
+    pass "A8-$crate" "$crate-$ver.crate extracted"
+  else
+    fail "A8-$crate" "$crate-$ver.crate extraction failed"; continue
+  fi
+  if [ -f "$WORK/$crate-$ver/$control" ]; then
+    pass "A8c-$crate" "positive control: $crate-$ver/$control present"
+  else
+    fail "A8c-$crate" "positive control: $crate-$ver/$control missing — wrong tree"; continue
+  fi
+  n=$(/usr/bin/grep -rn -E '(^|[^A-Za-z_])unsafe[[:space:]]' "$WORK/$crate-$ver/src" 2>/dev/null | wc -l | tr -d ' ')
+  if [ "$want" = "GT0" ]; then
+    if [ "${n:-0}" -gt 0 ]; then
+      pass "A8u-$crate" "$crate src contains \`unsafe\` (/usr/bin/grep -rn -E, lines=$n) — posture: uses unsafe, audit required"
+    else
+      fail "A8u-$crate" "$crate src contains no \`unsafe\` — expected some; the posture statement in the decision is wrong"
+    fi
+  fi
+  # Negative control on the same tree: a token that must not appear, so the
+  # search above is demonstrably matching content rather than everything.
+  z=$(/usr/bin/grep -rn -F 'unsafe_but_not_a_real_keyword' "$WORK/$crate-$ver/src" 2>/dev/null | wc -l | tr -d ' ')
+  assert_eq "A8n-$crate" "0" "${z:-0}" "negative control: $crate src has no synthetic token"
+done <<EOF
+$UNSAFE
+EOF
+# tabled was already extracted for A4; count its unsafe lines the same way.
+NTU=$(/usr/bin/grep -rn -E '(^|[^A-Za-z_])unsafe[[:space:]]' "$TSRC" 2>/dev/null | wc -l | tr -d ' ')
+if [ "${NTU:-0}" -ge 1 ]; then
+  pass "A8u-tabled" "tabled src contains \`unsafe\` (/usr/bin/grep -rn -E, lines=$NTU) — posture: uses unsafe, audit required"
+else
+  fail "A8u-tabled" "tabled src contains no \`unsafe\` — the decision's posture statement is wrong"
+fi
 echo
 
 # ------------------------------------- A5: practice evidence read at the source
