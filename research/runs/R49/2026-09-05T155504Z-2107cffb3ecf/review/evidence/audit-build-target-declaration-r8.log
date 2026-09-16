@@ -1,0 +1,145 @@
+# R49 empirical audit round 8 rerun
+cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+argv: bash research/runs/R49/2026-09-05T155504Z-2107cffb3ecf/review/evidence/check-lockfile-inclusion.sh
+4ed6818fb64e912d45ab47cbb1e1f7eca43536bfca40f776572d75f1db586ac7  research/runs/R49/2026-09-05T155504Z-2107cffb3ecf/review/evidence/check-lockfile-inclusion.sh
+# R49 check L — conditions under which Cargo.lock is included in a package
+retrieved: 2026-09-16T02:20:26Z
+installed: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+installed: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+
+=== src/doc/src/reference/manifest.md@rust-1.98.0 ===
+bytes: 25478  sha256: 28e0aaa4907a85fd7c8bc45e68a6fb4bac997913edaff83500cd63ca608a215b
+The following files are always included:
+
+* The `Cargo.toml` file of the package itself is always included, it does not
+  need to be listed in `include`.
+* A minimized `Cargo.lock` is automatically included.
+  See [`cargo package`] for more information.
+* If a [`license-file`](#the-license-and-license-file-fields) is specified, it
+  is always included.
+
+The options are mutually exclusive; setting `include` will override an
+ASSERT ok   manifest.md says the lockfile is automatically included
+ASSERT ok   manifest.md scopes that list to include/exclude
+
+=== src/doc/src/commands/cargo-package.md@rust-1.98.0 ===
+bytes: 21051  sha256: 257f6fd4b6b885e42edb01149c6981da5117fde0226f10a0250c0ea74119399f
+24:    - `Cargo.lock` is always included. When missing, a new lock file will be
+25-      generated unless the `--exclude-lockfile` flag is used. [cargo-install(1)](cargo-install.html)
+26-      will use the packaged lock file if the `--locked` flag is used.
+101:<dt class="option-term" id="option-cargo-package---exclude-lockfile"><a class="option-anchor" href="#option-cargo-package---exclude-lockfile"><code>--exclude-lockfile</code></a></dt>
+102-<dd class="option-desc"><p>Don’t include the lock file when packaging.</p>
+103-<p>This flag is not for general use.
+104-Some tools may expect a lock file to be present (e.g. <code>cargo install --locked</code>).
+105-Consider other options before using this.</p>
+ASSERT ok   cargo-package.md names --exclude-lockfile as the override
+ASSERT ok   cargo-package.md documents what the flag does
+
+=== cargo package --help (installed) ===
+12:      --exclude-lockfile         Don't include the lock file when packaging
+ASSERT ok   installed cargo offers --exclude-lockfile with no -Z gate
+=== cargo publish --help (installed) — the flag must be absent ===
+lines mentioning exclude-lockfile: 0
+ASSERT ok   cargo publish offers no --exclude-lockfile flag
+
+=== src/bin/cargo/commands/package.rs@rust-1.98.0 ===
+bytes: 3227  sha256: 0fb645dbf70ab1cb6d6b6e1b8c47db71de5094790dea7c19b93885cc3dfde995
+89:            include_lockfile: !args.flag("exclude-lockfile"),
+ASSERT ok   cargo package maps the flag to include_lockfile
+=== src/cargo/ops/cargo_package/mod.rs@rust-1.98.0 ===
+bytes: 46165  sha256: f5d50597973fdba1815ada7b3502ced329dc90eaf0e74c8242bae5ec4493b6ca
+513:            "Cargo.lock" => continue,
+559:    if include_lockfile {
+560-        let lockfile_path = ws.lock_root().as_path_unlocked().join(LOCKFILE_NAME);
+561-        let lockfile_path = lockfile_path.exists().then_some(lockfile_path);
+562-        let rel_str = "Cargo.lock";
+563-        result
+564-            .entry(UncasedAscii::new(rel_str))
+565-            .or_insert_with(Vec::new)
+566-            .push(ArchiveFile {
+567-                rel_path: PathBuf::from(rel_str),
+568-                rel_str: rel_str.to_string(),
+569-                contents: FileContents::Generated(GeneratedFile::Lockfile(lockfile_path)),
+ASSERT ok   an on-disk Cargo.lock is dropped from the source file list
+ASSERT ok   the archive entry is added only when include_lockfile is set
+ASSERT ok   an absent lockfile is generated rather than omitted
+=== src/cargo/ops/registry/publish.rs@rust-1.98.0 ===
+bytes: 34469  sha256: e0e8cc5d89ab35ffa5acff4c3a8a4a5c53aa9091c68827000f40a7682b6dbd12
+171:            include_lockfile: true,
+ASSERT ok   the publish path hardcodes inclusion, so it has no override
+
+=== whole-source enumeration of include_lockfile @rust-1.98.0 ===
+src/bin/cargo/commands/package.rs:89:            include_lockfile: !args.flag("exclude-lockfile"),
+src/cargo/ops/cargo_package/mod.rs:263:        && opts.include_lockfile
+src/cargo/ops/cargo_package/mod.rs:281:    let needs_local_reg = deps.has_dependencies() && (opts.include_lockfile || opts.verify);
+src/cargo/ops/cargo_package/mod.rs:492:    build_ar_list(ws, pkg, src_files, vcs_info, opts.include_lockfile)
+src/cargo/ops/cargo_package/mod.rs:502:    include_lockfile: bool,
+src/cargo/ops/cargo_package/mod.rs:559:    if include_lockfile {
+src/cargo/ops/cargo_package/mod.rs:85:    pub include_lockfile: bool,
+src/cargo/ops/registry/publish.rs:171:            include_lockfile: true,
+ASSERT ok   exactly three source files mention include_lockfile
+assignment sites: src/bin/cargo/commands/package.rs:89 src/cargo/ops/registry/publish.rs:171 
+ASSERT ok   include_lockfile is assigned in exactly two places
+
+RESULT all assertions passed
+lockfile rerun exit: 0
+argv: bash research/runs/R49/2026-09-05T155504Z-2107cffb3ecf/review/evidence/check-grep-identity.sh
+retrieved: 2026-09-16T02:20:31Z
+repo: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+
+## which programs are reachable here
+PATH binary:           /usr/bin/grep
+  its --version:       grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+bare `grep` under this script interpreter (bash): /usr/bin/grep
+second implementation: embedded in /Users/stevemorin/.local/share/claude/versions/2.1.263
+  its --version:       ugrep 7.8.4 aarch64-apple-macosx +neon/AArch64; -P:pcre2jit; -z:zlib,bzip2,zstd,brotli,7z,tar/pax/cpio/zip
+ASSERT ok   the PATH grep is the binary this item's lists name
+
+## the blobs under test
+ASSERT ok   revision-2 blob sha256
+ASSERT ok   revision-4 blob sha256
+
+## the same patterns under both implementations
+[1/1] revision-2, recorded revision-3 pattern
+      /usr/bin/grep -> 8 29 30 32 36 37 61 90 94 110 132 150 162 167 182 191 197 204 231 243 264 273 278 290 297 301 338 354 363 413 456 516 607 610 616 652 665 680 716 730
+ASSERT ok   revision-2, recorded revision-3 pattern (/usr/bin/grep)
+[2/2] revision-2, recorded revision-3 pattern -> SAME under the embedded ugrep
+[1/1] revision-2, corrected word-bounded pattern
+      /usr/bin/grep -> 182 363 607 610 616
+ASSERT ok   revision-2, corrected word-bounded pattern (/usr/bin/grep)
+[2/2] revision-2, corrected word-bounded pattern -> SAME under the embedded ugrep
+[1/1] revision-4, corrected word-bounded pattern
+      /usr/bin/grep -> 12 29 70 92 298 489 733 736 745 794
+ASSERT ok   revision-4, corrected word-bounded pattern (/usr/bin/grep)
+[2/2] revision-4, corrected word-bounded pattern -> SAME under the embedded ugrep
+[1/1] revision-4, licen
+      /usr/bin/grep -> 8 9 11 24 29 30 39 63 67 70 72 85 87 102 104 156 260 264 294 308 374 437 464 468 488 490 559 723 726 729 741 744 794
+ASSERT ok   revision-4, licen (/usr/bin/grep)
+[2/2] revision-4, licen -> SAME under the embedded ugrep
+
+## the widened SPDX pattern, under both implementations (new in revision 7)
+pattern: copyleft|AGPL|LGPL|GPL|MPL|Mozilla|PERMISSIVE|permissive|patent|Apache-2\.0|MIT|BSD|ISC|Unlicense|CC0
+[1/1] revision-2, widened SPDX pattern
+      /usr/bin/grep -> 53 182 338 342 363 364 582 605 606 607 608 609 610 611 616
+ASSERT ok   revision-2, widened SPDX pattern (/usr/bin/grep)
+[2/2] revision-2, widened SPDX pattern -> SAME under the embedded ugrep
+[1/1] revision-4, widened SPDX pattern
+      /usr/bin/grep -> 12 29 70 92 102 156 298 464 468 489 490 708 731 732 733 734 735 736 737 745 794
+ASSERT ok   revision-4, widened SPDX pattern (/usr/bin/grep)
+[2/2] revision-4, widened SPDX pattern -> SAME under the embedded ugrep
+[1/1] negative control: only the four real identifiers match
+      /usr/bin/grep -> 4 5 6 7
+ASSERT ok   negative control: only the four real identifiers match (/usr/bin/grep)
+[2/2] negative control: only the four real identifiers match -> SAME under the embedded ugrep
+
+## where the two implementations genuinely disagree
+[1/1] recursive search, /usr/bin/grep -> ignored/licence.md visible.md
+ASSERT ok   recursive: /usr/bin/grep reads the ignore-listed file
+[2/2] recursive search, embedded ugrep -> visible.md
+ASSERT ok   recursive: the embedded ugrep omits the ignore-listed file
+[2/2] explicitly named ignore-listed file: /usr/bin/grep -> ignored/licence.md ; ugrep -> ignored/licence.md
+ASSERT ok   explicitly named files are read by both
+
+RESULT: all assertions passed
+grep-identity rerun exit: 0
+combined rerun exit: 0

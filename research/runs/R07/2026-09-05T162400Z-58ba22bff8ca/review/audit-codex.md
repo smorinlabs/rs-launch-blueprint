@@ -1,27 +1,27 @@
-decision-sha256: 85beea991e84be1321b6b8cc55cd934c7049f621c38591394e2fa795234710a4
-actor: audit-codex-2026-09-05T162400Z-58ba22bff8ca-r2
+decision-sha256: a6193794a65cec1de30639e41ba22a147ead8c376898b9b55917e7af750e36dd
+actor: audit-codex-2026-09-05T162400Z-58ba22bff8ca-r3
 model: gpt-5.6-terra
 family: openai
-verdict: reject
-unresolved-findings: `## Supersedes` is not byte-verbatim to the required published revision 1; the claimed maximum 31-day staleness/retry bound is not established and is contradicted as a guarantee by GitHub's documented dropped-schedule possibility
+verdict: approve
+unresolved-findings: none
 
 ## Rerun
 
-- argv: `bash ./run-check-r2.sh`, exactly the decision's recorded script, from `research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical/r2`.
-- cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical/r2`.
-- toolchain: macOS 26.4 arm64; `actionlint 1.7.12`; Python 3.14.7 with PyYAML 6.0.3; Rust 1.98.0; `act` absent, form (b).
-- exit code: 0. Complete rerun log: `review/evidence/audit-contributors-bot-trigger-cadence-r2.log`.
-- output match: yes. `diff -u` of the saved `review/evidence/r07-empirical-r2.log` and the audit rerun after removal of only their `date:` lines exited 0. The rerun reproduced all six checks, including the 134 post-guard push-run total and `failure: 12`, `success: 122`.
-- falsifiability: a temporary outside-repository copy with the recommended cron changed to `0 6 * * 1` exited 1 and emitted the expected structural `ASSERT-FAIL` lines; the copy was discarded.
+- argv: `./run-check-r3.sh`; stdout and stderr were captured with `tee` to `review/evidence/audit-contributors-bot-trigger-cadence-r3.log`.
+- cwd: isolated copy at `/private/tmp/r07-audit-r3-isolated.wdEQG3/research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical/r3`; the copied decision, fixtures, snapshots, JSON evidence, and published revision-1 file match commit `f6150ab` for every R07 check input.
+- toolchain: macOS 26.4 arm64; Rust 1.98.0; `actionlint` 1.7.12; Python 3.14.7 with PyYAML 6.0.3; `act` absent (form (b)).
+- exit code: 0. Complete output: `review/evidence/audit-contributors-bot-trigger-cadence-r3.log`.
+- output match: yes. The diff after normalizing the sole `date:` line is empty both between the two audit runs (`review/evidence/audit-contributors-bot-trigger-cadence-r3-reproducibility.diff`) and between the first audit run and the recorded log (`review/evidence/audit-contributors-bot-trigger-cadence-r3-vs-recorded.diff`).
+- falsifiability: in the isolated copy outside the repository, adding `schedule: - cron: '17 6 1 * *'` made the script emit the identity, key-set, explicit-no-`schedule`, option-E-difference, structural, and `/usr/bin/grep` failures; the captured script exit code is 1 (`review/evidence/audit-contributors-bot-trigger-cadence-r3-falsification-rerun.log`).
 
 ## Findings
 
-1. **Required byte-verbatim supersession is false.** The published file `research/topics/07-contributors-bot-trigger-cadence/DECISION.md` hashes to the mandated `0b3dde8f9a15f22e60a01542065c53c122881e8c48bf3ee6c172ba5b70499346`. The payload after `## Supersedes` instead hashes to `1469280072fd615a85c1f883e42d8117d4ac7e79c832ec2aac1c48dee4de261d`. A direct diff shows added explanatory paragraphs plus opening and closing ````markdown` fences. The embedded text may be unaltered, but the required `## Supersedes` content is not the published decision byte-for-byte. Remove the wrapper so the section payload itself is exactly the published bytes.
+1. **All revision-3 empirical claims pass.** Check 1 produced the revision-1/revision-3 fixture hash `ecee9ea674107e7470c4b31449e6642798a09d87c172264716f68a95f1721a15`; `actionlint` 1.7.12 exited 0 with no diagnostics. Check 2 established exactly `push` and `workflow_dispatch`, the two expected ignored paths, equality with the action inputs, no `schedule` key, and no `cron` or `schedule` text anywhere in the fixture. Check 3 independently counted 134 post-guard push runs: 12 `failure`, 122 `success`. Check 4 asserted both snapshots, including the required workflow `state` enum. The revision-3 check is content-asserting, not exit-code-only.
 
-2. **The 31-day maximum is an unsupported guarantee.** A6 and the decision prose state that a failed or absent push is retried within, and the list is stale for at most, 31 days. Check 2 proves only the cron expression, while the decision explicitly says no scheduled run has executed. The live GitHub scheduled-events documentation still says that sufficiently high load can cause queued jobs to be dropped; an expiring or revoked credential can also make the scheduled retry fail, and the decision correctly documents that the whole workflow can be disabled. The design can truthfully state that it schedules a monthly retry attempt, not a maximum staleness or successful-retry bound.
+2. **The two historical identities hold.** The revision-3 commit `f6150ab` changes no revision-1 or revision-2 empirical script, fixture, snapshot, or log; it adds only the revision-3 fixture, script, and log. The one `## Supersedes` heading is at line 1100. Within that section, the published revision-1 payload begins at line 1151; independently extracting that payload through EOF hashes to `0b3dde8f9a15f22e60a01542065c53c122881e8c48bf3ee6c172ba5b70499346`, and a direct diff against `research/topics/07-contributors-bot-trigger-cadence/DECISION.md` is empty. The published payload is unfenced and is the last 26,203 bytes.
 
-3. **Verified, not a finding:** six live `curl` checks returned HTTP 200 for the cited workflow-syntax, scheduled-events, disable-and-enable, REST-workflows, action README, and repository API sources. The live pages retain the 60-day and public-fork rules, the workflow-level required `state` enum (`active`, `deleted`, `disabled_fork`, `disabled_inactivity`, `disabled_manually`), the workflow-wide disabling sentence, and `gh workflow enable WORKFLOW`; the API says rs is public. Thus revision 2 correctly rejects the controller premise: adding `schedule` exposes the whole workflow, including `push` and `workflow_dispatch`, and A7 plus behavior 5 state that consequence as bounded/documented/recoverable rather than claiming the push half survives.
+3. **The decision’s surrounding claims are supported.** The four `- assumes` values exactly match `docs/port/PARAMETERS.md`. Gate 1 is correctly `inapplicable`: R07 selects no crate or dependency. The owner records contain W0-R07 and W0-R07b, and the ranked runner-up’s condition now concerns a workflow-level auto-disable change or path filters becoming available for `schedule`; the current recommendation says a monthly schedule is an attempt, not a 31-day staleness or successful-retry guarantee. Five live citation probes returned HTTP 200 and found the cited 60-day rule, `paths-ignore`, `disabled_inactivity`, public visibility, and the action’s loop-protection guidance (`review/evidence/audit-contributors-bot-trigger-cadence-r3-citation-probes.log`).
 
 ## Assessment
 
-The empirical script is reproducible, content-asserting, and falsifiable; the revision-1 script and log retain their commit-`2460629` hashes, and the published revision-1 parameter section is byte-identical. Gate 1 is correctly recorded as `inapplicable` because R07 selects no crate. However, the explicitly required supersession representation fails its byte identity condition, and the decision overstates what its cron syntax and documentation establish. Both require a decision edit before approval.
+Approve. Revision 3 restores the owner-directed push-only block and preserves the published revision-1 decision byte-for-byte as the terminal Supersedes payload. Its five checks rerun cleanly from an isolated committed-input copy, reproduce apart from the timestamp, and fail on a meaningful outside-repository mutation. No unresolved empirical finding requires a decision change.
