@@ -1,0 +1,11 @@
+=== decision history invariants ===
+@@ -1 +1 @@
+@@ -3 +3 @@
+@@ -250 +250 @@ Second supplementary comparison, revision 4, not part of the acceptance argv: `b
+@@ -259 +259 @@ Two properties of the **selected** tool were measured in passing by that run and
+@@ -294 +294 @@ Findings none of the five raw reports made: commitlint's `subject-case` rejects
+PASS changed-line-hunks-exactly-1-3-250-259-294
+PASS decision-section-byte-identical
+PASS parameters-section-byte-identical
+PASS supersedes-published-byte-identical
+PASS five-parameter-lines-unchanged

@@ -1,0 +1,21 @@
+citation 1 crates.io candidate versions
+0.17.1 None AGPL-3.0 2021
+citation 2 GitHub release assets
+aarch64-unknown-linux-musl.tar.gz x86_64-unknown-linux-musl.tar.gz
+citation 3 upstream CI matrix
+        architecture: [ubuntu-24.04, ubuntu-24.04-arm]
+        architecture: [ubuntu-24.04, ubuntu-24.04-arm]
+        architecture: [ubuntu-24.04, ubuntu-24.04-arm]
+        architecture: [ubuntu-24.04, ubuntu-24.04-arm]
+        architecture: [ubuntu-24.04, ubuntu-24.04-arm]
+        architecture: [ubuntu-24.04, ubuntu-24.04-arm]
+citation 4 committed manifest pin and MSRV
+version = "1.1.11"
+citation 5 committed line-check implementation
+    if config.subject_length() != 0 {
+        failed |= check_subject_length(source, message, config.subject_length(), report)?;
+    if config.line_length() != 0 {
+citation 6 committed macOS CI
+    runs-on: ubuntu-latest
+        os: ["ubuntu-latest", "windows-latest", "macos-latest"]
+        os: ["ubuntu-latest"]

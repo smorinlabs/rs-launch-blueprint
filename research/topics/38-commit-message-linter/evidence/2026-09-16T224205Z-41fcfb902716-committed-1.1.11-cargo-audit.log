@@ -1,0 +1,82 @@
+R38 gate-3 dependency audit: committed 1.1.11
+date (UTC): 2026-09-05T16:59:09Z
+cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R38/2026-09-05T151356Z-c46d732f98ed/review/empirical
+toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew); cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew); cargo-audit-audit 0.22.1
+--- manifest requirements (Cargo.toml.orig, the author's manifest; the published Cargo.toml is cargo-normalized) ---
+38:anyhow = "1.0"
+39:git2 = { version = "0.20", default-features = false }
+--- pinned versions (published Cargo.lock) ---
+git2 = 0.20.4
+libgit2-sys = 0.18.3+1.9.2
+anyhow = 1.0.100
+--- cargo audit --file Cargo.lock ---
+    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+      Loaded 1239 security advisories (from /Users/stevemorin/.cargo/advisory-db)
+    Updating crates.io index
+    Scanning Cargo.lock for vulnerabilities (181 crate dependencies)
+Crate:     anyhow
+Version:   1.0.100
+Warning:   unsound
+Title:     Unsoundness in `Error::downcast_mut()`
+Date:      2026-06-25
+ID:        RUSTSEC-2026-0190
+URL:       https://rustsec.org/advisories/RUSTSEC-2026-0190
+Dependency tree:
+anyhow 1.0.100
+└── committed 1.1.11
+
+Crate:     git2
+Version:   0.20.4
+Warning:   unsound
+Title:     Potential undefined behavior when calling Remote::list()
+Date:      2026-05-12
+ID:        RUSTSEC-2026-0183
+URL:       https://rustsec.org/advisories/RUSTSEC-2026-0183
+Dependency tree:
+git2 0.20.4
+└── committed 1.1.11
+
+Crate:     git2
+Version:   0.20.4
+Warning:   unsound
+Title:     Potential undefined behavior with Signature from a buffer-created BlameHunk
+Date:      2026-05-13
+ID:        RUSTSEC-2026-0184
+URL:       https://rustsec.org/advisories/RUSTSEC-2026-0184
+
+warning: 3 allowed warnings found
+cargo audit exit=0
+--- reachability: git2 and anyhow API surface used by committed's sources ---
+   src/checks.rs:386:    commit: &git2::Commit<'_>,
+   src/checks.rs:389:    if 1 < commit.parent_count() {
+   src/checks.rs:402:    commit: &git2::Commit<'_>,
+   src/checks.rs:406:    let author = commit.author().to_string();
+   src/git.rs:2:    repo: &'r git2::Repository,
+   src/git.rs:3:    from: git2::Commit<'r>,
+   src/git.rs:4:    to: Option<git2::Commit<'r>>,
+   src/git.rs:8:    pub(crate) fn parse(repo: &'r git2::Repository, revspec: &str) -> Result<Self, anyhow::Error> {
+   src/git.rs:26:    pub(crate) fn iter(&self) -> impl Iterator<Item = git2::Commit<'r>> {
+   src/git.rs:29:            let mut revwalk = self.repo.revwalk().unwrap();
+   src/git.rs:30:            revwalk.push_range(&range).unwrap();
+   src/git.rs:31:            let revwalk = RevWalkIterator {
+   src/git.rs:33:                revwalk,
+   src/git.rs:35:            itertools::Either::Left(revwalk)
+   src/git.rs:43:    repo: &'r git2::Repository,
+   src/git.rs:44:    revwalk: git2::Revwalk<'r>,
+   src/git.rs:48:    type Item = git2::Commit<'r>;
+   src/git.rs:50:    fn next(&mut self) -> Option<git2::Commit<'r>> {
+   src/git.rs:51:        if let Some(next) = self.revwalk.next() {
+   src/main.rs:168:        git2::Repository::discover(repo).with_code(proc_exit::sysexits::USAGE_ERR)
+   src/main.rs:199:    let ignore_commit = |commit: &git2::Commit<'_>| {
+   src/main.rs:200:        let author = commit.author().to_string();
+   src/main.rs:245:            let abbrev_id = commit.as_object().short_id().ok();
+   src/main.rs:259:                let message = commit.message().unwrap();
+   src/main.rs:282:        let abbrev_id = commit.as_object().short_id().ok();
+   src/main.rs:296:            let message = commit.message().unwrap();
+   src/report.rs:32:    Oid(git2::Oid),
+   src/report.rs:38:fn serialize_oid<S>(oid: &git2::Oid, s: S) -> Result<S::Ok, S::Error>
+--- downcast / unsafe occurrences in committed's sources ---
+   downcast: 0
+   unsafe:   0
+   Remote::/.remote(/remotes(/blame(/BlameHunk/Buf type (the APIs RUSTSEC-2026-0183/0184 concern): 0
+   (a plain substring grep for Buf also matches std::path::PathBuf, which is why the type is matched as a whole word)

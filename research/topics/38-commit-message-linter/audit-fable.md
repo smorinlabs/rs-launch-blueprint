@@ -1,57 +1,334 @@
-decision-sha256: 97da7f169f26fce8f9b43c3d6c2eb0971b991f45b0d00ae2a91c5ddc3cbe4437
-actor: audit-fable-2026-09-05T151356Z-c46d732f98ed-r5
-model: claude-fable-5-1
+decision-sha256: c2e9b6e1f1cf096b640ecd2925c8f79010bf7e875a9ce91d18a1d3ad84b3ce24
+actor: audit-fable-2026-09-05T151356Z-c46d732f98ed-r9
+model: claude-opus-5
 family: anthropic
 verdict: approve
 unresolved-findings: none
 
 ## Principle and agreement level
 
-This audit was produced by a fresh context that wrote none of the five raw reports, none of the five decision revisions, none of the empirical audits and none of the earlier judgment audits (`review/audit-fable.r2.md`, `review/audit-fable.r3.md`). It judges revision 5 (sha256 `97da7f16…`) on its own text, with the archived audits read only for context. Revision 5 is the first revision audited on the full three-engine scope: the two-engine revision 3 (`2fc432d4…`) was approved by both auditors, revision 4 (`8682ab35…`) added the Doxa engine and was rejected by the empirical auditor solely on the file names it used for the revision-3 audits, and revision 5 changes only those citations, the title line and the revision note (`git diff 9f01167 93052b8`, three lines; the execution ledger records the change as made by the resumed r4 synthesizer, so the `-r4` actor label on line 3 is accurate).
+This audit was produced by a fresh context that wrote none of this item's raw
+reports, none of its nine decision revisions, none of the empirical audits and
+none of the earlier judgment audits. I bound the decision at sha256
+`c2e9b6e1f1cf096b640ecd2925c8f79010bf7e875a9ce91d18a1d3ad84b3ce24`, computed
+with `shasum -a 256` over `review/DECISION.md`; that is the hash given in my
+task, the hash `review/audit-codex.md` binds, and the hash of the file as
+committed at `HEAD` (`git show HEAD:…/review/DECISION.md | shasum -a 256`
+returns the same value, so the audited bytes are the committed bytes).
 
-The decision states the shared principle at the right level and preserves it. The principle is "every commit that lands satisfies one declared Conventional-Commits contract: grammar and the eleven-type vocabulary for every commit without exception; width rules for every human-authored commit, relaxed only in CI and only for bot pull requests whose generated messages cannot be wrapped; rejected before creation by the `commit-msg` hook and checked again in CI so `git commit --no-verify` cannot evade it". The level is capability/standard, and both citations hold at the stated lines: `docs/port/BASELINE-REVIEW.md:75` records F148 ("Enforce the selected commit-message convention at `commit-msg` time", capability/standard, retained); `docs/port/DIVERGENCE-ANALYSIS.md:155` classes the R38 tool row as class B, `harmonize: partly`, and `:157-160` class the value rows F152-F155 as class A, `harmonize: yes`. F149 is `COMMON → SUBSTITUTE` with `parent: F148` (`docs/port/COMMONALITY.md:153`), so replacing commitlint with `committed` is a tool substitution under an unchanged pattern row; no `OVERRIDE` is due and none is claimed. All five raw reports read the level the same way and the decision quotes each; I checked the five quotations against the raws.
+**Scope of this round, stated so a reader knows what I re-derived and what I
+carried.** Revision 9 differs from revision 8 in five single-line hunks — 1, 3,
+250, 259 and 294 — which I measured myself with `git diff -U0 08f1a9c HEAD --
+review/DECISION.md` rather than accepting from the revision note. Hunks 1 and 3
+are the title and the preamble; 250 is the third-evaluation paragraph inside
+`## Empirical check`; 259 is the revision-notes bullet and 294 one sentence of
+the uncertainty paragraph, both inside `## Engines`. `## Decision` (lines 5-190)
+and `## Parameters` (lines 191-199) contain **no hunk at all**, so every
+judgment the revision-7 judgment audit (`review/audit-fable.r7.md`) recorded
+against those sections — the agreement level and the `BASELINE-REVIEW.md:75` and
+`DIVERGENCE-ANALYSIS.md:155,159` rows behind it, the five essential behaviors as
+binding exclusion criteria, the three-way architecture comparison, the
+`conventional_commits_linter` exclusion's five clauses each landing on an
+executed row, the six fitness gates, the ledger rows and the acceptance criteria
+— stands against byte-identical text. I did not re-read the five raw reports,
+`inputs/prompt.md`, `docs/port/PARAMETERS.md` beyond line 13, or the
+`BASELINE-REVIEW.md` rows, because the text those readings certified has not
+moved; I concentrated on the four questions this round actually puts: whether
+the round-7 rejection is closed, whether `## Supersedes` is intact, whether the
+revision's prose matches the evidence it newly cites, and whether the
+recommendation moved since the owner's acceptance.
 
-The shared low-level values (eleven types, 50-column header, 72-column body and footer) sit at spec §2's policy/mechanism level inside that capability, where §2 requires a fit argument rather than an inference from repository agreement. The decision supplies one, and it is not a vote count: Git's own `git-commit` DISCUSSION and Pro Git for 50/72; ts's explicit `header-max-length` 50 (`commitlint.config.mjs:29`) for the whole header; py's only recorded reason for 200 (permalinks) dissolved in py's own ecosystem because the installed `@commitlint/cli@21.0.2` exempts any line matching `\bhttps?://\S+`; the residual class that would still tighten py (a long non-URL token, comparison case 17) named and left to py's follow-on evaluation; and the footer's 100 identified as config-conventional's inherited default that neither source chose (`DIVERGENCE-ANALYSIS.md:159`). Where the decision notes that four of five reports say 50, it says so "corroborates but does not decide" — the mandate's ordering, applied. The bot width-relaxation clause is carried inside the owned value rather than left implicit, so the principle stays concrete.
+**The agreement level is unchanged and remains correctly read.** The decision
+states **capability/standard** on `docs/port/BASELINE-REVIEW.md:75` (F148,
+retained) with `docs/port/DIVERGENCE-ANALYSIS.md:155` classing the tool row B
+(`harmonize: partly`) and the value rows A (`harmonize: yes`) — so the
+*contract* binds across py, ts and rs while the *program* may differ. Agreement
+among the five reports is cited as corroboration, never as the ground. Nothing
+in revision 9 touches this.
 
 ## Design and evidence
 
-**Architecture before libraries.** Three alternatives are compared as owner amendment A5 requires: (A) provision a JS runtime and run commitlint, (B) a native binary with its own configuration file, (C) a hand-rolled regex. (A) is both source repositories' choice and the pick of three of the five raw reports (Codex, OpenAI, Perplexity); the decision departs from it on checkable costs (`engines.node >= 22.12.0`, a `package.json` and JS lockfile in a Rust repository, py's three measured silent-pass modes) and records it as the architectural runner-up with the one condition under which it wins (R37 or R42 provisioning a runtime for another tool). Repository agreement and report majority were both treated as evidence, not as the winner.
+**The recommendation did not move, and that is measured, not asserted.** The
+absence of any diff hunk inside `## Decision` and `## Parameters` is the direct
+proof: the pick (`committed` 1.1.11, exact pin), the hook-plus-CI placement, all
+nine ledger rows F149-F157, the two derived `ADOPT` values F158/F160, all six
+gate results including gate 1's `inapplicable`, every acceptance criterion, the
+runner-up ranking and the `re-verify:` line are byte-identical to the revision
+the owner accepted. I separately confirmed the owned parameter against the live
+registry rather than against revision 8: the `- owns commit-message-convention`
+value at line 193 and the value cell of `docs/port/PARAMETERS.md:13` are **508
+bytes each and byte-identical** (`diff` produced no output), so the registry has
+not drifted underneath the byte-identity claim.
 
-**Library selection follows capability and gates.** Within (B) the filter is capability first: `convco check` enforces no width rule (`src/cmd/check.rs`), `cocogitto`'s `Settings` has no length field and is `deny_unknown_fields`, `git-sumi` counts whole lines and declares no `rust-version`, `commitlint-rs` ships no release binaries, `conventional_commits_linter` is `AGPL-3.0`, `gitfluff` has no configurable limits, `standard-commit` is a library. `cocogitto` leads the field on stars and downloads and is still excluded, which is the prompt's ordering applied correctly.
+**What revision 9 newly claims, and whether the evidence carries it.** The
+change is confined to evidence about reproducibility. I checked each load-bearing
+number against the artifact rather than the prose:
 
-**The three Doxa provider reports were weighed as evidence, not counted as votes, and not dismissed.** The test of this is whether their new material changed what was measured, and it did: (1) Gemini's pick and OpenAI's runner-up, `cargo-commitlint` 2.1.0, was installed (`cargo install --locked`, 34.2 s, with `COMMITLINT_NO_INSTALL=1` to suppress its build-script hook installer) and executed against the same fixture under a `commitlint.toml` expressing the same eleven types and 50/72/72 (`review/empirical/cargo-commitlint-compare/`), producing `review/evidence/cargo-commitlint-2.1.0-comparison.log` — the decisive evidence against it (cases 05 and 07 rejected) is executed, not asserted; (2) OpenAI's claim that `committed`'s 50 "applies to the description/subject rather than the complete header" became a new fixture message and asserted case 21, which falsified it; (3) OpenAI's claim that commitlint's footer rule lacks the URL exemption was checked against the installed rule sources; (4) Gemini's figures were re-read from the prescribed endpoints, named as wrong with the corrected numbers, and excluded from use; (5) Perplexity's one new fact (the AGPL license) was confirmed at the crates.io `versions` endpoint; (6) OpenAI's four additional adopters were carried into the reference list and honestly marked "not re-fetched here"; (7) OpenAI's "no bot relaxation initially" and Gemini's "skip the CI step for `github.actor == 'dependabot[bot]'`" were each tested against executed cases (19/R4; the first log's R3) and py's recorded reason (`commitlint.yml:8-10`). The decision also states which Doxa claims were *not* checked (adopter sets, npm advisory status, `gitfluff` not executed) under "Remaining uncertainty". Each provider's prose was treated as data to be checked, as the decision says.
+- The carried artifact. `review/evidence/rev6-evaluate.sh` is **14,374 bytes**
+  and hashes to `cf9ffcb2b84383c2fc797a86539612e3aaeff22753384f68d04cc2204eb501fa`,
+  exactly as the decision states. `git ls-files -s` shows it tracked at mode
+  `100644` — the decision's "committed at mode 644 so nothing runs it" — and its
+  tracked blob id *is* `a6e6641ea13c7e4b173cf7e0932fd682f794b28d`, the revision-6
+  blob the decision says it was extracted from, so the carried copy and the
+  history object are the same bytes rather than merely equal-hashing copies.
+- The new comparator's two runs. `review/evidence/r38-crossrun-compare-r9.log`
+  carries 106 `PASS`, 0 `FAIL`, 0 `SKIP`, `failed assertions: 0`,
+  `skipped assertions: 0`; the archive log carries 105 `PASS`, 0 `FAIL`, 1
+  `SKIP`, `failed assertions: 0`, `skipped assertions: 1`, and names the skip in
+  its own closing block as `r6/carried-copy-is-the-committed-blob`. Both match
+  the decision's figures, and the skip is the single Git-dependent assertion the
+  decision says it is.
+- The post-commit rerun. `diff r38-crossrun-compare-r9-archive.log
+  r38-crossrun-compare-r9-archive-postcommit.log` produces no output — the two
+  files are byte-identical, which is what "reruns unchanged after the commit"
+  requires.
+- The old comparator's two exits, which the decision now states rather than
+  assumes. `r38-crossrun-compare-r7-in-repository-r9.log`: 102 `PASS`, 0 `FAIL`,
+  `failed assertions: 0`. `r38-crossrun-compare-r7-in-archive.log`: 99 `PASS`,
+  `failed assertions: 3`, and the three named failures are exactly the three the
+  decision names — `r6/blob-recovered (expected 0, got 128)`,
+  `r6/blob-is-the-evaluation-script` and `r6/used-the-absolute-path`. So the
+  revision-8 empirical auditor's finding is reproduced in the evidence rather
+  than paraphrased away.
+- The self-containment claim. The decision says the comparator "never opens
+  `review/DECISION.md` or any log of its own". `grep -n 'DECISION.md'
+  r38-crossrun-compare-r9.sh` returns three hits, all of them non-reads: two
+  comment lines (16, 141) and one `echo` of a failure message (697). The claim
+  holds as stated.
+- The cited Git objects all exist: commits `43e82ca7…` (the extraction the
+  archive run was taken from), `b9cccb6d…` (the revision-9 text) and `9684a585…`
+  (the self-reference repair), and blob `a6e6641e…`.
+- The precedent. The decision says it "repairs the defect the way R17 revision 6
+  repaired the identical one (`research/runs/R17/2026-09-05T163018Z-d7ade3a111f8/review/DECISION.md:29`)".
+  I read that line: it describes a revision-2 copy committed beside the script as
+  an evidence artifact with its digest asserted, paths resolved from `dirname
+  "$0"` and never from git, and "exactly one assertion still needs Git history,
+  and it is named as such" — the same three-part shape, applied here. The
+  citation is precise, not decorative.
 
-**Citations I re-verified on 2026-09-09.** From the local cargo registry copy of `committed-1.1.11` (identical to the tag per the empirical auditor's curl): `checks.rs:92-97` runs the subject and line checks only when the limit is non-zero; `:98-100` dispatches `check_hard_line_length` with `config.line_length()` (the case-17 defect); `check_subject_length` at `:118-141` reads `message.split('\n').next()` — the whole first line — then measures up to `rfind(' ')`. From the local registry copy of `cargo-commitlint-2.1.0`: `Cargo.toml` `license = "MIT"`, `rust-version = "1.80"`; `Cargo.lock` locks `git2 0.20.3`; `src/validator.rs:1144-1145` counts `line.chars().count()` per body line with no URL exemption; `src/commit.rs:105` trailer regex `^([A-Za-z][A-Za-z0-9-]*|BREAKING CHANGE):\s*(.*)$`, which a bare `https://…` line matches; `src/hook.rs:197-198` prints `Warning: cargo-commitlint not found. Skipping commit message validation.` then `exit 0`; `build.rs` `find_git_dir`/`configure_git_hooks_path` writes `core.hooksPath` unless `COMMITLINT_NO_INSTALL` is set. From the installed `@commitlint/cli@21.0.2`: `@commitlint/rules/lib/footer-max-line-length.js` and `body-max-line-length.js` both call `maxLineLength` from `@commitlint/ensure`, whose `max-line-length.js` skips any line matching `/\bhttps?:\/\/\S+/`. Endpoints: `GET https://crates.io/api/v1/crates/cargo-commitlint` → `recent_downloads` 217, `downloads` 342, 2.1.0 published 2026-07-27 (Gemini's "~5,000+" and "100+ stars" are wrong by more than an order of magnitude, as the decision says); `conventional_commits_linter` 0.17.1 `license: AGPL-3.0`; `gitfluff` 0.8.0, 1,521 all-time, `rust_version` null; `commitlint-rs` 0.2.4, 8,588 in 90 days, `releases/latest` with an empty `assets` array; `committed` `recent_downloads` 4,025 and `downloads` 85,222 at 06:53Z (the decision's 3,979 and 85,176 were read at 05:58Z; drift consistent), newest unyanked 1.1.11, `license: MIT OR Apache-2.0`, `rust_version: 1.89`. GitHub: `crate-ci/committed` 182 stars, not archived, `pushed_at` 2026-09-08, 22 open issues by the search endpoint, `releases/latest` `v1.1.11` with the five named assets, tag `v1.1.11` → tag object `0a8b458c…` → commit `faeed42f2e10c244533a01525f13c4d8b6ce383f`; `quinnjr/cargo-commitlint` 3 stars, 0 forks, contributors `quinnjr` (User) and `dependabot[bot]` only, `.github/workflows/ci.yml` `runs-on: ubuntu-latest` for every job, `v2.1.0` assets `linux-x86_64`, `macos-x86_64`, `windows-x86_64` only; `KeisukeYamashita/commitlint-rs` 70 stars; `Goldziher/gitfluff` 8 stars. `rust-lang/team/teams/cargo.toml` lists `epage`. `channel-rust-stable.toml` is dated 2026-09-03 with `rustc 1.98.1`. `ratatui/ratatui`'s `committed.toml` sets exactly the eleven `allowed_types` (and notes the eight-member default). Every figure and source line matched.
+**The scope claim is verified against the tree as well as the file.**
+`git diff --stat 08f1a9c HEAD` over the whole run directory shows `DECISION.md`
+changed by 10 lines (the five hunks) and **no modification to any pre-existing
+evidence artifact**: `evaluate.sh`, its cited evaluation log, the revision-7
+comparator `r38-crossrun-compare.sh` and its log `r38-crossrun-compare.log` are
+untouched, and everything else in the diff is an addition — the new comparator,
+the carried script, the five new logs, and the audit artifacts. The decision's
+"both left byte-identical as history" is therefore true of the working tree, not
+only of the prose.
 
-**Disagreements are settled by executed cases or source lines, not by majority.** Rows 1-8 stand from revision 3. Of the thirteen rows the Doxa reports introduced (9-21): row 9 (the tool) rests on comparison cases 05/07, `validator.rs:1144-1145`, the CI matrix, `hook.rs:197-198` and the contributor record, and says in terms that "the vote count of five reports does not select a design"; row 10 (footer 100 vs 72) on `DIVERGENCE-ANALYSIS.md:159` and cases 07/08; row 11 (header 72 vs 50) on ts `commitlint.config.mjs:29`, Git's guidance and case 21 plus comparison case 21; row 12 on `checks.rs:118-141` and case 21; row 13 on the installed rule sources; row 14 on case 02 on both OS legs; row 15 on `validator.rs` and comparison cases 05/07; row 16 on cases 19/R4, the first log's R3 and py `commitlint.yml:8-10`; row 19 on the crates.io `license` field; row 20 on endpoint re-reads; rows 17, 18 and 21 are moot for the pick and say so. Three provider claims were found false by execution (rows 12, 14, 15) and one by source (row 13); the decision records them as false rather than as dissent.
+**The revision-8 finding is quoted accurately.** The decision's `## Engines` note
+reproduces it verbatim from `review/audit-codex.r8.md`'s `unresolved-findings`
+field: "The revision-7 cross-run comparator cannot reproduce from a clean git
+archive HEAD extraction: it requires the revision-6 Git blob
+a6e6641ea13c7e4b173cf7e0932fd682f794b28d, which an archive deliberately lacks,
+and exits 1 with three failed assertions". I compared the two strings; they
+agree word for word.
 
-**The empirical check demonstrates the principle, not startup.** `review/evidence/committed-1.1.11-acceptance-r4.log` (macOS arm64) and `-r4-linux-aarch64.log` (Ubuntu 25.10 aarch64) both end `summary: PASS=35 FAIL=0 RECORD=5` / `RESULT: PASS`. I checked the case lines and the fixture widths: 03 is a 71-column header (soft 63) rejected at 50; 21 a 66-column header (soft 59, description 41) rejected at 50; 04 an 83-column body line rejected at 72; 08 a 96-column footer line with spaces rejected at 72; 05 a bare 116-column URL and 07 a 107-column `Claude-Session:` trailer both accepted; 02 the enum rejection with the eleven names listed; R3/R3b the bot commit with type `wibble` rejected under both configs; R4/R4b the realistic dependabot message rejected under the main config and accepted under the bot config; H1 leaves HEAD unchanged; H2 then H3 show `--no-verify` creating the commit and `committed HEAD` catching it; 16 exits 127 on both legs; 15 shows the configuration file is load-bearing; T1 runs the F160 adapter's four tests. The fixture files (`committed.toml`, `committed.bot.toml`, `.gitmessage`, `cargo-commitlint-compare/commitlint.toml`) carry exactly the values the decision prints. The gate-3 audit is evidenced by a saved isolated-cache log (`committed-1.1.11-cargo-audit-isolated-cache.log`: 1,242 advisories, 181 dependencies, the three `unsound` warnings, zero-hit greps, exit 0), which closes the revision-3 judgment audit's first observation.
+**The repair is a repair, not a weakening — and the decision says so in the
+falsifiable direction.** The temptation in this class of fix is to delete the
+assertion that cannot run in an archive. This one keeps four content assertions
+about the revision-6 form running in **both** modes (`r6/carried-copy-readable`,
+`r6/carried-copy-is-the-evaluation-script`, `r6/used-the-absolute-path`, and the
+digest assertion), gates only the Git-object comparison, and states that the gate
+"prints `SKIP` by name and is counted a skip, never a pass". The archive log
+bears that out: one skip, named, with the count reported separately from the
+pass count. The empirical audit's controlled mutation — which I did not repeat,
+because it belongs to that role — shows the digest assertion failing in both
+modes, so the gated assertion masks nothing.
 
-**The `audit-codex.md` rerun is consistent with the decision.** It hashes this exact revision (`97da7f16…`), reprovisioned the binary in a fresh copy and reproduced `PASS=35 FAIL=0 RECORD=5` on macOS, ran `audit-deps.sh` under a fresh `CARGO_HOME` (1,242 advisories, 181 dependencies, the same three `unsound` warnings, exit 0), ran the Linux leg through `limactl` (`PASS=35 FAIL=0 RECORD=5`), reinstalled `cargo-commitlint 2.1.0` and reproduced the 05/07 rejections, and curl-checked the tagged manifest, `checks.rs`, `entrypoint.sh` (`VERSION=1.1.11`), `.pre-commit-hooks.yaml` and the release record (`review/evidence/audit-commit-message-linter-r5.log`). The engine identities in `## Engines` match `operations/codex.json` (`gpt-5.6-terra`, `codex-cli-0.153.2`), `operations/opus.json` (`claude-opus-5[1m]`, `claude-agent-tool`) and `operations/doxa.json` (operation `research-20260908-223857-c8861c11e5304bd4`, the three provider models and job ids); the six raw sha256 values (`raw/codex.md`, `raw/opus.md`, `raw/doxa.md`, the three normalized files) and the three original provider-file hashes in `doxa/relocation.txt` all match the files; `scripts/check-answer-shape.sh <file> crate` passes for all five raws.
+**The class-F correction is the rubric used against the decision's own
+interest.** Revision 7 recorded that class F (the live-figures block) had never
+been observed to vary. Revision 9's hunk at line 294 records that it *did* vary
+between 2026-09-13 and 2026-09-15 and calls that "the rule working, not a
+failure", while still declining to claim the class is guaranteed to appear. A
+document under pressure to look clean would have left the earlier sentence
+standing.
+
+**The audit-codex rerun is consistent with the decision.**
+`review/audit-codex.md` binds the same sha, verdict approve, findings none, and
+its history-invariant log records the same five hunk positions I measured
+independently, plus `decision-section-byte-identical`,
+`parameters-section-byte-identical`, `supersedes-published-byte-identical` and
+`five-parameter-lines-unchanged`. Its `audit-r9-repository-vs-cited.diff`,
+`audit-r9-archive-vs-cited.diff` and `audit-r9-archive-postcommit-vs-audit.diff`
+are all zero bytes. Nothing in it contradicts the decision text.
 
 ## Completeness
 
-Required H2 sections present in order and no others (`## Decision` line 5, `## Parameters` 191, `## Empirical check` 201, `## Engines` 250); no `## Supersedes` (correct: no accepted prior entry exists). `### Principles and implementation` (line 25) carries every element the synthesizer contract lists. The `re-verify:` line (189) is the final line of `## Decision` and now includes the `cargo-commitlint` trigger with its re-measurement recipe. `## Parameters` carries `- owns commit-message-convention = …` with the type enum, the three caps, the whole-header clause, the soft-line semantics and the bot clause, and `- assumes` lines for all four fixed parameters quoted word for word from `docs/port/PARAMETERS.md`; the prompt's `- consumes:` line is empty, so no consumed parameter is due. The owned value is consistent with every executed case: 02 (enum), 03 and 21 (header 50 over the whole line), 04 (body 72), 08 (footer 72), 05/07/18 (soft-line exemption), R3b/R4b (bot width-only relaxation) — and the decision records what each of the five reports proposed for it. The registry-description alignment ("enforced on every commit" versus the bot clause) is flagged for the controller. Fitness gates 1-6 are each answered for `committed` with evidence at the tag; gate 3 records the locked-tree audit and the reachability argument. Maintenance state follows the prompt's rubric (a 6.5-month release gap investigated, commits through 2026-09-08 and a sub-day response median). Every source carries a URL and a retrieval date (2026-09-05 or 2026-09-09), and the Doxa sources are attributed to the provider that retrieved them, with the Gemini grounding redirects replaced by its resolved list.
+**Required fields.** `## Decision`, `## Parameters`, `## Empirical check`,
+`## Engines` in order, with `## Supersedes` last as the spec permits for a
+reversal of a published exclusion, and `re-verify:` still the final line of
+`## Decision`.
 
-`CONFLICT:` handling: no raw raised one and the decision says so per report (Codex and Opus none; OpenAI `CONFLICT: none`; Perplexity "none is required"; Gemini none, with its malformed `assumes` lines named and not adopted). `BASELINE-REVIEW:` handling: `raw/opus.md` raises none; `raw/codex.md`'s one line is named in `## Engines`, shown to target R38's own rows, and disposed of as disagreement #1. The three Doxa provider reports raise twelve such lines that the decision does not name: OpenAI F149, F150, F152, F157 (`raw/doxa-openai.normalized.md:263-269`); Perplexity F155 and F153/F154 (`raw/doxa-perplexity.normalized.md:57,62`); Gemini F150, F151, F152/F153/F154, F155, F156, F157 (`raw/doxa-gemini.normalized.md:31-41`). Every one targets F149-F157 — R38's own `SUBSTITUTE` and `DIVERGENT` rows (`docs/port/COMMONALITY.md:153-161`) — and none touches a `REUSE` or `ADOPT` baseline (F148, F158, F159, F160), so nothing requires controller adjudication under RUNBOOK §4, by the same reasoning the decision applies to the Codex line. Their substance is disposed of: OpenAI F149 and Gemini F150/F151/F157 in row 9 (the tool) and rows 17/18; OpenAI F150 in row 17; OpenAI F152 and Gemini F152-F154 in rows 10 and 11; Perplexity F153/F154 in row 10; Perplexity F155 and Gemini F155 by the five-way agreement on the enum recorded under `## Parameters`; Gemini F156 in row 16; OpenAI F157 by the adopted CI re-run and the cross-repo rationale's reading of `DIVERGENCE-ANALYSIS.md:162`. The omission is a traceability gap in the text, recorded as observation 1 below, consistent with how the revision-2 judgment audit treated the unnamed Codex line.
+**Parameters.** One `- owns` line and four `- assumes` lines (`msrv-policy`,
+`rust-edition`, `target-os-matrix`, `license`), `Consumed parameters: none`. The
+owned value is byte-identical to the registry as measured above.
 
-The two `ADOPT` rows recorded "blocked pending R38" (`docs/port/BASELINE-REVIEW.md:76,78`) receive their derived values (the `.gitmessage` content and the F160 adapter) and both were executed. `## Engines` records each engine's actor, resolved model, family, tool, sha256 and shape-check result, the Doxa operation's three attempts with the billing-and-auth reasons for the first two, and the revision history with hashes that match the archived audits' `decision-sha256` fields. The three observations the revision-3 judgment audit left for a future revision are applied (isolated-cache log saved; case-15 row restated; Doxa failure described as billing and auth).
+**Fitness gates.** All six present for `committed` 1.1.11 with evidence columns.
+Gate 1 is recorded `inapplicable` with the owner's ruling of 2026-09-12 named
+and the reason for keeping the row rather than deleting it. I confirmed the
+ruling exists and reaches this far: `docs/planning/p02/execution-ledger.md:505`
+records "OWNER RULING Q7.B, 2026-09-12: the licence check is void ENTIRELY …
+Gate 1 is struck from every item's evaluation", and
+`docs/port/OWNER-REVIEW.md:47` carries it verbatim. Per that ruling and my
+task's instruction, the `AGPL-3.0` fact recorded for the excluded candidate is
+correctly a recorded fact weighed in no gate, and I raise no licence finding.
+
+**Owner acceptance and its citations.** The decision states the owner accepted
+revision 8 on 2026-09-15 as `W0-R38` option A at sha256 `7e88ba81…`, citing
+`docs/planning/p02/owner-decisions.md:356` and `docs/port/OWNER-REVIEW.md:139`.
+Line 356 of the first file is the `W0-R38` row at that hash today. The second
+citation needs a word: `docs/port/OWNER-REVIEW.md:139` held the R38 acceptance
+row at commit `b9cccb6d…`, the commit carrying revision 9 — I checked with `git
+show b9cccb6:docs/port/OWNER-REVIEW.md` — and the row has since moved to line 154
+as other items were accepted into the same table. That is live-file drift after
+the fact, not a defective citation, and it is not a finding.
+
+**Supersedes — intact, and measured rather than accepted.** I extracted the
+payload (line 308 to end of file), measured **82,801 bytes** with sha256
+`97da7f169f26fce8f9b43c3d6c2eb0971b991f45b0d00ae2a91c5ddc3cbe4437`, and ran
+`diff` against `research/topics/38-commit-message-linter/DECISION.md`: **no
+differences**. The published file is the same 82,801 bytes at the same hash. The
+section's own header states that size and that hash, so the document's claim
+about its own payload is exact. This is the check that matters most for a
+revision of a published decision, and it passes byte-for-byte.
+
+**`BASELINE-REVIEW:` and `CONFLICT:` handling** is unchanged from the text the
+revision-7 judgment audit certified (no hunk in `## Decision`; the `## Engines`
+disposition of the Codex line is outside both changed hunks), and the open text
+observation to name the twelve Doxa `BASELINE-REVIEW:` lines remains correctly
+listed as open.
 
 ## Findings
 
-Unresolved findings: none.
+Unresolved findings: **none**. Neither entry below is blocking: neither changes a
+ground, a gate, a parameter value, a ledger row, an acceptance criterion or a
+piece of evidence, and neither misdirects a reader to the wrong revision's
+content. Both are recorded so the controller and a future revision can see they
+were weighed rather than missed.
 
-Observations (no decision change required; recorded for the controller and for a future revision):
+**JF-1 — the forward-looking archiving clause for the judgment auditor names a
+launch that never happened, while the parallel clause for the empirical auditor
+was updated to fact.** The decision's preamble (line 3) and its `## Engines`
+revision note (line 259) both say of the revision-7 judgment audit:
 
-1. **The Doxa reports' twelve `BASELINE-REVIEW:` lines are disposed of but not named.** The decision names the Codex line and states why it needs no adjudication; it does not say the same for the OpenAI, Perplexity and Gemini lines listed above, although each is settled in a disagreement row. One sentence in the Doxa entry of `## Engines` — that the three reports raise `BASELINE-REVIEW:` lines against F149-F157 only, none against a `REUSE`/`ADOPT` row, disposed of in rows 9-11 and 16-18 — would make the disposition traceable. Text only.
-2. **The header's soft-line exemption is stated but not executed.** `check_subject_length` (`checks.rs:118-141`) applies the same `rfind(' ')` rule as the body check, and the owned value says so ("the header and every body/footer line are measured up to their last space"). But every over-50 header in the fixture also exceeds 50 on soft length (03: 71 whole, 63 soft; 19: 71/65; 21: 66/59), so no case shows a header that `committed` accepts at 50 and commitlint's whole-line `header-max-length` 50 would reject (for example a 55-column header whose final token is 24 characters: soft length 30). The body-side analogue (case 17) is listed under "Stated gaps and divergences"; the header side is not. The parameter value is complete and no executed case contradicts it, which is why this does not block; a future revision should add one asserted header case in that band and list the divergence beside the case-17 entry, since py and ts would enforce the "same" 50 on the whole line.
-3. **Row 10's `cargo-commitlint`-at-100 statement is an inference, cited as a case.** "Under G's own tool a 100 cap would still reject the 107-column `Claude-Session:` trailer (comparison case 07)" — the comparison ran at 72. The conclusion follows from `validator.rs:1144-1145` (whole-line count, no exemption) and the trailer's measured 107 columns, and is sound, but the parenthetical reads as an executed result at 100. Text only.
-4. **`cargo-commitlint`'s gate-4 result is stated but not labelled a failed gate.** Its tests run on `ubuntu-latest` only and macOS appears only in the release build (verified above); gate 4 requires "builds and is tested on every OS in `ubuntu-latest, macos-latest`". The decision records the fact and makes a macOS test job a runner-up condition; naming it as a gate-4 failure would be more exact. Immaterial to the pick, which already rests on the executed 05/07 rejections.
-5. **The reference implementation uses the form the decision rejects.** `clap-rs/clap`'s `committed.toml` carries `ignore_author_re="(dependabot|renovate)"` (retrieved 2026-09-09); the decision rejects `ignore_author_re` on the first log's case R3 (a bot commit with an invalid type exiting 0) and adopts py's width-only shape instead. The departure is justified by executed evidence and is the stronger design; it is simply not called out as a departure from the named reference. Text only.
-6. **The OpenAI report's proposal to run the commit-lint job on both runners is not tabulated.** The illustrative CI job runs on `ubuntu-latest` only. `target-os-matrix` binds the tool, which was executed on both legs; where the job runs is R11's decision. Immaterial.
-7. **Exit-status captures in the r5 empirical-audit log are blank in three places** (`RUN_CHECKS_EXIT=`, `AUDIT_DEPS_EXIT=`, `LINUX_LEG_EXIT=` after the first three commands), while the summaries (`RESULT: PASS`, `cargo audit exit=0`, the Linux leg's inner `RUN_CHECKS_EXIT=0`) and the log's "Status normalization" block carry the exits. A property of the other audit's artifact, not of the decision; the rerun's evidentiary value is unaffected.
-8. **Gate 2's dependency-tree clause is still not exercised at the 1.96 floor.** Immaterial, as the decision's scope note says (a dev-tool binary that never enters the template's dependency graph; the action and the release assets need no toolchain). Carried from the revision-2 and revision-3 audits.
+> read at `review/audit-fable.md` and expected to be archived as
+> `review/audit-fable.r7.md` when the controller launches the revision-8
+> judgment audit
+
+*The problem.* No revision-8 judgment audit was ever launched: revision 8 was
+accepted by the owner and rejected by the revision-8 **empirical** auditor, and
+the next judgment audit is this one, for revision 9 — the archiving the clause
+predicts is the one I performed at the start of this round. Revision 9 rewrote
+the sibling clause for the empirical auditor from its forward-looking form into
+the past tense it had earned ("which the controller archived as
+`review/audit-codex.r7.md` when it launched the revision-8 audit"), and left this
+one unadjusted, which is the same asymmetry the revision-7 judgment audit
+rejected revision 7 for.
+
+*Why it is not blocking, stated explicitly because the standard matters.* The
+defect that rejected revision 4 and revision 7 was a citation that sends a reader
+to a path holding a **different revision's report** with no redirect — "still
+under its live name", where a reader opening `review/audit-fable.md` would take
+the revision-7 audit for the revision-5 one. Here the sentence carries the exact
+repair the revision-7 judgment audit prescribed, naming the archive path
+`review/audit-fable.r7.md`, and that path is correct: it is where the revision-7
+judgment audit now lives. A reader is directed to the right bytes. What is wrong
+is only the scheduling clause naming which launch triggered the move, and the
+decision's own neighbouring text states the real pattern correctly (the
+revision-5 audit "archived under that name when it launched the revision-7
+judgment audit" — i.e. at the next judgment audit, whichever revision it serves).
+
+*What would resolve it.* One clause, touching nothing else: replace "when the
+controller launches the revision-8 judgment audit" with "when the controller
+launched the revision-9 judgment audit", and move the clause to the past tense as
+the empirical sibling already is.
+
+**JF-2 — one of the three invocation forms claimed for the comparator is
+uncorroborated by the empirical audit.** Line 250 states:
+
+> The repair landed at commit `9684a5851c71f87bd0392ec09d97aba733f98139`, and
+> all three invocation forms were then run against an extraction taken at that
+> commit: absolute path with the working directory set to `/`, the previously
+> breaking relative form from inside `review/evidence`, and the in-place run from
+> the run directory. Each exited **0** and each `diff` against the log this
+> decision cites … produced no output, which is why no fourth log is carried.
+
+*The problem.* The revision-9 empirical audit exercised two of those three forms
+— the in-place run from the run directory and the `cd / && bash
+<temporary-directory>/…/r38-crossrun-compare-r9.sh` archive run — and I found no
+execution of the third, the relative `bash r38-crossrun-compare-r9.sh` from
+inside `review/evidence`, anywhere in `review/audit-codex-r9-transcript.txt`
+(every match for `cd …review/evidence` in that transcript is a quotation of this
+decision's own sentence, not a command). That third form is the one the
+`9684a585` repair exists for, so the claim that it now passes rests on the
+synthesizer's word. The commit itself is real and inspectable (7 insertions, 2
+deletions, to that script alone), and the decision's reason for carrying no
+fourth log — the outputs were byte-identical to the cited ones — is internally
+coherent.
+
+*Why it is not blocking.* The two forms the audit contract actually needs are the
+two that were independently reproduced: the in-place run and the clean-archive
+run. The third is a convenience invocation whose failure mode was a self-check
+assertion reading its own file, not a change to any measured result.
+
+*What would resolve it.* Either the empirical auditor runs that third form once
+and records its exit and empty diff, or the decision narrows the sentence to the
+two forms an auditor has reproduced and records the third as unverified here.
+
+**Observations carried forward, not re-opened.** Observations 1, 2, 3, 5, 6, 7
+and 8 from the revision-5 judgment audit, and the `(?i)` source-read and
+263-repository code-search observations from the revision-7 judgment audit,
+remain open and are correctly listed as open in `## Engines`. Each would change
+text that two auditors approved on a question this revision's scope does not
+touch.
 
 ## Assessment
 
-Revision 5 completes the three-engine pilot on the full scope the two-engine revision 3 declared it would be superseded on. The third engine's three provider reports did not change the recommendation or any owned value, and the decision shows why with evidence rather than with a tally: the one candidate they introduced that could express the contract, `cargo-commitlint`, was installed and executed and fails the contract on the two URL cases the org's own trailers depend on; the two provider claims about `committed`'s capabilities were executed and found false; the one provider claim about commitlint's footer rule was checked in the installed source and found false; the Gemini figures were re-read and corrected; the Perplexity license finding was confirmed and adopted. Each of the thirteen new disagreement rows names the case or source line that settled it or states that it is moot for the pick, and the one place a majority is mentioned says it does not decide. The principle is stated at the capability/standard level with a fit argument for the harmonized values, real architectural alternatives are compared before libraries, the executed fixture proves the contract on two operating systems (type enum, whole-header cap, body and footer caps, soft-line exemption, hook rejection, `--no-verify` caught by the range check, width-only bot relaxation, loud failure on a missing binary, F160 lockstep), the dependency tree is audited with a saved isolated-cache log, and a second model family reproduced every executed claim. Every figure, hash and source line I re-fetched matched. The eight observations are text and future-revision notes; none contradicts a required field or an executed result. Approve.
+Revision 9 is a narrow, correct repair of a real evidence defect, and its
+narrowness is demonstrated rather than claimed: five single-line hunks at 1, 3,
+250, 259 and 294, with `## Decision`, `## Parameters` and the `## Supersedes`
+payload untouched, measured by diff against the accepted revision 8 rather than
+accepted from the revision note.
+
+The finding it adopts was genuine — the revision-7 comparator reached into the
+Git object database for blob `a6e6641e…`, which a `git archive HEAD` extraction
+deliberately lacks — and the repair is the right shape: carry the object as a
+committed artifact, assert its digest and byte count before reading it, resolve
+every path from the script's own location, and gate the one remaining
+history-dependent assertion as a named `SKIP` rather than deleting it or letting
+it pass vacuously. Every figure the new passage states — 14,374 bytes,
+`cf9ffcb2…`, 106/106/0, 105/1, the identical post-commit log, the old
+comparator's 0-in-repository and 1-with-three-failures-in-archive — I checked
+against the artifact, and every one matched. The precedent it cites (R17
+revision 6) is the same repair applied to the same defect, and the citation lands
+on the line that describes it.
+
+**The revision-7 rejection is closed.** That audit rejected on this clause of
+revision 7: the revision-5 judgment audit was cited as "`review/audit-fable.md`
+… **still under its live name**", which is the destination the role contract
+fixes for every judgment audit, so the citation attributed a revision-7 report to
+revision 5. Revision 9 carries the repaired text, made in revision 8 and
+unchanged here: the revision-5 judgment audit is now cited as
+"`review/audit-fable.r5.md` … which the controller archived under that name when
+it launched the revision-7 judgment audit", in both the preamble and the
+`## Engines` note. The path is the archived one, the attribution is right, and
+the remaining imprecision is the scheduling clause recorded as JF-1, which
+misnames a launch without misdirecting a reader.
+
+**`## Supersedes` is intact**: 82,801 bytes, sha256 `97da7f16…`, byte-for-byte
+identical to the published `research/topics/38-commit-message-linter/DECISION.md`,
+which is the property a revision of a published decision most needs to hold and
+most easily loses.
+
+**The recommendation did not move.** `## Decision` and `## Parameters` carry no
+diff hunk against revision 8, the sha the owner's acceptance binds
+(`7e88ba81…`), and the owned parameter value is still byte-identical to
+`docs/port/PARAMETERS.md:13` at 508 bytes. The owner's acceptance re-binds at
+this revision on the terms the acceptance record itself states — a revision that
+changes only reasoning or evidence re-binds; one that moves the recommendation
+re-asks. **The owner is not re-asked.**
+
+I approve. No finding is blocking, and the `unresolved-findings` field is `none`
+because neither JF entry requires a change to any ground, gate, value or piece of
+evidence in the decision.

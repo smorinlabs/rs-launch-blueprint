@@ -1,0 +1,6 @@
+PASS conventional-commits http=200 pattern=Conventional Commits
+PASS git-commit http=200 pattern=commit-msg
+PASS committed-reference http=200 pattern=allowed_types
+PASS committed-hooks http=200 pattern=commit-msg
+PASS committed-action http=200 pattern=VERSION=1.1.11
+citation-checks-exit=0
