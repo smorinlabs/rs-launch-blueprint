@@ -1,0 +1,46 @@
+{
+  "audits": {
+    "empirical": {
+      "actor": "audit-codex-2026-09-05T183003Z-44e034fc1d72-r4",
+      "family": "openai",
+      "file": "review/audit-codex.md",
+      "model": "gpt-5.6-terra"
+    },
+    "judgment": {
+      "actor": "audit-fable-2026-09-05T183003Z-44e034fc1d72-r4",
+      "family": "anthropic",
+      "file": "review/audit-fable.md",
+      "model": "claude-opus-5"
+    }
+  },
+  "empirical": {
+    "argv": [
+      "bash",
+      "review/evidence/r63-spinner-claims.sh"
+    ],
+    "cwd": "/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R63/2026-09-05T183003Z-44e034fc1d72, with R63_WORK set to the fresh directory /private/tmp/r63-audit-r4-retry.Gjgw5r recorded in review/evidence/audit-r63-spinner-r4-workdir.txt",
+    "exit_code": 0,
+    "output_log": "review/evidence/audit-r63-spinner-r4.log",
+    "toolchain": "macOS arm64; the rerun records rustc 1.98.0, cargo 1.98.0 and stable 1.98.1. The main check reported 168 pass / 0 fail, RESULT: PASS. The same audit also ran review/evidence/r63-quiet-baseline-r4.sh three times under a fresh R63_QUIET_WORK directory (21 pass / 0 fail, exit 0 each, all three byte-identical to the recorded log), and reran the comparator's classifier mutations from disposable copies rather than in place."
+  },
+  "engine_reports": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T183003Z-44e034fc1d72",
+      "family": "openai",
+      "file": "raw/codex.md",
+      "model": "gpt-5.6-terra"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T183003Z-44e034fc1d72",
+      "family": "anthropic",
+      "file": "raw/opus.md",
+      "model": "claude-opus-5"
+    }
+  },
+  "evidence_checks": {},
+  "synthesis": {
+    "actor": "synth-opus-2026-09-05T183003Z-44e034fc1d72-r4",
+    "family": "anthropic",
+    "model": "claude-opus-5"
+  }
+}
