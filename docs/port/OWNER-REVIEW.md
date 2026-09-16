@@ -136,6 +136,7 @@ The briefs the owner answered from are in `docs/planning/p02/owner-decisions.md`
 | R67 | 4 (published) | `16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497` | accept | 2026-09-14 | W0-R67 option A; consumers R03, R52–R56, R70 admissible |
 | R42 | 10 | `a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c` | accept | 2026-09-15 | W0-R42 option A; install-integrity posture chosen under W0-R42i (see the ruling below); the eight items consuming `package-manager-invocation` admissible |
 | R49 | 7 | `319a535665318a120c9be3bdf61037f9f4ea8214d972de724dafe16902bec41d` | accept | 2026-09-15 | W0-R49 option A; W0-R49n: the owner directs the short binary name `rslbp` in place of `rs-launch-blueprint` (ruling below); re-bound at revision 8, which also makes the round-7 judgment audit's three clause repairs; consumers R22, R32, R68, R50 admissible |
+| R38 | 8 | `7e88ba81e5ce0ea7ae997cba7da199ece85acde3573fed2fcea9f039629a7a58` | accept | 2026-09-15 | W0-R38 option A; `committed` 1.1.11, hook plus CI, the eleven-type 50/72/72 soft-line convention; recommendation byte-identical to the published revision 5; consumers R24 and the release-please rows admissible |
 
 ## Dispositions
 
