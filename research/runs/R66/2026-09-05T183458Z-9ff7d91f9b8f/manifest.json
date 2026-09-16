@@ -186,6 +186,15 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-16T22:40:06Z",
+      "publication": {
+        "acceptance_sha256": "4eb6a00f2ef0b04ede98e5de0896fc3908402d82e9ebb9085b7244376b85185a",
+        "decision_sha256": "a7958d3f38dfcdfe16e754b3e9e7a318bbb3a833fe86ebd663d28ef0696940ad",
+        "transaction": "fa70ff396ffd43d6ac39c46e28eed440"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -250,6 +259,11 @@
     }
   },
   "prompt_source": "research/topics/66-output-format-surface/prompts/output-format-surface.prompt.md",
+  "publication": {
+    "acceptance_sha256": "4eb6a00f2ef0b04ede98e5de0896fc3908402d82e9ebb9085b7244376b85185a",
+    "decision_sha256": "a7958d3f38dfcdfe16e754b3e9e7a318bbb3a833fe86ebd663d28ef0696940ad",
+    "transaction": "fa70ff396ffd43d6ac39c46e28eed440"
+  },
   "remaining_budget": "no paid engine before the pilot publishes (Doxa admissions paused)",
   "required_engines": [
     "codex",
@@ -258,7 +272,7 @@
   ],
   "run_id": "2026-09-05T183458Z-9ff7d91f9b8f",
   "schema_version": 1,
-  "state": "partial",
+  "state": "published",
   "tier": "deep",
-  "updated_at": "2026-09-10T15:40:40Z"
+  "updated_at": "2026-09-16T22:40:06Z"
 }
