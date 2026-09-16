@@ -1,4 +1,4 @@
-# R60 — CLI parsing framework (bundle, Deep) — revision 5, 2026-09-14
+# R60 — CLI parsing framework (bundle, Deep) — revision 6, 2026-09-15
 
 Synthesized 2026-09-10 by a fresh context that produced none of this item's raw
 reports, from three engine reports (five provider bodies) plus the verification
@@ -92,6 +92,69 @@ ruling is not re-opened**: the standard still binds, OV-01 is still refused,
 option (b) is still what F267 implements, and R60 still declares zero overrides.
 What changed is that those facts now rest on a file in this repository instead
 of on a task instruction.
+
+Revised again 2026-09-15 after the revision-5 draft (sha256
+`2a665e73f5a5d93794fe49520615e204be294d156f1d537b7bafe1421c042c06`) was
+**rejected** by `audit-codex-2026-09-05T183002Z-09f93cfc507c-r5` on one finding,
+quoted here in full:
+
+> **F2 — the preservation script is not insulated from untracked audit files.**
+> `r60-preservation-diff-r5.sh` claims to read committed files only. Its C1o
+> instead searches `"$RUN_DIR"/review/audit-codex*.md`. The live run already
+> contained the untracked `review/audit-codex.r4.md`, a byte-for-byte r4-audit
+> copy beside the canonical `review/audit-codex.md`. Both files contain revision
+> 4's decision hash. C1o therefore observed two matching reports, failed its
+> required one-report assertion, and made the in-place r5 preservation rerun exit
+> 1 with 133 checks and one failure. The committed log and decision claim exit 0
+> with no failures.
+>
+> The clean archive passes because it contains only the tracked canonical report;
+> that does not establish the claim that the script reads committed inputs only or
+> that its in-place result reproduces. Make C1o select an explicit canonical,
+> tracked report (or enumerate tracked paths), regenerate the preservation log,
+> and correct the decision's in-place reproducibility claim.
+
+**The finding is correct, and revision 6's scope is finding F2 and the evidence
+apparatus it names, and nothing else.** No claim about `clap`, the standard, the
+owner's ruling, the parameters or any acceptance criterion is touched, and **the
+owner's ruling is not re-opened**. What was wrong is a property of one lookup.
+`C1o` — and, reported beyond the brief, `C1i` carried the identical defect —
+located an audit report by *searching* this run's `review/` directory for
+whichever file named a given decision hash, then required exactly one match.
+Reading a directory rather than naming a file produces two failures, and the
+audit observed the first:
+
+1. **The match count is not the script's to control.** Any extra copy of a
+   report — tracked or untracked, placed by anyone working in this shared
+   worktree — enters the set. That is F2 as observed: an untracked byte-for-byte
+   copy of the revision-4 report sat beside the canonical one, so the in-place
+   rerun **exited `1` with 133 checks and one failure** while the committed log
+   recorded `133   FAILURES: 0`.
+2. **The search result is printed, so the log moves when the directory moves.**
+   When the revision-5 audit landed, the controller archived the revision-4
+   report under its round name; the wildcard followed it, and **the printed
+   basename changed from `audit-codex.md` to `audit-codex.r4.md`**. Rerun in
+   place on 2026-09-15, the revision-5 script exits `0` with 133 checks and no
+   failures — the count is right again — and its output still differs from the
+   committed log on that one printed line. A passing count is not a reproducing
+   log, and this second observation is recorded here because it shows the defect
+   is the directory read itself, not the duplicate file.
+
+The repair is `review/evidence/r60-preservation-diff-r6.sh`, which **names every
+audit report it reads** and asserts the header lines that bind it: its
+`decision-sha256:`, its `actor:` and its `verdict:`. No directory is searched, so
+a file the script does not name cannot be read and cannot change what it prints,
+and each report is pinned to bytes only that round's auditor wrote, so no check
+can pass by accident. `C1r` forbids the wildcard from returning, with `C1r0` as
+its positive control. `r60-preservation-diff-r5.sh` is left byte-identical as the
+artifact the revision-5 audit ran. The cost of naming is stated rather than left
+for an auditor to find: the current round's report is at `review/audit-codex.md`
+by the controller's convention and is renamed when the next audit lands, so
+`C1t` **will fail on location once a round-7 audit exists** — the same expected
+historical-control failure as `C4h`'s title check, and the reason each superseded
+script is kept rather than edited. `r60-standard-pin-r5.sh` and
+`r60-snapshot-provenance-r4.sh` are unchanged, reread in both modes for this
+revision, and remain this decision's live evidence.
 
 ## Decision
 
@@ -1000,8 +1063,12 @@ so that `cargo` will resolve the pins.
 of 2026-09-10. Rows **E1–E10** are the verification run first performed for
 revision 2 on 2026-09-12, re-executed in full for revision 3 on 2026-09-13
 against a rebuilt, self-contained evidence apparatus, re-executed again in full
-for revision 4 on 2026-09-14 against the revision-4 scripts, and **re-executed
-once more for revision 5 on 2026-09-14** against the revision-5 scripts. Rows
+for revision 4 on 2026-09-14 against the revision-4 scripts, **re-executed once
+more for revision 5 on 2026-09-14** against the revision-5 scripts, and
+**re-executed a fifth time for revision 6 on 2026-09-15** — the preservation half
+against the new `r60-preservation-diff-r6.sh`, the standard-pin and provenance
+halves against the unchanged `r60-standard-pin-r5.sh` and
+`r60-snapshot-provenance-r4.sh`. Rows
 **E11–E13** were added in revision 4: they carry the three
 claims the owner's ruling made load-bearing — that `ArgAction::Version`
 terminates the parse, that the four `Command` version APIs behave as the decided
@@ -1016,10 +1083,13 @@ and — row E10 — that every snapshot read really came from the source it name
 check inside a saved script; `P<n>` numbers a *principle* in `## Decision`'s
 agreement table and `AC<n>` an acceptance criterion. The four sequences are
 independent — `E6` and `P6` are unrelated. The `C<n>` ids were renumbered in
-revision 3 when the scripts were rewritten, extended in revision 4, and extended
-again in revision 5; **where a row names a `C<n>`, it names the revision-5
-script's id**, and the revision-5 scripts carry revisions 3 and 4's ids unchanged
-for every check they inherit.
+revision 3 when the scripts were rewritten, extended in revision 4, extended
+again in revision 5, and extended again in revision 6; **where a row names a
+`C<n>`, it names the id in the script that row cites** — the revision-6
+preservation script for row E9, the unchanged revision-5 standard-pin script for
+rows E1–E8 and E11–E13, and the unchanged revision-4 provenance script for row
+E10 — and each later script carries the earlier ones' ids unchanged for every
+check it inherits.
 
 **Revision-1 output: `review/evidence/r60-cli-parsing-verification.log`** (1,142
 lines; the section numbers and letters below match the headings in that file).
@@ -1234,6 +1304,32 @@ reissued under r5 names; the third is unchanged and stays at r4.
 | `r60-preservation-diff-r5.sh` | `r60-preservation-diff-r5.log` | exit `0`, `CHECKS RUN: 133   FAILURES: 0` — revision 4's 104 checks, plus the rejected revision-4 text as a fourth baseline (`C1m`–`C1q`), the 13 `C4k` checks of the repair itself, the `C9` r4→r5 diff, six more `C5c` evidence files and `C-grep` |
 | `r60-snapshot-provenance-r4.sh` | `r60-snapshot-provenance-r4.log` | **unchanged and still live evidence**: exit `0`, `CHECKS RUN: 17   FAILURES: 0   UNREACHABLE: 0   UNVERIFIABLE-HERE: 2`, and the rerun for this revision **diffed empty** against the committed log. No snapshot moved and `snapshots/MANIFEST.txt` is untouched, so there is nothing for an r5 successor to change |
 
+**The middle row of that table is false as an in-place claim, and revision 6
+corrects it here rather than rewriting it.** The row is kept because it is the
+record the revision-5 audit judged. What it says of the clean `git archive`
+extraction is true and the auditor confirmed it: from an archive, which contains
+only the tracked canonical report, `r60-preservation-diff-r5.sh` exits `0` with
+`CHECKS RUN: 133   FAILURES: 0`. What it says **in place** is not. Two in-place
+observations, both of them the same defect:
+
+- **At audit time**, an untracked byte-for-byte copy of the revision-4 report,
+  `review/audit-codex.r4.md`, sat beside the canonical `review/audit-codex.md`.
+  `C1o` searched the directory, found two files carrying the revision-4 hash,
+  failed its one-report assertion, and the run **exited `1` with 133 checks and
+  one failure**. That is finding F2.
+- **On 2026-09-15**, with the revision-4 report archived under its round name and
+  the revision-5 report at the canonical one, the count is `1` again and the run
+  exits `0` with 133 checks and no failures — but **the printed basename changed
+  from `audit-codex.md` to `audit-codex.r4.md`**, so the output differs from the
+  committed `r60-preservation-diff-r5.log` on that one line. The log still does
+  not reproduce in place.
+
+So the honest statement of the revision-5 preservation result is: reproducible
+from a clean extraction, **not** reproducible in place, for a reason that is the
+script's and not the tree's. `r60-preservation-diff-r6.sh` replaces it as this
+decision's preservation evidence and its own results are the **Revision-6 run**
+table below.
+
 **A fourth decision baseline was committed, and deliberately not as a
 `snapshots/` row.** `review/evidence/r60-decision-r4-baseline.md` is the
 rejected revision-4 text, sha256
@@ -1246,6 +1342,17 @@ revision for a file nothing else about this revision touches. It is anchored the
 way the revision-3 baseline is anchored instead: located by the sha256 its own
 audit report names rather than by a file name (`C1m`–`C1q`, which also assert
 that report's `verdict: reject`, its `F1`, and its revision-4 actor).
+
+**That last sentence describes the defect finding F2 rejected, and revision 6
+reverses the reasoning rather than deleting the paragraph.** "Located by the
+sha256 its own audit report names rather than by a file name" means *searched
+for in a directory*, which is precisely what let an untracked duplicate decide
+the result. The baseline files are still anchored by hash — that part was never
+the problem, because a hash pins bytes — but the **reports** are now named:
+`review/audit-codex.r3.md`, `review/audit-codex.r4.md` and, for the current
+round, `review/audit-codex.md`, each asserted against its own
+`decision-sha256:`, `actor:` and `verdict:` lines in
+`r60-preservation-diff-r6.sh`.
 
 **How the two checks were inverted, and why they are anchored rather than
 counted.** Revision 4's `C16h` and `C16i` asserted `OV-01` **count 0** and
@@ -1295,14 +1402,33 @@ retained on the same footing, as the revision-2 pair is before them. **No row
 below cites a revision-3 or revision-4 script for a revision-5 claim**, with one
 deliberate exception that is not a revision-4 claim at all:
 `r60-snapshot-provenance-r4.sh` is unchanged, reruns byte-identical, and is
-cited by row E10 as this revision's live provenance evidence.
+cited by row E10 as this revision's live provenance evidence. **Revision 6 adds
+the revision-5 preservation script to that retained set** and keeps the same
+rule: `r60-preservation-diff-r5.sh` is superseded by
+`r60-preservation-diff-r6.sh` and no row cites it for a revision-6 claim, while
+`r60-standard-pin-r5.sh` — untouched by finding F2, which is a property of the
+preservation script's report lookup alone — stays live and is cited by rows E1
+through E8 and E11 through E13.
 
 **The same two reproducibility claims, re-demonstrated rather than inherited.**
 `r60-standard-pin-r5.sh` and `r60-preservation-diff-r5.sh` read only files
 committed in this repository and make no network call; both were rerun against a
 `git archive` extraction of the exact tree this revision commits — an empty
 directory with no `.git` and no working-tree state — and `diff` against the two
-logs cited here reported no difference. `r60-snapshot-provenance-r4.sh` carries
+logs cited here reported no difference.
+
+**That sentence was true of `r60-standard-pin-r5.sh` and false of
+`r60-preservation-diff-r5.sh`, and it is the sentence finding F2 falsified.** It
+is kept here as the record and corrected immediately, per this document's
+practice for a superseded claim. The archive half holds for both scripts: the
+auditor reran both from a clean `git archive HEAD` extraction and both diffed
+empty. The "reads only files committed in this repository" half does not hold for
+the preservation script, because `C1i` and `C1o` read the run's `review/`
+**directory** rather than named files, and a directory in this shared worktree
+carries whatever anyone has put in it, tracked or not. The consequences, with
+their observed numbers, are recorded above under the revision-5 results table.
+`r60-preservation-diff-r6.sh` restores the claim by naming every file it reads;
+its two-mode results are the **Revision-6 run** table below. `r60-snapshot-provenance-r4.sh` carries
 the identical two conditions revision 3 recorded: byte-for-byte only while the
 network is reachable **and** the checkout carries git history. **The exact
 variance outside the second condition, observed rather than predicted**, from the
@@ -1326,6 +1452,56 @@ row E10's "is the pin still the newest commit". Nothing in the r5 log records a
 number read out of either file, precisely so that an unrelated edit to them
 cannot change this log.
 
+**Revision-6 run — the report lookup named rather than searched.** Revision 6
+implements the revision-5 audit's finding F2 and nothing else. One script is
+reissued; the other two are unchanged and were rerun in both modes for this
+revision rather than inherited.
+
+| Script | Log | Result |
+|---|---|---|
+| `r60-preservation-diff-r6.sh` | `r60-preservation-diff-r6.log` | exit `0`, `CHECKS RUN: 159   FAILURES: 0` — revision 5's 133 checks with `C1i`/`C1i2` and `C1o`/`C1o2` **rewritten to name their report file and assert its `decision-sha256:`**, plus `C1r`/`C1r0` forbidding a directory search from returning, plus the rejected revision-5 text as a fifth baseline (`C1s`–`C1v`), the 11 `C4m` checks of the repair itself, the `C10` r5→r6 diff and two more `C5c` evidence files |
+| `r60-standard-pin-r5.sh` | `r60-standard-pin-r5.log` | **unchanged and still live evidence**: exit `0`, `CHECKS RUN: 128   FAILURES: 0`, and the rerun for this revision **diffed empty against the committed log in both modes** — in place and from a clean `git archive` extraction. It names no audit report and reads no directory, so F2 does not reach it |
+| `r60-snapshot-provenance-r4.sh` | `r60-snapshot-provenance-r4.log` | **unchanged and still live evidence**: exit `0`, `CHECKS RUN: 17   FAILURES: 0   UNREACHABLE: 0   UNVERIFIABLE-HERE: 2` in place, diffing empty against the committed log; from the clean extraction it carries its two documented conditions and reads `CHECKS RUN: 14   FAILURES: 0   UNREACHABLE: 0   UNVERIFIABLE-HERE: 5`, unchanged from revision 5 |
+
+**A fifth decision baseline was committed, on the fourth's footing.**
+`review/evidence/r60-decision-r5-baseline.md` is the rejected revision-5 text,
+sha256 `2a665e73f5a5d93794fe49520615e204be294d156f1d537b7bafe1421c042c06` — the
+value `review/audit-codex.md` itself names — so that `C10` can enumerate the
+r5→r6 diff, which is the delta an auditor of revision 6 has to review. Like the
+fourth baseline it is **not** added to `snapshots/MANIFEST.txt`, because a new
+MANIFEST row would change `r60-snapshot-provenance-r4.sh`'s recorded totals and
+force a revision of a script this revision does not otherwise touch. Its hash is
+asserted directly (`C1s2`), and the report that bound that hash is read at its
+named path `review/audit-codex.md` with its `decision-sha256:`, `verdict:`,
+`unresolved-findings:` and `actor:` lines all asserted (`C1t`–`C1v`).
+
+**How the lookup was rewritten, and what `C1r` adds.** Revision 5 asked *which
+file in this directory carries hash H?* and required the answer to be one file.
+Revision 6 asks *does the file at path P carry hash H, and was it written by
+round N's auditor with verdict V?* The first question's answer depends on
+everything else in the directory; the second's depends only on the named file's
+bytes. Four report paths are now named — `review/audit-codex.r1.md`,
+`.r2.md`, `.r3.md`, `.r4.md`, all archived under their round names and stable —
+plus `review/audit-codex.md` for the current round. `C1r` then asserts that no
+executable line of the script contains a wildcard over those names at all, so the
+defect cannot return silently; `C1r0` is its positive control, requiring the
+pattern to be found somewhere in the file — it occurs in the quotation of F2 in
+the script's own header — so a search that had stopped working could not satisfy
+`C1r` by finding nothing. **Both were validated by making them fire**: a wildcard
+placed on an executable line of a throwaway copy took `C1r` to `FAIL` with
+`count=1`, and the copy was discarded.
+
+**The revision-5 preservation script's failure against this text is recorded
+rather than predicted.** `bash review/evidence/r60-preservation-diff-r5.sh` run
+against the revision-6 tree → **exit 1**, `CHECKS RUN: 133   FAILURES: 1`,
+failing exactly `C4h`, which requires the title to read revision 5. Every other
+check in it passes, which is this revision's scope evidence: nothing revision 6
+changed touches anything that script pins except the title. Its log still differs
+in place on the one printed report name, for the reason recorded above — that is
+the defect, still visible in the artifact that carries it. `r60-standard-pin-r4.sh`
+and `r60-preservation-diff-r4.sh` were not rerun for this revision and their
+recorded revision-5 results stand; they are superseded twice over.
+
 | Row | What it checks | Command | Result |
 |---|---|---|---|
 | E1 | that the text every `:<line>` citation resolves against is the pinned revision (`C1`, `C2` of `r60-standard-pin-r5.sh`) | verify each snapshot's sha256 against `snapshots/MANIFEST.txt`, then hash `snapshots/cli-design-standard-1.4.14.md` | all 10 snapshots match their recorded hashes, MANIFEST records exactly the files present and no others, and the standard snapshot's sha256 is `9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f` — **the sha256 of blob `f9de0437…` at commit `fb30a591…`**, which is how the committed text and the pinned blob are established to be the same bytes without needing a clone of the standards repository. The snapshot is 773 lines, asserted, so an out-of-range `:<line>` citation cannot pass silently. Its recorded origin is the commit-addressed URL `raw.githubusercontent.com/smorinlabs/cli-standards/fb30a591…/cli-design-standard.md`. That the pin is still the *newest* published commit is a live-history claim and is row E10 |
@@ -1336,7 +1512,7 @@ cannot change this log.
 | E6 | whether R67 pinned the standard (`C13`) | `grep` over the published R67 topic's `DECISION.md` and its 18 evidence logs, reached by a path relative to the script | **R67's body: no pin** — zero citations carrying a version, commit, blob or hash, across its two citations of the file (`:78`, `:464`), and zero occurrences of `1.4.14`. **R67's audit trail: the version, but not a pin** — its revision-4 audit log records at `:6` "Standard read: `…/cli-design-standard.md`, version 1.4.14"; the only other mention among the evidence logs is one quoted line of the standard's own changelog. Asserted as labelled counts (`count=0`, `count=2`, `count=2`, `count=1`), so an absence cannot be confused with a failed search and a two-digit count cannot satisfy a one-digit expectation. The presence of R67's decision file is itself asserted first, so a moved file would fail rather than read as four zeroes |
 | E7 | that both source ports document the plural noun (`C10`) | read the four committed port snapshots, taken through each port's pin | py `cli/commands/projects.py:37` is `@click.group(name="projects", cls=SuggestingGroup)`; py `cli/commands/__init__.py` is `COMMAND_GROUPS = [projects_group, config_group]`; ts `src/commands/projects.ts:70` is `.command('projects', { isDefault: true })`, looked up by that name at ts `src/router.ts:234`. This is the recorded practice R1.3 overrides |
 | E8 | the clap 4.6.6 APIs AC9/AC10 name (`C11`, `C12`) | read `snapshots/clap_builder-4.6.6-src-builder-command.rs.txt` and the two `clap_derive-4.6.4` snapshots, each hash-verified against MANIFEST, which records the tarball each came from and that tarball's checksum | the `clap_builder` snapshot's recorded origin is `clap_builder-4.6.6.crate`, sha256 `7b48fea5a88e9ae728a2dcbedbfc0e730f7d60da42e1cb049a83c9fb8b789889` — **the checksum crates.io records for 4.6.6** (`GET /api/v1/crates/clap_builder/4.6.6`, retrieved 2026-09-12 and re-retrieved 2026-09-13; the same response gives `rust_version: 1.85`). All eight methods exist on `Command` at the cited lines: `get_subcommands` `:3932`, `get_name` `:3756`, `is_hide_set` `:4242`, `render_long_help` `:1037`, `get_visible_aliases` `:3847`, `get_all_aliases` `:3874`, `alias` `:2691`, `visible_alias` `:2893`. And the behavioral half: `alias`'s own doc says "Aliases defined with this method are *hidden* from the help message" (`:2664-2666`) while `visible_alias`'s says its alias "is *visible* from the help message" (`:2865-2868`) — which is what makes `#[command(alias = …)]` the R1.3-conformant spelling and `visible_alias` a violation. **The derive forwarding is verified too** (`C12`), since the R1.3 repair rests on it: `clap_derive-4.6.4` (tarball sha256 `d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061`, likewise the checksum crates.io records) has no `MagicAttrName::Alias` variant and no mention of `alias` in `src/attr.rs`, so the name falls to the generic branch `_ => self.methods.push(Method::new(name, arg))` (`src/item.rs:337-345`) and a `Method` renders as `quote!( .#name(#args) )` (`:1281-1289`) — emitting `.alias("projects")`, the hidden method |
-| E9 | that this revision preserved what the approved revision 3 established, and that the owner's ruling is implemented rather than asserted (`review/evidence/r60-preservation-diff-r5.sh`, log `review/evidence/r60-preservation-diff-r5.log`; its `C0`–`C9`) | confirm the committed revision-1, revision-2, revision-3 and revision-4 texts hash to the values the four audit reports themselves name — the revision-3 and revision-4 reports located **by the hash each names** rather than by a file name, because this run's controller renames the previous report to `audit-codex.rN.md` when the next audit lands and a hard-coded name would break the same way revision 2's `HEAD:<path>` check broke — and that the revision-3 report's `verdict:` is `approve` with `unresolved-findings: none` and its `actor:` the revision-3 auditor, while the revision-4 report's is `reject` naming `F1` and `docs/port/OWNER-REVIEW.md`; for each preserved claim, require every baseline line carrying it to still be present verbatim; assert the inverted override and waiver state the ruling produces; re-read the four `assumes` values out of `docs/port/PARAMETERS.md`; `find` the run directory for Rust or Cargo artifacts; enumerate every differing line against all four baselines | **exit 0**, `CHECKS RUN: 133 FAILURES: 0`. **Preservation:** the 20 revision-1 targets and the 3 revision-2 targets are all still verbatim — the `clap 4.6.6` pin and its four features, the `clap_complete 4.6.9` pin, `strsim 0.11.1` transitive-only, the dependency-free `build.rs`, `clap_complete`'s `default = []` and its `clap >= 4.5.20` floor, "Locking 28 packages to latest Rust 1.96 compatible versions", the `cargo generate-lockfile`/`cargo tree` row, the `cargo audit` **exit 0** row with its 1,243 advisories and 29 dependencies, all four `assumes` lines, **OV-01's R4.6 quotation, its option (b) and option (c) rows and its owner-ruling sentence**, architectures A and E, the `clap` fitness-gate data row, the `casey/just` composition evidence, the 2026-09-12 status line, R1.3's rule text and the standard-pin content-hash row. That OV-01's argument and options survive its retirement byte-for-byte is the point, not an accident: the owner chose from exactly that table. **The inversion**, the 34 checks of the `C4f` family (`C4f` through `C4f29`; the count exceeds the labels because `C4f28` is a loop over the six fitness gates): the refusal is recorded and dated `REFUSED 2026-09-14`; option (b) is named as what the owner selected; OV-01 carries the `RETIRED OVERRIDE` label; the decision declares **zero overrides** and states that no `SHOULD` is waived; the 2026-09-12 record is labelled as superseded; the F267 row drops `Command::long_version` and names the JSON path at `:276-277`; AC2 asserts byte-identity and the no-leading-`v` `MUST`; AC3 asserts the JSON object with `commit` and `built` absent; AC7 records that `--version` returns through `Ok`; the R66 note is `related (not a registry dependency)` with the reason; **there are zero `CONFLICT:` lines**; the fired OV-01 `re-verify` trigger is marked removed and the R66 one added; and all six fitness gates appear in the closing enumeration. **C4g survives the inversion** — a refusal is not a grant, so eight affirmative grant phrasings must still be absent, and revision 4 both scans sentence-wise instead of line-wise (this prose is hard-wrapped, so a line-scoped scan could see `waiver was granted` while its `whether` sat on the previous line) and adds `C4g2`, a positive control running the same patterns over synthetic text that does claim a grant, which must fire. Structurally: four H2 sections in the required order, no `## Supersedes`, no second override declared, the title recording revision 5, and gate 1 recorded as `inapplicable` with the ruling as its reason while the gate's row is kept in the table rather than removed. `find` reports zero `.rs`, `Cargo.toml` or `Cargo.lock` files and zero `src/` or `target/` directories anywhere in this run directory, and each of the eighteen evidence files this decision cites is asserted present. **Revision 5's own repair is the 13 checks of the `C4k` family**: finding F1 is quoted rather than paraphrased; both durable records are cited by path-and-line-range *and* by section heading, so a citation survives a line shift; the two sentences the audit named are **still present verbatim**, each with its correction beside it, because a superseded record is corrected in place here rather than deleted; U8 is re-labelled `RESOLVED` and kept; and the note states that the owner's ruling is not re-opened. All four diffs are enumerated in full in the log; **their line counts are deliberately not quoted here, because quoting a count of the decision's own changed lines would change it** |
+| E9 | that this revision preserved what the approved revision 3 established, and that the owner's ruling is implemented rather than asserted (`review/evidence/r60-preservation-diff-r6.sh`, log `review/evidence/r60-preservation-diff-r6.log`; its `C0`–`C10`) | confirm the committed revision-1 through revision-5 texts hash to the values the five audit reports themselves name — **each report read at a named path, never located by searching the directory**, which is finding F2's repair: `review/audit-codex.r1.md` through `.r4.md` for the archived rounds and `review/audit-codex.md` for the current one, each asserted against its own `decision-sha256:`, `verdict:` and `actor:` lines, with `C1r` asserting that no executable line of the script contains a wildcard over those names — and that the revision-3 report's `verdict:` is `approve` with `unresolved-findings: none`, the revision-4 report's is `reject` naming `F1` and `docs/port/OWNER-REVIEW.md`, and the revision-5 report's is `reject` naming `F2` and `r60-preservation-diff-r5.sh`; for each preserved claim, require every baseline line carrying it to still be present verbatim; assert the inverted override and waiver state the ruling produces; re-read the four `assumes` values out of `docs/port/PARAMETERS.md`; `find` the run directory for Rust or Cargo artifacts; enumerate every differing line against all four baselines | **exit 0**, `CHECKS RUN: 159 FAILURES: 0`. **Preservation:** the 20 revision-1 targets and the 3 revision-2 targets are all still verbatim — the `clap 4.6.6` pin and its four features, the `clap_complete 4.6.9` pin, `strsim 0.11.1` transitive-only, the dependency-free `build.rs`, `clap_complete`'s `default = []` and its `clap >= 4.5.20` floor, "Locking 28 packages to latest Rust 1.96 compatible versions", the `cargo generate-lockfile`/`cargo tree` row, the `cargo audit` **exit 0** row with its 1,243 advisories and 29 dependencies, all four `assumes` lines, **OV-01's R4.6 quotation, its option (b) and option (c) rows and its owner-ruling sentence**, architectures A and E, the `clap` fitness-gate data row, the `casey/just` composition evidence, the 2026-09-12 status line, R1.3's rule text and the standard-pin content-hash row. That OV-01's argument and options survive its retirement byte-for-byte is the point, not an accident: the owner chose from exactly that table. **The inversion**, the 34 checks of the `C4f` family (`C4f` through `C4f29`; the count exceeds the labels because `C4f28` is a loop over the six fitness gates): the refusal is recorded and dated `REFUSED 2026-09-14`; option (b) is named as what the owner selected; OV-01 carries the `RETIRED OVERRIDE` label; the decision declares **zero overrides** and states that no `SHOULD` is waived; the 2026-09-12 record is labelled as superseded; the F267 row drops `Command::long_version` and names the JSON path at `:276-277`; AC2 asserts byte-identity and the no-leading-`v` `MUST`; AC3 asserts the JSON object with `commit` and `built` absent; AC7 records that `--version` returns through `Ok`; the R66 note is `related (not a registry dependency)` with the reason; **there are zero `CONFLICT:` lines**; the fired OV-01 `re-verify` trigger is marked removed and the R66 one added; and all six fitness gates appear in the closing enumeration. **C4g survives the inversion** — a refusal is not a grant, so eight affirmative grant phrasings must still be absent, and revision 4 both scans sentence-wise instead of line-wise (this prose is hard-wrapped, so a line-scoped scan could see `waiver was granted` while its `whether` sat on the previous line) and adds `C4g2`, a positive control running the same patterns over synthetic text that does claim a grant, which must fire. Structurally: four H2 sections in the required order, no `## Supersedes`, no second override declared, the title recording revision 6, and gate 1 recorded as `inapplicable` with the ruling as its reason while the gate's row is kept in the table rather than removed. `find` reports zero `.rs`, `Cargo.toml` or `Cargo.lock` files and zero `src/` or `target/` directories anywhere in this run directory, and each of the eighteen evidence files this decision cites is asserted present. **Revision 5's own repair is the 13 checks of the `C4k` family**: finding F1 is quoted rather than paraphrased; both durable records are cited by path-and-line-range *and* by section heading, so a citation survives a line shift; the two sentences the audit named are **still present verbatim**, each with its correction beside it, because a superseded record is corrected in place here rather than deleted; U8 is re-labelled `RESOLVED` and kept; and the note states that the owner's ruling is not re-opened. **Revision 6's own repair is the 11 checks of the `C4m` family**: finding F2 is quoted rather than paraphrased; the repaired script is named; the rejected one is recorded as kept byte-identical; **both** in-place observations are recorded with their numbers — the auditor's exit `1` with 133 checks and one failure, and the moved printed basename seen on 2026-09-15; the two sentences the finding falsified, the revision-5 results row and the "read only files committed in this repository" claim, are **kept verbatim** with their corrections beside them rather than deleted; the beyond-brief correction that `C1i` carried the same defect is reported; and the new lookup's own cost — that `C1t` will fail on location once a round-7 audit exists — is stated rather than left to be found. All five diffs are enumerated in full in the log; **their line counts are deliberately not quoted here, because quoting a count of the decision's own changed lines would change it** |
 | E10 | that every committed snapshot really is what MANIFEST.txt says, and that the pin is still the newest published commit (`review/evidence/r60-snapshot-provenance-r4.sh`, log `review/evidence/r60-snapshot-provenance-r4.log`; its `C1`, `C2`) | re-download each pinned source and re-derive the snapshot's sha256 from it; for a crate, verify the tarball against the checksum crates.io records before extracting; for a private origin, probe anonymously and require HTTP 404; then `GET https://api.github.com/repos/smorinlabs/cli-standards/commits?path=cli-design-standard.md&per_page=1` | **exit 0**, `CHECKS RUN: 17 FAILURES: 0 UNREACHABLE: 0 UNVERIFIABLE-HERE: 2` — three checks more than revision 3's 14, which is the two MANIFEST rows revision 4 added (`parser.rs` contributes both a tarball-checksum and an extracted-file check; `r60-decision-r3.md` contributes one git-object check). The standard re-fetched from its commit-addressed URL hashes to `9fb05d3d…`; both `clap` tarballs hash to the checksums crates.io records and **all four** extracted files hash to their snapshots; both Python sources re-fetched from their commit-addressed URLs match; **all three** decision baselines match this repository's own git objects, including revision 3 at commit `d642814cddfd3f1756fc56cd38738904440d9141`. The newest published commit touching `cli-design-standard.md` is still `fb30a591c267a7ec1130ba4cda679eaee494b9d7` — this is the live half of the `re-verify` trigger, and it is the check that will fail first when the standard moves. The 2 `UNVERIFIABLE-HERE` entries are unchanged: the two TypeScript snapshots, whose repository `smorinlabs/ts-launch-blueprint` returns **HTTP 404** to an anonymous request, which the script asserts rather than assumes |
 | E11 | **that `ArgAction::Version` terminates the parse** — the one new mechanical fact behind F267's move to option (b) (`C14` of `r60-standard-pin-r5.sh`) | read `snapshots/clap_builder-4.6.6-src-parser-parser.rs.txt`, hash-verified against MANIFEST, which records the tarball it came from and that tarball's crates.io checksum; `sed -n '1322,1331p'` | the arm at `parser.rs:1322` computes `use_long` from the identifier — `Some(Identifier::Long) => true`, `Some(Identifier::Short) => false` — and then **returns `Err(self.version_err(use_long))`**. Asserted in both directions: the arm contains no `Ok(` continuation (`count=0`), so it cannot fall through to a later argument, and — the control that keeps that zero from being vacuous — the immediately preceding arms *do* return `Ok(ParseResult::…)`, which the same search finds. So `<tool> --version <format-flag> json` is unreachable through clap's built-in version flag: the parse ends at `--version`, and `version_err` renders from the `Command::version`/`long_version` strings, which no parsed value reaches. **This is why option (b) costs more than an AC2/AC3 rewrite** |
 | E12 | that the four `clap 4.6.6` APIs F267's decided mechanism names exist and behave as described, and that the derive spelling reaches one of them (`C15` of `r60-standard-pin-r5.sh`) | read `snapshots/clap_builder-4.6.6-src-builder-command.rs.txt`, the same hash-verified snapshot row E8 uses (origin `clap_builder-4.6.6.crate`, sha256 `7b48fea5…`, the checksum crates.io records) | `Command::render_version` `:1097`, `disable_version_flag` `:1493`, `version` `:2119`, `long_version` `:2151` all exist at those lines. Behaviorally: `render_version()` is `self._render_version(false)` — the **short**, single-line form — and `_render_version`'s `false` branch reads `self.version` first and ends `format!("{display_name} {ver}\n")` (`:4906-4913`), which is R4.6's GNU name-and-version shape; `disable_version_flag` documents itself as disabling **both** `-V` and `--version` (`:1448`) and its own doctest asserts `--version` then yields `ErrorKind::UnknownArgument` (`:1455-1463`). The trap is asserted too: clap's documented custom-flag recipe re-declares the flag with `.action(ArgAction::Version)` and its doctest asserts `ErrorKind::DisplayVersion` (`:1465-1491`), so following that recipe would restore the short-circuit E11 describes. The template declares a plain boolean instead. **The derive forwarding is verified too** (`C15h`), on the same footing as revision 3's `alias` proof, because F267's mechanism rests on it: `disable_version_flag` appears zero times in `clap_derive-4.6.4`'s `MagicAttrName` table (`src/attr.rs`), so `#[command(disable_version_flag = true)]` takes the same generic branch row E8 already verified — `_ => self.methods.push(Method::new(name, arg))` rendered as `quote!( .#name(#args) )` — and emits `.disable_version_flag(true)`, the builder method above |
@@ -1351,6 +1527,10 @@ above). For revision 3: `bash review/evidence/r60-standard-pin-r3.sh` → **exit
 `bash review/evidence/r60-standard-pin-r4.sh` → **exit 0**, 115 checks, 0
 failures. For revision 5:
 `bash review/evidence/r60-standard-pin-r5.sh` → **exit 0**, 128 checks, 0
+failures. For revision 6 the standard-pin script is unchanged and reruns to the
+same **exit 0**, 128 checks, 0 failures, in place and from a clean extraction;
+this revision's own headline is its preservation script,
+`bash review/evidence/r60-preservation-diff-r6.sh` → **exit 0**, 159 checks, 0
 failures.
 
 **What these runs do not establish**, stated so they are not read as more:
@@ -1795,11 +1975,92 @@ too narrow and the second overruns the rule by two lines, and revision 5 leaves
 the owner's file untouched and says so here instead. Neither correction changes
 the owner's choice, which is option (b) either way.
 
+**Audit of revision 5, and what revision 6 changed.** The revision-5 draft
+(sha256 `2a665e73f5a5d93794fe49520615e204be294d156f1d537b7bafe1421c042c06`) was
+**rejected** by `audit-codex-2026-09-05T183002Z-09f93cfc507c-r5` (gpt-5.6-terra;
+report at `review/audit-codex.md`, rerun log
+`review/evidence/audit-cli-parsing-framework-r5.log`) on **one** finding, F2,
+quoted in full in the revision note at the top of this document. The auditor
+confirmed everything else from a clean `git archive HEAD` extraction: the owner
+ruling correctly recorded, the revision-5 anchoring, the parameter preservation,
+the retired OV-01 record, AC2/AC3/AC7, R66's `related`-not-conflict
+classification, the corrected R4.6 `:275-277` span, gate 1's `inapplicable`
+treatment under Q7.B, the r5 standard-pin script's owner-record section
+extraction including its `C16m` scoped-extraction control, and five external
+citations refetched and hash-matched. **So the recommendation was not challenged
+and does not move, and neither does the owner's ruling.**
+
+**What F2 was, in one sentence.** `r60-preservation-diff-r5.sh` said it read
+committed files only, but `C1i` and `C1o` located an audit report by searching
+this run's `review/` directory for whichever file carried a given decision hash;
+an untracked byte-for-byte copy of the revision-4 report was sitting there, two
+files matched, the one-report assertion failed, and the in-place rerun exited `1`
+with 133 checks and one failure while the committed log recorded `133` and no
+failures.
+
+**Two things are corrected, not one.** The finding names the count; rerunning the
+script in place on 2026-09-15 exposed the second half. With the revision-4 report
+since archived under its round name, the count is `1` again and the script exits
+`0` — yet the printed basename moved from `audit-codex.md` to
+`audit-codex.r4.md`, so the log still does not reproduce in place. A directory
+read is unreproducible whether or not its count happens to be right, which is why
+the repair names files rather than tightening the count.
+
+**The edit list, enumerated mechanically before any edit was made rather than by
+re-reading afterwards.** The document was searched for every line carrying
+`-r5.sh`, `-r5.log`, `133`, `byte-for-byte`, `reproduc`, `in place`,
+`located by the hash`, `renames the previous`, `C1i`, `C1m`, `C1o`, `C1q`, `E9`,
+`fourth baseline`, `revision-5 script`, `re-executed`, `For revision 5`,
+`revision 4 or revision 5 changed`, `No row below cites` and
+`revision 5`; the resulting line list was the work queue, and the
+same searches were re-run against the edited file. Twelve locations moved, and
+the list below was checked against the `C10` r5→r6 diff in
+`review/evidence/r60-preservation-diff-r6.log` rather than against memory:
+
+| # | Location | Change |
+|---|---|---|
+| 1 | the title | revision 5 → revision 6 |
+| 2 | the revision preamble | a revision-6 paragraph quoting finding F2 verbatim, recording both in-place observations and naming the repair and its cost |
+| 3 | `## Empirical check`'s "Three runs, kept separate" paragraph | a fifth execution recorded, naming which script each half ran |
+| 4 | the identifier note | `C<n>` now names the id in whichever script the citing row names, since the three scripts are now at three different revisions |
+| 5 | the Revision-5 results table | **kept**, with the correction of its preservation row immediately after: reproducible from a clean extraction, not in place, with both observations and their numbers |
+| 6 | the fourth-baseline paragraph | **kept**, with its "located by the hash its own audit report names rather than by a file name" reasoning reversed immediately after — that phrasing describes the defect |
+| 7 | the "same two reproducibility claims" paragraph | its sentence **kept verbatim** and corrected: true of the standard-pin script, false of the preservation script, and why |
+| 8 | the retained-scripts paragraph | `r60-preservation-diff-r5.sh` added to the retained-but-superseded set; `r60-standard-pin-r5.sh` stated to stay live, with the reason F2 does not reach it |
+| 9 | `## Empirical check` | a **Revision-6 run** section added: its results table in both modes, the fifth baseline, how the lookup was rewritten, what `C1r` adds and the demonstration that it fires, and the observed failure of the revision-5 script against this text |
+| 10 | row E9 | script r5 → r6; its method rewritten around named reports; its count 133 → 159; the title check; and the `C4m` family |
+| 11 | the headline command line | the revision-6 preservation result added, and the unchanged standard-pin result restated for this revision |
+| 12 | the closing fitness-gate sentence | "nothing revision 4 or revision 5 changed" → "nothing revision 4, revision 5 or revision 6 changed"; the six gate bullets themselves are byte-identical |
+
+**What did not change, and why that is the point.** The recommendation is
+untouched: `clap 4.6.6` with `derive`/`env`/`string`/`wrap_help`,
+`clap_complete 4.6.9`, the dependency-free `build.rs`, `strsim 0.11.1`
+transitive only. So are the owner's ruling and everything it decided — the
+standard binds, OV-01 is refused, F267 implements option (b), R60 declares zero
+overrides and waives no `SHOULD`. So are AC2, AC3 and AC7; the retired OV-01
+record with its argument and options table; the corrected R4.6 `:275-277`
+citations; R66's `related (not a registry dependency)` classification; U8's
+`RESOLVED` label and its `OWNER-REVIEW.md:72-91` citation; the five architecture
+alternatives; every fitness-gate row including gate 1's `inapplicable`; the
+`## Parameters` lines byte-for-byte; the five engine disagreements; U1–U7; the
+standard pin; `snapshots/MANIFEST.txt` and every snapshot in it; and the two
+unchanged scripts `r60-standard-pin-r5.sh` and `r60-snapshot-provenance-r4.sh`,
+both of which reran to their committed logs for this revision. **The mechanical
+evidence for that** is that `r60-preservation-diff-r5.sh`, rerun unmodified
+against this text, fails on `C4h` — the title — **and on nothing else**.
+
+**One thing reported beyond the brief.** The audit named `C1o`. `C1i`, which
+locates the revision-3 report, carried the identical defect: it searched the same
+directory for the revision-3 hash and required one match, and its count came back
+`1` by luck of timing rather than by construction. Both are repaired, and `C1r`
+now forbids the pattern on any executable line of the script, so the class is
+closed rather than the two instances.
+
 **The six fitness gates, enumerated mechanically at the close of this revision
 because two items this week shipped an "exhaustive" edit list that had silently
 dropped one.** Each is answered for every candidate in the fitness-gate table
-under `## Decision`, and nothing revision 4 or revision 5 changed touches
-any of them.
+under `## Decision`, and nothing revision 4, revision 5 or revision 6 changed
+touches any of them.
 **Gate 1, licence:** `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool` — stated on one unwrapped line here, so the recorded wording can be matched whole; the column is kept with the registry's values recorded as facts, and no exclusion ever rested on it. **Gate 2, MSRV within the policy:** answered per candidate against the 1.96
 floor; it is the gate that excludes `shadow-rs`, `argh`, `lexopt` and
 `pico-args` for declaring no `rust-version`, and that demotes `vergen 10.0.3`
