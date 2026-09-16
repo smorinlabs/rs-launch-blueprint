@@ -1,7 +1,35 @@
-# R69 web-framework-stack — decision (revision 7, 2026-09-16)
+# R69 web-framework-stack — decision (revision 8, 2026-09-16)
 
-**Revision note (revision 7). Prose only: one judgment finding, three locations, and neither
-the recommendation nor any owned value moves.** Revision 7 rewrites revision 6 (sha256
+**Revision note (revision 8). Two record-integrity corrections to the revision-7 note below; no
+sentence of the JF-4 repair, no owned value and no evidence file moves.** Revision 8 rewrites
+revision 7 (sha256 `a64addcff304770e9c114d05d974da4aaa9395e9095dff2f86823a45a29dfcfe`) in place,
+answering both findings of the round-7 empirical audit (`review/audit-codex.md`, actor
+`audit-codex-2026-09-12T204004Z-d02022bf6f42-r7`, model `gpt-5.6-terra`, family openai), which
+confirmed the three JF-4 repairs and rejected only the revision-boundary record, while the
+round-7 judgment audit (`review/audit-fable.md`, actor
+`audit-fable-2026-09-12T204004Z-d02022bf6f42-r7`, family anthropic) returned `approve` with
+`unresolved-findings: none`. **Finding 1 — the hunk count**: the revision-6-to-7 boundary was
+reported as **"six hunks"**, and that figure is corrected to **five**, because
+`git diff 10a83c4 1187133 -- review/DECISION.md` prints five `@@` headers — at git's default
+three-line context the retitled first line and the new revision-7 note are one contiguous hunk,
+followed by the history line and the three JF-4 locations — whereas **six** is the count of
+*edited locations*, which is what `diff -U0` reports because it splits that first pair; "hunk"
+in this decision now means a unified-diff hunk at default context, and an enumeration of
+locations is labelled as such. **Finding 2 — the no-evidence-change claim**: it was made against
+the range `10a83c4..HEAD`, which spans the intervening revision-6 audit-checkpoint commits and
+therefore carries `review/evidence/audit-*` additions belonging to those commits rather than to
+this revision, so it is scoped instead to the commits that produced revision 7 —
+`git show --stat --name-only 3e4c086` and the same command on `1187133` each list exactly one
+path, `research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md`. **Nothing else
+moves**: the title, this note, the revision-7 note's retention heading and the history line are
+the whole of revision 8, whose own revision-7-to-8 boundary is **two unified-diff hunks**, and
+the one `- owns web-extra-surface` line, the five `- assumes` lines, the H2 set, every sentence
+of the JF-4 repair and every evidence file are byte-identical.
+
+**Revision note (revision 7), retained as the record of that revision. It was approved by the
+round-7 judgment audit and rejected by the round-7 empirical audit on the two record-integrity
+findings the revision-8 note above answers; its body is retained verbatim and nothing in it is
+withdrawn.** Revision 7 rewrites revision 6 (sha256
 `d4d6a8d2a3297a6db488580142de6d651f33b8109e9023994f6cb9f5ecfd6a17`) in place. No revision of
 this decision has been published, so there is still no `## Supersedes`. The one
 `- owns web-extra-surface` line and the five `- assumes` lines are **byte-identical to revisions
@@ -571,7 +599,8 @@ Claude Opus 5 context that produced none of this item's raws, audits, revisions 
 audits, 2026-09-16, folding in the owner-supplied reference architecture under owner decision
 11; revision 7 by a seventh fresh Claude Opus 5 context that produced none of this item's raws,
 audits, revisions or their audits, 2026-09-16, repairing the round-6 judgment audit's single
-finding and nothing else; run
+finding and nothing else; revision 8 by that same revision-7 context, 2026-09-16, correcting the
+two record-integrity findings of the round-7 empirical audit and nothing else; run
 `research/runs/R69/2026-09-12T204004Z-d02022bf6f42`. This item was admitted ahead of the
 Wave 0 review gate by owner decision Q3.A (2026-09-12) because it consumes only R01, which
 the owner accepted on 2026-09-10, and because 19 items consume its owned parameter directly.
