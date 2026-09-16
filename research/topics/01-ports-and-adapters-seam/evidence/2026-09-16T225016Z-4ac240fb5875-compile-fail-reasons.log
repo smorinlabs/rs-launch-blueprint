@@ -1,0 +1,39 @@
+# Why each compile_fail doctest fails: the same code checked as a path-dependent crate so the compiler's error code is visible
+# date: 2026-09-10T01:11:55Z
+# toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+# scratch crate: /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/negcheck (depends on the fixture by path)
+
+## negative twin 1 (F011): impl ProjectsPort omits get()
+$ cargo check --quiet
+error[E0046]: not all trait items implemented, missing: `get`
+ --> src/main.rs:5:1
+  |
+5 | impl ProjectsPort for Incomplete {
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ missing `get` in implementation
+  |
+  = help: implement the missing item: `fn get(&self, _: &str) -> Result<Option<Project>, PortError> { todo!() }`
+
+For more information about this error, try `rustc --explain E0046`.
+error: could not compile `negcheck` (bin "negcheck") due to 1 previous error
+exit=101
+
+## negative twin 2: trait with a generic method erased to Arc<dyn Trait>
+$ cargo check --quiet
+error[E0038]: the trait `NotDynCompatible` is not dyn compatible
+ --> src/main.rs:6:36
+  |
+6 |     let erased: std::sync::Arc<dyn NotDynCompatible> = std::sync::Arc::new(A);
+  |                                    ^^^^^^^^^^^^^^^^ `NotDynCompatible` is not dyn compatible
+  |
+note: for a trait to be dyn compatible it needs to allow building a vtable
+      for more information, visit <https://doc.rust-lang.org/reference/items/traits.html#dyn-compatibility>
+ --> src/main.rs:2:68
+  |
+2 | trait NotDynCompatible: Send + Sync { fn name(&self) -> String; fn pick<T>(&self, t: T) -> T; }
+  |       ---------------- this trait is not dyn compatible...         ^^^^ ...because method `pick` has generic type parameters
+  = help: consider moving `pick` to another trait
+  = help: only type `A` implements `NotDynCompatible`; consider using it directly instead.
+
+For more information about this error, try `rustc --explain E0038`.
+error: could not compile `negcheck` (bin "negcheck") due to 1 previous error
+exit=101

@@ -1,0 +1,21 @@
+[package]
+name = "seam_fixture"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.96"
+license = "MIT OR Apache-2.0"
+description = "R01 empirical fixture: ports-and-adapters seam (trait port, generic service erased at the composition root, shipped in-memory fake, generic contract suite, serde data contract, thin web adapter)"
+publish = false
+
+[[bin]]
+name = "seam-cli"
+path = "src/main.rs"
+
+[dependencies]
+# F018 shared data contract: the same derived structs are rendered by the CLI and served by the web adapter.
+serde = { version = "1.0.229", features = ["derive"] }
+# JSON format for the CLI's JSON output, the web adapter's body and the contract round-trip test.
+serde_json = "1.0.151"
+# Fixture stand-in for the web layer (the framework itself is R69's decision, not R01's).
+axum = "0.8"
+tokio = { version = "1", features = ["rt-multi-thread", "net", "macros", "sync"] }
