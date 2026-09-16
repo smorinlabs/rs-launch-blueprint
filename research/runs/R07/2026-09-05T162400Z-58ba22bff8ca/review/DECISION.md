@@ -38,12 +38,16 @@ GitHub documents.** The REST `Workflow` schema gives a workflow **one** `state`
 field, required, whose enum is `active | deleted | disabled_fork |
 disabled_inactivity | disabled_manually`
 (https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28,
-retrieved 2026-09-15 UTC by this synthesizer, HTTP 200, 359,400 bytes; the
-schema is snapshotted at `review/evidence/r2-workflow-state-enum.json` and
-asserted in `## Empirical check`, revision-2 check 5). There is no per-trigger
-state. A workflow put into `disabled_inactivity` or `disabled_fork` therefore
-fires on **no** event at all, `push` and `workflow_dispatch` included, until a
-maintainer re-enables it. So adding the `schedule` key does not merely carry its
+retrieved 2026-09-16 UTC (2026-09-15 local) by this synthesizer, HTTP 200,
+359,400 bytes; the schema is snapshotted at
+`review/evidence/r2-workflow-state-enum.json` and asserted in
+`## Empirical check`, revision-2 check 5). There is no per-trigger state, and
+the disable-and-enable page defines the operation the same way: "Disabling a
+workflow allows you to stop a workflow from being triggered without having to
+delete the file from the repo" (snapshot passage 0, same check) — the workflow,
+with no trigger named and none excepted. A workflow put into
+`disabled_inactivity` or `disabled_fork` therefore fires on **no** event at all,
+`push` and `workflow_dispatch` included, until a maintainer re-enables it. So adding the `schedule` key does not merely carry its
 own silent-off exposure: it brings the whole workflow, push half included, inside
 GitHub's automatic-disable rules, which revision 1's block was outside. Revision
 2 implements the owner's direction and states that cost plainly rather than
@@ -320,11 +324,14 @@ Documented facts that separate them (GitHub, normative):
   `Workflow` schema declares `state` as a required field whose enum is
   `["active","deleted","disabled_fork","disabled_inactivity","disabled_manually"]`
   (https://docs.github.com/en/rest/actions/workflows?apiVersion=2022-11-28,
-  retrieved 2026-09-15 UTC by the synthesizer, HTTP 200, 359,400 bytes;
-  snapshot `review/evidence/r2-workflow-state-enum.json`, asserted in
-  revision-2 check 5), and the disable-and-enable page's own instructions
-  disable and enable a *workflow*, not an event. So when either rule above fires
-  on this workflow, the `push` trigger and `workflow_dispatch` stop with it. The
+  retrieved 2026-09-16 UTC (2026-09-15 local) by the synthesizer, HTTP 200,
+  359,400 bytes; snapshot `review/evidence/r2-workflow-state-enum.json`,
+  asserted in revision-2 check 5), and the disable-and-enable page says the same
+  thing in words: "Disabling a workflow allows you to stop a workflow from being
+  triggered without having to delete the file from the repo" (same retrieval,
+  snapshot passage 0) — the object is the workflow, and no trigger is named or
+  excepted. So when either rule above fires on this workflow, the `push` trigger
+  and `workflow_dispatch` stop with it. The
   documented recovery is one step — `gh workflow enable WORKFLOW`, or **Enable
   workflow** in the Actions sidebar (same page, snapshot passage 2). This fact is
   the reason revision 1 could claim the recommendation had no silent-off state
@@ -645,7 +652,7 @@ adds `review/empirical/r2/run-check-r2.sh` and a new log. Six checks: (1)
 `actionlint` on the revision-2 block; (2) that block's `on:` structure asserted
 field by field, including every cron field and criterion A5's second clause; (3)
 the negative control; (4) that the control differs from the recommendation only
-in where the guard sits; (5) the two documentation facts that decide the
+in where the guard sits; (5) the documentation facts that decide the
 backstop's cost, asserted against retrieved snapshots; (6) a recount of py's
 post-guard push-run outcomes, which is the figure the cost paragraph now cites.
 Every check asserts on content, a failure counter becomes the exit status, and
@@ -657,7 +664,9 @@ compiled; recorded per the role contract); **`actionlint` 1.7.12** (the same
 version revision 1 used; `actionlint --version` also reports "installed by
 building from source, built with go1.26.1 compiler for darwin/arm64"); Python
 3.14.7 with PyYAML 6.0.3; `act` absent, so this is form (b) as before. Log
-timestamp `2026-09-16T02:39:05Z` (2026-09-15 local).
+timestamp `2026-09-16T02:50:51Z`, which is 2026-09-15 in this host's local time
+— the date this revision carries — and 2026-09-16 UTC, the date used for every
+retrieval and snapshot below.
 
 **Working directory.**
 `research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical/r2/`
@@ -699,11 +708,12 @@ assert-ok: actionlint rejects paths-ignore under schedule
 assert-ok: rejection names the expected cause: unexpected key "paths-ignore" for element of "schedule" section
 
 == 5. documentation snapshots: the two facts that decide the backstop's cost ==
+assert-ok: /usr/bin/grep: snapshot carries the sentence defining what disabling does — stop the workflow from being TRIGGERED, no trigger named or excepted
 assert-ok: /usr/bin/grep: snapshot carries the 60-day inactivity sentence
 assert-ok: /usr/bin/grep: snapshot carries the fork-default sentence
 assert-ok: /usr/bin/grep: snapshot carries the documented re-enable command
 ["active", "deleted", "disabled_fork", "disabled_inactivity", "disabled_manually"]
-assert-ok: `state` is ONE required field of the whole workflow, whose enum carries disabled_fork and disabled_inactivity; there is no per-trigger state, so a workflow disabled by either rule fires on NO event, push and workflow_dispatch included
+assert-ok: `state` is ONE required field of the whole workflow, whose enum carries disabled_fork and disabled_inactivity; there is no per-trigger state, and passage 0 defines disabling as stopping the workflow from being triggered without naming or excepting a trigger, so a workflow disabled by either rule fires on NO event, push and workflow_dispatch included
 
 == 6. what the monthly backstop retries: py's post-guard push-run outcomes ==
 post-guard push runs (same scoping as revision 1 step 5b): 134
@@ -718,8 +728,8 @@ RESULT: PASS
 
 **Reproducibility, established by re-running rather than asserted.** The script
 was re-run immediately after the log was saved and the two were diffed. Exactly
-**one line** differs — the `date:` header, `2026-09-16T02:39:05Z` against
-`2026-09-16T02:39:22Z`. Nothing else moves, because every input is a file in
+**one line** differs — the `date:` header, `2026-09-16T02:50:51Z` against
+`2026-09-16T02:50:52Z`. Nothing else moves, because every input is a file in
 this run directory: the two fixtures, the two documentation snapshots and the
 two run-history JSONs. **The comparison rule is therefore: two runs of this
 script agree when, after replacing the `date:` line with a placeholder, the logs
@@ -758,7 +768,7 @@ headers, and the script itself makes none.
 **Evidence files added by revision 2** (revision 1's are untouched):
 `review/evidence/r07-empirical-r2.log` (full run),
 `review/evidence/r2-workflow-state-enum.json` (the REST `Workflow` schema),
-`review/evidence/r2-disable-and-enable-workflows.txt` (the two quoted passages).
+`review/evidence/r2-disable-and-enable-workflows.txt` (the three quoted passages).
 Fixtures and script: `review/empirical/r2/.github/workflows/update-contributors.yml`,
 `review/empirical/r2/alternatives/hybrid-paths-ignore-under-schedule.yml`,
 `review/empirical/r2/run-check-r2.sh`.
@@ -830,7 +840,9 @@ instantiation counts as forking. Issue-responsiveness
 medians for the surveyed actions were not computed by either raw; none is a
 dependency of this template. Codex's retrieval dates are 2026-09-05, Opus's
 2026-09-09 (UTC), the synthesizer's 2026-09-09 UTC at revision 1 and
-2026-09-15 UTC at revision 2.
+2026-09-16 UTC at revision 2 — which is 2026-09-15 in this host's local time,
+the date revision 2 carries in its title, and the two are named apart wherever
+either appears rather than being rounded to one.
 
 **What P03 must validate, listed here because every decision is a proposal the
 implementation phase proves.** Items 1 to 3 are unchanged from what revision 1

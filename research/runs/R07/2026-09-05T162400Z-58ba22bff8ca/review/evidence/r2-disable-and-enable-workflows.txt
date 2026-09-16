@@ -1,6 +1,9 @@
 source: https://docs.github.com/en/actions/how-tos/manage-workflow-runs/disable-and-enable-workflows
-retrieved: 2026-09-15 UTC by the R07 revision-2 synthesizer (HTTP 200, 303019 bytes)
-extraction: tags stripped, whitespace collapsed; the two passages this decision quotes
+retrieved: 2026-09-16 UTC (2026-09-15 local) by the R07 revision-2 synthesizer (HTTP 200, 303019 bytes)
+extraction: tags stripped, whitespace collapsed; the three passages this decision quotes
+
+--- passage 0: what disabling a workflow does ---
+Disabling a workflow allows you to stop a workflow from being triggered without having to delete the file from the repo.
 
 --- passage 1: the automatic-disable warning ---
 To prevent unnecessary workflow runs, scheduled workflows may be disabled automatically. When a public repository is forked, scheduled workflows are disabled by default. In a public repository, scheduled workflows are automatically disabled when no repository activity has occurred in 60 days.

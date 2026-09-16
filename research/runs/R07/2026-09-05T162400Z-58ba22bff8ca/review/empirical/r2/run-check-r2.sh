@@ -122,6 +122,9 @@ echo "== 5. documentation snapshots: the two facts that decide the backstop's co
 D="$EVID/r2-disable-and-enable-workflows.txt"
 S="$EVID/r2-workflow-state-enum.json"
 for f in "$D" "$S"; do [ -r "$f" ] || fail "snapshot missing: $f"; done
+/usr/bin/grep -q 'Disabling a workflow allows you to stop a workflow from being triggered without having to delete the file from the repo' "$D" \
+  && ok '/usr/bin/grep: snapshot carries the sentence defining what disabling does — stop the workflow from being TRIGGERED, no trigger named or excepted' \
+  || fail '/usr/bin/grep: snapshot lacks the definition of disabling'
 /usr/bin/grep -q 'In a public repository, scheduled workflows are automatically disabled when no repository activity has occurred in 60 days' "$D" \
   && ok '/usr/bin/grep: snapshot carries the 60-day inactivity sentence' \
   || fail '/usr/bin/grep: snapshot lacks the 60-day inactivity sentence'
@@ -140,14 +143,17 @@ print(json.dumps(enum))
 want = ["active", "deleted", "disabled_fork", "disabled_inactivity", "disabled_manually"]
 if enum == want and 'state' in d['workflow_schema']['required']:
     print("assert-ok: `state` is ONE required field of the whole workflow, whose enum carries "
-          "disabled_fork and disabled_inactivity; there is no per-trigger state, so a workflow "
-          "disabled by either rule fires on NO event, push and workflow_dispatch included")
+          "disabled_fork and disabled_inactivity; there is no per-trigger state, and passage 0 "
+          "defines disabling as stopping the workflow from being triggered without naming or "
+          "excepting a trigger, so a workflow disabled by either rule fires on NO event, push "
+          "and workflow_dispatch included")
     sys.exit(0)
 print(f"ASSERT-FAIL: state enum is {enum!r} or `state` is not required")
 sys.exit(1)
 PY
 rc=$?; echo "exit: $rc"; [ "$rc" -eq 0 ] || fail "workflow state-enum assertion"
-echo "drift rule: these two files are snapshots taken 2026-09-15 UTC, not live fetches."
+echo "drift rule: these two files are snapshots taken 2026-09-16 UTC (2026-09-15 local),"
+echo "not live fetches."
 echo "A re-run of this script therefore cannot change them. To test for drift, re-fetch"
 echo "each URL named in the snapshot header and re-run this section against the new text;"
 echo "a difference there is a documentation change and a re-verify trigger, not noise."
