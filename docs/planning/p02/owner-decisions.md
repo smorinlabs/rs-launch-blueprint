@@ -378,6 +378,8 @@ reject.
 | W0-R46 | R46 per-file-license-header | A accept | 2026-09-15 | `a95cbbfa…` | no headers; SPDX runner-up needs vendored/mixed-licence source |
 | W0-R47 | R47 contributors-recipe-mode | A accept | 2026-09-15 | `20693ce1…` | guarded render/init recipe |
 | W0-R64 | R64 pager-integration | A accept | 2026-09-15 | `39f0df04…` | `shlex` over `shell-words` on the strict MSRV gate |
+| W0-R81 | R81 docs-delivery-model | A accept | 2026-09-15 | `4329ce48…` | generator shipped at medium confidence; plain-tree runner-up wins for a flat corpus |
+| W0-R85 | R85 rich-terminal-row-niceties | A accept | 2026-09-15 | `1a81ae3a…` | `rows_rich` opt-in; requirement on R66's table crate ANSI-width feature |
 
 ## Retired from this list
 

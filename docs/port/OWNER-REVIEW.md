@@ -172,6 +172,8 @@ The briefs the owner answered from are in `docs/planning/p02/owner-decisions.md`
 | R46 | 6 (published) | `a95cbbfae000d539bb57aaf3d67b71510c22c62457f6e215a219d9640a6808bd` | accept | 2026-09-15 | W0-R46 option A; no per-file licence header; manifest plus root licence files |
 | R47 | 1 (published) | `20693ce171bcde1e4e0bbe1c8b03e3b11a5619d2824ed6578af8abf6305791ba` | accept | 2026-09-15 | W0-R47 option A; guarded `render` recipe with one-time `init` |
 | R64 | 2 (published) | `39f0df0410126a90f966b23f947939eba5be8c30b4299c85487e1ce8d050b661` | accept | 2026-09-15 | W0-R64 option A; `shlex` 2.0.1, two-tier pager resolution, spawn-and-pipe |
+| R81 | 5 | `4329ce48b428b70cab0bea32e71bb725471faac2c88356f3b0fa9b005fc5772e` | accept | 2026-09-15 | W0-R81 option A; ship the mdBook generator over the canonical `docs/` corpus, medium confidence stated; owner action pending: set the repository's Pages source to "GitHub Actions"; first publication pending |
+| R85 | 1 (published) | `1a81ae3a6979b937771efae63be83f8db1593ee3561225b3e748b432be13e983` | accept | 2026-09-15 | W0-R85 option A; capability-gated rich rows in the CLI crate |
 
 ## Dispositions
 
