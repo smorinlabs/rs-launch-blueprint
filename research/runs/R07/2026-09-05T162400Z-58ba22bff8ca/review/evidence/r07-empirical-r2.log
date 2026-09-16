@@ -1,0 +1,68 @@
+== toolchain ==
+date: 2026-09-16T02:39:05Z
+os: macOS 26.4 arm64
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+actionlint: 1.7.12
+Python 3.14.7
+pyyaml 6.0.3
+act: not installed -> form (b)
+cwd: research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical/r2
+
+== 1. actionlint on the revision-2 recommended workflow (expect exit 0 and no diagnostics) ==
+exit: 0
+assert-ok: actionlint accepts the push + schedule + workflow_dispatch block
+assert-ok: actionlint emitted no diagnostic line for the recommended block
+
+== 2. structure of the recommended on: block, asserted field by field ==
+assert-ok: set of on: keys == ['push', 'schedule', 'workflow_dispatch']
+assert-ok: on.push.branches == ['main']
+assert-ok: on.push.paths-ignore == ['CONTRIBUTORS.md', '.contributors.jsonl']
+assert-ok: on.schedule == [{'cron': '17 6 1 * *'}]
+assert-ok: on.workflow_dispatch == None
+assert-ok: keys of every on.schedule entry == ['cron']
+assert-ok: paths-ignore == {output-file, state-file} == ['.contributors.jsonl', 'CONTRIBUTORS.md']
+assert-ok: cron minute (not the top of the hour, per GitHub's high-load advice) == '17'
+assert-ok: cron hour == '6'
+assert-ok: cron day-of-month == '1'
+assert-ok: cron month (every month) == '*'
+assert-ok: cron day-of-week (unrestricted) == '*'
+assert-ok: cron field count == 5
+longest gap between two monthly runs, in days: 31 (the longest calendar month)
+exit: 0
+
+== 3. negative control: the same block with paths-ignore moved under schedule (expect non-zero) ==
+alternatives/hybrid-paths-ignore-under-schedule.yml:13:7: unexpected key "paths-ignore" for element of "schedule" section. expected one of "cron", "timezone" [syntax-check]
+   |
+13 |       paths-ignore:
+   |       ^~~~~~~~~~~~~
+exit: 1
+assert-ok: actionlint rejects paths-ignore under schedule
+assert-ok: rejection names the expected cause: unexpected key "paths-ignore" for element of "schedule" section
+
+== 4. the two fixtures differ only in where the guard sits ==
+assert-ok: both fixtures declare the same three triggers: push, schedule, workflow_dispatch
+
+== 5. documentation snapshots: the two facts that decide the backstop's cost ==
+assert-ok: /usr/bin/grep: snapshot carries the 60-day inactivity sentence
+assert-ok: /usr/bin/grep: snapshot carries the fork-default sentence
+assert-ok: /usr/bin/grep: snapshot carries the documented re-enable command
+-- the REST Workflow schema's state field, printed from the snapshot --
+["active", "deleted", "disabled_fork", "disabled_inactivity", "disabled_manually"]
+assert-ok: `state` is ONE required field of the whole workflow, whose enum carries disabled_fork and disabled_inactivity; there is no per-trigger state, so a workflow disabled by either rule fires on NO event, push and workflow_dispatch included
+exit: 0
+drift rule: these two files are snapshots taken 2026-09-15 UTC, not live fetches.
+A re-run of this script therefore cannot change them. To test for drift, re-fetch
+each URL named in the snapshot header and re-run this section against the new text;
+a difference there is a documentation change and a re-verify trigger, not noise.
+
+== 6. what the monthly backstop retries: py's post-guard push-run outcomes ==
+post-guard push runs (same scoping as revision 1 step 5b): 134
+conclusions: {"failure": 12, "success": 122}
+ts scheduled runs for comparison: {"failure": 3, "success": 6}
+assert-ok: 134 post-guard push runs, the figure revision 1 cites
+assert-ok: 12 of those 134 push runs concluded `failure` — the unretried-failure cost revision 1 accepted qualitatively and revision 2's backstop bounds at 31 days
+exit: 0
+
+overall failed assertions: 0
+RESULT: PASS
