@@ -1,0 +1,60 @@
+# Owner acceptances of research decisions
+
+This file records the owner's acceptance of each research decision at a named
+`DECISION.md` sha256, one row per accepted item, together with the rulings that
+accompanied an acceptance. It was moved here verbatim from
+`docs/port/OWNER-REVIEW.md` on 2026-09-16 because that file is validated by
+`scripts/check-research-tree.sh --require-owner-review` as the single-table
+codesign disposition record (exactly one `item | disposition | rationale | date`
+row per item), and the checker reads every pipe-table row in the file as part of
+that table; a second table there refused every publication from 2026-09-14
+until the move. The acceptance rule and rows below are unchanged; only their
+location moved. The per-question answers with the same bound hashes are in
+`docs/planning/p02/owner-decisions.md` section 10.
+
+## Wave 0 owner acceptances (recorded from 2026-09-14)
+
+An acceptance binds the **recommendation** of one decision at one
+`review/DECISION.md` sha256, the way the two audits do. A later revision that
+changes only reasoning or evidence leaves the acceptance standing; the item is
+re-bound here with a new row at the new hash. A revision that moves the
+recommendation, a selected crate or version, or an owned parameter value stales
+the acceptance and the item is re-asked. Acceptance makes the recommendation
+P03's proposal; publication still waits on the item's two approving audits, and
+a `hold` keeps the item where it is until the owner's named concern is answered.
+The briefs the owner answered from are in `docs/planning/p02/owner-decisions.md`.
+
+| item | revision | decision sha256 | verdict | date | owner note |
+|---|---|---|---|---|---|
+| R01 | 3 (published copy is revision 2) | `44bf9ae9f55060ed56256dbad4d9a0814b3bd63112602dabe932acb7bfb12d82` | accept | 2026-09-10, re-bound 2026-09-15 | first accepted at the published revision 2 (`8025fd5b…`); W0-R01 re-bound the acceptance to revision 3, a reasoning repair after the licence ruling with every crate, version and parameter value byte-identical; republication pending |
+| R67 | 4 (published) | `16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497` | accept | 2026-09-14 | W0-R67 option A; consumers R03, R52–R56, R70 admissible |
+| R42 | 10 | `a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c` | accept | 2026-09-15 | W0-R42 option A; install-integrity posture chosen under W0-R42i (see the ruling below); the eight items consuming `package-manager-invocation` admissible |
+| R49 | 8 | `86b7f925ef89ac682ea00bb0b6fea8a809c1abc712d9e0e0ced8e5082990d948` | accept | 2026-09-15 | first accepted at revision 7 (`319a5356…`), sha column corrected on 2026-09-16 to the revision-8 bytes the note already named; W0-R49 option A; W0-R49n: the owner directs the short binary name `rslbp` in place of `rs-launch-blueprint` (ruling below); re-bound at revision 8, which also makes the round-7 judgment audit's three clause repairs; consumers R22, R32, R68, R50 admissible |
+| R38 | 9 | `c2e9b6e1f1cf096b640ecd2925c8f79010bf7e875a9ce91d18a1d3ad84b3ce24` | accept | 2026-09-15, re-bound 2026-09-16 | first accepted at revision 8 (`7e88ba81…`); re-bound to revision 9 after its judgment audit approved on 2026-09-16: an evidence-only change (the carried `rev6-evaluate.sh`), recommendation and owned value byte-identical to revision 8; republication pending. W0-R38 option A; `committed` 1.1.11, hook plus CI, the eleven-type 50/72/72 soft-line convention; recommendation byte-identical to the published revision 5; consumers R24 and the release-please rows admissible |
+| R04 | 1 (published) | `0d4f2e60e994439d9261f5169c3fd28e5e76077dacd089d999a51fb67a5f6c5d` | accept | 2026-09-15 | W0-R04 option A; private-module barrel, deny lints, `compile_fail` doctests, `cargo-semver-checks` 0.50.0 on stable |
+| R06 | 1 (published) | `343a7fc555da5ad9d689f27ead710c007fdc9a4228eb4e8d8f49b0c69d55688d` | accept | 2026-09-15 | W0-R06 option A; `unsafe_code = "forbid"` workspace-inherited, clippy safety lints pre-armed |
+| R07 | 1 (published) | `0b3dde8f9a15f22e60a01542065c53c122881e8c48bf3ee6c172ba5b70499346` | accept | 2026-09-15 | W0-R07 option A directed a monthly backstop; W0-R07b (same day) WITHDREW it after the controller's premise about GitHub's auto-disable scope was found wrong — the workflow stays push + `workflow_dispatch`, no `schedule`; revision 3 records the declined backstop and its reason; re-bound at revision 3 |
+| R15 | 1 (published) | `7dd84b81f27b3d3fe20118958e71310b9f011e889372d8266ae4f161419dc45e` | accept | 2026-09-15 | W0-R15 option A; `template-press` 4.0.1, two workflows, three Rust additions; `app_name` settled as `rslbp` by W0-R49n |
+| R16 | 4 (published) | `d7946ed6a687834ee19530f49c27dad033f06eebd571aa77d30d0f2b7a3b9ca2` | accept | 2026-09-15 | W0-R16 option A; repository-local CodeQL config, `security-extended`, `paths-ignore`, `codeql-action` v4.37.9 |
+| R18 | 7 | `c9e44318abbdf4131d0d8b575d318c442c8a89ff9fc8c573c8d92c5ecb441f2e` | accept | 2026-09-15 | W0-R18 option A; the owner's 2026-09-12 design as implemented (`anthropics/claude-code-action` v1.0.220, credential preflight, no enable variable); published copy is revision 5, republication pending |
+| R19 | 5 | `178547307ca6000e9527fcea08af6c89fb5f23f25ef8e17938c0e5457791006d` | accept | 2026-09-15 | W0-R19 option A; two-entry catch-all-group Dependabot configuration; first publication pending |
+| R20 | 2 (published) | `02fee7a4d48220fc32187fd8ff43bdb70611907f2f9fbf64ae672b9e609ec772` | accept | 2026-09-15 | W0-R20 option A; SHA-pin every non-GitHub action with a release comment; `zizmor` 1.30.1 plus a comment check |
+| R21 | 2 (published) | `66d566a55330e2417a2e5227bcac64e3312fc56280db09d7b74a13425aa346c1` | accept | 2026-09-15 | W0-R21 option A; App credentials primary, `CONTRIBUTORS_PLEASE_PAT` fine-grained fallback |
+| R23 | 1 (published) | `ea269dd6ac3342672f48e69e6c2cb2645c7f73d1e476e5306a20803d1a6598ed` | accept | 2026-09-15 | W0-R23 option A; release-please `release-type: rust` bumps `Cargo.lock` in the release commit |
+| R25 | 7 (published) | `978ec7075e1f33f9f186815ea2a2154a52ad52eb53b970aebe1a38ed69def4e8` | accept | 2026-09-15 | W0-R25 option A; launch at `0.1.0` with pre-major dampening |
+| R26 | 3 (published) | `013fe4c3fc992d7e3755822cd08fe134cafebf83ecff509000b3a98780e8e7f3` | accept | 2026-09-15 | W0-R26 option A; four first-party packed-content checks in the publish verify job |
+| R33 | 5 | `39a5e39ce225fba3a23a7543865a3bcc537290b8d18322ca9b900491729336f2` | accept | 2026-09-15 | W0-R33 option A; `proptest` 1.11.0, `insta` 1.48.0, `cargo-insta` 1.48; published copy is revision 2, republication pending |
+| R34 | 1 (published) | `14d3526106bb7e670fe648fe3bad9e858a92ddb196603fb49d9090bdc08fee4e` | accept | 2026-09-15 | W0-R34 option A; weekly schedule-only canary workflow, three legs |
+| R41 | 8 (published) | `efc7614a4bcdb2b253a7537730daff0b44b3e9568da36b81324f1beb14f3f1ea` | accept | 2026-09-15 | W0-R41 option A; conditional unlocked resolve, Git comparison and restore |
+| R43 | 2 (published) | `b9c8303647a8098971ff9fec7116fba041c85f5db8a4c869960e9e18c89c8057` | accept | 2026-09-15 | W0-R43 option A; no vendor rule directories; one `companyAnnouncements` entry |
+| R45 | 2 (published) | `1e7fe24926e11fa5b40bedb3c42f187af05e161e4bec0b7ad4ea548b0fae6816` | accept | 2026-09-15 | W0-R45 option A: PR template carries no bot mention; the owner directs revision 3 to rewrite the `CONTRIBUTING.md` precondition to R18 revision 7's credential-presence rule (the `vars.ENABLE_CLAUDE_ASSISTANT` variable no longer exists); re-bound at revision 3 |
+| R46 | 6 (published) | `a95cbbfae000d539bb57aaf3d67b71510c22c62457f6e215a219d9640a6808bd` | accept | 2026-09-15 | W0-R46 option A; no per-file licence header; manifest plus root licence files |
+| R63 | 4 | `0ce8e4378bc9a0b52eb62f8279c0897ba9116ba9c4f56b89154b23f721ab1b97` | accept | 2026-09-15 | W0-R63 option A; `indicatif` 0.18 in the CLI crate, three-input suppression predicate; first publication pending |
+| R65 | 4 | `4b9b21a1454461ce691976580f07d8df73e89323d2a17c1df79dc7526ac70956` | accept | 2026-09-15 | W0-R65 option A; `anstream`/`anstyle` plus a template-owned resolver for tiers 1–4; first publication pending |
+| R66 | 1 | `a7958d3f38dfcdfe16e754b3e9e7a318bbb3a833fe86ebd663d28ef0696940ad` | accept | 2026-09-15 | W0-R66 option A; `-o table\|json\|markdown\|name`, `--json`, `--output-file`; `tabled` =0.22.0 exact-pinned; default named `table`; first publication pending |
+| R60 | 7 | `67d7a7d2a76c7d10c88edf9cd309c46484ada95a00074d902943a94410b8b9f2` | accept | 2026-09-15 | W0-R60 option A; `clap` 4.6.6 derive, `clap_complete` 4.6.9, dependency-free `build.rs`; OV-01 refused per the 2026-09-14 ruling; first publication pending |
+| R47 | 1 (published) | `20693ce171bcde1e4e0bbe1c8b03e3b11a5619d2824ed6578af8abf6305791ba` | accept | 2026-09-15 | W0-R47 option A; guarded `render` recipe with one-time `init` |
+| R64 | 2 (published) | `39f0df0410126a90f966b23f947939eba5be8c30b4299c85487e1ce8d050b661` | accept | 2026-09-15 | W0-R64 option A; `shlex` 2.0.1, two-tier pager resolution, spawn-and-pipe |
+| R81 | 5 | `4329ce48b428b70cab0bea32e71bb725471faac2c88356f3b0fa9b005fc5772e` | accept | 2026-09-15 | W0-R81 option A; ship the mdBook generator over the canonical `docs/` corpus, medium confidence stated; owner action pending: set the repository's Pages source to "GitHub Actions"; first publication pending |
+| R85 | 1 (published) | `1a81ae3a6979b937771efae63be83f8db1593ee3561225b3e748b432be13e983` | accept | 2026-09-15 | W0-R85 option A; capability-gated rich rows in the CLI crate |
+

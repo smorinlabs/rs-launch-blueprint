@@ -339,7 +339,7 @@ or either half negated.
 
 One question per item, asked in order, each answered before the next is put.
 Every acceptance binds the recommendation at a `DECISION.md` sha256 and is
-recorded in the "Wave 0 owner acceptances" table of `docs/port/OWNER-REVIEW.md`;
+recorded in the "Wave 0 owner acceptances" table of `docs/port/OWNER-ACCEPTANCES.md` (moved there from `docs/port/OWNER-REVIEW.md` on 2026-09-16, see the ledger);
 a later revision that changes only reasoning or evidence re-binds it, one that
 moves the recommendation re-asks it. The briefs put to the owner are drafted
 from each item's own decision text (scratchpad `owner-briefs/`), reviewed
