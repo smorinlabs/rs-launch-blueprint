@@ -1,0 +1,209 @@
+# R42 revision-2 empirical audit — audit-codex-2026-09-05T155503Z-4141a35b69e0
+# Model: gpt-5.6-terra. Recorded 2026-09-09 on macOS arm64.
+# Scope: research-only decision audit. No template, component, package, or release tool was installed.
+# Fixture source: copied revision-2 `rust-toolchain.toml` and Cargo-alias fixtures to
+# `/private/tmp/r42-audit-r2.uO3ytz`; the copied files pin `1.97.1-aarch64-apple-darwin`,
+# `stable`, and `1.96.0-aarch64-apple-darwin`. Every Rust command used:
+# `PATH=/Users/stevemorin/.cargo/bin:/usr/bin:/bin`.
+# The macOS reproduction used already-installed toolchains. The later Linux VM
+# reproduction selected a missing `1.97.1` fixture, and rustup automatically
+# acquired that toolchain; this audit-side effect is recorded below.
+
+## Proxy identity
+
+$ ls -l /Users/stevemorin/.cargo/bin/cargo-fmt /Users/stevemorin/.cargo/bin/cargo-clippy /Users/stevemorin/.cargo/bin/rustfmt /Users/stevemorin/.cargo/bin/rust-analyzer
+lrwxr-xr-x@ 1 stevemorin  staff  6 Apr 24 02:00 /Users/stevemorin/.cargo/bin/cargo-clippy -> rustup
+lrwxr-xr-x@ 1 stevemorin  staff  6 Apr 24 02:00 /Users/stevemorin/.cargo/bin/cargo-fmt -> rustup
+lrwxr-xr-x@ 1 stevemorin  staff  6 Apr 24 02:00 /Users/stevemorin/.cargo/bin/rust-analyzer -> rustup
+lrwxr-xr-x@ 1 stevemorin  staff  6 Apr 24 02:00 /Users/stevemorin/.cargo/bin/rustfmt -> rustup
+exit=0
+
+## Component-presence matrix
+
+The commands below ran from each copied fixture directory. For the two pipeline
+checks, `exit` is the final `grep -q` status, not the upstream `rustup` status.
+
+### neg — `channel = "1.97.1-aarch64-apple-darwin"`
+
+$ PATH=rustup-proxies rustup show active-toolchain
+1.97.1-aarch64-apple-darwin (overridden by '/private/tmp/r42-audit-r2.uO3ytz/neg/rust-toolchain.toml')
+exit=0
+$ PATH=rustup-proxies command -v cargo-fmt cargo-clippy
+/Users/stevemorin/.cargo/bin/cargo-fmt
+/Users/stevemorin/.cargo/bin/cargo-clippy
+exit=0
+$ PATH=rustup-proxies cargo fmt --version
+error: 'cargo-fmt' is not installed for the toolchain '1.97.1-aarch64-apple-darwin'.
+help: run `rustup component add --toolchain 1.97.1-aarch64-apple-darwin rustfmt` to install it
+exit=1
+$ PATH=rustup-proxies cargo clippy --version
+error: 'cargo-clippy' is not installed for the toolchain '1.97.1-aarch64-apple-darwin'.
+help: run `rustup component add --toolchain 1.97.1-aarch64-apple-darwin clippy` to install it
+exit=1
+$ PATH=rustup-proxies rustup component list --installed | grep -q '^rustfmt-'
+exit=1
+$ PATH=rustup-proxies rustup component list --installed | grep -q '^clippy-'
+exit=1
+$ PATH=rustup-proxies rustup which cargo-fmt
+error: 'cargo-fmt' is not installed for the toolchain '1.97.1-aarch64-apple-darwin'.
+help: run `rustup component add rustfmt` to install it
+exit=1
+$ PATH=rustup-proxies rustup which cargo-clippy
+error: 'cargo-clippy' is not installed for the toolchain '1.97.1-aarch64-apple-darwin'.
+help: run `rustup component add clippy` to install it
+exit=1
+
+### pos — `channel = "stable"`
+
+$ PATH=rustup-proxies rustup show active-toolchain
+stable-aarch64-apple-darwin (overridden by '/private/tmp/r42-audit-r2.uO3ytz/pos/rust-toolchain.toml')
+exit=0
+$ PATH=rustup-proxies command -v cargo-fmt cargo-clippy
+/Users/stevemorin/.cargo/bin/cargo-fmt
+/Users/stevemorin/.cargo/bin/cargo-clippy
+exit=0
+$ PATH=rustup-proxies cargo fmt --version
+rustfmt 1.8.0-stable (4a4ef493e3 2026-03-02)
+exit=0
+$ PATH=rustup-proxies cargo clippy --version
+clippy 0.1.94 (4a4ef493e3 2026-03-02)
+exit=0
+$ PATH=rustup-proxies rustup component list --installed | grep -q '^rustfmt-'
+exit=0
+$ PATH=rustup-proxies rustup component list --installed | grep -q '^clippy-'
+exit=0
+$ PATH=rustup-proxies rustup which cargo-fmt
+/Users/stevemorin/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo-fmt
+exit=0
+$ PATH=rustup-proxies rustup which cargo-clippy
+/Users/stevemorin/.rustup/toolchains/stable-aarch64-apple-darwin/bin/cargo-clippy
+exit=0
+
+### c196 — `channel = "1.96.0-aarch64-apple-darwin"`
+
+$ PATH=rustup-proxies rustup show active-toolchain
+1.96.0-aarch64-apple-darwin (overridden by '/private/tmp/r42-audit-r2.uO3ytz/c196/rust-toolchain.toml')
+exit=0
+$ PATH=rustup-proxies command -v cargo-fmt cargo-clippy
+/Users/stevemorin/.cargo/bin/cargo-fmt
+/Users/stevemorin/.cargo/bin/cargo-clippy
+exit=0
+$ PATH=rustup-proxies cargo fmt --version
+rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)
+exit=0
+$ PATH=rustup-proxies cargo clippy --version
+error: 'cargo-clippy' is not installed for the toolchain '1.96.0-aarch64-apple-darwin'.
+help: run `rustup component add --toolchain 1.96.0-aarch64-apple-darwin clippy` to install it
+exit=1
+$ PATH=rustup-proxies rustup component list --installed | grep -q '^rustfmt-'
+exit=0
+$ PATH=rustup-proxies rustup component list --installed | grep -q '^clippy-'
+exit=1
+$ PATH=rustup-proxies rustup which cargo-fmt
+/Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo-fmt
+exit=0
+$ PATH=rustup-proxies rustup which cargo-clippy
+error: 'cargo-clippy' is not installed for the toolchain '1.96.0-aarch64-apple-darwin'.
+help: run `rustup component add clippy` to install it
+exit=1
+
+Result: `command -v cargo-fmt` and `command -v cargo-clippy` exited 0 in all
+three cells because their names resolve to unconditional `rustup` proxies. The
+component-state and `rustup which` tests match executable truth in all six
+component/cell combinations: rustfmt is absent/present/present and clippy is
+absent/present/absent in neg/pos/c196. This reproduces decision checks 9 and 12.
+
+## Linux VM corroboration
+
+The Ubuntu VM was invoked as `limactl shell ubuntu -- bash -lc '<command>'`
+after `source $HOME/.cargo/env`. It used the same three fixture channels and a
+proxy-only `PATH`. `1.97.1-aarch64-unknown-linux-gnu` was absent initially;
+selecting it caused rustup to download that toolchain automatically. No component
+was added and no crate or release tool was installed.
+
+```text
+cell   selected toolchain                         lookup fmt/clippy  rustfmt state/which  clippy state/which
+neg    1.97.1-aarch64-unknown-linux-gnu            0 / 0              1 / 1               1 / 1
+pos    stable-aarch64-unknown-linux-gnu            0 / 0              0 / 0               0 / 0
+c196   1.96.0-aarch64-unknown-linux-gnu            0 / 0              0 / 0               1 / 1
+```
+
+Here `lookup` is `command -v cargo-fmt cargo-clippy`; `state` is the final
+status of `rustup component list --installed | grep -q`; and `which` is
+`rustup which cargo-fmt` or `rustup which cargo-clippy`. The Linux result matches
+the macOS matrix and the decision's claimed acquisition-keyed test behavior.
+
+## Bare names, built-ins, and aliases
+
+$ cd /private/tmp/r42-audit-r2.uO3ytz/neg && PATH=rustup-proxies command -v rustfmt rust-analyzer
+/Users/stevemorin/.cargo/bin/rustfmt
+/Users/stevemorin/.cargo/bin/rust-analyzer
+exit=0
+$ cd /private/tmp/r42-audit-r2.uO3ytz/neg && PATH=rustup-proxies rustfmt --version
+error: 'rustfmt' is not installed for the toolchain '1.97.1-aarch64-apple-darwin'.
+exit=1
+$ cd /private/tmp/r42-audit-r2.uO3ytz/neg && PATH=rustup-proxies rust-analyzer --version
+error: Unknown binary 'rust-analyzer' in official toolchain '1.97.1-aarch64-apple-darwin'.
+exit=1
+
+$ PATH=rustup-proxies command -v cargo-test cargo-build cargo-doc cargo-run
+exit=1
+$ PATH=rustup-proxies cargo test --help >/dev/null
+exit=0
+
+$ cd /private/tmp/r42-audit-r2.uO3ytz/alias && PATH=rustup-proxies cargo myver
+cargo 1.94.0 (85eff7c80 2026-01-15)
+exit=0
+$ cd /private/tmp/r42-audit-r2.uO3ytz/alias && PATH=rustup-proxies command -v cargo-myver
+exit=1
+$ cd /private/tmp/r42-audit-r2.uO3ytz/alias && PATH=bin:rustup-proxies cargo demo --flag 1
+warning: user-defined alias `demo` is shadowing an external subcommand found at `/private/tmp/r42-audit-r2.uO3ytz/bin/cargo-demo`
+  |
+  = note: this was previously accepted but will become a hard error in the future; see <https://github.com/rust-lang/cargo/issues/10049>
+error: unexpected argument '--flag' found
+exit=1
+$ cd /private/tmp/r42-audit-r2.uO3ytz && PATH=bin:rustup-proxies cargo demo --flag 1
+cargo-demo invoked argv: demo --flag 1
+exit=0
+
+Result: a bare rustup-proxied name has the same false-positive lookup behavior;
+Cargo built-ins run despite no `cargo-<sub>` executable; an alias runs without a
+`cargo-<alias>` executable and takes precedence over an external subcommand.
+The alias is not silent: Cargo explicitly emits the warning reproduced above.
+
+## casey/just correction and citation spot checks
+
+$ curl -L -sS https://raw.githubusercontent.com/casey/just/HEAD/justfile | grep -n -E 'cargo lclippy|cargo install cargo-limit'
+19:  cargo lclippy --all --all-targets --all-features -- --deny warnings
+117:  cargo install cargo-limit
+pipeline-exit=0 0
+$ curl -L -sS -o /dev/null -w 'http=%{http_code}\n' https://raw.githubusercontent.com/cargo-limit/cargo-limit/HEAD/src/bin/cargo-lclippy.rs
+http=200
+$ curl -L -sS -o /dev/null -w 'http=%{http_code}\n' https://raw.githubusercontent.com/cargo-limit/cargo-limit/HEAD/src/bin/cargo-lrun.rs
+http=200
+$ curl -L -sS -o /dev/null -w 'http=%{http_code}\n' https://raw.githubusercontent.com/cargo-limit/cargo-limit/HEAD/src/bin/cargo-lbuild.rs
+http=200
+$ curl -L -sS -o /dev/null -w 'http=%{http_code}\n' https://raw.githubusercontent.com/cargo-limit/cargo-limit/HEAD/src/bin/cargo-ltest.rs
+http=200
+$ curl -L -sS -o /dev/null -w 'http=%{http_code}\n' https://raw.githubusercontent.com/casey/just/HEAD/.cargo/config.toml
+http=404
+$ curl -L -sS -o /dev/null -w 'http=%{http_code}\n' https://raw.githubusercontent.com/oxc-project/oxc/HEAD/.cargo/config.toml
+http=200
+$ curl -L -sS -o /dev/null -w 'http=%{http_code}\n' https://raw.githubusercontent.com/biomejs/biome/HEAD/.cargo/config.toml
+http=200
+$ curl -L -sS https://raw.githubusercontent.com/cargo-bins/cargo-binstall/HEAD/rust-toolchain.toml
+[toolchain]
+channel = "stable"
+profile = "minimal"
+components = ["rustfmt", "clippy"]
+$ curl -L -sS -o /dev/null -w 'http=%{http_code}\n' https://rust-lang.github.io/rustup/concepts/components.html
+http=200
+$ curl -L -sS -o /dev/null -w 'http=%{http_code}\n' https://github.com/rust-lang/cargo/issues/10049
+http=200
+$ curl -L -sS -o /dev/null -w 'http=%{http_code}\n' https://crates.io/api/v1/crates/cargo-binstall/versions
+http=403
+
+The five successful source checks support the reference and component claims.
+The crates.io endpoint was rate-limited during this audit, so its dynamic version
+and licence data were not re-verified live; the decision's dated evidence log is
+the available evidence for that separate claim.

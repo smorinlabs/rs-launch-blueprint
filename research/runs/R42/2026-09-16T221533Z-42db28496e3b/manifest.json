@@ -7,6 +7,15 @@
       "actor": "controller-fable-5-1",
       "at": "2026-09-16T22:15:33Z",
       "state": "ready"
+    },
+    {
+      "at": "2026-09-16T22:25:40Z",
+      "publication": {
+        "acceptance_sha256": "a3732b422e672ddc8793d69cb2b494eafb0579a4232e9c54f0017c2a8bf9eb93",
+        "decision_sha256": "a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c",
+        "transaction": "7fd09fadc4334413b97e5be21b8ef3ea"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -23,6 +32,11 @@
   "model": "claude-fable-5-1",
   "operations": {},
   "prompt_source": "research/topics/42-dev-toolchain-provisioning/prompts/dev-toolchain-provisioning.prompt.md",
+  "publication": {
+    "acceptance_sha256": "a3732b422e672ddc8793d69cb2b494eafb0579a4232e9c54f0017c2a8bf9eb93",
+    "decision_sha256": "a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c",
+    "transaction": "7fd09fadc4334413b97e5be21b8ef3ea"
+  },
   "remaining_budget": "USD 0.00 (carried-forward republication; no provider submission)",
   "required_engines": [
     "codex",
@@ -31,7 +45,7 @@
   ],
   "run_id": "2026-09-16T221533Z-42db28496e3b",
   "schema_version": 1,
-  "state": "ready",
+  "state": "published",
   "tier": "deep",
-  "updated_at": "2026-09-16T22:15:33Z"
+  "updated_at": "2026-09-16T22:25:40Z"
 }

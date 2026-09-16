@@ -1,0 +1,74 @@
+# R42 revision-5 empirical audit — check 14 rerun
+# Run on macOS only. The Linux VM was deliberately not started; no package, toolchain,
+# component, crate, release binary, template, or implementation artifact was installed.
+# Working directory: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R42/2026-09-05T155503Z-4141a35b69e0
+# Started: 2026-09-10T07:11:47Z
+
+## Tooling
+
+$ curl --version | sed -n '1p'
+curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+
+$ gh --version | sed -n '1p'
+gh version 2.98.0 (2026-08-20)
+
+## Check 14 — the two former rustup-figure gaps
+
+$ curl -sS -o /dev/null -w '%{http_code}\n' https://rustsec.org/packages/rustup.html
+404
+$ curl -sS -o /dev/null -w '%{http_code}\n' https://rustsec.org/packages/time.html
+200
+$ curl -sS -o /dev/null -w '%{http_code}\n' https://rustsec.org/packages/atty.html
+200
+
+$ curl -sS -L https://crates.io/api/v1/crates/rustup
+HTTP 403 on the unauthenticated default request; the response was not JSON.
+
+# The archived r1 audit recorded the same access condition and used this explicit
+# descriptive User-Agent. Retrying the identical endpoint with it is an access-condition
+# retry, not a changed query.
+$ curl -sS -L -A 'rs-launch-blueprint empirical audit/1.0' https://crates.io/api/v1/crates/rustup | jq '{newest_version: .crate.newest_version, max_stable_version: .crate.max_stable_version, license: .crate.license}'
+{
+  "newest_version": "0.0.0",
+  "max_stable_version": null,
+  "license": null
+}
+
+# The documented endpoint identifies the placeholder. This companion versions endpoint
+# establishes the decision's stronger claim that its only version is yanked.
+$ curl -sS -L -A 'rs-launch-blueprint empirical audit/1.0' https://crates.io/api/v1/crates/rustup/versions | jq '[.versions[] | {num, yanked, license, created_at}]'
+[
+  {
+    "num": "0.1.0",
+    "yanked": true,
+    "license": "MIT",
+    "created_at": "2018-03-29T19:59:26.006143Z"
+  }
+]
+
+$ gh api repos/rust-lang/rustup --jq '{repo: .full_name, license: .license.spdx_id}'
+{"license":"Apache-2.0","repo":"rust-lang/rustup"}
+$ gh api repos/rust-lang/cargo --jq '{repo: .full_name, license: .license.spdx_id}'
+{"license":"Apache-2.0","repo":"rust-lang/cargo"}
+
+## Citation spot checks
+
+$ curl -L -sS -o /dev/null -w 'HTTP %{http_code}\n' https://rustsec.org/packages/rustup.html
+HTTP 404
+$ curl -L -sS -A 'rs-launch-blueprint empirical audit/1.0' -o /dev/null -w 'HTTP %{http_code}\n' https://crates.io/api/v1/crates/rustup
+HTTP 200
+$ curl -L -sS -o /dev/null -w 'HTTP %{http_code}\n' https://api.github.com/repos/rust-lang/rustup
+HTTP 200
+$ curl -L -sS -o /dev/null -w 'HTTP %{http_code}\n' https://api.github.com/repos/rust-lang/cargo
+HTTP 200
+$ curl -L -sS -o /dev/null -w 'HTTP %{http_code}\n' https://github.com/rust-lang/cargo/issues/10049
+HTTP 200
+
+## Result
+
+exit=0
+
+Check 14 matches `review/DECISION.md`: the RustSec `rustup` page is a 404 while
+the `time` and `atty` controls are 200; the crates.io `rustup` record has no
+stable version and its sole version, 0.1.0, is yanked; and both queried GitHub
+repositories report `Apache-2.0` through `license.spdx_id`.
