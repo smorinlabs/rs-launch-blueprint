@@ -1,213 +1,274 @@
-decision-sha256: 4da47900a8d5a0629dfaaff644f2773c10fdb6dead454fcc186a41574405469d
-actor: audit-fable-2026-09-05T183003Z-44e034fc1d72-r3
+decision-sha256: 0ce8e4378bc9a0b52eb62f8279c0897ba9116ba9c4f56b89154b23f721ab1b97
+actor: audit-fable-2026-09-05T183003Z-44e034fc1d72-r4
 model: claude-opus-5
 family: anthropic
-verdict: reject
-unresolved-findings: suppression-predicate-omits---quiet-conflicting-with-the-binding-cli-design-standard-r7.4-must-and-leaving-the-prompt-s-low-question-unanswered
+verdict: approve
+unresolved-findings: none
+
+This audit binds revision 4 of `review/DECISION.md` at the hash above, which matches the
+hash given in the task message. The round-3 judgment audit of revision 3 (hash
+`4da47900a8d5a0629dfaaff644f2773c10fdb6dead454fcc186a41574405469d`, reject, one finding) is
+preserved unedited at `review/audit-fable.r3.md`
+(sha256 `4cc6f4df6dd1442c3e9126a1be0bf9a04a2a3914ce38de6885116a3f97d1b1c0`).
+
+Read for this audit: `inputs/prompt.md`; both raw reports end to end (`raw/opus.md`, 864
+lines; `raw/codex.md`, 97 lines — read in full, not sampled at the lines the decision
+cites); `review/DECISION.md` in full; `review/audit-codex.md` (round 4) and its receipt;
+`docs/port/PARAMETERS.md`; `docs/port/BASELINE-REVIEW.md`; `research/RUNBOOK.md`;
+`research/CLAUDE.md` (index rows); the governing spec §2
+(`docs/superpowers/specs/2026-09-01-rs-port-research-program-design.md`, lines 44-127);
+the binding CLI Design Standard v1.4.14
+(`/Users/stevemorin/c/cli-standards/cli-design-standard.md`, R4.1 option table, R4.4, R7.1,
+R7.3, R7.4); `review/evidence/r63-quiet-baseline-r4.log`; and the two pinned source trees
+read directly at their pins. `review/evidence/r63-crossrun-compare.sh` was **not** run, as
+the task requires; the divergence between its committed hash and the round-3 audit record
+is explained in the decision (`## Empirical check`) and is not treated as a finding here.
 
 ## Principle and agreement level
 
-The shared requirement is stated at the right level and is not weakened into a goal.
-The decision declares the agreement level **capability and standard** with two halves
-that must agree — stream placement (stderr) and the suppression predicate — and it
-records the ts predicate verbatim at the pin rather than paraphrasing it
-(`DECISION.md:120-141`; `projects.ts:127-129` at pin `cb1cbcb2`). The semantics it
-extracts — any non-empty `CI` suppresses, an empty `CI` does not — are exactly what the
-quoted source says. What may vary (crate, frames, tick interval, the mechanism
-expressing "disabled") is separated from what must agree, per spec §2.
+The stated requirement is right and is stated at the right level. Spec §2's table
+(lines 45-47) names three levels; `capability/standard` is one of them, and
+`docs/port/BASELINE-REVIEW.md`'s own reading note repeats that vocabulary verbatim. The
+decision's "**capability and standard**" is that single level, not an invented compound,
+and it is decomposed into what must agree (stream placement; a three-clause suppression
+predicate) and what may vary (crate, frames, tick interval, the expression of "disabled").
+That is the §2 shape: shared requirement, agreement level and source, essential behaviors,
+ecosystem-specific design, and an acceptance check tying the design back to the
+requirement.
 
-The ledger citations are correct as read today: `docs/port/COMMONALITY.md:287` and
-`docs/port/areas/cli-framework-ux.md:27` are the F283 rows, and both carry
-`ts-only`/`DIVERGENT`. Leaving that verdict unchanged is right — py ships no indicator,
-which the check confirms independently (grep exit 1 at py pin `b08bccfb`).
+**The `--quiet` clause, which is why round 4 exists, is now correct and is carried on a
+rule rather than on engine agreement.** Revision 3's two-clause predicate conflicted with
+the binding standard; revision 4 states three inputs to one call-site predicate in the
+recommendation paragraph, the must-agree list, the essential behaviors, acceptance
+criterion 6, criterion 5's scope, the design-preservation paragraph, the CLI fit note, the
+py rationale and the `BASELINE-REVIEW:` line. `## Engines` item 8 records that both raws
+had already converged on it and that revision 3 dropped the convergence — and then
+explicitly subordinates the convergence to the rule: "it does not rest on engine
+agreement — which is the correct order under the research mandate, since agreement alone
+cannot select a design." That is the mandate's own ordering (spec §2, owner amendment A5),
+applied against the failure mode the mandate exists to prevent.
 
-The defect is in the **standard** half. Since the owner's 2026-09-14 ruling, the org CLI
-Design Standard (`/Users/stevemorin/c/cli-standards/cli-design-standard.md`, v1.4.14)
-binds this template, and **R7.4** reads: "Progress indicators **MUST** go to stderr
-(R7.1) and **MUST** be suppressed when not a TTY or under `--quiet`." The decision
-satisfies the first two clauses and not the third. It also never cites the standard as a
-binding document — the only appearance of `cli-standards` is inside a quotation lifted
-from the ts decision record (`DECISION.md:127-128`), i.e. as ts history rather than as
-the standard this item must conform to. Because R7.4's progress sentence is MUST-level,
-the standard's own waiver mechanism (lines 12 and 50: only SHOULDs may be waived, with a
-documented rule ID, deviation, rationale and owner/date) is not available; a conforming
-decision must carry the clause or record it as a named gap for P03.
+**Press 1 — the `(SHOULD)` heading over a MUST-worded sentence.** I read both rules. The
+disclosure is accurate and nothing depends on the label:
 
-Consequently the decision's affirmative baseline statement is wrong. It says "**No
-`BASELINE-REVIEW:` line is emitted**… F283's recorded requirement — a stderr spinner
-gated on stderr TTY-ness and the absence of `CI` — survives scrutiny unchanged"
-(`DECISION.md:105-111`). I checked the ts pin: `src/router.ts:131` defines
-`-q, --quiet`, and `src/commands/projects.ts:128` gates the spinner on
-`deps.stderrIsTTY && (ci === undefined || ci === '')` only — nothing consults `quiet`,
-and `src/lib/adapters.ts` has no quiet branch either. The **inherited requirement itself
-fails R7.4**, so the prompt's `BASELINE-REVIEW: F### — principle — proposed change —
-evidence` mechanism (prompt line 7) was the required vehicle here, and the decision
-affirmatively declined it. Handling of `CONFLICT:` is correct: neither raw raised one and
-no registered value needs changing.
+- `cli-design-standard.md:394` is `**R7.4 — Pager & progress. (SHOULD)**`; the heading is
+  composite (the rule covers pager and progress together) and the body at line 395 carries
+  its own RFC-2119 keywords — "Progress indicators **MUST** go to stderr (R7.1) and
+  **MUST** be suppressed when not a TTY or under `--quiet`." Under ordinary RFC-2119
+  reading the keyword in the sentence governs, and the pager half of the same line also
+  carries a **MUST**, so a (SHOULD) heading over MUST-level sentences is the rule's own
+  shape rather than an anomaly this decision must resolve.
+- `cli-design-standard.md:265` is `**R4.4 — Verbosity semantics. (MUST)**`, and line 266
+  contains "`--quiet`/`-q` suppresses progress and informational diagnostics on stderr
+  only; it **MUST NOT** suppress the requested result on stdout". **R4.4 is the same
+  obligation**, stated from the flag's side: progress is suppressed under `--quiet`. It
+  adds the stdout-preservation half, which acceptance criterion 6 asserts in the same run.
+  The decision quotes the sentence verbatim, so a reader sees for himself that the
+  suppression half is declarative inside a MUST-labelled rule; the decision's wording
+  ("restated inside the MUST-labelled R4.4") claims the label, not a keyword it does not
+  carry. No overclaim.
+- The handling makes nothing depend on the label. The decision carries the clause and says
+  so: "This decision carries the clause, which conforms under either reading of the label,
+  so nothing here depends on resolving it and no waiver is sought." Carrying a clause is
+  conformant whether the sentence is MUST or SHOULD, so the design is label-independent;
+  and the baseline challenge, which is the one place a MUST reading would do work, is
+  independently supported by the MUST-labelled R4.4 cited in the same evidence field.
+- Crucially, the disclosure is **asserted, not merely asserted-in-prose**: section 1 of
+  `review/evidence/r63-quiet-baseline-r4.log` prints both headings verbatim with their
+  line numbers (394 and 265) as content assertions, so a future reader cannot lose the
+  `(SHOULD)` label to a paraphrase.
 
 ## Design and evidence
 
-**Architecture before libraries — genuinely done.** Alternatives A–D are compared before
-any crate is picked (`DECISION.md:165-172`), and D (delegate gating to the crate) is
-rejected on evidence read at the published 0.18.6 artifact, not on taste:
-`ProgressDrawTarget::term` begins `if !term.is_term() || is_dumb() { return
-Self::hidden(); }` (`draw_target.rs:79-82`), and `indicatif` 0.18.6 makes no environment
-access at all (three greps exit 1, each additionally asserted as a zero match count). The
-residual asymmetry — `is_dumb()` in `console` 0.16.6 can additionally hide when `TERM` is
-unset or `dumb` — is named rather than glossed, bounded correctly (it can only suppress,
-never write to stdout, because both gate branches yield `hidden()` or `stderr()`), and
-converted into a P03 obligation to pin `TERM`. That is the right treatment of `TERM=dumb`.
+**Architecture before libraries, and the load-bearing rejection argued from source.**
+Alternatives A-D are compared as designs, not as crate substitutions, and D — delegating
+the gate to `indicatif`'s own terminal test — is rejected on two grounds read at pinned
+versions: it would place a second TTY check beside R65's, which this item's `## Out of
+scope` forbids, and it cannot cover `CI` at all, because `indicatif` 0.18.6 makes no
+environment access (three greps, all zero matches, log section 16). The residual
+asymmetry (`is_dumb()` in `console` 0.16.6 reading `TERM`) is named rather than glossed,
+its direction is argued (it can only suppress, never write to stdout, because both gate
+branches yield `hidden()` or `stderr()`), and the consequence for P03's tests — pin `TERM`
+to a non-`dumb` value — is stated. Design C is not chosen because `--quiet` demanded it:
+the decision is explicit that C was selected before the clause was known to be required,
+which is why absorbing the clause needed no redesign.
 
-**Library selection follows from principles, not popularity.** The clearest instance is
-the refusal of `is_ci`: its predicate is value-equality against three literals plus 35
-presence-checked variables, which diverges from the inherited contract in both directions
-(`CI=yes`; `GITHUB_ACTION` with `CI` unset). That is read at a pinned published artifact
-(`is_ci-1.2.0/src/lib.rs:25-70`, log section 3), and it decides the `std` recommendation
-on contract-preservation grounds. Adoption figures are carried as `VOLATILE:` and
-explicitly decide no gate.
+**Selection follows from gates and source reading, not popularity.** Eight candidates (the
+union of both raws' landscapes) are gate-checked; exactly one is gate-clean and
+maintained, which the decision reports as the finding the prompt asks for rather than as a
+result. Two exclusions carry independent grounds that would have decided them anyway
+(`spinoff` writes to stdout by its own documentation; `spinners` panics on `EPIPE`), and
+the decision says plainly that under a looser gate-2 reading `spinners` would reach the
+shortlist and still lose — an honest statement of how much the gate is actually carrying.
 
-**The re-admitted candidate was re-evaluated, not rubber-stamped.** `spinner` 0.5.0 loses
-its gate-1 exclusion and is re-grounded on the maintenance rubric alone, which the prompt
-defines (`archived` is one of the five rubric verdicts). The new ground is verified
-independently in the check rather than asserted: log 1061-1067 shows `archived=true`,
-`pushed_at 2020-04-20`, newest unyanked `0.5.0 2019-11-04`, and the licence string is
-labelled in the log itself as recorded fact that "excludes nothing". The exclusion table
-labels the row "none — excluded on maintenance" instead of burying the change
-(`DECISION.md:315`), the shortlist sentence is restated to say two of seven exclusions are
-not gate failures (`DECISION.md:302-305`), and `## Engines` item 7 records the
-contradiction with the licence review's characterization of R63 rather than quietly
-repairing it. The recommendation does not change and the reason is stated: the
-re-admitted candidate loses on a non-licence ground it failed independently. Gate 1 as
-`inapplicable` with the 2026-09-12 (Q7.B) ruling named is correct, and no `PASS` line in
-the log asserts a struck gate-1 verdict (checked at log 246, 426, 1012, 1064).
+**Press 2 — the `--debug`-overrides-`--quiet` ranking handed to R60.** This is a
+legitimate hand-off, not a gap, on four independent grounds:
 
-**Standard conformance, clause by clause, and what the decision says it proved.** Stderr
-placement: source read at 0.18.6 (`progress_bar.rs:147-154`), recorded as acceptance
-criterion 1, unproven. Non-TTY: criterion 3, unproven. `CI` including `CI=""`: criterion
-2, unproven. `TERM=dumb`: addressed as above, source read. `NO_COLOR`: **not a finding** —
-the prompt puts it out of scope under R65 (prompt line 14) and the standard itself
-excludes color, `NO_COLOR` and `FORCE_COLOR` from its scope (standard line 32).
-`--quiet`: **absent everywhere** — zero occurrences of `quiet` or `no-input` in the
-decision. The five criteria are correctly recorded as unproven with what would prove them
-(a `TermLike` fake, a pty, `TERM` pinned, `cargo tree -i indicatif`); declining to
-implement is right for a research decision and I do not fault it.
+1. **The predicate's normative form absorbs the override.** It is stated throughout as
+   "`--quiet` is **not in effect**", not "`--quiet` was not given". A resolved boolean
+   computed by the verbosity ladder is exactly what that phrasing consumes, so R4.4's
+   `--debug` override changes the value fed in, not the predicate.
+2. **The owner is the right one.** R60 (`cli-parsing-framework`) is a `bundle` covering the
+   global-option declarations and stackable global options (F270); R63 owns no parameter
+   and consumes none, and says "R63 defines no flag; it consumes the resolved boolean,
+   exactly as it consumes R65's resolved TTY answer." The R65 analogy is the pattern this
+   item's own prompt endorses for the TTY half.
+3. **The source precedent resolves the ladder at the same boundary.** At ts pin
+   `cb1cbcb2`, `src/router.ts:132` is
+   `.option('--debug', 'maximum diagnostics; implies -v and overrides -q', false)` and
+   `router.ts:105` folds `verbose`, `quiet` and `debug` into one `resolveLevel(...)` call.
+   The ladder already lives in the parser layer in the repository F283 records — so
+   locating it in R60 preserves the inherited structure rather than inventing one.
+4. **The gap is declared, not silently left.** `## Engines`' unproven-claims list states
+   "R4.4's rule that `--debug` overrides `--quiet` has no resolved ranking here — R63
+   consumes a boolean it does not compute", and the `re-verify:` trigger fires on R60
+   landing the global option set, requiring the implementer to "record how R4.4's
+   `--debug`-overrides-`--quiet` ladder ranks against it". Spec §2 prescribes precisely
+   this treatment: "Where the boundary is unresolved, state the gap and recommend a
+   boundary with evidence instead of treating it as decided."
 
-**The omission is a dropped convergence, not an oversight the raws share.** Both engines
-answered the prompt's LOW question. Opus calls it out by name — "This is the whole answer
-to the LOW question about `--quiet`: the gating lives [at the call site]" (`raw/opus.md:196`)
-— and its migration table folds "not-a-TTY, `CI` set, `--quiet`, and later
-`--no-progress`" into one `fn target(&self) -> ProgressDrawTarget` shaped after `uv`'s
-`Printer` (`raw/opus.md:664-666`). Codex puts `--quiet` and `--no-input` in its acceptance
-criteria (`raw/codex.md:17`), its migration plan (`:74`) and its validation strategy
-(`:89`). The decision's `## Engines` records neither the convergence nor a deliberate
-drop, which the runbook requires of that section (`RUNBOOK.md:188`).
+Neither raw report mentions `--debug` anywhere (zero matches in `raw/opus.md` and
+`raw/codex.md`), so no engine convergence on the ranking was available to drop. The
+round-3 failure mode is not repeated.
 
-**Minor, recorded but not escalated.** Codex alone requires cancellation to clear the
-spinner line (`raw/codex.md:17`); the decision's essential behaviors name the success and
-error paths only, with criterion 4 covering post-exit residue. That is a Codex-only
-divergence the `## Engines` section does not mention, but no standard rule requires it in
-those words, so it is a note, not a finding.
+**Press 3 — the `BASELINE-REVIEW: F283` line.** It is in the runbook's form and it says
+what the ts source actually does.
 
-**Consumers and coupling are named honestly.** R65 appears five times and in the right
-places: as the out-of-scope owner of F290, as the single TTY check the predicate consumes,
-as acceptance criterion 5 ("a search of the workspace finds exactly one TTY test"), as the
-one informal non-registry dependency in `## Parameters`, and as a re-verify trigger. R61
-is handled with unusual care — the runner-up condition states the double-renderer-on-one-
-stderr-line risk and explicitly refuses to decide R61 by side effect. R05 is named for the
-deliberately-off `tokio` feature. R85 is not named, and I checked whether it should be:
-R85 selects `anstyle-hyperlink` 1.0.2 and `supports-hyperlinks` 3.2.0, pulls no `console`
-and renders no progress, so there is no real coupling to declare. Its absence is not a
-defect.
+- **Form.** `research/RUNBOOK.md:22` fixes
+  `BASELINE-REVIEW: F### — principle — proposed change — evidence`. The line at
+  `DECISION.md:173` opens at column 0 with `BASELINE-REVIEW: F283` and carries exactly
+  those four em-dash-separated segments. Routing matches `RUNBOOK.md:167` — the controller
+  adjudicates it with the affected decision — and the decision states that it changes no
+  other item and no ledger file, and that the recommendation already carries the clause so
+  P03 is not blocked while it is pending.
+- **Mechanism.** `BASELINE-REVIEW:` is the correct instrument and `OVERRIDE (OV-nn)` is
+  not available: spec lines 88 and 110 confine `OVERRIDE` to a pattern row of legal origin
+  `same`, and F283 is `DIVERGENT` with origin `ts-only` (`research/CLAUDE.md:68`). The
+  decision leaves that verdict and origin explicitly unchanged. `docs/port/BASELINE-REVIEW.md`
+  adjudicated only the `COMMON → REUSE` and `ADOPT` rows and therefore holds no F283 row,
+  so the line contradicts no recorded adjudication.
+- **Factual accuracy, re-read by me today at the pin, not taken from the log.**
+  `src/router.ts:131` is byte-exactly
+  `.option('-q, --quiet', 'only show warnings and errors', false)`; `quiet` occurs on
+  exactly three lines of that file (78, 105, 131); `router.ts:105` is the only *consumer* —
+  line 78 is the type field `quiet: boolean;`, a declaration and not a feed — so "feeds it
+  only to the log level" is literally true; `projects.ts:127` is `const ci = deps.env['CI'];`
+  and `:128` is `const spinnerEnabled = deps.stderrIsTTY && (ci === undefined || ci === '');`;
+  and `grep -c quiet` returns `0` for both `src/commands/projects.ts` and
+  `src/lib/adapters.ts`. Every clause of the evidence field is exact.
+- **Supporting check.** `review/evidence/r63-quiet-baseline-r4.log` (78 lines, sha256
+  `b081a1e33b2fb87cfb855565a5588485215479716f19d589904b7b660f417d7a`, `checks: 21 pass /
+  0 fail`) asserts all of the above on content, not on exit codes: `lineis` echoes the
+  numbered line it read and `has` asserts a match count, so the two absence claims read
+  `(matching lines) == 0`. Its four controls are the right ones — wrong line text, an
+  absence asserted where the literal is present, an unreadable checkout, and a true-count
+  positive — and their verdicts are themselves asserted as `probe tally == 1 pass /
+  3 fail`, so a control cannot quietly stop failing. The round-4 empirical audit reran it
+  three times byte-identically.
 
-**The empirical check verifies the claims it is cited for, and the r3 rerun is
-consistent.** I re-hashed all five archived predecessors and every one matches the sha256
-the decision records (`r63-spinner-claims.r1.sh/.log`, `.r2.sh/.log`,
-`-negative-control.r2.log`). The cited log is 1071 lines with exactly 126 `VOLATILE: ` and
-4 `HOST: ` lines and 168 `PASS` lines, ending `checks: 168 pass / 0 fail` / `RESULT: PASS`
-— matching every figure the difference rule (R1/R2/R3) states. The comparator ends
-`failed assertions: 0`. The run directory is clean against `HEAD`. One bookkeeping note
-that breaks no claim: `audit-codex.md` records the classifier log at
-`b38cba4a10c128af08364160ade596b2158fb5d50b7f0fae475dd1083c185742`, while the committed
-file hashes `cc1fba04ec35060314faf590d2ade846b4232cde3d3d34e2eb44a3297f2a2c16` (identical
-to `git show HEAD:…`); this is the controller's restore after an audit rerun overwrote one
-ambient-locale line, and the decision cites no sha256 for that file.
+**Nothing material in either raw is unaccounted for.** Because the round-3 finding was in
+part a dropped convergence, I read both raws end to end and checked every substantive
+assertion against the decision rather than only the lines it cites. Everything either raw
+raises is adopted, adjudicated with evidence, or declined with a stated reason: Codex's
+cancellation criterion (routed to R67's exit-code taxonomy), its `--no-input` criterion
+(declined as R61's subject), its `CI` predicate, its zero-width regression test, its
+`prodash` macOS gap and its RustSec-404 reading (all four adjudicated in `## Engines`
+items 1-4); Opus's `--no-progress` note, its informal R65 `assumes` line, its criterion
+5, its `in_memory` dev-dependency, its `enable_steady_tick` requirement and its
+library/web exclusions (all adopted). Two raw-only items are dropped without an explicit
+note, and both are correctly dropped: Opus's `spinach` licence-history caution and its
+`cliclack` `once_cell` advisory analysis are gate-1 material, which the settled 2026-09-12
+Q7.B ruling strikes.
+
+One divergence between the raws is not recorded as such, and I checked it rather than
+assume: the mandated issue-responsiveness figure differs between them — Codex reports a
+median of about 13.2 hours over 8 answered of 10 (retrieved 2026-09-05), Opus a median of
+0.13 days, about 3 hours, over 8 answered of 10 (retrieved 2026-09-10). The decision
+carries Opus's figure alone. That is correct and is covered rather than overlooked: the
+window is the ten *most recently opened* issues, so a five-day gap changes the sample;
+`## Uncertainty` states the governing rule ("Codex's figures were not re-queried at their
+own retrieval date") and names this exact figure as carried forward unconfirmed; and the
+figure decides nothing, because the `active` maintenance verdict is stated to rest on the
+release date, `pushed_at` and `archived: false`, all of which the check asserts. Both raws
+agree on the two numbers that would matter — 8 answered, 2 unanswered — and both medians
+support the same verdict.
+
+**Press 4 — everything the round-3 audit cleared, re-confirmed.**
+
+| Cleared item | Status in revision 4 |
+|---|---|
+| `indicatif = "0.18"` (0.18.6), CLI crate only | Unchanged; library exclusion restated with the semver reason, plus the `in_memory` dev-dependency for acceptance tests |
+| Design C, call-site-owned `ProgressDrawTarget` | Unchanged; the `--quiet` clause reaches the same `hidden()` value by the same route |
+| `spinner` 0.5.0 excluded on maintenance | Unchanged; archived 2020-04-20, newest unyanked 2019-11-04, and the table says in terms that gate 1 now excludes nothing |
+| R65 and R61 named honestly | Verified against their prompts: R65 owns F290's TTY mechanism; R61 owns `--no-input`'s behavioral fork (F360) and the prompt crate. `--no-input` is declined with that reason rather than by silence |
+| Four `- assumes` lines | Byte-identical to `docs/port/PARAMETERS.md` rows 7-10, re-diffed today |
+| `review/audit-codex.md` rerun | Consistent: it binds this same decision hash, approves with no unresolved finding, and its recorded figures (1071 lines / 168 checks; 21 checks and the `b081a1e3…` hash for all three quiet-baseline runs) match the decision's claims exactly |
 
 ## Completeness
 
-Required H2s per `RUNBOOK.md:181-190` are all present and in order: `## Decision` with
-`### Principles and implementation`, the settled `F283` row and a `re-verify:` line;
-`## Parameters`; `## Empirical check` with toolchain, OS, working directory, exact command
-and observed output; `## Engines` with both reports, five adjudicated disagreements and an
-explicit `**Uncertainty**` block. `## Supersedes` is correctly absent — no revision has
-been published, R63's index row is still `open` — and the decision says so in its first
-paragraph rather than leaving the absence unexplained.
+All four required H2s are present with non-empty bodies (`RUNBOOK.md:181-190`):
+`## Decision` carrying the recommendation, the version, the settled `F283` row,
+`### Principles and implementation` and a `re-verify:` line with seven named triggers;
+`## Parameters`; `## Empirical check` with toolchain, host, command, working directory and
+observed output; and `## Engines` with both reports, four adjudicated disagreements, the
+figure-drift accounting and an explicit uncertainty statement. No `## Supersedes` is
+required — no revision has been published and R63's index row is still `open`
+(`research/CLAUDE.md:68`), which is what the decision states.
 
-Parameters: no `owns` and no `consumes` lines, which matches the prompt's empty `- owns:`
-and `- consumes:`; no `CONFLICT:`, correctly. The four `assumes` lines are byte-identical
-to `docs/port/PARAMETERS.md`, checked value by value — `msrv-policy` ("stable minus 2
-minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and
-tested in CI"), `rust-edition` (`2024`), `target-os-matrix` (`ubuntu-latest, macos-latest`)
-and `license` (`MIT OR Apache-2.0`) — and each is argued for its bearing on the decision
-rather than merely listed.
+Owned and assumed parameters: none owned (the prompt's `- owns:` line is empty), four
+fixed parameters assumed and byte-exact, and the absence of a `CONFLICT:` line is stated
+with its reason rather than left implicit. The two informal non-registry dependencies
+(R65's TTY check, R60's `--quiet`) are named as such and correctly kept out of the
+`assumes` list.
 
-All six fitness gates are reported, none omitted: gate 1 `inapplicable` with the ruling
-named, gates 2-6 passed with figures, gate 6 explicitly qualitative with the reason no
-byte figure exists. Source dates are present on every citation, and the two citations the
-check does not cover — the `astral-sh/uv` `printer.rs` read on a moving branch and the two
-in-repository ledger reads — are named individually under `## Engines` item 5 instead of
-being folded into the blanket re-assert sentence. That is the correct handling.
+All six fitness gates are reported. Gate 1 is `inapplicable` with its reason, per the
+settled 2026-09-12 Q7.B ruling. Gates 2-6 pass with figures, and gate 6 states plainly
+that no measured byte or second figure exists because no crate exists to build. Source
+dates are present and their non-uniformity is explained rather than smoothed: 2026-09-10
+for pinned-source readings and the preserved tables, 2026-09-13 for re-quoted live
+figures, 2026-09-15 for the new check, with the two citations covered by neither
+(`astral-sh/uv` on a moving branch, and the two in-repository ledger reads) named
+individually.
 
-The one completeness gap is the prompt's LOW question: "Does the candidate crate support
-being disabled entirely via a runtime flag (composing with `--quiet`/`--no-input`), or
-does that gating have to live in the call site rather than the crate?" (prompt line 36).
-It has no answer anywhere in the decision, and the tier guidance is explicit that the
-Focused tier "does not remove any prompt section, approved question, owner requirement,
-shared principle, acceptance criterion, or applicable fitness gate" (prompt line 71).
+The empirical check verifies what it is cited for and the decision claims no more.
+Acceptance criterion 6 is marked unproven on its face, with the test that would prove it
+named concretely (`InMemoryTerm` with `TERM` pinned non-`dumb`, asserting empty contents
+and an intact stdout JSON body). The unproven-claims list carries six entries, each with
+what would prove it, and the `--quiet` clause is described as "the least proven thing
+here" with its documentary support separated from the behavior nobody has observed. That
+is the correct posture for a research decision whose template P03 builds.
 
 ## Findings
 
-**Reject — the suppression predicate omits `--quiet`, conflicting with the binding CLI
-Design Standard R7.4 and leaving the prompt's LOW question unanswered.** The decision
-states the predicate as exactly two halves that must agree — stderr TTY-ness and `CI`
-absent-or-empty (`DECISION.md:122-141`) — describes it as "a single function" whose TTY
-half is R65's (criterion 5), and gives five acceptance criteria none of which mentions
-`--quiet`. R7.4 is MUST-level and MUSTs are unwaivable under the standard's own
-conformance language, so a P03 implementer following this decision literally ships a
-spinner that renders under `--quiet` on an interactive stderr. Three independent grounds
-converge: (1) the standard conflict; (2) the unanswered LOW question, which both raws did
-answer and whose answers `## Engines` neither adopts nor records as dropped; and (3) the
-affirmative "no `BASELINE-REVIEW:` line" claim, which is wrong because the ts
-implementation the requirement is drawn from does not suppress under `--quiet` either
-(`router.ts:131` defines `-q, --quiet`; `projects.ts:128` ignores it).
-
-Two limbs, separable by the reviser. `--quiet` is the MUST conflict and must be carried:
-add it as a third suppression input to the one predicate, extend criteria 2-4 (or add a
-sixth) to cover it, record the `## Engines` convergence, and emit
-`BASELINE-REVIEW: F283 — progress suppressed under --quiet — add the quiet clause to the
-recorded requirement — CLI Design Standard R7.4; ts `projects.ts:128` at pin `cb1cbcb2`
-does not consult it`. `--no-input` is only the unanswered prompt question: answering it
-"a prompting concern owned by R61, not a progress input" would be legitimate, provided
-the decision says so rather than staying silent.
-
-No other unresolved finding. Nothing from rounds 1 and 2 dangles: r1's uninvoked
-`supplements()` defect and r2's three evidence defects are each answered, and I confirmed
-the archived artifacts those answers rest on are byte-identical to the hashes recorded.
+None.
 
 ## Assessment
 
-Reject on one finding. **The recommendation itself follows from the principles and the
-evidence, and I would not disturb it.** `indicatif = "0.18"` (0.18.6) in the CLI crate
-only, design C with the render/suppress choice owned by the call site and expressed as a
-`ProgressDrawTarget`, and a `std::env::var_os("CI")` predicate with
-`is_none_or(|v| v.is_empty())`, are each derived from stated principles and verified
-source rather than from adoption figures or repository agreement; the `dev-dependencies`
-`in_memory` addition is the right way to make criteria 2-4 checkable without a pty. The
-defect is not in the pick and does not reopen the candidate search: design C's call-site-
-owned target already absorbs a third suppression input with no redesign — the `uv`
-`Printer` the decision cites as its reference implementation folds `quiet`, `verbose` and
-`no_progress` into exactly that one method. What must change is the stated predicate, the
-acceptance criteria, the `## Engines` record, and the baseline line. The evidence
-discipline in this revision is otherwise strong: claims are qualified as source reads
-where they are source reads, the unproven list is honest and carries what would prove
-each item, and the comparator demonstrates its own failure modes rather than asserting
-them. Revision 4 should be a narrow edit, not a re-research.
+**Approve.** Revision 4 repairs all three limbs of the round-3 finding without disturbing
+anything that was right. The predicate now has the clause the binding standard requires,
+stated once and consumed at one call site; the prompt's LOW question is answered with a
+mechanism (`indicatif` 0.18.6 has no flag surface and reads no environment variable, so
+gating cannot live in the crate) rather than a preference, and `--no-input` is declined on
+a stated ownership ground; the wrong affirmative baseline sentence is replaced by a
+correctly formed, correctly routed `BASELINE-REVIEW:` line whose every factual clause I
+re-read at the ts pin today and found exact. The recommendation, crate, version, design
+alternatives, gate outcomes, exclusions, runner-up condition and parameter lines are
+unchanged from the revision two auditors already examined, which is what a repair of this
+kind should look like.
+
+One non-blocking observation for the controller, recorded because it is a wording matter
+and not an evidentiary one. The recommendation paragraph describes the third input once as
+"the parsed value of the CLI's own `--quiet`/`-q` flag". Under R4.4 the *parsed* and
+*effective* values diverge in the single `-q --debug` case, where `--debug` must win. Every
+normative statement of the predicate in this document uses the effective form — "`--quiet`
+is not in effect" in the recommendation, the must-agree list, the essential behaviors and
+the `BASELINE-REVIEW:` line, and "consumes the resolved boolean" in the must-agree list and
+`## Parameters` — and the same sentence that says "parsed value" cites "R4.4's verbosity
+ladder" two clauses later, so no implementer following the normative text ships a spinner
+that wrongly suppresses under `-q --debug`. It is one descriptive phrase against four
+normative ones; tightening "parsed" to "resolved" at publication would remove the last
+ambiguity. This does not rise to a finding and does not qualify this approval.
+
+Acceptance now requires the controller to confirm the second approving verdict and current
+consumed values; the round-4 empirical audit (`review/audit-codex.md`, `gpt-5.6-terra`,
+family openai) approves the same decision hash with no unresolved finding.
