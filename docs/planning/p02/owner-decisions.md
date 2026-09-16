@@ -370,6 +370,9 @@ reject.
 | W0-R23 | R23 lockfile-version-sync | A accept | 2026-09-15 | `ea269dd6…` | native Rust release strategy; jsonpath runner-up silently no-ops |
 | W0-R25 | R25 semver-bump-strategy | A accept | 2026-09-15 | `978ec707…` | `0.1.0` with dampening; `1.0.0` runner-up waits on R04's surface |
 | W0-R26 | R26 packed-artifact-content-guard | A accept | 2026-09-15 | `013fe4c3…` | first-party diff/assert/dry-run guard |
+| W0-R33 | R33 property-and-snapshot-testing | A accept | 2026-09-15 | `39a5e39c…` | separate-file snapshots; `snapbox` runner-up needs the inline relaxation |
+| W0-R34 | R34 scheduled-freshness-lanes | A accept | 2026-09-15 | `14d35261…` | scheduled canary; the auto-disable closed by `workflow_dispatch` plus a documented re-enable |
+| W0-R41 | R41 lockfile-freshness-check | A accept | 2026-09-15 | `efc7614a…` | unlocked resolve asks py's question; `--locked` cannot |
 
 ## Retired from this list
 

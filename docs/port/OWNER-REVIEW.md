@@ -164,6 +164,9 @@ The briefs the owner answered from are in `docs/planning/p02/owner-decisions.md`
 | R23 | 1 (published) | `ea269dd6ac3342672f48e69e6c2cb2645c7f73d1e476e5306a20803d1a6598ed` | accept | 2026-09-15 | W0-R23 option A; release-please `release-type: rust` bumps `Cargo.lock` in the release commit |
 | R25 | 7 (published) | `978ec7075e1f33f9f186815ea2a2154a52ad52eb53b970aebe1a38ed69def4e8` | accept | 2026-09-15 | W0-R25 option A; launch at `0.1.0` with pre-major dampening |
 | R26 | 3 (published) | `013fe4c3fc992d7e3755822cd08fe134cafebf83ecff509000b3a98780e8e7f3` | accept | 2026-09-15 | W0-R26 option A; four first-party packed-content checks in the publish verify job |
+| R33 | 5 | `39a5e39ce225fba3a23a7543865a3bcc537290b8d18322ca9b900491729336f2` | accept | 2026-09-15 | W0-R33 option A; `proptest` 1.11.0, `insta` 1.48.0, `cargo-insta` 1.48; published copy is revision 2, republication pending |
+| R34 | 1 (published) | `14d3526106bb7e670fe648fe3bad9e858a92ddb196603fb49d9090bdc08fee4e` | accept | 2026-09-15 | W0-R34 option A; weekly schedule-only canary workflow, three legs |
+| R41 | 8 (published) | `efc7614a4bcdb2b253a7537730daff0b44b3e9568da36b81324f1beb14f3f1ea` | accept | 2026-09-15 | W0-R41 option A; conditional unlocked resolve, Git comparison and restore |
 
 ## Dispositions
 
