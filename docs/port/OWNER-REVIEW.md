@@ -147,7 +147,7 @@ The briefs the owner answered from are in `docs/planning/p02/owner-decisions.md`
 
 | item | revision | decision sha256 | verdict | date | owner note |
 |---|---|---|---|---|---|
-| R01 | 2 (published) | `8025fd5b1a959b1e76fa9a738176071b418fd411aa2ba6ad5c6e4bffbd9a018f` | accept | 2026-09-10 | recorded retroactively 2026-09-14; the acceptance predates this table |
+| R01 | 3 (published copy is revision 2) | `44bf9ae9f55060ed56256dbad4d9a0814b3bd63112602dabe932acb7bfb12d82` | accept | 2026-09-10, re-bound 2026-09-15 | first accepted at the published revision 2 (`8025fd5b…`); W0-R01 re-bound the acceptance to revision 3, a reasoning repair after the licence ruling with every crate, version and parameter value byte-identical; republication pending |
 | R67 | 4 (published) | `16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497` | accept | 2026-09-14 | W0-R67 option A; consumers R03, R52–R56, R70 admissible |
 | R42 | 10 | `a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c` | accept | 2026-09-15 | W0-R42 option A; install-integrity posture chosen under W0-R42i (see the ruling below); the eight items consuming `package-manager-invocation` admissible |
 | R49 | 7 | `319a535665318a120c9be3bdf61037f9f4ea8214d972de724dafe16902bec41d` | accept | 2026-09-15 | W0-R49 option A; W0-R49n: the owner directs the short binary name `rslbp` in place of `rs-launch-blueprint` (ruling below); re-bound at revision 8, which also makes the round-7 judgment audit's three clause repairs; consumers R22, R32, R68, R50 admissible |
@@ -173,6 +173,7 @@ The briefs the owner answered from are in `docs/planning/p02/owner-decisions.md`
 | R63 | 4 | `0ce8e4378bc9a0b52eb62f8279c0897ba9116ba9c4f56b89154b23f721ab1b97` | accept | 2026-09-15 | W0-R63 option A; `indicatif` 0.18 in the CLI crate, three-input suppression predicate; first publication pending |
 | R65 | 4 | `4b9b21a1454461ce691976580f07d8df73e89323d2a17c1df79dc7526ac70956` | accept | 2026-09-15 | W0-R65 option A; `anstream`/`anstyle` plus a template-owned resolver for tiers 1–4; first publication pending |
 | R66 | 1 | `a7958d3f38dfcdfe16e754b3e9e7a318bbb3a833fe86ebd663d28ef0696940ad` | accept | 2026-09-15 | W0-R66 option A; `-o table\|json\|markdown\|name`, `--json`, `--output-file`; `tabled` =0.22.0 exact-pinned; default named `table`; first publication pending |
+| R60 | 7 | `67d7a7d2a76c7d10c88edf9cd309c46484ada95a00074d902943a94410b8b9f2` | accept | 2026-09-15 | W0-R60 option A; `clap` 4.6.6 derive, `clap_complete` 4.6.9, dependency-free `build.rs`; OV-01 refused per the 2026-09-14 ruling; first publication pending |
 | R47 | 1 (published) | `20693ce171bcde1e4e0bbe1c8b03e3b11a5619d2824ed6578af8abf6305791ba` | accept | 2026-09-15 | W0-R47 option A; guarded `render` recipe with one-time `init` |
 | R64 | 2 (published) | `39f0df0410126a90f966b23f947939eba5be8c30b4299c85487e1ce8d050b661` | accept | 2026-09-15 | W0-R64 option A; `shlex` 2.0.1, two-tier pager resolution, spawn-and-pipe |
 | R81 | 5 | `4329ce48b428b70cab0bea32e71bb725471faac2c88356f3b0fa9b005fc5772e` | accept | 2026-09-15 | W0-R81 option A; ship the mdBook generator over the canonical `docs/` corpus, medium confidence stated; owner action pending: set the repository's Pages source to "GitHub Actions"; first publication pending |
