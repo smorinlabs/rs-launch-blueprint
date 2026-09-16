@@ -38,8 +38,8 @@ advisory line as volatile. Revision 3 takes the **first and stronger** form, bec
 would leave the decision's gate-3 answer resting on a number nobody can reproduce, and because
 the pinned corpus turns out to load exactly the 1,243 advisories this decision already cites —
 the figure becomes traceable to a recorded commit instead of to one moment in time. The new
-check is `review/evidence/feature-shape-check-r3.sh`, and it differs from its predecessor in
-four ways and no others:
+check is `review/evidence/feature-shape-check-r3.sh`. It differs from its predecessor in four
+**substantive** ways:
 
 1. **The advisory database is pinned.** Section 8 clones `RustSec/advisory-db` at commit
    `b50980aad8b8f14f77e25a97b32dd94bf008b0af` (2026-09-09) into a scratch directory under
@@ -49,11 +49,21 @@ four ways and no others:
    showing the count test can fail. A hash **mismatch is a FAIL, never a skip**. The clone is
    removed by an `EXIT` trap and is never written inside this run directory: no advisory
    database and no nested git repository is committed here.
-2. **`--no-fetch` drops one line the revision-1 log had.** The revision-1 log printed
-   `Updating crates.io index`, which belonged to cargo-audit's yanked-crate lookup rather than
-   to the advisory corpus; with `--no-fetch` that lookup does not run and the line is absent.
-   No advisory result depends on it, so the gate-3 answer below is unaffected — but an auditor
-   diffing the two logs will see the difference, and this is what it is.
+2. **`--no-fetch` drops one line the revision-1 log had, and the reason is narrower than it
+   looks.** The revision-1 log printed `Updating crates.io index`. That line belongs to
+   cargo-audit's yanked-crate lookup, not to the advisory corpus, and `--no-fetch` does **not**
+   disable that lookup: read at the published source of `cargo-audit` 0.22.1
+   (`src/commands/audit.rs:222`, `config.database.fetch &= !self.no_fetch;`, and
+   `src/auditor.rs:115-167`), `--no-fetch` clears `database.fetch`, which turns the
+   `yanked.update_index && database.fetch` branch — the one that prints the line and calls
+   `CachedIndex::fetch` — into the `else` branch, which calls `CachedIndex::open` and still
+   performs the yanked comparison against whatever crates.io index is already cached. So the
+   observed facts, stated as observed: the index is not refreshed, the line is absent, and the
+   yanked comparison reads a cached index. No advisory result depends on any of it, so the
+   gate-3 answer below is unaffected. **The residual environment dependency, named rather than
+   claimed away:** on a machine with no cached crates.io index that same `else` branch prints
+   `couldn't open crates.io index: …` as a warning line, which would make the log differ there.
+   That is the second and last documented way this log can vary, alongside the SKIP in item 4.
 3. **Absolute paths are normalised.** `cargo tree` prints the probe package's absolute path,
    and the scratch clone's path varies per run and per machine. The script rewrites the two
    probe directories to `<feature-shape>` and `<feature-shape-r01base>` and the clone to
@@ -64,17 +74,36 @@ four ways and no others:
    `SKIP: advisory-scan-skipped-pinned-db-unavailable` and contributes nothing to the exit
    status. The feature-shape status is computed as a separate variable (`rc_shape`) that always
    reaches the exit code, so a skipped advisory scan **cannot** mask a failed feature-shape
-   assertion. This was tested rather than assumed: with the remote forced to an unreachable
-   host, the mirror disabled and one feature-shape assertion deliberately broken, the script
-   printed the SKIP marker and still exited `1`.
+   assertion. This was tested rather than assumed, and the test is described so an auditor can
+   repeat it: a **scratch copy** of the committed script, produced with `sed` and with the
+   single assertion `must "axum v0.8.9" "$on"` rewritten to `must "axum v9.9.9" "$on"`, was run
+   with `R69_ADVISORY_DB_URL` pointed at an unreachable host and `R69_NO_LOCAL_MIRROR=1`. It
+   printed `SKIP: advisory-scan-skipped-pinned-db-unavailable`, reported `rc_shape=1`, and
+   exited `1`. The scratch copy was deleted; the committed script is unmodified. The other
+   three branches were exercised the same way: the local-mirror fallback (unreachable remote,
+   mirror allowed → `advisory-db obtained from : local-mirror`, exit 0) and a forced
+   pinned-hash mismatch (→ `FAIL`, `rc_audit=1`, exit `1`, **not** a skip).
+
+**The remaining differences between the two scripts are mechanical**, and are listed so that a
+script-to-script `diff` holds no surprises: `/usr/bin/grep`, `/usr/bin/sed` and `/usr/bin/awk`
+are invoked by absolute path, and the log names the grep binary, because an interactive agent
+shell on this machine resolves a typed `grep` to ugrep; the two scratch files that section 4
+uses are created with `mktemp` under `${TMPDIR:-/tmp}` instead of fixed `/tmp/r69-rv*.txt`
+names, because ten agents share this worktree; two header lines (`grep binary:` and
+`probe dir:`) were added and therefore appear in the log; the single `rc` variable became the
+pair `rc_shape` / `rc_audit` that item 4 depends on, and the final three lines of the log print
+both; `--stale` accompanies `--no-fetch` so that a database pinned to a fixed commit does not
+start failing cargo-audit's freshness window as it ages; and the `55 crate dependencies` line
+and the advisory-count control are asserted where revision 1 asserted only the exit status.
 
 `review/empirical/feature-shape-check.sh` and its log `review/evidence/feature-shape-check.log`
 are **left byte-identical** as the record of revision 1, exactly as revision 1's
 `parameters-check.log` was. The check-2 row of the table under `## Empirical check` now names
 the r3 script and `review/evidence/feature-shape-check-r3.log`, and the reproducibility
-paragraph there states precisely what the new check establishes. Every other sentence of this
-decision is unchanged from revision 2 except the five citation and figure locations enumerated
-at the end of that paragraph.
+paragraph there states precisely what the new check establishes. Beyond the title, this note,
+the heading of the retained revision-2 note below and the preamble's synthesizer line, every
+other sentence of this decision is unchanged from revision 2 except the five citation and
+figure locations enumerated at the end of that paragraph.
 
 **Revision note (revision 2), retained as the record of that revision.** Revision 2 rewrote
 revision 1 (sha256
@@ -947,9 +976,11 @@ exactly what was established, by whom, and under which conditions.
   printed in the log's first two lines (`rustc 1.98.0` / `cargo 1.98.0` on Darwin arm64,
   macOS 26.4), `cargo-audit` 0.22.1, and a reachable copy of the pinned commit. When the
   pinned commit is reachable from neither the network nor a local mirror, section 8 prints
-  `SKIP: advisory-scan-skipped-pinned-db-unavailable` instead of the three advisory lines and
-  the rest of the log is unchanged — that is the one documented way the output can differ, and
-  it cannot hide a feature-shape failure, which is asserted by a separate status variable.
+  `SKIP: advisory-scan-skipped-pinned-db-unavailable` instead of the advisory lines and the rest
+  of the log is unchanged; it cannot hide a feature-shape failure, which is asserted by a
+  separate status variable. On a machine with no cached crates.io index, cargo-audit adds a
+  `couldn't open crates.io index: …` warning line, which affects no advisory result. Those two
+  are the only documented ways this log can differ, and both are named in the revision note.
 - **Check 6** was re-run for revision 3 against this revised file, with `diff` reporting no
   differences against `review/evidence/parameters-check-r2.log`. It is the only one of the six
   that reads `review/DECISION.md`, and revision 3 moves nothing it measures — the one `- owns`
@@ -1041,11 +1072,12 @@ to *candidates*, not to every transitive crate, and this figure records that lim
 `RustSec/advisory-db` **pinned** at commit `b50980aad8b8f14f77e25a97b32dd94bf008b0af` and
 asserted to be at that commit, loaded 1,243 advisories, scanned 55 crate dependencies and
 exited 0 with no findings. The count and the crate total are asserted as constants, and a
-control assertion demanding a count the database cannot have shows the test can fail. Because
-`--no-fetch` also suppresses cargo-audit's yanked-crate lookup, this scan does not refresh the
-crates.io index and prints no `Updating crates.io index` line; no advisory result depends on
-that lookup. Revision 1 ran this scan against the live, self-updating `~/.cargo/advisory-db`,
-which is why its count was not reproducible and why revision 2 was rejected.
+control assertion demanding a count the database cannot have shows the test can fail. This scan
+does not refresh the crates.io index and prints no `Updating crates.io index` line; per
+`cargo-audit` 0.22.1's source (`src/auditor.rs:115-167`) the yanked-crate lookup still runs,
+against whatever index is already cached, and no advisory result depends on it. Revision 1 ran
+this scan against the live, self-updating `~/.cargo/advisory-db`, which is why its count was
+not reproducible and why revision 2 was rejected.
 With the base set to R01's published members, the non-dev tree is **12 packages with the feature
 off and 52 with it on**; the 52 matches the opus raw exactly, and the base differs by one package
 because that probe carried one further base dependency, so the delta reads 40 here and 39 there.
