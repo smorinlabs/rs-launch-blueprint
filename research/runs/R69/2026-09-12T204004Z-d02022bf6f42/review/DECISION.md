@@ -1,6 +1,112 @@
-# R69 web-framework-stack — decision (revision 4, 2026-09-15)
+# R69 web-framework-stack — decision (revision 5, 2026-09-15)
 
-**Revision note (revision 4).** Revision 4 rewrites revision 3 (sha256
+**Revision note (revision 5).** Revision 5 rewrites revision 4 (sha256
+`1814883d3d4b83333ea145c6dae0e02d86ba058b46b512c4bdfeac00afca23c3`) in place. No revision of
+this decision has been published, so there is still no `## Supersedes`. **Nothing about the
+recommendation, the parameters, the checks or the evidence moves.** `axum` 0.8.9 on `tokio`
+1.53.1 behind an off-by-default `web` feature, `tower` 0.5.3 as a dev-dependency and `bacon`
+3.25.0 as the dev watcher stand unchanged; the single `- owns web-extra-surface` line and the
+five `- assumes` lines are byte-identical to revisions 2, 3 and 4; the R67 exit contract
+(SIGTERM →143, SIGINT →130, drain-deadline expiry →1) and the request to R67 are unchanged;
+the CLI Design Standard's R4.1 required global core is unchanged; fitness gate 1 remains
+`inapplicable` under owner ruling Q7.B; revision 4's repair — `review/evidence/feature-shape-check-r4.sh`,
+its cited log `feature-shape-check-r4.log` and the isolated `CARGO_HOME` that makes the
+crates.io-index warning impossible — is **untouched and byte-identical**, as are the other
+five scripts and every cited log. Revision 5 repairs exactly one defect: **a number in
+revision 4's own revision note that was written from recall instead of from a run.**
+
+Revision 4 was **rejected** by the round-4 empirical audit (`review/audit-codex.md`, actor
+`audit-codex-2026-09-12T204004Z-d02022bf6f42-r4`, model `gpt-5.6-terra`, family openai) on a
+single finding, quoted verbatim:
+
+> **Reject — the claimed yanked-lookup control has the wrong observed count.** Revision 4
+> states at `review/DECISION.md:84-90`, and its own script repeats at
+> `review/evidence/feature-shape-check-r4.sh:72-80`, that an empty isolated `CARGO_HOME` with
+> yanked lookup enabled prints 55 `couldn't check if the package is yanked` errors. I recreated
+> that variant with the same pinned advisory-db commit, an otherwise empty cargo home, and only
+> the `cargo-audit` symlink required for Cargo to discover the subcommand. It loaded 1,243
+> advisories, scanned 55 dependencies, exited `0`, and emitted **54** such errors
+> (`review/evidence/audit-codex-r4-empty-cargo-home-yanked.log:59`). The decision must correct
+> the count before acceptance.
+
+The finding is correct and is accepted without qualification. The same auditor's findings 2 and
+3 confirmed the rest of revision 4: the isolated-`CARGO_HOME` repair reproduces byte-for-byte in
+every mode tried — three in-place reruns, a temporary-index `git archive` extraction, a `HEAD`
+`git archive` extraction, and a rerun made while a separate process held `flock(LOCK_EX)` on
+`~/.cargo/.package-cache` — and the retained r3 artefacts and the other five scripts and logs
+are unchanged and matched their cited logs. Revision 5 changes none of that.
+
+**Why the wrong figure arose, so a reader can see the confusion rather than take the correction
+on trust.** **55 is the dependency count**, not the error count. It is the figure in
+cargo-audit's own `Scanning Cargo.lock for vulnerabilities (55 crate dependencies)` line, which
+check 2 asserts as a constant and which this decision cites correctly wherever else it appears.
+The yanked lookup does **not** run over all 55. It is a crates.io **registry** query, so it runs
+only over lockfile entries carrying a
+`source = "registry+https://github.com/rust-lang/crates.io-index"` key; the probe's root package
+`r69_feature_shape` is a **path** package with no `source` and is skipped. 55 − 1 = **54**, and
+`yanked-control-r5.sh` asserts each of those three figures separately rather than leaving this
+paragraph to be believed. Revision 4 reported the variant as tested, then wrote down the count
+it had to hand — the figure on the line immediately above the first error line in that same
+output — instead of the count the run produced. That is the failure mode this programme has
+rejected all week, and the correction is therefore not a re-wording: it is a rerun.
+
+**The repair: the figure is now true by construction.** Revision 5 re-ran the rejected variant
+itself, in the new script `review/evidence/yanked-control-r5.sh`, whose cited log is
+`review/evidence/yanked-control-r5.log`. The script recreates exactly what the round-4 audit
+recreated — the pinned advisory-db commit `b50980aad8b8f14f77e25a97b32dd94bf008b0af`, an
+isolated `mktemp -d` `CARGO_HOME` holding **only** a `bin/cargo-audit` symlink and deliberately
+**no** `audit.toml`, so `[yanked] enabled` keeps its default `true` — and it **asserts** the
+number rather than printing it for a reader to transcribe:
+
+- the count of `couldn't check if the package is yanked` lines, taken with
+  `/usr/bin/grep -cF` (the POSIX `grep` at its absolute path; a typed `grep` in an agent shell
+  on this machine is `ugrep`), must be exactly **54**, and a control shows the same test
+  **rejects 55**, the figure revision 4 stated, so the assertion can fail;
+- the lockfile must hold 55 `[[package]]` entries and 54 `source = "registry+` keys, which is
+  *why* the two figures differ;
+- the 54 crate names in the error lines, sorted, must `diff` empty against the sorted names of
+  the lockfile's registry-sourced packages, and the one lockfile package absent from the error
+  lines must be `r69_feature_shape`.
+
+Observed: `Loaded 1243 security advisories`, `Scanning Cargo.lock for vulnerabilities (55 crate
+dependencies)`, cargo-audit `exit=0`, `yanked-error-lines (/usr/bin/grep -cF): 54`, every
+assertion `OK`, script `rc=0`. The script was run three times in a row and runs 2 and 3 were
+**byte-identical** to run 1, which is the cited log; absolute scratch paths are normalised to
+`<pinned-advisory-db>` and `<isolated-cargo-home>` exactly as in `feature-shape-check-r4.sh`,
+which is what makes that identity possible. The script sets `set -o pipefail`, asserts on
+content, never writes inside this run directory (its advisory-db clone and its isolated home are
+`mktemp -d` directories under `${TMPDIR:-/tmp}`, removed by an `EXIT` trap — **no nested git
+repository is ever created in this tree**), and passes the repository's `shellcheck` pre-commit
+hook carrying a file-level `# shellcheck disable=SC2015,SC2016,SC2329` directive that justifies
+each of the three informational codes, exactly as `feature-shape-check-r4.sh` does. The
+directive is a comment, so it changes no byte of the output.
+
+**What is deliberately left byte-identical, and where the superseded figure therefore still
+sits.** `review/evidence/feature-shape-check-r4.sh` is **not edited**. Its cited log
+`feature-shape-check-r4.log` is the output that the round-4 audit reproduced five ways, and the
+55 the finding names in that file sits in the **header comment block at lines 72-80**, not in
+any assertion the script executes: no run, no exit status and no output line of that script
+depends on it. Editing the file to fix a comment would invalidate a reproduction record to
+correct prose, so **the r4 script's comment is left carrying the superseded figure**, and this
+note is where a reader learns that. The live record of the count is
+`yanked-control-r5.sh` — where the figure is asserted, not narrated.
+
+**The two locations in the revision-4 note below were corrected in place, which is an exception
+to this file's practice, and the exception is stated rather than hidden.** Revisions 4 and 3
+each left the previous revision's note body **verbatim** as that revision's record, adding a
+warning to its heading. Revision 5 does not do that at the two sentences the finding cites —
+lines 87 and 89 of revision 4, the `prints 55 lines of` sentence and the `the log grew 55 lines`
+sentence: it changes `55` to `54` in both and cites the new log, because the round-4 finding
+requires the count in
+`review/DECISION.md:84-90` to match the run, and a decision that carries a known-false empirical
+figure in its own body — with only a later note to contradict it — is the defect being repaired,
+not a record worth preserving. What revision 4 actually wrote is quoted in full in the finding
+above, so nothing is lost. Every other sentence of the revision-4 note is byte-identical.
+
+**Revision note (revision 4), retained as the record of that revision. Its two sentences
+reporting the empty-`CARGO_HOME` variant's error count are the ones the round-4 audit refuted;
+they are corrected in place to 54 and marked, and the revision-5 note above says why.**
+Revision 4 rewrites revision 3 (sha256
 `a9eec9bd3cc3631d61f395f470e0b15a389746f9e26e26a5b2b32a9fc9a7e98f`) in place. No revision of
 this decision has been published, so there is still no `## Supersedes`. **Nothing about the
 recommendation, the parameters or the other five checks moves.** `axum` 0.8.9 on `tokio`
@@ -84,9 +190,15 @@ ways:
    **The variant the finding's own wording suggested was tested and rejected on evidence.** An
    isolated but *unpopulated* `CARGO_HOME` with `yanked.enabled` left at its default `true` does
    **not** print the warning: `CachedIndex::open` succeeds against a newly created empty index,
-   and cargo-audit then prints 55 lines of
-   `error: couldn't check if the package is yanked: not found: No such crate in crates.io index: <name>`.
-   Asserting the warning's absence would have passed while the log grew 55 lines. Disabling the
+   and cargo-audit then prints **54** lines of
+   `error: couldn't check if the package is yanked: not found: No such crate in crates.io index: <name>`
+   — one for each of the 54 registry-sourced packages in the probe's 55-package lockfile; the
+   root path package `r69_feature_shape` has no crates.io source and is not looked up. *(Revision
+   4 wrote 55 here, the scan's dependency count, without re-running the variant; the round-4
+   audit observed 54 and rejected it. Revision 5 re-ran the variant and asserts the count in
+   `review/evidence/yanked-control-r5.sh`, cited log `yanked-control-r5.log`. See the revision-5
+   note above.)*
+   Asserting the warning's absence would have passed while the log grew 54 lines. Disabling the
    lookup is the form that makes the claim true by construction.
 2. **One named, anchored classified line class, for a second environment dependency found while
    repairing the first.** Sections 1, 2, 5 and 7 run cargo under the **real** `CARGO_HOME` —
@@ -308,7 +420,8 @@ second fresh Claude Opus 5 context that produced none of this item's raws, audit
 1, 2026-09-15; revision 3 by a third fresh Claude Opus 5 context that produced none of this
 item's raws, audits, revisions or their audits, 2026-09-15; revision 4 by a fourth fresh
 Claude Opus 5 context that produced none of this item's raws, audits, revisions or their
-audits, 2026-09-15; run
+audits, 2026-09-15; revision 5 by a fifth fresh Claude Opus 5 context that produced none of
+this item's raws, audits, revisions or their audits, 2026-09-15; run
 `research/runs/R69/2026-09-12T204004Z-d02022bf6f42`. This item was admitted ahead of the
 Wave 0 review gate by owner decision Q3.A (2026-09-12) because it consumes only R01, which
 the owner accepted on 2026-09-10, and because 19 items consume its owned parameter directly.
@@ -1081,6 +1194,16 @@ control assertion that must fail, so that a check which cannot fail is visible a
 check 2 now carries three, the MSRV-floor control, revision 3's advisory-count control, and
 revision 4's control showing the warning-absence test reports a line that *is* present.
 
+**One further script, which is not a seventh check.** Revision 5 adds
+`review/evidence/yanked-control-r5.sh` and its log `yanked-control-r5.log`. It tests **no claim
+this decision makes**: it exists only to make the error-line count reported in the revision-4
+note — the figure the round-4 audit rejected — an **executed assertion** rather than a
+recalled number, and it carries its own control showing that assertion rejects 55. It lives in
+`review/evidence/`, resolves its paths from `${BASH_SOURCE[0]}`, sets `set -o pipefail`,
+asserts on content, and reruns unchanged after this decision is committed, like the six checks;
+it is listed separately from them because its exit status decides nothing about the
+recommendation.
+
 | # | Claim under test | Script | Exit | Log under `review/evidence/` |
 |---|---|---|---|---|
 | 1 | **the R01 coupling**: the erased service satisfies axum's state bound without `ProjectsService` deriving `Clone`, and the `Arc` and R01's `Send + Sync` supertraits are each load-bearing | `state-bound-check.sh` | 0 | `state-bound-check.log` |
@@ -1148,13 +1271,23 @@ exactly what was established, by whom, and under which conditions.
   that reads `review/DECISION.md`, and revision 4 moves nothing it measures — the one `- owns`
   line, the five `- assumes` lines and the H2 section list are byte-identical to revisions 2 and
   3 — so revision 2's log remains the cited one and **no new log is written**. Revision 1's
-  `parameters-check.log` stays unedited as the record of revision 1.
+  `parameters-check.log` stays unedited as the record of revision 1. **Revision 5 re-ran it
+  again**, against revision 5's text, and `diff` again reported no differences against
+  `parameters-check-r2.log`: revision 5 edits prose and adds one control script, and moves
+  neither a parameter line nor an H2 heading, so revision 2's log remains the cited one and no
+  new log is written for it either.
 - **Checks 1, 3, 4 and 5** were **not** re-run by revision 4, and that is not asserted here.
   None of them reads this file and none of their inputs changed. What stands for them is the
   round-3 empirical audit's own rerun, recorded in `review/audit-codex.md`: its finding 4
   reports that the five unchanged checks — state bound, figures, issue responsiveness, bacon
   install and parameters — reran with `exit code: 0` and **byte-identical logs**, check 2 being
-  the sole exception and the subject of this repair.
+  the sole exception and the subject of this repair. **Revision 5 re-ran none of checks 1 to 5
+  either, and does not assert that it did.** It changes no script, no probe input and no log
+  among them. What stands for them, and for check 2 in particular, is the **round-4** empirical
+  audit's own rerun recorded in `review/audit-codex.md`: its findings 2 and 3 report that
+  `feature-shape-check-r4.sh` reproduced `feature-shape-check-r4.log` byte-for-byte in all five
+  modes tried and that the other five scripts and their cited logs were unchanged from `a735e88^`
+  through `HEAD` and matched. Revision 5's own run is the separate control script named above.
 - **Checks 3 and 4** read the committed reduced snapshots rather than live endpoints, because
   download counters, `pushed_at` and star counts move hourly and a live re-run could never be
   byte-identical; `fetch-figures.sh` refreshes them and records its retrieval timestamp in
@@ -1166,8 +1299,11 @@ exactly what was established, by whom, and under which conditions.
   the version numbers, MSRVs, licences, `archived` flags and source facts — are the stable
   part, and are what the decision rests on.
 
-An auditor therefore runs the six scripts and nothing else, five from `review/empirical/` and
-check 2 from `review/evidence/`. **The five locations revision 3 edited in this section and
+An auditor therefore runs the six scripts, five from `review/empirical/` and check 2 from
+`review/evidence/`, plus — since revision 5 — the one control script named above,
+`review/evidence/yanked-control-r5.sh`, which decides nothing about the recommendation and is
+run only to reproduce the count in the revision-4 note. Nothing else. **The five locations
+revision 3 edited in this section and
 above it, enumerated rather than left to a reader's diff:** (1) acceptance criterion 1's
 citation, now `feature-shape-check-r3.log`; (2) the gate-3 paragraph, which now names the
 pinned advisory-db commit and, in the same sentence, corrects "resolved 52-package lockfile"
@@ -1199,6 +1335,32 @@ advisories, 55 crate dependencies, exit 0 — none of which revision 4 moves); e
 "newest non-yanked version" figure in the candidate tables (those come from the committed
 crates.io snapshots read by check 3, never from this scan); the `## Parameters` block in full;
 and the retained revision-2 and revision-3 note bodies.
+
+**The locations revision 5 edited, enumerated from a mechanical search rather than from a
+re-reading.** The search was three passes of `/usr/bin/grep -n -E` over this file before any
+edit was made: `'55 lines|grew 55|prints 55'`, `'unpopulated|yanked\.enabled|default .true'`,
+and `'six scripts|six checks|synthesizer|revision 4'`; every hit was classified first, and the
+same searches were re-run against the edited file. The complete edit list: (1) the title, now
+revision 5; (2) the new revision-5 note, which quotes the round-4 finding verbatim, explains
+that 55 was the dependency count, and names the new script and log; (3) the revision-4 note's
+heading, which now says the note is retained as that revision's record and that its two
+error-count sentences are corrected in place; (4) **the count itself, at the two sentences the
+finding cites** — `prints 55 lines of` → `prints 54 lines of`, with the 55-versus-54 arithmetic
+and the citation to `yanked-control-r5.sh` added, and `the log grew 55 lines` → `the log grew 54
+lines`; (5) the preamble's synthesizer line, which adds revision 5's context; (6) a new
+paragraph after the control-assertion sentence above, introducing `yanked-control-r5.sh` as a
+control and **not** as a seventh check; (7) the auditor sentence, which now names that script
+alongside the six checks; (8) this enumeration. **Deliberately left byte-identical, and why:**
+`review/evidence/feature-shape-check-r4.sh` and `feature-shape-check-r4.log` (the r4 script's
+header comment at lines 72-80 therefore still carries the superseded 55, which the revision-5
+note states explicitly; editing a comment would invalidate a log the round-4 audit reproduced
+five ways, and no assertion, exit status or output line of that script depends on the figure);
+the check-2 row of the table above, its reproducibility bullet and its narrative below, all of
+which describe the isolated-`CARGO_HOME` scan that revision 5 does not touch; the six checks
+and their five other scripts and logs; the gate-3 paragraph and every `55 crate dependencies`
+figure, which is the *correct* use of that number; the `## Parameters` block in full; the
+recommendation, the R67 exit contract and request, the R4.1 global core, gate 1's
+`inapplicable` row; and the retained revision-2 and revision-3 note bodies.
 
 **Check 1 — the R01 coupling.** Three dependency-free packages under
 `review/empirical/state-bound/`. Each declares R01's published seam shape transcribed from
