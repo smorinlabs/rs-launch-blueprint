@@ -1,0 +1,15 @@
+=== citation probes: 2026-09-15, retry with a declared User-Agent ===
+--- CLI Design Standard pinned raw source ---
+9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f  -
+--- CLI Design Standard latest path commit ---
+fb30a591c267a7ec1130ba4cda679eaee494b9d7	docs: resolve PR #1 review findings (v1.4.14)
+--- clap 4.6.6 metadata ---
+4.6.6	1.85	MIT OR Apache-2.0	473c7e07f409a8d772161724aa8db6a765a2532a70f9667eeb7b49d3d02fbdca
+--- clap 4.6.6 published tarball ---
+473c7e07f409a8d772161724aa8db6a765a2532a70f9667eeb7b49d3d02fbdca  -
+--- clap_complete 4.6.9 metadata ---
+4.6.9	1.85	MIT OR Apache-2.0
+--- Cargo build-script environment documentation ---
+HOST PROFILE RUSTC TARGET 
+--- rustsec no-advisory page for clap ---
+HTTP 404

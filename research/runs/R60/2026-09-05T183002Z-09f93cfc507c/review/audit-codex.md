@@ -1,24 +1,22 @@
-decision-sha256: 89d888fb3a649ed7a99c895e4bc279a1afcc61438c3c41b6db8a966b6459db38
-actor: audit-codex-2026-09-05T183002Z-09f93cfc507c-r6
+decision-sha256: 67d7a7d2a76c7d10c88edf9cd309c46484ada95a00074d902943a94410b8b9f2
+actor: audit-codex-2026-09-05T183002Z-09f93cfc507c-r7
 model: gpt-5.6-terra
 family: openai
-verdict: reject
-unresolved-findings: F3 — the decision and r6 script say only C1t2, C1u2, C1u3, and C1v fail after this report lands, but C1u also fails because the current report's verdict changes from reject to approve
+verdict: approve
+unresolved-findings: none
 
 ## Rerun
 
-argv: `bash review/evidence/r60-preservation-diff-r6.sh`; `bash review/evidence/r60-standard-pin-r5.sh`; `bash review/evidence/r60-snapshot-provenance-r4.sh`
+argv: `bash review/evidence/r60-preservation-diff-r7.sh`; `bash review/evidence/r60-standard-pin-r5.sh`; `bash review/evidence/r60-snapshot-provenance-r4.sh`
 
 cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R60/2026-09-05T183002Z-09f93cfc507c`; toolchain: Bash with `/usr/bin/grep` 2.6.0-FreeBSD, macOS 26.4 aarch64.
 
-Exit code: 0. Complete in-place output: `review/evidence/audit-cli-parsing-framework-r6.log`. The preservation rerun was `159/0`, the standard-pin rerun `128/0`, and provenance `17/0/0/2`; each in-place output diffed empty against its recorded log. A clean `git archive HEAD` extracted from the repository root gave preservation `159/0` and standard-pin `128/0`, each with an empty diff. Provenance gave its documented archive variance, `14/0/0/5`, from the three self-origin snapshots lacking Git history in addition to the two private TypeScript origins.
+Exit code: 0. Complete output: `review/evidence/audit-cli-parsing-framework-r7.log`. In place, preservation was `183/0`, standard-pin was `128/0`, and provenance was `17/0/0/2`; each output diffed empty against its committed log. From a clean root `git archive 484105c`, preservation was `183/0` and standard-pin was `128/0`, each again with an empty diff; provenance gave its documented `14/0/0/5`. The superseded r6 preservation script exits `5` against this text, with exactly `C1t2`, `C1u2`, `C1u3`, `C1v`, and `C4h` failing. Citation probes are in `review/evidence/audit-cli-parsing-framework-r7-citation-probes-rerun.log`: pinned standard bytes and latest-path commit, clap and clap_complete metadata, clap tarball checksum, Cargo build-script variables, and clap's RustSec 404 all matched the decision's cited evidence.
 
 ## Findings
 
-F3 — the post-landing assertion is incomplete. `review/DECISION.md:157-159` and `r60-preservation-diff-r6.sh:339-344` say that only `C1t2`, `C1u2`, `C1u3`, and `C1v` fail when this report replaces the canonical round-5 report. The post-landing rerun instead exits `5`, with exactly five real failures: those four plus `C1u`. `C1u` requires `verdict: reject`; this report correctly carries `verdict: approve`, so it must fail too. Evidence: `review/evidence/audit-cli-parsing-framework-r6-post-landing.log`.
-
-C1r0 found the deliberate comment-only wildcard and C1r found zero executable wildcard uses. C1i through C1q assert archived report content; all passed before this report replaced the canonical round-5 report. The revision-5 control failed only C4h, in place and from the root archive, at `133/1` as recorded. The four parameter lines match `docs/port/PARAMETERS.md`; AC2, AC3, AC7, retired OV-01, R66 `related`, R4.6 `:275-277`, U8's resolved owner record, and gate 1 `inapplicable` were all content-asserted. Five cited endpoints were also probed with curl; each expected availability/404 claim held.
+None. `C1e`/`C1f`, `C1i`–`C1l`, `C1m`–`C1q`, and `C1t`–`C1v` read only explicit archived report paths. `C1w`/`C1w2` bind the rejected revision-6 baseline by hash without reading its report. `C1x0` fired on its comment control and `C1x` counted zero executable live-path occurrences; the script also contains zero executable audit-report wildcard occurrences. Thus neither overwriting `review/audit-codex.md` nor creating `review/audit-codex.r6.md` changes the r7 script's inputs or result. The `C4n` assertions, unchanged parameter lines, AC2/AC3/AC7, retired OV-01, R66 `related` status, R4.6 `:275-277`, U8's durable owner record, and gate 1's Q7.B `inapplicable` treatment all passed content assertions.
 
 ## Assessment
 
-The decision makes no unproved implementation claim, but its rollover account is false by one check. It must include `C1u` in the expected post-landing failures, or change that assertion, before acceptance.
+The recorded commands support the revision-7 repair. It makes the preservation proof invariant to both the live-report overwrite and round-6 archive event, while visibly leaving the revision-6 report unasserted rather than claiming evidence it could not have had.
