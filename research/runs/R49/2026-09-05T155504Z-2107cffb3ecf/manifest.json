@@ -169,6 +169,15 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-16T22:38:54Z",
+      "publication": {
+        "acceptance_sha256": "3295e8a00001ad2b215be272e630a0d65a3668abfa68115c09282d2301f23157",
+        "decision_sha256": "86b7f925ef89ac682ea00bb0b6fea8a809c1abc712d9e0e0ced8e5082990d948",
+        "transaction": "b6c0fbcdb2254697b33d18519dd1be95"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -234,6 +243,11 @@
     }
   },
   "prompt_source": "research/topics/49-build-target-declaration/prompts/build-target-declaration.prompt.md",
+  "publication": {
+    "acceptance_sha256": "3295e8a00001ad2b215be272e630a0d65a3668abfa68115c09282d2301f23157",
+    "decision_sha256": "86b7f925ef89ac682ea00bb0b6fea8a809c1abc712d9e0e0ced8e5082990d948",
+    "transaction": "b6c0fbcdb2254697b33d18519dd1be95"
+  },
   "remaining_budget": "USD 300.00 remaining of USD 300.00 bulk Deep ceiling (Doxa admissions paused; no automatic retry)",
   "required_engines": [
     "codex",
@@ -242,7 +256,7 @@
   ],
   "run_id": "2026-09-05T155504Z-2107cffb3ecf",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "deep",
-  "updated_at": "2026-09-10T15:19:58Z"
+  "updated_at": "2026-09-16T22:38:54Z"
 }

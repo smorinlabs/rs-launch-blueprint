@@ -1,0 +1,7 @@
+# R49 audit r3 — five cited-source spot checks
+retrieved: 2026-09-13T07:56:52Z
+ASSERT ok   manifest bytes=25478 sha256=28e0aaa4907a85fd7c8bc45e68a6fb4bac997913edaff83500cd63ca608a215b
+ASSERT ok   targets bytes=15513 sha256=4115df65c915ae7143c219b13a928d6707fc317596d9013f7c3f9215668d48dd
+ASSERT ok   package bytes=21051 sha256=257f6fd4b6b885e42edb01149c6981da5117fde0226f10a0250c0ea74119399f
+ASSERT ok   install bytes=24916 sha256=cdc70523e650b068b7fc3400cbcc7f9c84b01443ad46035d3c5138c7a2f60024
+ASSERT ok   dist bytes=4594 sha256=55a5a35648191aa4bf569d519063a44f07e7aa52914f5c7c5cc4d71052cc74cd

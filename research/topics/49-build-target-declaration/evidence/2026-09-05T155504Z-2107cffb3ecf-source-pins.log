@@ -1,0 +1,90 @@
+# R49 — the py and ts precedent read through the programme pins (never from the working tree)
+retrieved: 2026-09-10T15:28:59Z
+py pin b08bccfb55d05f15e46a83b52c5660b1881d19f5 · ts pin cb1cbcb2e88b898e8c081b0abbfabc1630079c00
+
+=== py pyproject.toml lines 118-142 (F213/F216/F218 evidence) ===
+118	[project.scripts]
+119	# Noun-verb CLI (gh-style): plbp <noun> <verb>
+120	plbp = "py_launch_blueprint.cli.main:cli"
+121	     4	
+122	# ITM-072 — package metadata URLs (round 19).
+123	[project.urls]
+124	Homepage = "https://github.com/smorinlabs/py-launch-blueprint"
+125	Repository = "https://github.com/smorinlabs/py-launch-blueprint"
+126	Documentation = "https://py-launch-blueprint.readthedocs.io/en/latest/"
+127	Changelog = "https://github.com/smorinlabs/py-launch-blueprint/blob/main/CHANGELOG.md"
+128	Issues = "https://github.com/smorinlabs/py-launch-blueprint/issues"
+129	    12	
+130	# ITM-073 — uv_build (ADR-06 cutover; replaces Hatchling + hatch-vcs).
+131	[build-system]
+132	requires = ["uv_build>=0.5,<1.0"]
+133	build-backend = "uv_build"
+134	    17	
+135	# ITM-074 — uv_build module configuration.
+136	# Template uses a flat layout (package at repo root, not src/) — must set
+137	# module-root = "" so uv_build doesn't expect src/py_launch_blueprint/.
+138	[tool.uv.build-backend]
+139	module-name = "py_launch_blueprint"
+140	# src/ layout (Decision 1) — package now lives at src/py_launch_blueprint/.
+141	module-root = "src"
+142	    25	
+
+=== py README.md line 45 (F219 evidence) ===
+```
+
+Install as a tool: `uvx --from py-launch-blueprint plbp` (uvx needs `--from` because the distribution name differs from the console-script name) or `pip install py-launch-blueprint && plbp`.
+
+The [`plbp` noun-verb CLI](EXAMPLECLI.md) documents the template's CLI conventions: global flags, the text/JSON/Markdown output contract, stable exit & error codes, and layered TOML config.
+
+=== ts package.json lines 1-30 (F216/F218/F219 evidence) ===
+{
+  "name": "ts-launch-blueprint",
+  "version": "0.1.3",
+  "description": "CLI tools for project search and selection - TypeScript port of py-launch-blueprint",
+  "keywords": [
+    "blueprint",
+    "cli",
+    "template",
+    "typescript"
+  ],
+  "license": "MIT",
+  "author": "Steve Morin <steve.morin@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/smorinlabs/ts-launch-blueprint.git"
+  },
+  "bin": {
+    "ts-projects": "dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./dist/lib.d.ts",
+      "default": "./dist/lib.js"
+    },
+    "./package.json": "./package.json"
+  },
+
+=== ts tsdown.config.ts (F212/F213 evidence) ===
+// Build config (D-012(1)): tsdown (exact-pinned 0.22.x) bundles the CLI and the
+// library entry; dts via the fast oxc path (isolatedDeclarations, D-025).
+// The shebang in src/cli.ts is preserved by tsdown and the output made
+// executable. tsc --noEmit remains the separate typecheck gate.
+import { defineConfig } from 'tsdown';
+
+// Explicit annotation required by isolatedDeclarations (D-025).
+const config: ReturnType<typeof defineConfig> = defineConfig({
+  entry: ['src/cli.ts', 'src/lib.ts'],
+  format: 'esm',
+  // Emit .js/.d.ts (not .mjs/.d.mts): the package is "type": "module", and the
+  // hand-authored exports map / bin point at dist/lib.js + dist/cli.js (D-012(3)).
+  fixedExtension: false,
+  dts: true,
+  sourcemap: true,
+  clean: true,
+});
+
+export default config;

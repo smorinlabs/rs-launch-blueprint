@@ -1,0 +1,125 @@
+retrieved: 2026-09-14T23:10:28Z
+repo: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+grep(PATH): /usr/bin/grep
+grep(used): /usr/bin/grep
+
+ASSERT ok   revision-2 blob sha256
+ASSERT ok   revision-4 blob sha256
+
+## 1. the recorded grep, re-run untruncated on the revision-2 blob
+argv: /usr/bin/grep -niE 'copyleft|agpl|[^a-z]gpl|mpl|mozilla|patent|permissive' <revision-2 blob>
+raw output, one line per match, line numbers only:
+8 29 30 32 36 37 61 90 94 110 132 150 162 167 182 191 197 204 231 243 264 273 278 290 297 301 338 354 363 413 456 516 607 610 616 652 665 680 716 730
+raw match count: 40
+ASSERT ok   untruncated licence-identifier grep returns 40 lines
+ASSERT ok   recorded revision-3 list is NOT that raw output
+ASSERT ok   PATH grep agrees on the count
+
+## 2. the filter that was applied but not stated
+For each line in raw-output minus recorded-list, the tokens it matched:
+ASSERT ok   35 lines were dropped from the reported list
+  line 8    matched: mpl
+  line 29   matched: mpl
+  line 30   matched: mpl
+  line 32   matched: mpl
+  line 36   matched: mpl
+  line 37   matched: mpl
+  line 61   matched: mpl
+  line 90   matched: mpl
+  line 94   matched: mpl
+  line 110  matched: mpl
+  line 132  matched: mpl
+  line 150  matched: mpl
+  line 162  matched: mpl
+  line 167  matched: mpl
+  line 191  matched: mpl
+  line 197  matched: mpl
+  line 204  matched: mpl
+  line 231  matched: mpl
+  line 243  matched: mpl
+  line 264  matched: mpl
+  line 273  matched: mpl
+  line 278  matched: mpl
+  line 290  matched: mpl
+  line 297  matched: mpl
+  line 301  matched: mpl
+  line 338  matched: mpl
+  line 354  matched: mpl
+  line 413  matched: mpl
+  line 456  matched: mpl
+  line 516  matched: mpl
+  line 652  matched: mpl
+  line 665  matched: mpl
+  line 680  matched: mpl
+  line 716  matched: mpl
+  line 730  matched: mpl
+ASSERT ok   every dropped line matched through 'mpl' and nothing else
+The ordinary words those `mpl` occurrences sit inside:
+    15 template
+     7 implementation
+     3 example
+     2 implements
+     1 templates
+     1 sampling
+     1 implies
+     1 implied
+     1 implicitly
+     1 implication
+     1 implementations
+     1 autoexamples
+dropped lines that do carry licence text (all covered by the `licen` grep): 338
+ASSERT ok   only the owned-parameter line among the dropped lines carries licence text
+
+## 3. corrected pattern: raw output equals the reported list, no filter
+argv: /usr/bin/grep -nwE 'copyleft|AGPL|LGPL|GPL|MPL|Mozilla|PERMISSIVE|permissive|patent' <revision-2 blob>
+raw output:
+182 363 607 610 616
+ASSERT FAIL corrected pattern on revision 2 returns exactly the 5 lines revision 3 acted on
+  expected: 182 363 607 610 617
+  actual:   182 363 607 610 616
+The five lines in full:
+  182:non-yanked 1.23.0, `GPL-3.0-only` (check 6) — and it is out of scope regardless,
+  363:the Rust API Guidelines' C-PERMISSIVE convention already recorded on F206, the
+  607:| `cargo-binstall` | 125,820 | 3,483,662 | 1.23.0 | 2026-09-05 | **GPL-3.0-only** | 1.79.0 | HTTP 404 |
+  610:| `cbindgen` | 13,646,147 | 101,705,742 | 0.29.4 | 2026-06-09 | MPL-2.0 | 1.74 | HTTP 404 |
+  616:`GPL-3.0-only`.
+
+argv: /usr/bin/grep -nwE 'copyleft|AGPL|LGPL|GPL|MPL|Mozilla|PERMISSIVE|permissive|patent' <revision-4 blob>
+raw output:
+12 29 70 92 298 489 733 736 745 794
+ASSERT ok   corrected pattern on revision 4 returns 10 lines
+The ten lines in full:
+  12:`GPL-3.0-only` … which is not compatible with `MIT OR Apache-2.0` for anything
+  29:that way. The enumeration greps over `DECISION.md` (`licen`, `gate 1`, copyleft
+  70:for `licen`, `gate 1`, copyleft and licence identifiers, and `binstall` produced
+  92:only other changes: the title's revision number, and the removal of bold emphasis from the `GPL-3.0-only` cell in
+  298:registry value `GPL-3.0-only` immediately beside the clause *"out of scope
+  489:the Rust API Guidelines' C-PERMISSIVE convention already recorded on F206, the
+  733:| `cargo-binstall` | 125,820 | 3,483,662 | 1.23.0 | 2026-09-05 | GPL-3.0-only | 1.79.0 | HTTP 404 |
+  736:| `cbindgen` | 13,646,147 | 101,705,742 | 0.29.4 | 2026-06-09 | MPL-2.0 | 1.74 | HTTP 404 |
+  745:dependency or tool. `cargo-binstall`'s `GPL-3.0-only` value therefore excludes
+  794:- **opus** `raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md` (retrieved 2026-09-10) — the same Cargo-native conclusion reached from an eight-project manifest survey, p
+
+## 4. widened to the permissive SPDX identifiers
+argv: /usr/bin/grep -nwE 'copyleft|AGPL|LGPL|GPL|MPL|Mozilla|PERMISSIVE|permissive|patent|Apache-2\.0|MIT|BSD|ISC|Unlicense|CC0' <revision-2 blob>
+raw output:
+53 182 338 342 363 364 582 605 606 607 608 609 610 611 616
+ASSERT ok   widened pattern on revision 2 returns 15 lines
+argv: /usr/bin/grep -nwE 'copyleft|AGPL|LGPL|GPL|MPL|Mozilla|PERMISSIVE|permissive|patent|Apache-2\.0|MIT|BSD|ISC|Unlicense|CC0' <revision-4 blob>
+raw output:
+12 29 70 92 102 156 298 464 468 489 490 708 731 732 733 734 735 736 737 745 794
+ASSERT ok   widened pattern on revision 4 returns 21 lines
+ASSERT ok   negative control: only the four real identifiers match
+The 6 licence locations no revision-3 enumeration list carried (revision-2 numbering):
+  582: 2026-05-22, `MIT OR Apache-2.0`, `rust_version` 1.74 — `book/src/workspaces/
+  605: | `cargo-dist` | 19,922 | 175,385 | 0.32.0 | 2026-05-22 | MIT OR Apache-2.0 | 1.74 | HTTP 404 |
+  606: | `cargo-make` | 248,798 | 3,672,469 | 0.37.24 | 2025-01-18 | Apache-2.0 | **absent** | HTTP 404 |
+  608: | `cross` | 307,766 | 6,269,217 | 0.2.5 | 2023-02-04 | MIT OR Apache-2.0 | absent | HTTP 404 |
+  609: | `cargo-zigbuild` | 1,547,057 | 7,034,852 | 0.23.4 | 2026-09-02 | MIT | 1.88 | HTTP 404 |
+  611: | `cargo-packager` | 47,349 | 178,600 | 0.11.8 | 2025-11-27 | Apache-2.0 OR MIT | absent | HTTP 404 |
+
+RESULT: one or more assertions FAILED
+negative-control-exit: 1
+77:ASSERT FAIL corrected pattern on revision 2 returns exactly the 5 lines revision 3 acted on
+78:  expected: 182 363 607 610 617
+121:RESULT: one or more assertions FAILED

@@ -1,0 +1,193 @@
+# R49 — where dist (formerly cargo-dist) keeps its configuration, read at the stated versions
+retrieved: 2026-09-10T15:27:46Z
+
+=== newest non-yanked crates.io release of cargo-dist ===
+{'num': '0.32.0', 'created_at': '2026-05-22T05:58:59.298224Z', 'license': 'MIT OR Apache-2.0', 'rust_version': '1.74', 'yanked': False}
+
+=== git tags present for 0.23.0 and 0.32.0 ===
+refs/tags/v0.26.0
+refs/tags/v0.26.1
+refs/tags/v0.27.0
+refs/tags/v0.27.1
+refs/tags/v0.28.0
+refs/tags/v0.28.1
+refs/tags/v0.28.2
+refs/tags/v0.28.3
+refs/tags/v0.28.4
+refs/tags/v0.28.5
+refs/tags/v0.28.6
+refs/tags/v0.28.7
+refs/tags/v0.29.0
+refs/tags/v0.30.0
+refs/tags/v0.30.1
+refs/tags/v0.30.2
+refs/tags/v0.30.3
+refs/tags/v0.30.4
+refs/tags/v0.31.0
+refs/tags/v0.32.0
+
+=== book/src/reference/config.md — 'Config file' section at tag v0.32.0 ===
+bytes:    81577
+
+=== config.md at v0.32.0: every mention of the workspace config file and the deprecation ===
+5-Configuration is currently read from the following sources, in increasing preference:
+6-
+7-1. Your language-specific project manifests like [Cargo.toml][rust-guide] or [package.json][js-guide]
+8:2. Your workspace dist config in [dist-workspace.toml][js-guide] or [dist.toml][project-guide]
+9-3. Your package dist config in [dist.toml][project-guide]
+10-
+11:We're currently in the middle of [a major config migration](https://github.com/axodotdev/cargo-dist/pull/1247). For [existing Rust users][rust-guide], all references to the `[dist]` section in dist-workspace.toml and dist.toml may also refer to `[workspace.metadata.dist]` or `[package.metadata.dist]` in your Cargo.toml.
+12-
+13-
+14-
+15-
+16-
+17-[`[dist]`](#the-dist-section)
+18-* [`allow-dirty`](#allow-dirty)
+19-* [`cargo-dist-version`](#cargo-dist-version)
+--
+142-> <span style="float:right">since 0.3.0<br>[global-only][]</span>
+143-> default = `[]`
+144->
+145:> *in your dist-workspace.toml or dist.toml:*
+146-> ```toml
+147-> [dist]
+148-> allow-dirty = ["ci", "msi"]
+149-> ```
+150-
+151-This is a list of [`generate`][generate] tasks for dist to ignore when checking if generated configuration is up to date.
+152-
+153-**We recommend avoiding setting this, as it prevents dist from updating these files for you whenever you update or change your configuration. If you think you need this, please [do file an issue](https://github.com/axodotdev/cargo-dist/issues/new) or ask us about it, so we know what settings we're missing that necessitates this (or ideally, can point you to the existing settings).**
+--
+164-> <span style="float:right">since 0.3.0<br>[global-only][]</span>
+165-> default = `<none>` (this is mandatory!)
+166->
+167:> *in your dist-workspace.toml or dist.toml:*
+168-> ```toml
+169-> [dist]
+170-> cargo-dist-version = "0.10.0"
+171-> ```
+172-
+173-This is added automatically by [`dist init`][init], and is a recording of its own version for the sake of reproducibility and documentation.
+174-
+175-Your [release CI][github-ci] will fetch and use the given version of dist to build and publish your project.
+--
+183-> [📖 read the guide for this feature!][distribute] \
+184-> default = `<none>` (infer it)
+185->
+186:> *in your dist-workspace.toml or dist.toml:*
+187-> ```toml
+188-> [dist]
+189-> dist = true
+190-> ```
+191-
+192-Specifies whether dist [should distribute (build and publish) a package][distribute], overriding all other rules for deciding if a package is eligible.
+193-
+194-There are 3 major cases where you might use this:
+--
+204-> [📖 read the guide for this feature!][distribute] \
+205-> default = `<none>` (infer it)
+206->
+207:> *in your dist-workspace.toml or dist.toml:*
+208-> ```toml
+209-> [dist]
+210-> packages = ["a", "b"]
+211-> ```
+212-
+213-`packages` provides a more explicit way of specifying which packages to dist (or not). If `packages` is set, it provides a list of exactly which packages should be distributed within the workspace. It overrides individual package-level `dist = true` or `dist = false` configuration.
+214-
+215-
+--
+219-> [📖 read the guide for this feature!][build-guide] \
+220-> default = `<none>`
+
+=== book/src/workspaces/structure.md at tag v0.32.0 (the page Opus quoted) ===
+# Workspace Structure
+
+All dist projects, regardless of how many packages they may contain, are
+considered workspaces. A minimalist dist project would be a workspace that
+contains a single package.
+
+This guide walks through the structure of a dist workspace, but if you're more interested in seeing one in action, you can skip ahead to the [simple workspace guide][simple-guide].
+
+Dist has two types of configuration:
+
+- **Workspace**: Configuration that should apply to any projects in a single repo
+- **Package**: Configuration that should apply to one specific project
+
+The vast majority of configuration for dist is workspace configuration. Because
+we understand language-specific config manifests like `Cargo.toml` and
+`package.json`, package configuration usually does not require any additional
+files. Dedicated package configuration, in `dist.toml` files, is typically only needed when using dist's ["custom builds"][custom-builds] mode.
+
+## Workspace configuration
+
+A workspace file may be:
+
+* `dist-workspace.toml`
+* (deprecated in 0.23.0) `Cargo.toml` (Rust users only, goes in `[workspace.metadata.dist]`)
+
+### Specifying The Members Of Your Workspace
+
+Create a `workspace.members` field in your `dist-workspace.toml` that points to
+an array of strings. Each string is prefaced with a type:
+
+- `npm`: this indicates a package that is specified by a `package.json`
+- `cargo`: this indicates a package (or nested workspace) that is specified by a `Cargo.toml`. You do not need to specify cargo workspace members individually, you can simply refer to the workspace.
+- `dist`: this indicates a package that is specified by a `dist.toml`
+
+For example:
+
+```toml
+[workspace]
+members = [
+  "npm:path/to/npm/packagejson/dir/",
+  "cargo:path/to/workspace/cargotoml/dir/",
+  "dist:path/to/distoml/dir/"
+]
+```
+
+## Package configuration
+
+A package file may be:
+
+* `dist.toml`
+* `dist-workspace.toml`
+* `Cargo.toml` (for a Rust package)
+* `package.json` (for an npm package)
+
+In the case of a `Cargo.toml` and `package.json`, we'll do our best to find basic package
+info like package name, version, repository, binaries among the native language-specific config.
+
+However these files do not natively support dist-specific config, so you may
+need to place a dist config *next* to them to specify additional dist-specific
+config. If we see the language-specific package file, we will automatically
+
+=== CHANGELOG.md at v0.32.0: the 0.23.0 entry ===
+7-Over the past few months, we've been working towards a new config format. Up to now, aside from a few references in the documentation, these changes have been internal and haven't been visible to users. This release marks the first user-facing side of the new config format.
+8-
+9:This new config format uses the `dist-workspace.toml` and `dist.toml` files that were originally created for non-Rust projects. It allows us to unify project configuration formats between languages, and allows you to configure cargo-dist without adding content to your root `Cargo.toml`. In this release, newly `cargo init`ted Rust projects will use the new format. Existing projects will be given the option to opt into the new format, but by default will keep their existing format for now.
+10-
+11-For more information, see the [workspace docs][workspace-docs].
+12-
+13-- impl
+14-  - @Gankra [doc: address most config TODOs](https://github.com/axodotdev/cargo-dist/pull/1422)
+15-  - @mistydemeo [feat: adjust new config opt-in](https://github.com/axodotdev/cargo-dist/pull/1426)
+--
+34-### Improved path modification options
+35-
+36:While we've always provided options to turn off modifying the user's `PATH` in the installer, this behaviour was inconsistent between the shell and PowerShell installers. In this release, we've unified the behaviour. The current recommended path is to use environment variables; the variable controlling this is `APPNAME_NO_MODIFY_PATH`, where `APPNAME` is the name of your application. For example, `AXOLOTLSAY_NO_MODIFY_PATH` for an app named `axolotlsay`. The commandline flag, which was named inconsistently between platforms, has been deprecated.
+37-
+38-We've also made a change to ensure that the user's preference for the "don't modify `PATH`" option is persisted across upgrades. This fixes an issue present in previous versions where it would only be respected on initial installation, not in calls to axoupdater.
+39-
+40-For more information, see the [installer usage docs][installer-usage].
+41-
+42-- impl
+43-  - @mistydemeo [feat: unmanaged installs](https://github.com/axodotdev/cargo-dist/pull/1410)
+44:  - @mistydemeo [feat: deprecate --no-modify-path](https://github.com/axodotdev/cargo-dist/pull/1415)
+45-  - @mistydemeo [feat: track NO_MODIFY_PATH for updates](https://github.com/axodotdev/cargo-dist/pull/1421)
+46-
+47-## npm packages can now use any archive format
+48-
+49-In previous versions, enabling the npm installer would require your package to be distributed using `.tar.gz` archives on all platforms, including Windows. This release removes that restriction by rewriting a section of the npm installer code.
+50-

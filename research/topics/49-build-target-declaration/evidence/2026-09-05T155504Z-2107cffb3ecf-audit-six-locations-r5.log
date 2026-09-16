@@ -1,0 +1,220 @@
+--- revision-3 commit message ---
+docs(research): revise R49 to revision 3 for the owner licence ruling
+
+Owner ruling 2026-09-12 (Q4 as superseded by Q7.B) strikes fitness gate 1
+(licence compatibility) from every item's evaluation. R49's recommendation
+does not move: the pick (declare every build target in Cargo.toml itself, add
+no build backend, bundler or build-orchestration crate) is dominant because
+Cargo's manifest is the only candidate in the three-bin map that declares a
+build target at all, which no licence question touches.
+
+Reasoning repair only. Mechanical enumeration against revision 2
+(sha256 1b5a6b99ecedb88f7358d16a4567aa9b56838a2102e9e4feda99d00bc787513f):
+
+  grep -ni 'licen'          -> 53 157 158 248 311 338 342 362 364 433
+                               597 600 603 615
+  grep -ni 'gate 1'         -> 181
+  grep -niE 'copyleft|agpl|[^a-z]gpl|mpl|mozilla|patent|permissive'
+                            -> 182 363 607 610 616
+  grep -n  'binstall'       -> 137 181 183 272 607 615
+
+Three locations carried a licence-as-gate claim; all three are edited:
+  - L157-158 fitness gate 1 for the recommendation -> recorded as
+    "inapplicable - owner ruling 2026-09-12 (Q7.B): licence compatibility is
+    not evaluated for any dependency or tool". Row kept, not deleted: the
+    binding prompt still lists the gate.
+  - L181-183 the cargo-binstall exclusion -> the "fails gate 1 as a
+    dependency / GPL-3.0-only" ground is removed. The exclusion survives on
+    its scope ground alone, verified to sit in the decision's own voice in
+    "### Principles and implementation" (not in a quoted provider report) and
+    to quote this item's own prompt "## Out of scope", which names
+    cargo-binstall metadata as R68's (F214).
+  - L613-616 the check-6 readout -> "two gate exclusions" becomes one
+    (cargo-make's absent rust_version); the license column is retained as
+    measured registry metadata evaluated against no gate.
+
+Presentational: title revision number; bold removed from the GPL-3.0-only
+cell in check 6's table, where it marked a gate failure that no longer
+exists. The measured value is unchanged (transcription of
+review/evidence/registry-figures.log).
+
+Byte-identical on purpose: L53 L248 L311 L338 L362-364 L433 (the repository's
+own license field and LICENSE-MIT/LICENSE-APACHE pair, explicitly exempted by
+the ruling), L342 (- assumes license = MIT OR Apache-2.0), L137 L272
+(cargo-binstall mentions with no licence content), L597 L600 L603 L610
+(check-6 field names and cbindgen's MPL-2.0 row, already excluded by scope).
+
+All five "- owns"/"- assumes" lines are byte-identical to revision 2 (diff
+empty). No evidence script, log or empirical check was altered or re-run; this
+revision makes no new empirical claim. No engine position is disturbed: no raw
+report excluded cargo-binstall on a licence ground, so "## Engines" is
+unchanged. R49 is unpublished, so no "## Supersedes" section is added.
+
+New decision sha256: 7ca810b506e9951b795581bb58cdb6f12bce208817577edbf56554de3d1605fd
+
+Claude-Session: https://claude.ai/code/session_01ULEUr6b17aZ6iTpWjPGtWM
+
+--- revision-2 disclosed locations 570-620 ---
+   570	author: **6 of 10 answered, 4 unanswered, median 0.190 days (4.6 hours)**. Every
+   571	one of those maintainer comments carries `author_association: CONTRIBUTOR`, and a
+   572	filter on `MEMBER`/`OWNER`/`COLLABORATOR` returns **0 comments on all six
+   573	answered issues** — the artifact reproduced directly. With `archived: false`,
+   574	`pushed_at` 2026-09-08, 297 open issues, a last non-yanked release 2026-05-22
+   575	(3.6 months, below the rubric's six-month investigate trigger) and no RustSec
+   576	record, **the rubric verdict is `active`, not `at-risk`**, confirming the
+   577	withdrawal in the raw report. Exit status 0.
+   578	Log `review/evidence/cargo-dist-responsiveness.log`.
+   579	
+   580	**Check 10 — `raw/opus…`'s second self-correction, read at the stated versions,
+   581	and refined.** At the **v0.32.0** tag — the newest non-yanked crates.io release,
+   582	2026-05-22, `MIT OR Apache-2.0`, `rust_version` 1.74 — `book/src/workspaces/
+   583	structure.md` lists the workspace configuration file as `dist-workspace.toml` or
+   584	*"(deprecated in 0.23.0) `Cargo.toml` (Rust users only, goes in
+   585	`[workspace.metadata.dist]`)"*. The deprecation is therefore real and still
+   586	current at the newest release. **It is not a removal, and this decision does not
+   587	say it is:** `book/src/reference/config.md` at the same tag still reads
+   588	configuration from *"Your language-specific project manifests like Cargo.toml"*
+   589	and states that *"all references to the `[dist]` section in dist-workspace.toml
+   590	and dist.toml may also refer to `[workspace.metadata.dist]` or
+   591	`[package.metadata.dist]` in your Cargo.toml"*, and the 0.23.0 changelog entry
+   592	says newly initialized Rust projects use the new format while *"Existing projects
+   593	will be given the option to opt into the new format, but by default will keep
+   594	their existing format for now."* Exit status 0.
+   595	Log `review/evidence/cargo-dist-config-location.log`.
+   596	
+   597	**Check 6 — registry, advisory and license figures, re-measured this run**
+   598	(`GET https://crates.io/api/v1/crates/<name>` for `crate.recent_downloads` and
+   599	`crate.downloads`; `/versions` for the newest non-yanked `num`, `created_at`,
+   600	`license` and `rust_version`; `https://rustsec.org/packages/<name>.html` for
+   601	advisories). Retrieved 2026-09-10; log `review/evidence/registry-figures.log`.
+   602	
+   603	| crate | 90-day | all-time | newest non-yanked | created_at | license | rust_version | RustSec |
+   604	|---|---|---|---|---|---|---|---|
+   605	| `cargo-dist` | 19,922 | 175,385 | 0.32.0 | 2026-05-22 | MIT OR Apache-2.0 | 1.74 | HTTP 404 |
+   606	| `cargo-make` | 248,798 | 3,672,469 | 0.37.24 | 2025-01-18 | Apache-2.0 | **absent** | HTTP 404 |
+   607	| `cargo-binstall` | 125,820 | 3,483,662 | 1.23.0 | 2026-09-05 | **GPL-3.0-only** | 1.79.0 | HTTP 404 |
+   608	| `cross` | 307,766 | 6,269,217 | 0.2.5 | 2023-02-04 | MIT OR Apache-2.0 | absent | HTTP 404 |
+   609	| `cargo-zigbuild` | 1,547,057 | 7,034,852 | 0.23.4 | 2026-09-02 | MIT | 1.88 | HTTP 404 |
+   610	| `cbindgen` | 13,646,147 | 101,705,742 | 0.29.4 | 2026-06-09 | MPL-2.0 | 1.74 | HTTP 404 |
+   611	| `cargo-packager` | 47,349 | 178,600 | 0.11.8 | 2025-11-27 | Apache-2.0 OR MIT | absent | HTTP 404 |
+   612	
+   613	An HTTP 404 on a RustSec package page means **no advisory record exists**, not
+   614	that the query failed. The two gate exclusions above rest on this table:
+   615	`cargo-make`'s `rust_version` is absent, and `cargo-binstall`'s license is
+   616	`GPL-3.0-only`.
+   617	
+   618	**Check 7 — the packaged-file mechanism and the name-divergence rate in
+   619	well-regarded manifests, measured independently of the raw reports.** Nine
+   620	manifests fetched through `gh api repos/<o>/<r>/contents/<path>` on their default
+--- revision-3 decision direct occurrences at six locations ---
+   570	   `src/cargo/ops/cargo_package/mod.rs` (the `PackageOpts` field at `:85`, the
+   571	   `build_ar_list` parameter at `:502`, and three reads at `:263`, `:281`,
+   572	   `:492`), `src/bin/cargo/commands/package.rs` and
+   573	   `src/cargo/ops/registry/publish.rs` — and it is *assigned* in exactly two
+   574	   places, `commands/package.rs:89` and `ops/registry/publish.rs:171`, the two
+   575	   quoted above. Both the file set and the assignment-site set are asserted as
+   576	   exact string equality, so a fourth file or a third assignment fails the check.
+   577	
+   578	**Observed outcome:** the correct width is *automatic under manifest selection,
+   579	generated when absent, and omitted only by `cargo package --exclude-lockfile`* —
+   580	not "included regardless", which revision 1's owned value and four supporting
+   581	lines asserted. The owned parameter now carries that qualification in full; the
+   582	`## Decision` table row, AC3 and check 4 carry it by reference to this check.
+   583	**Reproducibility:** the script was re-run against the cited log immediately
+   584	before this sentence was written; the two outputs differ on exactly one line, the
+   585	`retrieved:` timestamp in the header, every other byte identical. The two
+   586	documentation pages are addressed by tag *and* by recorded SHA-256, so they
+   587	cannot drift under a re-run without the digest assertion failing; the four source
+   588	files and the tarball are addressed by tag and their digests or derived line
+   589	lists are printed into the log, so drift would show as a log diff. **Three
+   590	negative controls were run**, each on a copy of the script: an asserted
+   591	documentation string altered, the expected assignment-site set altered, and the
+   592	`cargo publish` absence assertion pointed at the one help text that does contain
+   593	`--exclude-lockfile`. All three exited 1 with `ASSERT FAIL`, so this check can
+   594	fail in both directions — a missing string and an unexpectedly present one.
+   595	
+   596	**Check D — where artifacts land.** `build-cache.md` at the tag: *"By default,
+   597	both directories point to a directory named `target` in the root of your
+   598	workspace"*, overridable by `CARGO_TARGET_DIR`, `build.target-dir` or
+   599	`--target-dir`; `target/debug/` for `dev`, `target/release/` for `release`, a
+   600	directory named for a user-defined profile, and a `target/<triple>/` level under
+   601	`--target`. Note for P03: this release of the reference splits *final* build
+   602	artifacts (the binary — in the target-dir) from *intermediate* ones (in a
+   603	build-dir settable by `CARGO_BUILD_BUILD_DIR`); the owned parameter describes the
+   604	final artifacts only.
+   605	
+   606	**Check 8 — the installed cargo's own effective configuration.**
+   607	`cargo package --help` and `cargo install --help`, run against the installed
+   608	cargo 1.98.0. **Observed:** `cargo install --help` prints
+   609	`--bins  Install all binaries` and `--bin [<NAME>]  Install only the specified
+   610	binary`, matching `cargo-install.md`'s *"Install all binaries. This is the default
+   611	behavior."*; `cargo package --help` prints `-l, --list`, `--no-verify` and
+   612	`--allow-dirty`. Exit status 0. Same log.
+   613	
+   614	**Check 9 — `raw/opus…`'s first self-correction, re-measured rather than
+   615	inherited: `cargo-dist` issue responsiveness by login.** Commit authorship on
+   616	`axodotdev/cargo-dist`'s default branch over the 100 most recent commits gives
+   617	the commit-access logins `mistydemeo` (26) and `woodruffw` (6), beside
+   618	`dependabot[bot]` (63). Measuring the first comment by either login across the
+   619	same ten most recently opened issues, and excluding a comment by the issue's own
+   620	author: **6 of 10 answered, 4 unanswered, median 0.190 days (4.6 hours)**. Every
+--- revision-5 treatment of six locations ---
+92-**What the corrected pattern finds that no revision-3 list carried, and why it is
+93-left byte-identical.** Widening it to the permissive SPDX identifiers —
+94-`…|Apache-2\.0|MIT|BSD|ISC|Unlicense|CC0`, still `-w`, still case-sensitive —
+95-returns 15 lines on the revision-2 blob and 21 on the revision-4 blob. Six of the
+96:revision-2 lines (`582 605 606 608 609 611`; in revision-4 numbering `708 731 732
+97-734 735 737`) appear in **none** of revision 3's four recorded lists, because
+98-neither `licen` nor the noisy identifier pattern reaches them: they are check 6's
+99-registry rows for `cargo-dist`, `cargo-make`, `cross`, `cargo-zigbuild` and
+100-`cargo-packager`, and check 10's parenthetical record of `dist`'s licence at its
+--
+143-`audit-codex-2026-09-05T155504Z-2107cffb3ecf-r3`, model `gpt-5.6-terra`, family
+144-openai) on one unresolved finding: *"false claim that no raw report excluded
+145-`cargo-binstall` on a licence ground"*. **The finding is correct and the false
+146-claim was mine.** The canonical Opus raw report does state a licence ground:
+147:`raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:353-356`
+148-reads *"**`cargo-binstall` 1.23.0** — fails **gate 1** *as a dependency*: license
+149-`GPL-3.0-only` … which is not compatible with `MIT OR Apache-2.0` for anything
+150-linked"*. That same report then gives scope as an independent ground at
+151-`:359-362`: *"It is excluded here regardless because the
+--
+234-this item's prompt places out of scope in those words. *[Sentence corrected in
+235-revision 4. This paragraph originally continued: "No raw report excluded
+236-`cargo-binstall` on a licence ground, so no engine position is disturbed and
+237-`## Engines` is unchanged." That was false. The canonical Opus raw does state a
+238:licence ground, at `raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:353-356`,
+239-alongside an independent scope ground at `:359-362`; an engine position therefore
+240-was affected, and `## Engines` now records it. See the revision-4 note above for
+241-how the error was made.]* Every `- owns` and `- assumes` line is byte-identical
+242-to revision 2. Besides this paragraph itself, two presentational edits are the
+--
+340-
+341-**Two BASELINE-REVIEW findings are carried through, not resolved.** Neither the
+342-ledger, the index, the prompt nor the registry has been edited by this decision.
+343-
+344:BASELINE-REVIEW: F212 — principle: the build backend/bundler is a *selectable third-party tool*, which is what makes R49 an item of kind `crate` in `research/CLAUDE.md` and makes the prompt's crate figure table (90-day downloads, last release, advisories, adopters) the required evidence — proposed change: reclassify R49's item kind from `crate` to `pattern`, or to an explicit `crate (first-party toolchain, zero added dependencies)` sub-kind, and record F212's substitute as "the Cargo toolchain, no crates.io dependency", so downstream items and the `check-research-tree.sh` gate do not expect a version range for a crate that does not exist — evidence: (a) the Cargo Book documents `[lib]`/`[[bin]]`/`include`/`exclude` as manifest fields of the toolchain itself, with no pluggable backend interface analogous to PEP 517 (`src/doc/src/reference/cargo-targets.md` and `src/doc/src/reference/manifest.md` at the `rust-1.98.0` tag of `rust-lang/cargo`, read 2026-09-10, log `evidence/cargo-docs-1.98.log`); (b) the ledger row already anticipates it — "Cargo is Rust's native build system with no separate backend/bundler crate needed" (`docs/port/COMMONALITY.md:216`); (c) every crate figure this prompt requires is `inapplicable` to the recommended answer, as recorded under `### Principles and implementation`; affected items: R49 (this item), and informationally R68 and R50, whose prompts describe R49 as declaring build targets — neither statement changes. Raised by `raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md`; carried here unresolved, per the prompt's instruction to report a challenged baseline rather than change it.
+345-
+346-BASELINE-REVIEW: F218 — principle: the set of files that reaches the consumer is bounded by a declaration, not by whatever is in the working tree — proposed change: replace the row's parenthetical premise "(default: git-tracked files only)" with Cargo's actual default rule and with the explicit `include` allow-list this decision selects — evidence: the manifest reference at the `rust-1.98.0` tag states *"The default if neither field is specified is to include all files from the root of the package, except for the exclusions listed below"*, and the only listed exclusions are hidden dotfiles when the package is **not** in a git repository, gitignored files when it **is**, sub-packages, and a root `target` directory (`src/doc/src/reference/manifest.md:391-411` at that tag, read 2026-09-10, log `evidence/cargo-docs-1.98.log`). A file that is untracked but not gitignored therefore falls **inside** the default packaged set, which "git-tracked files only" says it does not. The practical exposure is narrower than that gap sounds, and this decision states it at that width: `cargo package` refuses a dirty working tree unless `--allow-dirty` is passed, and its dirty walk is configured with `emit_untracked(EmissionMode::Matching)`, so an untracked packaged source file makes the tree dirty and packaging stops (`src/cargo/ops/cargo_package/vcs.rs` at the same tag, checks A and H). What the dirty guard does **not** catch is a *committed* directory nobody meant to publish — `.github/`, `docs/`, `research/` — which under the default or under an `exclude` deny-list ships to every crates.io consumer. Affected items: R49 (this item, which sets the value) and R26 (`packed-artifact-content-guard`, F039/F078), which owns whether CI asserts the resulting file list. Raised by `raw/codex-cd14ccfbbefdabb73358b9b75dd288f863c9984100d6d5e3d21f796e3c37f183.md`; carried here unresolved.
+347-
+348-### Principles and implementation
+--
+449-registry value `GPL-3.0-only` immediately beside the clause *"out of scope
+450-regardless"* — that clause byte-identical in revision 1 (sha256
+451-`b7adf7d8f8ff380cdb25b40ff331d6b83291b2f7ea75a42407684ce2919cbcf9`) and revision
+452-2 — and revision 3 removed the gate-1 half. The second was the Opus raw's, at
+453:`raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md:353-356`,
+454-which likewise paired it with an independent scope ground at `:359-362`: *"It is
+455-excluded here regardless because the `[package.metadata.binstall]` table it reads
+456-is an artifact-distribution decision that **R68 owns (F214)**, explicitly out of
+457-scope for this item."* That report is recorded as it stands and is not rewritten;
+--
+941-
+942-## Engines
+943-
+944-- **codex** `raw/codex-cd14ccfbbefdabb73358b9b75dd288f863c9984100d6d5e3d21f796e3c37f183.md` (retrieved 2026-09-05) — Cargo-native, no backend crate; explicit `[lib]` + one `[[bin]]`; `autobins = false`; **`include` allow-list**; package and bin names **match**; no web `[[bin]]` now. Excludes `cargo-make` on the absent-`rust_version` gate and `cargo-dist` on scope. Raised the F218 baseline-review line carried above. Could not measure issue responsiveness — the unauthenticated GitHub core limit was exhausted — and said so rather than inventing a figure.
+945:- **opus** `raw/opus-93a5d89f571b19ea2bc7cdb9ccb956052b1a414c82a9256bb31a0a71454d3059.md` (retrieved 2026-09-10) — the same Cargo-native conclusion reached from an eight-project manifest survey, plus the F212 baseline-review line carried above; **`exclude` deny-list**; names **diverge** (`rslbp`, labelled a naming proposal needing an owner decision); web behind a feature following mdBook rather than a second `[[bin]]`; `default-run` unset; no `build.rs`. Carries two recorded self-corrections, both re-measured here in checks 9 and 10. Excluded `cargo-binstall` on **two** grounds: fitness gate 1 at `:353-356` (licence `GPL-3.0-only`, *"not compatible with `MIT OR Apache-2.0` for anything linked"*) and, independently, scope at `:359-362` (*"excluded here regardless"*, the `[package.metadata.binstall]` table being R68's F214). Under the owner's 2026-09-12 ruling (Q7.B) the gate-1 ground is void and is not carried forward; the scope ground is the one this decision adopts.
+946-- **doxa** `raw/doxa.normalized.md` — three providers regrouped under the template's fields; per-provider originals in `raw/doxa-openai.normalized.md`, `raw/doxa-perplexity.normalized.md`, `raw/doxa-gemini.normalized.md`; every repair recorded in `doxa/normalization.json`. All three reach Cargo-native with no backend crate and split on the sub-decisions below.
+947-  - **doxa/openai** (gpt-5.6-sol, retrieved 2026-09-09) — `include` allow-list; names match; `autobins = false`; **also** `build = false` and `default-run` set; proposes a concrete `rust-version = "1.96"`.
+948-  - **doxa/perplexity** (sonar-deep-research, retrieved 2026-09-09) — names match; **neither `include` nor `exclude`**, relying on Cargo's default and documenting that as deliberate; a **second `[[bin]]`** `rs-launch-blueprint-web` with `required-features = ["web-service"]` and CLI at `src/bin/cli.rs`.
+949-  - **doxa/gemini** (deep-research-preview-04-2026, retrieved 2026-09-09) — `include` allow-list, argued from 2024-edition design discussions about `.github` leaking into published crates; a **second `[[bin]]`** for the web service; names **diverge** (`rsbp`, likewise a naming proposal).

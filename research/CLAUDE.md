@@ -51,7 +51,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R46 | per-file-license-header | pattern | different | DIVERGENT | — | [prompt](topics/46-per-file-license-header/prompts/per-file-license-header.prompt.md) | resolved |
 | R47 | contributors-recipe-mode | pattern | different | DIVERGENT | — | [prompt](topics/47-contributors-recipe-mode/prompts/contributors-recipe-mode.prompt.md) | resolved |
 | R48 | mocking-crates | bundle | different | DIVERGENT | — | [prompt](topics/48-mocking-crates/prompts/mocking-crates.prompt.md) | open |
-| R49 | build-target-declaration | crate | same | COMMON → SUBSTITUTE | build-tool-output-shape | [prompt](topics/49-build-target-declaration/prompts/build-target-declaration.prompt.md) | open |
+| R49 | build-target-declaration | crate | same | COMMON → SUBSTITUTE | build-tool-output-shape | [prompt](topics/49-build-target-declaration/prompts/build-target-declaration.prompt.md) | resolved |
 | R50 | install-smoke-test | bundle | different | DIVERGENT | — | [prompt](topics/50-install-smoke-test/prompts/install-smoke-test.prompt.md) | open |
 | R51 | container-image | bundle | py-only | DIVERGENT | — | [prompt](topics/51-container-image/prompts/container-image.prompt.md) | open |
 | R52 | toml-crate | bundle | different | DIVERGENT | — | [prompt](topics/52-toml-crate/prompts/toml-crate.prompt.md) | open |

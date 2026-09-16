@@ -1,0 +1,58 @@
+# R49 — re-measurement of cargo-dist issue responsiveness BY LOGIN (not by author_association)
+retrieved: 2026-09-10T15:25:55Z
+
+=== who has commit access: distinct commit authors on the default branch, 100 most recent ===
+{"commits":63,"login":"dependabot[bot]"}
+{"commits":26,"login":"mistydemeo"}
+{"commits":6,"login":"woodruffw"}
+{"commits":1,"login":"OpenSauce"}
+{"commits":1,"login":"blyedev"}
+{"commits":1,"login":"eegli"}
+{"commits":1,"login":"ntBre"}
+{"commits":1,"login":"rafaeelaudibert"}
+
+=== repository state ===
+{"archived":false,"default_branch":"main","license":"Apache-2.0","pushed_at":"2026-09-08T10:07:06Z","stargazers_count":2112}
+
+=== open issues (search endpoint, total_count) ===
+297
+
+=== 10 most recently opened issues ===
+2504	2026-09-08T21:38:56Z	mkatychev
+2492	2026-08-27T16:53:13Z	Paul-16098
+2489	2026-08-21T13:22:02Z	jrenno-kantic
+2457	2026-08-07T06:44:41Z	slukyano
+2456	2026-08-05T17:15:03Z	woodruffw
+2446	2026-07-01T16:14:51Z	Remi-Godin
+2444	2026-06-29T11:37:57Z	mhatzl
+2443	2026-06-29T10:32:26Z	Danil42Russia
+2442	2026-06-29T05:47:43Z	typed-sigterm
+2437	2026-06-22T05:16:41Z	TanvirAnjumApurbo
+
+=== first comment by a commit-access login on each of the 10 newest issues ===
+commit-access logins taken from the commit-author tally above: mistydemeo, woodruffw
+(a comment by the issue's own author is recorded separately and excluded from the response measure)
+#2504  opened 2026-09-08T21:38:56Z  author mkatychev            first maintainer comment mistydemeo 2026-09-09T01:42:34Z (CONTRIBUTOR)  days=0.169
+#2492  opened 2026-08-27T16:53:13Z  author Paul-16098           first maintainer comment mistydemeo 2026-08-27T17:02:01Z (CONTRIBUTOR)  days=0.006
+#2489  opened 2026-08-21T13:22:02Z  author jrenno-kantic        first maintainer comment mistydemeo 2026-08-28T06:04:48Z (CONTRIBUTOR)  days=6.696
+#2457  opened 2026-08-07T06:44:41Z  author slukyano             first maintainer comment mistydemeo 2026-08-07T18:46:16Z (CONTRIBUTOR)  days=0.501
+#2456  opened 2026-08-05T17:15:03Z  author woodruffw            first maintainer comment mistydemeo 2026-08-05T17:22:21Z (CONTRIBUTOR)  days=0.005
+#2446  opened 2026-07-01T16:14:51Z  author Remi-Godin           first maintainer comment NONE (total comments: 0)
+#2444  opened 2026-06-29T11:37:57Z  author mhatzl               first maintainer comment mistydemeo 2026-06-29T16:41:29Z (CONTRIBUTOR)  days=0.211
+#2443  opened 2026-06-29T10:32:26Z  author Danil42Russia        first maintainer comment NONE (total comments: 0)
+#2442  opened 2026-06-29T05:47:43Z  author typed-sigterm        first maintainer comment NONE (total comments: 0)
+#2437  opened 2026-06-22T05:16:41Z  author TanvirAnjumApurbo    first maintainer comment NONE (total comments: 0)
+
+answered: 6 of 10; unanswered: 4 of 10; median days to first maintainer response = 0.190 (4.6 hours)
+
+=== the author_association filter artifact, reproduced ===
+every maintainer comment above carries author_association CONTRIBUTOR, so a filter on MEMBER/OWNER/COLLABORATOR returns zero:
+  issue #2504: MEMBER/OWNER/COLLABORATOR comments = 0
+  issue #2492: MEMBER/OWNER/COLLABORATOR comments = 0
+  issue #2489: MEMBER/OWNER/COLLABORATOR comments = 0
+  issue #2457: MEMBER/OWNER/COLLABORATOR comments = 0
+  issue #2456: MEMBER/OWNER/COLLABORATOR comments = 0
+  issue #2444: MEMBER/OWNER/COLLABORATOR comments = 0
+
+verdict by the prompt's rubric: last non-yanked release 2026-05-22 (3.6 months, below the 6-month investigate trigger);
+archived=false; pushed_at 2026-09-08; maintainer commits present; no RustSec record -> active, NOT at-risk.

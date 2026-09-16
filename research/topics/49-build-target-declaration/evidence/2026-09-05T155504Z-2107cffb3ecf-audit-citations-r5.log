@@ -1,0 +1,38 @@
+retrieved: 2026-09-14T23:12:31Z
+
+[manifest include/exclude]
+url: https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/doc/src/reference/manifest.md
+http-status: 200
+sha256: 28e0aaa4907a85fd7c8bc45e68a6fb4bac997913edaff83500cd63ca608a215b
+content-assertion: pass
+match: root of the package, except for the exclusions listed below.
+
+[target name]
+url: https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/doc/src/reference/cargo-targets.md
+http-status: 200
+sha256: 4115df65c915ae7143c219b13a928d6707fc317596d9013f7c3f9215668d48dd
+content-assertion: pass
+match: The `name` field specifies the name of the target, which corresponds to the
+
+[feature-gated executable variable]
+url: https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/doc/src/reference/environment-variables.md
+http-status: 200
+sha256: 6f665b89e5a164da0526f22602105ba9dfb16928d76e028bf2fc4a30e0d37323
+content-assertion: pass
+match: * `CARGO_BIN_EXE_<name>` --- The absolute path to a binary target's executable.
+
+[package lockfile override]
+url: https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/doc/src/commands/cargo-package.md
+http-status: 200
+sha256: 257f6fd4b6b885e42edb01149c6981da5117fde0226f10a0250c0ea74119399f
+content-assertion: pass
+match: <p>This flag is not for general use.
+
+[install binary selection]
+url: https://raw.githubusercontent.com/rust-lang/cargo/rust-1.98.0/src/doc/src/commands/cargo-install.md
+http-status: 200
+sha256: cdc70523e650b068b7fc3400cbcc7f9c84b01443ad46035d3c5138c7a2f60024
+content-assertion: pass
+match: <dd class="option-desc"><p>Install all binaries. This is the default behavior.</p>
+
+RESULT: all five citation content assertions passed
