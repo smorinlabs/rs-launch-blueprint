@@ -1,0 +1,7 @@
+PASS tier-7 stream gate | https://raw.githubusercontent.com/rust-cli/anstyle/anstream-v1.0.0/crates/anstream/src/auto.rs:211 |             } else if raw.is_terminal()
+PASS tier-7 CI operand | https://raw.githubusercontent.com/rust-cli/anstyle/anstream-v1.0.0/crates/anstream/src/auto.rs:214 |                     || anstyle_query::is_ci())
+PASS CI is presence based | https://raw.githubusercontent.com/rust-cli/anstyle/anstyle-query-v1.1.5/crates/anstyle-query/src/lib.rs:134 |     std::env::var_os("CI").is_some()
+PASS effective stream choice API | https://raw.githubusercontent.com/rust-cli/anstyle/anstream-v1.0.0/crates/anstream/src/auto.rs:187 |     pub fn current_choice(&self) -> ColorChoice {
+PASS cargo flag before config | https://raw.githubusercontent.com/rust-lang/cargo/0.99.0/src/cargo/util/context/mod.rs:1209 |         let color = color.or_else(|| term.color.as_deref());
+PASS colored stdout gate | https://raw.githubusercontent.com/colored-rs/colored/v3.1.1/src/control.rs:108 |                 && io::stdout().is_terminal(),
+TOTAL: 6 passed, 0 failed

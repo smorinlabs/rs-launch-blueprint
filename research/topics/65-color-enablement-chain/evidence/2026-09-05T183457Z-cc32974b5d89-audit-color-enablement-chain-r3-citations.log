@@ -1,0 +1,10 @@
+PASS tagged colored control source has stdout-only terminal predicate
+PASS tagged colored control source has no stderr token [count=0]
+PASS tagged colored lib source has 81 ColoredString returns [count=81]
+PASS tagged colored lib source has no stderr token [count=0]
+PASS tagged colored manifest records rust-version 1.80
+PASS crates.io versions response contains colored 3.1.1
+PASS crates.io reverse-dependencies response has a meta total field
+PASS RustSec colored package page remains HTTP 404 [count=404]
+PASS tagged anstream source constructs AutoStream from stream plus choice
+TOTAL: 9 passed, 0 failed

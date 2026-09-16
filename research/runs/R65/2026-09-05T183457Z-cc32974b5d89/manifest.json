@@ -115,6 +115,15 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-16T22:36:32Z",
+      "publication": {
+        "acceptance_sha256": "bae746935d8d7d77ea28da0b02aaadf94d1eb563c18ad3bcd6606cf0807d9224",
+        "decision_sha256": "4b9b21a1454461ce691976580f07d8df73e89323d2a17c1df79dc7526ac70956",
+        "transaction": "3d49f3b388ca4c7ea0f8eb4ce0ba62a4"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -164,6 +173,11 @@
     }
   },
   "prompt_source": "research/topics/65-color-enablement-chain/prompts/color-enablement-chain.prompt.md",
+  "publication": {
+    "acceptance_sha256": "bae746935d8d7d77ea28da0b02aaadf94d1eb563c18ad3bcd6606cf0807d9224",
+    "decision_sha256": "4b9b21a1454461ce691976580f07d8df73e89323d2a17c1df79dc7526ac70956",
+    "transaction": "3d49f3b388ca4c7ea0f8eb4ce0ba62a4"
+  },
   "remaining_budget": "no paid engine before the pilot publishes (Doxa admissions paused)",
   "required_engines": [
     "codex",
@@ -171,7 +185,7 @@
   ],
   "run_id": "2026-09-05T183457Z-cc32974b5d89",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "focused",
-  "updated_at": "2026-09-10T15:42:01Z"
+  "updated_at": "2026-09-16T22:36:32Z"
 }
