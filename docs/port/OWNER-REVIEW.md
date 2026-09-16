@@ -170,6 +170,8 @@ The briefs the owner answered from are in `docs/planning/p02/owner-decisions.md`
 | R43 | 2 (published) | `b9c8303647a8098971ff9fec7116fba041c85f5db8a4c869960e9e18c89c8057` | accept | 2026-09-15 | W0-R43 option A; no vendor rule directories; one `companyAnnouncements` entry |
 | R45 | 2 (published) | `1e7fe24926e11fa5b40bedb3c42f187af05e161e4bec0b7ad4ea548b0fae6816` | accept | 2026-09-15 | W0-R45 option A: PR template carries no bot mention; the owner directs revision 3 to rewrite the `CONTRIBUTING.md` precondition to R18 revision 7's credential-presence rule (the `vars.ENABLE_CLAUDE_ASSISTANT` variable no longer exists); re-bound at revision 3 |
 | R46 | 6 (published) | `a95cbbfae000d539bb57aaf3d67b71510c22c62457f6e215a219d9640a6808bd` | accept | 2026-09-15 | W0-R46 option A; no per-file licence header; manifest plus root licence files |
+| R47 | 1 (published) | `20693ce171bcde1e4e0bbe1c8b03e3b11a5619d2824ed6578af8abf6305791ba` | accept | 2026-09-15 | W0-R47 option A; guarded `render` recipe with one-time `init` |
+| R64 | 2 (published) | `39f0df0410126a90f966b23f947939eba5be8c30b4299c85487e1ce8d050b661` | accept | 2026-09-15 | W0-R64 option A; `shlex` 2.0.1, two-tier pager resolution, spawn-and-pipe |
 
 ## Dispositions
 
