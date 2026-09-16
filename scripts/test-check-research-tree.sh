@@ -104,7 +104,10 @@ p2="$t/research/topics/02-web-framework/prompts/web-framework.prompt.md"
 
 fresh; expect_ok "valid tree"
 fresh; expect_ok "valid tree with owner review" --require-owner-review
-fresh; printf '\n```\n## Not a section\n```\n' >> "$p2"; expect_ok "H2 inside a fence is ignored"
+fresh
+# Backticks are literal Markdown fence fixtures.
+# shellcheck disable=SC2016
+printf '\n```\n## Not a section\n```\n' >> "$p2"; expect_ok "H2 inside a fence is ignored"
 
 # index / prompts
 fresh; mkdir -p "$t/research/topics/09-x/prompts"; prompt R09 > "$t/research/topics/09-x/prompts/x.prompt.md"; expect_fail "orphan prompt" "prompt not linked from index"

@@ -25,6 +25,8 @@ while IFS= read -r line; do
     none) [ "$py" = "—" ] && [ "$ts" = "—" ] || err "none rows have no citations: $feat" ;;
     *) err "origin '$org' not in same|different|py-only|ts-only|none: $feat" ;;
   esac
+  # Backticks are literal Markdown citation delimiters, not substitutions.
+  # shellcheck disable=SC2016
   cite='`[^`]*:[0-9][0-9]*`'
   case "$org" in
     same|different) printf '%s' "$py" | grep -Eq "$cite" || err "py cell needs \`path:line\`: $feat"
