@@ -1,6 +1,83 @@
-# R69 web-framework-stack — decision (revision 2, 2026-09-15)
+# R69 web-framework-stack — decision (revision 3, 2026-09-15)
 
-**Revision note.** Revision 2 rewrites revision 1 (sha256
+**Revision note (revision 3).** Revision 3 rewrites revision 2 (sha256
+`9a8d825d0e204bcf6eed2185409c183ae27903ebd5614ec0245ed2a9537b8723`) in place. No revision of
+this decision has been published, so there is still no `## Supersedes`. **Nothing about the
+recommendation, the parameters or the other five checks moves.** `axum` 0.8.9 on `tokio`
+1.53.1 behind an off-by-default `web` feature, `tower` 0.5.3 as a dev-dependency and `bacon`
+3.25.0 as the dev watcher stand unchanged; the single `- owns web-extra-surface` line and the
+five `- assumes` lines are byte-identical to revision 2; the R67 exit contract (SIGTERM →143,
+SIGINT →130, drain-deadline expiry →1) and the request to R67 are unchanged; the CLI Design
+Standard's R4.1 required global core is unchanged; fitness gate 1 remains `inapplicable` under
+owner ruling Q7.B; and the other five evidence scripts and their cited logs are untouched.
+Revision 3 repairs exactly one defect: **the reproducibility of check 2.**
+
+Revision 2 was **rejected** by the round-2 empirical audit (`review/audit-codex.md`, actor
+`audit-codex-2026-09-12T204004Z-d02022bf6f42-r2`, model `gpt-5.6-terra`, family openai) on a
+single finding, quoted verbatim:
+
+> check 2 is not reproducible as claimed. feature-shape-check.sh invokes bare `cargo audit`,
+> which fetches and updates the advisory database. Its recorded log says 1,243 advisories; the
+> successful private-db rerun observed 1,246. The original exact rerun failed only on the
+> sandbox's read-only database lock, but it likewise did not reproduce. The decision says
+> checks 1, 2, 5, and 6 reproduce byte-for-byte and that all six immediate reruns had no
+> differences. The check needs a fixed advisory-db input (or the decision must stop claiming
+> byte-identical check-2 reproduction).
+
+The finding is correct and is accepted without qualification. Section 8 of
+`review/empirical/feature-shape-check.sh` invoked bare `cargo audit`, which fetches and
+updates `~/.cargo/advisory-db`; the advisory corpus was therefore a **mutable** input and the
+printed advisory count was a moving number that no rerun could be held to. The same auditor's
+findings 2, 3 and 4 confirmed everything else in revision 2 — the parameter repair, R67's
+quoted taxonomy and exit contract, the CLI Design Standard's R4.1 core, and gate 1's
+`inapplicable` answer — and revision 3 changes none of it.
+
+**The repair, and why this form.** The finding allowed two remedies: give the check a fixed
+advisory-database input, or stop claiming byte-identical check-2 reproduction and classify the
+advisory line as volatile. Revision 3 takes the **first and stronger** form, because the second
+would leave the decision's gate-3 answer resting on a number nobody can reproduce, and because
+the pinned corpus turns out to load exactly the 1,243 advisories this decision already cites —
+the figure becomes traceable to a recorded commit instead of to one moment in time. The new
+check is `review/evidence/feature-shape-check-r3.sh`, and it differs from its predecessor in
+four ways and no others:
+
+1. **The advisory database is pinned.** Section 8 clones `RustSec/advisory-db` at commit
+   `b50980aad8b8f14f77e25a97b32dd94bf008b0af` (2026-09-09) into a scratch directory under
+   `${TMPDIR:-/tmp}`, **asserts** the checked-out commit hash, and runs
+   `cargo audit --db <that clone> --no-fetch --stale`. The loaded-advisory count and the
+   scanned-crate count are asserted as constants (`1243` and `55`), with a control assertion
+   showing the count test can fail. A hash **mismatch is a FAIL, never a skip**. The clone is
+   removed by an `EXIT` trap and is never written inside this run directory: no advisory
+   database and no nested git repository is committed here.
+2. **`--no-fetch` drops one line the revision-1 log had.** The revision-1 log printed
+   `Updating crates.io index`, which belonged to cargo-audit's yanked-crate lookup rather than
+   to the advisory corpus; with `--no-fetch` that lookup does not run and the line is absent.
+   No advisory result depends on it, so the gate-3 answer below is unaffected — but an auditor
+   diffing the two logs will see the difference, and this is what it is.
+3. **Absolute paths are normalised.** `cargo tree` prints the probe package's absolute path,
+   and the scratch clone's path varies per run and per machine. The script rewrites the two
+   probe directories to `<feature-shape>` and `<feature-shape-r01base>` and the clone to
+   `<pinned-advisory-db>`, which is what lets the log reproduce from a clean
+   `git archive HEAD` extraction rather than only from the author's checkout.
+4. **A named, narrowly scoped SKIP.** If the pinned commit can be obtained from neither the
+   network nor a local `~/.cargo/advisory-db` mirror, section 8 prints exactly
+   `SKIP: advisory-scan-skipped-pinned-db-unavailable` and contributes nothing to the exit
+   status. The feature-shape status is computed as a separate variable (`rc_shape`) that always
+   reaches the exit code, so a skipped advisory scan **cannot** mask a failed feature-shape
+   assertion. This was tested rather than assumed: with the remote forced to an unreachable
+   host, the mirror disabled and one feature-shape assertion deliberately broken, the script
+   printed the SKIP marker and still exited `1`.
+
+`review/empirical/feature-shape-check.sh` and its log `review/evidence/feature-shape-check.log`
+are **left byte-identical** as the record of revision 1, exactly as revision 1's
+`parameters-check.log` was. The check-2 row of the table under `## Empirical check` now names
+the r3 script and `review/evidence/feature-shape-check-r3.log`, and the reproducibility
+paragraph there states precisely what the new check establishes. Every other sentence of this
+decision is unchanged from revision 2 except the five citation and figure locations enumerated
+at the end of that paragraph.
+
+**Revision note (revision 2), retained as the record of that revision.** Revision 2 rewrote
+revision 1 (sha256
 `7a1257842cfe1b39befa54e6ea0c8cdd125ee1768e13e72a1463c64d49d7d2d8`) in place. No revision of
 this decision has been published, so there is no `## Supersedes`. **One owned parameter value
 changes**: JF-3 requires the `<app>-serve` binary to carry the CLI Design Standard's required
@@ -62,7 +139,8 @@ file, saved as the new `review/evidence/parameters-check-r2.log`; revision 1's
 
 Bundle, Deep tier. Synthesizer: fresh Claude Opus 5 context, 2026-09-13; revision 2 by a
 second fresh Claude Opus 5 context that produced none of this item's raws, audits or revision
-1, 2026-09-15; run
+1, 2026-09-15; revision 3 by a third fresh Claude Opus 5 context that produced none of this
+item's raws, audits, revisions or their audits, 2026-09-15; run
 `research/runs/R69/2026-09-12T204004Z-d02022bf6f42`. This item was admitted ahead of the
 Wave 0 review gate by owner decision Q3.A (2026-09-12) because it consumes only R01, which
 the owner accepted on 2026-09-10, and because 19 items consume its owned parameter directly.
@@ -130,7 +208,7 @@ and are carried in the unproven table under `## Engines`.
 1. **The surface is optional and costs nothing when off.** *Observable:* with no features,
    `cargo tree -e normal` lists no `axum`, `tokio`, `hyper` or `tower`, and
    `cargo build --bins` produces no serve binary. *Verified here on a manifest probe*
-   (`review/evidence/feature-shape-check.log`, checks 1, 2, 6 and 7), not on a template.
+   (`review/evidence/feature-shape-check-r3.log`, sections 1, 2, 6 and 7), not on a template.
 2. **The web handler reaches the same erased service the CLI reaches, over the same
    serialisable type, with no mirror struct** (R01 acceptance criterion 6). *Observable:* the
    handler's return type names the library's own `Project`, and a real HTTP GET against a
@@ -604,8 +682,12 @@ this run's executed checks:
   for a crate with no advisory. `tokio` and `hyper` have pages listing **historic** advisories
   only (`RUSTSEC-2025-0023`, `-2023-0005`, `-2023-0001`, `-2021-0124`, `-2021-0072` for tokio;
   `RUSTSEC-2022-0022` and older for hyper), none of which applies to a recommended version.
-  The decisive check is executed rather than read: `cargo audit` 0.22.1 against the resolved
-  52-package `--features web` lockfile loaded 1,243 advisories and exited 0 with no findings.
+  The decisive check is executed rather than read: `cargo audit` 0.22.1 against the probe's
+  resolved `--features web` lockfile, over an advisory database **pinned** at
+  `RustSec/advisory-db` commit `b50980aad8b8f14f77e25a97b32dd94bf008b0af`, loaded 1,243
+  advisories, scanned 55 crate dependencies and exited 0 with no findings. The pin is what
+  makes that figure reproducible; revision 2 reported the same number from an unpinned fetch
+  and was rejected for it (see the revision note).
   `axum` declares `[lints.rust] unsafe_code = "forbid"` and its `src/` contains **zero**
   occurrences of `unsafe` (both asserted). `tokio` uses `unsafe` pervasively and by design —
   the opus raw counted 1,066 occurrences in the published 1.53.1 `src/`, a figure this run did
@@ -820,17 +902,20 @@ LLVM 22.1.8. `cargo --version` → `cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebre
 `cargo audit --version` → `cargo-audit-audit 0.22.1`. `jq` 1.x at `/opt/homebrew/bin/jq`;
 `gh` authenticated as `smorin`. Under `msrv-policy` the floor today is **1.96**.
 
-**Working directory.** All six scripts live in
-`research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/` and resolve their own
-paths from `${BASH_SOURCE[0]}`, so they rerun unchanged from any directory after this decision
-is committed. Every script sets `set -o pipefail`. Every script asserts on **content**, and
-three of them carry a deliberate control assertion that must fail, so that a check which
-cannot fail is visible as such.
+**Working directory.** Five of the six scripts live in
+`research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/`; the sixth, check 2's
+`feature-shape-check-r3.sh`, lives in the sibling
+`research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/` and reads the two probe
+packages under `../empirical/`. All six resolve their own paths from `${BASH_SOURCE[0]}`, so
+they rerun unchanged from any directory after this decision is committed. Every script sets
+`set -o pipefail`. Every script asserts on **content**, and three of them carry a deliberate
+control assertion that must fail, so that a check which cannot fail is visible as such —
+check 2 now carries two, the pre-existing MSRV-floor control and a new advisory-count control.
 
 | # | Claim under test | Script | Exit | Log under `review/evidence/` |
 |---|---|---|---|---|
 | 1 | **the R01 coupling**: the erased service satisfies axum's state bound without `ProjectsService` deriving `Clone`, and the `Arc` and R01's `Send + Sync` supertraits are each load-bearing | `state-bound-check.sh` | 0 | `state-bound-check.log` |
-| 2 | the `web` feature's gating shape, its dependency cost, the resolved-tree MSRV, and that no advisory applies to the resolved lockfile | `feature-shape-check.sh` | 0 | `feature-shape-check.log` |
+| 2 | the `web` feature's gating shape, its dependency cost, the resolved-tree MSRV, and that no advisory in a **pinned** RustSec database applies to the resolved lockfile | `feature-shape-check-r3.sh` (in `review/evidence/`; revision 1's `review/empirical/feature-shape-check.sh` is retained unchanged) | 0 | `feature-shape-check-r3.log` (revision 1's `feature-shape-check.log` is retained unchanged) |
 | 3 | every population figure, gate answer and published-artifact fact this decision cites | `assert-figures.sh` | 0 | `assert-figures.log` |
 | 4 | the issue-responsiveness figure the codex raw recorded as unverified | `issue-responsiveness.sh` | 0 | `issue-responsiveness.log` |
 | 5 | the recommended dev tool's version pin installs on macOS and exposes the two capabilities F339's recipe needs | `bacon-install-check.sh` | 0 | `bacon-install-check.log` |
@@ -844,27 +929,59 @@ into `review/evidence/sources/`, which is **not** committed, because it is third
 and one of it (`bacon` 3.25.0) is AGPL-3.0 — and the owner's 2026-09-12 ruling explicitly does
 not touch the rule against committing third-party copyleft files **into** this repository.
 
-**On reproducibility, stated precisely.** Checks 1, 2, 5 and 6 run locally and reproduce
-byte-for-byte. Checks 3 and 4 read the committed reduced snapshots rather than live endpoints,
-because download counters, `pushed_at` and star counts move hourly and a live re-run could
-never be byte-identical; `fetch-figures.sh` refreshes them and records its retrieval timestamp
-in `snapshots/RETRIEVED-AT.txt` (`2026-09-13T07:57:55Z`). Check 3 additionally reads the
-uncommitted sources, and invokes `fetch-sources.sh` itself when they are absent — which
-reproduces, because every one of those files is fetched at an immutable coordinate (a
-published `.crate` version, a git tag, a commit SHA). An auditor therefore runs the six
-scripts and nothing else. Immediately before writing this sentence, all six were re-run and
-each produced output **identical** to the log cited above, with `diff` reporting no
-differences. **What revision 2 changed about that, stated precisely.** Check 6 is the only one
-of the six that reads `review/DECISION.md`, so it is the only one whose output revision 2 can
-move — and it does move, because the `- owns` line is longer and check 6 prints its byte count.
-The script itself is **unmodified**; it was re-run against the revised file and its output is
-the new `review/evidence/parameters-check-r2.log` (`rc=0`), while revision 1's
-`parameters-check.log` is retained unedited as the record of revision 1. The other five were
-**not** re-run for revision 2 and are not claimed to have been: none of them reads this file,
-none of their inputs changed, and the revision-1 sentence above — which the empirical audit
-independently reproduced — is what stands for them. Re-running `fetch-figures.sh` will move the counters inside the snapshots and
-therefore the figures the logs print; the assertions — the version numbers, MSRVs, licences,
-`archived` flags and source facts — are the stable part, and are what the decision rests on.
+**On reproducibility, stated precisely — and corrected.** Revision 2 said in this place that
+"checks 1, 2, 5 and 6 run locally and reproduce byte-for-byte" and that all six had just been
+re-run with `diff` reporting no differences. **For check 2 that was false**, and the round-2
+empirical audit was right to reject it: the check's advisory scan consumed a mutable database,
+so its advisory count moved from 1,243 to 1,246 between the recorded log and the auditor's
+rerun. The sentence is withdrawn and replaced by the following, which says for each check
+exactly what was established, by whom, and under which conditions.
+
+- **Check 2** now reads a **pinned** advisory database and normalises every absolute path it
+  would print, and its log `feature-shape-check-r3.log` is what revision 3 re-established:
+  the script was run three times in a row in this checkout, and runs 2 and 3 were
+  **byte-identical** to run 1, which is the cited log; the same script and its committed probe
+  inputs were then extracted into a scratch directory as `git archive` produces them from the
+  committed tree and run there, and that run was **byte-identical to the cited log as well**.
+  The conditions under which that holds, stated rather than implied: the same toolchain and OS
+  printed in the log's first two lines (`rustc 1.98.0` / `cargo 1.98.0` on Darwin arm64,
+  macOS 26.4), `cargo-audit` 0.22.1, and a reachable copy of the pinned commit. When the
+  pinned commit is reachable from neither the network nor a local mirror, section 8 prints
+  `SKIP: advisory-scan-skipped-pinned-db-unavailable` instead of the three advisory lines and
+  the rest of the log is unchanged — that is the one documented way the output can differ, and
+  it cannot hide a feature-shape failure, which is asserted by a separate status variable.
+- **Check 6** was re-run for revision 3 against this revised file, with `diff` reporting no
+  differences against `review/evidence/parameters-check-r2.log`. It is the only one of the six
+  that reads `review/DECISION.md`, and revision 3 moves nothing it measures — the one `- owns`
+  line, the five `- assumes` lines and the H2 section list are byte-identical to revision 2 —
+  so revision 2's log remains the cited one and **no new log is written**. Revision 1's
+  `parameters-check.log` stays unedited as the record of revision 1.
+- **Checks 1, 3, 4 and 5** were **not** re-run by revision 3, and that is not asserted here.
+  None of them reads this file and none of their inputs changed. What stands for them is the
+  round-2 empirical audit's own rerun, recorded in `review/audit-codex.md`: it re-ran all six
+  scripts and reported `exit code: 0` and **byte-identical output for checks 1, 3, 4, 5 and 6**,
+  check 2 being the sole exception and the subject of this repair.
+- **Checks 3 and 4** read the committed reduced snapshots rather than live endpoints, because
+  download counters, `pushed_at` and star counts move hourly and a live re-run could never be
+  byte-identical; `fetch-figures.sh` refreshes them and records its retrieval timestamp in
+  `snapshots/RETRIEVED-AT.txt` (`2026-09-13T07:57:55Z`). Check 3 additionally reads the
+  uncommitted sources and invokes `fetch-sources.sh` itself when they are absent — which
+  reproduces, because every one of those files is fetched at an immutable coordinate (a
+  published `.crate` version, a git tag, a commit SHA). Re-running `fetch-figures.sh` will move
+  the counters inside the snapshots and therefore the figures the logs print; the assertions —
+  the version numbers, MSRVs, licences, `archived` flags and source facts — are the stable
+  part, and are what the decision rests on.
+
+An auditor therefore runs the six scripts and nothing else, five from `review/empirical/` and
+check 2 from `review/evidence/`. **The five locations revision 3 edited in this section and
+above it, enumerated rather than left to a reader's diff:** (1) acceptance criterion 1's
+citation, now `feature-shape-check-r3.log`; (2) the gate-3 paragraph, which now names the
+pinned advisory-db commit and, in the same sentence, corrects "resolved 52-package lockfile"
+to the 55 crate dependencies the scan actually reported — 52 is the *other* probe's non-dev
+package count and did not belong there; (3) the working-directory sentence, since the six
+scripts no longer share one directory; (4) the check-2 row of the table above; (5) the check-2
+narrative below, which now names the pin. Nothing else in this section or in any other section
+changed.
 
 **Check 1 — the R01 coupling.** Three dependency-free packages under
 `review/empirical/state-bound/`. Each declares R01's published seam shape transcribed from
@@ -920,7 +1037,15 @@ to bring `ServiceExt` into scope in tests. The resolved non-dev tree's highest d
 excluded); the same test applied against a 1.70 floor reports a failure, so it can fail. Nine
 transitive dependencies declare no `rust-version` at all — the strict gate-2 reading is applied
 to *candidates*, not to every transitive crate, and this figure records that limit. `cargo audit`
-0.22.1 loaded 1,243 advisories, scanned 55 crate dependencies and exited 0 with no findings.
+0.22.1, run as `cargo audit --db <clone> --no-fetch --stale` against a scratch clone of
+`RustSec/advisory-db` **pinned** at commit `b50980aad8b8f14f77e25a97b32dd94bf008b0af` and
+asserted to be at that commit, loaded 1,243 advisories, scanned 55 crate dependencies and
+exited 0 with no findings. The count and the crate total are asserted as constants, and a
+control assertion demanding a count the database cannot have shows the test can fail. Because
+`--no-fetch` also suppresses cargo-audit's yanked-crate lookup, this scan does not refresh the
+crates.io index and prints no `Updating crates.io index` line; no advisory result depends on
+that lookup. Revision 1 ran this scan against the live, self-updating `~/.cargo/advisory-db`,
+which is why its count was not reproducible and why revision 2 was rejected.
 With the base set to R01's published members, the non-dev tree is **12 packages with the feature
 off and 52 with it on**; the 52 matches the opus raw exactly, and the base differs by one package
 because that probe carried one further base dependency, so the delta reads 40 here and 39 there.
