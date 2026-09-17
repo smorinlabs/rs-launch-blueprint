@@ -1,0 +1,5 @@
+Output: `raw/codex.md`  
+SHA-256: `8d50eb6746d64ddc1011b7a4e471004d01d1bf2b82e8971274eb5e82e355b2d3`  
+H3 fields written: 10  
+CONFLICT: none. BASELINE-REVIEW: none.  
+Unverified: P03’s actual CI timing/cache cost and R49’s final binary name.
