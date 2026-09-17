@@ -8,7 +8,7 @@ retrieved-on:    2026-09-17 (UTC; the one line that advances on rerun)
 grep binary:     /usr/bin/grep
 
 PASS C00 — repository HEAD resolved
-     HEAD = 626d948084a156abd7875ff44d1023e2792704ce
+     HEAD = 9267dcb1dbc7461401bad269cc1d1fe7a6204212
 PASS C01 — COMMONALITY.md carries F016 and F022 verbatim as cited
      /usr/bin/grep exact-line matches: F016=1, F022=1 in docs/port/COMMONALITY.md
 PASS C02 — registry web-extra-surface (R69) declares dep:tokio, optional tokio 1.53.1 and optional axum 0.8.9
@@ -40,7 +40,7 @@ PASS C12 — one crypto provider in each feature-on tree: ring for the synchrono
      asynchronous feature-on TLS crates: aws-lc-rs v1.18.1 aws-lc-sys v0.45.0 rustls v0.23.45 
      /usr/bin/grep counts: sync ring=1 aws-lc=0; async aws-lc-rs=1 ring=0
 PASS C13 — both shapes build clean in release; the synchronous one is strictly faster
-     INFORMATIONAL, varies per machine and run: p_scen_sync seconds=14, p_scen_async seconds=31
+     INFORMATIONAL, varies per machine and run: p_scen_sync seconds=12, p_scen_async seconds=32
      only the ordering (sync < async) is asserted
 PASS C14 — ureq 3.4.2 fetched https://example.com/ on this host, directly and inside tokio::task::spawn_blocking, with identical results
      binary p_bridge: direct_blocking_len=559, spawn_blocking_len=559 (bytes of body)
@@ -70,7 +70,11 @@ PASS C18 — no Doxa provider body mentions dep:tokio, R69 or async-trait; OpenA
 PASS C19 — with reqwest's default features on, the asynchronous shape resolves to 109 default deps and 116 with --features web
      cargo tree counts (unique normal deps, root included): feature-off=109, feature-on=116
      consequence: C11's 93/101 is the leanest asynchronous configuration, so the sync-versus-async comparison is conservative
+PASS C20 — R67's registered contract says main returns ExitCode, and the owner reference's three Variant handler heads are async fn
+     /usr/bin/grep matches in the extracted error-taxonomy-exit-codes cell for the ExitCode sentence: 1
+     /usr/bin/grep line-start matches in the owner reference: 'async fn tasks('=1, 'async fn create('=1, 'async fn ws('=1
+     consequence: dispositions R05-3 and R05-4 rest on verified text, not on a raw report's reading
 
 == summary ==
-passed=20 failed=0 skipped=0
+passed=21 failed=0 skipped=0
 RESULT: PASS

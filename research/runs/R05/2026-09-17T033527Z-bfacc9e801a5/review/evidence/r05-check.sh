@@ -610,6 +610,33 @@ else
   fail C19 "off=${adef_off} (want 109), on=${adef_on} (want 116), C11 off=${async_off}"
 fi
 
+# ---------------------------------------------------------------------------
+# C20 — the two remaining facts the owner-reference dispositions rest on:
+#       R05-3 quotes R67's registered exit-code contract, and R05-4 asserts that
+#       both reference Variants' handler heads are async fn axum handlers.
+# ---------------------------------------------------------------------------
+python3 - "$REGISTRY" > "${WORK}/exitcodes.txt" <<'EXITCODES'
+import sys
+for line in open(sys.argv[1], encoding="utf-8"):
+    if line.startswith("| error-taxonomy-exit-codes |"):
+        sys.stdout.write(line.split(" | ")[3])
+        break
+EXITCODES
+rc=$?
+# shellcheck disable=SC2016  # the backticks are literal text in the registry value
+main_exitcode="$($GREP -c '`main` returns `ExitCode` and does not call `process::exit` on the error path' "${WORK}/exitcodes.txt")"
+ref_tasks="$($GREP -c '^async fn tasks(' "$REF")"
+ref_create="$($GREP -c '^async fn create(' "$REF")"
+ref_ws="$($GREP -c '^async fn ws(' "$REF")"
+if [ "$rc" -eq 0 ] && [ "$main_exitcode" = "1" ] && [ "$ref_tasks" = "1" ] && [ "$ref_create" = "1" ] && [ "$ref_ws" = "1" ]; then
+  pass C20 "R67's registered contract says main returns ExitCode, and the owner reference's three Variant handler heads are async fn"
+  note "${GREP} matches in the extracted error-taxonomy-exit-codes cell for the ExitCode sentence: ${main_exitcode}"
+  note "${GREP} line-start matches in the owner reference: 'async fn tasks('=${ref_tasks}, 'async fn create('=${ref_create}, 'async fn ws('=${ref_ws}"
+  note "consequence: dispositions R05-3 and R05-4 rest on verified text, not on a raw report's reading"
+else
+  fail C20 "extraction rc=${rc}; ExitCode sentence=${main_exitcode}, tasks=${ref_tasks}, create=${ref_create}, ws=${ref_ws}"
+fi
+
 printf '\n== summary ==\n'
 printf 'passed=%d failed=%d skipped=%d\n' "$PASSED" "$FAILED" "$SKIPPED"
 if [ "$FAILED" -gt 0 ]; then
