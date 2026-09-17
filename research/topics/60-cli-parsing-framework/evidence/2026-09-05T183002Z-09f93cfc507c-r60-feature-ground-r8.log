@@ -1,0 +1,101 @@
+=== G-grep. the search binary every count below was produced by ===
+grep binary:  /usr/bin/grep
+grep version: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+=== G0. negative control: prove this harness can actually fail ===
+--- the next FAIL line is deliberate ---
+FAIL  G0 control (expected to FAIL)
+      wanted substring: THIS-SUBSTRING-IS-ABSENT
+      got: committed snapshot text
+PASS  G0 harness detected the mismatch and incremented its counter
+--- control accounted for; counters reset, real checks follow ---
+PASS  G-grep the search binary is an absolute /usr/bin/grep that reports a version
+=== G1. every artifact read below is the one MANIFEST.txt records ===
+9fb05d3dfaa5ea11fbf66422e988b0ae8c050e22a39b9fc6dd9688734f02463f  cli-design-standard-1.4.14.md
+PASS  G1 cli-design-standard-1.4.14.md matches its recorded sha256
+ec8854cb291bb4f666de87470c99459db312ba9addd0864cedf83e52225cd8fc  clap_builder-4.6.6-src-builder-command.rs.txt
+PASS  G1 clap_builder-4.6.6-src-builder-command.rs.txt matches its recorded sha256
+382ef691d65bdc867eaa5465a408374ffda528e96824cebeff88de7f9d40e2eb  clap_derive-4.6.4-src-item.rs.txt
+PASS  G1 clap_derive-4.6.4-src-item.rs.txt matches its recorded sha256
+revision-1 verification log: present
+PASS  G1d the revision-1 verification log is committed in review/evidence/
+=== G2. wrap_help's FUNCTIONAL ground: the standard's rule and clap's own doc ===
+standard :390 (R7.3 body): A tool **SHOULD** detect whether stdout is a TTY and adjust *presentation* accordingly: interactive niceties when attached (spinners, pager, prompts), and none of those when piped. TTY state **MUST NOT** change the selected output *format*: `-o` (default `table`) determines the format regardless of whether output is a terminal or a pipe — a pipe only suppresses the niceties (and, per the separate color standard, color). Scripts wanting machine output **MUST** pass an explicit machine format such as `-o json`/`--json` (or `-o jsonl` for documented streams) on commands that emit formatted result data rather than relying on the pipe to switch formats. (Color/styling is governed separately and out of scope here.)
+PASS  G2a R7.3 (SHOULD) requires presentation to adapt to the terminal
+standard :398 (R7.5 body): Every command **MUST** print structured help containing, in order: a one-line summary, `Usage:`, then `Commands`/`Arguments`/`Flags`/`Examples` sections as applicable. Explicitly requested help (`--help` or `acme help ...`) **MUST** go to stdout and exit `0`; usage/help text printed as part of a usage error **MUST** go to stderr and exit nonzero (R7.9). At least one realistic **example MUST** be shown for non-trivial commands.
+PASS  G2b R7.5 (MUST) requires structured, sectioned help
+command.rs :1375-1376:     /// Defaults to current terminal width when `wrap_help` feature flag is enabled.  If current
+    /// width cannot be determined, the default is 100.
+PASS  G2c clap documents the wrapping width as the terminal's ONLY with the feature on
+PASS  G2d and as a fixed 100 columns when the width cannot be determined
+command.rs :1389:     /// **NOTE:** This requires the `wrap_help` feature
+PASS  G2e clap states the requirement on term_width explicitly
+=== G3. string's only gates in the committed command.rs are the two EXCLUDED APIs ===
+occurrences of 'feature = "string"' in the committed command.rs (/usr/bin/grep grep (BSD grep, GNU compatible) 2.6.0-FreeBSD): 4
+PASS  G3a there are exactly four occurrences, two cfg_attr pairs
+their line numbers: 264 265 395 396 
+PASS  G3b they are at :264 :265 :395 :396 and nowhere else
+    #[cfg_attr(feature = "string", doc = "```")]
+    #[cfg_attr(not(feature = "string"), doc = "```ignore")]
+PASS  G3c :264-265 is a doctest gate, not an API gate
+PASS  G3c2 and its partner hides the example when the feature is off
+command.rs :296:     pub fn mut_args<F>(mut self, f: F) -> Self
+PASS  G3d the API those two lines document is Command::mut_args
+    #[cfg_attr(feature = "string", doc = "```")]
+    #[cfg_attr(not(feature = "string"), doc = "```ignore")]
+PASS  G3e :395-396 is the same doctest gate
+command.rs :426:     pub fn mut_subcommands<F>(mut self, f: F) -> Self
+PASS  G3f the API those two lines document is Command::mut_subcommands
+standard :322 (R5.4 body): Environment variables **MUST** use the uppercase `TOOL_*` prefix with a deterministic mapping (`--some-flag` → `TOOL_SOME_FLAG`; for the fictional `acme` examples, `ACME_SOME_FLAG`). Only a **curated subset** of settings **SHOULD** read from the environment — typically auth/token, host/endpoint, output format, config path, and telemetry opt-out — and the tool **MUST NOT** auto-expose every flag as an env var.
+PASS  G3g R5.4 (MUST NOT) is what excludes the mut_args blanket-env design
+=== G4. the derive front end reaches clap without an owned String ===
+item.rs :552:                 Some(MagicAttrName::DefaultValueT) => {
+PASS  G4a :552 is the DefaultValueT arm
+item.rs :588:                             static DEFAULT_VALUE: ::std::sync::OnceLock<String> = ::std::sync::OnceLock::new();
+PASS  G4b it emits a static OnceLock<String> rather than handing clap the String
+item.rs :593:                             let s: &'static str = &*s;
+PASS  G4c and narrows it to a &'static str before clap sees it
+item.rs :598:                     let raw_ident = Ident::new("default_value", attr.name.span());
+PASS  G4d which is then passed to Command/Arg as the default_value method
+occurrences of 'feature = "string"' in the committed item.rs: 0
+PASS  G4e clap_derive's item.rs gates nothing on the string feature
+=== G5. clap_complete does not pull the feature in transitively ===
+=== Q. clap_complete 4.6.9: deps, features, shells ===
+13:edition = "2024"
+14:rust-version = "1.85"
+40:license = "MIT OR Apache-2.0"
+[features]
+debug = ["clap/debug"]
+default = []
+unstable-doc = ["unstable-dynamic"]
+unstable-dynamic = [
+    "dep:clap_lex",
+    "dep:shlex",
+    "dep:is_executable",
+    "clap/unstable-ext",
+]
+unstable-shell-tests = [
+    "dep:completest",
+    "dep:completest-pty",
+]
+
+[lib]
+name = "clap_complete"
+path = "src/lib.rs"
+bench = false
+
+[[example]]
+--- dependencies ---
+127:[dependencies.clap]
+128-version = "4.5.20"
+129-features = ["std"]
+130-default-features = false
+131-
+132:[dependencies.clap_lex]
+PASS  G5a the log section is clap_complete 4.6.9's manifest read
+PASS  G5b it depends on clap with features = ["std"] only
+PASS  G5c with default features off
+PASS  G5d its own default feature set is empty
+PASS  G5e and the only feature of its own that adds a clap feature is unstable-dynamic
+
+CHECKS RUN: 28   FAILURES: 0
+RESULT: all checks passed

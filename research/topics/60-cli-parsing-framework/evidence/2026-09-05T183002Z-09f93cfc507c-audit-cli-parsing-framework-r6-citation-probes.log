@@ -1,0 +1,6 @@
+standard_raw_http=200
+clap_crates_api_http=403
+clap_github_api_http=200
+clap_rustsec_http=404
+just_cargo_manifest_http=200
+clap_crates_api_user_agent_http=200

@@ -1,0 +1,152 @@
+R60 cli-parsing-framework — empirical audit evidence, revision 1
+Actor: audit-codex-2026-09-05T183002Z-09f93cfc507c-r1
+Model: gpt-5.6-terra
+Decision SHA-256: d35d4f5a681b1d6572b80533393963bb55a435a71ca59fcca21d10b4c461bd6c
+Audit date: 2026-09-10
+
+Scope: no template source, crate scaffold, or command surface was written. The
+resolution fixture was outside the repository at /private/tmp/r60-audit.6Mm9TS
+and consisted only of Cargo.toml plus a zero-byte src/lib.rs, which Cargo 1.96.0
+requires to resolve a manifest. The Linux command was attempted first as
+required, but `limactl shell ubuntu` reported that the named instance was
+stopped. `limactl start ubuntu` then failed before it could start because the
+sandbox may not unlink /Users/stevemorin/.lima/ubuntu/ha.stdout.log. The macOS
+fallback below therefore uses the installed Rust 1.96.0 toolchain.
+
+=== source and decision identity ===
+$ shasum -a 256 review/DECISION.md
+d35d4f5a681b1d6572b80533393963bb55a435a71ca59fcca21d10b4c461bd6c  review/DECISION.md
+
+=== macOS toolchain ===
+$ sw_vers; arch
+ProductName: macOS
+ProductVersion: 26.4
+BuildVersion: 25E246
+arm64
+$ rustup run 1.96.0 rustc --version
+rustc 1.96.0 (ac68faa20 2026-05-25)
+$ rustup run 1.96.0 cargo --version
+cargo 1.96.0 (30a34c682 2026-05-25)
+$ cargo-audit --version
+cargo-audit 0.22.1
+
+=== resolution fixture manifest ===
+[package]
+name = "r60-audit-resolution"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.96"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[dependencies]
+clap = { version = "4.6.6", features = ["derive", "env", "string", "wrap_help"] }
+clap_complete = "4.6.9"
+
+=== declared empirical check: lock resolution ===
+$ rustup run 1.96.0 cargo generate-lockfile
+    Updating crates.io index
+     Locking 28 packages to latest Rust 1.96 compatible versions
+generate-lockfile exit=0
+$ rg -c '^name = ' Cargo.lock
+29
+
+Interpretation: Cargo added 28 registry packages. Cargo.lock has 29 package
+stanzas because it also records the local resolution-fixture root. This matches
+the decision's 28-package resolution count and its 29-dependency cargo-audit
+count.
+
+=== resolved normal dependency tree ===
+$ rustup run 1.96.0 cargo tree -e normal
+r60-audit-resolution v0.0.0 (/private/tmp/r60-audit.6Mm9TS)
+├── clap v4.6.6
+│   ├── clap_builder v4.6.6
+│   │   ├── anstream v1.0.0
+│   │   │   ├── anstyle v1.0.14
+│   │   │   ├── anstyle-parse v1.0.0
+│   │   │   │   └── utf8parse v0.2.2
+│   │   │   ├── anstyle-query v1.1.5
+│   │   │   ├── colorchoice v1.0.5
+│   │   │   ├── is_terminal_polyfill v1.70.2
+│   │   │   └── utf8parse v0.2.2
+│   │   ├── anstyle v1.0.14
+│   │   ├── clap_lex v1.1.0
+│   │   ├── strsim v0.11.1
+│   │   └── terminal_size v0.4.4
+│   │       └── rustix v1.1.4
+│   │           ├── bitflags v2.13.2
+│   │           ├── errno v0.3.14
+│   │           │   └── libc v0.2.189
+│   │           └── libc v0.2.189
+│   └── clap_derive v4.6.4 (proc-macro)
+│       ├── heck v0.5.0
+│       ├── proc-macro2 v1.0.107
+│       │   └── unicode-ident v1.0.24
+│       ├── quote v1.0.47
+│       │   └── proc-macro2 v1.0.107 (*)
+│       └── syn v3.0.5
+│           ├── proc-macro2 v1.0.107 (*)
+│           ├── quote v1.0.47 (*)
+│           └── unicode-ident v1.0.24
+└── clap_complete v4.6.9
+    └── clap v4.6.6 (*)
+
+=== declared empirical check: advisory audit ===
+$ cargo-audit audit --db /private/tmp/r60-audit-rustsec-db-3
+    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+      Loaded 1243 security advisories (from /private/tmp/r60-audit-rustsec-db-3)
+    Updating crates.io index
+warning: couldn't update crates.io index: I/O operation failed: failed to obtain lock file '/Users/stevemorin/.cargo/.package-cache'
+    Scanning Cargo.lock for vulnerabilities (29 crate dependencies)
+cargo audit exit=0
+
+The advisory scan completed successfully against the generated lockfile. The
+crates.io-index refresh warning is environmental and did not prevent the scan.
+
+=== published crate tarballs, not repository branches ===
+$ curl --fail --location https://static.crates.io/crates/<name>/<name>-<version>.crate
+$ shasum -a 256 <archive>
+clap-4.6.6 sha256=473c7e07f409a8d772161724aa8db6a765a2532a70f9667eeb7b49d3d02fbdca expected=473c7e07f409a8d772161724aa8db6a765a2532a70f9667eeb7b49d3d02fbdca match=yes
+clap_builder-4.6.6 sha256=7b48fea5a88e9ae728a2dcbedbfc0e730f7d60da42e1cb049a83c9fb8b789889 expected=7b48fea5a88e9ae728a2dcbedbfc0e730f7d60da42e1cb049a83c9fb8b789889 match=yes
+clap_derive-4.6.4 sha256=d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061 expected=d012d2b9d65aca7f18f4d9878a045bc17899bba951561ba5ec3c2ba1eed9a061 match=yes
+clap_complete-4.6.9 sha256=3be2ad0423bdbbb0e25bc89add796f3559706d4a95e1bc98e4d9662a957b6a19 expected=3be2ad0423bdbbb0e25bc89add796f3559706d4a95e1bc98e4d9662a957b6a19 match=yes
+
+Published-source checks after unpacking those archives:
+- `clap-4.6.6/Cargo.toml` declares `derive`, `env`, `string`, and `wrap_help`; its default feature list includes `suggestions`.
+- `clap_builder-4.6.6/Cargo.toml` maps `suggestions` to `dep:strsim`, and declares `strsim = "0.11.1"` optional. The resolved tree enables the default and suggestions features and contains transitive `strsim v0.11.1`.
+- `clap_complete-4.6.9/Cargo.toml` accepts clap `4.5.20` or later with `default-features = false`; its `Shell` enum contains Bash, Elvish, Fish, PowerShell, and Zsh, and `aot::generate` accepts `&mut dyn Write`.
+- `clap_builder-4.6.6/src/parser/parser.rs:1322-1329` dispatches `ArgAction::Version` with `Identifier::Long => true` and `Identifier::Short => false`. `src/builder/command.rs:4898-4914` selects `long_version` for the long form and `version` for the short form, then renders `format!("{display_name} {ver}\\n")`.
+- `src/builder/arg.rs:881-884` states that global arguments propagate down and may be used at any position; `:2205-2210` defines per-argument `Arg::env`.
+- `src/parser/features/suggestions.rs:19-21` uses `strsim::jaro` and accepts confidence strictly greater than `0.7`.
+- A recursive symbol search of the published `clap_builder-4.6.6` and `clap_derive-4.6.4` archives found no `env_prefix`, `auto_env`, or `envvar_prefix` symbol.
+
+=== exact shared-parameter comparison ===
+$ compare `review/DECISION.md` assumes values to `inputs/PARAMETERS.md`
+msrv-policy=match
+rust-edition=match
+target-os-matrix=match
+license=match
+
+=== saved check-script inventory ===
+$ find . -maxdepth 5 -type f \( -name '*.sh' -o -name '*.py' \)
+(no output)
+
+There is no saved R60 check script in this run directory. Consequently no script
+could be rerun or verified to emit the decision's complete sections 01--12; the
+saved historical log is evidence output, not an executable check script. The
+two headline commands attributed in `## Empirical check` were rerun above.
+
+=== standard and override review ===
+The cited standard is /Users/stevemorin/c/cli-standards/cli-design-standard.md,
+version 1.4.14. R60 treats the R1.1/R6.1-style organisation rule as binding in
+the same way R67 treats R6.1: it cites the canonical standard, calls the rule a
+MUST, and relies on Decision Log row 1 as org-locked. OV-01 has the charter's
+required `Argument` and `Options` fields, says explicitly that no owner waiver
+record exists, and names conforming alternatives b and c. It does not claim an
+owner waiver.
+
+R60 nevertheless violates a separate applicable MUST: R1.3 requires singular
+canonical resource nouns. The proposed mechanism and AC1/AC5/AC6 use `projects`
+as the canonical documented command (`<tool> projects list`) and do not record
+an alternative canonical `project` form with an undocumented plural alias. No
+waiver is possible for this MUST.

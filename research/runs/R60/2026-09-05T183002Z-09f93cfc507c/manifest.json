@@ -169,6 +169,15 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-17T01:20:24Z",
+      "publication": {
+        "acceptance_sha256": "d29628bbdc8c2c01a52d71b5942898909c8a3fd99d12fe7f61c312eae408dab4",
+        "decision_sha256": "16d2db72028bc368e0f857e2a168d488d40dffdbea78b99b01519d02dd120651",
+        "transaction": "502f641de45948ffb62913b2204b25b5"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -234,6 +243,11 @@
     }
   },
   "prompt_source": "research/topics/60-cli-parsing-framework/prompts/cli-parsing-framework.prompt.md",
+  "publication": {
+    "acceptance_sha256": "d29628bbdc8c2c01a52d71b5942898909c8a3fd99d12fe7f61c312eae408dab4",
+    "decision_sha256": "16d2db72028bc368e0f857e2a168d488d40dffdbea78b99b01519d02dd120651",
+    "transaction": "502f641de45948ffb62913b2204b25b5"
+  },
   "remaining_budget": "no paid engine before the pilot publishes (Doxa admissions paused)",
   "required_engines": [
     "codex",
@@ -242,7 +256,7 @@
   ],
   "run_id": "2026-09-05T183002Z-09f93cfc507c",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "deep",
-  "updated_at": "2026-09-10T15:27:12Z"
+  "updated_at": "2026-09-17T01:20:24Z"
 }

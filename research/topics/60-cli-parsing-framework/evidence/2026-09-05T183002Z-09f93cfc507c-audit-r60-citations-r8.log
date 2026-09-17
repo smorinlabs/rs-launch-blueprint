@@ -1,0 +1,29 @@
+=== curl citation spot checks ===
+tmp=/private/tmp/r60-citation-r8.m0G0Va
+PASS  1 pinned CLI-standard URL matches the stated blob bytes
+PASS  1a R3.8 body is at line 221
+PASS  1b R4.1 body is at line 238
+PASS  1c R4.5 body is at line 271
+PASS  1d R9.1 body is at line 484
+PASS  1e R9.3 body is at line 492
+PASS  2 clap_builder 4.6.6 tarball matches the recorded crates.io checksum
+FAIL  2a clap term_width states wrap_help is required at cited line 1389
+  wanted: **NOTE:** This requires the `wrap_help` feature
+  got:     /// **NOTE:** This requires the `wrap_help` feature
+curl: (56) The requested URL returned error: 403
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/r60-citation-r8.m0G0Va/clap-4.6.6.json'
+FAIL  3 crates.io clap 4.6.6 metadata records the decision release date and Rust floor
+  wanted: 4.6.6|2026-08-06|1.85
+  got: 
+curl: (56) The requested URL returned error: 403
+Traceback (most recent call last):
+  File "<stdin>", line 2, in <module>
+FileNotFoundError: [Errno 2] No such file or directory: '/private/tmp/r60-citation-r8.m0G0Va/clap-complete-4.6.9.json'
+FAIL  4 crates.io clap_complete 4.6.9 metadata identifies the selected companion version
+  wanted: 4.6.9|1.85
+  got: 
+PASS  5 public TS router URL now matches its committed snapshot
+PASS  6 public TS projects URL now matches its committed snapshot
+citation_failures=3
