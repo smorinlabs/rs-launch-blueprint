@@ -182,8 +182,10 @@ no profile key, and R49's `include` allow-list admits none of `dist-workspace.to
 projection.
 
 Owner inputs: `docs/port/OWNER-REVIEW.md` §*"2026-09-16 — Release build profile ownership: R68
-(W0-R69p)"* is present at line 136 and its four declined options are reproduced accurately in
-the decision's opening; note that the ruling's own text names four keys (`lto`, `codegen-units`,
+(W0-R69p)"* is present at line 136, the decision cites it by that exact title, and the three
+options the ruling declines (adding the subject to R49, a new item, leaving Cargo's defaults to
+P03) are carried verbatim by the prompt amendment at `inputs/prompt.md:11` rather than by the
+decision itself; note that the ruling's own text names four keys (`lto`, `codegen-units`,
 `opt-level`, `strip`) while the amended prompt asks for six — the decision answers all six, a
 superset, so nothing is dropped. Gate 1 is answered `inapplicable — owner ruling 2026-09-12
 (Q7.B)` with the section present at line 47 and the gate row **recorded rather than deleted**,
@@ -219,9 +221,11 @@ is argued from dist's runner map. Applied evenly, that map also assigns `x86_64-
 cross-build the decision never names. Opus's raw carries the missing half and the synthesis
 compressed it out: `opus.md:360` records that *"Apple's toolchain targets both architectures"*
 and `:372` that `x86_64-apple-darwin` *"costs one extra `rustup target add` on a runner that
-is"* aarch64. Darwin↔Darwin cross-compilation is toolchain-native and dist's generated workflow
-installs rustup targets itself, so the recommendation as written is very likely correct; what is
-missing is the sentence saying why the ARM-Linux ground does not reach this triple. It is
+is"* already provisioned — that is, Opus priced the extra target and judged it cheap on a runner
+the matrix already supplies, which is the argument the synthesis dropped rather than one it
+contradicted. Who runs that `rustup target add` was not read at dist's source in this run and I
+do not assert it. What is missing from the decision is the sentence saying why the ARM-Linux
+ground does not reach this triple. It is
 non-blocking because the gap is already inside the scope of the recorded unproven item *"dist
 was never executed in this item"*, whose named proof — `dist plan --output-format=json`
 asserting exactly three archives — is the check that would surface a failure before a release,
