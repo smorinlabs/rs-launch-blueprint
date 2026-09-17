@@ -1,5 +1,5 @@
 
-===== A0. environment (these four lines are the only volatile lines in this log) =====
+===== A0. environment (all six lines below are host-dependent; nothing else in this log is) =====
 rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
 cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
 OS: macOS 26.4 (arm64)
@@ -69,7 +69,11 @@ PASS  [/usr/bin/grep -c -E] got=1 want=1  A4.1 2.9.2 is the newest section — t
 PASS  [/usr/bin/grep -c -E] got=1 want=1  A4.2 2.9.1's sole entry is the hash-calculation regression fix — the reason the floor is 2.9.1, not 2.9.0
 PASS  [/usr/bin/grep -c -E] got=1 want=1  A4.3 2.9.0 added all-installed-toolchains keying, which the MSRV floor job needs
 PASS  [/usr/bin/grep -c -E] got=1 want=1  A4.4 2.9.0 moved to the node24 runtime
-PASS  [/usr/bin/grep -c -E] got=0 want=0  A4.5 NO entry at or below 2.9.2 mentions a macOS image or ImageOS fix — issue #341 is unfixed at the pin
+PASS  got=0 want=0  A4.5 [/usr/bin/grep -c -i -E] NO entry at any version records an image-keying or #341 fix — that defect is unfixed at the pin
+-- what the CHANGELOG DOES say about macOS, case-insensitively, printed so the negative above is bounded --
+52:- Only run macOsWorkaround() on macOS
+168:- Work around macOS cache corruption.
+PASS  got=2 want=2  A4.6 [/usr/bin/grep -c -i -E] exactly two macOS entries exist (2.7.5 and 1.0.1), both the macOsWorkaround for cargo#8603 / actions/cache#403 — a different defect from #341
 
 ===== A5. Swatinem/rust-cache LICENSE at 6323deb102c322ba6fcbdcafc7e3dddab59af2b6 — recorded as a FIGURE only =====
                    GNU LESSER GENERAL PUBLIC LICENSE
@@ -142,5 +146,5 @@ PASS  control fired: got=1 != perturbed-want=0  A13.3 A6.3 discriminates: the sa
 PASS  control fired: got=3 != perturbed-want=0  A13.4 A9.2 discriminates: the same action-name pattern is non-zero in R20 (3), so zero in R42 is a real absence
 
 ===== RESULT =====
-checks: 59 passed, 0 failed, 0 skipped
+checks: 60 passed, 0 failed, 0 skipped
 VERDICT: PASS

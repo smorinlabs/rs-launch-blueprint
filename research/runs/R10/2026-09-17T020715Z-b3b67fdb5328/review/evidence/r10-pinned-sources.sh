@@ -9,8 +9,12 @@
 # Reproducibility contract: every remote read in this script is pinned to a
 # commit SHA or to an immutable tag object, and every local read is of a file
 # tracked in this repository, so the log this script writes is intended to be
-# byte-for-byte reproducible apart from the four lines of section A0 that report
-# the local toolchain and CLI versions. Volatile figures (stars, issue counts,
+# byte-for-byte reproducible apart from the six host-dependent lines of section
+# A0: the rustc, cargo, OS, gh and /usr/bin/grep versions, and the resolved
+# repository root, which differs in any other checkout or extraction directory.
+# Section A8 additionally reads two actions/runner-images paths on that
+# repository's default branch — the only unpinned remote reads here, and the one
+# place where upstream can move the log. Volatile figures (stars, issue counts,
 # push dates) are NOT read here; they live in r10-live-figures.sh.
 #
 # Checks that need this repository's .git directory print "SKIP <name>" and are
@@ -90,7 +94,7 @@ sha256_of() {
   fi
 }
 
-hr "A0. environment (these four lines are the only volatile lines in this log)"
+hr "A0. environment (all six lines below are host-dependent; nothing else in this log is)"
 rustc --version
 cargo --version
 printf 'OS: macOS %s (%s)\n' "$(sw_vers -productVersion)" "$(uname -m)"
@@ -172,8 +176,17 @@ expect_count "$WORK/CHANGELOG.md" '^- Consider all installed toolchains for cach
 # shellcheck disable=SC2016  # the $ is a regex anchor, not a shell expansion
 expect_count "$WORK/CHANGELOG.md" '^- Update to `node24`$' 1 \
   "A4.4 2.9.0 moved to the node24 runtime"
-expect_count "$WORK/CHANGELOG.md" 'macos|ImageOS|image' 0 \
-  "A4.5 NO entry at or below 2.9.2 mentions a macOS image or ImageOS fix — issue #341 is unfixed at the pin"
+# A4.5 and A4.6 are deliberately split, and both are case-INSENSITIVE. A
+# case-sensitive search would miss the spelling "macOS" that the file actually
+# uses, and would turn a bounded negative into a false "nothing found".
+got=$("$GREP" -c -i -E 'imageos|runner image|image generation|macos-latest|341' "$WORK/CHANGELOG.md" || true)
+expect_equal "${got:-0}" "0" \
+  "A4.5 [$GREP -c -i -E] NO entry at any version records an image-keying or #341 fix — that defect is unfixed at the pin"
+echo "-- what the CHANGELOG DOES say about macOS, case-insensitively, printed so the negative above is bounded --"
+"$GREP" -n -i -E 'macos' "$WORK/CHANGELOG.md" || true
+got=$("$GREP" -c -i -E 'macos' "$WORK/CHANGELOG.md" || true)
+expect_equal "${got:-0}" "2" \
+  "A4.6 [$GREP -c -i -E] exactly two macOS entries exist (2.7.5 and 1.0.1), both the macOsWorkaround for cargo#8603 / actions/cache#403 — a different defect from #341"
 
 hr "A5. Swatinem/rust-cache LICENSE at $RUST_CACHE_PIN — recorded as a FIGURE only"
 # Fitness gate 1 is 'inapplicable — owner ruling 2026-09-12 (Q7.B)'. The licence

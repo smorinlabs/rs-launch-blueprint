@@ -119,11 +119,19 @@ new image generation, so the runner *image* is not in the key. Issue
 github macos runner", opened 2026-05-13, **closed** 2026-05-29 with 5 comments
 (`GET https://api.github.com/repos/Swatinem/rust-cache/issues/341`, retrieved
 2026-09-17) — is that defect observed: a cache saved on the old image restored
-`$CARGO_HOME/bin` onto the new one and broke the rustup shims. **The CHANGELOG at
-the recommended pin records no fix for it** (assertion A4.5 asserts zero
-CHANGELOG lines mentioning macOS, an image or `ImageOS`), so the behaviour is
-live at `v2.9.2` and the template must close it in its own configuration. That
-is what `env-vars: "ImageOS"` is for.
+`$CARGO_HOME/bin` onto the new one and broke the rustup shims. **The CHANGELOG
+at the recommended pin records no image-keying fix for it**: a case-insensitive
+search over the whole file returns zero lines matching `imageos`, `runner image`,
+`image generation`, `macos-latest` or `341` (assertion A4.5). That negative is
+bounded rather than absolute — the file does carry exactly two macOS entries,
+`Only run macOsWorkaround() on macOS` (2.7.5) and `Work around macOS cache
+corruption.` (1.0.1), both printed verbatim in the log and both the
+`macOsWorkaround` for `rust-lang/cargo#8603` and `actions/cache#403`, which is a
+different defect from #341 (assertion A4.6). The load-bearing proof that the
+#341 behaviour is live at `v2.9.2` is not the CHANGELOG's silence but the key
+itself: it still ends in `os.type()`-`os.arch()` with no image component
+(assertions A3.4 and A3.5). The template must therefore close it in its own
+configuration, which is what `env-vars: "ImageOS"` is for.
 
 **LOW — extra configuration for a multi-crate workspace?** No input is needed
 for the workspace R02 may produce. The manifest digest normalises
@@ -437,7 +445,7 @@ shellcheck research/runs/R10/2026-09-17T020715Z-b3b67fdb5328/review/evidence/r10
 
 | Script | Log | Exit | Outcome |
 |---|---|---|---|
-| `r10-pinned-sources.sh` | `review/evidence/r10-pinned-sources.log` | **0** | `checks: 59 passed, 0 failed, 0 skipped` / `VERDICT: PASS` |
+| `r10-pinned-sources.sh` | `review/evidence/r10-pinned-sources.log` | **0** | `checks: 60 passed, 0 failed, 0 skipped` / `VERDICT: PASS` |
 | `r10-live-figures.sh` | `review/evidence/r10-live-figures.log` | **0** | figures only; reports no verdict, and says so |
 | `shellcheck` on both | — | **0** | no findings |
 
@@ -459,11 +467,12 @@ found in `rust-cache` (1) and absent from `setup-rust-toolchain` (0) with the
 same expression (A13.3), and the action-name pattern that returns 0 in R42
 returning 3 in R20 (A13.4). All four fired.
 
-**What the 59 assertions cover**, by section: A1 the tag-to-commit resolution;
-A2 the `action.yml` contract and ten input defaults at the pin; A3 the key
+**What the 60 assertions cover**, by section: A1 the tag-to-commit resolution;
+A2 the `action.yml` contract and its input defaults at the pin; A3 the key
 derivation read from `src/config.ts` at the pin; A4 the CHANGELOG, including the
-**negative** assertion that no entry at or below 2.9.2 mentions a macOS image
-fix; A5 the licence figure; A6 the `setup-rust-toolchain` delegate line, its
+**case-insensitive negative** assertion A4.5 that no entry records an
+image-keying or #341 fix, paired with A4.6 counting the two macOS entries that
+do exist so the negative is bounded; A5 the licence figure; A6 the `setup-rust-toolchain` delegate line, its
 `cache` default and its **absent** `env-vars` passthrough; A7 GitHub's published
 Rust recipe, quoted verbatim, with `restore-keys` counted at zero; A8 the two
 `ImageOS` export paths; A9 this repository — the published R42 `DECISION.md`
@@ -480,9 +489,10 @@ committed log was written, and `diff` reported **no difference**: the committed
 log is the byte-for-byte output of the committed script as of 2026-09-17 UTC. It
 is designed to stay that way — every remote read in it is pinned to a commit SHA
 or an immutable tag object, and every local read is of a file tracked here. Three
-drift surfaces are named rather than assumed away: the four lines of section A0
-report this host's `rustc`, `cargo`, OS and `gh` versions and will differ on
-another host; section A8 reads two `actions/runner-images` paths on that
+drift surfaces are named rather than assumed away: the six lines of section A0
+report this host's `rustc`, `cargo`, OS, `gh` and `/usr/bin/grep` versions and
+the resolved repository root, all of which differ in another checkout,
+extraction directory or host; section A8 reads two `actions/runner-images` paths on that
 repository's default branch, which are the only unpinned remote reads in the
 script and could be renamed upstream; and the `gh` credential must be present, or
 the A1–A8 reads fail loudly rather than silently. `r10-live-figures.log` is
