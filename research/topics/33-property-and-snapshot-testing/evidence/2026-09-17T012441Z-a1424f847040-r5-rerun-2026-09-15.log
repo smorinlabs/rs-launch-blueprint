@@ -1,0 +1,623 @@
+
+===== CHECK 1 — toolchain and host =====
+-- run at 2026-09-15T07:00:43Z
+  STATUS OK   rustc --version: exit=0 (expected 0)
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+  ASSERT OK   rustc is a released version: /^rustc 1\.[0-9]+\.[0-9]+/ present
+  STATUS OK   cargo --version: exit=0 (expected 0)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+  ASSERT OK   cargo is a released version: /^cargo 1\.[0-9]+\.[0-9]+/ present
+os: macOS 26.4 arm64
+note: the template does not exist yet; no Rust workspace is built or resolved here.
+
+===== CHECK 2 — current stable Rust (msrv floor input) =====
+-- run at 2026-09-15T07:00:43Z
+  STATUS OK   GET channel-rust-stable.toml: exit=0 (expected 0)
+[pkg.rust]
+version = "1.98.1 (48a229cea 2026-09-01)"
+git_commit_hash = "48a229ceaefd4985c50990b14116b6d856af0985"
+  STATUS OK   grep [pkg.rust]: exit=0 (expected 0)
+  ASSERT OK   a stable version line is present: /^version = "1\.[0-9]+\.[0-9]+/ present
+
+===== CHECK 3 — crates.io — the pinned version's licence, rust_version, edition (plus newest unyanked) =====
+-- run at 2026-09-15T07:00:43Z
+GET https://crates.io/api/v1/crates/proptest/1.11.0 -> HTTP 200
+  STATUS OK   crates.io proptest 1.11.0 is HTTP 200: exit=200 (expected 200)
+GET https://crates.io/api/v1/crates/proptest/versions -> HTTP 200
+  STATUS OK   crates.io proptest versions is HTTP 200: exit=200 (expected 200)
+  STATUS OK   parse proptest version records: exit=0 (expected 0)
+  proptest: PINNED num=1.11.0 created_at=2026-03-24T11:01:38.993611Z license='MIT OR Apache-2.0' rust_version='1.85' edition='2021' yanked=False
+  proptest: newest-unyanked num=1.11.0 license='MIT OR Apache-2.0' rust_version='1.85' (same as pinned)
+  ASSERT OK   proptest 1.11.0 declares MIT OR Apache-2.0: /PINNED num=1.11.0 .*license='MIT OR Apache-2\.0'/ present
+GET https://crates.io/api/v1/crates/quickcheck/1.1.0 -> HTTP 200
+  STATUS OK   crates.io quickcheck 1.1.0 is HTTP 200: exit=200 (expected 200)
+GET https://crates.io/api/v1/crates/quickcheck/versions -> HTTP 200
+  STATUS OK   crates.io quickcheck versions is HTTP 200: exit=200 (expected 200)
+  STATUS OK   parse quickcheck version records: exit=0 (expected 0)
+  quickcheck: PINNED num=1.1.0 created_at=2026-02-10T18:57:19.150934Z license='Unlicense OR MIT' rust_version='1.85.0' edition='2021' yanked=False
+  quickcheck: newest-unyanked num=1.1.0 license='Unlicense OR MIT' rust_version='1.85.0' (same as pinned)
+  ASSERT OK   quickcheck 1.1.0 declares Unlicense OR MIT: /PINNED num=1.1.0 .*license='Unlicense OR MIT'/ present
+GET https://crates.io/api/v1/crates/insta/1.48.0 -> HTTP 200
+  STATUS OK   crates.io insta 1.48.0 is HTTP 200: exit=200 (expected 200)
+GET https://crates.io/api/v1/crates/insta/versions -> HTTP 200
+  STATUS OK   crates.io insta versions is HTTP 200: exit=200 (expected 200)
+  STATUS OK   parse insta version records: exit=0 (expected 0)
+  insta: PINNED num=1.48.0 created_at=2026-06-11T14:13:41.200726Z license='Apache-2.0' rust_version='1.66.0' edition='2021' yanked=False
+  insta: newest-unyanked num=1.48.0 license='Apache-2.0' rust_version='1.66.0' (same as pinned)
+  ASSERT OK   insta 1.48.0 declares Apache-2.0 alone: /PINNED num=1.48.0 .*license='Apache-2\.0'/ present
+GET https://crates.io/api/v1/crates/cargo-insta/1.48.0 -> HTTP 200
+  STATUS OK   crates.io cargo-insta 1.48.0 is HTTP 200: exit=200 (expected 200)
+GET https://crates.io/api/v1/crates/cargo-insta/versions -> HTTP 200
+  STATUS OK   crates.io cargo-insta versions is HTTP 200: exit=200 (expected 200)
+  STATUS OK   parse cargo-insta version records: exit=0 (expected 0)
+  cargo-insta: PINNED num=1.48.0 created_at=2026-06-11T14:13:59.056637Z license='Apache-2.0' rust_version='1.66.0' edition='2021' yanked=False
+  cargo-insta: newest-unyanked num=1.48.0 license='Apache-2.0' rust_version='1.66.0' (same as pinned)
+  ASSERT OK   cargo-insta 1.48.0 declares Apache-2.0 alone: /PINNED num=1.48.0 .*license='Apache-2\.0'/ present
+GET https://crates.io/api/v1/crates/snapbox/1.2.2 -> HTTP 200
+  STATUS OK   crates.io snapbox 1.2.2 is HTTP 200: exit=200 (expected 200)
+GET https://crates.io/api/v1/crates/snapbox/versions -> HTTP 200
+  STATUS OK   crates.io snapbox versions is HTTP 200: exit=200 (expected 200)
+  STATUS OK   parse snapbox version records: exit=0 (expected 0)
+  snapbox: PINNED num=1.2.2 created_at=2026-05-26T16:30:09.105602Z license='MIT OR Apache-2.0' rust_version='1.85' edition='2024' yanked=False
+  snapbox: newest-unyanked num=1.2.2 license='MIT OR Apache-2.0' rust_version='1.85' (same as pinned)
+  ASSERT OK   snapbox 1.2.2 declares MIT OR Apache-2.0: /PINNED num=1.2.2 .*license='MIT OR Apache-2\.0'/ present
+GET https://crates.io/api/v1/crates/expect-test/1.5.1 -> HTTP 200
+  STATUS OK   crates.io expect-test 1.5.1 is HTTP 200: exit=200 (expected 200)
+GET https://crates.io/api/v1/crates/expect-test/versions -> HTTP 200
+  STATUS OK   crates.io expect-test versions is HTTP 200: exit=200 (expected 200)
+  STATUS OK   parse expect-test version records: exit=0 (expected 0)
+  expect-test: PINNED num=1.5.1 created_at=2024-12-21T13:05:32.571711Z license='MIT OR Apache-2.0' rust_version='1.60.0' edition='2018' yanked=False
+  expect-test: newest-unyanked num=1.5.1 license='MIT OR Apache-2.0' rust_version='1.60.0' (same as pinned)
+  ASSERT OK   expect-test 1.5.1 declares MIT OR Apache-2.0: /PINNED num=1.5.1 .*license='MIT OR Apache-2\.0'/ present
+GET https://crates.io/api/v1/crates/proptest-derive/0.8.0 -> HTTP 200
+  STATUS OK   crates.io proptest-derive 0.8.0 is HTTP 200: exit=200 (expected 200)
+GET https://crates.io/api/v1/crates/proptest-derive/versions -> HTTP 200
+  STATUS OK   crates.io proptest-derive versions is HTTP 200: exit=200 (expected 200)
+  STATUS OK   parse proptest-derive version records: exit=0 (expected 0)
+  proptest-derive: PINNED num=0.8.0 created_at=2026-02-05T03:10:04.617172Z license='MIT OR Apache-2.0' rust_version='1.84' edition='2021' yanked=False
+  proptest-derive: newest-unyanked num=0.8.0 license='MIT OR Apache-2.0' rust_version='1.84' (same as pinned)
+  ASSERT OK   proptest-derive 0.8.0 declares MIT OR Apache-2.0: /PINNED num=0.8.0 .*license='MIT OR Apache-2\.0'/ present
+
+===== CHECK 4 — crates.io — download and reverse-dependency figures (VOLATILE: counters move daily) =====
+-- run at 2026-09-15T07:00:56Z
+  STATUS OK   GET crates.io/proptest: exit=0 (expected 0)
+  STATUS OK   GET crates.io/proptest reverse_dependencies: exit=0 (expected 0)
+  STATUS OK   parse proptest figures: exit=0 (expected 0)
+  proptest: recent_downloads=47309421 downloads=187076323 reverse_deps=10515
+  ASSERT OK   proptest figures are numeric: /recent_downloads=[0-9]+ downloads=[0-9]+ reverse_deps=[0-9]+/ present
+  STATUS OK   GET crates.io/quickcheck: exit=0 (expected 0)
+  STATUS OK   GET crates.io/quickcheck reverse_dependencies: exit=0 (expected 0)
+  STATUS OK   parse quickcheck figures: exit=0 (expected 0)
+  quickcheck: recent_downloads=10812062 downloads=68322485 reverse_deps=1537
+  ASSERT OK   quickcheck figures are numeric: /recent_downloads=[0-9]+ downloads=[0-9]+ reverse_deps=[0-9]+/ present
+  STATUS OK   GET crates.io/insta: exit=0 (expected 0)
+  STATUS OK   GET crates.io/insta reverse_dependencies: exit=0 (expected 0)
+  STATUS OK   parse insta figures: exit=0 (expected 0)
+  insta: recent_downloads=26775426 downloads=99383806 reverse_deps=4433
+  ASSERT OK   insta figures are numeric: /recent_downloads=[0-9]+ downloads=[0-9]+ reverse_deps=[0-9]+/ present
+  STATUS OK   GET crates.io/cargo-insta: exit=0 (expected 0)
+  STATUS OK   GET crates.io/cargo-insta reverse_dependencies: exit=0 (expected 0)
+  STATUS OK   parse cargo-insta figures: exit=0 (expected 0)
+  cargo-insta: recent_downloads=196078 downloads=1564280 reverse_deps=5
+  ASSERT OK   cargo-insta figures are numeric: /recent_downloads=[0-9]+ downloads=[0-9]+ reverse_deps=[0-9]+/ present
+  STATUS OK   GET crates.io/snapbox: exit=0 (expected 0)
+  STATUS OK   GET crates.io/snapbox reverse_dependencies: exit=0 (expected 0)
+  STATUS OK   parse snapbox figures: exit=0 (expected 0)
+  snapbox: recent_downloads=3273823 downloads=12344255 reverse_deps=156
+  ASSERT OK   snapbox figures are numeric: /recent_downloads=[0-9]+ downloads=[0-9]+ reverse_deps=[0-9]+/ present
+  STATUS OK   GET crates.io/expect-test: exit=0 (expected 0)
+  STATUS OK   GET crates.io/expect-test reverse_dependencies: exit=0 (expected 0)
+  STATUS OK   parse expect-test figures: exit=0 (expected 0)
+  expect-test: recent_downloads=7502330 downloads=37346697 reverse_deps=313
+  ASSERT OK   expect-test figures are numeric: /recent_downloads=[0-9]+ downloads=[0-9]+ reverse_deps=[0-9]+/ present
+
+-- the six ratios, DERIVED from the figures just fetched (VOLATILE values,
+   durable floors). The quotient is printed to four decimal places beside its
+   one-decimal rounding so the rounding is auditable. Only the FLOOR lines are
+   asserted: an exact live value would be a claim that expires overnight.
+  STATUS OK   collect the six live figure lines: exit=0 (expected 0)
+  STATUS OK   derive the six live ratios: exit=0 (expected 0)
+  RATIO live insta/snapbox 90d-downloads = 8.1786 -> 8.2x  (26775426 / 3273823)
+  FLOOR live insta/snapbox 90d-downloads > 5.0 : OK  (8.1786)
+  RATIO live insta/snapbox reverse-deps = 28.4167 -> 28.4x  (4433 / 156)
+  FLOOR live insta/snapbox reverse-deps > 20.0 : OK  (28.4167)
+  RATIO live insta/expect-test 90d-downloads = 3.5689 -> 3.6x  (26775426 / 7502330)
+  FLOOR live insta/expect-test 90d-downloads > 3.0 : OK  (3.5689)
+  RATIO live insta/expect-test reverse-deps = 14.1629 -> 14.2x  (4433 / 313)
+  FLOOR live insta/expect-test reverse-deps > 10.0 : OK  (14.1629)
+  RATIO live proptest/quickcheck 90d-downloads = 4.3756 -> 4.4x  (47309421 / 10812062)
+  FLOOR live proptest/quickcheck 90d-downloads > 3.0 : OK  (4.3756)
+  RATIO live proptest/quickcheck reverse-deps = 6.8412 -> 6.8x  (10515 / 1537)
+  FLOOR live proptest/quickcheck reverse-deps > 5.0 : OK  (6.8412)
+  ASSERT OK   every live ratio is printed in derived form: /^  RATIO live [a-z/-]+ [a-z0-9-]+ = [0-9]+\.[0-9]{4} -> [0-9]+\.[0-9]x  \([0-9]+ / [0-9]+\)$/ present
+  ASSERT OK   live: insta/snapbox 90d-downloads leads by more than 5.0x: /^  FLOOR live insta/snapbox 90d-downloads > 5\.0 : OK/ present
+  ASSERT OK   live: insta/snapbox reverse-deps leads by more than 20.0x: /^  FLOOR live insta/snapbox reverse-deps > 20\.0 : OK/ present
+  ASSERT OK   live: insta/expect-test 90d-downloads leads by more than 3.0x: /^  FLOOR live insta/expect-test 90d-downloads > 3\.0 : OK/ present
+  ASSERT OK   live: insta/expect-test reverse-deps leads by more than 10.0x: /^  FLOOR live insta/expect-test reverse-deps > 10\.0 : OK/ present
+  ASSERT OK   live: proptest/quickcheck 90d-downloads leads by more than 3.0x: /^  FLOOR live proptest/quickcheck 90d-downloads > 3\.0 : OK/ present
+  ASSERT OK   live: proptest/quickcheck reverse-deps leads by more than 5.0x: /^  FLOOR live proptest/quickcheck reverse-deps > 5\.0 : OK/ present
+
+===== CHECK 4b — the same six ratios recomputed from two COMMITTED snapshots, and the stability comparison =====
+-- run at 2026-09-15T07:01:06Z
+-- Inputs are static files in this run's evidence directory, so this section is
+   deterministic: apart from its own '-- run at' header it prints identical text
+   on any day and on any machine.
+  STATUS OK   input exists: adoption-figures-2026-09-10.txt: exit=0 (expected 0)
+  STATUS OK   input exists: adoption-figures-2026-09-13.txt: exit=0 (expected 0)
+  STATUS OK   input exists: DECISION.md: exit=0 (expected 0)
+-- provenance headers of the two snapshots (file names only: an absolute path
+   would make this section machine-specific)
+  [adoption-figures-2026-09-10.txt]
+# source-path: research/topics/33-property-and-snapshot-testing/evidence/2026-09-05T164358Z-eae89906c763-property-and-snapshot-testing.log
+# source-sha256: 33c4358489d43edf46b30e37f7a8f5ff465f99f22ea3058e99604d6d40115f6b
+# source-run: 2026-09-10, revision 2 of review/DECISION.md (published)
+# extracted: 2026-09-13, by revision 4's synthesizer, with
+  STATUS OK   adoption-figures-2026-09-10.txt carries provenance headers: exit=0 (expected 0)
+  [adoption-figures-2026-09-13.txt]
+# source-path: research/runs/R33/2026-09-05T164358Z-eae89906c763/review/evidence/property-and-snapshot-testing.log
+# source-sha256: 235dd90ffcdaba32eea3bf66909d4983da6fe43d05360d4dc0e8fe3c25777102
+# source-run: 2026-09-13T07:25Z, the run recorded by revision 3 of review/DECISION.md
+# extracted: 2026-09-13, by revision 4's synthesizer, with
+  STATUS OK   adoption-figures-2026-09-13.txt carries provenance headers: exit=0 (expected 0)
+  ASSERT OK   the 2026-09-10 snapshot names the published revision-2 log: /^# source-sha256: 33c4358489d43edf46b30e37f7a8f5ff465f99f22ea3058e99604d6d40115f6b$/ present
+  ASSERT OK   the 2026-09-13 snapshot names the run at 07:25Z: /^# source-run: 2026-09-13T07:25Z/ present
+  STATUS OK   derive the six 2026-09-10 ratios: exit=0 (expected 0)
+  RATIO 2026-09-10 insta/snapbox 90d-downloads = 8.2828 -> 8.3x  (26382169 / 3185186)
+  FLOOR 2026-09-10 insta/snapbox 90d-downloads > 5.0 : OK  (8.2828)
+  RATIO 2026-09-10 insta/snapbox reverse-deps = 28.1026 -> 28.1x  (4384 / 156)
+  FLOOR 2026-09-10 insta/snapbox reverse-deps > 20.0 : OK  (28.1026)
+  RATIO 2026-09-10 insta/expect-test 90d-downloads = 3.6009 -> 3.6x  (26382169 / 7326545)
+  FLOOR 2026-09-10 insta/expect-test 90d-downloads > 3.0 : OK  (3.6009)
+  RATIO 2026-09-10 insta/expect-test reverse-deps = 14.0064 -> 14.0x  (4384 / 313)
+  FLOOR 2026-09-10 insta/expect-test reverse-deps > 10.0 : OK  (14.0064)
+  RATIO 2026-09-10 proptest/quickcheck 90d-downloads = 4.4145 -> 4.4x  (46574976 / 10550560)
+  FLOOR 2026-09-10 proptest/quickcheck 90d-downloads > 3.0 : OK  (4.4145)
+  RATIO 2026-09-10 proptest/quickcheck reverse-deps = 6.7630 -> 6.8x  (10388 / 1536)
+  FLOOR 2026-09-10 proptest/quickcheck reverse-deps > 5.0 : OK  (6.7630)
+  ASSERT OK   2026-09-10: insta/snapbox 90d-downloads leads by more than 5.0x: /^  FLOOR 2026-09-10 insta/snapbox 90d-downloads > 5\.0 : OK/ present
+  ASSERT OK   2026-09-10: insta/snapbox reverse-deps leads by more than 20.0x: /^  FLOOR 2026-09-10 insta/snapbox reverse-deps > 20\.0 : OK/ present
+  ASSERT OK   2026-09-10: insta/expect-test 90d-downloads leads by more than 3.0x: /^  FLOOR 2026-09-10 insta/expect-test 90d-downloads > 3\.0 : OK/ present
+  ASSERT OK   2026-09-10: insta/expect-test reverse-deps leads by more than 10.0x: /^  FLOOR 2026-09-10 insta/expect-test reverse-deps > 10\.0 : OK/ present
+  ASSERT OK   2026-09-10: proptest/quickcheck 90d-downloads leads by more than 3.0x: /^  FLOOR 2026-09-10 proptest/quickcheck 90d-downloads > 3\.0 : OK/ present
+  ASSERT OK   2026-09-10: proptest/quickcheck reverse-deps leads by more than 5.0x: /^  FLOOR 2026-09-10 proptest/quickcheck reverse-deps > 5\.0 : OK/ present
+  STATUS OK   derive the six 2026-09-13 ratios: exit=0 (expected 0)
+  RATIO 2026-09-13 insta/snapbox 90d-downloads = 8.2490 -> 8.2x  (26700493 / 3236799)
+  FLOOR 2026-09-13 insta/snapbox 90d-downloads > 5.0 : OK  (8.2490)
+  RATIO 2026-09-13 insta/snapbox reverse-deps = 28.2051 -> 28.2x  (4400 / 156)
+  FLOOR 2026-09-13 insta/snapbox reverse-deps > 20.0 : OK  (28.2051)
+  RATIO 2026-09-13 insta/expect-test 90d-downloads = 3.5890 -> 3.6x  (26700493 / 7439591)
+  FLOOR 2026-09-13 insta/expect-test 90d-downloads > 3.0 : OK  (3.5890)
+  RATIO 2026-09-13 insta/expect-test reverse-deps = 14.0575 -> 14.1x  (4400 / 313)
+  FLOOR 2026-09-13 insta/expect-test reverse-deps > 10.0 : OK  (14.0575)
+  RATIO 2026-09-13 proptest/quickcheck 90d-downloads = 4.3973 -> 4.4x  (47141103 / 10720585)
+  FLOOR 2026-09-13 proptest/quickcheck 90d-downloads > 3.0 : OK  (4.3973)
+  RATIO 2026-09-13 proptest/quickcheck reverse-deps = 6.8021 -> 6.8x  (10448 / 1536)
+  FLOOR 2026-09-13 proptest/quickcheck reverse-deps > 5.0 : OK  (6.8021)
+  ASSERT OK   2026-09-13: insta/snapbox 90d-downloads leads by more than 5.0x: /^  FLOOR 2026-09-13 insta/snapbox 90d-downloads > 5\.0 : OK/ present
+  ASSERT OK   2026-09-13: insta/snapbox reverse-deps leads by more than 20.0x: /^  FLOOR 2026-09-13 insta/snapbox reverse-deps > 20\.0 : OK/ present
+  ASSERT OK   2026-09-13: insta/expect-test 90d-downloads leads by more than 3.0x: /^  FLOOR 2026-09-13 insta/expect-test 90d-downloads > 3\.0 : OK/ present
+  ASSERT OK   2026-09-13: insta/expect-test reverse-deps leads by more than 10.0x: /^  FLOOR 2026-09-13 insta/expect-test reverse-deps > 10\.0 : OK/ present
+  ASSERT OK   2026-09-13: proptest/quickcheck 90d-downloads leads by more than 3.0x: /^  FLOOR 2026-09-13 proptest/quickcheck 90d-downloads > 3\.0 : OK/ present
+  ASSERT OK   2026-09-13: proptest/quickcheck reverse-deps leads by more than 5.0x: /^  FLOOR 2026-09-13 proptest/quickcheck reverse-deps > 5\.0 : OK/ present
+-- each ratio's exact value on each date, asserted (both inputs are immutable)
+  ASSERT OK   2026-09-10 insta/snapbox 90d-downloads computes to 8.2828 (8.3x): /^  RATIO 2026-09-10 insta/snapbox 90d-downloads = 8\.2828 -> 8\.3x/ present
+  ASSERT OK   review/DECISION.md pairs 8.2828 with 8.3x for 2026-09-10 insta/snapbox 90d-downloads: /8\.2828.*8\.3/ present
+  ASSERT OK   2026-09-10 insta/snapbox reverse-deps computes to 28.1026 (28.1x): /^  RATIO 2026-09-10 insta/snapbox reverse-deps = 28\.1026 -> 28\.1x/ present
+  ASSERT OK   review/DECISION.md pairs 28.1026 with 28.1x for 2026-09-10 insta/snapbox reverse-deps: /28\.1026.*28\.1/ present
+  ASSERT OK   2026-09-10 insta/expect-test 90d-downloads computes to 3.6009 (3.6x): /^  RATIO 2026-09-10 insta/expect-test 90d-downloads = 3\.6009 -> 3\.6x/ present
+  ASSERT OK   review/DECISION.md pairs 3.6009 with 3.6x for 2026-09-10 insta/expect-test 90d-downloads: /3\.6009.*3\.6/ present
+  ASSERT OK   2026-09-10 insta/expect-test reverse-deps computes to 14.0064 (14.0x): /^  RATIO 2026-09-10 insta/expect-test reverse-deps = 14\.0064 -> 14\.0x/ present
+  ASSERT OK   review/DECISION.md pairs 14.0064 with 14.0x for 2026-09-10 insta/expect-test reverse-deps: /14\.0064.*14\.0/ present
+  ASSERT OK   2026-09-10 proptest/quickcheck 90d-downloads computes to 4.4145 (4.4x): /^  RATIO 2026-09-10 proptest/quickcheck 90d-downloads = 4\.4145 -> 4\.4x/ present
+  ASSERT OK   review/DECISION.md pairs 4.4145 with 4.4x for 2026-09-10 proptest/quickcheck 90d-downloads: /4\.4145.*4\.4/ present
+  ASSERT OK   2026-09-10 proptest/quickcheck reverse-deps computes to 6.7630 (6.8x): /^  RATIO 2026-09-10 proptest/quickcheck reverse-deps = 6\.7630 -> 6\.8x/ present
+  ASSERT OK   review/DECISION.md pairs 6.7630 with 6.8x for 2026-09-10 proptest/quickcheck reverse-deps: /6\.7630.*6\.8/ present
+  ASSERT OK   2026-09-13 insta/snapbox 90d-downloads computes to 8.2490 (8.2x): /^  RATIO 2026-09-13 insta/snapbox 90d-downloads = 8\.2490 -> 8\.2x/ present
+  ASSERT OK   review/DECISION.md pairs 8.2490 with 8.2x for 2026-09-13 insta/snapbox 90d-downloads: /8\.2490.*8\.2/ present
+  ASSERT OK   2026-09-13 insta/snapbox reverse-deps computes to 28.2051 (28.2x): /^  RATIO 2026-09-13 insta/snapbox reverse-deps = 28\.2051 -> 28\.2x/ present
+  ASSERT OK   review/DECISION.md pairs 28.2051 with 28.2x for 2026-09-13 insta/snapbox reverse-deps: /28\.2051.*28\.2/ present
+  ASSERT OK   2026-09-13 insta/expect-test 90d-downloads computes to 3.5890 (3.6x): /^  RATIO 2026-09-13 insta/expect-test 90d-downloads = 3\.5890 -> 3\.6x/ present
+  ASSERT OK   review/DECISION.md pairs 3.5890 with 3.6x for 2026-09-13 insta/expect-test 90d-downloads: /3\.5890.*3\.6/ present
+  ASSERT OK   2026-09-13 insta/expect-test reverse-deps computes to 14.0575 (14.1x): /^  RATIO 2026-09-13 insta/expect-test reverse-deps = 14\.0575 -> 14\.1x/ present
+  ASSERT OK   review/DECISION.md pairs 14.0575 with 14.1x for 2026-09-13 insta/expect-test reverse-deps: /14\.0575.*14\.1/ present
+  ASSERT OK   2026-09-13 proptest/quickcheck 90d-downloads computes to 4.3973 (4.4x): /^  RATIO 2026-09-13 proptest/quickcheck 90d-downloads = 4\.3973 -> 4\.4x/ present
+  ASSERT OK   review/DECISION.md pairs 4.3973 with 4.4x for 2026-09-13 proptest/quickcheck 90d-downloads: /4\.3973.*4\.4/ present
+  ASSERT OK   2026-09-13 proptest/quickcheck reverse-deps computes to 6.8021 (6.8x): /^  RATIO 2026-09-13 proptest/quickcheck reverse-deps = 6\.8021 -> 6\.8x/ present
+  ASSERT OK   review/DECISION.md pairs 6.8021 with 6.8x for 2026-09-13 proptest/quickcheck reverse-deps: /6\.8021.*6\.8/ present
+-- which ratios moved at one decimal place between the two dates
+  STATUS OK   compare the two dates: exit=0 (expected 0)
+  MOVE insta/snapbox 90d-downloads: 2026-09-10 8.3x -> 2026-09-13 8.2x : moved
+  MOVE insta/snapbox reverse-deps: 2026-09-10 28.1x -> 2026-09-13 28.2x : moved
+  MOVE insta/expect-test 90d-downloads: 2026-09-10 3.6x -> 2026-09-13 3.6x : held
+  MOVE insta/expect-test reverse-deps: 2026-09-10 14.0x -> 2026-09-13 14.1x : moved
+  MOVE proptest/quickcheck 90d-downloads: 2026-09-10 4.4x -> 2026-09-13 4.4x : held
+  MOVE proptest/quickcheck reverse-deps: 2026-09-10 6.8x -> 2026-09-13 6.8x : held
+  one-decimal comparison 2026-09-10 -> 2026-09-13: moved=3 held=3 of 6
+  ASSERT OK   insta/snapbox 90d-downloads went 8.3x -> 8.2x and is 'moved': /^  MOVE insta/snapbox 90d-downloads: 2026-09-10 8\.3x -> 2026-09-13 8\.2x : moved$/ present
+  ASSERT OK   insta/snapbox reverse-deps went 28.1x -> 28.2x and is 'moved': /^  MOVE insta/snapbox reverse-deps: 2026-09-10 28\.1x -> 2026-09-13 28\.2x : moved$/ present
+  ASSERT OK   insta/expect-test 90d-downloads went 3.6x -> 3.6x and is 'held': /^  MOVE insta/expect-test 90d-downloads: 2026-09-10 3\.6x -> 2026-09-13 3\.6x : held$/ present
+  ASSERT OK   insta/expect-test reverse-deps went 14.0x -> 14.1x and is 'moved': /^  MOVE insta/expect-test reverse-deps: 2026-09-10 14\.0x -> 2026-09-13 14\.1x : moved$/ present
+  ASSERT OK   proptest/quickcheck 90d-downloads went 4.4x -> 4.4x and is 'held': /^  MOVE proptest/quickcheck 90d-downloads: 2026-09-10 4\.4x -> 2026-09-13 4\.4x : held$/ present
+  ASSERT OK   proptest/quickcheck reverse-deps went 6.8x -> 6.8x and is 'held': /^  MOVE proptest/quickcheck reverse-deps: 2026-09-10 6\.8x -> 2026-09-13 6\.8x : held$/ present
+  ASSERT OK   three of the six moved at one decimal and three held: /^  one-decimal comparison 2026-09-10 -> 2026-09-13: moved=3 held=3 of 6$/ present
+-- the counters move in BOTH directions: cargo-insta's 90-day downloads FELL
+  [adoption-figures-2026-09-10.txt]   cargo-insta: recent_downloads=204308 downloads=1555508 reverse_deps=5
+  STATUS OK   read cargo-insta in adoption-figures-2026-09-10.txt: exit=0 (expected 0)
+  [adoption-figures-2026-09-13.txt]   cargo-insta: recent_downloads=199628 downloads=1560749 reverse_deps=5
+  STATUS OK   read cargo-insta in adoption-figures-2026-09-13.txt: exit=0 (expected 0)
+  ASSERT OK   cargo-insta 90-day downloads were 204308 on 2026-09-10: /^  cargo-insta: recent_downloads=204308 / present
+  ASSERT OK   cargo-insta 90-day downloads were 199628 on 2026-09-13 (a fall): /^  cargo-insta: recent_downloads=199628 / present
+
+===== CHECK 5 — RustSec package pages, with two known-advisory controls =====
+-- run at 2026-09-15T07:01:06Z
+  proptest         404
+  quickcheck       404
+  insta            404
+  cargo-insta      404
+  snapbox          404
+  expect-test      404
+  proptest-derive  404
+  time             200
+  atty             200
+  controls 'time' and 'atty' are crates with published advisories; a 200 there with 404 elsewhere
+  shows rustsec.org publishes a package page only when an advisory exists.
+  ASSERT OK   proptest has no RustSec page (404): /^  proptest +404$/ present
+  ASSERT OK   quickcheck has no RustSec page (404): /^  quickcheck +404$/ present
+  ASSERT OK   insta has no RustSec page (404): /^  insta +404$/ present
+  ASSERT OK   cargo-insta has no RustSec page (404): /^  cargo-insta +404$/ present
+  ASSERT OK   snapbox has no RustSec page (404): /^  snapbox +404$/ present
+  ASSERT OK   expect-test has no RustSec page (404): /^  expect-test +404$/ present
+  ASSERT OK   proptest-derive has no RustSec page (404): /^  proptest-derive +404$/ present
+  ASSERT OK   control 'time' has a RustSec page (200): /^  time +200$/ present
+  ASSERT OK   control 'atty' has a RustSec page (200): /^  atty +200$/ present
+
+===== CHECK 6 — first-party CI OS matrices (fitness gate 4) =====
+-- run at 2026-09-15T07:01:08Z
+--- proptest-rs/proptest .github/workflows/rust.yml
+  STATUS OK   gh api repos/proptest-rs/proptest/contents/.github/workflows/rust.yml: exit=0 (expected 0)
+  STATUS OK   base64 -d workflow: exit=0 (expected 0)
+13:    runs-on: ${{ matrix.os }}
+24:            os: ubuntu-24.04
+27:            os: ubuntu-24.04
+30:            os: ubuntu-24.04
+33:            os: ubuntu-24.04
+  ASSERT OK   proptest CI runs ubuntu-24.04: /ubuntu-24\.04/ present
+  ASSERT OK   proptest CI has no macOS leg: /macos/ absent
+  ASSERT OK   proptest CI has no Windows leg: /windows/ absent
+--- mitsuhiko/insta .github/workflows/tests.yml
+  STATUS OK   gh api repos/mitsuhiko/insta/contents/.github/workflows/tests.yml: exit=0 (expected 0)
+  STATUS OK   base64 -d workflow: exit=0 (expected 0)
+17:    runs-on: ${{ matrix.os }}
+20:        os:
+21:          - ubuntu-latest
+22:          - macos-latest
+23:          - windows-latest
+33:    runs-on: ubuntu-latest
+43:    runs-on: ubuntu-latest
+60:    runs-on: ubuntu-latest
+71:    runs-on: ubuntu-latest
+79:    runs-on: ubuntu-latest
+88:    runs-on: ubuntu-latest
+108:    runs-on: ubuntu-latest
+  ASSERT OK   insta CI runs ubuntu-latest: /ubuntu-latest/ present
+  ASSERT OK   insta CI runs macos-latest: /macos-latest/ present
+  ASSERT OK   insta CI runs windows-latest: /windows-latest/ present
+--- assert-rs/snapbox .github/workflows/ci.yml
+  STATUS OK   gh api repos/assert-rs/snapbox/contents/.github/workflows/ci.yml: exit=0 (expected 0)
+  STATUS OK   base64 -d workflow: exit=0 (expected 0)
+29:    runs-on: ubuntu-latest
+39:        os: ["ubuntu-latest", "windows-latest", "macos-latest"]
+42:    runs-on: ${{ matrix.os }}
+67:        os: ["ubuntu-latest"]
+68:    runs-on: ${{ matrix.os }}
+88:        os: ["ubuntu-latest"]
+89:    runs-on: ${{ matrix.os }}
+104:    runs-on: ubuntu-latest
+118:    runs-on: ubuntu-latest
+134:    runs-on: ubuntu-latest
+150:    runs-on: ubuntu-latest
+186:    runs-on: ubuntu-latest
+  ASSERT OK   snapbox CI runs ubuntu-latest: /ubuntu-latest/ present
+  ASSERT OK   snapbox CI runs macos-latest: /macos-latest/ present
+  ASSERT OK   snapbox CI runs windows-latest: /windows-latest/ present
+
+===== CHECK 7 — insta manifest — licence field and default features (docs.rs correction) =====
+-- run at 2026-09-15T07:01:09Z
+  STATUS OK   GET mitsuhiko/insta insta/Cargo.toml: exit=0 (expected 0)
+[package]
+name = "insta"
+version = "1.48.0"
+license = "Apache-2.0"
+authors = ["Armin Ronacher <armin.ronacher@active-4.com>"]
+description = "A snapshot testing library for Rust"
+edition = "2021"
+rust-version = "1.66.0"
+homepage = "https://insta.rs/"
+repository = "https://github.com/mitsuhiko/insta"
+keywords = ["snapshot", "testing", "jest", "approval"]
+categories = ["development-tools::testing"]
+readme = "README.md"
+exclude = ["assets/*"]
+
+[package.metadata.docs.rs]
+all-features = true
+rustdoc-args = ["--cfg", "docsrs"]
+
+[features]
+default = ["colors"]
+
+# when the redactions feature is enabled values can be redacted in serialized
+# snapshots.
+redactions = ["pest", "pest_derive", "serde"]
+
+# Enables support for running filters on snapshot
+filters = ["regex", "strip-ansi-escapes"]
+
+# Glob support
+glob = ["walkdir", "globset"]
+
+# Color support
+colors = ["console"]
+
+# Serialization formats
+csv = ["dep:csv", "serde"]
+json = ["serde"]
+ron = ["dep:ron", "serde"]
+toml = ["dep:toml_edit", "dep:toml_writer", "serde"]
+yaml = ["serde"]
+
+# internal feature exclusive to cargo-insta
+_cargo_insta_internal = ["clap"]
+
+  ASSERT OK   insta's own manifest declares Apache-2.0: /^license = "Apache-2\.0"/ present
+  ASSERT OK   insta default features are colors only: /^default = \["colors"\]/ present
+--- workspace manifest: members and prebuilt targets
+  STATUS OK   GET mitsuhiko/insta Cargo.toml: exit=0 (expected 0)
+[workspace]
+members = ["cargo-insta"]
+resolver = "2"
+
+# Config for 'dist'
+[workspace.metadata.dist]
+# The preferred dist version to use in CI (Cargo.toml SemVer syntax)
+cargo-dist-version = "0.30.2"
+# CI backends to support
+ci = "github"
+# Whether to install an updater program
+install-updater = false
+# The installers to generate for each app
+installers = ["shell", "powershell"]
+# Which actions to run on pull requests
+pr-run-mode = "plan"
+# Build only the required packages, and individually
+precise-builds = true
+# Target platforms to build apps for (Rust target-triple syntax)
+targets = [
+    "aarch64-apple-darwin",
+    "x86_64-apple-darwin",
+    "x86_64-unknown-linux-gnu",
+    "x86_64-unknown-linux-musl",
+    "x86_64-pc-windows-msvc",
+]
+# Path that installers should place binaries in
+install-path = "CARGO_HOME"
+# because of
+# https://github.com/axodotdev/cargo-dist/issues/1760
+allow-dirty = ["ci"]
+
+[workspace.metadata.dist.github-custom-runners]
+x86_64-unknown-linux-gnu = "ubuntu-22.04"
+x86_64-unknown-linux-musl = "ubuntu-22.04"
+x86_64-pc-windows-msvc = "windows-2022"
+
+[profile.dist]
+inherits = "release"
+lto = "thin"
+  ASSERT OK   cargo-insta is a workspace member: /members = \["cargo-insta"\]/ present
+  ASSERT OK   dist targets include aarch64-apple-darwin: /aarch64-apple-darwin/ present
+  ASSERT OK   dist targets include x86_64-unknown-linux-gnu: /x86_64-unknown-linux-gnu/ present
+
+===== CHECK 8 — proptest manifest at HEAD — rust-version vs the published 1.11.0 value =====
+-- run at 2026-09-15T07:01:10Z
+  STATUS OK   GET proptest-rs/proptest proptest/Cargo.toml: exit=0 (expected 0)
+2:name = "proptest"
+3:version = "1.11.0"
+5:license = "MIT OR Apache-2.0"
+12:edition = "2021"
+13:rust-version = "1.86"
+20:[features]
+22:default = ["std", "fork", "timeout", "bit-set"]
+  STATUS OK   grep proptest manifest fields: exit=0 (expected 0)
+  ASSERT OK   HEAD declares rust-version 1.86: /^rust-version = "1\.86"/ present
+  ASSERT OK   HEAD default features: /^default = \["std", "fork", "timeout", "bit-set"\]/ present
+
+===== CHECK 9 — clap documentation — the determinism pins the B2 architecture depends on =====
+-- run at 2026-09-15T07:01:10Z
+StyledStr HTTP 200
+  STATUS OK   docs.rs StyledStr is HTTP 200: exit=200 (expected 200)
+  STATUS OK   scan StyledStr page: exit=0 (expected 0)
+  'Color-unaware printing': FOUND ...edStrSource§fn default() -> &StyledStrReturns the “default value” for a type. Read moreSource§impl Display for StyledStrColor-unaware printing. Never uses coloring. Source§fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error>Formats the
+  'Never uses coloring': FOUND ...-> &StyledStrReturns the “default value” for a type. Read moreSource§impl Display for StyledStrColor-unaware printing. Never uses coloring. Source§fn fmt(&self, f: &mut Formatter<'_>) -> Result<(), Error>Formats the value using the given f
+  'ansi(': FOUND ...tr` // ...Implementations§Source§impl StyledStrSourcepub const fn new() -> StyledStrCreate an empty buffer Sourcepub fn ansi(&self) -> impl DisplayAvailable on crate feature color only.Display using ANSI Escape Code styling Sourcepub fn pus
+  ASSERT OK   StyledStr documents color-unaware Display: /'Color-unaware printing': FOUND/ present
+  ASSERT OK   StyledStr documents 'Never uses coloring': /'Never uses coloring': FOUND/ present
+  ASSERT OK   StyledStr offers an opt-in ansi() method: /'ansi\(': FOUND/ present
+Command HTTP 200
+  STATUS OK   docs.rs Command is HTTP 200: exit=200 (expected 200)
+  STATUS OK   scan Command page: exit=0 (expected 0)
+  'render_long_help': FOUND ...g_helppropagate_versionremoverender_helprender_long_helprender_long_versionrender_usagerender_versionset_bin_nameshort_flagshort_flag_aliasshort_flag_aliasesstylessubcommandsubcommand_help_headingsubcommand_negates_reqss
+  'get_subcommands': FOUND ...nd_help_headingget_subcommand_value_nameget_subcommandsget_subcommands_mutget_versionget_visible_aliasesget_visible_long_flag_aliasesget_visible_short_flag_aliasesgroupgroupshas_subcommandshelp_expectedhelp_templatehideh
+  'term_width': FOUND ...g_aliaslong_flag_aliaseslong_versionmax_term_widthmulticallmut_argmut_argsmut_groupmut_subcommandmut_subcommandsnamenext_display_ordernext_help_headingnext_line_helpno_binary_nameoverride_helpoverride_usageprint_helpprin
+  ASSERT OK   Command exposes render_long_help: /'render_long_help': FOUND/ present
+  ASSERT OK   Command exposes get_subcommands: /'get_subcommands': FOUND/ present
+  ASSERT OK   Command exposes term_width: /'term_width': FOUND/ present
+
+===== CHECK 9b — is a volatile version string actually present in clap --help output? =====
+-- run at 2026-09-15T07:01:11Z
+-- raw/opus.md recommends insta's `filters` feature because "Rust --help output for this template will
+-- contain the crate version in the -V, --version line". This check tests that premise.
+  STATUS OK   scan Command::help_template prose: exit=0 (expected 0)
+  docs.rs clap Command::help_template, retrieved from the page fetched in check 9
+  quoted: Sets the help template to be used, overriding the default format. Tags are given inside curly brackets. Valid tags are: {name} - Display name for the (sub-)command. {bin} - Binary name.(deprecated) {version} - Version number. {author} - Author information. {au
+  {version} tag listed: True
+  the page does NOT quote the default template text, so what a default --help contains is not
+  established here; {version} is a tag a template must opt into, and the doc example that shows
+  it is labelled 'For showing more application context', i.e. an override of the default.
+  page quotes the default template: False
+  ASSERT OK   help_template is documented as an override: /overriding the default format/ present
+  ASSERT OK   {version} is an opt-in template tag: /\{version\} tag listed: True/ present
+  ASSERT OK   the default template text is not quoted: /page quotes the default template: False/ present
+
+===== CHECK 10 — py at the pin — the two source suites the ledger cites =====
+-- run at 2026-09-15T07:01:11Z
+  STATUS OK   git show py tests/core/test_properties.py: exit=0 (expected 0)
+"""Property-based round-trip tests (WL-013).
+
+Example-based tests check the cases we thought of; these check a *property* of
+every input Hypothesis can generate, at the two seams where a silent
+serialization bug would be costly: the domain model's JSON wire form and the
+config file's persist→reload cycle. Reaching into a private reader
+(``_read_toml``) is the documented test exemption (HEX-35).
+"""
+
+from pathlib import Path
+
+from hypothesis import HealthCheck, given, settings
+from hypothesis import strategies as st
+
+from py_launch_blueprint.core.config import _read_toml, write_config_data
+from py_launch_blueprint.core.models import Project
+
+# Real-world-ish text: any unicode except surrogates (not valid UTF-8) and
+# control chars — so the property is about *our* round-trip, not the encoder's
+# escaping minutiae. Identifiers/names/config values don't carry control chars.
+_text = st.text(st.characters(exclude_categories=("Cs", "Cc")), max_size=60)
+
+
+@given(pid=_text, name=_text, workspace=st.none() | _text)
+def test_project_survives_json_round_trip(pid: str, name: str, workspace: str | None):
+    """Every Project re-parses from its own JSON unchanged (the wire contract)."""
+    project = Project(id=pid, name=name, workspace=workspace)
+    assert Project.model_validate_json(project.model_dump_json()) == project
+
+
+--- line 24 (F122 evidence):
+@given(pid=_text, name=_text, workspace=st.none() | _text)
+  ASSERT OK   py line 24 is the Hypothesis @given line: /@given/ present
+  STATUS OK   git show py tests/cli/test_help_snapshots.py: exit=0 (expected 0)
+--- line 36 (F123 evidence):
+    assert result.output == snapshot
+  ASSERT OK   py line 36 is the syrupy snapshot assertion: /assert result\.output == snapshot/ present
+--- committed syrupy snapshot fixture:
+  STATUS OK   git ls-tree py at the pin: exit=0 (expected 0)
+tests/cli/__snapshots__/test_help_snapshots.ambr
+tests/cli/test_help_snapshots.py
+tests/web/test_openapi_snapshot.py
+  ASSERT OK   the .ambr fixture is committed: /tests/cli/__snapshots__/test_help_snapshots\.ambr/ present
+--- pytest addopts and marker check (are either suite excluded by default?):
+  STATUS OK   git show py pyproject.toml: exit=0 (expected 0)
+276:# Default `addopts` excludes both — run full suite with `pytest -m ""`.
+278:addopts = "-m 'not live and not slow'"
+290:# default addopts, so the fast local inner loop keeps clean `-x`/pdb behaviour.
+  ASSERT OK   addopts excludes only live and slow: /not live and not slow/ present
+0
+0
+(counts above are occurrences of slow/live markers in each file; 0 means the suite runs by default)
+  STATUS OK   property suite carries no slow/live marker: exit=0 (expected 0)
+  STATUS OK   help-snapshot suite carries no slow/live marker: exit=0 (expected 0)
+--- snapshot-update instruction in the py test file:
+7:    uv run pytest tests/cli/test_help_snapshots.py --snapshot-update
+  ASSERT OK   the regeneration command is in the docstring: /pytest tests/cli/test_help_snapshots\.py --snapshot-update/ present
+
+===== CHECK 11 — ts at the pin — is the absence of both capabilities drift or a language limit? =====
+-- run at 2026-09-15T07:01:11Z
+--- vitest and fast-check in package.json:
+  STATUS OK   git show ts package.json: exit=0 (expected 0)
+34:    "test": "vitest run",
+35:    "test:coverage": "vitest run --coverage",
+53:    "@vitest/coverage-v8": "^4.1.10",
+61:    "vitest": "^4.1.10",
+  STATUS OK   grep vitest in package.json: exit=0 (expected 0)
+  ASSERT OK   vitest 4.1.10 is a devDependency: /"vitest": "\^4\.1\.10"/ present
+  ASSERT OK   fast-check is absent: /fast-check/ absent
+--- does the pinned lockfile resolve a snapshot facility inside vitest itself?
+  STATUS OK   git show ts pnpm-lock.yaml: exit=0 (expected 0)
+1050:  '@vitest/snapshot@4.1.10':
+3011:  '@vitest/snapshot@4.1.10':
+3983:      '@vitest/snapshot': 4.1.10
+  STATUS OK   grep @vitest/snapshot: exit=0 (expected 0)
+  ASSERT OK   the lockfile resolves @vitest/snapshot 4.1.10: /@vitest/snapshot.: 4\.1\.10|'@vitest/snapshot@4\.1\.10'/ present
+--- any snapshot or property test in the ts tree:
+git grep exit=1 (1 = no files match)
+  STATUS OK   no file in the ts tree uses either capability: exit=1 (expected 1)
+--- does docs/port/TS_PORT_DECISIONS.md record a reason for either omission?
+  STATUS OK   git show ts docs/port/TS_PORT_DECISIONS.md: exit=0 (expected 0)
+  ASSERT OK   the file is the TS port decision log: /^## D-019:/ present
+grep exit=1 (1 = no line mentions any of these)
+  STATUS OK   no recorded reason for either omission: exit=1 (expected 1)
+
+===== CHECK 11b — the ts testing decision D-019 in full, to show what it does settle =====
+-- run at 2026-09-15T07:01:11Z
+-- check 11 establishes the silence; this check prints the decision that is silent,
+-- so the claim 'D-019 settles the runner and is silent on both capabilities' is readable.
+  STATUS OK   extract D-019: exit=0 (expected 0)
+213:## D-019: Phase 4 research — Testing (Vitest 4, tests/ dir, 95/95/90/95, two-tier CLI tests)
+214-- Ref: TS_PORT_RESEARCH.md §T09 (full options, rationale, tradeoffs, migration implications, and validation strategy per recommendation live there); research fragment produced by workflow wf_09df6180-960
+215-- Options: per-recommendation option sets are enumerated in TS_PORT_RESEARCH.md §T09 field 5 ("TypeScript/Node options considered") with current-version evidence fetched 2026-07-07
+216-- Decision: all of the following (cite as D-019(k)):
+217-  1. [Replace Python-specific tool with TypeScript equivalent] Test runner and version (pytest replacement) → Vitest 4 (^4.1.10, current stable major; do not adopt 5.0 beta) with @vitest/coverage-v8 at the same version, node environment, no globals
+218-  2. [Adapt existing repo decision] Test structure: test/ vs colocated → Top-level tests/ directory mirroring concerns (tests/config.test.ts, api.test.ts, cli.test.ts) plus tests/integration/ subprocess tier; unit/integration script split
+219-  3. [Adapt existing repo decision] Coverage provider, thresholds, and exclusions → v8 provider, coverage.include ['src/**/*.ts'] (required in v4), thresholds lines 95 / functions 95 / branches 90 / statements 95 enforced in CI, only thin I/O adapter/entry files excluded with explanatory comments; local fast loop stays coverage-free
+220-  4. [Replace Python-specific tool with TypeScript equivalent] CLI smoke-test approach (CliRunner replacement) → Two tiers: in-process runCli(argv, deps) -> exit code with injected deps asserting exit codes and separated stdout/stderr; plus tests/integration/ spawning the built dist CLI via subprocess with staleness-aware globalSetup rebuild and cli-standards R9.14 conformance fixtures
+221-  5. [Adapt existing repo decision] Mocking seams and fixture patterns → DI-first (fakes/vi.fn spies passed through the deps object; injected fetchImpl as the only HTTP transport seam), vi.stubEnv for env, fs.mkdtemp for temp files, local factory helpers instead of global setup; vi.mock reserved as last resort; fix the source's latent mis-mock bug rather than porting it and add missing exit-3/exit-4 tests
+222-  6. [Keep source Python repo cross-platform tool] Relaxed lint/type rules for the test tree → Carry per-glob overrides for tests/** (asserts allowed, looser ergonomics) with explanatory comments; tests stay under strict tsconfig but excluded from build output; exact rule IDs owned by the lint topic (T04) — stated dependency, not decided here
+223-- Why:
+224-  1. Vitest is org-unanimous across all recent TS repos (Synthesis #1) and 4.1.10 is the verified current stable as of 2026-07-07 (5.x still beta). [registry.npmjs.org/vitest dist-tags (latest 4.1.10, pub 2026-07-06; beta 5.0.0-beta.6); TS_EXISTING_REPO_REVIEW.md:553-559]
+225-  2. Matches source testpaths=["tests"] intent and claim-npm (the org repo supplying the whole testing pattern); agent2linear colocation is the minority precedent. [/Users/stevemorin/c/py-launch-blueprint/pyproject.toml:126-129; TS_EXISTING_REPO_REVIEW.md:306]
+226-  3. Review Synthesis explicitly prefers claim-npm's 95/95/90/95-with-adapter-exclusions over agent2linear's 100%; enforcing it deviates from the source's installed-not-enforced stance, with org precedent winning per Phase-4 tie-break rules (deviation documented). [TS_EXISTING_REPO_REVIEW.md:652-653,306; https://vitest.dev/config/coverage]
+227-  4. No Node CliRunner analog exists; the DI in-process harness (claim-npm CliDeps, contributors-please CliIo) plus built-artifact subprocess tier is triple-precedented org DNA. [TS_EXISTING_REPO_REVIEW.md:316,330,149,306; TS_PORT_INDEX.md:1197-1201]
+228-  5. DI preserves unittest.mock's hermetic-boundary intent with compile-time seam safety, structurally preventing the wrong-seam bug documented at test_cli.py:82/100/155. [TS_PORT_INDEX.md:1812,1818; TS_EXISTING_REPO_REVIEW.md:330,249]
+229-  6. Preserves the source's ruff per-file-ignores + mypy test-override intent as a pattern; the mechanism belongs to the lint/tsconfig topics. [/Users/stevemorin/c/py-launch-blueprint/pyproject.toml:119-124; TS_PORT_INDEX.md:364]
+  ASSERT OK   D-019 settles the test runner: /Vitest 4/ present
+  ASSERT OK   D-019 settles coverage thresholds: /Coverage provider, thresholds/ present
+  ASSERT OK   D-019 says nothing about snapshots or property testing: /snapshot|fast-check|property/ absent
+
+===== CHECK 12 — ledger and divergence rows this decision settles =====
+-- run at 2026-09-15T07:01:11Z
+-- repository root resolved from this script's location: rs-launch-blueprint-p02-plan
+  STATUS OK   grep F122/F123 in COMMONALITY.md: exit=0 (expected 0)
+128:| F122 | property-based (generative) testing | testing-coverage | py-only | DIVERGENT | R33 | bundle; whether Rust adopts a property-based testing crate (e.g. proptest) — decides F123 |
+129:| F123 | CLI golden-snapshot testing | testing-coverage | py-only | DIVERGENT | R33 | bundle |
+  ASSERT OK   F122 is py-only and DIVERGENT, item R33: /\| F122 \|.*py-only \| DIVERGENT \| R33 \|/ present
+  ASSERT OK   F123 is py-only and DIVERGENT, item R33: /\| F123 \|.*py-only \| DIVERGENT \| R33 \|/ present
+  STATUS OK   grep R33 in DIVERGENCE-ANALYSIS.md: exit=0 (expected 0)
+143:| R33 property-and-snapshot-testing | item | Hypothesis `@given` round-trip tests (`tests/core/test_properties.py:24`); syrupy CLI `--help` snapshots (`tests/cli/test_help_snapshots.py:36`) | absent both; no decision entry addresses omitting Hypothesis/fast-check or a `.ambr`/`toMatchSnapshot` equivalent | no recorded reason for either; inferred: both patterns are portable (Vitest has native `toMatchSnapshot`, JS has `fast-check`) — ts simply didn't adopt them, not blocked by language | D | pick a Rust property-testing crate (`proptest`/`quickcheck`) and a snapshot crate (`insta`) for parity | yes |
+  ASSERT OK   the divergence row is cause class D, harmonize yes: /\| D \|.*\| yes \|/ present
+
+===== CHECK 13 — insta's documented CI behaviour and review commands (acceptance criteria 6 and 7) =====
+-- run at 2026-09-15T07:01:11Z
+  --- https://insta.rs/docs/quickstart/  (HTTP 200)
+  STATUS OK   insta.rs quickstart page is HTTP 200: exit=200 (expected 200)
+  --- https://insta.rs/docs/cli/  (HTTP 200)
+  STATUS OK   insta.rs cli page is HTTP 200: exit=200 (expected 200)
+  STATUS OK   scan the insta.rs pages: exit=0 (expected 0)
+  --- https://insta.rs/docs/quickstart/
+    'will not write new snapshot files': FOUND . In this case we can clearly see that there is a mismatch between username and name between context and template. Continuous Integration Insta behaves differently in CI environments. For instance it will not write new snapshot files. This behavior is enabled by the CI environment variable. Please ensure that your CI system sets it. export CI=true Found an issue? You can edit this page on GitHub.
+    '.new extension': FOUND ords); } Reviewing Snapshots The recommended flow is to run the tests once, have them fail and check if the result is okay. By default the new snapshots are stored next to the old ones with the extra .new extension. Once you are satisifed move the new files over. To simplify this workflow you can use cargo insta review which will let you interactively review them: cargo insta review You can run yo
+    'CI': FOUND ional. You can also just use insta directly from cargo test and control it via the INSTA_UPDATE environment variable. The default is auto which will write all new snapshots into .snap.new files if no CI is detected so that cargo-insta can pick them up. The following other modes are possible: auto: the default. no for CI environments or new otherwise always: overwrites old snapshot files with new o
+  --- https://insta.rs/docs/cli/
+    'cargo insta review': NOT FOUND 
+    'unreferenced': FOUND ots. --keep-pending: do not reject pending snapshots before run. --force-update-snapshots: update all snapshots even if they are still matching. This is useful if insta changed the metadata format. --unreferenced: controls what should happen with unreferenced snapshots. The default is ignore. Valid values are ignore, warn, reject, delete and auto. warn will emit a warning if there are unreference
+    'reject': FOUND pes Serializers Snapshot Files Redactions Filters Advanced Features Testing CLIs Settings Patterns Cargo Insta VS Code Extension API Docs Cargo Insta Installation Configuration Commands review accept reject pending-snapshots test Cargo Insta Cargo Insta is the companion command line tool to assist with snapshot reviewing. It's not necessary for working with regular snapshots but it's required when
+    'accept': FOUND shot Types Serializers Snapshot Files Redactions Filters Advanced Features Testing CLIs Settings Patterns Cargo Insta VS Code Extension API Docs Cargo Insta Installation Configuration Commands review accept reject pending-snapshots test Cargo Insta Cargo Insta is the companion command line tool to assist with snapshot reviewing. It's not necessary for working with regular snapshots but it's requir
+    'pending-snapshots': FOUND ializers Snapshot Files Redactions Filters Advanced Features Testing CLIs Settings Patterns Cargo Insta VS Code Extension API Docs Cargo Insta Installation Configuration Commands review accept reject pending-snapshots test Cargo Insta Cargo Insta is the companion command line tool to assist with snapshot reviewing. It's not necessary for working with regular snapshots but it's required when workin
+    '--check': NOT FOUND 
+  ASSERT OK   CI suppresses new snapshot files: /'will not write new snapshot files': FOUND/ present
+  ASSERT OK   INSTA_UPDATE auto is 'no' under CI: /no for CI environments/ present
+  ASSERT OK   --unreferenced defaults to ignore: /The default is ignore/ present
+  ASSERT OK   the review subcommands are documented: /'pending-snapshots': FOUND/ present
+  ASSERT OK   '--check' is NOT documented on the CLI page: /'--check': FOUND/ absent
+
+===== SUMMARY =====
+failed assertions: 0
+===== END =====

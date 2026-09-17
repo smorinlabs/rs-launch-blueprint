@@ -1,0 +1,118 @@
+--- review/evidence/property-and-snapshot-testing.log	2026-09-13 01:55:25
++++ review/evidence/audit-property-and-snapshot-testing-r5.log	2026-09-15 01:04:35
+@@ -3 +3 @@
+--- run at 2026-09-13T08:55:00Z
++-- run at 2026-09-15T08:04:03Z
+@@ -14 +14 @@
+--- run at 2026-09-13T08:55:00Z
++-- run at 2026-09-15T08:04:03Z
+@@ -23 +23 @@
+--- run at 2026-09-13T08:55:01Z
++-- run at 2026-09-15T08:04:03Z
+@@ -82 +82 @@
+--- run at 2026-09-13T08:55:12Z
++-- run at 2026-09-15T08:04:17Z
+@@ -86 +86 @@
+-  proptest: recent_downloads=47141103 downloads=185879611 reverse_deps=10449
++  proptest: recent_downloads=47309421 downloads=187076323 reverse_deps=10516
+@@ -91 +91 @@
+-  quickcheck: recent_downloads=10720585 downloads=68002370 reverse_deps=1536
++  quickcheck: recent_downloads=10812062 downloads=68322485 reverse_deps=1537
+@@ -96 +96 @@
+-  insta: recent_downloads=26700493 downloads=98716669 reverse_deps=4400
++  insta: recent_downloads=26775426 downloads=99383806 reverse_deps=4433
+@@ -101 +101 @@
+-  cargo-insta: recent_downloads=199628 downloads=1560749 reverse_deps=5
++  cargo-insta: recent_downloads=196078 downloads=1564280 reverse_deps=5
+@@ -106 +106 @@
+-  snapbox: recent_downloads=3236799 downloads=12229363 reverse_deps=156
++  snapbox: recent_downloads=3273823 downloads=12344255 reverse_deps=156
+@@ -111 +111 @@
+-  expect-test: recent_downloads=7439591 downloads=37128584 reverse_deps=313
++  expect-test: recent_downloads=7502330 downloads=37346697 reverse_deps=313
+@@ -120,12 +120,12 @@
+-  RATIO live insta/snapbox 90d-downloads = 8.2490 -> 8.2x  (26700493 / 3236799)
+-  FLOOR live insta/snapbox 90d-downloads > 5.0 : OK  (8.2490)
+-  RATIO live insta/snapbox reverse-deps = 28.2051 -> 28.2x  (4400 / 156)
+-  FLOOR live insta/snapbox reverse-deps > 20.0 : OK  (28.2051)
+-  RATIO live insta/expect-test 90d-downloads = 3.5890 -> 3.6x  (26700493 / 7439591)
+-  FLOOR live insta/expect-test 90d-downloads > 3.0 : OK  (3.5890)
+-  RATIO live insta/expect-test reverse-deps = 14.0575 -> 14.1x  (4400 / 313)
+-  FLOOR live insta/expect-test reverse-deps > 10.0 : OK  (14.0575)
+-  RATIO live proptest/quickcheck 90d-downloads = 4.3973 -> 4.4x  (47141103 / 10720585)
+-  FLOOR live proptest/quickcheck 90d-downloads > 3.0 : OK  (4.3973)
+-  RATIO live proptest/quickcheck reverse-deps = 6.8027 -> 6.8x  (10449 / 1536)
+-  FLOOR live proptest/quickcheck reverse-deps > 5.0 : OK  (6.8027)
++  RATIO live insta/snapbox 90d-downloads = 8.1786 -> 8.2x  (26775426 / 3273823)
++  FLOOR live insta/snapbox 90d-downloads > 5.0 : OK  (8.1786)
++  RATIO live insta/snapbox reverse-deps = 28.4167 -> 28.4x  (4433 / 156)
++  FLOOR live insta/snapbox reverse-deps > 20.0 : OK  (28.4167)
++  RATIO live insta/expect-test 90d-downloads = 3.5689 -> 3.6x  (26775426 / 7502330)
++  FLOOR live insta/expect-test 90d-downloads > 3.0 : OK  (3.5689)
++  RATIO live insta/expect-test reverse-deps = 14.1629 -> 14.2x  (4433 / 313)
++  FLOOR live insta/expect-test reverse-deps > 10.0 : OK  (14.1629)
++  RATIO live proptest/quickcheck 90d-downloads = 4.3756 -> 4.4x  (47309421 / 10812062)
++  FLOOR live proptest/quickcheck 90d-downloads > 3.0 : OK  (4.3756)
++  RATIO live proptest/quickcheck reverse-deps = 6.8419 -> 6.8x  (10516 / 1537)
++  FLOOR live proptest/quickcheck reverse-deps > 5.0 : OK  (6.8419)
+@@ -141 +141 @@
+--- run at 2026-09-13T08:55:22Z
++-- run at 2026-09-15T08:04:28Z
+@@ -252 +252 @@
+--- run at 2026-09-13T08:55:22Z
++-- run at 2026-09-15T08:04:29Z
+@@ -275 +275 @@
+--- run at 2026-09-13T08:55:23Z
++-- run at 2026-09-15T08:04:31Z
+@@ -308,12 +308,12 @@
+-27:    runs-on: ubuntu-latest
+-37:        os: ["ubuntu-latest", "windows-latest", "macos-latest"]
+-40:    runs-on: ${{ matrix.os }}
+-61:        os: ["ubuntu-latest"]
+-62:    runs-on: ${{ matrix.os }}
+-78:        os: ["ubuntu-latest"]
+-79:    runs-on: ${{ matrix.os }}
+-96:    runs-on: ubuntu-latest
+-109:    runs-on: ubuntu-latest
+-124:    runs-on: ubuntu-latest
+-138:    runs-on: ubuntu-latest
+-170:    runs-on: ubuntu-latest
++29:    runs-on: ubuntu-latest
++39:        os: ["ubuntu-latest", "windows-latest", "macos-latest"]
++42:    runs-on: ${{ matrix.os }}
++67:        os: ["ubuntu-latest"]
++68:    runs-on: ${{ matrix.os }}
++88:        os: ["ubuntu-latest"]
++89:    runs-on: ${{ matrix.os }}
++104:    runs-on: ubuntu-latest
++118:    runs-on: ubuntu-latest
++134:    runs-on: ubuntu-latest
++150:    runs-on: ubuntu-latest
++186:    runs-on: ubuntu-latest
+@@ -325 +325 @@
+--- run at 2026-09-13T08:55:24Z
++-- run at 2026-09-15T08:04:33Z
+@@ -421 +421 @@
+--- run at 2026-09-13T08:55:24Z
++-- run at 2026-09-15T08:04:33Z
+@@ -435 +435 @@
+--- run at 2026-09-13T08:55:24Z
++-- run at 2026-09-15T08:04:34Z
+@@ -456 +456 @@
+--- run at 2026-09-13T08:55:24Z
++-- run at 2026-09-15T08:04:34Z
+@@ -472 +472 @@
+--- run at 2026-09-13T08:55:25Z
++-- run at 2026-09-15T08:04:34Z
+@@ -533 +533 @@
+--- run at 2026-09-13T08:55:25Z
++-- run at 2026-09-15T08:04:35Z
+@@ -560 +560 @@
+--- run at 2026-09-13T08:55:25Z
++-- run at 2026-09-15T08:04:35Z
+@@ -586 +586 @@
+--- run at 2026-09-13T08:55:25Z
++-- run at 2026-09-15T08:04:35Z
+@@ -598 +598 @@
+--- run at 2026-09-13T08:55:25Z
++-- run at 2026-09-15T08:04:35Z
