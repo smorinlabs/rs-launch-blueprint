@@ -1,0 +1,29 @@
+--- review/evidence/audit-r45-r4-r2-inplace.log	2026-09-16 16:59:59
++++ review/evidence/audit-r45-r4-r2-archive.log	2026-09-16 17:01:42
+@@ -1,11 +1,11 @@
+ # r18-trigger-phrase-pin.log
+-captured: 2026-09-16T23:59:56Z
++captured: 2026-09-17T00:01:40Z
+ host toolchain:
+   rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+   cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+   OS: macOS 26.4 arm64
+   gh: gh version 2.98.0 (2026-08-20)
+-working directory: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
++working directory: /private/tmp/r45-audit-r4-archive.fepZim
+ 
+ === C1 — R18 claim 2: review lane trigger types (no 'synchronize') ===
+ 38:| `.github/workflows/claude-code-review.yml` | `pull_request: types: [opened, ready_for_review, reopened]` | **preflight `if:`** — `py`'s fork guard **and** both `py` bot guards, unchanged **and** `github.event.pull_request.draft == false` (revision 3). **`
+@@ -132,9 +132,9 @@
+ # private mktemp -d directory removed on exit: action-v1.0.220.yml,
+ # trigger-v1.0.220.ts, greptile-llms-full.txt and greptile-err.txt.
+ set -uo pipefail
+-REPO=/Users/stevemorin/c/rs-launch-blueprint-p02-plan
+-PY=~/c/py-launch-blueprint
+-TS=~/c/ts-launch-blueprint
++REPO=/private/tmp/r45-audit-r4-archive.fepZim
++PY=/private/tmp/r45-audit-r4-py.9SynQw
++TS=/private/tmp/r45-audit-r4-ts.waUeWs
+ PYPIN=b08bccfb55d05f15e46a83b52c5660b1881d19f5
+ TSPIN=cb1cbcb2e88b898e8c081b0abbfabc1630079c00
+ ACTPIN=19dda84776b3518d98b8798e591daee763049ed3   # anthropics/claude-code-action v1.0.220

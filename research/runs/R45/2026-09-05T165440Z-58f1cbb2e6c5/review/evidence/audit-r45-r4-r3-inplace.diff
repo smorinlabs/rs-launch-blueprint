@@ -1,0 +1,95 @@
+--- review/evidence/r45-r18-credential-gate-r3.log	2026-09-15 22:09:31
++++ review/evidence/audit-r45-r4-r3-inplace.log	2026-09-16 17:00:01
+@@ -1,5 +1,5 @@
+ # r45-r18-credential-gate-r3.log
+-captured: 2026-09-16T05:09:28Z
++captured: 2026-09-16T23:59:59Z
+ host toolchain:
+   rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+   cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+@@ -152,18 +152,30 @@
+ | W0-R45 | R45 pr-comment-bot-trigger-block | A accept + update the R18 precondition | 2026-09-15 | `1e7fe249…` → revision 3 | R45's re-verify trigger (R18's enablement decision) fired with W0-R18 |
+ 
+ === D16 — how far revision 2's script still reproduces revision 2's log ===
+-R18 published entry (what C1 and C2 read): sha256 b45a17a342bfa49689c3571e71c14ab55c2fa64e0f9337032876739babdae205
+-# R18 — ai-assisted-review-workflows (bundle, Deep) — decision (revision 5, 2026-09-10)
++R18 published entry (what C1 and C2 read): sha256 c9e44318abbdf4131d0d8b575d318c442c8a89ff9fc8c573c8d92c5ecb441f2e
++# 2026-09-12 — R18 — ai-assisted-review-workflows (bundle, Deep) — decision (revision 6)
+ revision-2 script exit: 0
+ --- every differing line, so the drift is on the record rather than summarised ---
+ < captured: 2026-09-10T23:00:33Z
+-> captured: 2026-09-16T05:09:29Z
++> captured: 2026-09-16T23:59:59Z
++< 11:| `.github/workflows/claude-code-review.yml` | `pull_request: types: [opened, ready_for_review, reopened]` | `vars.ENABLE_CLAUDE_REVIEW == 'true'` **and** `py`'s fork guard **and** both `py` bot guards, unchanged **and** `github.event.pull_request.draft == 
++> 38:| `.github/workflows/claude-code-review.yml` | `pull_request: types: [opened, ready_for_review, reopened]` | **preflight `if:`** — `py`'s fork guard **and** both `py` bot guards, unchanged **and** `github.event.pull_request.draft == false` (revision 3). **`
++< 6. **Bundle or two independent decisions?** `doxa-openai` argues independence; `opus` supplies the only actual *argument* either way, and it is a design coupling: dropping `synchronize` removes automatic re-review after a fix-up push, and the replacement is a write-access user typing `@claude please re-review`, which is F052. **That argument holds only if `synchronize` is dropped** — if P03 restores it, the bundling 
++> |---|---|---|
++< | `.github/workflows/claude.yml` | `issue_comment: [created]`, `pull_request_review_comment: [created]`, `issues: [opened, assigned]`, `pull_request_review: [submitted]` | `vars.ENABLE_CLAUDE_ASSISTAN
++> 
++<   coderabbit   hits=1
++>   coderabbit   hits=2
++< | C. Hosted third-party review app (PR-Agent as a service, CodeRabbit as an app) | a GitHub App installed on the repository | No | Rejected on the same fit ground, plus a second vendor relationship. |
++> **What must agree; what may vary.** What must agree across `py`, `ts` and `rs` is the **guard contract**, because it is simultaneously a security property and a correctness property and is ecosystem-neutral. It has four clauses, and clause (a) is scoped at revision 3 to the lane it actually binds:
+ < GET https://www.greptile.com/docs/llms-full.txt -> 371153 bytes
+-> GET https://www.greptile.com/docs/llms-full.txt -> 378898 bytes
++<   @greptileai occurrences:   40
++> GET https://www.greptile.com/docs/llms-full.txt -> 381431 bytes
++>   @greptileai occurrences:   39
+ < 1165:    To disable automatic reviews entirely (manual trigger via `@greptileai` only):
+ < 1192:    * `skipReview: "AUTOMATIC"` - Skips automatic reviews, only triggers via `@greptileai`
+-> 1386:    To disable automatic reviews entirely (manual trigger via `@greptileai` only):
+-> 1413:    * `skipReview: "AUTOMATIC"` - Skips automatic reviews, only triggers via `@greptileai`
++> 1388:    To disable automatic reviews entirely (manual trigger via `@greptileai` only):
++> 1852:    * Force refresh: Create PR with `@greptileai review`
+ --- and then region by region, because a flat diff cannot tell a live corpus from a republished file ---
+   D16a  PASS  log header below the capture time: toolchain and working directory
+         observed: identical
+@@ -171,15 +183,34 @@
+         observed: identical
+   D16c  PASS  everything from '=== end of checks ===' on, emitted source included
+         observed: identical
+-  D16d  PASS  C8 still counts 40 @greptileai
+-        1 occurrence(s) of: @greptileai occurrences:   40
++  D16d  FAIL  C8 still counts 40 @greptileai
++        0 occurrences of: @greptileai occurrences:   40
+   D16e  PASS  C8 still counts 0 @greptile-apps
+         1 occurrence(s) of: @greptile-apps occurrences: 0
+ --- C8 reads a LIVE vendor corpus, so its byte count is recorded and never asserted ---
+ GET https://www.greptile.com/docs/llms-full.txt -> 371153 bytes
+-GET https://www.greptile.com/docs/llms-full.txt -> 378898 bytes
+-  D16f  PASS  C1 and C2, while the published R18 entry is still the one they were captured against
+-        observed: identical
++GET https://www.greptile.com/docs/llms-full.txt -> 381431 bytes
++  D16f  N/A   C1 and C2 now read a REPUBLISHED R18 entry, sha256 c9e44318abbdf4131d0d8b575d318c442c8a89ff9fc8c573c8d92c5ecb441f2e.
++        Revision 2's log records what the PUBLISHED entry said on 2026-09-10; R18's own
++        '## Supersedes' preserves those bytes verbatim, so nothing is lost and this is not
++        a failure. The facts themselves are re-checked against the owner-accepted entry by
++        D11, D12 and D14 above.
++--- what C1 and C2 read now ---
++=== C1 — R18 claim 2: review lane trigger types (no 'synchronize') ===
++38:| `.github/workflows/claude-code-review.yml` | `pull_request: types: [opened, ready_for_review, reopened]` | **preflight `if:`** — `py`'s fork guard **and** both `py` bot guards, unchanged **and** `github.event.pull_request.draft == false` (revision 3). **`
++--- R18's own statement of the consequence (DECISION.md:316) ---
++|---|---|---|
++--- assistant lane events (DECISION.md:12) ---
++
++
++=== C2 — R18 claim 1: which vendor bots R18 configures ===
++grep -n -ci over R18/DECISION.md:
++  coderabbit   hits=2
++  greptile     hits=0
++  cubic        hits=0
++--- the only hit, DECISION.md:96 ---
++**What must agree; what may vary.** What must agree across `py`, `ts` and `rs` is the **guard contract**, because it is simultaneously a security property and a correctness property and is ecosystem-neutral. It has four clauses, and clause (a) is scoped at revision 3 to the lane it actually binds:
++
+   D16g  PASS  C1 reports the review lane's trigger types under either published entry
+         1 occurrence(s) of: pull_request: types: [opened, ready_for_review, reopened]
+         rule: line 2 is the capture time; C8's byte count and corpus line numbers drift because
+@@ -192,7 +223,7 @@
+         observed: identical
+ 
+ === end of checks ===
+-failed checks: 0
++failed checks: 1
+ 
+ === script source (emitted by this script, so the log is self-contained) ===
+ #!/usr/bin/env bash
