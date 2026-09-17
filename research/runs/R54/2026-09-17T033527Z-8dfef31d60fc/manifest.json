@@ -7,6 +7,20 @@
       "actor": "controller-fable-5-1",
       "at": "2026-09-17T03:35:27Z",
       "state": "ready"
+    },
+    {
+      "actor": "research-codex-2026-09-17T033527Z-8dfef31d60fc",
+      "at": "2026-09-17T04:39:55Z",
+      "operation": {
+        "actor": "research-codex-2026-09-17T033527Z-8dfef31d60fc",
+        "at": "2026-09-17T04:39:55Z",
+        "model": "gpt-5.6-terra",
+        "provider": "codex",
+        "request_id": "2fae2a030ade4ae299ee5a40c95aae3a",
+        "state": "submitting"
+      },
+      "provider": "codex",
+      "state": "submitting"
     }
   ],
   "input_hashes": {
@@ -21,7 +35,16 @@
   },
   "item": "R54",
   "model": "claude-fable-5-1",
-  "operations": {},
+  "operations": {
+    "codex": {
+      "actor": "research-codex-2026-09-17T033527Z-8dfef31d60fc",
+      "at": "2026-09-17T04:39:55Z",
+      "model": "gpt-5.6-terra",
+      "provider": "codex",
+      "request_id": "2fae2a030ade4ae299ee5a40c95aae3a",
+      "state": "submitting"
+    }
+  },
   "prompt_source": "research/topics/54-config-discovery-tiers/prompts/config-discovery-tiers.prompt.md",
   "remaining_budget": "USD 238.50 to 263.50 remaining of USD 300.00 bulk Deep ceiling (owner authorisation W1-DOXA 2026-09-16; Doxa in batches of three, no automatic retry)",
   "required_engines": [
@@ -31,7 +54,7 @@
   ],
   "run_id": "2026-09-17T033527Z-8dfef31d60fc",
   "schema_version": 1,
-  "state": "ready",
+  "state": "submitting",
   "tier": "deep",
-  "updated_at": "2026-09-17T03:35:27Z"
+  "updated_at": "2026-09-17T04:39:55Z"
 }
