@@ -1,0 +1,36 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-17T03:40:10Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-17T03:40:10Z",
+      "state": "ready"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb",
+    "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+    "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+    "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+    "prerequisites": "cbe23dd082a1bcc88fa6e30eabae0e6da6c6230a6f853ba73aad4d77df0eeab6",
+    "prompt": "95610e37f5fda4b2e987b3191e9a913abd4d2dc9b8e4686aa51970a1ff355457",
+    "registry": "6b6887f96798af3588743b8727854606534eebfbbb5dc3062549638e6ebe91cb"
+  },
+  "item": "R76",
+  "model": "claude-fable-5-1",
+  "operations": {},
+  "prompt_source": "research/topics/76-cors-middleware/prompts/cors-middleware.prompt.md",
+  "remaining_budget": "no paid engine (Focused tier)",
+  "required_engines": [
+    "codex",
+    "opus"
+  ],
+  "run_id": "2026-09-17T034010Z-d958540e8834",
+  "schema_version": 1,
+  "state": "ready",
+  "tier": "focused",
+  "updated_at": "2026-09-17T03:40:10Z"
+}
