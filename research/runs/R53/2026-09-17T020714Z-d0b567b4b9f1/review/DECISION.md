@@ -89,8 +89,10 @@ representative rejected values" (`S11`) — is met by the enum and `NonZeroU32` 
    write path (`S25`, `S26`, `S27`). `raw/opus.md` passed R52 a requirement — an addressable
    intermediate value the loader can walk key by key, and a source location for a rejected key.
    Both are satisfied: `toml::Table` is the intermediate (the probe walks it, `S80`), and
-   `serde_spanned` is one of `toml`'s non-optional dependencies, so `toml::Spanned` can carry
-   offsets when P03 wants them. **The requirement is therefore discharged, not outstanding.**
+   `serde_spanned` is a non-optional dependency of `toml` — it resolves as `serde_spanned
+   v1.1.1` under `toml v1.1.6+spec-1.1.0` in the probe's own `cargo tree -e normal`
+   (`review/evidence/r53-verify.log`, line 388) — so `toml::Spanned` can carry offsets when
+   P03 wants them. **The requirement is therefore discharged, not outstanding.**
 2. **Opus's re-verify trigger 1 did not fire.** It said this item's answer would change
    materially if R52 selected `toml-span` (whose `DeserError { errors: Vec<Error> }` aggregates
    natively). R52 selected `toml`, so the per-key loop stands as the aggregation mechanism.
@@ -124,10 +126,8 @@ representative rejected values" (`S11`) — is met by the enum and `NonZeroU32` 
 6. Adopting the runner-up: `garde` crosses its 6-month release trigger on 2026-11-23 with its
    unanswered-issue run unbroken, which moves the runner-up seat to `validator`.
 
-Otherwise at the scheduled date below, which is 90 days from this run — `recent_downloads` is
+Otherwise at the scheduled date on the final line of this section, which is 90 days from this run — `recent_downloads` is
 a rolling 90-day window, so every popularity figure here ages out together.
-
-re-verify: 2026-12-16, or earlier on any of — a second constraint appearing that the type system cannot express (R56 adding a constrained token, a bounded numeric key, or any cross-field rule); serde publishing 2.0, or serde-rs/serde pull request 2891 merging; R52 replacing toml with a parser that has no addressable intermediate value or one with native multi-error deserialization; a RustSec or OSV advisory against serde, serde_core or serde_derive; serde's published rust_version rising above the then-current stable-minus-2 floor; or garde reaching 2026-11-23 without a release, which moves the runner-up seat to validator.
 
 ### Principles and implementation
 
@@ -255,9 +255,13 @@ default features and explicitly **not** `preserve_order` (`S27`), so `toml::Tabl
 `format, limit, color` (`S85`). Two consequences, both worth stating. The report order is
 **deterministic and therefore snapshot-testable**, which `validator`'s
 `ValidationErrors(HashMap<…>)` is not. And the single error a fail-fast mechanism reports is
-**not the first key in the user's file** but the first in sorted order — for the three-bad-key
-document, serde reports `color`, not `format` (`S73` against `S76`). A user fixing the one
-error they were shown, and being shown an arbitrary one, is the concrete cost of fail-fast.
+**not necessarily the first key in the user's file**: for the three-bad-key document written
+`format, limit, color`, serde's derive reported `color` — the file's third key — at document
+line 4 (`S73`, `P1_SERDE_DERIVE_DISPLAY_FIRSTLINE = TOML parse error at line 4, column 9`),
+which is consistent with the sorted iteration order `S85` records. **That is one observation on
+one document, not a rule**; no ordering guarantee is claimed and none was tested across inputs.
+It is enough for the point being made: the one error a user is shown need not be the first
+mistake they made, which is the concrete cost of fail-fast.
 
 **Where a different ecosystem needs a different design.** py and ts have a runtime
 type-erasure problem this template does not: a Python `dict` or a JS object carries no
@@ -457,6 +461,8 @@ boundary. `crates/rs-launch-blueprint/tests/config_schema.rs`: the rejected-valu
 executable form of F229's criterion. No `build.rs`, no proc-macro crate of the template's own,
 no feature flag, no new CI job, and no entry in R42's tool-provisioning surface — this item
 adds no binary to `PATH`.
+
+re-verify: 2026-12-16, or earlier on any of — a second constraint appearing that the type system cannot express (R56 adding a constrained token, a bounded numeric key, or any cross-field rule); serde publishing 2.0, or serde-rs/serde pull request 2891 merging; R52 replacing toml with a parser that has no addressable intermediate value or one with native multi-error deserialization; a RustSec or OSV advisory against serde, serde_core or serde_derive; serde's published rust_version rising above the then-current stable-minus-2 floor; or garde reaching 2026-11-23 without a release, which moves the runner-up seat to validator.
 
 ## Parameters
 
@@ -689,7 +695,8 @@ neither does this decision. Both emit no `CONFLICT:`. Both state that nothing wa
 
 **`BASELINE-REVIEW: F229` — two lines, two dispositions. The ledger is not edited here.**
 
-- *Codex's line*, carried verbatim: `BASELINE-REVIEW: F229 — configuration is validated before
+- *Codex's line*, carried verbatim less its trailing parenthetical citation and the code
+  formatting inside it: `BASELINE-REVIEW: F229 — configuration is validated before
   use — retain the pattern and layer Garde semantic validation after Serde structural decoding;
   require representative rejected values — Serde alone admits a signed integer that TypeScript
   rejects with .positive(); affected items R53, R52, R55`. **Disposition: half accepted, half
