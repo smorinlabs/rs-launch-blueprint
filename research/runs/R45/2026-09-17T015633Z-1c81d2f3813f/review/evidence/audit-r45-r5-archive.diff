@@ -1,0 +1,35 @@
+--- review/evidence/r45-greptile-snapshot-r5-archive.log	2026-09-16 18:25:39
++++ review/evidence/audit-r45-r5-archive.log	2026-09-16 18:45:05
+@@ -1,18 +1,18 @@
+ # r45-greptile-snapshot-r5.log
+-captured: 2026-09-17T01:25:27Z
++captured: 2026-09-17T01:45:04Z
+ 
+ === E0 - provenance of this check ===
+-  repository root (derived from this script's path): /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r45r5/archive
+-  working directory: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
++  repository root (derived from this script's path): /private/tmp/r45-r5-archive.TcpmLI
++  working directory: /private/tmp/r45-r5-archive.TcpmLI
+   bash:   GNU bash, version 3.2.57(1)-release (arm64-apple-darwin25)
+   curl:   curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+   grep:   grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+   uname:  Darwin 25.4.0 arm64
+-  writes: none durable; ephemeral only inside /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.l7NNBdsujN, removed on exit
++  writes: none durable; ephemeral only inside /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.RRCzHsDmcY, removed on exit
+   exit status depends on E1 to E4 and E6 only. E5 is VOLATILE and cannot fail the run.
+ 
+ === E1 - the committed observation record, which is what the decision is asserted against ===
+-  record: /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r45r5/archive/research/runs/R45/2026-09-05T165440Z-58f1cbb2e6c5/review/evidence/r45-greptile-corpus-2026-09-17.snapshot
++  record: /private/tmp/r45-r5-archive.TcpmLI/research/runs/R45/2026-09-05T165440Z-58f1cbb2e6c5/review/evidence/r45-greptile-corpus-2026-09-17.snapshot
+   observed-utc 2026-09-17T01:14:29Z; 381431 bytes; corpus sha256 2b26da66c6bfb1ae62f3ca7da568daa6d617181b49004acc9c580a805b12bb06
+   E1a   PASS  the record carries the observation instant
+         observed: 2026-09-17T01:14:29Z
+@@ -79,7 +79,7 @@
+ 
+ === E6 - the observation record and its extract are tracked, not scratch files ===
+   E6    SKIP  the three new artifacts are tracked in git
+-        no .git at /private/tmp/claude-501/-Users-stevemorin-c-rs-launch-blueprint-p02-plan/b7c06b2f-d78d-4987-b237-63eeced4bd23/scratchpad/r45r5/archive -- this is a git archive extraction, where tracking is already established by construction
++        no .git at /private/tmp/r45-r5-archive.TcpmLI -- this is a git archive extraction, where tracking is already established by construction
+ 
+ === end of checks ===
+ failed checks: 0

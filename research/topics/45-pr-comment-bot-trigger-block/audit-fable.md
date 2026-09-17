@@ -1,184 +1,49 @@
-decision-sha256: 1e7fe24926e11fa5b40bedb3c42f187af05e161e4bec0b7ad4ea548b0fae6816
-actor: audit-fable-2026-09-05T165440Z-58f1cbb2e6c5-r2
+decision-sha256: a272f615effeecee4bc99ba18890f9c73dcf33b006ddb02bd0319014819b1c0c
+actor: audit-fable-2026-09-05T165440Z-58f1cbb2e6c5-r5
 model: claude-opus-5
 family: anthropic
 verdict: approve
 unresolved-findings: none
 
+This is the round-5 judgment audit, binding revision 5 at the hash above. Revision 5 answers the round-4 **empirical** rejection — `review/audit-codex.r4.md`, one finding, `D16d fails: the live Greptile corpus contains 39 @greptileai occurrences, not the 40 that the decision and r45-check-r3.sh assert` — and the round-4 **judgment** audit approved revision 4 with no findings, so there were no judgment findings for this revision to answer. The three predecessor judgment audits are archived byte-identical and none is withdrawn: `review/audit-fable.r4.md` (round 4, `6d13f530bb655d159b8d3242216da29e370e7677a0dfd6ed08ea618280a4c5a0`, binding `d9c72ef3…`, approve), `review/audit-fable.r3.md` (round 3, binding `d36259eb…`, approve) and `review/audit-fable.r2.md` (binding the published `1e7fe249…`, approve). A Codex empirical audit of revision 5 is queued and owns the reruns; what follows is judgment, with the reruns I made for myself named as mine.
+
 ## Principle and agreement level
 
-The shared requirement is stated as an outcome, not as a mechanism: *after a contributor
-pushes a fix, obtaining a fresh automated review is a documented, discoverable act rather
-than folklore.* Its source is named at a pin (py `b08bccfb`, `.github/pull_request_template.md:90-97`,
-C6) plus ledger row F204, and the must-agree / may-vary split is recorded before the
-alternatives are compared, as spec §2 requires rather than inferred from how py happens to
-be implemented.
-
-The declared level is **policy** — specifically a documentation-location policy — with the
-reasons for excluding the other two levels given: the capability belongs to R18, and no
-architecture is involved. That label is defensible under the §2 table even though the file
-may vary per repository, because the decision does not leave the file to taste: it derives
-it from a rule ("the correct file follows from which surface the command uses"). A
-per-repository difference that falls out of a shared rule is a derivation, not a variation,
-so the policy is not drained by clause (d). The alternative reading — capability/standard —
-would not change any conclusion in the file, since what may vary is identical under both.
-
-The three essential behaviors and the three acceptance criteria (A1 handle resolution, A2
-who may use the trigger, A3 no template claim the workflows contradict) are observable, and
-A1 is identified as the mechanically checkable one with its check routed to P03. Nothing is
-weakened into a vague goal.
+Unchanged and untouched. The shared requirement, its **policy** agreement level, the must-agree/may-vary split, the three essential behaviors and the three acceptance criteria all sit in `## Decision` and none moved. I compared paragraph by paragraph against revision 4 rather than trusting the note: the `**Recommendation.**` paragraph, all four statements of the `CONTRIBUTING.md` section — statement 2, the credential-presence precondition verified line-by-line against R18 in round 3, included — the `**Fitness gates.**` paragraph, the `**Ledger row.**` paragraph and the `BASELINE-REVIEW: F204` line are identical strings in both revisions. The recommendation moves under nothing in this revision.
 
 ## Design and evidence
 
-**The R18 branch claim, tested rather than accepted.** The decision's load-bearing structural
-claim is that its PR-template answer is invariant across the two branches of an owner
-acceptance that is not on record, and that only the `CONTRIBUTING.md` half is conditional. I
-tested it in both directions.
+**The repair is the right one, and it is a repair of the check's design rather than of its arithmetic.** The round-4 finding is not that the decision misread the corpus; it is that `D16d` asserted a **live third-party count** as a fixed fact, so a vendor edit could fail this decision's check with nothing in this repository changing — and one did, between the round-3 audit and the round-4 rerun. Revision 5 separates the three things that were conflated in that one assertion:
 
-- Branch B is not this item's invention: R18 revision 5 (`DECISION.md:7`) states its own
-  fallback in those words — "If the owner withholds that acceptance, the documented runner-up
-  is what ships: delete both files and publish the opt-in recipe." The two branches are
-  exhaustive of the owner question R18 poses (acceptance recorded, or withheld).
-- Under branch A the case for no block stands on four grounds that are each about rs: no bot
-  py names is configured by R18's file set (C2); the review lane omits `synchronize`, so py's
-  "Bots also auto-review on push" sentence would be false if copied (C1); the one available
-  trigger is author-gated, so a command pasted into every rendered body would instruct most
-  outside contributors to do something that starts no job; and the template is the
-  description surface, which is the one surface the action's trigger scan reads (C4).
-- Under branch B grounds one and two hold a fortiori — nothing is configured at all, so a
-  block would name bots the repository does not have and would fail A1 on its face.
-- Neither branch's argument is doing the other branch's work. The conclusion is reached twice,
-  by different routes, not once and then asserted to carry. There is no quiet single-branch
-  dependence, which is the defect the claim had to avoid.
+- **The observation** is committed. `review/evidence/r45-greptile-corpus-2026-09-17.snapshot` records the fetch at `2026-09-17T01:14:29Z`, HTTP 200, 381431 bytes, corpus sha256 `2b26da66…`, 39 `@greptileai` over 38 lines, 0 `@greptile-apps`, with the fetch, count, absence and extract commands written out; `review/evidence/r45-greptile-handle-lines-2026-09-17.txt` carries the 38 matching lines. E1 asserts against those committed bytes, and E1d recounts the 39 from the extract independently of the recorded figure, with E1f checking the one line that carries two occurrences. Nothing there can be moved by a vendor.
+- **The relation** is what gets asserted. E2a asserts `@greptileai` at least once — a **floor, not a value** — and E2b asserts `@greptile-apps` exactly zero. That is precisely what the argument uses: py's inlined string names a handle its vendor's own documentation does not carry. The drift from 40 to 39 cannot touch it, which is the point, and the decision says so where the argument is made rather than only in the evidence section.
+- **The live corpus** is reported and never asserted. E5 re-fetches, prints bytes, sha256 and both counts, and labels the result `VOLATILE-AGREES`, `VOLATILE-DRIFTED` or `VOLATILE-UNREACHABLE`; the script's E0 states that the exit status depends on E1 to E4 and E6 only. A relation flip is routed to the `re-verify:` line, an unreachable corpus is recorded rather than failed. This is the structural fix: the check can no longer be broken by a third party's editing schedule, and the one event that *should* re-open the decision is the one that now does.
 
-The decision also does not overclaim the invariance: the branch table marks the
-`CONTRIBUTING.md` row as differing, the runner-up paragraph repeats that the difference is
-confined there, and the residual conditionality that remains under branch A — P03's
-`synchronize` choice, and R18's unproven `U12` — is recorded under "What P03 must validate"
-rather than absorbed. I verified `U12` and `U2` exist in R18 with the content R45 attributes
-to them (R18 `DECISION.md:18`, `:32`).
+**I ran the script myself rather than taking its recorded result.** `bash review/evidence/r45-check-r5.sh` from the run directory exits **0** with `failed checks: 0` and all twenty assertions passing (E1a–g, E2a–b, E3a–f, E4a–e, E6 three times); E5 printed `VOLATILE-AGREES`, so the live corpus is at this moment byte-identical to the committed observation. I also confirmed the corroboration the snapshot claims: `review/evidence/audit-r45-r4-citations.log:19-20` records the round-4 empirical auditor's own fetch as `greptileai-occurrences=39`, `greptile-apps-occurrences=0` — a different actor, a fetch this decision could not influence, same relation.
 
-**The latent-not-live refinement.** It is load-bearing, and at the right strength. It is what
-keeps fact 3 from becoming a security claim the evidence does not support: the pinned source
-shows the body scan exists (`trigger.ts:78-102`, C4), and the same file shows the review lane
-never reaches it because `prompt` short-circuits at `:20-23`, while the assistant lane lists
-no `pull_request` event (R18 `DECISION.md:12`); C5 adds that py's four-clause `if:`, which R18
-adopts unchanged, carries zero `pull_request` clauses, so a later revision would need both the
-event and a matching clause. The decision states the consequence in the only form that follows:
-the rule is adopted "because it costs nothing and closes the exposure ahead of that revision,
-not because the exposure is live today." That is a precaution argued as a precaution, and it
-is narrower than either raw's framing — the decision records that it narrowed both, and names
-the pinned `trigger.ts` rather than the `main` docs wording the Opus raw quoted.
+**The prose is honest about what the number is evidence of.** Three places carry the change and each states the boundary rather than gesturing at it. `**The measured argument against inlining**` now gives both readings — 40 on 2026-09-10, 39 at `2026-09-17T01:14:29Z` with the corpus sha256 — and then says in its own words that what both establish is the presence/absence relation "and not either count, which is why the drift from 40 to 39 leaves the argument exactly where it was". `## Engines` disagreement 2 keeps the original three-fetch agreement as history and adds the two-actor agreement at the new reading, ending "Two actors, two fetches, one relation — which is the part the recommendation uses". `**What the count establishes.**` tracks the manual-trigger line moving from `:1165` to `:1388` under the same vendor edit and points at the committed extract that carries it. The pre-existing limits are unweakened: not that `@greptile-apps review` fails to trigger a review, not that the corpus is stable, nothing about rs.
 
-**The handle count.** The discipline is right, not over-hedged. "Three separate fetches … one
-of them by a different actor" is immediately qualified in the same paragraph — two are the
-same script on the same host, the third is the r1 auditor's own fetch — so the word
-"independent" is not carrying weight it has not earned. The `What it does not establish`
-paragraph rules out four specific over-readings (that `@greptile-apps review` fails; when the
-divergence began; that agreement across one day implies corpus stability; anything about rs)
-and each exclusion names what would have been needed to claim it. The test that separates
-honest hedging from evasion is whether the hedge costs the recommendation anything, and the
-decision answers it explicitly: "if the count were reversed tomorrow, the recommendation would
-not change." The count is corroboration for a policy reached on the surface argument and on
-C2, and it is placed as such.
+**The superseded assertion is quoted and labelled, not deleted.** The `C8` table row keeps its 2026-09-10 reading "because it is what revision 2's log records" and marks it "**Superseded as a current reading by E1**" with the new figures. The `D16` row states that `D16d` is superseded, names it as the round-4 finding, explains why asserting a live vendor count was wrong, and records that `D16e` — the `@greptile-apps` zero — still holds on every reading taken. Best of all, the prose around `r45-check-r3.sh` no longer claims a standing exit status: it says the recorded `Exit status: 0` "is the capture's, not a standing property", that re-running today exits **1** on `D16d`, and cites the round-4 audit's own log at `audit-r45-r4-r3-inplace.log:186-187` for it. The scripts and logs of revisions 2 and 3 are left unedited on purpose — E4a to E4d hash all four and E4e checks that the superseded string is still in the r3 script — so two audits' reproductions remain reproducible. Superseding in the document rather than rewriting history in the artifacts is the correct choice, and it is argued rather than assumed.
 
-**Removing what the source has.** The removal is argued from rs, not from py's defects. The
-four grounds above are all about what this template would ship; the py observations — Greptile
-handle drift (C8) and an instruction to comment `@cubic-dev-ai review` in a repository with no
-cubic configuration (C7) — are fenced where they are introduced: "Both observations are about
-py's inlined block; neither is evidence about rs." The ecosystem evidence is used at the right
-altitude too: zero adopters of the inlined shape among twelve surveyed Rust projects is
-reported with its own limit (non-documentation at repository level, not non-use, because an
-org-level app install is invisible to a repository's files), and the Rust project's deliberate
-template/guide split is cited as the positive reference implementation rather than as mere
-popularity. The removal's cost is named and accepted, not elided: copy-paste at the point of
-need, and multi-bot coverage the template cannot honestly keep true.
-
-**Alternatives.** Five designs are compared on a stated axis — who owns the string that can
-drift — with a verified adopter per row, including the two source precedents and the native-UI
-option that would make documentation unnecessary. The decision declines both precedents and
-says why neither transfers, which is the §2 result the mandate contemplates.
+**The new `re-verify:` clause is mechanical and meaningful.** It fires on "Greptile's published documentation corpus ceasing to satisfy the presence/absence relation C8 and E2 record — `@greptileai` absent from it, or `@greptile-apps` present in it", and names `E5` as the thing that reports it on every run. It is mechanical because E5 evaluates exactly that predicate and prints the verdict; it is meaningful because it is the event that would actually undermine the handle-divergence argument, whereas the count that used to be asserted never could. It is also mechanically safe for publication: `scripts/research_package.py:367` derives `acceptance.json`'s `reverify` field from the decision text through `reverify_of`, and `scripts/research_validation.py:504-507` compares the decision's line against that derived value, so a changed trigger regenerates consistently rather than going stale against a fixed expectation.
 
 ## Completeness
 
-- Required H2s present and in order: `## Decision` (carrying `### Principles and implementation`
-  and the `re-verify:` line), `## Parameters`, `## Empirical check`, `## Engines`. No
-  `## Supersedes`, correctly — this is a revision of an unpublished decision, not a reversal.
-- Parameters: `owns` and `consumes` are both empty in the prompt, and the decision says so and
-  owns nothing. The four `assumes` lines match `docs/port/PARAMETERS.md` in name and value, and
-  each is explained as inapplicable with a reason rather than listed and left. No `CONFLICT:`
-  line is needed and none is invented.
-- Fitness gates: all six answered `inapplicable`, each with its own reason, as the tier
-  guidance requires for a pattern item; none is silently omitted. Gate 3 additionally records
-  the nearest security-shaped consideration and names where the actual trust gate lives (R18's
-  `author_association` prefilter), rather than treating "inapplicable" as "nothing to say".
-- `BASELINE-REVIEW:` handled as the runbook requires: Opus's F204 line is carried verbatim in
-  substance, routed and not acted on, with the ledger untouched and verdict assignment left to
-  the controller. Codex's competing F204 line is recorded with the reason it is not carried
-  (it presupposes a block this decision does not create, and it predates R18's result by five
-  days) rather than dropped in silence.
-- Ledger facts check out: `docs/port/COMMONALITY.md:208` is F204, `py-only`, `DIVERGENT`, item
-  R45, annotated `standalone`, exactly as cited; F203 is named as out of scope and nothing in
-  the decision touches a checklist line. F204 carries no BASELINE-REVIEW.md row, so there is no
-  recorded agreement level for this item's label to contradict.
-- Source dates and pins are present throughout, and carried-not-refetched citations are
-  labelled as such (the four Rust/GitHub URLs, CodeRabbit and cubic references) rather than
-  presented as this run's observations.
-- The decision does not implement its own recommendation and should not: the A1 check is routed
-  to P03 with its wiring assigned to R11, and the Opus prototype's two limits are carried
-  forward. The `Status` paragraph states the proposal/validation boundary and disclaims owner
-  acceptance.
-- Consistency with the empirical audits: `audit-codex.r1.md` rejected revision 1 on two claims
-  about how the file described its own check (log reproducibility; write scope), and both are
-  answered in the artifact I read — the script is saved at `review/evidence/r45-check.sh` with
-  its sha256, it emits its own source, and the four scratch writes are enumerated.
-  `audit-codex.md` (r2) confirms by rerun that the checks region is byte-identical across
-  revision 1, revision 2 and its own run, so no observation moved; its five other passes concern
-  claims I did not need to re-derive and none of them conflicts with anything above. The r1
-  audit's three passing findings cover the same three inherited facts and the same branch claim
-  I tested here, and it reached the same reading.
+- **Structure.** Four required H2s once each and in order — `## Decision` 17, `## Parameters` 91, `## Empirical check` 100, `## Engines` 191 — with `## Supersedes` last at 218, and `re-verify:` at `:89` still the final line of `## Decision`. The H1 keeps the date-first form revision 4 introduced, so the fix for `check_history` is preserved.
+- **`check_history`.** I called `scripts/research_runner.py`'s `check_history` directly with the published topic file as destination and revision 5's bytes as desired: **PASS**.
+- **`## Supersedes` payload.** Splitting at the sole newline-anchored `\n## Supersedes` and hashing from the carried revision-2 H1 yields `1e7fe24926e11fa5b40bedb3c42f187af05e161e4bec0b7ad4ea548b0fae6816`, which is both the still-live published entry and, byte-for-byte, revision 4's payload. Untouched.
+- **Parameters.** The four `- assumes` lines at `:93-96` are identical to revision 4's and each value is present verbatim in `docs/port/PARAMETERS.md` rows 7 to 10. The item still owns no parameter, consumes none, and raises no `CONFLICT:`.
+- **Evidence-integrity claims.** The revision-2 and revision-3 scripts and logs hash to the four values the decision records, which I confirmed by running E4 and by the script's own output; the diff of the decision between revision 4 and revision 5 touches no other file, and the two commits `596fcbc` and `a017b82` add the snapshot, the extract, the new script and its two logs without editing any prior artifact.
+- **Round-5 empirical audit.** Queued and owning the reruns. This audit's independent run of `r45-check-r5.sh` is evidence for my own judgment, not a substitute for that audit; the strict acceptance schema still needs an empirical audit bound to `a272f615…`.
 
 ## Findings
 
-1. **Pass — the branch-invariance claim survives the test it invites.** The PR-template
-   recommendation is independently reached under each branch of R18's open owner question, the
-   branch-B fallback is R18's own stated runner-up, and the conditional half is confined to
-   `CONTRIBUTING.md` and labelled there.
-2. **Pass — the latent-not-live refinement is load-bearing and correctly bounded.** Two
-   independent unreachability reasons are verified at the pin, and the rule that follows is
-   argued as a cheap precaution rather than as a live-exposure fix.
-3. **Pass — the handle count resolves the inherited claim without over-reading it.** The
-   corroboration is disclosed for what it is, the four exclusions are specific, and the
-   recommendation is stated to be indifferent to the count's outcome.
-4. **Pass — the removal is argued from evidence about this template.** py's two defects are
-   fenced as evidence about py; the rs-specific grounds stand alone, and the removal's costs
-   are named and accepted.
-5. **Pass — required fields, parameters, gates, ledger handling and the P02/P03 boundary are
-   complete and correct**, and the decision records its unproven rows with what would prove
-   them and who owns them.
+No unresolved findings. Three observations.
+
+1. **Observation — the revision-5 note's "Nothing else moves" under-enumerates by one dependent.** The note lists the recommendation, the pattern name, the ranked runner-up, the six fitness gates, the four `- assumes` lines, the `BASELINE-REVIEW:` line and the whole `## Supersedes` section as byte-identical to revision 4, and that list is accurate. The `re-verify:` line is not in it and did change: it gained the presence/absence-relation clause. The enumeration therefore does not make a false statement, but the topic sentence reads wider than the facts, and this item's own standard — set by revision 3's "exactly those three plus their dependents" and revision 4's literally-true "No other byte moved" — is to enumerate. The fix is one clause, for whichever revision next touches the note: "Nothing else moves **except one dependent: the `re-verify:` line gains the presence/absence-relation clause**". Non-blocking, because the change is correct, is a dependent of the repair the same sentence describes, makes the decision's trigger more accurate rather than less, and overstates nothing about what any evidence establishes — which is the axis on which this item's earlier rejections turned.
+2. **Observation — self-references below the note stack still name revision 3.** The `re-verify:` line ends "is what revision 3 carries", and the `## Supersedes` introduction still says "revision 3 changes a **published** entry" and "What revision 3 changed". Carried forward unchanged from round 4 for the same reason: these are true statements about revision 3, whose text later revisions carry, and editing them would break byte-identity claims that checks now hash.
+3. **Observation — the `@greptile-apps` zero is the one figure not recountable from committed bytes, and the record says so.** An extract of lines containing `@greptileai` cannot establish the absence of a different string over the whole corpus. The snapshot's `extract-boundary` field states exactly that and pins the absence to `corpus-sha256` plus live re-observation; E2b accordingly reads the recorded figure rather than pretending to recompute it, and E5 re-observes it live without asserting it. Correct handling, recorded here so a later reader does not mistake E2b for a recount.
 
 ## Assessment
 
-This is a decision whose value rests on a structural claim, and the claim holds: the answer it
-records for `.github/pull_request_template.md` does not depend on an owner decision that has not
-been taken. It reaches that answer twice by different routes, states the one half that is
-conditional as conditional, narrows two inherited claims against pinned sources rather than
-repeating its raws, and declines to assert the things it did not test. Approve, with no
-unresolved findings.
-
-Two precision notes for the controller, neither a finding and neither blocking publication:
-
-- `## Engines`, disagreement 1 restates fact 3 unqualified — "the one reviewer R18 configures
-  reads the description for its trigger phrase (C4)". Read literally that is live behavior,
-  whereas C4 establishes the action's code path and fact 3 establishes that no lane R18
-  configures reaches it. Disagreements 2 and 3 both carry a pointer back to their narrowing;
-  this one does not. The paragraph's conclusion does not depend on it — it stands on C2's empty
-  row set and on the comment-versus-description surface convention — so a clause tightening it
-  ("the action that reviewer is built on reads the description; see `## Decision` fact 3 for why
-  no configured lane reaches that branch") would close the last gap between the two statements.
-- The closing uncertainty paragraph lists C7 and C8 among the reasons the PR-template half is
-  over-determined, while `## Decision` says of those same observations that "neither is evidence
-  about rs". Both are true under the reading the decision itself supplies elsewhere — they are
-  evidence about the inlined-vendor-string *pattern*, which is what rs would be adopting, and
-  essential behavior (3) is where that link is made — but the second mention does not restate
-  it, so the two sentences read as if they disagree.
+The round-4 finding was a design defect, not a slip, and revision 5 repairs it at that level: the observation is committed, the assertion is narrowed to the presence/absence relation the argument actually uses, and the live corpus becomes a report that cannot fail a check. I verified the parts a judgment audit can verify and ran the new script myself — exit 0, twenty assertions, `VOLATILE-AGREES` — and confirmed the corroborating fetch in the round-4 auditor's own log. The old "40" is quoted and labelled superseded in both places it appears rather than quietly replaced; the r3 script's exit status is now stated as a capture rather than a property, with the failing rerun cited; the new trigger fires on the event that would actually undermine the argument and regenerates cleanly through `reverify_of` at publication. The recommendation, the credential-presence precondition, the gates, the parameters, the ledger line and the `## Supersedes` payload are untouched, and `check_history` passes. Every judgment approved in rounds 3 and 4 carries forward to `a272f615…`. Approve.

@@ -1,0 +1,47 @@
+# Greptile documentation-corpus observation, recorded for R45 revision 5.
+#
+# This file is the COMMITTED observation that the decision's Greptile-handle
+# prose is asserted against. It exists because the round-4 empirical audit
+# rejected revision 4 on `D16d fails: the live Greptile corpus contains 39
+# @greptileai occurrences, not the 40 that the decision and r45-check-r3.sh
+# assert`. A check that asserts a LIVE count binds the decision to a third
+# party's editing schedule; this record moves the assertion onto a dated
+# observation the repository carries, and `r45-check-r5.sh` re-fetches the live
+# corpus as a VOLATILE report that is printed and never asserted.
+
+url: https://www.greptile.com/docs/llms-full.txt
+observed-utc: 2026-09-17T01:14:29Z
+observed-local-date: 2026-09-16
+observed-by: R45 revision-5 synthesizer, a fresh context
+http-status: 200
+corpus-bytes: 381431
+corpus-sha256: 2b26da66c6bfb1ae62f3ca7da568daa6d617181b49004acc9c580a805b12bb06
+greptileai-occurrences: 39
+greptile-apps-occurrences: 0
+greptileai-lines: 38
+manual-trigger-line: 1388
+
+fetch-command: /usr/bin/curl -sS -L -A 'https://github.com/smorinlabs/rs-launch-blueprint' -o <corpus> https://www.greptile.com/docs/llms-full.txt
+count-command: /usr/bin/grep -o -F '@greptileai' <corpus> | /usr/bin/wc -l
+absence-command: /usr/bin/grep -o -F '@greptile-apps' <corpus> | /usr/bin/wc -l
+extract-command: /usr/bin/grep -n -F '@greptileai' <corpus> > r45-greptile-handle-lines-2026-09-17.txt
+
+extract: r45-greptile-handle-lines-2026-09-17.txt
+extract-boundary: the extract carries every line of the corpus that contains
+  @greptileai, so the 39 occurrences can be recounted from the committed file
+  itself. The 0 for @greptile-apps is an ABSENCE over the WHOLE corpus; an
+  extract of matching lines cannot establish it, so it is recorded here against
+  corpus-sha256 and re-observed live, unasserted, by r45-check-r5.sh.
+
+prior-observation: 2026-09-10, 371153 bytes, 40 @greptileai, 0 @greptile-apps,
+  manual-trigger line 1165 -- recorded as C8 in review/evidence/r18-trigger-phrase-pin.log
+  and independently re-fetched by the revision-1 auditor (review/audit-codex.r1.md:30).
+concurring-observation: the round-4 empirical auditor's own fetch, recorded at
+  review/evidence/audit-r45-r4-citations.log:19-20, also reports 39 @greptileai
+  and 0 @greptile-apps. Two actors, two fetches, same relation.
+
+what-this-is-evidence-of: that Greptile's published documentation corpus uses
+  @greptileai throughout and does not carry @greptile-apps at all. That is a
+  presence/absence relation. It does not depend on the exact occurrence count,
+  and the decision's `## Engines` disagreement 2 already states that "if the
+  count were reversed tomorrow, the recommendation would not change".

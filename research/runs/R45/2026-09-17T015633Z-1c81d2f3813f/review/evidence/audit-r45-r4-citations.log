@@ -1,0 +1,20 @@
+=== rustbot ===
+bytes=26521 sha256=6081ef3907da0185a0709b9219e97a9375b96a634fba32972d654e3d13b4215f
+content-assertion=PASS phrase=@rustbot
+=== triagebot ===
+bytes=25500 sha256=0de56d8a7dcdb8070e600615b8f19c5c13cf04965e55b239c8953d6785134ecd
+content-assertion=PASS phrase=triagebot
+=== github-pr-template ===
+bytes=120199 sha256=e9bd26539f74a53693ff5b9fd1cb15efc1b6a8da97aea735eddaf08164324d84
+content-assertion=PASS phrase=pull request template
+=== github-copilot-review ===
+bytes=750719 sha256=ca435fac0822b9ec0ca54d7b87b8ff7d0a868a4255e32ae4069721a2396da266
+content-assertion=PASS phrase=code review
+=== coderabbit ===
+bytes=700364 sha256=2e43c9481802bfaa2e77588ae9f510e32f0094a758ff6bc1134b5e86d35f2fd3
+content-assertion=PASS phrase=CodeRabbit
+=== greptile ===
+bytes=381431 sha256=2b26da66c6bfb1ae62f3ca7da568daa6d617181b49004acc9c580a805b12bb06
+content-assertion=PASS phrase=@greptileai
+greptileai-occurrences=39
+greptile-apps-occurrences=0

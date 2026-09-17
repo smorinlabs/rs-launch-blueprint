@@ -1,0 +1,18 @@
+--- review/evidence/r45-greptile-snapshot-r5.log	2026-09-16 18:24:00
++++ review/evidence/audit-r45-r5-recorded.log	2026-09-16 18:45:21
+@@ -1,5 +1,5 @@
+ # r45-greptile-snapshot-r5.log
+-captured: 2026-09-17T01:24:00Z
++captured: 2026-09-17T01:45:19Z
+ 
+ === E0 - provenance of this check ===
+   repository root (derived from this script's path): /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+@@ -8,7 +8,7 @@
+   curl:   curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+   grep:   grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+   uname:  Darwin 25.4.0 arm64
+-  writes: none durable; ephemeral only inside /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.OYQn4V45Lj, removed on exit
++  writes: none durable; ephemeral only inside /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.iWnrVRzfqr, removed on exit
+   exit status depends on E1 to E4 and E6 only. E5 is VOLATILE and cannot fail the run.
+ 
+ === E1 - the committed observation record, which is what the decision is asserted against ===
