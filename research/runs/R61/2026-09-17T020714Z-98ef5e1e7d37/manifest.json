@@ -7,6 +7,60 @@
       "actor": "controller-fable-5-1",
       "at": "2026-09-17T02:07:15Z",
       "state": "ready"
+    },
+    {
+      "actor": "research-codex-2026-09-17T020714Z-98ef5e1e7d37",
+      "at": "2026-09-17T04:07:22Z",
+      "operation": {
+        "actor": "research-codex-2026-09-17T020714Z-98ef5e1e7d37",
+        "at": "2026-09-17T04:07:22Z",
+        "model": "gpt-5.6-terra",
+        "provider": "codex",
+        "request_id": "c1cc4a7f17774a78b3def51ea296a7f1",
+        "state": "submitting"
+      },
+      "provider": "codex",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-codex-2026-09-17T020714Z-98ef5e1e7d37",
+      "at": "2026-09-17T04:15:00Z",
+      "operation": {
+        "actor": "research-codex-2026-09-17T020714Z-98ef5e1e7d37",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-17T04:07:22Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a0ad8c-40a9-7f53-8b9f-72eedfa9133d",
+        "provider": "codex",
+        "request_id": "c1cc4a7f17774a78b3def51ea296a7f1",
+        "returned_at": "2026-09-17T04:15:00Z",
+        "state": "submitted"
+      },
+      "provider": "codex",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-codex-2026-09-17T020714Z-98ef5e1e7d37",
+      "at": "2026-09-17T04:15:00Z",
+      "operation": {
+        "actor": "research-codex-2026-09-17T020714Z-98ef5e1e7d37",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-17T04:07:22Z",
+        "collected_at": "2026-09-17T04:15:00Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a0ad8c-40a9-7f53-8b9f-72eedfa9133d",
+        "provider": "codex",
+        "raw": "research/runs/R61/2026-09-17T020714Z-98ef5e1e7d37/raw/codex-a22fcc08990a3db262b3c950447646fac3d0293d284e55b484e2233320444f2e.md",
+        "raw_sha256": "a22fcc08990a3db262b3c950447646fac3d0293d284e55b484e2233320444f2e",
+        "reason": "",
+        "request_id": "c1cc4a7f17774a78b3def51ea296a7f1",
+        "returned_at": "2026-09-17T04:15:00Z",
+        "state": "succeeded"
+      },
+      "provider": "codex",
+      "state": "succeeded"
     }
   ],
   "input_hashes": {
@@ -21,7 +75,24 @@
   },
   "item": "R61",
   "model": "claude-fable-5-1",
-  "operations": {},
+  "operations": {
+    "codex": {
+      "actor": "research-codex-2026-09-17T020714Z-98ef5e1e7d37",
+      "actual_model": "gpt-5.6-terra",
+      "actual_provider": "codex-cli-0.153.2",
+      "at": "2026-09-17T04:07:22Z",
+      "collected_at": "2026-09-17T04:15:00Z",
+      "model": "gpt-5.6-terra",
+      "operation_id": "01a0ad8c-40a9-7f53-8b9f-72eedfa9133d",
+      "provider": "codex",
+      "raw": "research/runs/R61/2026-09-17T020714Z-98ef5e1e7d37/raw/codex-a22fcc08990a3db262b3c950447646fac3d0293d284e55b484e2233320444f2e.md",
+      "raw_sha256": "a22fcc08990a3db262b3c950447646fac3d0293d284e55b484e2233320444f2e",
+      "reason": "",
+      "request_id": "c1cc4a7f17774a78b3def51ea296a7f1",
+      "returned_at": "2026-09-17T04:15:00Z",
+      "state": "succeeded"
+    }
+  },
   "prompt_source": "research/topics/61-interactive-prompts/prompts/interactive-prompts.prompt.md",
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
@@ -30,7 +101,7 @@
   ],
   "run_id": "2026-09-17T020714Z-98ef5e1e7d37",
   "schema_version": 1,
-  "state": "ready",
+  "state": "partial",
   "tier": "focused",
-  "updated_at": "2026-09-17T02:07:15Z"
+  "updated_at": "2026-09-17T04:15:00Z"
 }
