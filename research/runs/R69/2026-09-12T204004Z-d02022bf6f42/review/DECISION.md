@@ -1,7 +1,58 @@
-# R69 web-framework-stack — decision (revision 8, 2026-09-16)
+# R69 web-framework-stack — decision (revision 9, 2026-09-16)
 
-**Revision note (revision 8). Two record-integrity corrections to the revision-7 note below; no
-sentence of the JF-4 repair, no owned value and no evidence file moves.** Revision 8 rewrites
+**Revision note (revision 9). Three rows of the owner-supplied reference architecture that
+revision 6's reconciliation missed, added to it; no owned value, no recommendation and no
+existing evidence file moves.** Revision 9 rewrites revision 8 (sha256
+`ce7a5dad994e4c5fa87a35674a7172913265cf70cc13456ed105a7018270407a`) in place. No revision of
+this decision has been published, so there is still no `## Supersedes`. The one
+`- owns web-extra-surface` line and the five `- assumes` lines are **byte-identical to
+revisions 2 through 8**, the H2 set is unchanged, and every file of the six checks,
+`yanked-control-r5.sh`, `owner-reference-check-r6.sh` and every snapshot outside the new
+`snapshots/r9/` directory is **byte-identical**.
+
+**Why there is a revision 9 at all.** Revision 8 was **approved by both round-8 audits** — the
+empirical audit (`review/audit-codex.md`, actor
+`audit-codex-2026-09-12T204004Z-d02022bf6f42-r8`, model `gpt-5.6-terra`, family openai) with
+`unresolved-findings: none`, and the judgment audit likewise. Revision 9 repairs no audit
+finding. Its prompt is the **brief drafter's report**, which found that revision 6's
+reconciliation with the owner-supplied reference architecture
+(`docs/planning/p02/owner-reference-axum-companion-stack-2026-09-16.md`, folded in under
+**owner decision 11 of 2026-09-16**) disposed of eight rows but left **three rows of that
+document's reference `Cargo.toml` carrying no disposition at all**: its
+`tokio = { version = "1", features = ["full"] }`, its `axum-extra` dependency, and its
+`[profile.release]` block. Owner decision 11 requires a disposition for every overlapping row,
+so the omission is a gap in the reconciliation rather than a defect in the recommendation.
+Revision 9 closes it and does nothing else.
+
+**The three rows, in the same form as the revision-6 table below, continuing its numbering.**
+Each was verified at a primary source rather than taken from the document, whose own caveat
+records that its patterns were "compiled in my head, not against the toolchain".
+
+| # | Row | Disposition |
+|---|---|---|
+| 9 | Runtime features — the reference `Cargo.toml` writes `tokio = { version = "1", features = ["full"] }` against the six named features this decision selects | **Differs: ground.** `full` is twelve features; the six plus the `rt` that `rt-multi-thread` implies cover seven of them, and the five it adds — `fs`, `io-util`, `io-std`, `parking_lot`, `process` — serve no behaviour F338 asks for, while `parking_lot` is an optional **dependency** and so lands in the tree gate 6 measures. The ground is this decision's own rule, already stated at gate 5: "`tokio`'s `default = []`, so every feature is opted into explicitly." Owned value unmoved. Recorded at Disagreement 5. |
+| 10 | `axum-extra` — the reference's shared core pairs `axum-extra 0.12.6` with axum, at `features = ["cookie", "cookie-private", "typed-header"]` | **Hand-off: not decided here.** The version is current, not stale (0.12.6 is the newest non-yanked and newest stable, MIT, `rust-version` 1.80, requiring `axum ^0.8.9`), so nothing is wrong with the document's figure; the crate is simply not a member of this item's stack, because the three features it enables are two extra optional crates — cookie jars and typed headers — that no behaviour this item owns asks for. Cookie jars are C6's (**no P02 item; pending owner scoping**); typed-header extractors belong to whichever of **R72**–**R76** needs them. It nests on top under the owned value's "heavier opt-ins nest on top rather than widening it" clause. Recorded at Disagreement 3 and in the overlap map. |
+| 11 | `[profile.release]` — the reference sets `lto = "thin"` and `codegen-units = 1` | **Hand-off, and the owning item is not yet fixed — the gap is named rather than papered over.** Verified against this repository: **no** binding prompt of any of the 85 research items, and **no** row of the commonality ledger, names `[profile`, `lto`, `codegen-units` or `opt-level`. The controller's reading is **R68** (`release-binary-artifacts`), and R68 is indeed the nearest consumer — the release binary's size and build time are what the profile governs and what R68's own questions weigh — but R68's prompt scopes itself to "which distribution channels/artifact *types* … get built and shipped" and puts manifest declarations in **R49**'s scope, while R49's owned `build-tool-output-shape` makes "Cargo's own manifest … the entire declaration surface" yet sets no `[profile.*]` key. So: **hand-off to R68 as the controller's reading, with the ownership itself recorded as an open scoping question.** Recorded under *Migration implications* and in the overlap map. |
+
+**The evidence, and what is deliberately not touched.** Two new files, matching the fetcher and
+check pair revision 6 introduced: `review/evidence/fetch-owner-reference-r9.sh` writes reduced
+snapshots under `review/evidence/snapshots/r9/`, which are committed, and
+`review/evidence/owner-reference-check-r9.sh` asserts against them — plus, for row 11, against
+this repository's own committed prompts and ledger, because "which item owns this subject" is a
+fact about this repository rather than about an upstream project. Its cited log is
+`review/evidence/owner-reference-check-r9.log`. Only **published crate metadata** is
+snapshotted — versions, licences, declared `rust-version`, `[features]` maps and dependency
+requirements, all served by the crates.io API — so no third-party source file enters this
+repository and the rule the owner's 2026-09-12 ruling explicitly does not touch stays
+unengaged. `owner-reference-check-r6.sh`, its snapshots, `yanked-control-r5.sh` and the six
+checks are **not edited**. `review/empirical/parameters-check.sh` was re-run against this file
+and `diff` reported no differences against `review/evidence/parameters-check-r2.log`.
+
+**Revision note (revision 8), retained as the record of that revision. It was approved by both
+round-8 audits, with `unresolved-findings: none`; its body is retained verbatim and nothing in
+it is withdrawn. Its own heading recorded it as: two record-integrity corrections to the
+revision-7 note below; no sentence of the JF-4 repair, no owned value and no evidence file
+moves.** Revision 8 rewrites
 revision 7 (sha256 `a64addcff304770e9c114d05d974da4aaa9395e9095dff2f86823a45a29dfcfe`) in place,
 answering both findings of the round-7 empirical audit (`review/audit-codex.md`, actor
 `audit-codex-2026-09-12T204004Z-d02022bf6f42-r7`, model `gpt-5.6-terra`, family openai), which
@@ -600,7 +651,9 @@ audits, 2026-09-16, folding in the owner-supplied reference architecture under o
 11; revision 7 by a seventh fresh Claude Opus 5 context that produced none of this item's raws,
 audits, revisions or their audits, 2026-09-16, repairing the round-6 judgment audit's single
 finding and nothing else; revision 8 by that same revision-7 context, 2026-09-16, correcting the
-two record-integrity findings of the round-7 empirical audit and nothing else; run
+two record-integrity findings of the round-7 empirical audit and nothing else; revision 9 by
+the revision-6 context, 2026-09-16, adding the three owner-reference rows the brief drafter's
+report found undisposed and nothing else; run
 `research/runs/R69/2026-09-12T204004Z-d02022bf6f42`. This item was admitted ahead of the
 Wave 0 review gate by owner decision Q3.A (2026-09-12) because it consumes only R01, which
 the owner accepted on 2026-09-10, and because 19 items consume its owned parameter directly.
@@ -1394,6 +1447,38 @@ document's reference repositories for C13 are Variant-A and Variant-B applicatio
 item names `rust-lang/crates.io` as its reference implementation for the reasons under
 *Authorities*, and neither set was re-read for this row.
 
+**The release profile: a row this item does not own, whose owner is not yet fixed either**
+(owner-reference *Reference `Cargo.toml`*, `[profile.release]` with `lto = "thin"` and
+`codegen-units = 1`; owner decision 11, row 11). The `Cargo.toml` row in the table above
+enumerates every manifest change this item asks for — the `[features]` entry, the two optional
+dependencies, the `tower` dev-dependency and the `[[bin]]` target — and **`[profile.*]` is not
+among them, deliberately.** A release profile tunes how *every* target in the package is
+compiled; it is neither gated by the `web` feature nor specific to the web surface, so
+selecting one here would reach the CLI and library builds this item does not own.
+**Which item does own it was verified rather than assumed**, because the answer turned out to be
+"none yet". Asserted in `review/evidence/owner-reference-check-r9.log`, section C, over the
+**complete** set of **85** binding prompts and the commonality ledger, with the denominator
+printed and a control showing the same census reports a string the prompts do carry:
+**no prompt and no ledger row names `[profile`, `lto`, `codegen-units` or `opt-level`.**
+What the same section does establish, positively:
+- **R68** (`release-binary-artifacts`) is the nearest consumer: its prompt scopes it to "which
+  distribution channels/artifact *types* … get built and shipped", and the values a release
+  profile governs — binary size and build time — are exactly what its MEDIUM and LOW questions
+  weigh. But the same prompt places "the Cargo manifest's build-target declarations" outside
+  its scope, in R49's.
+- **R49** (`build-target-declaration`) owns the declaration surface — its owned
+  `build-tool-output-shape` reads "no build backend or bundler crate; Cargo's own manifest is
+  the entire declaration surface" and it names `target/release/rslbp` as the filename "R68's
+  release matrix uploads" — yet it **sets no `[profile.*]` key at all**, which the same check
+  asserts.
+
+**So the disposition is a hand-off to R68 as the controller's reading, with the ownership itself
+recorded as an open scoping question** rather than settled by this item. Nothing here
+recommends, excludes or evaluates `lto = "thin"` or `codegen-units = 1`; whoever takes the row
+inherits a live tradeoff this decision deliberately leaves untouched — both settings trade
+build time for run-time performance and binary size, and this item's gate-6 answer already
+records that the wall-clock and binary-size halves of that measurement are **unproven here**.
+
 **Validation strategy.** *Verified in this run:* the six checks under `## Empirical check` —
 the R01 state-bound coupling with two negative twins, the feature's gating shape and
 dependency cost, the resolved-tree MSRV, advisories against the resolved lockfile, the
@@ -1569,8 +1654,46 @@ control assertion that must fail, so that a check which cannot fail is visible a
 check 2 now carries three, the MSRV-floor control, revision 3's advisory-count control, and
 revision 4's control showing the warning-absence test reports a line that *is* present.
 
-**Three further scripts, none of which is a seventh check.** Two of them are revision 6's and
-are described first; the third is revision 5's and follows.
+**Five further scripts, none of which is a seventh check.** Two are revision 9's and are
+described first; two are revision 6's; the fifth is revision 5's.
+
+Revision 9 adds `review/evidence/fetch-owner-reference-r9.sh` and
+`review/evidence/owner-reference-check-r9.sh`, with the cited log
+`review/evidence/owner-reference-check-r9.log`. They stand in the same relation to each other
+as revision 6's pair, for the same reason: the fetcher goes to the network and writes reduced
+snapshots under `review/evidence/snapshots/r9/`, **which are committed**, and the check asserts
+against those committed snapshots so that it reruns offline and byte-identically after this
+decision is committed. Only **published crate metadata** is snapshotted — versions, licences,
+declared `rust-version`, `[features]` maps and dependency requirements from the crates.io API —
+so no third-party source file is written into this repository. The check has one property
+revision 6's does not: **its section C reads committed files of *this* repository** — the 85
+binding prompts under `research/topics/` and `docs/port/COMMONALITY.md` — because the question
+row 11 asks is *which P02 item owns release-profile settings*, and that is a fact about this
+repository, not about an upstream project. A census over prompts is exactly the shape this
+programme has been burned by before, so it is written to fail loudly rather than quietly:
+**the denominator is asserted and printed** (`prompt files searched (the complete set): 85`,
+and a separate assertion that the set is non-empty), and **the control runs the identical
+`find`/`/usr/bin/grep -l` census over the identical file set for a string the prompts do
+carry**, reporting 85 of 85. That guard is not decorative — while this check was being written,
+a wrong path expression made the file set empty, and the run reported `0` prompts naming
+`[profile` for the wrong reason; the denominator assertion and the control both failed and
+caught it. The script was run **three times in a row** and runs 2 and 3 were **byte-identical**
+to run 1, which is the cited log. Failure capability was demonstrated separately: a scratch
+copy, produced with `cp` and `sed` inside a mirrored scratch tree, with the single assertion
+`must "what \`full\` adds beyond them, count" "5"` rewritten to `"9"`, printed
+`FAIL … expected=9 actual=5` and exited `1`. The scratch tree was deleted and the committed
+script is unmodified; section C's census does not execute inside that scratch tree, because
+`find` does not follow the symlinked `topics` directory there, which is why the empty-file-set
+failure described above is what stands as that section's failure evidence. Both scripts set
+`set -o pipefail`, resolve their paths from `${BASH_SOURCE[0]}`, invoke `/usr/bin/grep` by
+absolute path with the binary named in the log, name the repository rather than any personal
+address in the User-Agent, write nothing inside this run directory except into
+`snapshots/r9/`, and carry the same file-level `# shellcheck disable=SC2015,SC2016,SC2329`
+directive with the same per-code justification the earlier scripts carry. **Neither is a
+check**: no claim in the recommendation rests on either, and their exit status decides nothing
+about it. What they establish is the three owner-reference rows revision 9 adds.
+
+Revision 6's pair follows, unchanged and not edited by revision 9.
 
 Revision 6 adds `review/evidence/fetch-owner-reference-r6.sh` and
 `review/evidence/owner-reference-check-r6.sh`, with the cited log
@@ -1731,11 +1854,15 @@ An auditor therefore runs the six scripts, five from `review/empirical/` and che
 `review/evidence/yanked-control-r5.sh`, which decides nothing about the recommendation and is
 run only to reproduce the count in the revision-4 note, plus — since revision 6 —
 `review/evidence/owner-reference-check-r6.sh`, which reads only the committed snapshots under
-`review/evidence/snapshots/r6/` and likewise decides nothing about the recommendation.
-`review/evidence/fetch-owner-reference-r6.sh` is **not** rerun as part of an audit: it is the
-fetcher that wrote those snapshots, it goes to the network, and rerunning it would move the
-snapshot contents under the check that reads them — the same reason `fetch-figures.sh` is not
-rerun for checks 3 and 4. Nothing else. **The five locations
+`review/evidence/snapshots/r6/` and likewise decides nothing about the recommendation, and
+plus — since revision 9 — `review/evidence/owner-reference-check-r9.sh`, which reads the
+committed snapshots under `review/evidence/snapshots/r9/` together with this repository's own
+committed prompts and ledger, and likewise decides nothing about the recommendation.
+**Neither fetcher is rerun as part of an audit** — not
+`review/evidence/fetch-owner-reference-r6.sh` and not
+`review/evidence/fetch-owner-reference-r9.sh`: each goes to the network, and rerunning it would
+move the snapshot contents under the check that reads them — the same reason `fetch-figures.sh`
+is not rerun for checks 3 and 4. Nothing else. **The five locations
 revision 3 edited in this section and
 above it, enumerated rather than left to a reader's diff:** (1) acceptance criterion 1's
 citation, now `feature-shape-check-r3.log`; (2) the gate-3 paragraph, which now names the
@@ -1836,6 +1963,43 @@ core, none of which the document reaches; the `re-verify:` line, because the 0.9
 checks and all seven of their scripts and logs, `yanked-control-r5.sh` and its log, and every
 committed snapshot outside the new `snapshots/r6/` directory; and the retained revision-2,
 revision-3, revision-4 and revision-5 note bodies.
+
+**The locations revision 9 edited, enumerated from a mechanical search rather than from a
+re-reading.** Revision 9, like revision 6 and unlike revisions 7 and 8, repairs no audit
+finding: it closes a **gap in coverage**, so the search had to find where each of the three
+undisposed rows' subjects already appears, and confirm that where a subject appears nowhere —
+as `[profile.release]` does — that absence is itself the finding. The search was one pass of
+`/usr/bin/grep -n -E` over revision 8, run **before any edit was made**, with the alternation
+`'axum-extra|profile|"full"|\[features\]|tokio feature set|member is a decidable|Migration implications|further scripts|An auditor therefore|Document row \| Subject|synthesizer|revision 8'`;
+every hit was classified against the three rows before any text was written, and the same
+search was re-run against the edited file. Two classifications from that pass are worth
+recording because they are near misses rather than hits: the two existing `axum-extra` mentions
+(inside the 0.9 discussion under F338) are about **where axum's 0.9 breaking changes land**,
+not about adopting the crate, and are left byte-identical; and every existing occurrence of the
+word "profile" is either the CLI standard's *Small-CLI profile*, R58's *console/structured
+profile* or `target/release` as a directory — **none is `[profile.*]` in the manifest sense**,
+which is what made row 11's absence real rather than an artefact of the search. The complete
+edit list, in file order: (1) the title, now revision 9; (2) the new revision-9 note, carrying
+the three rows in the revision-6 table's form and continuing its numbering at 9, 10 and 11;
+(3) the revision-8 note's heading, which now records that the note is retained as that
+revision's record and was approved by both round-8 audits — its body is left **verbatim**, with
+its original heading sentence quoted inside the new one so nothing it said is lost; (4) the
+history line, which adds revision 9's context; (5) after *Migration implications*, a new
+paragraph on the release profile and the ownership gap (row 11); (6) inside Disagreement 3, a
+new block on `axum-extra` (row 10); (7) inside Disagreement 5, a new block on `full` against
+the six (row 9); (8) two new rows in the overlap-map table under `## Engines`, for rows 10 and
+11; (9) in `## Empirical check`, the further-scripts paragraph, which now introduces revision
+9's two scripts before revision 6's and states the census guard and the failure evidence;
+(10) the auditor sentence, which now names `owner-reference-check-r9.sh` and scopes the
+not-rerun rule to both fetchers; (11) this enumeration. **Deliberately left byte-identical, and
+why:** the `## Parameters` block in full, because all three rows resolve to a *differs* whose
+ground is a rule the decision already states and two *hand-offs* to other items, none of which
+touches what the `web` feature gates; the recommendation, every version pin, the tokio feature
+list itself, every exclusion, the gate answers, the R67 exit contract and request, and the R4.1
+global core; the `re-verify:` line, which none of the three rows gives a new trigger; the six
+checks and every one of their scripts and logs; `yanked-control-r5.sh` and its log;
+`fetch-owner-reference-r6.sh`, `owner-reference-check-r6.sh`, its log and every file under
+`snapshots/r6/`; and the retained revision-2 through revision-8 note bodies.
 
 **Check 1 — the R01 coupling.** Three dependency-free packages under
 `review/empirical/state-bound/`. Each declares R01's published seam shape transcribed from
@@ -2038,6 +2202,8 @@ One line each, with no position taken on any:
 | Cloud Run Runbook | `gcloud run deploy` flags, affinity, migrations on deploy, pool sizing | **No P02 item; pending owner scoping.** The template ships no deployment and `target-os-matrix` names no cloud. |
 | Variants A / B | HTMX head versus SPA head, and the hybrid | **No P02 item; pending owner scoping.** Owner decision 11 lists it explicitly among the rows it does not admit. |
 | Level One, `tokio` throughout | Whether the library and CLI join the web surface's async world | **R05** (`sync-async-execution-model`, open), which `## Parameters` above already records as a coupling this decision survives either way. |
+| Reference `Cargo.toml` | `axum-extra` 0.12.6 at `["cookie","cookie-private","typed-header"]` — added by revision 9 | Cookie jars are C6's, which has **no P02 item; pending owner scoping**; typed-header extractors belong to whichever of **R72**–**R76** needs one. Not a member here; reconciled at Disagreement 3. |
+| Reference `Cargo.toml` | `[profile.release]` — `lto = "thin"`, `codegen-units = 1` — added by revision 9 | **R68** (`release-binary-artifacts`) as the controller's reading and the nearest consumer, **with the ownership recorded as an open scoping question**: no prompt and no ledger row names these keys. Reconciled under *Migration implications*. |
 
 **What the owner's licence ruling changed versus the raws.** Every licence-based exclusion in
 every raw was enumerated and re-evaluated. Gate 1 is recorded throughout this decision as
@@ -2148,6 +2314,35 @@ enters this repository.
    this item owns only the idiom its own acceptance criterion needs, and R32 adding `axum-test`
    as a harness crate would not disturb the `tower` member or the owned value. Owner decision
    11 places C12 in R32's overlap set, so the document reaches R32 as an input in its own right.
+
+   **`axum-extra`, which the owner-supplied document pairs with axum in its shared core, is not
+   a member of this stack** (owner-reference *TL;DR*, "axum 0.8.9 + **axum-extra 0.12.6** on
+   tokio 1 / hyper 1 / tower 0.5 / tower-http 0.6 / http 1", and its *Reference `Cargo.toml`*,
+   `axum-extra = { version = "0.12.6", features = ["cookie","cookie-private","typed-header"] }`;
+   owner decision 11, row 10). **The document's figure is correct and is not the issue.**
+   Verified at the registry and asserted in `review/evidence/owner-reference-check-r9.log`,
+   section B: `axum-extra` **0.12.6** is the newest non-yanked *and* the newest stable version,
+   published 2026-04-14 — the same day as `axum` 0.8.9 — licence MIT, declared `rust-version`
+   **1.80** (inside the 1.96 floor), requiring `axum ^0.8.9`. Nothing about it is stale or
+   unfit. **It is excluded by the member rule this Disagreement already states** — *a member is
+   a decidable artifact this item owns* — for the same reason `tower-http` is: what the
+   document enables it for is another layer's business. Its three named features resolve to two
+   optional crates and nothing else: `cookie = ["dep:cookie"]` and
+   `cookie-private = ["cookie", "cookie?/private"]` bring in `cookie ^0.18.0` for signed and
+   private jars, and `typed-header = ["dep:headers"]` brings in `headers ^0.4.0` for the
+   `TypedHeader` extractor. **No acceptance criterion in this item asks for either.** The
+   handler in *Minimal realistic endpoint* takes `State` and `Query` and returns the library's
+   own types; there is no cookie, no session and no typed header anywhere in F303, F330, F331,
+   F338 or F339.
+   **Where it goes, as a hand-off and not a decision.** Cookie jars serve sessions, auth and
+   CSRF — the document's own *C6*, which **no P02 item covers**; it is listed under `## Engines`
+   as pending owner scoping. Typed-header extractors serve request handling and middleware, so
+   they belong to whichever of **R72**–**R76** needs one. Either way the mechanism is already
+   fixed by the owned parameter and needs no change here: `axum-extra` would be an **additive**
+   dependency of a later layer nested inside the gated `src/web/` tree, under the clause
+   *"heavier opt-ins nest on top rather than widening it"*. **This item neither selects nor
+   excludes it on fitness** — no gate is answered for it, because it is not a candidate here —
+   and the owned value is byte-identical.
 4. **The axum feature set.** Codex proposes `default-features = false` with
    `["http1", "json", "tokio"]`; openai `default-features = false` with seven named features;
    opus leaves the defaults on. **Settled for defaults on.** Codex's minimal set drops
@@ -2191,6 +2386,40 @@ enters this repository.
    `tokio::time::timeout` and therefore no drain deadline at all, so codex's and gemini's lists
    cannot implement the F338 behavior they describe. `sync` follows from Disagreement 2 and was
    confirmed to be implied by nothing else in the feature graph.
+
+   **The owner-supplied document proposes a sixth list — `full` — and it is not adopted**
+   (owner-reference *Reference `Cargo.toml`*, `tokio = { version = "1", features = ["full"] }`;
+   owner decision 11, row 9). **The rule this is decided by is already stated in this decision,
+   at gate 5:** *"`tokio`'s `default = []`, so every feature is opted into explicitly."* That is
+   not a preference for small manifests; it is the reason the five raws' lists could be
+   adjudicated at all, and it is the same rule that **added** `time` and `sync` above when a
+   named behaviour needed them. Applied to `full`, it asks what behaviour each added name
+   serves. Read at tokio 1.53.1's own published `[features]` map and asserted in
+   `review/evidence/owner-reference-check-r9.log`, section A:
+   - **`full` is twelve features** — `fs`, `io-util`, `io-std`, `macros`, `net`, `parking_lot`,
+     `process`, `rt`, `rt-multi-thread`, `signal`, `sync`, `time`.
+   - **The six selected already cover seven of them**, because `rt-multi-thread = ["rt"]`. So
+     this is not a disagreement about the runtime, the listener, the signals or the clock: on
+     all of those the document and this decision agree exactly.
+   - **What `full` adds beyond them is five names — `fs`, `io-util`, `io-std`, `parking_lot`,
+     `process`** — and no acceptance criterion, no F338 behaviour and no line of `serve_until`
+     uses any of them. `fs` and `process` are filesystem and child-process APIs this surface
+     never touches; `io-util`/`io-std` are AsyncRead/AsyncWrite helpers and stdio wrappers that
+     `axum::serve` does not route through.
+   - **One of the five costs a crate, not just a code path.** `parking_lot` carries no feature
+     body: it is the implicit feature tokio's **optional dependency**
+     `parking_lot = "^0.12.0"` creates, so enabling it puts `parking_lot` and its own tree into
+     the resolved graph. That is measured cost against **gate 6**, whose whole finding is the
+     12 → 52 package delta the `web` feature already pays.
+
+   **So the disposition is *differs, with ground*, and it moves nothing.** The recommended list
+   stays `rt-multi-thread`, `net`, `signal`, `macros`, `time`, `sync`, and the owned value is
+   byte-identical. The document's own preference is understandable in its context — a reference
+   architecture for an application, where `full` saves a reader from auditing a feature list —
+   but this template's cost argument is measured in packages, and a template is copied. **Where
+   the document is right and this decision agrees:** its `version = "1"` is a caret requirement
+   that admits 1.53.1, exactly as *Compatibility* above explains for axum; the two differ only
+   on the feature list, not on the runtime or its version line.
 6. **Whether Rust needs py's lazy configuration fallback.** All five raws say no, for the same
    reason. Recorded as `BASELINE-REVIEW: F330`; no disagreement to settle.
 7. **Router registry versus native composition.** Codex, opus, openai and gemini all say
