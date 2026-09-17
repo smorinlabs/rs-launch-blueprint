@@ -376,7 +376,7 @@ reject.
 | W0-R34 | R34 scheduled-freshness-lanes | A accept | 2026-09-15 | `14d35261…` | scheduled canary; the auto-disable closed by `workflow_dispatch` plus a documented re-enable |
 | W0-R41 | R41 lockfile-freshness-check | A accept | 2026-09-15 | `efc7614a…` | unlocked resolve asks py's question; `--locked` cannot |
 | W0-R43 | R43 ai-assistant-repo-furniture | A accept | 2026-09-15 | `b9c83036…` | AGENTS.md hub; announcement entry |
-| W0-R45 | R45 pr-comment-bot-trigger-block | A accept + update the R18 precondition | 2026-09-15 | `1e7fe249…` → revision 3 | R45's re-verify trigger (R18's enablement decision) fired with W0-R18 |
+| W0-R45 | R45 pr-comment-bot-trigger-block | A accept + update the R18 precondition | 2026-09-15 | `1e7fe249…` → revision 3 → re-bound `a272f615…` (revision 5, 2026-09-17) | R45's re-verify trigger (R18's enablement decision) fired with W0-R18 |
 | W0-R46 | R46 per-file-license-header | A accept | 2026-09-15 | `a95cbbfa…` | no headers; SPDX runner-up needs vendored/mixed-licence source |
 | W0-R47 | R47 contributors-recipe-mode | A accept | 2026-09-15 | `20693ce1…` | guarded render/init recipe |
 | W0-R64 | R64 pager-integration | A accept | 2026-09-15 | `39f0df04…` | `shlex` over `shell-words` on the strict MSRV gate |
