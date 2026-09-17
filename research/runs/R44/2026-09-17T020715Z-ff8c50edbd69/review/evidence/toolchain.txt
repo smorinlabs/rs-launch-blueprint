@@ -1,5 +1,5 @@
 R44 evidence host record (machine-dependent; deliberately NOT on stdout)
-date-utc: 2026-09-17T05:26:15Z
+date-utc: 2026-09-17T05:29:25Z
 uname: Darwin 25.4.0 arm64
 rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
 cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
@@ -7,4 +7,5 @@ rustup: rustup 1.29.1 (d95a37b6a 2026-08-13)
 curl: curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
 jq: jq-1.8.2
 gh: gh version 2.98.0 (2026-08-20)
+docker: /usr/local/bin/docker
 repo-root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan

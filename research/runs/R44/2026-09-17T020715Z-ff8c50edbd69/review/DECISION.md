@@ -117,7 +117,7 @@ expressed here.
 |---|---|---|
 | Digest pin + trailing tag comment | R20's decided pattern for `uses:` clauses is `owner/repo@<40-hex> # vX.Y.Z`, whose principle is that the immutable identity is pinned and the readable release identity travels beside it. An OCI reference's immutable identity is its `@sha256:` digest | A floating tag silently changes the environment between two contributors' rebuilds |
 | Index digest, not a child digest | The index carries both `linux/amd64` and `linux/arm64` (check 1b) | Pinning a child manifest would drop Apple-Silicon hosts to emulation or to failure |
-| `trixie`, not `bookworm`, not `bullseye` | `rust-lang/docker-rust` removed EOL Debian bullseye (`fix!: Remove EOL Debian Bullseye`, 2026-09-08, cited from `raw/opus.md`; **not** re-executed here). Trixie is current Debian stable and the smaller live variant | A bullseye tag still resolves in the registry, so the trap is silent |
+| `trixie`, not `bookworm`, not `bullseye` | `rust-lang/docker-rust` removed EOL Debian bullseye (`fix!: Remove EOL Debian Bullseye`, 2026-09-08, cited from `raw/opus.md`; **not** re-executed here). Trixie is current Debian stable and the smaller of the two live variants — 831 MiB against bookworm's 870 MiB, the bookworm figure likewise carried from `raw/opus.md` and not re-executed (see `## Empirical check`) | A bullseye tag still resolves in the registry, so the trap is silent |
 | No `features` block | `rust-toolchain.toml` is the template's single toolchain declaration (R42 layer 1). A `features` block with `version`/`profile`/`components` options is a second one | It also removes a second OCI reference from the pinning surface and sidesteps the feature installer's weaker rustup provenance (check 5a vs 5d) |
 | No `customizations` block | The image metadata already contributes `rust-lang.rust-analyzer`, `tamasfe.even-better-toml`, `vadimcn.vscode-lldb` and `files.watcherExclude` on `target/` (check 1f) | A second extension list is a second source of truth with no mechanism keeping it honest — measured in py at check 7b |
 | Cargo-cache volume mount on `/usr/local/cargo` | The image's own `CARGO_HOME` (check 1e); the first-party `devcontainers/templates` `src/rust` template documents this mount and `astral-sh/ruff` uses it | Without it every rebuild re-downloads the registry index and every crate source. It also caches what R42's generic `install-tool` recipe puts in Cargo's install root, which is `$CARGO_HOME/bin` by default — **asserted from R42's recipe shape, not observed in a container; P03 confirms** |
@@ -241,7 +241,9 @@ in the repository. Two independent facts confirm the choice rather than merely
 rationalising it: C's installer carries weaker rustup provenance than B's image
 (gate 3, checks 5a and 5d), and C's installer has an open version-resolution
 defect at its current tag (check 5b, `devcontainers/features` #1726 open, check
-5c). D is excluded on demonstrated rot; C's `universal:6` variant is additionally
+5c). D is excluded on demonstrated rot — a judgement resting entirely on the
+adopters' last-touched dates carried from `raw/opus.md` and **not** re-executed
+here (see `## Empirical check`); C's `universal:6` variant is additionally
 excluded on gate 4 (amd64-only, check 2a).
 
 **The decisive fact about the selected image.**
@@ -455,8 +457,11 @@ file, and the 31-repository survey is counted over the whole snapshot file.
 
 **Nothing was built and no container was run.** Every image fact is read from the
 registry's HTTP API — index manifest, child manifest, config blob — which needs no
-container runtime and no `docker` binary, and Docker is not available in this
-session. There is no `.devcontainer/` in this repository, no CI job, no acceptance
+container runtime and no `docker` binary. A `docker` client *is* present on this
+host (`/usr/local/bin/docker`, recorded by the script in
+`review/evidence/toolchain.txt`); it was **never invoked**, deliberately, because
+building or running the recommended environment is P03's work and is forbidden to
+this decision. There is no `.devcontainer/` in this repository, no CI job, no acceptance
 harness and no fixture: the pattern this decision recommends is P03's to build.
 
 **What each section verified** (section numbers are the log's):
@@ -468,7 +473,7 @@ harness and no fixture: the pattern this decision recommends is P03's to build.
 | 1e | `org.opencontainers.image.source = https://github.com/rust-lang/docker-rust`; `RUST_VERSION=1.98.1`; `CARGO_HOME=/usr/local/cargo`; `RUSTUP_HOME=/usr/local/rustup` | PASS ×4 |
 | 1f | Baked features (`common-utils:2`, `git:1`, `rust:1`); contributed extensions (`rust-lang.rust-analyzer`, `tamasfe.even-better-toml`, `vadimcn.vscode-lldb`); `remoteUser: vscode`; `files.watcherExclude`; `capAdd: SYS_PTRACE` | PASS ×5 |
 | 2a | `devcontainers/universal:6` offers `linux/amd64` only — the gate-4 exclusion of the `biome` shape | PASS ×1 |
-| 3a–3b | `macos-latest` → macOS 26 Arm64 image, `ubuntu-latest` → Ubuntu 24.04 image; 0 case-insensitive `docker` lines in the 261-line macOS inventory; Docker Client and Docker Server in the Ubuntu inventory | PASS ×4 |
+| 3a–3b | `macos-latest` → macOS 26 Arm64 image, `ubuntu-latest` → Ubuntu 24.04 image; 0 case-insensitive `docker` lines in the 261-line macOS inventory; Docker Client and Docker Server in the Ubuntu inventory | PASS ×5 |
 | 4a–4b | Dependabot's `devcontainers` parser calls `parse_features` and contains 0 references to an image parser; `dependabot-core` #9271 is `closed` (2026-03-26) | PASS ×3 |
 | 5a–5d | The `rust` feature at `feature_rust_1.6.0` fetches an unversioned `rustup-init` with a same-host checksum and 0 hard-coded sha256 constants, and its "fully specified version" test is `grep -o "." \| wc -l`, so resolution reaches `git ls-remote`; `devcontainers/features` #1726 is `open`; the image's upstream Dockerfile pins `rustup/archive/1.29.0/` with 7 hard-coded sha256 constants and is `FROM buildpack-deps:trixie` | PASS ×9 |
 | 6a–6b | rustup's CHANGELOG records `RUSTUP_AUTO_INSTALL` and `set auto-install disable`; `rustup toolchain install --help` on this host states "or by default the active toolchain" | PASS ×3 |
@@ -524,15 +529,28 @@ host`, the two sibling checkouts by path). The exact invocation is:
 HOME=<empty-dir> PATH=/usr/bin:/bin:/usr/sbin:/sbin bash r44-claims.sh
 ```
 
+Re-running that control reproduces the saved log except for exactly **two lines**
+— the `7a/7b` and `7c` skips, which name the absent sibling checkout by its
+**absolute path**, and therefore quote whatever `<empty-dir>` the rerun chose.
+That difference is the check working, not drifting.
+
 **Claims carried from the raws that this check did *not* re-execute**, listed so
 no reader mistakes them for verified here: the `fix!: Remove EOL Debian Bullseye`
 commit date (2026-09-08); the `devcontainers/templates` `src/rust` file content;
-`ruff`'s and `biome`'s `.devcontainer` contents and last-touched dates;
-`universal:6`'s ≈3,821 MiB compressed total; the star counts and open-issue counts
-for the supporting repositories; and `devcontainers/features`' issue-responsiveness
-sample. Each is cited to `raw/opus.md` or `raw/codex.md` with its own retrieval
-date where it appears above, and none of them carries the recommendation on its
-own.
+the `.devcontainer` **contents and last-touched dates** of all four adopters —
+`ruff` (2024-08-28), `biome` (2026-09-09), `deno` (**2023-12-19**) and `tauri`
+(**2022-06-06**) — which are the whole basis of every "rot" statement in this
+decision, at `### Principles and implementation` ("D is excluded on demonstrated
+rot"), in the runner-up paragraph, and at `## Engines` ground 3 ("three of them
+have let the file rot"); the `2.1.1-bookworm` compressed total (912,332,031
+bytes ≈ 870 MiB), which is the whole basis of calling `trixie` "the smaller live
+variant"; `universal:6`'s ≈3,821 MiB compressed total; the star counts and
+open-issue counts for the supporting repositories; and `devcontainers/features`'
+issue-responsiveness sample. Only the four adopters' **presence** of a
+`.devcontainer` directory was re-executed here (check 8a); their file contents and
+dates were not. Each claim is cited to `raw/opus.md` or `raw/codex.md` with its own
+retrieval date where it appears above, and none of them carries the recommendation
+on its own — the recommendation rests on checks 1–9.
 
 ## Engines
 
@@ -574,7 +592,10 @@ that decide it:
    (check 8a). The signal is against adopting, both reports say so, and this
    decision carries it as the runner-up's case rather than as a refutation — the
    four adopters are the drive-by-contributor-heavy projects a template most
-   resembles, and three of them have let the file rot.
+   resembles, and three of them have let the file rot — the last-touched dates
+   behind that sentence are carried from `raw/opus.md` and were **not**
+   re-executed here (see `## Empirical check`); only the four adopters' presence
+   was re-probed.
 4. **The positive grounds are owner decisions already taken, not preferences.**
    `target-os-matrix` excludes Windows, which is what creates a population with no
    CI-validated path; and `DIVERGENCE-ANALYSIS.md` records the adopt-or-drop half

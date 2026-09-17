@@ -150,6 +150,7 @@ command -v gh > /dev/null 2>&1 && have_gh=1
   printf 'curl: %s\n' "$(curl --version 2>/dev/null | head -1)"
   printf 'jq: %s\n' "$(jq --version 2>/dev/null || echo 'absent')"
   printf 'gh: %s\n' "$(gh --version 2>/dev/null | head -1 || echo 'absent')"
+  printf 'docker: %s\n' "$(command -v docker || echo 'absent')"
   printf 'repo-root: %s\n' "$REPO"
 } > "$EVID/toolchain.txt"
 
