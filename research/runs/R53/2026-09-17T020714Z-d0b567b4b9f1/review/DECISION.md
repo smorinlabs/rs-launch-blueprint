@@ -1,8 +1,37 @@
-# 2026-09-17 — R53 — config-schema-validation (crate, Focused) — decision (revision 1)
+# 2026-09-17 — R53 — config-schema-validation (crate, Focused) — decision (revision 2)
 
-Actor `synth-opus-2026-09-17T020714Z-d0b567b4b9f1-r1`, model `claude-opus-5`, item kind
-`crate`, effort tier `focused` (two engines, no Doxa). This is the first revision; nothing has
-been published for R53, so there is no `## Supersedes`.
+**Revision note, revision 2.** Revision 2 answers the round-1 judgment audit
+(`review/audit-fable.md`, verdict `reject`, findings JF-1 to JF-4) and changes **nothing in
+the recommendation**: still `serde >= 1.0.229, < 2.0.0` with `features = ["derive"]` and no
+validation crate, still `garde >= 0.23.0, < 0.24.0` as the ranked runner-up, no parameter
+value moved, no gate disposition reversed and no candidate excluded or admitted. The
+round-1 empirical (Codex) audit did not run — the Codex account is out of usage, as
+`review/audit-fable.md` records — so no artifact was reproduced by a second engine; even so,
+`review/evidence/verify.sh` and `review/evidence/r53-verify.log` are carried into this
+revision **byte-identical**, and every new check is a new file
+(`r53-r2-gate-posture.sh`/`.log`, `r53-r2-verify-rerun.log`). The blocking finding is a
+completeness defect in two prompt-mandated per-candidate fields, and closing it **strengthens**
+the recommendation rather than disturbing it: the crate carrying `unsafe` on its default build
+path is `garde`, the one not chosen.
+
+| Finding | Disposition in this revision |
+|---|---|
+| **JF-1** (blocking) — fitness gate 3's `unsafe`-posture limb and gate 5's async-runtime-coupling limb are answered for no candidate, though the prompt says "do not omit it silently" | **Accepted in full, and answered by new executed evidence rather than by carrying the raw.** A new check, `review/evidence/r53-r2-gate-posture.sh`, downloads each candidate's **published crate source at its exact version** into a `$TMPDIR` vendor directory and censuses it with `/usr/bin/grep -n -w 'unsafe'` by absolute path (checks `G01`–`G23`), then reads default features and the whole normal-dependency list for async coupling from each crate's own crates.io records (`G24`–`G31`). A new H3, **"The six fitness gates, per candidate"**, states both limbs for `serde`, `garde`, `validator`, `serde_valid`, `nutype` and `validify`, names `garde`'s three default-path `unsafe` sites explicitly, and gives the reason no exclusion follows. Superseded wording, corrected in place at two locations: "**`serde`'s own `unsafe` posture**, not audited here" in the not-proven list, and "`garde`'s and `validator`'s `unsafe` audits … are carried from `raw/opus.md`" in the not-re-read list — the audit is right that nothing was carried, and both sentences are replaced by the executed result. The word `async` did not appear in revision 1 at all; gate 5 now has its own row and its own check. |
+| **JF-2** (non-blocking) — a quoted Codex sentence is truncated mid-sentence and closed with a full stop | **Accepted.** Superseded wording: "That is a deliberate diagnostic boundary, not full Zod aggregate parity." The quotation now carries Codex's clause to its end — "…not full Zod aggregate parity, and R55 decides how either class is tolerated" — which, as the audit notes, agrees with this decision's own refusal to pre-decide R55. |
+| **JF-3** (non-blocking) — three container-type claims that decide the runner-up ranking carry no check identifier and are absent from the not-re-read list | **Accepted, and closed by reading the published sources rather than by demoting the claims.** The same new check asserts all three from the extracted crate sources: `toml 1.1.6+spec-1.1.0` `src/table.rs:14` `pub type Table = Map<String, Value>;` with `src/map.rs:36-37` `#[cfg(not(feature = "preserve_order"))] type MapImpl<K, V> = BTreeMap<K, V>;` (`G32`, `G33`); `garde 0.23.0` `src/error.rs:23-24,50` `Report { errors: Vec<(Path, Error)> }` and `into_inner(self) -> Vec<(Path, Error)>` (`G34`, `G35`); `validator 0.21.0` `src/types.rs:50` `pub struct ValidationErrors(pub HashMap<Cow<'static, str>, ValidationErrorsKind>);` (`G36`, `G37`). The audit is right that the `BTreeMap` claim was sourced nowhere in either raw; it now rests on the crate's own `cfg` line. The determinism sentence is rewritten to rest on the documented container type, with the single probe observation kept as corroboration rather than as ground. |
+| **JF-4** (non-blocking) — the reproducibility paragraph reports a comparison whose second input was not kept | **Accepted.** `verify.sh` was rerun for revision 2 and **both** logs are now committed: `r53-verify.log` (unchanged, byte-identical to revision 1) and `r53-r2-verify-rerun.log`. The paragraph now cites the committed pair and states the diff a reader can reproduce with `diff` over two files in the tree, instead of describing a comparison only the author saw. |
+
+**Revision history.** Revision 1 — sha256
+`62f5c9f799c008af0de12deb083276454808183cbc8313acbec6ce53e0ab0cf1`, commits `9b5cdbc`
+(first write) and `1a4ba6f` (three citation corrections); rejected by the round-1 judgment
+audit (`review/audit-fable.md`, commit `57c1a3d`) on JF-1, with JF-2 to JF-4 non-blocking.
+The round-1 empirical audit did not run. Revision 2 — this file, plus the new
+`r53-r2-gate-posture` check and the second `verify.sh` log. Revision 1's `verify.sh` and
+`r53-verify.log` are carried forward byte-identical.
+
+Actor `synth-opus-2026-09-17T020714Z-d0b567b4b9f1-r2`, model `claude-opus-5`, item kind
+`crate`, effort tier `focused` (two engines, no Doxa). Nothing has been published for R53, so
+there is no `## Supersedes`.
 
 Retrieval dates: **2026-09-17 (UTC)** for everything this decision checked itself through
 `review/evidence/verify.sh`, and each raw report's own date for anything carried from a raw —
@@ -107,6 +136,11 @@ representative rejected values" (`S11`) — is met by the enum and `NonZeroU32` 
    and is proven (`S80`, `S84`); the second half is vacuous for the current schema, which has
    no cross-field rule. The conflict itself is carried under `## Engines` without adjudication —
    it is R55's and R67's to settle, and **this decision emits no `CONFLICT:` line of its own**.
+   One further coupling for R55 to reconcile, stated as a coupling and not as a decision made
+   on R55's behalf: **R53's per-key loop supplies leaf-level dotted paths and free unknown-key
+   detection** — every key present in the parsed table that the loop did not consume — which is
+   exactly what R55's own re-verify trigger watches; R55 decides what to do with both, and
+   nothing here constrains that choice.
 
 **Re-verification triggers**, each mechanical enough to be checked without judgment:
 
@@ -249,12 +283,19 @@ succeed as a `Table` (`S89`) and fail only as the typed struct (`S90`). So the l
 failure. The per-key loop is the second half of a structure R67 requires anyway.
 
 **Determinism, which a CLI needs and a `HashMap` cannot give.** R52 selected `toml` with
-default features and explicitly **not** `preserve_order` (`S27`), so `toml::Table` is
-`BTreeMap`-backed and iterates in sorted key order. The probe records
-`P4_TABLE_KEY_ORDER = ["color", "format", "limit"]` for a document written in the order
+default features and explicitly **not** `preserve_order` (`S27`), and the crate's own
+published source decides what that means: `src/table.rs:14` declares
+`pub type Table = Map<String, Value>;` (`G32`) and `src/map.rs:36-37` selects that map's
+backing with `#[cfg(not(feature = "preserve_order"))] type MapImpl<K, V> = BTreeMap<K, V>;`
+(`G33`). So `toml::Table` is `BTreeMap`-backed under R52's feature selection and iterates in
+sorted key order — **the ground is the crate's `cfg` line, not an inference from behaviour**.
+The probe corroborates it on one document, recording
+`P4_TABLE_KEY_ORDER = ["color", "format", "limit"]` for a file written in the order
 `format, limit, color` (`S85`). Two consequences, both worth stating. The report order is
 **deterministic and therefore snapshot-testable**, which `validator`'s
-`ValidationErrors(HashMap<…>)` is not. And the single error a fail-fast mechanism reports is
+`ValidationErrors(pub HashMap<Cow<'static, str>, ValidationErrorsKind>)` —
+`validator 0.21.0` `src/types.rs:50`, read at the published version (`G36`), and not a
+`BTreeMap` (`G37`) — is not. And the single error a fail-fast mechanism reports is
 **not necessarily the first key in the user's file**: for the three-bad-key document written
 `format, limit, color`, serde's derive reported `color` — the file's third key — at document
 line 4 (`S73`, `P1_SERDE_DERIVE_DISPLAY_FIRSTLINE = TOML parse error at line 4, column 9`),
@@ -332,6 +373,45 @@ library crate adopting it would compile two major versions of its own error-deri
 so `features = ["derive"]` is the entire surface (`S57`, `S58`) — which is why it, and not
 `validator`, is the runner-up.
 
+**The six fitness gates, per candidate.** Revision 1 answered gates 1, 2, 4 and 6 and the
+advisory half of gate 3, and left gate 3's `unsafe`-posture limb and gate 5's async-coupling
+limb unstated for every candidate; the prompt's tier guidance forbids that ("Apply every
+fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and
+the reason in the answer; do not omit it silently"), and revision 2 closes it. Every cell
+below is executed evidence from this run unless the cell says otherwise.
+
+| Gate | `serde` 1.0.229 | `garde` 0.23.0 | `validator` 0.21.0 | `serde_valid` 3.1.2 | `nutype` 0.7.0 | `validify` 2.0.0 |
+|---|---|---|---|---|---|---|
+| **1 · licence** | `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool`. Strings recorded as metadata only, `S16`/`S17`: `MIT OR Apache-2.0` | same ruling; `MIT OR Apache-2.0` | same ruling; `MIT` | same ruling; `MIT` | same ruling; `MIT` | same ruling; `MIT` |
+| **2 · MSRV ≤ 1.96 floor** | declares **1.56** — passes (`S47`) | declares **1.87** — passes (`S48`) | declares **1.88** — passes (`S49`) | declares **none** — evidence gap, not a breach (`S50`) | declares none | declares none (`S51`) |
+| **3a · RustSec advisory** | none; HTTP 404 with 200 controls in the same run (`S59`, `S60`, `S61`) | none, same method | none, same method | none, same method | none, same method | none, same method |
+| **3b · `unsafe` posture** | **2 `unsafe` blocks** in its own `src/`, both `str::from_utf8_unchecked` — `src/core/format.rs:16` and `src/core/ser/impls.rs:821` (`G01`, `G02`); its only non-optional dependency `serde_core` 1.0.229 mirrors the same two (`G03`); `serde_derive` has **0** (`G04`). No crate-level `unsafe_code` lint | **7 matching lines** (`G05`), of which **4** are inside `src/rules/pattern.rs`'s `regex_js_sys` module, gated `#[cfg(all(target_arch = "wasm32", target_os = "unknown"))]` and therefore absent from an `ubuntu-latest`/`macos-latest` build (`G07`, `G16`, `G17`). **Three are on the default path**: `src/error/rc_list/mod.rs:93` `unsafe { transmute(&next.value) }` (`G08`, `G09`) in the un-gated `mod rc_list;` that backs `garde::error::Path` (`G18`, `G19`), and two in the un-gated `pub mod i18n;` (`G06`, `G20`, `G21`) — a raw-pointer deref and a lifetime `transmute` behind a stated stack-guard SAFETY argument. `garde_derive` adds **2** (`G10`). No crate-level `unsafe_code` lint (`G22`) | **0** anywhere in its `src/` (`G11`). No crate-level `unsafe_code` lint (`G23`) | **0** anywhere in its `src/` (`G12`) | **3** matches, all of them **doc-comment prose** in `src/lib.rs` describing its opt-in `new_unchecked` feature, not compiled `unsafe` (`G14`, `G15`) | **0** anywhere in its `src/` (`G13`) |
+| **4 · ubuntu + macOS** | no upstream macOS leg (Ubuntu and Windows only); satisfied by portability, receipt is the template's own `macos-latest` job | no upstream macOS leg | no upstream macOS leg | no upstream macOS leg | no upstream macOS leg | not evaluated — excluded on maintenance |
+| **5a · default features** | `default = ["std"]`, so `features = ["derive"]` is additive (`G24`, `G25`) | **no `default` key at all**, so `features = ["derive"]` is the whole surface (`G26`) | no `default` key (`G27`) | `default = ["i128"]` (`G28`) | `default = ["std"]` (`G29`) | no `default` key (`G30`) |
+| **5b · async-runtime coupling** | **none.** 2 normal dependencies, 0 matching an executor or reactor | **none.** 13 normal dependencies (optional included), 0 matching | **none.** 9 normal dependencies, 0 matching | **none.** 13 normal dependencies, 0 matching | **none.** 1 normal dependency, 0 matching | **none.** 12 normal dependencies, 0 matching |
+| **6 · binary size / compile cost** | already in the tree for R52 and R66, so **zero marginal crates**; `serde_derive` is a proc macro and costs compile time, not binary bytes | adds `garde`, `garde_derive`, `compact_str`, `smallvec` — the smallest addition of any validation crate (`S53`) | adds `regex` (and its automata/syntax subtree), `idna`, `url`, `serde_json` unavoidably (`S54`, `S55`) | adds all of `validator`'s weight plus `indexmap`, `itertools`, `num-traits`, `unicode-segmentation` and a second major of `thiserror` (`S56`) | one dependency, `nutype_macros` | not evaluated |
+
+Gate 5b's method, stated because a null result is only evidence if the search was real: the
+whole **normal** dependency list of each crate — optional entries included, since a feature
+flag can turn one on — was matched against
+`^(tokio|async-std|smol|futures|futures-[a-z-]+|async-global-executor|async-io|async-executor|actix-rt)$`.
+Across all six candidates the total is **0** (`G31`). Every candidate in this field is
+synchronous, and none of them can drag an async runtime into a CLI's tree.
+
+**What follows from gate 3b, and what does not.** **No candidate is excluded on it.** R06
+(`research/topics/06-unsafe-code-policy/DECISION.md`) forbids `unsafe` in the **template's own
+code** through `[workspace.lints.rust] unsafe_code = "forbid"` and explicitly makes no claim
+about the dependency tree, because Cargo compiles dependencies with `--cap-lints allow`. The
+recommended crate is not `unsafe`-free either — `serde` carries two `str::from_utf8_unchecked`
+calls, which is unremarkable in a crate with `serde`'s audit exposure — so the finding does
+not separate the recommendation from the runner-up in the template's favour by accident. What
+it does do is put a fact in front of anyone acting on re-verify trigger 6: **adopting `garde`
+adds three `unsafe` sites on the default build path**, one of them a `transmute` in the
+allocator-free list that backs its error `Path`. That is not a reason to reject `garde` — it
+carries no advisory (`S59`) and its `SAFETY` comments state their arguments — but it is a fact
+the runner-up's adopter is entitled to know before the trade is made, and revision 1 did not
+supply it.
+
 **Performance is not a discriminator and none is manufactured.** Config validation runs once
 per process over a file of tens of lines. No candidate publishes a benchmark for that workload,
 none was run here, and comparing library microbenchmarks across unlike harnesses would violate
@@ -347,8 +427,10 @@ constraints the type system cannot hold**: a string key with a length or pattern
 adding a `token` with a minimum length or prefix rule), a numeric key whose valid range is not
 merely "nonzero", or any cross-field rule. At that point the hand-written pass begins
 reimplementing `garde`'s rule set with worse messages. `garde` is preferred over `validator`
-for that seat on three grounds: its `Report` is an ordered `Vec<(Path, Error)>` where
-`validator`'s `ValidationErrors` is an unordered `HashMap` a CLI must sort before printing; it
+for that seat on three grounds: its `Report` holds `errors: Vec<(Path, Error)>` and hands it
+back with `into_inner(self) -> Vec<(Path, Error)>` — `garde 0.23.0` `src/error.rs:23-24` and
+`:50`, read at the published version (`G34`, `G35`) — an ordered sequence, where `validator`'s
+`ValidationErrors` wraps an unordered `HashMap` (`G36`) a CLI must sort before printing; it
 adds two small non-optional crates where `validator` adds `regex`, `url`, `idna` and
 `serde_json` unavoidably (`S53`, `S54`); and its `Unvalidated<T>`/`Valid<T>` type-state is the
 same structure this decision recommends building by hand.
@@ -511,18 +593,43 @@ recorded but not evaluated for any dependency, per the 2026-09-12 owner ruling (
 compiling under 1.98.0 does not prove the recommendation builds under 1.96**, which is P03's
 `cargo +1.96 check --workspace` to run once a lockfile exists.
 
-**Command and working directory.**
+**Commands and working directory.** Two scripts, run from the repository root. The first is
+revision 1's and is carried into revision 2 **byte-identical**, with its log; the second is
+new in revision 2 and answers judgment findings JF-1 and JF-3.
 
 ```bash
 cd /Users/stevemorin/c/rs-launch-blueprint-p02-plan
-shellcheck research/runs/R53/2026-09-17T020714Z-d0b567b4b9f1/review/evidence/verify.sh
-research/runs/R53/2026-09-17T020714Z-d0b567b4b9f1/review/evidence/verify.sh \
-  > research/runs/R53/2026-09-17T020714Z-d0b567b4b9f1/review/evidence/r53-verify.log 2>&1
+R=research/runs/R53/2026-09-17T020714Z-d0b567b4b9f1/review/evidence
+
+shellcheck "$R/verify.sh"                 && "$R/verify.sh"              > "$R/r53-verify.log" 2>&1
+shellcheck "$R/r53-r2-gate-posture.sh"    && "$R/r53-r2-gate-posture.sh" > "$R/r53-r2-gate-posture.log" 2>&1
+"$R/verify.sh" > "$R/r53-r2-verify-rerun.log" 2>&1   # the JF-4 second log, kept
 ```
 
-**Observed result.** `shellcheck` exits 0 with no finding. `verify.sh` exits **0**:
-**117 checks run, 0 failures, 0 skips** on this host. The full output is the committed
-`review/evidence/r53-verify.log`.
+**Observed result.** `shellcheck` exits 0 with no finding on **both** scripts. `verify.sh`
+exits **0** — **117 checks run, 0 failures, 0 skips** — and `r53-r2-gate-posture.sh` exits
+**0** — **37 checks run, 0 failures, 0 skips**. The full outputs are the committed
+`review/evidence/r53-verify.log`, `review/evidence/r53-r2-gate-posture.log` and the rerun
+`review/evidence/r53-r2-verify-rerun.log`. **154 assertions in total, none failing, none
+skipped on this host.**
+
+**What the revision-2 check adds, and how it reads its sources.** `r53-r2-gate-posture.sh`
+answers the two gate limbs revision 1 left unstated, and it does so from **published crate
+source at an exact version** rather than from documentation or from a raw report. For each of
+`serde` 1.0.229, `serde_core` 1.0.229, `serde_derive` 1.0.229, `garde` 0.23.0, `garde_derive`
+0.23.0, `validator` 0.21.0, `serde_valid` 3.1.2, `nutype` 0.7.0, `validify` 2.0.0 and (for
+JF-3's `Table` claim only) `toml` 1.1.6+spec-1.1.0, it downloads the `.crate` tarball from
+`https://crates.io/api/v1/crates/<name>/<version>/download`, extracts it into a `$TMPDIR`
+vendor directory deleted by an `EXIT` trap, and censuses it with `/usr/bin/grep -n -w 'unsafe'`
+by absolute path over every `.rs` file `find(1)` locates — printing **every matching line
+beneath its count**, so the count is auditable against the listing rather than taken on trust,
+and never from a `head`-truncated prefix. Gate 5 is read from
+`GET https://crates.io/api/v1/crates/<name>/<version>` (the `default` feature key) and
+`.../dependencies` (the whole `kind == "normal"` list, optional entries included). **Nothing is
+compiled, and no file is written into the repository.** Because crates.io releases are
+immutable, every count in that log is reproducible byte-for-byte; a rerun differs only in the
+retrieval-date line and the eleven lines carrying the PID-bearing vendor path, which is what a
+rerun of it during this revision showed.
 
 **What the script verifies, and how it is kept honest.** It sets `set -uo pipefail` so a
 failing command inside a pipeline cannot be masked by a succeeding one; every load-bearing
@@ -582,13 +689,22 @@ surviving partial value. **P4_TABLE_KEY_ORDER** — sorted, because R52 chose `t
 F229's criterion names, with their exact messages. **P6** — the `RSLB202`/`RSLB203` boundary
 holds structurally, with no string-matching of `message()`.
 
-**Reproducibility, measured rather than asserted.** `verify.sh` was run twice back to back
-against the same tree and the two logs were diffed before this paragraph was written. The
-**entire diff is four lines — two changed pairs — and neither is a figure**: both carry the
+**Reproducibility, measured rather than asserted, and now checkable from the tree.**
+`verify.sh` was rerun for revision 2 and **both logs are committed**, so a reader reproduces
+the comparison without rerunning anything:
+
+```bash
+diff research/runs/R53/2026-09-17T020714Z-d0b567b4b9f1/review/evidence/r53-verify.log \
+     research/runs/R53/2026-09-17T020714Z-d0b567b4b9f1/review/evidence/r53-r2-verify-rerun.log
+```
+
+The **entire diff is four lines — two changed pairs — and neither is a figure**: both carry the
 probe crate's `$TMPDIR` path, which embeds the shell's PID and so differs on every run
-(`…/T/r53-verify.<pid>/probe`, log lines 315 and 357). **Every `PASS` / `FAIL` / `SKIP` line,
-every count, and all twenty probe output lines reproduced byte-for-byte.** The same two-line
-difference is the expected result of rerunning the committed script against the committed log.
+(log lines 315 and 357). The rerun's own summary reads `checks run: 117`, `failures: 0`,
+`skips: 0`, identical to the committed log's. **Every `PASS` / `FAIL` / `SKIP` line, every
+count, and all twenty probe output lines reproduced byte-for-byte.** Revision 1 asserted this
+same comparison from a second log it did not keep, which is judgment finding JF-4; the
+committed pair replaces that assertion with an artifact.
 
 The `VOLATILE` lines happened not to move inside that short interval, and that is not a
 guarantee: each is a live figure that will drift on any longer one. `crate.recent_downloads`
@@ -604,10 +720,18 @@ blob, the probe's output — is stable input.
 **What this check does not prove**, listed rather than glossed: the recommendation under the
 **1.96 MSRV floor** (local toolchain is 1.98.0, and the transitive tree was not resolved at
 1.96); **macOS and Linux CI**, since this is one macOS developer host and not the two-runner
-matrix; **compile-time or binary-size cost**, which was not measured; **`serde`'s own
-`unsafe` posture**, not audited here; and whether **`toml::Spanned` in the intermediate
-carries the per-key offsets** R67's `hint` wants, which the probe did not exercise. Each is
-listed again under `## Engines` with what would prove it.
+matrix; **compile-time or binary-size cost**, which was not measured; and whether
+**`toml::Spanned` in the intermediate carries the per-key offsets** R67's `hint` wants, which
+the probe did not exercise. Each is listed again under `## Engines` with what would prove it.
+Revision 1 listed a fourth item here — "**`serde`'s own `unsafe` posture**, not audited here" —
+which **revision 2 removes because it is now audited**: `r53-r2-gate-posture.sh` censuses
+`serde` 1.0.229's published source along with every other candidate's (`G01`–`G04`), and the
+result is in the gate table under `## Decision`. What the new check still does **not** prove is
+narrower and is stated in its place: it reads each candidate's **own** `src/` tree only, so the
+`unsafe` posture of the transitive dependencies those crates pull in — `regex`, `idna`, `url`,
+`serde_json`, `compact_str`, `smallvec` and the rest — is unexamined. Proving that needs a
+whole-tree audit against a resolved lockfile (`cargo geiger` or equivalent), which P03 can run
+once a lockfile exists and which no gate here requires.
 
 ## Engines
 
@@ -626,7 +750,11 @@ measurement.** This is the item's central question and the engines split on it. 
 factual dispute: Codex states the same underlying fact Opus does — "a malformed TOML value or
 wrong Rust type still fails during deserialization before Garde runs; Garde aggregates all
 semantic errors only after structure succeeds. That is a deliberate diagnostic boundary, not
-full Zod aggregate parity." The disagreement is whether that concession is fatal. The probe
+full Zod aggregate parity, and R55 decides how either class is tolerated" (`raw/codex.md:13`;
+revision 1 quoted this sentence only as far as "parity" and closed it with a full stop, which
+presented a partial quotation as a complete one — the dropped clause is not adverse, since it
+agrees with this decision's own refusal to pre-decide R55). The disagreement is whether that
+concession is fatal. The probe
 measures its size in two halves. A document with three bad keys yields exactly one error from
 serde's derive alone (`S72`). A document carrying one bad *type* plus two values `garde`'s own
 rules would reject yields `P2_GARDE_REACHED = false` and `P2_GARDE_REPORT_ENTRIES = 0` (`S74`,
@@ -637,7 +765,7 @@ sources' behaviour and to give R67 its `RSLB202`/`RSLB203` split structurally �
 constraint in the current schema is a type (three literal sets, one positive integer), the
 crate's remaining job for this schema is empty. **Codex's recommendation is therefore not
 adopted, but its analysis is not rejected**: `garde` is this decision's ranked runner-up on
-Codex's own grounds (smallest tree, ordered `Report`, aggregate contract), and its winning
+Codex's own grounds (smallest tree, the ordered `Report` of `G34`/`G35`, aggregate contract), and its winning
 condition is written into the re-verify triggers. Fairness recorded: `garde` does aggregate
 constraint errors, measured at `S77`–`S79`.
 
@@ -747,10 +875,22 @@ to change.
 source repositories (`py@b08bccfb`, `ts@cb1cbcb2`) for `settings.py` and `config.ts`; this
 synthesis quotes those line references from the raws and did **not** re-run `git show` against
 either repository, which is outside this run's tree. Likewise `cargo-deny`'s `src/cfg.rs`
-`UnvalidatedConfig` trait, `garde`'s and `validator`'s `unsafe` audits, both crates'
-`.github/workflows` runner labels, and the issue-responsiveness samples are carried from
-`raw/opus.md` at its stated retrieval date; this synthesis verified the lockfiles, the registry
-figures, the RustSec responses, the commit history and the serde pull request itself.
+`UnvalidatedConfig` trait, both crates' `.github/workflows` runner labels, and the
+issue-responsiveness samples are **referred to from `raw/opus.md` at its stated retrieval date
+and are not reproduced here**; this synthesis verified the lockfiles, the registry figures, the
+RustSec responses, the commit history and the serde pull request itself.
+
+Revision 1's wording of that sentence also listed "`garde`'s and `validator`'s `unsafe`
+audits" among the things "carried from `raw/opus.md`". **That was inaccurate twice over and is
+corrected here**: nothing was carried — the audits were referred to, not reproduced, which is
+the audit's point — and the `unsafe` posture is no longer a referred-to claim at all, because
+revision 2 re-ran it from the published crate sources at every candidate's exact version
+(`G01`–`G23`). Where the new census and `raw/opus.md:533-547` differ, **the census governs**:
+the raw described `garde`'s `src/rules/pattern.rs` `unsafe impl Send`/`Sync` as "js-sys only",
+which the `cfg` line confirms exactly (`G16`, `G17`), but it did not separate the seven
+matching lines into the three that are on the default path and the four that are not, and it
+reported `serde` as "not audited here", which is now audited. The word "referred to" is used
+above rather than "carried" for the remaining items, deliberately.
 
 **What P03 must validate.** Each line is a check that can fail, not a restatement.
 
