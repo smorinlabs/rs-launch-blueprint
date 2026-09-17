@@ -1,382 +1,280 @@
-decision-sha256: 0309754689dc338010858e46a59f7b6f52ed8859464b9ac1dfc564d5a537ed5f
-actor: audit-fable-2026-09-17T020714Z-f9e4f950ea82-r1
+decision-sha256: 29e7c7cf1f207e564ec839db168258abe7d0a5e1cdb79959e0b3faf5992fb683
+actor: audit-fable-2026-09-17T020714Z-f9e4f950ea82-r2
 model: claude-opus-5
 family: anthropic
 verdict: reject
-unresolved-findings: JF-1 (blocking): `wiremock` 0.6.5 is kept on the qualified shortlist at rank three with gate 2 recorded as "passes on substance, fails on declaration" and engine item 3 settling that it "fails no applicable gate", while `double`, `stubr` and `rvcr` are excluded on gate 2 in the same paragraph for the identical absent `rust-version` and `mry` is not — the programme withdrew the permissive reading at `docs/planning/p02/execution-ledger.md:414` ("insufficient evidence to PASS a gate the prompt says must be passed") and applied the strict one at `:640`, so codex's `raw/codex.md:115` exclusion was right, `wiremock` belongs under *Excluded by gate*, and the C12 reversal condition's "commits on `LukeMathWalker/wiremock-rs` after 2025-08-24" branch cannot clear gate 2; JF-2 (blocking): `mockall` 0.15.0's gate 4 is recorded as "**passes** by adopter evidence" from an adopter carrying 0.13.0 with macOS support for 0.15.0 conceded as "**inferred, not observed**", the same claim appears in the unproven table as "**Unproven**", `mockito` in the same evidentiary position is labelled "unverified for macOS test execution, not failed", and codex's contrary position at `raw/codex.md:61` is absent from the six numbered engine items — this is the one finding under which the recommendation moves, because an uncleared gate 4 removes member 2 from the stack; JF-3 (blocking): all thirteen URLs in the decision sit in the C01–C20 endpoint column, so every figure outside the check table is uncited, including the three adopter claims that are the entire basis for three gate-4 dispositions (`tokio-rs/tokio`, `matrix-org/matrix-rust-sdk`, `apache/iceberg-rust`) and `httptest`'s "35 stars and 55 reverse dependencies", which carries no retrieval date either, against the prompt's "Every claim carries a source URL and retrieval date; every number carries its endpoint"; JF-4 (blocking): `mockall`'s gate-2 cell says "its six required dependencies are pure Rust and older-MSRV (C08)" where C08 asserts only the dependency-name set and "no tokio, no hyper", and the dependency-tree half of gate 2 is established for no candidate and recorded as unproven for none; JF-5 (non-blocking): the BASELINE-REVIEW quotes R01's F121 row as "called from `tests/` once per adapter" and omits its next clause, "no parametrization or mocking crate", which a reader meets as a contradiction of member 3; JF-6 (non-blocking): member 1 is a pattern with no crate and receives no gate or figure statement, where the prompt requires `inapplicable` with its reason rather than silent omission; JF-7 (non-blocking): the claim that the script "passes `shellcheck` with no findings" appears in neither committed log and the script invokes no `shellcheck`; JF-8 (non-blocking): "No download counter, star count, open-issue count or active repository's `pushed_at` literal is printed anywhere" is true of the log and false of the decision body, which prints `httptest`'s star count and `mockall`'s and `httpmock`'s `pushed_at` dates
+unresolved-findings: JF-9 (blocking): five prose locations and the committed `D01` log line credit check D01 with compiling **both** selected members' dependency trees at 1.96.0 — the revision note's JF-4 row, the `## Parameters` prose at line 506, the D01 row of the spike table at line 583, engine item 7 at line 747, and the unproven table at line 772, which names "`mockall`'s six crates and `httpmock`'s 25" as compiled under D01 — but D01 runs `cargo +1.96.0 test` with the feature **off**, and `mockall` and its six required dependencies do not appear in that run's compile list while `D05` in the same table proves their absence ("`cargo tree -i mockall` … did not match any packages"); `mockall`'s tree compiles under **D02**, so the fact is proven and only the attribution is wrong, which is the JF-4 defect shape recurring inside the JF-4 repair, and the `mockall` gate-2 cell at line 306 already cites "(D01, D02)" correctly, showing the intended form; JF-10 (blocking): two claims the revision's own `## Empirical check` labels superseded are still live in the document — `## Decision` at line 45 states "Nothing was built here and no Rust was compiled by either engine or by this synthesis", which line 528 contradicts in terms ("Revision 1 said 'nothing was compiled'; revision 2 compiles one thing"), and the `httpmock` gate-6 cell at line 307 ends "**No wall-clock figure: nothing was compiled**" where the parallel `mockall` cell at line 306 was correctly rewritten to "**No wall-clock figure is offered**: the spike compiles a two-method probe crate, not the template", and the spike log records three wall-clock figures (27.05s, 9.45s, 20.14s) for builds that include `httpmock`
 
 ## Principle and agreement level
 
-The decision states the shared requirement at the right level and cites it correctly.
-F119 is stated as a **capability** — "A test can replace a collaborator with a
-programmable stand-in and can afterwards assert *what the code under test asked of it*"
-— sourced to `docs/port/areas/testing-coverage.md:9` and
-`docs/port/DIVERGENCE-ANALYSIS.md:177`. I read both lines. Line 177 is the R48/F119
-sub-row, cause class **B**, `harmonize: no`, and its cause column reads verbatim
-"D-019(5): same DI-and-spy pattern, only the framework-native tool differs" — the exact
-phrase the decision quotes as its ground for holding agreement at capability and letting
-the mechanism vary. F120 is stated as a capability too — hermetic upstream control,
-explicitly not mechanism — sourced to `testing-coverage.md:10` and
-`DIVERGENCE-ANALYSIS.md:178`, which is cause class **F**, `harmonize: no`, and whose
-cause column names "hermetic-boundary intent". The ledger rows the decision claims to
-settle are the rows it owns: `docs/port/COMMONALITY.md:125` is F119 and `:126` is F120,
-both `DIVERGENT`, both assigned to R48. F121 sits at `:127` and is R01's; the decision
-cites it as evidence and mints no finding against it, which is correct.
+Unchanged from revision 1 and unchanged in my assessment: F119 and F120 are stated as
+capabilities, sourced to `docs/port/areas/testing-coverage.md:9-10` and
+`docs/port/DIVERGENCE-ANALYSIS.md:177-178`, and the ledger rows the decision settles are
+the two it owns at `docs/port/COMMONALITY.md:125-126`. I re-read none of this ground in
+round 2 beyond confirming the text did not move; round 1 verified it line by line and
+revision 2 does not touch it.
 
-The three justified mechanism differences (nominal `impl` instead of `unittest.mock`
-over a `Protocol`; a hand-written spy because libtest ships none; a real loopback socket
-instead of py's in-process transport patch) are each argued from a property of the
-target ecosystem rather than from repository agreement. The third carries its structural
-consequence explicitly — the HTTP adapter's base URL becomes a constructor parameter —
-and names it as "the single structural change this item forces on R01's design". That is
-the right disclosure at the right place.
-
-**The BASELINE-REVIEW F120 disposition is a legitimate narrowing, not a covert change.**
-R01's sentence exists where the decision says it is: `research/topics/01-ports-and-adapters-seam/DECISION.md:76`
-reads "gives R48 the same conclusion this decision gives: **the recommended seam needs no
-HTTP-mocking crate** because the transport sits behind an injected port", and `:154`
-routes it to this item — "R48 receives 'the recommended seam needs no HTTP-mocking crate'
-for F120". The narrowing adds "**at the port seam**" and leaves R01's owned parameter,
-recommendation and crate selections untouched. I verified the parameter is untouched by
-byte-comparison (see `## Completeness`) and verified R01 is the pinned revision: the
-sha256 of `research/topics/01-ports-and-adapters-seam/DECISION.md` is
-`44bf9ae9f55060ed56256dbad4d9a0814b3bd63112602dabe932acb7bfb12d82`, which equals
-`inputs/prerequisites.json` `R01.decision`. The two supports the decision leans on are
-both real: R01:17 commits the template to a contract function "called from `tests/` once
-per adapter", and R01:261 asks for "A template integration test that starts the real
-upstream (or a bound test listener)". `BASELINE-REVIEW:` rather than `CONFLICT:` is the
-right vehicle — the prompt reserves `CONFLICT:` for a consumed parameter that must
-change, and none must. The finding carries feature ID, principle, proposed change,
-affected items and evidence, which is the form the prompt and the answer template
-require. One omission in how it quotes R01 is recorded as JF-5, which is non-blocking
-and does not make the narrowing covert.
+The `BASELINE-REVIEW: F120` finding stands as written and is now better supported. JF-5 is
+closed: line 282 quotes R01's F121 row in full — "called from `tests/` once per adapter;
+no parametrization or mocking crate" — and adds the distinguishing sentence I asked for,
+"the row's second clause governs the suite's own mechanism — this finding proposes no
+parametrization and no mocking crate in that suite, only an upstream for the adapter it
+already runs against". That is the sentence that makes the narrowing visibly legitimate
+rather than selective, and it forecloses the reading an empirical auditor would otherwise
+have to raise.
 
 ## Design and evidence
 
-**The architecture alternatives were genuinely compared, and before crates.** Five
-shapes for F119 (hand-written fake, derive-macro crate, struct mocking, closure
-injection, universal mock type) and five for F120 (loopback server, transport injection,
-in-process interception, cassettes, no HTTP test). Each rejection turns on a property of
-this template rather than on adoption: `faux` cannot produce a `ProjectsPort`
-implementor; `responses`-style interception has no Rust equivalent because there is no
-run-time patching of a linked crate; alternative B is recorded as a *complement* for the
-one failure class a real socket cannot reach, which is the honest disposition rather
-than a dismissal. The recommendation follows from this comparison: member 1 is the
-default because the language supplies the substitute, member 2 is gated because it adds
-terseness and no capability, member 3 exists because F121 needs an upstream to answer a
-real adapter. That chain holds.
+**JF-1 is closed, and closed uniformly rather than locally.** I asked for the strict
+gate-2 reading applied by one rule to every candidate. Revision 2 does exactly that, and
+it does it from a single executed table rather than crate by crate: check E04 reads the
+newest non-yanked version and declared `rust-version` for **all eleven** surveyed crates in
+one pass, and the log line enumerates them — `mockall=0.15.0:1.77.0 httpmock=0.8.3:1.88.0
+mockito=1.7.2:1.70 unimock=0.6.8:1.70 faux=0.1.13:1.65 wiremock=0.6.5:NONE
+httptest=0.16.4:NONE mry=0.14.0:NONE double=0.2.4:NONE stubr=0.6.2:NONE rvcr=0.2.1:NONE`.
+Five clear the gate, six do not, and the six are exactly the six now under *Excluded by
+gate*. `wiremock` 0.6.5 and `httptest` 0.16.4 moved there, `mry`'s clause is corrected, and
+every superseded sentence is quoted where it was replaced, which is what lets a reader
+check the sweep rather than trust it. The rule's authority is cited at
+`docs/planning/p02/execution-ledger.md:414` and `:640`, the two locations I named.
 
-**Four of the six engine items are settled on grounds, and I checked each against the
-raws.**
+Three things raise this above a minimal compliance repair. First, the exclusion is stated
+no harsher than the evidence: `wiremock`'s entry records that it fails **no other** gate,
+with gate 3 (C07), gate 4 (E02), gate 5 (C11) and gate 6 (C19) each shown passing, so the
+reader sees a crate excluded on one declaration rather than a crate disparaged. Second, the
+decision adds a fact that settles whether the absence is an oversight: pull request #172 to
+add a `rust-version` was closed unmerged on 2025-08-26, "so the absence is settled rather
+than pending". Third, it resists the temptation to lean on C20 — it notes that an effective
+floor inferred from a bug report "is exactly the 'unknown effective version' the ledger
+rules insufficient", which is the correct reading of the rule against its own item.
 
-1. *Does the HTTP condition fire?* Codex `raw/codex.md:127` reads "Do not add an
-   HTTP-mocking dependency for R01's registered trait/fake branch"; opus puts `httpmock`
-   in the stack. Settled for opus on R01's own F121 row and its bound-test-listener line,
-   both of which I read at the pinned revision. This is evidence, not a vote.
-2. *Where `mockall` is declared.* Settled on a language and Cargo constraint, not a
-   preference: integration tests under `tests/` link the library as an external crate, so
-   a mock gated by `#[cfg(test)]` is invisible to them, and an optional dependency that
-   `dep:mockall` can name cannot live in `[dev-dependencies]`. Both are true, and the
-   decision states the narrow case in which codex's shape is sound. Correctly settled.
-3. *How `wiremock` leaves the shortlist.* Settled for opus, with codex "recorded as
-   overstated". **This is the one settlement decided on the wrong rule** — see JF-1.
-4. *What a RustSec 404 means.* Codex recorded advisory status as unverified
-   (`raw/codex.md:179`, "Every queried RustSec package URL returned HTTP 404, so advisory
-   status is unverified"); the decision settles it by adding a control. C07 in the log
-   reads "rustsec.org control lock_api = HTTP 200 (RUSTSEC-2020-0070 exists), candidates
-   mockall=404 httpmock=404 wiremock=404 mockito=404 — the probe distinguishes". A
-   control that discriminates in the same run is exactly what converts a 404 from a
-   possibly-broken probe into a negative result. This settlement is sound, and it is the
-   strongest piece of empirical work in the item.
+Engine item 3 is flipped to codex on the gate, with `raw/codex.md:115` quoted and revision
+1's sentence named as superseded, while everything of opus's that survives the gate is kept
+and re-labelled as supporting rather than leading ground. That is a settlement on evidence
+in both directions.
 
-Items 5 and 6 are corrections to opus, and both are real. `raw/opus.md:830-831` does
-state `unsafe_code = "forbid"` and `edition = "2024"` read from master, and master is
-0.9.0; C06 re-read the v0.8.3 tag and found "0 unsafe_code lines and edition = '2021'".
-`raw/opus.md:842` does say 26 dependencies; C19 re-read all three in one pass and found
-25. Both corrections are carried into the rows they affect rather than only noted.
+**The C12 reversal condition now holds.** Revision 1 allowed `wiremock` back on commit
+activity alone. Revision 2 states the gate as the only door — "a released `wiremock` 0.6.6
+or later that declares `rust-version` inside the floor — that is the gate, and nothing else
+clears it" — and says explicitly that commit activity "would lift ground 3 only, leaving
+grounds 1 and 2 standing". The `re-verify:` line carries the same asymmetry, and C13 is
+re-described as lifting the maintenance ground only. The reconciliation also gains the
+sentence that states the owner's actual choice plainly: "An owner who wants `wiremock` is
+choosing to waive a gate, not to prefer a crate." That is the correct framing of a differ
+from a standing owner input under owner decision 11.
 
-**The unproven rows are honest and complete on the substance the decision claims.** The
-decision says plainly, three times, that nothing was compiled, and the seven-row unproven
-table names the falsifying test for each claim, including the one that would falsify the
-recommendation (the F121 suite passing for both adapters from one seed set). It declines
-to implement its own recommendation, which is correct for this role and is not a defect.
-No performance figure is offered and the refusal is argued from the absence of the
-workload. Nothing in the prose overstates the two logs I read, with one exception
-recorded as JF-4: a gate-2 sentence cites C08 for a dependency-tree MSRV property that
-C08 does not assert.
+**JF-2 is closed, and the observed compile is enough to close gate 4.** I named two
+acceptable resolutions in round 1 and revision 2 took the stronger one. The evidence is a
+throwaway probe crate — one two-method `ProbePort` trait, one `#[automock]`, two tests —
+built in `/private/tmp/r48-r2-spike-AcA2km`, outside the repository, deleted on exit, and
+asserted to be outside the tree by D00. This stays inside the role's boundary: it is the
+"confirm a version pin exists and installs" check the synthesizer role permits, it is not a
+seam, service, acceptance script or template scaffold, and R01 closed the identical macOS
+gap for `serde` the same way. The decision draws the line itself and keeps the template-side
+claims unproven, including the one that matters most — the generated mock is "**Still
+unproven against R01's actual `ProjectsPort`**, whose method set and any async form differ".
 
-**The C12 reconciliation honours section 11 in form but not in ground.** Owner decision
-11 makes the reference "an owner-supplied research input, not a binding standard and not
-a pre-decision", and requires a differing item to state its ground. The decision differs,
-states two grounds, re-verifies both at primary sources (C11 for async-only from the
-maintainer's own README, C13 and C03 for maintenance and the absent `rust-version`), and
-states a reversal condition. The reference row itself is where the decision says it is: I
-read line 72 (the C12 Testing row naming wiremock), line 117 ("Mock outbound HTTP with
-**wiremock**") and line 197 (`wiremock = "0.6"`). The process note about owner decision
-11 assigning C12 to R32 while R48 owns F119 and F120 is accurate and correctly raised to
-the controller rather than minted as a finding. What is wrong is that the decisive ground
-is missing and the reversal condition is stated too weakly, both consequences of JF-1.
+On sufficiency: gate 4 asks that a candidate build and be tested on `ubuntu-latest` and
+`macos-latest`, evidenced by a CI badge or a stated platform list. `mockall` now has
+Ubuntu from its own CI at the `v0.15.0` tag and macOS from direct observation at the
+recommended version — D02 expands `#[automock]`, erases the generated mock to
+`Arc<dyn Trait>` and passes `.with(eq(7)).times(1)` at 1.96.0, and D03 repeats it at stable
+1.98.0 against the same lockfile under `--locked`. A direct execution of the recommended
+version on the required OS is stronger evidence than the badge the gate names as a
+sufficient form, so the bar is cleared rather than inferred, which is precisely what the
+strict reading demands. The decision is also honest about the residue: the probe ran on
+"Darwin 26.4 aarch64 … the architecture `macos-latest` runs today, though not the GitHub
+runner image itself", and codex's wider point is preserved in the unproven table as the
+template's own two-OS lane. Engine item 7 records the disagreement I said was missing,
+settles it **for codex on the reasoning**, and then closes it by evidence rather than by
+demotion. Member 2 stays on grounds, not on preference.
+
+**Provenance of the compile is fully recorded.** Toolchain: `cargo 1.96.0 (30a34c682
+2026-05-25)` and `rustc 1.96.0 (ac68faa20 2026-05-25)` through `rustup` for the floor,
+`cargo 1.98.0 (797e8a9bc 2026-08-05)` and `rustc 1.98.0 (88d9e12ae 2026-08-18)` for stable,
+all four version strings in the decision and the log's own banner. Host: Darwin 26.4 arm64,
+with the macOS product version printed. Command: `bash
+review/evidence/r48-r2-msrv-macos-spike.sh`, named in the commands table with its result
+and log path. Exit: 0, with `RESULT: all checks passed (0 FAIL)` and 6 PASS lines. The log
+carries, in a `# `-prefixed appendix declared volatile, cargo's full compile output for all
+three invocations, both `cargo tree` outputs, and the complete resolved lockfile as 114
+name/version pairs, so a reader can check what was and was not built rather than taking the
+assertion lines on trust. That transparency is what let me find JF-9.
+
+**JF-3 is closed.** Every figure I named now carries an endpoint and a retrieval date, and
+the repair is systemic rather than spot: a **Sources** paragraph groups them by endpoint
+family, states which were executed by this synthesis and which are carried from the raws,
+and spells out the responsiveness method down to the `author_association` filter and the
+exclusion of the reporter. The three adopter claims that carried three gate-4 dispositions
+are now checks — E01 (`tokio-rs/tokio`, and it records the pin as 0.13.0 and **not** the
+recommended version), E02 (`matrix-org/matrix-rust-sdk`), E03 (`apache/iceberg-rust`, which
+asserts the macOS mention and explicitly does **not** assert the build-only/tests-ubuntu
+refinement it carries from opus). `httptest`'s 35 stars and 55 reverse dependencies, the
+figure that had neither endpoint nor date, now has both. E01–E03 are also written to fail on
+an upstream bump, which turns a carried citation into a maintained one.
+
+**JF-4 is closed on the substance and reopened on the attribution.** The "(C08)" clause is
+gone, and C08 is now explicitly limited — "cited only for the dependency **names** it
+asserts, not for their MSRVs". Dependency-tree MSRV is executed for both selected members
+and recorded as unproven for `mockito` with what would prove it, and the unproven row even
+carries the right caveat about MSRV-aware resolution proving that "a satisfying resolution
+exists, not that every newest transitive version is within the floor". What is wrong is
+which check is credited, which is JF-9.
+
+**Nothing in the recommendation moves.** The three members, their versions, their manifest
+shapes and their roles are identical to revision 1; no parameter value changes; the
+`BASELINE-REVIEW` stands. Neither new finding touches a selection, a gate disposition or a
+member.
 
 ## Completeness
 
-**H2 set and order.** `## Decision`, `## Parameters`, `## Empirical check`, `## Engines`
-— exactly the four the synthesizer role requires, in order, with no others and no
-`## Supersedes`. The required `### Principles and implementation` H3 is present, and the
-final line of `## Decision` is `re-verify:` with a date and a list of earlier triggers.
+**Structure.** The four required H2s in order — `## Decision`, `## Parameters`,
+`## Empirical check`, `## Engines` — with no others and no `## Supersedes`, which is right
+for an unpublished item, and one `### Principles and implementation`. The revision note and
+the finding-disposition table sit above `## Decision` as front matter rather than as a new
+H2, which keeps the required set intact. The `re-verify:` line closes `## Decision`.
 
-**`## Parameters` grammar.** Five `- assumes` lines, no `- owns` line, matching the
-prompt's empty `owns:`. I extracted each value and compared it byte-for-byte against
-column 4 of the matching `docs/port/PARAMETERS.md` row with a string equality test, not
-by eye: `msrv-policy`, `rust-edition`, `target-os-matrix`, `license` and
-`http-transport-injection-seam` are all **identical**. No backticks, no citation, no
-commentary on any value line; the prose about how each parameter bears on the decision
-follows the list, which is where the role doc puts it. The absence of `CONFLICT:` lines
-is correct — neither raw emitted one (`raw/codex.md:163`, `raw/opus.md:1132`).
+**`## Parameters`.** Five `- assumes` lines, no `- owns` line against the prompt's empty
+`owns:`, no `CONFLICT:`. I re-extracted each value and compared it byte-for-byte against
+column 4 of the matching `docs/port/PARAMETERS.md` row: all five are identical, unchanged
+from revision 1. Values are bare, with the bearing-on-the-decision prose after the list.
 
-**Fitness gates.** Gate 1 is stated `inapplicable — owner ruling 2026-09-12 (Q7.B)` for
-every candidate, licences are recorded as facts only, and codex's licence sentence is
-recorded as struck rather than as a pass. I read
-`docs/port/OWNER-REVIEW.md:47` and confirm the ruling and its scope, and I raise no
-licence finding. Gates 2 to 6 are answered per candidate for the four shortlisted crates
-in one table and in prose for each excluded candidate. Two defects remain: the gate
-dispositions are not applied by one consistent rule (JF-1, JF-2), and member 1 — a
-pattern, not a crate — receives no gate or figure statement at all (JF-6).
+**Fitness gates.** Gate 1 remains `inapplicable — owner ruling 2026-09-12 (Q7.B)`; I raise
+no licence finding. Gates 2 to 6 are answered per candidate for the four shortlisted crates
+and in prose for each excluded one, now under a single stated rule. JF-6 is closed: line 286
+carries an explicit `inapplicable` statement for member 1 covering gates 1 to 6 **and** the
+crate figures the prompt's evidence table requires, with the reason ("there is no registry
+page and no repository to query") and the R01-style record that the language features
+predate Rust 1.0. Both halves of gate 2 are now distinguished per candidate, which is an
+improvement on the prompt's own granularity.
 
-**Empirical check.** Toolchain, host, working directory, the exact command and the
-evidence log path are all present, and the section says explicitly that nothing was
-compiled. I read both logs and did not rerun them. `r48-claims-check.log` carries
-twenty `PASS` lines, C01 through C20, and `RESULT: all checks passed (0 FAIL)`, which
-matches the decision's "20 checks, 20 PASS, 0 FAIL, 0 SKIP". The two logs are identical
-line-for-line apart from the retrieval timestamp in the `# ` header, which is exactly
-the reproducibility rule the decision states, and `r48-archive-rerun.log` records
-`exit 0` from a clean `git archive HEAD` extraction. The C-table gives an endpoint for
-every check. Two checks are declared as designed to fail later, which is a legitimate
-tripwire and is tied to the recorded re-verify triggers.
+**Empirical check.** Three scripts, 31 checks, 31 PASS, exit 0 each. I read the three
+committed logs and the clean-extraction rerun and did not rerun any of them.
+`r48-r2-archive-rerun.log` carries 31 `PASS` lines and three `RESULT: all checks passed (0
+FAIL)` lines from a `git archive HEAD` extraction, matching 20 + 6 + 5. Script 1 and its two
+logs are byte-identical to revision 1, which the round-1 empirical audit reproduced in two
+environments. Identifier spaces do not collide (`C01`–`C20`, `D00`–`D05`, `E01`–`E05`).
+JF-7 is closed by E05, which runs `shellcheck` 0.11.0 over all three scripts and asserts
+both a zero exit and zero lines of output, with the superseded prose claim named. JF-8 is
+closed: the volatility sentence is scoped to "the scripts' output" and says in terms that
+revision 1's claim "was true of the log and false of the document".
 
-**Where completeness fails.** Every figure the decision states that is *not* covered by
-a check carries no endpoint (JF-3); one gate cell cites a check that does not establish
-it and the dependency-tree half of gate 2 is addressed for no candidate (JF-4); and one
-executed claim appears in neither log (JF-7).
+**Where completeness fails.** Two sentence-families were not carried through the sweep that
+the revision's own facts changed: JF-9 and JF-10. Both are mechanical, both are repairable
+against evidence this run already holds, and neither requires new retrieval or a new check.
 
 ## Findings
 
-**JF-1 — blocking. `wiremock` is kept on the qualified shortlist under a gate-2 reading
-the programme withdrew, and engine disagreement 3 is settled the wrong way in
-consequence.**
+**JF-9 — blocking. Five prose locations and the committed log line credit D01 with a
+compile D01 did not perform; D05, in the same table, proves it did not.**
 
-Quoted, from the fitness-gate table: `wiremock` 0.6.5 column 2 reads "**passes on
-substance, fails on declaration** — it declares **no** `rust-version` at all (C03), so
-the MSRV-aware resolver offers no protection". Quoted, from engine item 3: "**Settled for
-opus, and codex's framing is recorded as overstated.** `wiremock` fails no applicable
-gate: gate 2 passes on substance". Quoted, from *Excluded by gate*: "`unimock` 0.6.8 and
-`mry` 0.14.0 fail no applicable gate (`unimock` declares 1.70; `mry` declares none)".
+Quoted, from the D01 row of the spike table at line 583: "`cargo test` with the feature
+**off** exits 0 with exactly 1 passing integration test — **both selected members' whole
+resolved dependency trees compile at the `msrv-policy` floor**, which is gate 2's tree half,
+and the gated `mockall` test is correctly invisible without the feature". Quoted, from the
+unproven table at line 772: "**Proven** (D01): the whole resolved tree, `mockall`'s six
+crates and `httpmock`'s 25 including `tokio` and `hyper`, compiles at 1.96.0". Quoted, from
+the committed log: "PASS D01: cargo +1.96.0 test (feature off) exit 0 … — mockall's and
+httpmock's resolved dependency trees compile at the msrv-policy floor of 1.96.0 on this
+macOS host".
 
-The problem. The programme settled this reading against the decision.
-`docs/planning/p02/execution-ledger.md:414` records the owner's withdrawal in terms:
-"RULING WITHDRAWN: fitness gate 2 is read strictly … an unknown effective version is not
-evidence of incompatibility, as I said, but it is insufficient evidence to PASS a gate
-the prompt says must be passed. That distinction is the part I got wrong: I treated the
-gate as a test the candidate could fail, when the prompt writes it as a bar the candidate
-must clear." `execution-ledger.md:640` shows the strict reading applied to a crate in
-exactly `wiremock`'s position — "watchexec-cli 2.7.2 still fails gate 2 (no declared
-rust-version)" — and `docs/planning/p02/owner-decisions.md:456-458` records the same
-outcome for the owner. Under that rule an absent `rust-version` does not clear gate 2,
-and the prompt's own instruction is that "a failed gate lists the candidate under
-*Excluded by gate*". Codex was therefore right at `raw/codex.md:115` ("its release
-metadata declares no `rust_version`; this fails the evidence gate for macOS/MSRV") and
-the decision records a correct reading as overstated. The decision also applies the
-strict rule to three other candidates in the same paragraph — `double` and `stubr`
-excluded on "gates 2 and 6" for "no declared `rust-version`", `rvcr` excluded "on **gate
-2** (no declared `rust-version`)" — so the document reads the same gate two ways
-internally, with `mry` on the permissive side and `rvcr` on the strict side.
+The problem. D01's invocation is `cargo +1.96.0 test` with the `mock` feature off. I read
+the log's `msrv-nofeature.txt` appendix: the only three lines in it matching `mockall` are
+the probe crate's own name (`Compiling r48-mockall-probe`, `Running unittests …
+r48_mockall_probe-…`, `Doc-tests r48_mockall_probe`), and `mockall`, `mockall_derive`,
+`predicates`, `predicates-core`, `predicates-tree`, `downcast`, `fragile` and `termtree`
+appear nowhere in it. They all appear in `msrv-feature.txt`, which is **D02**. D05 states
+the same fact from the other side, one row below D01 in the same table: with the feature
+off, "`cargo tree -i mockall`" reports "did not match any packages". So the D01 row asserts
+that `mockall`'s tree compiled in a run that the adjacent row proves did not contain it,
+and the row contradicts itself internally, since its own closing clause concedes the gated
+`mockall` test is invisible there.
 
-What resolves it. Apply the strict reading uniformly: move `wiremock` 0.6.5 from the
-qualified shortlist to *Excluded by gate* on gate 2 with C03 as its evidence, restate
-engine item 3 as settled for codex on the gate and for opus only on the ranking prose
-that survives, correct the `mry` clause, and rewrite the C12 reversal condition — as
-written it allows `wiremock` to win on "commits on `LukeMathWalker/wiremock-rs` after
-2025-08-24", which cannot clear gate 2; only the second branch, "a released 0.6.6+ that
-declares `rust-version`", can. The fitness ground stated in the reconciliation should
-name the gate failure first, since it is decisive where the two fit grounds are not.
+This matters beyond tidiness for three reasons. The underlying claim is *true* — both
+members' trees do compile at 1.96.0, D01 for `httpmock` and D02 for `mockall` — so nothing
+here is unsupported; but the unproven table is the one place a reader goes to learn what is
+proven by what, and it names the wrong check. The log line is what an empirical auditor
+reruns and reads, and a `PASS` line that asserts an outcome its command did not produce is
+a check asserting more than it tests. And this is the JF-4 shape — attributing to a check a
+property that check does not carry — recurring inside the repair for JF-4, which is the
+failure mode the synthesizer contract names ("enumerate mechanically, never by reading").
 
-**JF-2 — blocking. `mockall`'s gate 4 is recorded as a pass on evidence the same
-document records as unproven, and on a rule the document applies more strictly to
-`mockito`.**
+What resolves it, and the correct form is already in the document. The `mockall` gate-2 cell
+at line 306 gets it right: "*Dependency tree:* **executed** — the whole resolved tree
+compiles and its test passes at 1.96.0 on this macOS host (D01, D02)". Apply that citation
+at the five locations that name D01 alone — the revision note's JF-4 row (line 19), the
+`## Parameters` prose (line 506), the D01 table row (line 583), engine item 7's closing
+clause "and D01 does the same for the resolved trees of both selected members at the floor"
+(line 747), and the unproven table (line 772) — and rewrite D01's assertion, in the table
+and in the script, to state what that command established: `httpmock`'s resolved tree
+compiles at the floor, the MSRV-aware resolve locked 113 packages to 1.96.0-compatible
+versions, and the gated `mockall` test is absent, with D02 supplying `mockall`'s tree.
+Re-run script 2 so the log carries the corrected line. The recommendation does not move.
 
-Quoted, from the gate table, `mockall` 0.15.0 column 4: "**passes by adopter evidence.**
-Its own CI is `ubuntu-latest` only; closed by `tokio-rs/tokio` … **Version caveat: that
-adopter evidence is for 0.13.0, not 0.15.0** … macOS support for 0.15.0 specifically is
-**inferred, not observed**". Quoted, from the same table, `mockito` column 4:
-"**unverified for macOS test execution, not failed**". Quoted, from the unproven table:
-"`mockall` 0.15.0 builds and tests on macOS | **Unproven.** Inferred from an adopter
-carrying **0.13.0** on a macOS matrix".
+**JF-10 — blocking. Two claims the revision's own `## Empirical check` declares superseded
+are still live elsewhere in the document.**
 
-The problem. Three things are wrong together. First, the document calls the same claim a
-gate *pass* in one table and *unproven* in another. Second, `mockito` is in the same
-evidentiary position — its own CI carries no macOS lane and only adopter evidence is
-available — and receives the weaker label, while the decision then uses the gap between
-the two labels as a discriminator elsewhere. Third, this is an unenumerated engine
-divergence: `raw/codex.md:61` records that `mockall`'s "public CI shown on Ubuntu
-stable/MSRV does not demonstrate the required macOS lane, so the template must prove its
-own Ubuntu/macOS test matrix before acceptance", which contradicts the table's "passes"
-and is not among the six numbered items, although `## Engines` is where the role doc
-requires the disagreements and their settling evidence. Under JF-1's strict reading —
-a gate is a bar to clear, and inferred evidence does not clear it — the cell as written
-cannot stand.
+Quoted, from `## Decision` at line 45: "Nothing was built here and no Rust was compiled by
+either engine or by this synthesis: the template does not exist yet." Quoted, from the
+`httpmock` gate-6 cell at line 307: "**No wall-clock figure: nothing was compiled**".
 
-What resolves it, and this is the one finding under which the recommendation moves.
-Either close the gate with executed evidence in the way R01 closed the identical gap for
-`serde` (it compiled the pin on this Darwin host; the synthesizer role permits "confirm a
-version pin exists and installs", which is not building the recommendation), or find an
-adopter running 0.15.0 on a macOS matrix; or relabel gate 4 for `mockall` exactly as
-`mockito`'s is labelled, add codex's position to the numbered items, and state the
-consequence — under the strict reading an uncleared gate 4 puts `mockall` under
-*Excluded by gate* and member 2 leaves the stack. Members 1 and 3 are unaffected either
-way, and the decision already states member 2's cost as terseness only ("dropping it
-costs the template no capability"), so the consequence is bounded and already priced.
+The problem. Revision 2's central repair is an executed compile, and the decision says so
+at line 528 in terms that name the earlier wording as superseded: "Revision 1 said 'nothing
+was compiled'; revision 2 compiles one thing and it is worth being exact about what". The
+superseded wording is nevertheless still standing in `## Decision`, which is the section a
+reader reads first and the section a publication carries, and it is categorical about this
+synthesis specifically rather than about the template. The gate-6 case is the same miss in
+miniature and is the clearer evidence that the sweep was done by reading: the parallel
+`mockall` cell in the adjacent row *was* rewritten, to "**No wall-clock figure is offered**:
+the spike compiles a two-method probe crate, not the template, so its timings would not
+represent the template's cost", while the `httpmock` cell directly below kept the old
+sentence — even though `httpmock`'s tree is the one thing D01 did compile, three times, and
+the log prints the wall-clock figures (27.05s at the floor feature-off, 9.45s at the floor
+feature-on, 20.14s at stable). The correct disposition is not that no figure exists but
+that the figures that exist do not represent the template, which is exactly what the
+`mockall` cell now says.
 
-**JF-3 — blocking. Load-bearing figures carry no endpoint, and one carries no retrieval
-date.**
+For the avoidance of doubt, one nearby sentence is **not** part of this finding and should
+not be swept: `## Engines` at line 672 says the two raw reports "both report that nothing
+was compiled", which is a true statement about codex and opus and must stay.
 
-Quoted: "`tokio-rs/tokio` carries `mockall` as a dev dependency and runs its test matrix
-on `macos-latest`"; "`matrix-org/matrix-rust-sdk`, which runs its full suite against
-`wiremock = "0.6.5"` on `macos-latest`"; "the best adopter evidence, `apache/iceberg-rust`,
-runs macOS in its `build` matrices but its `tests` job on `ubuntu-latest` only";
-"`httptest` 0.16.4 … not adopted, because 35 stars and 55 reverse dependencies make it an
-unsuitable default"; "`double` 0.2.4 — excluded on **gates 2 and 6**: last release
-2019-09-22"; "`stubr` 0.6.2 — excluded on **gates 2 and 6** (no declared `rust-version`,
-last release 2023-06-29)"; "its master branch moves to 1.85"; "median 1.18 days to first
-maintainer response over the ten most recently opened issues".
-
-The problem. I extracted every URL in the decision: there are thirteen distinct ones and
-all thirteen are in the C01–C20 endpoint column. Every figure outside that table is
-therefore uncited. The prompt's Constraints require "Every claim carries a source URL and
-retrieval date; every number carries its endpoint", its Required-evidence table pins each
-figure class to a named endpoint and requires adopter evidence to carry a "name + source
-link", and the synthesizer role says to "Cite sources with URLs and retrieval dates
-carried over from the raws you relied on". This is not pedantry here: the first three
-quotations are the entire evidentiary basis for three gate-4 dispositions, one of them
-for a selected member, and none can be checked from the decision. The `httptest` figure
-carries neither endpoint nor retrieval date and is the sole stated ground for not
-adopting a candidate the decision says fails no gate.
-
-What resolves it. Carry the endpoints from the raws, as R01's decision does in its own
-**Sources.** paragraph, or state the figures with a per-figure endpoint at the point of
-use. The raws hold the URLs already — `raw/codex.md` cites each figure inline — so this
-is transcription, not new retrieval. The recommendation does not move.
-
-**JF-4 — blocking. A gate-2 sentence cites a check that does not establish it, and the
-dependency-tree half of gate 2 is answered for no candidate and recorded as unproven for
-none.**
-
-Quoted, from `mockall`'s gate-2 cell: "**passes** — declares `rust-version = "1.77.0"`
-(C01), enforced by a CI job pinned to that image; its six required dependencies are pure
-Rust and older-MSRV (C08)".
-
-The problem. C08 in the log asserts one thing: "mockall 0.15.0 required normal
-dependencies are exactly: cfg-if downcast fragile mockall_derive predicates
-predicates-tree — no tokio, no hyper, no async runtime". It says nothing about any
-dependency's MSRV, and the script's C08 block tests only the dependency-name set and the
-HTTP status. "Pure Rust and older-MSRV (C08)" therefore attributes to the check a
-property the check does not carry — the exact defect shape the synthesizer contract warns
-about. The wider gap is that gate 2 as the prompt writes it is "crate **and
-dependency-tree** MSRV", and no candidate's tree MSRV is established anywhere in the
-decision, nor listed in the unproven table with what would prove it. Both raws saw this:
-`raw/codex.md:61` records "the resolved dependency-tree MSRV is unverified and must be
-checked after the template fixes `rust-version`".
-
-What resolves it. Drop the "(C08)" attribution or extend C08 to assert what the sentence
-claims, and add a row to the unproven table for dependency-tree MSRV with its proof — a
-resolved lockfile the synthesizer role does not permit this run to produce, which is the
-disposition R33 reached for the same obstacle. The recommendation does not move.
-
-**JF-5 — non-blocking. The BASELINE-REVIEW quotes half of R01's F121 row, and the omitted
-half reads as contradicting member 3.**
-
-Quoted, from the decision: "R01's own F121 row commits the template to one contract
-function 'called from `tests/` once per adapter' and names two adapters". The full row at
-`research/topics/01-ports-and-adapters-seam/DECISION.md:17` reads "called from `tests/`
-once per adapter; **no parametrization or mocking crate**".
-
-The problem. A reader checking the narrowing against R01 meets a clause that appears to
-forbid what member 3 adds. The decision has the answer already — R01's clause governs the
-*suite mechanism* (a mock programmed per test compares nothing, which is why alternative
-B "cannot serve F121"), whereas `httpmock` stubs the upstream the real adapter talks to
-and does not touch the suite's mechanism. Quoting the row in full and saying that in one
-sentence is what makes the narrowing visibly legitimate rather than selective.
-
-What resolves it. Quote the full row and add the distinguishing sentence.
-
-**JF-6 — non-blocking. Member 1 receives no gate or figure statement, and the omission is
-not declared.**
-
-The problem. The tier guidance in the prompt is explicit: "If a metric is inapplicable to
-this item kind, state `inapplicable` and the reason in the answer; do not omit it
-silently", and "pattern candidates use the pattern fields and explain why crate figures do
-not apply". Member 1 is a pattern with no crate; the fitness-gate table and the
-maintenance paragraph cover only the four candidate crates, and nothing says why. R01 set
-the precedent at its line 93: "Fitness gates 2 to 6 for the language-feature members …
-are `inapplicable` — no crate exists to fail an MSRV, advisory, platform, feature or
-build-cost gate".
-
-What resolves it. One sentence stating the gates and figures `inapplicable` for member 1
-with the reason.
-
-**JF-7 — non-blocking. An executed claim appears in neither log.**
-
-Quoted: the script "passes `shellcheck` with no findings".
-
-The problem. I read the script rather than rerunning it: it contains no `shellcheck`
-invocation, and neither `r48-claims-check.log` nor `r48-archive-rerun.log` records a
-`shellcheck` run or its output. The synthesizer contract addresses this case directly —
-"if you run a follow-up by hand, add it to the script before you cite it, because an
-auditor reruns the script and counts". Every other property asserted in the same sentence
-is verifiable by reading the script and is true (`set -uo pipefail` at line 28,
-`/usr/bin/grep` by absolute path, per-command status capture, no personal address in the
-`User-Agent`), which makes the one unrecorded claim the odd element. The adjacent claim
-that C18 "prints `SKIP` by name where that clone is absent" is sound: the `skip()` helper
-is at line 46 and the C18 comment at line 22 documents the branch.
-
-What resolves it. Fold the `shellcheck` run into the script and its result into the log,
-or drop the clause.
-
-**JF-8 — non-blocking. A scoping sentence is true of the log and false of the decision
-body.**
-
-Quoted: "No download counter, star count, open-issue count or active repository's
-`pushed_at` literal is printed anywhere, because those drift by the hour."
-
-The problem. Read against the log the sentence holds. Read against the decision it does
-not: "35 stars and 55 reverse dependencies" is a star count, and "`mockall` **active**
-(not archived; pushed 2026-09-02 …)" and "`httpmock` **active** (not archived; pushed
-2026-09-14 …)" are `pushed_at` literals for two repositories the same paragraph calls
-active. "Anywhere" is the word doing the damage.
-
-What resolves it. Scope the sentence to the script's output, and give the three body
-figures their endpoint and retrieval date under JF-3.
+What resolves it. Rewrite line 45 so it says what is true of revision 2 — the template was
+not built and its recommendation was not implemented, and the only Rust compiled was the
+throwaway probe crate under `## Empirical check` — and give the `httpmock` gate-6 cell the
+same treatment its `mockall` neighbour already has. The recommendation does not move.
 
 ## Assessment
 
-Reject. JF-1 and JF-2 each turn on a fitness gate read differently in different rows of
-one document, and the programme has already settled which reading governs; JF-3 and JF-4
-leave gate dispositions that a reader cannot check against a source. Any one of the four
-is sufficient to send the item back.
+Reject, on two mechanical findings and nothing else. I want to be explicit about the shape
+of this round, because the difference from a circling item matters: revision 2 closed all
+eight round-1 findings, and closed the hardest one the expensive way. JF-2 could have been
+answered by demoting `mockall`'s gate-4 cell to match `mockito`'s and dropping member 2 —
+the cheap path I left open — and instead the synthesis went and observed the thing, at the
+recommended version, at both the floor and stable, on the required OS, and then kept
+codex's residual point alive in the unproven table. JF-1's repair is broader than I asked
+for: one executed table for all eleven crates, every superseded sentence quoted, and the
+exclusion of the owner reference's crate stated without overstating what is wrong with it.
+JF-3's repair is a Sources apparatus rather than a patch. That is a revision that engaged
+with the findings rather than with the auditor.
 
-The recommendation itself is well argued and I expect it to survive. Members 1 and 3
-stand under every finding: nothing here touches the case for hand-written fakes plus
-`RecordingPort<P>` as the default, and JF-1 strengthens rather than weakens the case for
-`httpmock` 0.8.3 over the crate the owner reference names, because a gate failure is a
-firmer ground than the two fit grounds the decision currently leads with. **Member 2 is
-the one part that can move**: if gate 4 cannot be closed for `mockall` 0.15.0 on macOS
-with observed evidence, the strict reading puts it under *Excluded by gate* and the stack
-becomes two members. That consequence is bounded and the decision has already priced it,
-recording that member 2 "adds only terseness" and that dropping it "costs the template no
-capability". No other finding moves any selection; JF-3 and JF-4 are citation and
-attribution repairs, and JF-5 through JF-8 are wording.
+JF-9 and JF-10 are both consequences of the same thing: the compile changed what is true
+about this run, and two sentence-families did not follow it. Neither is an unsupported
+claim — the facts are in the committed logs — and neither touches a member, a version, a
+gate disposition or a parameter. **The recommendation does not move under either finding**,
+and no new evidence gathering is required: JF-9 needs a citation changed from D01 to
+(D01, D02) in five places, one assertion line rewritten in the table and in script 2, and
+that script re-run so its log carries the corrected text; JF-10 needs two sentences brought
+into line with the section that already supersedes them. Both should be done by the
+mechanical enumeration the contract prescribes, from the searches this audit records — the
+line numbers are given above — rather than by re-reading.
 
-Two procedural notes. The role doc lists `review/audit-codex.md` among my inputs; it did
-not exist when I read the run directory, so the empirical audit of this revision is not
-reflected here and my judgment rests on the decision, the two raws, the two committed
-logs, the check script, and the repository documents named in my task. There was no prior
-`review/audit-fable.md` to archive. I did not rerun either log and I did not edit the
+Procedural notes. `review/audit-codex.md` now exists for round 1 and I read it: it approves
+revision 1 on empirical grounds, reproduced script 1 in two environments, and independently
+re-derived the crates.io, RustSec, GitHub and `c2pa-rs` facts from their primary endpoints,
+which corroborates the factual base both revisions rest on; it took no position on the gate
+readings, which is my lane. No round-2 empirical audit exists — Codex is out of usage — so
+this round is judgment only, and the two new scripts have not been independently reproduced
+by another family; I read their logs and the clean-extraction rerun but did not run them.
+Round 1's audit is archived byte-identical at `review/audit-fable.r1.md`, sha256
+`1e02b647b2061ea693845fc3a03920f4d5a5da425143b0133ad1b1598748f292`. I did not edit the
 decision.
