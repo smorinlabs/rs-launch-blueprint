@@ -484,3 +484,11 @@ Context put to the owner: the twelve no-spend Wave 1 items were prepared under t
 | W1-GH: authenticated GitHub API budget for Codex research workers instead of the anonymous 60/hour per-IP budget | B: use the owner's existing `gh` login token | 2026-09-16 | `codex-research.sh` exports `GH_TOKEN` from `gh auth token` into the research sandbox environment only; never written to disk or logs; every report and transcript is swept for the token bytes before it is registered or committed; the recommended read-only token (option A) was declined for speed |
 | W1-CODEX: the Codex CLI account hit its usage limit ("try again at Sep 19th, 2026 7:28 AM") with fourteen research legs and every empirical audit waiting on it | "Let's skip codex for now" | 2026-09-16 | both runners stay stopped; Codex research legs and empirical audits are deferred; Opus legs, syntheses, judgment audits, Doxa and acceptance asks continue; no item publishes without its empirical audit, so publication of Wave 1 items waits; the controller does not resume Codex without telling the owner |
 
+## 13. Wave 1 acceptances (from 2026-09-16) -- IN PROGRESS
+
+Same rule as section 10: an acceptance binds the recommendation at one `review/DECISION.md` sha256; evidence-only revisions re-bind, recommendation moves re-ask. Rows are added as items complete both audits.
+
+| question | item | answer | date | bound sha256 | note |
+|---|---|---|---|---|---|
+| W1-R52 | R52 toml-crate (TOML crate) | A accept | 2026-09-16 | `4287ea4d…` (revision 1) | toml 1.1.6 read + toml_edit 0.25.15 write; basic-toml out on gate 2; F243 stays inherited; codex's responsiveness figure corrected (7/10 answered) |
+
