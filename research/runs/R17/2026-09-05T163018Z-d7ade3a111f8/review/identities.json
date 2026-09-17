@@ -1,0 +1,46 @@
+{
+  "audits": {
+    "empirical": {
+      "actor": "audit-codex-2026-09-05T163018Z-d7ade3a111f8-r12",
+      "family": "openai",
+      "file": "review/audit-codex.md",
+      "model": "gpt-5.6-terra"
+    },
+    "judgment": {
+      "actor": "audit-fable-2026-09-05T163018Z-d7ade3a111f8-r12",
+      "family": "anthropic",
+      "file": "review/audit-fable.md",
+      "model": "claude-opus-5"
+    }
+  },
+  "empirical": {
+    "argv": [
+      "bash",
+      "mutations-r11.sh"
+    ],
+    "cwd": "/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R17/2026-09-05T163018Z-d7ade3a111f8/review/empirical, the working directory the round-12 empirical audit's `## Rerun` records; the argv above is relative to it, as that section writes it. review/empirical/ is not part of the publication: the packager stages only the raw reports, the two audits and review/evidence/*.log.",
+    "exit_code": 0,
+    "output_log": "review/evidence/audit-secret-scanning-ci-workflow-r12.log",
+    "toolchain": "/usr/bin/grep (grep (BSD grep, GNU compatible) 2.6.0-FreeBSD), /usr/bin/curl (curl 8.7.1), Bash and /opt/homebrew/bin/python3 (Python 3.14.7), as the round-12 empirical audit's `## Rerun` records. The target-only mutation result matches the decision: mutation 1 failed exactly 08h, 08i and 08j, mutation 2 failed exactly 08e, both mutated runs exited non-zero, and the harness ended `mutation-harness failures: 0` with `RESULT: PASS`; the anonymous-core readings were 60 60 before and after. That audit states this is NOT a byte-for-byte replay of measurement (5): PY_REPO, TS_REPO and a declared token were unavailable, so 01a-01c, 02a, 04g, 04h and 13q skipped by their recorded names. The mutation targets and their failing-set assertions executed rather than skipped."
+  },
+  "engine_reports": {
+    "codex": {
+      "actor": "research-codex-2026-09-05T163018Z-d7ade3a111f8",
+      "family": "openai",
+      "file": "raw/codex.md",
+      "model": "gpt-5.6-terra"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-05T163018Z-d7ade3a111f8",
+      "family": "anthropic",
+      "file": "raw/opus.md",
+      "model": "claude-opus-5"
+    }
+  },
+  "evidence_checks": {},
+  "synthesis": {
+    "actor": "synth-opus-2026-09-05T163018Z-d7ade3a111f8-r12",
+    "family": "anthropic",
+    "model": "claude-opus-5"
+  }
+}
