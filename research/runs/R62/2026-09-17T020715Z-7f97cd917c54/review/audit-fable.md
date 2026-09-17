@@ -1,338 +1,228 @@
-decision-sha256: 10caee16f01cb2b39bad301c7669abb65cef4cb24b112fb0821bc23869bc73e7
-actor: audit-fable-2026-09-17T020715Z-7f97cd917c54-r1
+decision-sha256: fb0a58c9556fdd19052e165d2f5a1d53e2766a84961ab86f9f2401500140d3c2
+actor: audit-fable-2026-09-17T020715Z-7f97cd917c54-r2
 model: claude-opus-5
 family: anthropic
-verdict: reject
-unresolved-findings: JF-1 (blocking) — AC3's byte-empty stdout contradicts AC2 and the decision's own must-agree ordering row, and the resulting tension with R67's envelope invariant is unrecorded; JF-2 — fitness gate 3's `unsafe` posture for `arboard` is stated nowhere; JF-3 — the §7.6 issue-responsiveness figure is omitted; JF-4 — the `re-verify:` line names two alternatives the decision never defines; JF-5 — standard rule R5.6 is cited for a proposition it does not carry; JF-6 — "verbatim" overstates the `nushell` reference, which pins 3.6.0; JF-7 — the rejected warning policy is not recorded beside the fatal choice
+verdict: approve
+unresolved-findings: none
 
-I read, in order, `docs/superpowers/plans/p02-roles/judgment-auditor.md`,
-`review/DECISION.md` whole, `raw/codex.md` whole, the parts of `raw/opus.md`
-that carry the five disagreements and the fatal-versus-warning choice,
-`inputs/prompt.md`, `research/RUNBOOK.md` §4–§5,
+This is the round-2 judgment audit of R62 revision 2 (commit `2547506`). I wrote
+the round-1 audit, archived byte-identical at `review/audit-fable.r1.md`
+(sha256 `9b7b5a106f7b88f546cc51426e3e98e671a9dcc5bf2a0cc82597b2575190b198` for
+both files); I produced none of this item's raw reports, neither revision of the
+decision, and none of its evidence. The empirical audit remains deferred, so
+`review/audit-codex.md` does not exist and nothing here stands in for one —
+acceptance still needs that second verdict under `research/RUNBOOK.md` §5.
+
+I read the full revision-2 file, the complete `2547506~1..2547506` diff, the new
+`review/evidence/verify-r2.sh` and `r62-clipboard-claims-r2.log`, and I re-read
+at source every document the repairs newly depend on:
 `research/topics/67-error-and-exit-code-contract/DECISION.md`,
-`docs/port/PARAMETERS.md`, `docs/port/COMMONALITY.md:285-286`,
-`docs/port/OWNER-REVIEW.md`, `docs/port/BASELINE-REVIEW.md`, the org CLI Design
-Standard v1.4.14 at blob `f9de0437baece3383e73ca2c5f48b7ab399b51c7`, both
-committed logs under `review/evidence/`, both evidence scripts, the `py`
-commit `f587e48b41bcf6535ba1b62f348147294911c48d` and its parent through the pin
-`b08bccfb55d05f15e46a83b52c5660b1881d19f5`, and the `ts` pin. I reran nothing.
-The decision file is committed and clean, and the sha256 above is the
-working-tree file as I read it. No `review/audit-fable.md` existed before this
-one. The empirical audit is deferred for this revision, so
-`review/audit-codex.md` does not exist and the role doc's audit-consistency
-check is inapplicable here; nothing in this audit stands in for it.
+`research/topics/06-unsafe-code-policy/DECISION.md`, `docs/port/PARAMETERS.md`,
+`docs/port/OWNER-REVIEW.md` (both the 2026-09-12 and the 2026-09-14 entries),
+the org CLI Design Standard at blob `f9de0437`, and the parts of `raw/opus.md`
+that the new subsections quote. I reran nothing.
 
 ## Principle and agreement level
 
-The requirement is stated at the level the owner clarification of 2026-09-04
-asks for and no lower: a capability and a policy — an optional `--copy` on a
-result-emitting command, the write strictly after the primary sink, the note on
-stderr, a typed catchable failure carrying a remedy, and absence of the facility
-treated as a normal runtime state. The five-row must-agree / may-differ table
-(`### Principles and implementation`) puts the crate, the synchronous-versus-helper
-question, the note's wording, the concrete error type and the catalogue code on
-the may-differ side. That is the correct split for an item whose ledger rows are
-`ts-only DIVERGENT`: there is no inherited Rust mechanism to preserve, only an
-outcome.
+Unchanged and still correct. The requirement, its source, the capability-and-policy
+agreement level and the five-row must-agree table are byte-identical to
+revision 1, and the diff touches none of them. The prompt-gloss correction, the
+`ts-only` ledger reading and the absence of a `BASELINE-REVIEW:` line all stand
+as audited in round 1.
 
-The item's strongest analytical move is the one the prompt did not ask for. The
-prompt's `## Context` gloss — "py ships no clipboard integration to compare
-against" — is corrected rather than repeated, and the correction is load-bearing
-for the "should `--copy` exist at all" question (architecture D). I verified the
-correction at source rather than through the log:
-`f587e48b41bcf6535ba1b62f348147294911c48d`, dated 2026-06-09, whose body names
-"`--copy`/clipboard" among "the legacy flat-flag features … dropped"; at
-`f587e48^`, `src/py_launch_blueprint/projects.py:398` calls `pyperclip.copy(result)`
-immediately after `console.print(result)`, guarded by nothing more specific than
-`except Exception` → `sys.exit(4)`; and `pyperclip` appears zero times in tracked
-`*.py` and `pyproject.toml` at the pin. Every element of the decision's account
-holds, including the reading that the removal is collateral rather than a
-judgement against the capability.
-
-Recording that as a finding and emitting no `BASELINE-REVIEW:` line is the right
-handling, and I tested the contrary reading before accepting it. A
-`BASELINE-REVIEW:` line proposes a change to a ledger row's classification;
-`F281`/`F282` classify what the *source repositories ship at their pins*, and at
-`b08bccfb` py ships nothing, so `ts-only` is accurate and no row changes.
-`docs/port/BASELINE-REVIEW.md` adjudicated `COMMON → REUSE` and `ADOPT` rows
-only; two `ts-only DIVERGENT` rows were never in its scope, so there is no
-existing entry to amend either. The finding form is correct, and the decision's
-sentence that the prompt is immutable is right.
-
-The three-repository trajectory the decision draws — py had the capability and
-got the failure path wrong, ts kept it and repaired the failure path, rs keeps
-both and must additionally solve selection ownership, which neither Python nor
-Node ever faced because neither owns the selection — is the clearest statement of
-the shared principle in this run, and it is sourced rather than asserted.
+Revision 2 adds one thing at this level that improves it: the post-result
+partial failure is now named as a *shape* — the command's requested result
+delivered and correct, one additional requested side effect not performed — and
+the must-agree row is cited as the reason neither output mode may withhold the
+result. That is the principle doing work rather than being restated.
 
 ## Design and evidence
 
-**The architecture comparison precedes the library choice and is genuine.** Four
-alternatives (native crate, shell out, OSC 52, do not ship) each carry a reason
-that could have gone the other way, and the runner-up is named with the
-condition that would promote it. Alternative B is rejected on a measured fact
-rather than a preference: `xclip`, `xsel` and `wl-clipboard` are all absent from
-the `ubuntu-latest` image, established against an `xvfb` presence control fetched
-in the same request (checks A63–A66) — the pairing is what makes three absences
-evidence instead of three nulls. Alternative C is rejected on a property of the
-mechanism (fire-and-forget, so failure is undetectable), which is the right axis
-for an item whose whole subject is clean degradation.
+**The recommendation does not move, and I verified that mechanically rather than
+on the synthesizer's word.** The diff is three files: `review/DECISION.md`, plus
+two new additive artefacts (`review/evidence/verify-r2.sh`,
+`review/evidence/r62-clipboard-claims-r2.log`). `verify.sh`, `spike-build.sh`,
+`r62-clipboard-claims.log` and `r62-spike-build.log` do not appear in the diff at
+all, so everything round 1 reproduced is untouched. The member table, the flag
+spelling, the stderr note, the fatal policy sentence and the four `- assumes`
+lines are absent from the deletion set, so they are byte-identical. The complete
+list of deleted lines is exactly the seven passages my findings named, plus the
+figures-table header row the responsiveness column replaces, the `re-verify:`
+line, the logs paragraph, and the `copypasta` sentence that now carries the
+countervailing figure. Nothing else was edited.
 
-**Member 3 is the finding that justifies the run, and it is settled on source.**
-I checked each of the four reads the decision rests it on. The `arboard` README
-carries a *Clipboard Ownership* section and the "the data will be lost" sentence
-(A31, A33); the X11 backend serves paste requests from a thread inside the
-copying process (A34); the Wayland backend passes `foreground` only for
-`WaitConfig::Forever` (A35); and `wl-clipboard-rs` documents `foreground` as a
-*thread* switch, with its own doc comment contrasting `wl-copy` the binary, which
-forks (A41, A42). Each assertion's text in the log matches what the decision
-says it establishes. Codex's one-member stack is not a rejection of Member 3 —
-`raw/codex.md` contains no discussion of selection ownership at all — so
-"omission rather than considered disagreement" is the accurate characterisation,
-and Disagreement 1 is settled on evidence rather than on a vote.
+**JF-1 is resolved, and resolved consistently.** The three surfaces that
+contradicted each other now agree. AC3 states that stdout carries the result
+byte-identical to the same command run without `--copy` while stderr carries
+exactly one `RSLB101` object; AC2 is unchanged and now agrees with it; the
+must-agree ordering row is cited as the constraint that forces both. The new
+subsection *"What a post-result failure puts on each stream, and the R67 clause
+it meets"* states the two modes in a table with fd 1, fd 2 and the exit status,
+and the superseded wording is quoted in place rather than silently removed —
+both at AC3 and in the `## Parameters` sentence — so a reader of revision 2 can
+see what revision 1 said and why it was wrong.
 
-**The other four disagreements are settled on grounds, not on agreement.**
-Placement in the binary crate only, behind a default-on `clipboard` feature, is
-settled on the principle that the library and web-service builds must link no
-desktop dependency, with `nushell/reedline`'s optional + feature-gated shape as
-the production instance (A51, A52) and AC5 as the check that makes it falsifiable
-— not on Opus's preference. RustSec is settled the only way a 404 can be: the
-same endpoint returns 200 for `anyhow`, whose page is backed by an advisory
-(A09), and the advisory-db contents API agrees independently (A10, A11); Codex's
-caution was right about a bare 404 and the decision says so while closing the
-question. `copypasta`'s CI is converted from Codex's impression to fact —
-the matrix is `[windows-latest, macos-latest]` and `ubuntu` appears nowhere in
-the file (A46, A47). The MSRV disagreement is resolved by correcting *both*
-engines from an executed resolution (1.71.0 macOS, 1.86 Linux; S17, S18), and
-the decision says plainly that the figure was wrong while the verdict is not,
-since both floors sit far below R67's 1.96 floor.
+The standard is now read at each rule's own scope, which is the part I would
+have pressed on. **R7.8**'s mid-stream clause and the absence of any
+empty-stdout requirement carry the argument (checks `R01`, `R02`); **R7.1**
+routes a mid-command diagnostic to stderr without withdrawing data already
+written (`R03`, `R04`, `R04b`); **R8.2** supplies exit `1` (`R07`). **R6.3 is
+explicitly demoted to a shape analogy** because its literal scope is "a command
+operating on many items" (`R05`, `R06`) — the decision reached that on its own
+and says so, and it is the correction I would otherwise have made, since
+`raw/opus.md` had cited R6.3 as if it governed. Every one of those assertions
+appears in the r2 log with text that matches the use the decision makes of it.
 
-**The new duplicate-resolution finding is correctly scoped, and neither
-alternative instrument fits.** I read what R67 actually requires. Its
-zero-duplicate result is an integration-cost measurement of its own two-crate
-set — "the stack locks **20 packages** with **zero duplicate versions**", empirical
-row E13 — and its own unproven row 8 says "Only the dependency *count* (20
-packages, no duplicates) was established here". It is not a fitness gate, an
-acceptance criterion, or a workspace invariant, so there is nothing for R62 to
-fail. A `CONFLICT:` line is the wrong instrument on its own grammar: it names a
-registered parameter and a needed value, R62 consumes none, and R67's owned
-`error-taxonomy-exit-codes` is untouched by a `hashbrown` duplicate. A re-verify
-trigger is not required either, because `## Empirical check` section B already
-states that the package counts and the duplicate report are properties of the
-resolution date and toolchain rather than of `arboard` 3.6.1. Calling it a cost
-to record for P03 is the correct disposition.
+**Check A95 is no longer asked to carry what it does not assert.** `R12` records
+exactly what A95 established (the envelope substring, nothing more), `R13` carries
+the `hint`-omitted-not-`null` claim, and `R08`/`R09`/`R11` carry the byte-empty
+clause. The `## Parameters` prose is rewritten to match.
 
-**The fatal-versus-warning policy is grounded, and I checked it in both source
-repositories rather than accepting the standard citation alone.** At the `ts`
-pin, `src/commands/projects.ts` writes the result to stdout or to the
-`--output` file and only then calls the injected clipboard writer, throwing
-`CliError` on failure; `CliError`'s constructor defaults to `EXIT_CODES.error`
-(`src/lib/errors.ts:28-34`), so ts exits non-zero with the result already on
-stdout. Pre-removal py did the same shape by accident, exiting 4 from its generic
-handler after `console.print(result)`. The standard supports it independently:
-R6.3 makes a command that did its main work but failed part of it exit `1`, and
-R8.2 assigns exit `1` to runtime failures. So "failure fatal" for a convenience
-flag is evidenced, not asserted — the decision's own line 106 gloss
-("best-effort side effect") is looser than its must-agree table, but the table is
-the operative text and it is precise.
+**The R67 disposition is legitimate, and the form is right.** I tested it against
+the alternatives rather than accepting it. Three things decide it.
 
-**What the fatal choice collides with is R67's envelope wording, and that is
-finding JF-1 below.** The collision is real, it was inherited from `raw/opus.md`
-unexamined, and it is the one defect in this decision that reaches an acceptance
-criterion.
+First, the facts the decision states about R67 are exact. The clause *"stdout
+stays byte-empty on the error path"* occurs in R67 exactly twice — inside the
+`owns error-taxonomy-exit-codes` value and again in R67's own AC2 — so "two
+locations, and the complete list" is right, and check `R08` is candid that the
+clause sits **inside the registered value**, which is the fact that makes the
+question hard rather than easy. R67's broken-pipe rule does separate the result
+stream from the error path in R67's own words, so ground 1 is R67's text, not an
+inference about it.
 
-**Claims are held to what the evidence establishes.** The headless behaviour is
-labelled a code-path read and named in Unproven 1 with "A code path read is not
-an execution"; the Linux leg is labelled resolved-not-compiled; the
-probe-before-spawn ordering is labelled an evidence gap with the reason the gap
-exists (`code2prompt`'s `spawn_clipboard_daemon` contains no `Clipboard::new`
-probe, check A61, so the best available reference implementation is also the
-defect analysis); the `ext-data-control` question is left unresolved with its
-blast radius bounded. Six unproven rows, each with what would prove it. The
-decision does not implement its own recommendation — the only compiled artefact
-is a one-line `fn main` — which is correct for a research programme where P03
-builds and proves the template.
+Second, a `CONFLICT:` line would assert something the decision has not
+established and does not believe. Its grammar, in the prompt and in RUNBOOK §4
+alike, fires when a recommendation *needs a registered value changed*. Under
+R62's reading nothing changes: the clause was written for failures that produced
+no result, which is every failure R67 itself had in view, and `RSLB101`, exit
+`1`, the three keys, the `hint` rule and the `thiserror`/`anyhow` layering all
+apply to R62 unchanged. Emitting a conflict would claim the opposite — that
+R67's value must move — which R62 neither shows nor needs.
+
+Third, and decisively for approval, the decision does not settle the question by
+assertion. It writes out the exact substitute sentence R67 would need under the
+unqualified reading, attaches the same qualification to R67's AC2, names that as
+an R67 edit rather than an R62 one, makes it a `re-verify:` trigger on R67's
+*Envelope* wording, and adds unproven row 7 stating in terms that the reading is
+"this decision's, argued from the binding standard and from R67's own broken-pipe
+rule, and it is not an owner ruling". A controller who reads the clause as
+unqualified can overrule the disposition without re-deriving anything. That is a
+genuine owner question raised *with* the research done and a recommendation
+attached — the form the programme asks for — rather than a consumer quietly
+reinterpreting a published owner-accepted value.
+
+I record one acceptance-process consequence for the controller below; it is not
+a defect in the decision and not an unresolved finding.
+
+**JF-2 through JF-7 are closed, each with new evidence rather than new prose.**
+
+| Finding | Closed by | Verified |
+|---|---|---|
+| JF-2 | Gate 3's posture half answered in full: `arboard` uses `unsafe` in platform FFI — 67 keyword lines across six surveyed sources (`R14`) — zero in the public error module (`R15`), with R06's scoping quoted | R06's decision text carries *"makes no claim about `unsafe` inside its dependency tree"* verbatim; the `forbid` sentence is now explicitly labelled first-party-only |
+| JF-3 | The §7.6 column added and **computed here**, with a stated method (10 most recently opened non-PR items; first `OWNER`/`MEMBER`/`COLLABORATOR` comment that is not the author's; median over the answered subset, unanswered reported beside it) | 30 issues sampled across the three crates (`R18*`); figures 1.68 / 8 of 10, 0.02 / 1 of 10, 7.92 / 5 of 10 |
+| JF-4 | Alternatives 2b and 3a defined with promotion condition and migration cost | `raw/opus.md` numbers the Member 2 runner-up **2b**, ranked above 2a and 2c — my round-1 narrative called it 2a, and the decision corrects me by name (`R25`) |
+| JF-5 | R5.6 demoted to motivation; the operative reasons stated (`/proc/<pid>/cmdline` world-readability, `ARG_MAX`) | `R19`–`R21`: R5.6's title is *Secret redaction in output* and its text contains no `argv`, process listing or `/proc` — which matches the blob I read |
+| JF-6 | "verbatim" replaced by the accurate claim about the dependency-line *shape*, pinned one patch earlier | `R23`, `R24`: zero 3.6.1 pins in nushell's manifest |
+| JF-7 | The rejected warning policy recorded beside the fatal one, with its argument, the ground of rejection and the cost of flipping it | `R29`–`R31`, quoted from `raw/opus.md` |
+
+JF-3's repair goes further than the finding asked. The figure it adds cuts
+against the crate the decision selects — `copypasta` answers in about half an
+hour and `arboard` leaves eight of ten recent issues unanswered — and the
+decision says so in those terms, keeps the `at-risk` verdict on the two signals
+responsiveness does not touch, and explicitly disclaims that the selection is a
+claim of better maintenance on every axis. That is the honest handling of
+countervailing evidence, not the minimum one.
 
 ## Completeness
 
-Required structure holds. The H2 set is `## Decision`, `## Parameters`,
-`## Empirical check`, `## Engines`, with no `## Supersedes` — correct, since
-revision 1 reverses nothing. The `re-verify:` line sits at the end of
-`## Decision` immediately before `## Parameters`, matching R64 and R67. The
-`## Parameters` section opens with four `- assumes` lines and then prose,
-matching the convention R64 established.
+The H2 set is unchanged and correct: `## Decision`, `## Parameters`,
+`## Empirical check`, `## Engines`, with no `## Supersedes` — right, because
+revision 2 revises an unpublished file in place and reverses no published entry,
+and the revision note says exactly that. The `re-verify:` line still sits at the
+end of `## Decision` immediately before `## Parameters`, matching R64 and R67.
+The four `- assumes` lines remain byte-identical to `docs/port/PARAMETERS.md`.
+No `owns` line, no `CONFLICT:` line, no `BASELINE-REVIEW:` line — all three
+correct for an item whose `## Couplings` carries an empty `owns:` and an empty
+`consumes:`.
 
-The four `- assumes` values are byte-identical to the live registry rows
-(`docs/port/PARAMETERS.md`, `msrv-policy`, `rust-edition`, `target-os-matrix`,
-`license`); I compared them against the registry directly, not through check
-A89. No `owns` line is correct: the prompt's `## Couplings` carries an empty
-`owns:` and an empty `consumes:`, and R67 appears there as "related (not a
-registry dependency)", so discussing `error-taxonomy-exit-codes` in prose rather
-than as an `assumes` line is the right treatment. The ledger rows are quoted
-correctly against `docs/port/COMMONALITY.md:285-286`. Gate 1 is
-`inapplicable` against the real owner ruling — `docs/port/OWNER-REVIEW.md`
-carries "2026-09-12 — no licence check for anything the template uses (Q4,
-superseded and widened by Q7.B)" — and nothing was excluded on licence.
+The revision note, the finding-to-repair table and the revision history make the
+round-1 verdict and every repair auditable from the file itself. The artefact
+discipline is stated and holds: new check ids are prefixed `R` so they cannot
+collide with revision 1's `A` and `S` ids, and I found no collision.
 
-The figures are stated within the logs. `r62-clipboard-claims.log` contains
-exactly 120 `PASS` lines, zero `FAIL`, zero `SKIP`, and its summary reads
-`assertions run : 120 / failures : 0 / skipped : 0`; `r62-spike-build.log`
-contains 21 `PASS` lines and `assertions run : 21 / failures : 0`. The section
-list "0-14" matches the log's fourteen section banners. Each numeric claim I
-spot-checked in the decision — A05, A13, A14, A20–A30, A37–A39, A44, A49,
-A61, A63–A66, S04–S08, S14, S15, S17–S21 — appears in the log with assertion
-text that supports the use the decision makes of it. Every crate figure carries
-its endpoint, and the block carries its retrieval date (2026-09-17 UTC, which is
-the same clock as the run id and one local day after Codex's 2026-09-16
-retrievals — a difference in timezone, not in freshness). The disclosure that the
-committed log is the post-write run, preceded by an identical run that reported
-one `SKIP` for check A91, is honest and self-reporting; it cannot be checked from
-the committed artefact, and it does not need to be.
+The new log's figures are stated within what it shows: 35 `PASS` lines, zero
+`FAIL`, zero `SKIP`, and a summary reading `assertions run : 35 / failures : 0 /
+skipped : 0`. Section C's description of what each section establishes matches
+the log's own section banners and assertion text. The rerun disclosure is
+precise in an unusually careful way — the filtered comparison is empty, the raw
+diff happened to be two lines on this same-UTC-day rerun, and the decision
+insists the filtered rule is still the operative one because the responsiveness
+window moves.
 
-What is missing is listed as findings below: one fitness-gate field (JF-2), one
-required §7.6 figure row (JF-3), and four precision defects (JF-4 through JF-7).
+The six unproven rows of revision 1 are intact and a seventh is added for the
+R67 reading. `## Engines` gains an accurate new paragraph recording that both
+raw reports carried the stdout contradiction, that revision 1 inherited it, and
+that Codex's own acceptance criterion 2 reached the right shape without it.
+Every figure still carries its endpoint and retrieval date.
 
 ## Findings
 
-**JF-1 — blocking. Acceptance criteria AC2 and AC3 cannot both hold, and the
-tension with R67's envelope invariant is unrecorded.**
+**No unresolved findings.** Every round-1 finding is closed on new evidence, the
+repairs introduce no new claim I could not verify at source, and the diff is
+only what the revision note says it is.
 
-AC2 requires that on the headless path the command "emits the result unharmed,
-and exits `1`". AC3 requires that the same failure under a machine output format
-produce R67's stderr object "and **byte-empty stdout**". Those are the same
-failure in two output modes, and the must-agree row at
-`### Principles and implementation` says the write "happens **after** the result
-has reached its primary sink, and never replaces it" — so stdout carries the
-result in both modes and cannot be byte-empty in either. The defect is inherited:
-`raw/opus.md` states both "The result still reaches stdout unchanged" in its
-fatal-policy rationale and `[ ! -s out.txt ]` in its own A3 validation command,
-and the synthesis carried the contradiction across without noticing it.
+Two precision notes, recorded for the controller and deliberately **not** raised
+as findings, on the treatment R18/R45 and R64 established: neither changes a
+selection, an exclusion, a parameter, an acceptance criterion or the disposition,
+and editing the decision for them would unbind this audit for a further round.
 
-The standard resolves which half is wrong, in R62's favour on the design and
-against AC3's wording. R7.8 requires the single stderr error object "for ordinary
-command failures, **including a failure that occurs mid-stream**", and R6.3
-describes exactly this shape — a command that completed its main work, failed a
-part, reports both and exits `1`. Neither rule asks for an empty stdout. R67's
-`## Decision` says "stdout stays byte-empty on the error path" and its AC2 repeats
-it; that invariant was written for error paths where the command produced no
-result, and R62 is the first item in the programme to present a post-result
-partial failure. The decision does not surface that at all. It asserts R67
-conformance instead, and attributes to check A95 two claims A95 does not make:
-A95 asserts only the substring `{"error":{"code","message","hint"?}}`, not
-"`hint` omitted rather than `null`" and not "stdout byte-empty on the error path".
-Both extra claims are true of R67's text; neither is established by the check
-cited for them, and the second is the one R62's own design cannot satisfy.
+1. **An acceptance-process consequence, not a defect.** Accepting revision 2
+   ratifies R62's reading of a clause that sits inside another item's registered,
+   owner-accepted value — `docs/port/PARAMETERS.md` carries the
+   `error-taxonomy-exit-codes` row with the byte-empty clause in it. The decision
+   has done everything a decision can do: it states the clause is not literally
+   satisfied, argues the scoping reading on three grounds, writes out the exact
+   substitute wording the other reading would require of R67, addresses the
+   controller by name, and records unproven row 7 saying the reading is its own
+   and not an owner ruling. What remains is a controller act under RUNBOOK §4 —
+   record the disposition with R67's owner at acceptance, or put the one-sentence
+   qualification to the owner. I flag it so acceptance is a decision rather than
+   a side effect; it is not something revision 3 should try to fix.
+2. **One citation reads slightly ahead of its source.** The sentence *"The org
+   standard binds above R67 (owner ruling 2026-09-14)"* cites an entry that
+   confirms the standard "governs this template" and notes that R67 is published
+   relying on its rule R6.1; the precedence over R67's own wording is R62's
+   inference from those two facts, and a sound one. Unproven row 7 already labels
+   the whole reading as this decision's rather than the owner's, so the honesty
+   is present where it matters; only the parenthetical reads more directly than
+   the entry does.
 
-What this costs: nothing in the recommendation. The three members, the crate,
-the version, the feature set, the crate placement and the fatal policy all
-survive. What must change is AC3's byte-empty clause, the prose sentence in
-`## Parameters` that repeats it, and the addition of the stated tension —
-either as a note that R62 qualifies R67's invariant for post-result failures, or
-as a re-verify trigger on R67 revisiting the envelope wording. Until that is
-recorded, a P03 implementer reading AC2 and AC3 together has no implementable
-target, and a downstream reader is told R67 conformance that the design does not
-have.
-
-**JF-2 — non-blocking. Fitness gate 3's `unsafe` posture is never stated for
-`arboard`.**
-
-The prompt's gate 3 is "no open RustSec advisory; `unsafe` posture stated", and
-the tier guidance says an inapplicable metric must be marked `inapplicable` with
-its reason rather than omitted silently. The advisory half is answered at length
-and well. The `unsafe` half appears nowhere: the string `unsafe` occurs once in
-the decision — "*No `unsafe`.* R06 sets `unsafe_code = "forbid"` in the workspace
-lint table" — which is a statement about the template's own crates and the reason
-re-exec beats `libc::fork()`, not about the selected dependency. Standing alone
-in an item whose macOS and Linux backends are FFI, it reads as a claim about the
-stack. Both raw reports carry what is missing: Codex records that `arboard` uses
-`unsafe` internally in platform FFI, and `raw/opus.md` adds the point that makes
-the sentence safe to keep — `unsafe_code = "forbid"` governs first-party crates
-only, because Cargo passes `--cap-lints allow` to dependencies. The evidence log
-contains no `unsafe` check at all. One sentence repairs it.
-
-**JF-3 — non-blocking. The §7.6 issue-responsiveness figure is omitted.**
-
-The prompt's figure table requires, per crate member, "median days to first
-maintainer response; unanswered count" over the ten most recently opened issues.
-The decision's figures table carries seven columns and not that one, and the
-evidence log collects it nowhere. `raw/codex.md` supplies it — `arboard` one
-response at 3.30 days with four unanswered; `copypasta` median 0.22 days with
-none unanswered; `clipboard-rs` median 0.83 days with two unanswered — so the
-item holds the evidence and only the decision drops it. It is not neutral
-housekeeping: `copypasta`'s figures are the most responsive of the three and are
-the one datum that pulls against the `at-risk` rubric verdict the decision
-assigns it. The verdict still stands on its two concrete signals (sixteen months
-with no release and no push, and no Ubuntu job), but a rubric verdict should
-weigh the countervailing figure rather than omit it.
-
-**JF-4 — non-blocking. The `re-verify:` line names two alternatives the decision
-never defines.**
-
-The line promises that R03 settling toward absence-as-value "promotes Member 2's
-ranked runner-up", and that an owner inversion of the fatal policy "promotes
-Member 3's acknowledgement-byte alternative". Neither is defined anywhere in
-`DECISION.md`; the only ranked runner-up the decision states is architecture B,
-shell-out. Both come from `raw/opus.md`, where they are Alternative 2a (a free
-function, no port) and Alternative 3a (probe, spawn, wait for an acknowledgement
-byte). A controller checking triggers quarterly still reruns the item, so the
-trigger functions; its stated consequence is not evaluable from the decision
-alone.
-
-**JF-5 — non-blocking. R5.6 is cited for a proposition it does not carry.**
-
-The decision writes "*No payload in a process listing.* Standard **R5.6**
-(check A85) is why Member 3 hands the text to the child over **stdin** rather
-than `argv`." R5.6 at the cited blob is *Secret redaction in output*: secret
-values must be masked in all output, with `--show-secrets` to reveal them. It
-governs what a tool prints, not what appears in `/proc/<pid>/cmdline`, and a
-copied command result is not necessarily a secret. Check A85 is honest about this
-— it asserts only "R5.6 exists" — but the decision's prose promotes existence
-into causation. The design choice is right for the ordinary reason (a copied
-payload may contain a secret and `argv` is world-readable on Linux); it should
-be argued on that reason, with R5.6 cited as motivation rather than as the rule
-that requires it.
-
-**JF-6 — non-blocking. "Verbatim" overstates the `nushell` reference.**
-
-The reference table says `nushell/nushell` ships
-`arboard = { version = "3.6.0", default-features = false, features = ["wayland-data-control"] }`
-"verbatim" against a recommendation of 3.6.1. The dependency-line *shape* is
-identical and that is what the row is for; the version is not, and "verbatim"
-sitting beside two different version strings in the same sentence invites the
-misreading.
-
-**JF-7 — non-blocking. The rejected warning policy is not recorded beside the
-fatal choice.**
-
-`raw/opus.md` weighs both policies explicitly and records why fatal wins and what
-the warning policy would cost. The decision states the fatal conclusion and lets
-the alternative survive only as a re-verify trigger ("the owner inverting the
-fatal-versus-warning policy"). Since this is the item's one genuinely
-owner-flippable policy — and, per JF-1, the one place the design meets R67's
-envelope rule — the two-line alternative belongs in
-`### Principles and implementation` so the owner sees a choice rather than a
-conclusion.
+I also record, since it corrects my own round-1 text rather than the decision's:
+`raw/opus.md` numbers Member 2's ranked runner-up **Alternative 2b**, not 2a as
+my round-1 audit wrote when describing it. Revision 2 and check `R25` have it
+right and say so explicitly.
 
 ## Assessment
 
-The recommendation does not move under any finding. The evidence supports three
-members rather than one, and Disagreement 1 is settled on four independent source
-reads that all say what the decision says they say; `arboard` 3.6.1 with
-`default-features = false` and `wayland-data-control` is the choice both engines
-reached and the one the fitness gates and the executed resolution support;
-binary-crate-only placement behind a default-on `clipboard` feature follows from
-the library/web-build constraint and has a production instance; and the fatal
-policy is grounded in `ts`, in pre-removal `py`, and in the standard's own R6.3
-and R8.2. The duplicate-resolution finding is scoped correctly against what R67
-actually requires, and neither a `CONFLICT:` line nor a re-verify trigger is
-owed. The prompt-gloss correction is handled in the right form, and the unproven
-rows are honest about a macOS-only session.
+Nothing moves. The three members, `arboard` 3.6.1 with `default-features = false`
+and `wayland-data-control` optional behind a default-on `clipboard` feature, the
+binary-crate-only placement, the library-side `ClipboardPort` and
+`ClipboardError`, the `cfg(target_os = "linux")` probe-then-re-exec helper, the
+fatal failure policy, the four `- assumes` lines and every verdict in `## Engines`
+are exactly what revision 1 recommended. What changed is what the round-1 audit
+asked to change and nothing else: one acceptance criterion, the prose that
+repeated it, four citations corrected to what their sources actually say, three
+omissions supplied, and one new subsection that states a cross-item tension the
+programme had not previously had to face.
 
-The rejection is narrow and repairable in one edit. AC3 as written cannot be
-satisfied by the design the same document specifies, and the reason it cannot —
-that R62 is the programme's first post-result partial failure, a shape R67's
-envelope wording did not anticipate — is exactly the kind of cross-item tension a
-decision must surface rather than assert away. Because that edit reopens the
-document anyway, JF-2 through JF-7 should be repaired in the same revision at no
-extra audit cost. With those seven repairs and no change to the stack, this
-decision should approve on its next round.
+The blocking finding is fully answered. Revision 1 asserted two acceptance
+criteria that could not both be satisfied and claimed conformance to a clause its
+own design contradicts; revision 2 states the design's real stream behaviour,
+proves it from the binding standard at each rule's own scope, quotes the R67
+clause at both of its locations, takes a reasoned and overrulable position on it,
+and writes down the edit that would be needed if the position is overruled. The
+supporting repairs are evidenced rather than asserted, and JF-3's in particular
+weighs a figure that tells against the recommendation instead of omitting it.
+
+This decision approves. Acceptance additionally requires the deferred empirical
+audit's verdict and the controller's disposition of precision note 1.
