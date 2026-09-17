@@ -39,7 +39,9 @@ first three; the fourth is the composition order they force.
    **not** `NotFound` (permissions, a directory where a file was named, a device
    error), or a TOML parse failure.
    - *Explicit* layer → **fatal**. Unreadable is `RSLB104` at exit `1`;
-     unparsable is `RSLB202` at exit `2`. This settles **F237**.
+     unparsable is `RSLB202` at exit `2`. This **preserves F237**, which this item
+     does not own and does not settle: F237's `Item` column is `—`, it is already
+     `COMMON → REUSE`, and this clause is the Rust behavior that keeps it true.
    - *Discovered* layer → **one warning naming the file, the layer skipped, the
      exit code unchanged**. This settles **F236**, and applies only if R54 adopts
      a discovered (non-explicit) tier; if R54 adopts none, this clause has no
@@ -347,9 +349,12 @@ Working directory: `research/runs/R55/2026-09-17T020714Z-62a04ad8fee1/review/`.
 `evidence/check.log`. The script asserts on content in every check; a check whose
 external input is unavailable prints `SKIP` with its own name rather than passing
 vacuously. It locates the repository root by looking for `docs/port/PARAMETERS.md`
-rather than `.git`, so it reruns from a clean `git archive HEAD` extraction; in
-such an extraction `C06-cli-standard-absent` skips by name, since the org CLI
-Design Standard lives in a separate repository.
+rather than `.git`, so it reruns from a clean `git archive HEAD` extraction. That
+was executed, not assumed: `git archive HEAD | tar -x -C "$(mktemp -d)"` followed
+by the extracted copy of the script produced the same `PASS=25 FAIL=0 SKIP=0` and
+exit `0`. On a machine without the org CLI Design Standard repository,
+`C06-cli-standard-absent` skips by name rather than passing vacuously; on this
+machine the standard is present, so that check ran.
 
 What the checks establish:
 
