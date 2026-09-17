@@ -468,3 +468,14 @@ evidence — and never for its recommendation, which has not changed once. The
 contract has been amended to require the revision sweep be done by search rather
 than by re-reading, which is the specific failure each time. If revision 5 is
 rejected, the item comes to you for adjudication rather than a sixth round.
+
+## 12. Wave 1 admission (2026-09-16) -- ANSWERED
+
+Context put to the owner: the twelve no-spend Wave 1 items were prepared under the schedule once section 1's gate was satisfied; the Deep tier, R86 and the GitHub budget needed rulings.
+
+| question | answer | date | effect |
+|---|---|---|---|
+| W1-DOXA: paid Doxa for the six Deep-tier Wave 1 items (R02 R03 R05 R54 R56 R68), estimated USD 25-55 against the USD 300 ceiling (USD 36.5-61.5 spent) | A: authorise all six | 2026-09-16 | prepared with authorization ref `OWNER-2026-09-16-W1-DOXA`; Codex and Opus legs run now; Doxa in batches of three, at least 30 s apart, no automatic retry |
+| W1-R86: placement of R86 codex-assisted-review-workflows (owner-created 2026-09-12, Deep, no prerequisites, runner-ready, in no wave) | A: admit now with Wave 1 | 2026-09-16 | prepared alongside the Deep six; its Doxa leg is covered by W1-DOXA (a seventh Deep operation) |
+| W1-GH: authenticated GitHub API budget for Codex research workers instead of the anonymous 60/hour per-IP budget | B: use the owner's existing `gh` login token | 2026-09-16 | `codex-research.sh` exports `GH_TOKEN` from `gh auth token` into the research sandbox environment only; never written to disk or logs; every report and transcript is swept for the token bytes before it is registered or committed; the recommended read-only token (option A) was declined for speed |
+
