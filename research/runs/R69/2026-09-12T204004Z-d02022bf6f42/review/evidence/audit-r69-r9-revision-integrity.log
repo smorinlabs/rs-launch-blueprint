@@ -1,0 +1,27 @@
+revision boundary: c1e5131~1..c1e5131
+changed paths:
+M	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/fetch-owner-reference-r9.sh
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/owner-reference-check-r9.log
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/owner-reference-check-r9.sh
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/snapshots/r9/RETRIEVED-AT.txt
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/snapshots/r9/crates-axum-extra.json
+A	research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/snapshots/r9/crates-tokio-features.json
+stat:
+ .../review/DECISION.md                             | 251 ++++++++++++++++++++-
+ .../review/evidence/fetch-owner-reference-r9.sh    | 127 +++++++++++
+ .../review/evidence/owner-reference-check-r9.log   |  65 ++++++
+ .../review/evidence/owner-reference-check-r9.sh    | 203 +++++++++++++++++
+ .../review/evidence/snapshots/r9/RETRIEVED-AT.txt  |   1 +
+ .../evidence/snapshots/r9/crates-axum-extra.json   |  42 ++++
+ .../snapshots/r9/crates-tokio-features.json        |  71 ++++++
+ 7 files changed, 749 insertions(+), 11 deletions(-)
+parameter-line diff:
+parameter-line-diff rc=0
+H2-list diff:
+h2-list-diff rc=0
+r6 blob identities old -> revision9:
+review/evidence/fetch-owner-reference-r6.sh  
+review/evidence/owner-reference-check-r6.sh  
+review/evidence/owner-reference-check-r6.log  
+revision-integrity rc=0

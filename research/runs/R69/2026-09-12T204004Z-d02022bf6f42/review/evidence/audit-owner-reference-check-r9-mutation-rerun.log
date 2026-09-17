@@ -1,0 +1,65 @@
+R69 revision 9 — owner-reference rows A, B and C primary-source check
+grep binary: /usr/bin/grep (the POSIX grep, invoked by absolute path; never a shell alias, never ugrep)
+jq binary: /opt/homebrew/bin/jq
+snapshot dir: <run>/review/evidence/snapshots/r9 (committed; written by fetch-owner-reference-r9.sh)
+snapshots retrieved at: 2026-09-16T23:53:51Z
+repository tree read for section C: <repo>/research (index and every item's prompt, committed)
+network: NOT used by this script; sections A and B read committed snapshots, section C reads committed files
+OK   snapshot crates-tokio-features.json                        present
+OK   snapshot crates-axum-extra.json                            present
+
+== A. tokio 1.53.1: what `full` is, against the six this decision selects (row A) ==
+OK   tokio version snapshotted                                  1.53.1
+OK   tokio default feature set is empty                         0
+OK   tokio `full` expands to N features                         12
+OK   features this decision selects                             6
+OK   rt-multi-thread implies rt                                 rt
+OK   of `full`, covered by the six plus rt                      7
+OK   what `full` adds beyond them, count                        5
+OK   what `full` adds beyond them, names                        fs,io-util,io-std,parking_lot,process
+OK   parking_lot is an optional DEPENDENCY                      true
+OK   parking_lot dependency requirement                         ^0.12.0
+consequence: `full` is not a superset this decision declined for taste. It names five
+             capabilities nothing in F338 uses, one of which (parking_lot) is an optional
+             dependency and therefore lands in the resolved tree gate 6 measures.
+
+== B. axum-extra 0.12.6, which this decision's stack does not contain (row B) ==
+OK   axum-extra version snapshotted                             0.12.6
+OK   axum-extra is not yanked                                   false
+OK   axum-extra newest stable version                           0.12.6
+OK   axum-extra licence                                         MIT
+OK   axum-extra declared rust-version                           1.80
+OK   axum-extra requires axum                                   ^0.8.9
+OK   cookie is an optional dependency                           true
+OK   headers is an optional dependency                          true
+OK   the reference's `cookie` feature                           dep:cookie
+OK   the reference's `typed-header` feature                     dep:headers
+consequence: the three features the reference enables are exactly two extra crates —
+             cookie jars and typed headers — neither of which any behaviour this item
+             owns asks for. The version the reference names is current, not stale.
+
+== C. which P02 item owns `[profile.release]` — answered against this repository (row C) ==
+prompt files searched (the complete set): 85
+OK   the prompt set is non-empty                                yes
+OK   prompts naming [profile/lto/codegen-units/opt-level        0
+OK   the commonality ledger is readable                         yes
+OK   commonality-ledger rows naming those keys                  0
+OK   R68 is scoped to distribution artifact TYPES               present
+OK   R68 puts manifest declarations in R49's scope              present
+OK   R49 owns the manifest as the declaration surface           present
+OK   R49 names R68 as the consumer of target/release            present
+OK   R49 sets any [profile.*] key                               0
+consequence: no item's prompt and no ledger row claims release-profile settings, so this
+             row is a hand-off whose owner is not yet fixed. R68 is the nearest consumer
+             because the release binary's size and build time are what the profile
+             governs and what R68's own questions weigh; R49 owns the manifest's
+             declaration surface but sets no profile key. Recorded as the controller's
+             reading with the gap named, not as a settled ownership.
+
+== D. control — the same census test applied to a string every prompt DOES contain ==
+OK   control (expected to report a present string)              control reports 85 of 85 prompts
+reading: section C asserts zero prompts name [profile. This control runs the identical
+         find/grep -l census over the identical file set for a string the prompts do
+         carry, so the zero above is capable of being non-zero.
+
+owner-reference-check-r9 rc=0

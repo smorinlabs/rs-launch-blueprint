@@ -1,0 +1,10 @@
+grep binary: /usr/bin/grep
+prompt root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/topics
+prompt files (complete find set): 85
+profile-search grep status: 1
+profile-search matching prompt count: 0
+control-search grep status: 0
+control-search matching prompt count: 85
+ledger-search grep status: 1
+ledger matching line count: 0
+independent-census rc=0
