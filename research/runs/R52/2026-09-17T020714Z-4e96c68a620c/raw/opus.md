@@ -6,8 +6,23 @@ zone) unless a different date is stated on the line. No Rust template exists; th
 research for P03 to implement, not an implementation.
 
 Licence gate note applied throughout: **gate 1 is `inapplicable — owner ruling
-2026-09-12 (Q7.B)`** (`docs/planning/p02/owner-decisions.md` section 7). No candidate
-is excluded on licence grounds, and licence strings are reported as metadata only.
+2026-09-12 (Q7.B)`**. No candidate is excluded on licence grounds, and licence strings
+are reported as metadata only.
+
+**Provenance caveat on that ruling, raised rather than papered over.** The instruction
+to record gate 1 this way, with the label `Q7.B` and the pointer
+`docs/planning/p02/owner-decisions.md` section 7, reached this engine in its **task
+message**, and the pointer did not resolve when checked. In the repository as read on
+2026-09-17, section 7 of that file is *"The baseline-review questions"*; the licence
+gate's reach is **section 5**, *"The licence gate's reach"* (line 157), which is
+recorded there as still **open** — it lists options (a)/(b)/(c), recommends **(b)**
+("Rule that it does" reach separate-process tools), and ends with *"Response that
+settles it"* rather than a recorded answer. The string `Q7.B` does not appear anywhere
+under `docs/` or `research/`. This report follows the task instruction — gate 1 is
+recorded as `inapplicable` and nothing is excluded on licence — and flags the
+discrepancy so the synthesizer can correct the citation or the instruction. Nothing in
+the recommendation turns on it: both recommended members report `MIT OR Apache-2.0` on
+crates.io and would pass gate 1 under any reading.
 
 ### Landscape
 
@@ -51,7 +66,7 @@ assertion.
 | Project | Standing (evidence) | What its manifest declares |
 |---|---|---|
 | `rust-lang/cargo` | 15,484 stars, `archived: false`, `pushed_at: 2026-09-16T13:22:52Z` (`gh api repos/rust-lang/cargo`). It is Rust's official package manager — relevance is definitional for a Cargo-shaped template. | `toml = { version = "1.1.5", default-features = false }`; `toml_edit = { version = "0.25.10", features = ["serde"] }`; `toml_parser = "1.1.2"`; `toml_writer = "1.1.1"`. Workspace member re-enables `toml` with `["std","serde","parse","display","preserve_order"]`. |
-| `astral-sh/uv` | 89,887 stars, `archived: false`, `pushed_at: 2026-09-17T02:33:02Z`. A newer, heavily adopted Rust CLI — exactly the "weight newer popular ones" case the survey method asks for, and the reference the owner's own Python guidance already uses for tooling. | `toml = { version = "1.1.0", default-features = false, … }`; `toml_edit = { version = "0.25.8", default-features = false, … }`; `toml_parser` with `["alloc","simd"]`; `toml_writer` with `["alloc"]`. |
+| `astral-sh/uv` | 89,887 stars, `archived: false`, `pushed_at: 2026-09-17T02:33:02Z`. A newer, heavily adopted Rust CLI — exactly the "weight newer popular ones" case the survey method asks for. | `toml = { version = "1.1.0", default-features = false, … }`; `toml_edit = { version = "0.25.8", default-features = false, … }`; `toml_parser` with `["alloc","simd"]`; `toml_writer` with `["alloc"]`. |
 | `starship/starship` | 59,920 stars, `archived: false`, `pushed_at: 2026-09-17T03:32:48Z`. A cross-platform Rust CLI whose entire configuration surface is a user-edited TOML file — the closest analogue to this template's `config set` use case. | `toml = { version = "1.1.6", features = ["preserve_order"] }`; `toml_edit = "0.25.15"`. |
 
 All three ship **both** crates. That is the practice evidence for the recommended
@@ -202,7 +217,12 @@ Neither crate performs file I/O, so F243's atomic-0600 write stays hand-rolled
 
 ### Members
 
+Two members, in the order they run at runtime: `toml` performs the typed read, `toml_edit`
+performs the comment-preserving write. Each carries the full crate field set below.
+
 #### toml
+
+Member 1 of 2 — the typed read path (`toml::from_str`), version `1.1.6+spec-1.1.0`.
 
 ##### Landscape
 
@@ -284,17 +304,25 @@ pushed 2 days before retrieval; median first-response 0.67 days. No `at-risk` si
   the kind the rubric demands. Figures for the record: 90-day downloads 14,324,113;
   all-time 63,353,663; last release `0.1.10` on 2025-03-03T04:41:42Z; 83 stars; 4 open
   issues; 36 reverse dependencies. It is also a fork of `toml` 0.5 and so predates the
-  TOML 1.0/1.1 conformance work; it cannot parse the TOML 1.1 constructs `toml` 1.1.6
-  accepts.
-- **`tomling` 0.3.0** — **fails gate 6 as unassessable and fails the maintenance
-  rubric**: 90-day downloads **30**, all-time 2,280, last release 2025-07-09T10:31:56Z
-  (14 months before retrieval), `https://crates.io/api/v1/crates/tomling`. There is no
-  adoption base from which to state a binary-size or compile-time cost for a real
-  workload, and nothing to investigate the release gap against. Not a template
-  dependency.
+  TOML 1.0/1.1 conformance work — **executed 2026-09-17**, not inferred from lineage:
+  the TOML 1.1 multi-line inline table `t = {\n  x = 1,\n  y = 2,\n}` and the TOML 1.1
+  `\e` string escape both parse under `toml` 1.1.6 (`Ok`) and both fail under
+  `basic-toml` 0.1.10 with `expected a table key, found a newline at line 1 column 6`
+  and `invalid escape character in string: \`e\` at line 1 column 8` respectively.
+*(`tomling` 0.3.0 is **not** excluded by a gate — no gate was shown to fail. It is
+recorded under `##### Up-and-comers` with its adoption figures instead.)*
 
 ##### Up-and-comers
 
+- **`tomling` 0.3.0** — 90-day downloads **30**, all-time 2,280, last release
+  2025-07-09T10:31:56Z, 4 reverse dependencies (`https://crates.io/api/v1/crates/tomling`
+  and `/reverse_dependencies?per_page=1`, retrieved 2026-09-17). Maintenance state:
+  **stable-quiet** — 14 months without a release is a rubric trigger, and the
+  investigation that would turn it into `at-risk` or `dormant` was **not performed**
+  (no unpatched advisory, broken build or maintainer notice was found or looked for),
+  so no worse verdict is claimed. Not recommended, and not excluded by a gate: with 30
+  downloads in 90 days there is no adoption base against which to evaluate it for a
+  template, which is a judgment about evidence, not a gate failure.
 - **`boml` 2.0.0** — zero-dependency, `no_std`, `rust-version = "1.85.0"`, released
   2026-03-24T01:02:07Z; 90-day downloads 116,110, all-time 737,176; `bright-shard/boml`
   14 stars, `archived: false`, `pushed_at: 2026-03-24T01:01:20Z`, **0** open issues;
@@ -400,7 +428,7 @@ No `CONFLICT:` lines.
 |---|---|
 | 1 — licence | `inapplicable — owner ruling 2026-09-12 (Q7.B)` |
 | 2 — MSRV, crate and tree | **Pass.** Crate 1.85; whole-tree maximum 1.85.0; template floor 1.96 (stable 1.98.1). `rust-version` is declared in `Cargo.toml` and the upstream project runs a dedicated `msrv` CI job (`.github/workflows/ci.yml:67–72`). |
-| 3 — advisories and `unsafe` | **Pass.** No RustSec page (HTTP 404) and OSV `{}`. `unsafe` posture: `crates/toml/src/lib.rs:150` is `#![forbid(unsafe_code)]`, with the comment *"Makes rustc abort compilation if there are any unsafe blocks in the crate … lets them ensure that there is indeed no unsafe code as opposed to something they couldn't detect (e.g. unsafe added via macro expansion)"*. `toml_writer/src/lib.rs:53` is likewise `#![forbid(unsafe_code)]`. `toml_parser/src/lib.rs:18` is `#![cfg_attr(not(feature = "unsafe"), forbid(unsafe_code))]` and `toml`'s default features request `toml_parser` with `alloc` only — the `unsafe` and `simd` features stay **off**, so the forbid applies. Honest caveat: with `toml_edit` also present, `indexmap` 2.14.2 and `hashbrown` 0.17.1 enter the tree and both do use `unsafe` internally. |
+| 3 — advisories and `unsafe` | **Pass.** No RustSec page (HTTP 404) and OSV `{}`. `unsafe` posture: `crates/toml/src/lib.rs:150` is `#![forbid(unsafe_code)]`, with the comment *"Makes rustc abort compilation if there are any unsafe blocks in the crate … lets them ensure that there is indeed no unsafe code as opposed to something they couldn't detect (e.g. unsafe added via macro expansion)"*. `toml_writer/src/lib.rs:53` is likewise `#![forbid(unsafe_code)]`. `toml_parser/src/lib.rs:18` is `#![cfg_attr(not(feature = "unsafe"), forbid(unsafe_code))]` and `toml`'s default features request `toml_parser` with `alloc` only — the `unsafe` and `simd` features stay **off**, so the forbid applies. Honest caveat: with `toml_edit` also present, `indexmap` 2.14.2 and `hashbrown` 0.17.1 enter the tree and both use `unsafe` internally — counted 2026-09-17 in the vendored sources under `~/.cargo/registry/src/*/`: `hashbrown-0.17.1/src` has 337 `unsafe {` occurrences across 18 files, `indexmap-2.14.2/src` has 12 across 4 files, `equivalent-1.0.2/src` has none. |
 | 4 — CI on `ubuntu-latest, macos-latest` | **Pass, exceeded.** `.github/workflows/ci.yml:38–42` declares `matrix.os: ["ubuntu-latest", "windows-latest", "macos-latest"]` with `runs-on: ${{ matrix.os }}`. Windows is supported (noted, not required). |
 | 5 — default features, async coupling | **Pass.** `default = ["std", "serde", "parse", "display"]`. Non-default features available: `preserve_order`, `fast_hash`, `unbounded`, `debug`. **No async-runtime coupling** — no `tokio`, `async-std`, `futures` or executor appears anywhere in the resolved tree (`cargo tree -e normal`, executed). |
 | 6 — binary size and compile time | **Pass, quantified.** +190,032 bytes stripped and ~4–5.5 s of cold release build over an empty binary on the stated machine; see `##### Tradeoffs`. Qualitatively: small, and dominated by the `serde_derive` proc-macro chain the template pays for regardless. |
@@ -478,6 +506,9 @@ programme's next dependency-freshness sweep (R34).
 
 #### toml_edit
 
+Member 2 of 2 — the comment-preserving write path (`toml_edit::DocumentMut`), version
+`0.25.15+spec-1.1.0`.
+
 ##### Landscape
 
 Bin: **built-in / first-party toolchain** — same workspace, same maintainer, same
@@ -499,8 +530,11 @@ of P4**: like `toml`, it performs no file I/O, so F243's atomic-0600 write remai
 `std::fs` work. The rustdoc's own worked example shows the guarantee:
 `assert_eq!(doc.to_string(), toml)` for an unmodified document, then a targeted
 `doc["a"]["b"]["c"]["d"] = value("hello")` that leaves `"hello" = 'toml!' # comment`
-untouched. Reference implementations: `rust-lang/cargo` (`cargo add`, `cargo remove`
-and every manifest edit go through it), `starship/starship`, `astral-sh/uv`.
+untouched. Reference implementations: `rust-lang/cargo` (which declares
+`toml_edit = { version = "0.25.10", features = ["serde"] }` at `Cargo.toml:116` and
+re-exports it to its workspace members at line 225; the specific claim that Cargo's
+manifest-editing commands route through it was **not** traced to a source file and is
+not asserted here), `starship/starship`, `astral-sh/uv`.
 
 ##### Dominant choice
 
@@ -608,7 +642,10 @@ left the header comment, the per-key comment and the trailing comment all intact
   by exactly **four** crates — `toml_edit`, `indexmap` 2.14.2, `equivalent` 1.0.2,
   `hashbrown` 0.17.1 — because `toml_parser`, `toml_writer`, `toml_datetime` and
   `winnow` are shared with `toml` (`cargo tree -e normal`, executed).
-- **Risk accepted:** `indexmap` and `hashbrown` use `unsafe` internally. They are among
+- **Risk accepted:** `indexmap` and `hashbrown` use `unsafe` internally — counted
+  2026-09-17 in the vendored registry sources: 12 `unsafe {` occurrences in
+  `indexmap-2.14.2/src`, 337 in `hashbrown-0.17.1/src`, none in `equivalent-1.0.2/src`.
+  They are among
   the most-audited crates in the ecosystem and carry no open advisory (OSV and RustSec
   checked), but the template can no longer claim an entirely `unsafe`-free config path.
   R06's `unsafe` policy governs first-party code, which is unaffected.
@@ -916,7 +953,7 @@ list carries the cross-cutting and repository sources.
 - `docs/port/COMMONALITY.md` rows F224 (line 228), F225 (229), F226 (230), F227 (231), F243 (247).
 - `docs/port/PARAMETERS.md` — the four fixed rows and `error-taxonomy-exit-codes`.
 - `research/topics/67-error-and-exit-code-contract/DECISION.md`, revision 4, 2026-09-10 — `error-contract/v1`; rows `RSLB104`, `RSLB202`, `RSLB203`; Disagreement 4.
-- `docs/planning/p02/owner-decisions.md` section 7 — ruling Q7.B, licence compatibility not evaluated.
+- `docs/planning/p02/owner-decisions.md` — **read and found not to contain the cited ruling.** The gate-1 instruction (`inapplicable — owner ruling 2026-09-12 (Q7.B)`) came from this engine's **task message**; the pointer it gave, section 7, is *"The baseline-review questions"*, the licence-gate topic is section 5 (*"The licence gate's reach"*, line 157) and is recorded there as open with recommendation (b), and the string `Q7.B` appears nowhere under `docs/` or `research/`. See the provenance caveat at the top of this report. The instruction was followed; the citation is attributed to the task message, not to the file.
 
 **Method notes.** Registry figures came from `https://crates.io/api/v1/crates/<name>`,
 `/versions` and `/reverse_dependencies` with a `User-Agent` header set, per the prompt's
@@ -929,10 +966,16 @@ differ, 57 against 71, because the latter counts pull requests. Advisory checks 
 `atty`, both HTTP 200 with advisory IDs listed), and were cross-checked against
 `https://api.osv.dev/v1/query`. Upstream manifests, changelogs, rustdoc headers and CI
 workflows were read from `raw.githubusercontent.com`. The behavioural and cost figures
-were produced by building and running a throwaway crate in the session scratchpad with
-`rustc 1.98.0` / `cargo 1.98.0` on an Apple M4 Pro; nothing was written into the
-repository and no git state was modified. Source-repository evidence was read through
-the programme pins (`b08bccfb` for py, `cb1cbcb2` for ts), never from a working tree.
+were produced by building and running throwaway crates in the session scratchpad with
+`rustc 1.98.0` / `cargo 1.98.0` on an Apple M4 Pro — including the comment-preservation
+and decor probes, the `toml::de::Error`/`toml_edit::TomlError` span checks, the
+`basic-toml`-versus-`toml` TOML 1.1 construct comparison, and the `cargo tree` /
+`cargo metadata` graph reads. The `unsafe` counts for `indexmap`, `hashbrown` and
+`equivalent` were taken by grepping the vendored sources under
+`~/.cargo/registry/src/*/`. Nothing was written into the repository and no git state
+was modified; the only file this engine created is `raw/opus.md`. Source-repository
+evidence was read through the programme pins (`b08bccfb` for py, `cb1cbcb2` for ts),
+never from a working tree.
 
 *Could not verify (recorded as unverified, not guessed):*
 (1) **blessed.rs** — `https://raw.githubusercontent.com/nicoburns/blessed-rs/main/data/crates.json`
@@ -948,3 +991,10 @@ retrieved; only its crates.io figures are cited, and it is not recommended.
 its gate 2 failure.
 (5) **Annual Rust survey** — deliberately not cited: it does not rank TOML or
 serialization crates, and stretching it would be a false authority.
+(6) **The `Q7.B` licence ruling itself** — the instruction was followed as given, but
+the ruling could not be located in the repository at the cited path or anywhere else
+under `docs/` or `research/`; see the provenance caveat at the top of this report. This
+is the one item a synthesizer should resolve before relying on the citation.
+(7) **Cargo's manifest-editing internals** — the claim that `cargo add` / `cargo remove`
+route through `toml_edit` was not traced to a Cargo source file and is not asserted;
+only Cargo's declared dependency on the crate is cited.
