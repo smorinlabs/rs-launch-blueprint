@@ -229,7 +229,9 @@ zero-dependency crates that compile in well under a second, which proves the
 composition works and proves nothing whatever about the template's cost. The real
 workload is one compile of `rs-launch-blueprint`'s dependency tree plus the crate,
 on a GitHub-hosted `ubuntu-latest` runner. The levers, each with its documented
-source in the cargo-install reference (retrieved 2026-09-17):
+source in the cargo-install reference
+(`https://doc.rust-lang.org/cargo/commands/cargo-install.html`, retrieved
+2026-09-17):
 
 | Driver | Default | Lever | Effect |
 |---|---|---|---|
@@ -250,7 +252,9 @@ job; `sharkdp/bat` runs `cargo install --locked --path .` in CI), **not a
 measurement**, and `## Engines` records it as unproven.
 
 **Lockfile handling.** `--locked` on the pull-request lane. The cargo-install
-reference states that the packaged `Cargo.lock` is ignored by default and that
+reference (`https://doc.rust-lang.org/cargo/commands/cargo-install.html`,
+retrieved 2026-09-17)
+states that the packaged `Cargo.lock` is ignored by default and that
 `--locked` forces its use; the unlocked form is the literal behavioural twin of
 `uvx`, which resolves fresh against the index, but it is also network-coupled and
 non-deterministic — a dependency published an hour ago can turn an unrelated pull
@@ -330,24 +334,7 @@ literal string `target/`, because R49's `build-tool-output-shape` states the
 directory is relocatable; a hardcoded `target/` would break the recipe in the very
 job that invokes it.
 
-re-verify: on any of — (1) `cargo install`'s default lockfile handling, default
-target directory, or `--root`/`--debug`/`--no-track`/`--target-dir` semantics
-change; (2) `cargo package`'s output path, its default verification, or
-`--no-verify` semantics change — in particular, if `--no-verify` ever leaves an
-extracted copy in the tree, the ground for the scratch extraction moves; (3) R49
-changes the binary name `rslbp`, the single `[[bin]]`, or the `[package] include`
-allow-list; (4) R11 fixes `ci-job-structure` in a way that makes a dedicated,
-path-filtered job unavailable; (5) R69 resolves its serve binary's placeholder
-name to a literal, or changes its `required-features` gate; (6) R22 or R60 fixes
-`--version`'s exact output, at which point AC4 tightens from substring to ts's
-equality form; (7) `src/main.rs` stops depending on the library crate, which makes
-the scratch-consumer library check necessary; (8) a macOS-only packaging failure
-is observed, which widens the job to the two-runner matrix; (9) R26's elements
-move from the publish workflow to pull-request CI, which would change this item's
-marginal coverage; (10) R34 accepts or declines the unlocked `latest-deps` leg
-recommended above; (11) the F222 ledger correction above is applied or rejected;
-(12) first execution of the recipe against the real template in P03, which is when
-every cost figure in this decision first becomes measurable.
+re-verify: 2027-03-17, or earlier on any of — (1) a Cargo release that changes `cargo install`'s default lockfile handling, its default target directory, or the semantics of `--root`, `--debug`, `--no-track` or `--target-dir`; (2) a Cargo release that changes `cargo package`'s output path, its default verification, or `--no-verify` semantics — in particular, if `--no-verify` ever leaves an extracted copy in the tree, the ground for the scratch extraction moves; (3) R49 changing the binary name `rslbp`, the single `[[bin]]`, or the `[package] include` allow-list; (4) R11 fixing `ci-job-structure` in a way that makes a dedicated, path-filtered job unavailable; (5) R69 resolving its serve binary's placeholder name to a literal, or changing its `required-features` gate; (6) R22 or R60 fixing `--version`'s exact output, at which point AC4 tightens from a substring to ts's equality form; (7) `src/main.rs` ceasing to depend on the library crate, which makes the scratch-consumer library check necessary; (8) a macOS-only packaging failure being observed, which widens the job to the two-runner matrix; (9) R26's elements moving from the publish workflow to pull-request CI, which changes this item's marginal coverage; (10) R34 accepting or declining the unlocked `latest-deps` leg recommended above; (11) the F222 ledger correction above being applied or rejected; or (12) the first execution of the recipe against the real template in P03, which is when every cost figure in this decision first becomes measurable
 
 ## Parameters
 
@@ -447,6 +434,13 @@ phase announcing itself by name, `SKIP ts-pin/all — checkout absent at …`.
 template was not scaffolded: every compile below is a throwaway fixture crate with
 **zero dependencies**, created under a `mktemp -d` scratch root and deleted on
 exit, and `cargo publish` was never invoked in any form (asserted, log line 209).
+One deliberate difference between the spike and the recommended recipe: every
+`cargo` command in the check passes **`--offline`**, which the fixtures permit
+because they have no dependencies to resolve and which keeps the spike provably
+network-free. **The recipe this decision recommends does not pass `--offline`** —
+`cargo install` must resolve and download the template's real dependency tree —
+so the spike is evidence about the composition's mechanics, not about its network
+behaviour on a runner.
 
 | Phase | Check | Result |
 |---|---|---|
