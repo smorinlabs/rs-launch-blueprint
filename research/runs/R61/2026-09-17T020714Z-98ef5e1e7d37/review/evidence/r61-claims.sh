@@ -144,9 +144,16 @@ assert_contains C5d "$CR/inquire-0.9.4/src/prompts/confirm/mod.rs" \
   'Err(InquireError::OperationCanceled) => Ok(None),' "prompt_skippable turns ESC into Ok(None)"
 assert_contains C5e "$CR/inquire-0.9.4/src/terminal/crossterm.rs" \
   'io: IO::Std(stderr()),' "inquire's crossterm back-end writes to stderr"
-STDOUT_HITS="$("$GREP" -rlF 'stdout' "$CR/inquire-0.9.4/src" 2>/dev/null | wc -l | tr -d ' ')"
-echo "files under inquire-0.9.4/src containing the string 'stdout', counted by $GREP -rlF: $STDOUT_HITS"
-assert_eq C5f "$STDOUT_HITS" "0" "inquire-0.9.4/src never names stdout (counted by $GREP)"
+STDOUT_HITS="$("$GREP" -rilF 'stdout' "$CR/inquire-0.9.4/src" 2>/dev/null | wc -l | tr -d ' ')"
+echo "files under inquire-0.9.4/src containing 'stdout' in ANY case, counted by $GREP -rilF: $STDOUT_HITS"
+assert_eq C5f "$STDOUT_HITS" "0" "inquire-0.9.4/src never names stdout in any case (case-INSENSITIVE count by $GREP)"
+echo "the IO enum behind CrosstermTerminal, and the gate on its only non-stderr variant:"
+sed -n '19,25p' "$CR/inquire-0.9.4/src/terminal/crossterm.rs" 2>/dev/null
+sed -n '376,392p' "$CR/inquire-0.9.4/src/terminal/crossterm.rs" 2>/dev/null
+IO_PUB="$("$GREP" -c '^pub enum IO' "$CR/inquire-0.9.4/src/terminal/crossterm.rs" 2>/dev/null || true)"
+assert_eq C5l "${IO_PUB:-0}" "0" "the IO enum is crate-private: no public API hands inquire a stream to write to"
+assert_contains C5m "$CR/inquire-0.9.4/src/terminal/crossterm.rs" '#[cfg(test)]' \
+  "the constructor for the only non-stderr IO variant (new_in_memory_output) sits under #[cfg(test)]"
 assert_contains C5g "$CR/inquire-0.9.4/src/prompts/multiselect/mod.rs" \
   'pub fn prompt(self) -> InquireResult<Vec<T>>' "MultiSelect::prompt returns the selected VALUES (Vec<T>)"
 assert_contains C5h "$CR/inquire-0.9.4/src/ui/api/render_config.rs" \
@@ -525,16 +532,16 @@ OVDIRS=""
 OVHITS="$WORK/ov-hits.txt"
 : > "$OVHITS"
 if [ -n "$OVDIRS" ]; then
-  "$GREP" -rlF 'OVERRIDE (OV-02)' "$REPO_ROOT/docs/port" >> "$OVHITS" 2>/dev/null
+  "$GREP" -rlF 'OV-02' "$REPO_ROOT/docs/port" >> "$OVHITS" 2>/dev/null
 fi
 for f in "$REPO_ROOT"/research/topics/*/DECISION.md; do
   case "$f" in *"/61-"*) continue;; esac
   [ -f "$f" ] || continue
-  "$GREP" -lF 'OVERRIDE (OV-02)' "$f" >> "$OVHITS" 2>/dev/null
+  "$GREP" -lF 'OV-02' "$f" >> "$OVHITS" 2>/dev/null
 done
 OVCOUNT="$(wc -l < "$OVHITS" | tr -d ' ')"
-echo "files declaring 'OVERRIDE (OV-02)' outside this item (docs/port/ and research/topics/*/DECISION.md, counted by $GREP): $OVCOUNT"
-assert_eq C15a "${OVCOUNT:-0}" "0" "OV-02 is unused by any other published decision or port document"
+echo "files mentioning the bare string 'OV-02' outside this item (docs/port/ and research/topics/*/DECISION.md, counted by $GREP): $OVCOUNT"
+assert_eq C15a "${OVCOUNT:-0}" "0" "the string OV-02 appears in no other published decision or port document"
 assert_contains C15b "$REPO_ROOT/docs/port/OWNER-REVIEW.md" 'Override OV-01 is REFUSED.' \
   "OV-01 is taken: the owner refused it on 2026-09-14 (R60's CLI-standard waiver)"
 assert_contains C15c "$REPO_ROOT/research/topics/60-cli-parsing-framework/DECISION.md" \

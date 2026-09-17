@@ -1,7 +1,7 @@
 ================================================================
 R61 interactive-prompts — empirical check
 run directory : /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R61/2026-09-17T020714Z-98ef5e1e7d37
-executed at   : 2026-09-17T05:36:21Z (UTC)
+executed at   : 2026-09-17T05:43:30Z (UTC)
 retrieval date for every live figure below: the date on the line above
 ================================================================
 
@@ -115,8 +115,35 @@ PASS C5b — inquire maps ^C (Action::Interrupt) to OperationInterrupted — a v
 PASS C5c — Confirm::prompt_skippable exists
 PASS C5d — prompt_skippable turns ESC into Ok(None)
 PASS C5e — inquire's crossterm back-end writes to stderr
-files under inquire-0.9.4/src containing the string 'stdout', counted by /usr/bin/grep -rlF: 0
-PASS C5f — inquire-0.9.4/src never names stdout (counted by /usr/bin/grep) [= 0]
+files under inquire-0.9.4/src containing 'stdout' in ANY case, counted by /usr/bin/grep -rilF: 0
+PASS C5f — inquire-0.9.4/src never names stdout in any case (case-INSENSITIVE count by /usr/bin/grep) [= 0]
+the IO enum behind CrosstermTerminal, and the gate on its only non-stderr variant:
+
+enum IO {
+    Std(Stderr),
+    #[allow(unused)]
+    Test(Vec<u8>),
+}
+
+}
+
+#[cfg(test)]
+mod test {
+    use crate::terminal::Terminal;
+    use crate::ui::{Color, Key, KeyModifiers};
+
+    use super::Attributes;
+    use super::CrosstermKeyReader;
+    use super::CrosstermTerminal;
+    use super::IO;
+
+    impl CrosstermTerminal {
+        pub fn new_in_memory_output() -> Self {
+            Self {
+                io: IO::Test(Vec::new()),
+            }
+PASS C5l — the IO enum is crate-private: no public API hands inquire a stream to write to [= 0]
+PASS C5m — the constructor for the only non-stderr IO variant (new_in_memory_output) sits under #[cfg(test)]
 PASS C5g — MultiSelect::prompt returns the selected VALUES (Vec<T>)
 PASS C5h — inquire's RenderConfig::default consults NO_COLOR (why R65 must pass an explicit config)
 PASS C5i — inquire declares rust-version (fitness gate 2, declaration half) [= 1.80.0]
@@ -280,12 +307,12 @@ PASS C12e — no async runtime is pulled in at any depth
     signal-hook v0.3.18
     ├── crossterm v0.29.0
     │   └── inquire v0.9.4
-    │       └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-82475/spike-a)
+    │       └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-57813/spike-a)
     └── signal-hook-mio v0.2.5
         └── crossterm v0.29.0 (*)
     
     signal-hook v0.4.4
-    └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-82475/spike-a)
+    └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-57813/spike-a)
 PASS C12f — crossterm pins signal-hook 0.3.x
 PASS C12g — the template's own R67 signal-hook 0.4.4 stands beside it
 PASS C12h — signal-hook is the ONLY duplicated package (two majors, counted by /usr/bin/grep) [= 2]
@@ -340,8 +367,8 @@ the prompt's Couplings block, which is what makes C14d and C14e the right expect
 PASS C14f — the prompt carries an - owns: line
 
 ### Section 15 — the OVERRIDE number does not collide
-files declaring 'OVERRIDE (OV-02)' outside this item (docs/port/ and research/topics/*/DECISION.md, counted by /usr/bin/grep): 0
-PASS C15a — OV-02 is unused by any other published decision or port document [= 0]
+files mentioning the bare string 'OV-02' outside this item (docs/port/ and research/topics/*/DECISION.md, counted by /usr/bin/grep): 0
+PASS C15a — the string OV-02 appears in no other published decision or port document [= 0]
 PASS C15b — OV-01 is taken: the owner refused it on 2026-09-14 (R60's CLI-standard waiver)
 PASS C15c — R60 retains OV-01's record rather than deleting it
 
@@ -367,5 +394,5 @@ PASS C17e — the Opus raw recommends inquire
 PASS C17f — the Opus raw numbered its override OV-01, which this decision renumbers to OV-02
 
 ================================================================
-TOTAL  pass=95  fail=0  skip=0
+TOTAL  pass=97  fail=0  skip=0
 ================================================================
