@@ -1,0 +1,4 @@
+Audit: [review/audit-codex.md](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R17/2026-09-05T163018Z-d7ade3a111f8/review/audit-codex.md) — sha256 `b00867dc25556e5a040215a6bd61b11df342f22153fdfb4b0b1f0bf9ca2b5a34`
+Verdict: reject.
+Reruns: `run-checks-r8.sh` exit 0; `mutations-r9.sh` exit 1. Log: [audit-secret-scanning-ci-workflow-r10.log](/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R17/2026-09-05T163018Z-d7ade3a111f8/review/evidence/audit-secret-scanning-ci-workflow-r10.log)
+Finding F1: no-credential mutation rerun had unrelated API-dependent failures, so target-only mutation falsifiability did not reproduce.
