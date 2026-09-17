@@ -1,0 +1,6 @@
+Output: `raw/codex.md`  
+SHA-256: `523260b7256c2c89acef409e57c29369daa1ccdee3f0c4674e4b6bb14248d550`  
+H3 fields: 10  
+CONFLICT: R67 `RSLB203` must exclude individually recoverable invalid config leaves.  
+BASELINE-REVIEW: F238 validate each layer before precedence merging.  
+Unverified: serde/toml RustSec package pages returned 404; source-unsafe audit and P03 tests remain unrun.
