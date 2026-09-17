@@ -491,4 +491,5 @@ Same rule as section 10: an acceptance binds the recommendation at one `review/D
 | question | item | answer | date | bound sha256 | note |
 |---|---|---|---|---|---|
 | W1-R52 | R52 toml-crate (TOML crate) | A accept | 2026-09-16 | `4287ea4d…` (revision 1) | toml 1.1.6 read + toml_edit 0.25.15 write; basic-toml out on gate 2; F243 stays inherited; codex's responsiveness figure corrected (7/10 answered) |
+| W1-R57 | R57 xdg-directory-set | A accept | 2026-09-16 | `44e94504…` (revision 2) | etcetera 0.11.0 on a template-owned Paths, namespace rslbp; R5.3 MUST makes the location rule unconditional; judgment-only acceptance under W1-CODEX; publication waits for the empirical audit |
 
