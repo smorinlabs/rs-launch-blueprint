@@ -497,4 +497,5 @@ Same rule as section 10: an acceptance binds the recommendation at one `review/D
 | W1-R44 | R44 devcontainer-environment | A accept | 2026-09-16 | `ea398dda…` (revision 1) | image-only digest-pinned devcontainer; omission runner-up; digest refreshed by hand; judgment-only under W1-CODEX |
 | W1-R10 | R10 dependency-cache-action | A accept | 2026-09-16 | `3ebb09ce…` (revision 1) | rust-cache v2.9.2 by commit; ImageOS assertion mandatory; judgment-only under W1-CODEX |
 | W1-R61 | R61 interactive-prompts | A accept | 2026-09-16 | `3131e895…` (revision 1) | inquire 0.9.4 behind Prompter; gate at the call site; OV-02 declined confirm exits 0; judgment-only under W1-CODEX |
+| W1-R50 | R50 install-smoke-test | A accept | 2026-09-16 | `316dd29d…` (revision 2) | pack → extract → install → run rslbp --version; ubuntu-only smoke job; judgment-only under W1-CODEX |
 
