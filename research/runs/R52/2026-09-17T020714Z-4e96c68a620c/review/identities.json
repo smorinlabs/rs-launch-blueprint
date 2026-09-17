@@ -1,0 +1,46 @@
+{
+  "audits": {
+    "empirical": {
+      "actor": "audit-codex-2026-09-17T020714Z-4e96c68a620c-r1",
+      "family": "openai",
+      "file": "review/audit-codex.md",
+      "model": "gpt-5.6-terra"
+    },
+    "judgment": {
+      "actor": "audit-fable-2026-09-17T020714Z-4e96c68a620c-r1",
+      "family": "anthropic",
+      "file": "review/audit-fable.md",
+      "model": "claude-opus-5"
+    }
+  },
+  "empirical": {
+    "argv": [
+      "bash",
+      "research/runs/R52/2026-09-17T020714Z-4e96c68a620c/review/evidence/verify.sh"
+    ],
+    "cwd": "/Users/stevemorin/c/rs-launch-blueprint-p02-plan, the repository root the round-1 empirical audit records as the recorded cwd, which is why the argv above carries the full repository-relative script path. That audit also ran an equivalent in-place rerun from the assigned run directory, which exited 0 (review/evidence/audit-codex-r1-live.log), and a clean-copy rerun of the same argv from a `git archive HEAD | tar -x` extraction under /tmp (review/evidence/audit-codex-r1-archive.log and audit-codex-r1-archive-verified.log). Only the exact recorded-command leg named in argv is asserted here.",
+    "exit_code": 0,
+    "output_log": "review/evidence/audit-codex-r1-exact-root.log",
+    "toolchain": "macOS 26.4 arm64; rustc 1.98.0; cargo 1.98.0; /usr/bin/curl 8.7.1; BSD /usr/bin/grep; authenticated gh; network reachable, as the round-1 empirical audit's `## Rerun` records. The recorded run reports 108 assertions, 0 failures and 0 skips, as do both archive reruns. The live rerun differs from the committed r52-toml-crate.log only in the two throwaway probe-directory PID paths, and the archive rerun additionally names its archive root; no asserted content changed. `shellcheck review/evidence/verify.sh` exited 0 with empty output (review/evidence/audit-codex-r1-shellcheck.log)."
+  },
+  "engine_reports": {
+    "codex": {
+      "actor": "research-codex-2026-09-17T020714Z-4e96c68a620c",
+      "family": "openai",
+      "file": "raw/codex.md",
+      "model": "gpt-5.6-terra"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-17T020714Z-4e96c68a620c",
+      "family": "anthropic",
+      "file": "raw/opus.md",
+      "model": "claude-opus-5"
+    }
+  },
+  "evidence_checks": {},
+  "synthesis": {
+    "actor": "synth-opus-2026-09-17T020714Z-4e96c68a620c-r1",
+    "family": "anthropic",
+    "model": "claude-opus-5"
+  }
+}
