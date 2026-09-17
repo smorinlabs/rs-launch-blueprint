@@ -1,6 +1,20 @@
-# 2026-09-17 — R48 — mocking-crates (bundle, Focused) — decision (revision 2)
+# 2026-09-17 — R48 — mocking-crates (bundle, Focused) — decision (revision 3)
 
-**Revision note.** Revision 2 answers the round-1 judgment audit
+**Revision note, revision 3.** Revision 3 answers the round-2 judgment audit
+(`review/audit-fable.md`, verdict `reject`, findings JF-9 and JF-10) and is **prose-only**.
+It moves no member, no version, no manifest shape, no gate disposition and no parameter
+value; it gathers no new evidence about any crate. Both findings are the same kind of
+mistake — revision 2's executed compile changed what is true about this run, and two
+sentence-families did not follow it — and both are repaired by mechanical enumeration from
+the line numbers the audit records, not by re-reading.
+
+| Finding | Disposition in this revision |
+|---|---|
+| **JF-9** (blocking) — five prose locations credit check D01 with compiling **both** selected members' dependency trees, which D01 did not do, and which revision 2's own D05 disproves from the other side | **Accepted; the audit is right on the facts.** D01 runs `cargo test` with the `mock` feature **off**, and `mockall` is an optional dependency behind that feature, so it is absent from that build graph: D01 carries `httpmock`'s tree, **D02** carries `mockall`'s. All five locations now cite the pair — the revision-2 note's JF-4 row, the `## Parameters` prose, the D01 row of the spike table (whose D02 row is also amended to say what it carries), engine item 7, and the unproven table — each quoting revision 2's wording as superseded. The `mockall` gate-2 cell already cited "(D01, D02)" correctly and is unchanged. |
+| **JF-9, the log line** | **The committed log is not edited.** `review/evidence/r48-r2-msrv-macos-spike.log` is an artifact the round-1 and round-2 audits read, so it and its script stay byte-identical — **and its D01 `PASS` line is wrongly worded**, exactly as the audit says: it credits that feature-off run with compiling "mockall's and httpmock's resolved dependency trees". Rather than rewrite history, revision 3 adds a new check, `review/evidence/r48-r3-tree-msrv-relabel.sh`, which re-runs the same two commands on the same probe crate and asserts the split directly — G01 asserts **0** `Compiling mockall` lines in the feature-off run, G02 asserts **1** in the feature-on run. Where the two logs' wording disagrees, `r48-r3-tree-msrv-relabel.log` is correct and the D02 and D05 lines of the revision-2 log were right as written. |
+| **JF-10** (blocking) — two claims revision 2's own `## Empirical check` declares superseded are still live | **Accepted.** `## Decision` no longer says "Nothing was built here and no Rust was compiled by either engine or by this synthesis"; it now separates the template (not built, not implemented) from the throwaway probe crate (compiled, outside the repository, described under `## Empirical check`). The `httpmock` gate-6 cell no longer says "**No wall-clock figure: nothing was compiled**"; it now says what its `mockall` neighbour already said — figures exist but do not represent the template. The `## Engines` sentence that the two raw reports "both report that nothing was compiled" is **true of codex and opus and is deliberately left standing**, as the audit directs. |
+
+**Revision note, revision 2.** Revision 2 answers the round-1 judgment audit
 (`review/audit-fable.md`, verdict `reject`, findings JF-1 to JF-8) and changes
 **nothing in the recommendation**: the stack is still the same three members at the same
 versions in the same manifest shapes, no parameter value moves, and the
@@ -16,7 +30,7 @@ executed evidence rather than by demotion, so member 2 stays in the stack.
 | **JF-1** (blocking) — `wiremock` 0.6.5 kept on the qualified shortlist under a gate-2 reading the programme withdrew | **Accepted.** Fitness gate 2 is now applied by one rule to every candidate, the strict one the programme settled at `docs/planning/p02/execution-ledger.md:414` and applied at `:640`: an absent declared `rust-version` does not clear the gate. `wiremock` 0.6.5 and `httptest` 0.16.4 move to *Excluded by gate*, `mry` 0.14.0's clause is corrected, and codex's reading at `raw/codex.md:115` is recorded as right. Superseded wording: "**passes on substance, fails on declaration**" in `wiremock`'s gate-2 cell; "`wiremock` fails no applicable gate: gate 2 passes on substance" in engine item 3; "`unimock` 0.6.8 and `mry` 0.14.0 fail no applicable gate"; "`httptest` 0.16.4 fails no applicable gate and is kept on the shortlist". The C12 reversal condition is rewritten so commit activity alone cannot re-admit `wiremock`: superseded wording — "a re-verification finds commits on `LukeMathWalker/wiremock-rs` after 2025-08-24, **or** a released 0.6.6+ that declares `rust-version`". |
 | **JF-2** (blocking) — `mockall`'s gate 4 recorded as a pass on evidence the same document calls unproven | **Accepted, and closed with observed evidence.** A throwaway probe crate was compiled **outside** the repository on this macOS host at the `msrv-policy` floor (1.96.0) and at stable (1.98.0): `review/evidence/r48-r2-msrv-macos-spike.log`, checks D01–D05. Gate 4 for `mockall` 0.15.0 is now `passes` on an executed macOS compile plus the crate's own `ubuntu-latest` CI, not on a 0.13.0 adopter. Superseded wording: "**passes by adopter evidence.** … macOS support for 0.15.0 specifically is **inferred, not observed**". Codex's contrary position at `raw/codex.md:61` is added to `## Engines` as item 7. Because the gate is closed, **member 2 stays**; had it not been, `mockall` would have moved to *Excluded by gate* and the stack would have become two members. |
 | **JF-3** (blocking) — every figure outside the check table is uncited | **Accepted.** The three adopter claims that carried three gate-4 dispositions are re-read at source by checks E01–E03, and a **Sources** paragraph now gives an endpoint and a retrieval date for every remaining figure, following R01's precedent. |
-| **JF-4** (blocking) — a gate-2 cell cites C08 for a property C08 does not assert, and dependency-tree MSRV is established for no candidate | **Accepted.** The "(C08)" attribution is removed from the clause it did not support. Dependency-tree MSRV is now **executed** for both selected members (D01 compiles their whole resolved trees at 1.96.0) and recorded as **unproven** for `mockito`, with what would prove it, in the unproven table. |
+| **JF-4** (blocking) — a gate-2 cell cites C08 for a property C08 does not assert, and dependency-tree MSRV is established for no candidate | **Accepted.** The "(C08)" attribution is removed from the clause it did not support. Dependency-tree MSRV is now **executed** for both selected members — `httpmock`'s tree in the feature-off run (D01, G01) and `mockall`'s in the feature-on run (D02, G02) — and recorded as **unproven** for `mockito`, with what would prove it, in the unproven table. (Revision 2's wording of this row credited D01 alone with "their whole resolved trees"; that is corrected under JF-9 below.) |
 | **JF-5** (non-blocking) — R01's F121 row quoted by half | **Accepted.** The row is quoted in full, including "no parametrization or mocking crate", with one sentence distinguishing the suite *mechanism* R01 governs from the upstream member 3 stubs. |
 | **JF-6** (non-blocking) — member 1 receives no gate or figure statement | **Accepted.** Member 1 now carries an explicit `inapplicable` statement for gates 1 to 6 and for the crate figures, with the reason, following R01's precedent at its line 93. |
 | **JF-7** (non-blocking) — an unrecorded `shellcheck` claim | **Accepted.** `shellcheck` now runs inside check E05 over all three evidence scripts and its result is in a committed log; the unrecorded claim is gone. |
@@ -24,8 +38,13 @@ executed evidence rather than by demotion, so member 2 stays in the stack.
 
 **Revision history.** Revision 1 — sha256
 `0309754689dc338010858e46a59f7b6f52ed8859464b9ac1dfc564d5a537ed5f`, commits `aa585df`
-(first write) and `2d79de8` (checks C19–C20); approved by `review/audit-codex.md`,
-rejected by `review/audit-fable.md`. Revision 2 — this file.
+(first write) and `2d79de8` (checks C19–C20); approved by the round-1 empirical audit
+(`review/audit-codex.md`), rejected by the round-1 judgment audit on JF-1 to JF-8.
+Revision 2 — sha256 `29e7c7cf1f207e564ec839db168258abe7d0a5e1cdb79959e0b3faf5992fb683`,
+commit `695f673`; the round-2 judgment audit (`review/audit-fable.md`, commit `453ac73`)
+closed JF-1 to JF-4 and rejected on JF-9 and JF-10. Revision 3 — this file, prose-only,
+plus the new `r48-r3-tree-msrv-relabel` check and log. Every revision-1 and revision-2
+script and log is carried forward byte-identical.
 
 ## Decision
 
@@ -42,9 +61,14 @@ mocking mechanism in tests), both `DIVERGENT` in `docs/port/COMMONALITY.md:125-1
 
 **This is a proposal validated in the implementation phase** (owner ruling, 2026-09-10).
 It records what the research found and what it recommends; **P03 builds the template and
-its CI proves the recommendation**. Nothing was built here and no Rust was compiled by
-either engine or by this synthesis: the template does not exist yet. Every acceptance
-criterion below is a requirement on P03, not an observed result. A decision that does not
+its CI proves the recommendation**. The template was not built here and this decision
+implements none of its recommendation: the template does not exist yet. Neither engine
+compiled anything; the only Rust this synthesis compiled is the throwaway probe crate
+described under `## Empirical check`, built outside this repository to close two gates and
+deleted afterwards. Every acceptance criterion below is a requirement on P03, not an
+observed result. (Revision 2 still carried revision 1's categorical sentence here —
+"Nothing was built here and no Rust was compiled by either engine or by this synthesis" —
+which its own `## Empirical check` had already superseded; that wording is retired.) A decision that does not
 survive implementation is revised against this recorded research, not researched again
 from scratch. The claims P03 must validate are listed under `## Engines`.
 
@@ -304,7 +328,7 @@ incompatible license" is recorded as struck rather than as a passing gate.
 | Candidate | 1 licence (recorded only) | 2 MSRV vs the 1.96 floor | 3 advisory / `unsafe` | 4 `ubuntu-latest, macos-latest` | 5 default features / async coupling | 6 binary size and compile cost |
 |---|---|---|---|---|---|---|
 | `mockall` 0.15.0 **(selected)** | `MIT OR Apache-2.0` | **passes, both halves.** *Crate:* declares `rust-version = "1.77.0"` (C01, E04), inside the 1.96 floor, enforced by a CI job pinned to that image. *Dependency tree:* **executed** — the whole resolved tree compiles and its test passes at 1.96.0 on this macOS host (D01, D02), which is the tree half the prompt asks for. C08 is cited only for the dependency **names** it asserts, not for their MSRVs | **passes** — `rustsec.org/packages/mockall.html` HTTP 404, evidenced as "no advisory" by the `lock_api` control (C07). `unsafe`: the crate is safe Rust; `downcast` uses `unsafe` for type erasure and `fragile` for a thread-affinity check — **stated from manifests and documentation, not a line-by-line audit** | **passes, observed.** *Ubuntu:* the crate's own CI (`.github/workflows/ci.yml` at the `v0.15.0` tag) runs `ubuntu-latest`. *macOS:* **executed at the recommended version** — a throwaway probe crate outside this repository resolved `mockall 0.15.0`, expanded `#[automock]`, and passed a test erasing the generated mock to `Arc<dyn Trait>` at 1.96.0 and at stable 1.98.0 on Darwin 26.4 aarch64 (D02, D03, D04). That is the architecture `macos-latest` runs today, though not the GitHub runner image itself. `tokio-rs/tokio` (E01) is corroboration at 0.13.0, no longer the basis | **passes** — the only feature is `nightly`, not default; no async runtime anywhere in the required dependency list (C08), so enabling `mock` does not drag `tokio` into a sync build. Composes with `async-trait` subject to `automock` preceding `#[async_trait]` | **passes** — zero bytes in the shipped binary (feature-and-dev-only). Compile cost is one extra proc-macro tree (`mockall_derive` → `syn`), paid only under `--features mock`, which is the reason for the gate. **No wall-clock figure is offered**: the spike compiles a two-method probe crate, not the template, so its timings would not represent the template's cost |
-| `httpmock` 0.8.3 **(selected)** | `MIT` | **passes, both halves.** *Crate:* declares `rust-version = "1.88.0"` (C02, E04), four minors of headroom below the 1.96 floor, enforced on master by `cargo hack check --rust-version --each-feature --no-dev-deps`. *Dependency tree:* **executed** — its whole resolved tree, `tokio` and `hyper` included, compiles and links at 1.96.0 on this macOS host (D01) | **passes** — `rustsec.org/packages/httpmock.html` HTTP 404 with the same control (C07). `unsafe`: **corrected here.** `unsafe_code = "forbid"` appears in the **master** manifest, which is already versioned 0.9.0; the released **v0.8.3 tag's manifest carries no such lint and declares `edition = "2021"`** (C06). For 0.8.3 the posture is "safe Rust over `hyper`/`tokio`", stated from manifests, not audited | **passes on its own CI** — `.github/workflows/platform.yml` runs the matrix `os: [ubuntu-latest, macos-latest, windows-latest]` (C09). It is the only candidate in the category whose own CI covers macOS, and `target-os-matrix` is owner-fixed, so this is the gate-4 discriminator | **passes with a change** — default feature set is exactly `["cookies"]` (C05), which this recommendation turns off with `default-features = false`; nothing here matches on cookies. `standalone`, `https`, `proxy`, `record`, `remote` stay off. `tokio` is a required dependency of the crate, but the **API** is sync-and-async, so the dev tree contains `tokio` while the template's test code need not be async | **passes** — zero bytes in the shipped binary. Heaviest dependency list of the three full-featured candidates — **25** required normal dependencies against `wiremock`'s 15 and `mockito`'s 16, re-read at the endpoint (C19), which corrects the opus report's 26 — because it bundles diffing and pretty-printing for readable mismatch output; paid only when the test suite compiles. **No wall-clock figure: nothing was compiled** |
+| `httpmock` 0.8.3 **(selected)** | `MIT` | **passes, both halves.** *Crate:* declares `rust-version = "1.88.0"` (C02, E04), four minors of headroom below the 1.96 floor, enforced on master by `cargo hack check --rust-version --each-feature --no-dev-deps`. *Dependency tree:* **executed** — its whole resolved tree, `tokio` and `hyper` included, compiles and links at 1.96.0 on this macOS host (D01) | **passes** — `rustsec.org/packages/httpmock.html` HTTP 404 with the same control (C07). `unsafe`: **corrected here.** `unsafe_code = "forbid"` appears in the **master** manifest, which is already versioned 0.9.0; the released **v0.8.3 tag's manifest carries no such lint and declares `edition = "2021"`** (C06). For 0.8.3 the posture is "safe Rust over `hyper`/`tokio`", stated from manifests, not audited | **passes on its own CI** — `.github/workflows/platform.yml` runs the matrix `os: [ubuntu-latest, macos-latest, windows-latest]` (C09). It is the only candidate in the category whose own CI covers macOS, and `target-os-matrix` is owner-fixed, so this is the gate-4 discriminator | **passes with a change** — default feature set is exactly `["cookies"]` (C05), which this recommendation turns off with `default-features = false`; nothing here matches on cookies. `standalone`, `https`, `proxy`, `record`, `remote` stay off. `tokio` is a required dependency of the crate, but the **API** is sync-and-async, so the dev tree contains `tokio` while the template's test code need not be async | **passes** — zero bytes in the shipped binary. Heaviest dependency list of the three full-featured candidates — **25** required normal dependencies against `wiremock`'s 15 and `mockito`'s 16, re-read at the endpoint (C19), which corrects the opus report's 26 — because it bundles diffing and pretty-printing for readable mismatch output; paid only when the test suite compiles. **No wall-clock figure is offered**: the spike's appendix does print times for compiling this tree, but they are times for a two-method probe crate, not for the template, so they would misrepresent the cost. Revision 2's wording here, "**No wall-clock figure: nothing was compiled**", is superseded — `httpmock`'s tree is the one thing the spike compiled three times |
 | `mockito` 1.7.2 (**ranked runner-up**) | `MIT` | **crate half passes; tree half unproven.** *Crate:* declares 1.70 (C04, E04); its master branch moves to 1.85 (`https://raw.githubusercontent.com/lipanski/mockito/master/.github/workflows/tests.yml`, `MINIMUM_SUPPORTED_TOOLCHAIN`, opus, 2026-09-17), still inside the floor, so the headroom is narrowing. *Dependency tree:* **not established** — no `mockito` tree was resolved or compiled here, and the unproven table records what would prove it | **passes** — HTTP 404 (C07) | **unverified for macOS test execution, not failed** — its own CI covers `ubuntu-latest` and `windows-latest` and no macOS; the best adopter evidence, `apache/iceberg-rust`, runs macOS in its `build` matrices but its `tests` job on `ubuntu-latest` only, so macOS *compilation* is evidenced and macOS *test execution* is not | **passes** — sync and async APIs; `tokio` required; one optional feature | **passes** — zero bytes shipped; **16** required normal dependencies (C19), the lightest of the three full-featured options |
 
 The qualified shortlist is therefore `mockall` 0.15.0 and `unimock` 0.6.8 for F119, and
@@ -503,7 +527,8 @@ doubles reach the **port**, and a loopback HTTP server is not a patch of any tra
 `msrv-policy` is the binding gate-2 rule, and it is the parameter that decides F120: at
 stable 1.98.1 the floor is 1.96, the highest declared `rust-version` across the selected
 members is `httpmock`'s 1.88.0, four minors below it, and both selected members' whole
-resolved dependency trees were compiled at 1.96.0 to prove the tree half (D01). Six
+resolved dependency trees were compiled at 1.96.0 to prove the tree half — `httpmock`'s in
+the feature-off run (D01, G01) and `mockall`'s in the feature-on run (D02, G02). Six
 surveyed crates declare no `rust-version` at all — `wiremock`, `httptest`, `mry`, `double`,
 `stubr`, `rvcr` (E04) — and under the strict reading the programme applies they do not
 clear the gate, which is why the crate the owner reference names is excluded rather than
@@ -535,7 +560,7 @@ same way. What it proves is stated narrowly beside each claim; what it does not 
 in the unproven table under `## Engines`.
 
 **Working directory.** Any — each script resolves the repository root from its own path, so
-all three run from a `git archive HEAD` extraction as well as from the worktree.
+all four run from a `git archive HEAD` extraction as well as from the worktree.
 
 **Commands, and what each produced.** Paths are relative to the run directory
 `research/runs/R48/2026-09-17T020714Z-f9e4f950ea82/`.
@@ -545,11 +570,24 @@ all three run from a `git archive HEAD` extraction as well as from the worktree.
 | 1 | `bash review/evidence/r48-claims-check.sh` | **20 checks, 20 PASS, 0 FAIL, 0 SKIP; exit 0** | `review/evidence/r48-claims-check.log` |
 | 2 | `bash review/evidence/r48-r2-msrv-macos-spike.sh` | **6 checks, 6 PASS, 0 FAIL, 0 SKIP; exit 0** | `review/evidence/r48-r2-msrv-macos-spike.log` |
 | 3 | `bash review/evidence/r48-r2-citations-check.sh` | **5 checks, 5 PASS, 0 FAIL, 0 SKIP; exit 0** | `review/evidence/r48-r2-citations-check.log` |
+| 4 | `bash review/evidence/r48-r3-tree-msrv-relabel.sh` | **4 checks, 4 PASS, 0 FAIL, 0 SKIP; exit 0** | `review/evidence/r48-r3-tree-msrv-relabel.log` |
 
 Script 1 and both of its logs are **byte-identical to revision 1**, which the round-1
-empirical audit reproduced in two environments; scripts 2 and 3 are new files added by this
-revision. Their checks are numbered `D00`–`D05` and `E01`–`E05` so no identifier collides
-with `C01`–`C20`.
+empirical audit reproduced in two environments; scripts 2 and 3 and their logs are
+**byte-identical to revision 2**, which the round-2 judgment audit read line by line;
+script 4 is the only new file, added by revision 3. Their checks are numbered `D00`–`D05`,
+`E01`–`E05` and `G00`–`G03` so no identifier collides with `C01`–`C20`.
+
+**Script 4 — the attribution correction** (`review/evidence/r48-r3-tree-msrv-relabel.log`).
+It gathers no new evidence about any crate: it re-runs script 2's first two commands on the
+same probe crate and asserts, directly, which run compiles which tree. **G00** repeats the
+outside-the-repository check. **G01** asserts the feature-off run exits 0 with 1 passing
+test, **1** `Compiling httpmock v0.8.3` line and **0** `Compiling mockall v` lines — so that
+run establishes `httpmock`'s tree and nothing about `mockall`'s. **G02** asserts the
+feature-on run exits 0 with 2 passing tests, **1** `Compiling mockall v0.15.0` line and
+**1** `Compiling mockall_derive v0.15.0` line — so that run is where `mockall`'s tree is
+established. This exists because the D01 `PASS` line in script 2's committed log is wrongly
+worded and that log is not edited; see the revision-3 note above.
 
 | Check | What it asserts | Endpoint (all retrieved 2026-09-17) |
 |---|---|---|
@@ -580,8 +618,8 @@ default-features = false }` as a dev-dependency — and deletes it on exit.
 | Check | What it asserts | Toolchain |
 |---|---|---|
 | D00 | the probe directory is outside the repository tree, so no template, seam or scaffold is created inside it | — |
-| D01 | `cargo test` with the feature **off** exits 0 with exactly 1 passing integration test — **both selected members' whole resolved dependency trees compile at the `msrv-policy` floor**, which is gate 2's tree half, and the gated `mockall` test is correctly invisible without the feature | `cargo 1.96.0` |
-| D02 | `cargo test --features mock` exits 0 and the named test passes — `#[automock]` expands, the generated mock satisfies the trait's `Send + Sync` supertraits, and `Arc::new(mock) as Arc<dyn Trait>` compiles and returns the programmed value under `.with(eq(7)).times(1)` | `cargo 1.96.0` |
+| D01 | `cargo test` with the feature **off** exits 0 with exactly 1 passing integration test — **`httpmock`'s whole resolved dependency tree compiles at the `msrv-policy` floor**, which is `httpmock`'s half of gate 2's tree question, and the gated `mockall` test is correctly invisible without the feature. It establishes **nothing about `mockall`'s tree**, which is behind the off-by-default feature and absent from this build graph; D02 is the check that carries that. Revision 2's wording, "**both selected members' whole resolved dependency trees compile at the `msrv-policy` floor**", is superseded here and re-labelled by G01 | `cargo 1.96.0` |
+| D02 | `cargo test --features mock` exits 0 and the named test passes — **`mockall`'s whole resolved dependency tree compiles at the floor** (this is the check that carries `mockall`'s half of gate 2's tree question), `#[automock]` expands, the generated mock satisfies the trait's `Send + Sync` supertraits, and `Arc::new(mock) as Arc<dyn Trait>` compiles and returns the programmed value under `.with(eq(7)).times(1)` | `cargo 1.96.0` |
 | D03 | the same lockfile passes `cargo test --locked --features mock` at current stable — **gate 4's macOS half for `mockall` 0.15.0, observed** | `cargo 1.98.0` |
 | D04 | the resolved `Cargo.lock` pins are exactly `mockall 0.15.0`, `mockall_derive 0.15.0`, `httpmock 0.8.3` — the versions recommended are the versions that built | — |
 | D05 | `cargo tree -i mockall` exits non-zero with "did not match any packages" when the feature is off and prints `mockall v0.15.0` when it is on — the off-by-default gate keeps the crate out of the build graph, and the two invocations differ, so the check can fail | `cargo 1.96.0` |
@@ -597,7 +635,7 @@ default-features = false }` as a dev-dependency — and deletes it on exit.
 | E04 | newest non-yanked version and declared `rust-version` for **all eleven** surveyed crates in one pass — five declare one inside the floor (`mockall`, `httpmock`, `mockito`, `unimock`, `faux`); six declare none and fail gate 2 (`wiremock`, `httptest`, `mry`, `double`, `stubr`, `rvcr`). This is the check that makes the gate-2 rule uniform | `https://crates.io/api/v1/crates/<name>/versions` |
 | E05 | `shellcheck` reports no findings and exits 0 for **all three** evidence scripts in this run, its output being 0 lines long | local files |
 
-**Reproducibility, stated after re-running all three scripts against their committed logs
+**Reproducibility, stated after re-running all four scripts against their committed logs
 rather than before.** In every log, each line beginning `# ` is volatile — the retrieval
 timestamp, the host and toolchain banners, and in script 2 the appendix carrying cargo's
 raw output and the resolved lockfile, since cargo prints compile order, wall-clock times
@@ -611,7 +649,7 @@ bash review/evidence/<script>.sh > /tmp/rerun.log
 diff <(/usr/bin/grep -v '^# ' /tmp/rerun.log) <(/usr/bin/grep -v '^# ' review/evidence/<script>.log)
 ```
 
-which was run for all three and was empty each time. **Scoped, because revision 1 scoped it
+which was run for all four and was empty each time. **Scoped, because revision 1 scoped it
 too widely:** no download counter, star count, open-issue count or active repository's
 `pushed_at` literal is printed in any of the three **scripts' output**. Figures of those
 kinds do appear in this decision's prose, where each now carries its endpoint and retrieval
@@ -634,22 +672,25 @@ HEAD` extraction into a temporary directory — a tree with no `.git`, carrying 
 `review/DECISION.md` and `review/evidence/r48-claims-check.sh` at their paths — and
 produced `PASS` lines identical to the committed log and exit status 0; that run is
 recorded in `review/evidence/r48-archive-rerun.log`, with its procedure in the log's own
-header; that log is a revision-1 artifact and is carried forward unchanged. **All three
-scripts** were re-run from a fresh clean extraction for this revision — 31 `PASS` lines,
-three `RESULT: all checks passed (0 FAIL)` lines, exit 0 each, every stable line identical
-to the corresponding committed log — recorded in
-`review/evidence/r48-r2-archive-rerun.log`. Outside this repository the three scripts reach six network hosts and nothing
+header; that log is a revision-1 artifact and is carried forward unchanged, as is
+`review/evidence/r48-r2-archive-rerun.log`, which recorded the same exercise over the three
+scripts that existed in revision 2 (31 `PASS` lines, three `RESULT: all checks passed (0
+FAIL)` lines). **All four scripts** were re-run from a fresh clean extraction for revision 3
+— 35 `PASS` lines, four `RESULT: all checks passed (0 FAIL)` lines, exit 0 each, every
+stable line identical to the corresponding committed log — recorded in
+`review/evidence/r48-r3-archive-rerun.log`. Outside this repository the four scripts reach six network hosts and nothing
 else: `crates.io` and `static.crates.io` (the latter through `cargo`'s own downloads in
 script 2), `raw.githubusercontent.com`, `rustsec.org`, `docs.rs` and `api.github.com`
 (reached through the machine's authenticated `gh`). Every check whose toolchain may be
 absent — `gh`, `shellcheck`, `rustup`'s 1.96.0 toolchain, the Homebrew `cargo`, and the
 `py-launch-blueprint` clone — prints `SKIP` **by name** rather than passing vacuously.
 
-All three scripts set `set -uo pipefail`, invoke `/usr/bin/grep` by absolute path, name that
+All four scripts set `set -uo pipefail`, invoke `/usr/bin/grep` by absolute path, name that
 binary beside every count they print, check each `curl` or `cargo` status separately rather
 than trusting a pipeline, and contain no personal email in any `User-Agent`. **That they
 pass `shellcheck` with no findings is now executed and logged, not asserted:** check E05
-runs `shellcheck` over all three and asserts both a zero exit and zero lines of output.
+runs `shellcheck` over the three scripts that existed in revision 2 and asserts both a zero
+exit and zero lines of output, and check G03 does the same over all four.
 Revision 1 claimed the `shellcheck` result in prose while no script ran it and no log
 recorded it; that claim is superseded by E05.
 
@@ -744,8 +785,9 @@ found by re-reading the source.
    demonstrates the required lane: the workflow at the **v0.15.0 tag** carries 0 macOS
    mentions, and E01 confirms `tokio-rs/tokio`'s pin is `0.13.0`. So this synthesis
    compiled the recommended version instead: D02 and D03 build and run `mockall` 0.15.0's
-   generated mock on Darwin 26.4 aarch64 at 1.96.0 and at 1.98.0, and D01 does the same
-   for the resolved trees of both selected members at the floor. Gate 4 is therefore
+   generated mock on Darwin 26.4 aarch64 at 1.96.0 and at 1.98.0, carrying `mockall`'s
+   whole resolved tree with them, while D01 does the same for `httpmock`'s tree at the
+   floor (re-confirmed and re-labelled by G01 and G02). Gate 4 is therefore
    `passes` on an observed macOS compile plus the crate's own `ubuntu-latest` CI, and
    revision 1's "**inferred, not observed**" cell is superseded. Codex's wider point
    stands and is recorded in the unproven table: the template must still prove its own
@@ -769,8 +811,8 @@ proposed, and the template's own suite is where they are settled.
 |---|---|---|
 | A `mockall` mock generated for a `Send + Sync` trait erases to `Arc<dyn Trait>` | **Proven for the mechanism** (D02): the probe crate's test compiles and passes, and compiling is the proof. **Still unproven against R01's actual `ProjectsPort`**, whose method set and any async form differ | One `--features mock` test in the template that erases a `MockProjectsPort` to `Arc<dyn ProjectsPort>` and drives the CLI; R01 records `error[E0038]` as the failure mode |
 | `mockall` 0.15.0 builds and its generated mocks run on macOS | **Proven at the recommended version** (D02, D03) on Darwin 26.4 aarch64 at 1.96.0 and 1.98.0 — the architecture `macos-latest` runs today, **but not the GitHub runner image**, and not the template's suite | The template's own `macos-latest` CI lane running `cargo test --features mock`, which is the point codex's `raw/codex.md:61` makes and which stands |
-| Both selected members' dependency trees are within the MSRV floor | **Proven** (D01): the whole resolved tree, `mockall`'s six crates and `httpmock`'s 25 including `tokio` and `hyper`, compiles at 1.96.0. **Caveat:** `cargo` 1.96's MSRV-aware resolution chose that tree, so this proves a satisfying resolution exists, not that every newest transitive version is within the floor | The template's own `Cargo.lock` compiled on an MSRV CI lane, which is where the pinned tree becomes the tested one |
-| `mockito` 1.7.2's dependency-tree MSRV | **Unproven.** Only its declared crate-level `rust-version` was read (C04, E04); no `mockito` tree was resolved or compiled here | Resolving and compiling a `mockito` tree at the floor, the way D01 does for the selected members — worth doing only if `mockito` is promoted |
+| Both selected members' dependency trees are within the MSRV floor | **Proven, by two checks and not one:** `httpmock`'s 25 required crates including `tokio` and `hyper` compile at 1.96.0 in the feature-off run (D01, G01), and `mockall`'s six compile at 1.96.0 in the feature-on run (D02, G02) — `mockall` is behind an off-by-default feature, so it is absent from the feature-off graph, which D05 states from the other side. Revision 2 credited D01 alone with both trees; that attribution is superseded. **Caveat:** `cargo` 1.96's MSRV-aware resolution chose that tree, so this proves a satisfying resolution exists, not that every newest transitive version is within the floor | The template's own `Cargo.lock` compiled on an MSRV CI lane, which is where the pinned tree becomes the tested one |
+| `mockito` 1.7.2's dependency-tree MSRV | **Unproven.** Only its declared crate-level `rust-version` was read (C04, E04); no `mockito` tree was resolved or compiled here | Resolving and compiling a `mockito` tree at the floor, the way D01 does for `httpmock`'s and D02 for `mockall`'s — worth doing only if `mockito` is promoted |
 | `httpmock` servers do not collide when tests run in parallel on both OSes | **Unproven.** No `MockServer` was started anywhere in this run; the spike links `httpmock` and names its types without binding a port | `cargo test -- --test-threads=8` on `ubuntu-latest` and on `macos-latest` |
 | The F121 contract suite passes for **both** adapters from one seed set, and a renamed `data` key fails the HTTP case while the in-memory case still passes | **Unproven.** This is the check that would falsify the recommendation | `cargo test --test port_contract`, then rename the stub's `data` key to `results` and re-run |
 | The gated feature really keeps `mockall` out of the default build graph | **Proven for the mechanism** (D05): with the feature off `cargo tree -i mockall` reports no such package and exits non-zero; with it on it prints `mockall v0.15.0`. **Unproven for the template**, which has a different manifest | `cargo tree --edges dev -i mockall` in the template with the feature off; `cargo tree --edges normal` for `httpmock`; `cargo build --release` with and without `--features mock` compared for size |
