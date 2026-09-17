@@ -1,0 +1,1 @@
+`raw/codex.md` — SHA-256 `74afacbc4e5c12376873cfd37eee46255bc5519486756c2278453a5c1f5e007e`; H3 fields: 15; no `CONFLICT:` or `BASELINE-REVIEW:` lines; unverified: live workflow behavior and cache-performance measurements.
