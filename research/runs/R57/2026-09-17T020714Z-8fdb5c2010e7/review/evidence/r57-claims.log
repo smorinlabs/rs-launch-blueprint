@@ -42,12 +42,12 @@ PASS R10.1 places a stored credential under $XDG_STATE_HOME (expected 1, got 1; 
 --- R67 DECISION.md:587 — the RSLB104 catalogue row and its basis ---
 | `RSLB104` config layer unreadable | 1 | **Standard-derived.** R8.2's "runtime input failures such as unreadable files", verbatim. |
 
---- R67 — every line naming RSLB101 outside the parameter blob ---
-grep: invalid option --  
-usage: grep [-abcdDEFGHhIiJLlMmnOopqRSsUVvwXxZz] [-A num] [-B num] [-C[num]]
-	[-e pattern] [-f file] [--binary-files=value] [--color=when]
-	[--context[=num]] [--directories=action] [--label] [--line-buffered]
-	[--null] [pattern] [file ...]
+--- R67 — where RSLB101 is defined, and the fact that it is defined nowhere else ---
+occurrences of RSLB101 in the whole file: 1 (binary: /usr/bin/grep)
+the line numbers carrying it:
+383
+the catalogue clause inside the owned parameter value on line 383:
+`RSLB101` I/O → 1
 
 --- COMMONALITY.md:253 — ledger row F249, the row this item settles ---
 | F249 | separate XDG-style data/state/cache directories beyond config | config-env-logging | py-only | DIVERGENT | R57 | standalone; whether Rust adopts the full XDG data/state/cache directory set beyond just config — contingent on whether a file log sink (R59) or a crash log (see F302) end up needing a state/cache path; kept a standalone item at the Task 10 reconciliation because the directory set is consumed by both R59 (file-sink default path) and R67 (crash-log path), so folding it into R59 would hide an R67 dependency inside another item |
@@ -62,6 +62,8 @@ unsafe_code = "forbid"
 PASS R67 defers the crash-record location to R57 (expected 1, got 1; binary: /usr/bin/grep)
 PASS R67 AC7 leaves the exit code and envelope unchanged on a write failure (expected 1, got 1; binary: /usr/bin/grep)
 PASS R67 maps a config layer that cannot be read to RSLB104 and exit 1 (expected 1, got 1; binary: /usr/bin/grep)
+PASS RSLB101 appears in R67 exactly once, inside its owned parameter value (expected 1, got 1; binary: /usr/bin/grep)
+PASS that single occurrence defines RSLB101 as I/O mapping to exit 1 (expected 1, got 1; binary: /usr/bin/grep)
 PASS F249 still carries the contingency clause this decision replaces (expected 1, got 1; binary: /usr/bin/grep)
 PASS R06 states unsafe_code = "forbid", at 6 places in its decision (expected 6, got 6; binary: /usr/bin/grep)
 PASS R06 puts that lint in the workspace table every member inherits, at 5 places (expected 5, got 5; binary: /usr/bin/grep)
@@ -79,8 +81,8 @@ PASS fixed rows are byte-identical between the run input and the registry
 --- the prompt's owns and consumes lines ---
 23:- owns:
 24:- consumes:
-PASS the prompt declares no owned parameter (expected 1, got 1; binary: /usr/bin/grep)
-PASS the prompt declares no consumed parameter (expected 1, got 1; binary: /usr/bin/grep)
+PASS the prompt's owns line is bare, so this item owns no parameter (expected 1, got 1; binary: /usr/bin/grep)
+PASS the prompt's consumes line is bare, so this item consumes no parameter (expected 1, got 1; binary: /usr/bin/grep)
 
 ========== 4. etcetera 0.11.0 — the published artifact, read at a pinned sha256 ==========
 

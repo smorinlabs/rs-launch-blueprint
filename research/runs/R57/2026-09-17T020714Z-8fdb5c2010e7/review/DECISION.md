@@ -258,12 +258,19 @@ is still right, because the `Err` arm is reachable where neither `HOME` nor a
 `/etc/passwd`, which is exactly the R51 case that motivates the web-surface
 caution above. But P03 must construct that state deliberately rather than by
 unsetting `HOME`, or cover the error arm at the caller of `from_strategy` instead
-of end to end. The *mapping* of that failure needs no new error code: R67's
-catalogue already carries `RSLB101` (I/O → exit 1) for a command that needs a path
-it cannot compute and `RSLB104` (config layer unreadable → exit 1, `R67
-DECISION.md:587`) for the user-tier config file specifically, a choice that
-belongs to R54. Both land on exit `1`, so the observable contract is the same
-either way, and **no `CONFLICT:` line is raised against R67**. For the crash
+of end to end. The *mapping* of that failure needs no new error code, but be
+precise about whose mapping it is. R67 **defines** `RSLB101` as I/O → exit 1, and
+does so in exactly one place: inside its owned parameter value at
+`research/topics/67-error-and-exit-code-contract/DECISION.md:383`, the file's only
+occurrence of that identifier (verified by count, `## Empirical check` §2). R67
+does **not** say that an unresolvable path is an `RSLB101`; routing it there is
+**this decision's proposal for P03**, and routing a user-tier config file that
+cannot be located to `RSLB104` (config layer unreadable → exit 1, defined at
+`:587`) is **R54's** to make, not this item's. Both candidates land on exit `1`,
+so the observable contract is the same either way, no new catalogue row is needed,
+and **no `CONFLICT:` line is raised against R67** — whose `ErrorCode` enum is
+`#[non_exhaustive]` and append-only, so a dedicated row for environment
+resolution would be R67's ordinary extension path rather than a conflict. For the crash
 record itself, R67's AC7 already settles it: a crash-record write failure leaves
 the exit code and the envelope unchanged, so an unresolvable state directory
 leaves the sink silent.
@@ -385,7 +392,9 @@ This item is *substantively* downstream of two published decisions that are not
 parameters it consumes: R67 (`research/topics/67-error-and-exit-code-contract/DECISION.md`,
 sha256 `16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497`, which
 matches the hash recorded in `inputs/prerequisites.json` — verified, §2) supplies
-the crash-record consumer and the `RSLB101`/`RSLB104` mapping, and R49's
+the crash-record consumer, and the error codes this decision proposes routing an
+unresolvable path onto — `RSLB101` and `RSLB104`, which R67 and R54 respectively
+own, on the gradation stated under `### Principles and implementation`; R49's
 `build-tool-output-shape` supplies the binary name `rslbp` that is the namespace
 segment. Neither appears above, because neither is on this prompt's `- consumes:`
 line and the packaging validator derives the expected `- assumes` set from the
@@ -416,14 +425,14 @@ $ bash r57-claims.sh > r57-claims.log 2>&1
 $ echo $?
 0
 $ /usr/bin/grep -c '^PASS' r57-claims.log
-51
+53
 $ /usr/bin/grep -c '^FAIL' r57-claims.log
 0
 $ /usr/bin/grep -c '^SKIP' r57-claims.log
 0
 ```
 
-51 assertions pass, none fail, nothing skipped; the script's last line is
+53 assertions pass, none fail, nothing skipped; the script's last line is
 `failed assertions: 0` and it exits non-zero if any assertion fails. Counts above
 were produced with the binary at `/usr/bin/grep` and from the whole file, never
 from output piped through `head` or `cut`.
@@ -462,7 +471,7 @@ toolchain — and none of them skipped on this run.
 
 **Files.** `review/evidence/r57-claims.sh` (the script, `shellcheck`-clean),
 `review/evidence/r57-claims.log` (its complete output, sha256
-`6e23f41d3ce6201926860c6a5d55f4361ba7da48439e58cd2761a63958bab6a3`),
+`fbbe9fae82267a67d220b71536095e82edc38776ed845bc4017b478252332143`),
 `review/evidence/toolchain.txt`, and `review/evidence/snap/`. `snap/` holds 12
 artifacts; **10 are committed and 2 are not** — the `.crate` tarballs match this
 repository's `.gitignore:12` rule `research/runs/**/*.crate`, which is respected
@@ -503,18 +512,24 @@ ledger-style row
 | Crash record | `std::fs` behind an injected sink; **location deferred to R57** | CLI binary only |
 ```
 
-`:126` prints AC7; `:587` prints the `RSLB104` row and its basis; every line
-naming `RSLB101` outside the parameter blob prints. `docs/port/COMMONALITY.md:253`
+`:126` prints AC7; `:587` prints the `RSLB104` row and its basis. `RSLB101` is
+then counted rather than quoted, because the count is the finding: it occurs
+**once** in the whole of R67, on line 383, inside the owned parameter value, as
+the clause `` `RSLB101` I/O → 1 `` — which is why the B6 correction above is
+careful to call the unresolvable-path mapping this decision's proposal rather than
+R67's text. `docs/port/COMMONALITY.md:253`
 prints the F249 row still carrying the contingency clause this decision replaces,
 and `:251` prints F247. `research/topics/06-unsafe-code-policy/DECISION.md:24`
 prints `unsafe_code = "forbid"`. The R67 decision hash on disk
 (`16947ab1…`) is asserted equal to the hash recorded in
 `inputs/prerequisites.json`; it matches, so the prerequisite is not stale.
-7 passing checks in this section.
+9 passing checks in this section.
 
 *§3 — parameters and couplings.* `diff` of `inputs/PARAMETERS.md` rows 7–10
 against `docs/port/PARAMETERS.md` rows 7–10 is empty; the prompt's `- owns:` and
-`- consumes:` lines print, both bare. 3 passing checks in this section.
+`- consumes:` lines print, both bare — asserted as **whole-line** matches, so
+`- owns: something` would fail the check rather than satisfy it. 3 passing checks
+in this section.
 
 *§4 — `etcetera` 0.11.0, at the published artifact.* Tarball
 `https://static.crates.io/crates/etcetera/etcetera-0.11.0.crate`, sha256 asserted
@@ -708,7 +723,10 @@ not `master`'s 1.95.0. Opus's acceptance criterion B6 is corrected outright — 
    `ubuntu-latest` **and** `macos-latest`. These two must never be allowed to run
    on one leg only: the entire crate choice rests on their macOS result.
 2. **B6's failure path, constructed deliberately** — not by unsetting `HOME`, per
-   the correction above — and mapped to `RSLB101`/exit 1 with a byte-empty stdout.
+   the correction above — and mapped to the code P03 settles on. This decision
+   proposes `RSLB101`/exit 1; R67 defines that code but does not assign this
+   failure to it, and R54 may instead claim the config-file case for `RSLB104`.
+   Whichever is chosen, exit `1` and a byte-empty stdout are the fixed part.
 3. **`Paths` under R04's public-API enforcement**, including whether
    `from_strategy(&impl BaseStrategy)` may carry an `etcetera` type in a public
    signature; the escape hatch is recorded under *Tradeoffs*.

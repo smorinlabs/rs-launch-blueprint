@@ -139,8 +139,13 @@ claim "R67 DECISION.md:126 — acceptance criterion AC7"
 sed -n '126p' "$R67"
 claim "R67 DECISION.md:587 — the RSLB104 catalogue row and its basis"
 sed -n '587p' "$R67"
-claim "R67 — every line naming RSLB101 outside the parameter blob"
-$GREP -n -F 'RSLB101' "$R67" | $GREP -v -F '- owns error-taxonomy-exit-codes'
+claim "R67 — where RSLB101 is defined, and the fact that it is defined nowhere else"
+printf 'occurrences of RSLB101 in the whole file: %s (binary: %s)\n' \
+  "$(count "$R67" 'RSLB101')" "$GREP"
+printf 'the line numbers carrying it:\n'
+$GREP -n -o -F 'RSLB101' "$R67" | cut -d: -f1 | sort -u
+printf 'the catalogue clause inside the owned parameter value on line 383:\n'
+sed -n '383p' "$R67" | $GREP -o -F '`RSLB101` I/O → 1'
 claim "COMMONALITY.md:253 — ledger row F249, the row this item settles"
 sed -n '253p' "$LEDGER"
 claim "COMMONALITY.md:251 — ledger row F247, named out of scope by the prompt"
@@ -155,6 +160,10 @@ assert "R67 AC7 leaves the exit code and envelope unchanged on a write failure" 
   "$(count "$R67" '| AC7 | A crash-record write failure leaves the exit code and the envelope unchanged |')"
 assert "R67 maps a config layer that cannot be read to RSLB104 and exit 1" 1 \
   "$(count "$R67" '| `RSLB104` config layer unreadable | 1 |')"
+assert "RSLB101 appears in R67 exactly once, inside its owned parameter value" 1 \
+  "$(count "$R67" 'RSLB101')"
+assert "that single occurrence defines RSLB101 as I/O mapping to exit 1" 1 \
+  "$(count "$R67" '`RSLB101` I/O → 1')"
 assert "F249 still carries the contingency clause this decision replaces" 1 \
   "$(count "$LEDGER" 'contingent on whether a file log sink (R59) or a crash log (see F302) end up needing a state/cache path')"
 assert "R06 states unsafe_code = \"forbid\", at 6 places in its decision" 6 \
@@ -178,8 +187,12 @@ else
 fi
 claim "the prompt's owns and consumes lines"
 $GREP -n -E '^- (owns|consumes):' "$RUN/inputs/prompt.md"
-assert "the prompt declares no owned parameter" 1 "$(count "$RUN/inputs/prompt.md" '- owns:')"
-assert "the prompt declares no consumed parameter" 1 "$(count "$RUN/inputs/prompt.md" '- consumes:')"
+# -x makes these whole-line matches, so `- owns: something` would fail the
+# assertion rather than satisfy it. A substring match would not test the claim.
+assert "the prompt's owns line is bare, so this item owns no parameter" 1 \
+  "$($GREP -c -x -F -- '- owns:' "$RUN/inputs/prompt.md" || true)"
+assert "the prompt's consumes line is bare, so this item consumes no parameter" 1 \
+  "$($GREP -c -x -F -- '- consumes:' "$RUN/inputs/prompt.md" || true)"
 
 # ================================================= 4. etcetera 0.11.0 source ==
 section "4. etcetera 0.11.0 — the published artifact, read at a pinned sha256"
