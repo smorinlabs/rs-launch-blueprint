@@ -1,0 +1,151 @@
+=== R55 evidence — environment ===
+date (UTC):      2026-09-17T04:43:00Z
+repository root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+counting binary: /usr/bin/grep (grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+uname:           Darwin arm64
+cargo:           cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+rustc:           rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+
+=== C01-C03 — R67 (owner-accepted prerequisite) settles the CONFLICT ===
+PASS C01: R67 publishes the RSLB203 catalogue row — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS C02: R67 delegates tolerated-vs-fatal to R55, so RSLB203 is an available code and not a mandate — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS C03a: R67 publishes the RSLB104 row this decision routes an unreadable explicit layer to — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS C03b: R67 publishes the RSLB202 row this decision routes an unparsable explicit document to — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS C03c: R67 publishes the RSLB201 row the strict alternative for (a) would use — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+
+=== C04 — ledger rows this decision settles ===
+PASS C04a: COMMONALITY carries F235 — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS C04b: COMMONALITY carries F236 — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS C04c: COMMONALITY carries F237 as COMMON → REUSE with origin same (the BASELINE-REVIEW target) — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS C04d: COMMONALITY carries F238 with no layer qualifier in its row text — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+
+=== C05 — every '- assumes' line is byte-identical to the registry ===
+  ok msrv-policy (118 bytes match the registry byte-for-byte)
+  ok rust-edition (4 bytes match the registry byte-for-byte)
+  ok target-os-matrix (27 bytes match the registry byte-for-byte)
+  ok license (17 bytes match the registry byte-for-byte)
+  ok error-taxonomy-exit-codes (4057 bytes match the registry byte-for-byte)
+PASS C05: /usr/bin/grep found 5 '- assumes' line(s), all byte-identical to /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/PARAMETERS.md
+PASS C05b: /usr/bin/grep counted 0 '- owns' line(s), matching the prompt's empty owns: field
+
+=== C06 — org CLI Design Standard v1.4.14 rules cited by this decision ===
+PASS C06a: the standard read is blob f9de0437baece3383e73ca2c5f48b7ab399b51c7, the blob this decision cites
+PASS C06b: R5.2 makes an explicit --config replace the discovered layers — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS C06c: R5.8 requires precise file/key diagnostics — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS C06d: R5.8 names silent ignoring of bad config as the anti-pattern — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS C06e: R7.6 requires an error to name the offending input — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+
+=== C07 — crates.io figures for the two crates this decision adds ===
+Endpoint: GET https://crates.io/api/v1/crates/<name>/versions
+Retrieved: see the snapshot files beside this script; the assertions below
+read the snapshots, not the live endpoint, so they are stable on rerun.
+PASS C07-serde_path_to_error: newest non-yanked 0.1.20, license MIT OR Apache-2.0, rust_version 1.61
+PASS C07-serde_ignored: newest non-yanked 0.1.14, license MIT OR Apache-2.0, rust_version 1.61
+Download counts move daily and are therefore reported, never asserted:
+  serde_path_to_error recent_downloads=80853700 downloads=280245735 (snapshot of GET https://crates.io/api/v1/crates/serde_path_to_error)
+  serde_ignored recent_downloads=11429284 downloads=51134001 (snapshot of GET https://crates.io/api/v1/crates/serde_ignored)
+
+=== C08 — the verification spike (built OUTSIDE the repository) ===
+The spike is throwaway verification, not a template scaffold: P03 builds
+the template. Its source is checked in beside this script as the check's
+input and is copied to a temporary directory to build.
+warning: field `0` is never read
+  --> src/main.rs:97:13
+   |
+97 |     Rslb202(String),
+   |     ------- ^^^^^^
+   |     |
+   |     field in this variant
+   |
+   = note: `Fatal` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+   = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+help: consider changing the field to be of unit type to suppress this warning while preserving the field numbering, or remove the field
+   |
+97 -     Rslb202(String),
+97 +     Rslb202(()),
+   |
+
+warning: field `0` is never read
+  --> src/main.rs:99:13
+   |
+99 |     Rslb203(String),
+   |     ------- ^^^^^^
+   |     |
+   |     field in this variant
+   |
+   = note: `Fatal` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+help: consider changing the field to be of unit type to suppress this warning while preserving the field numbering, or remove the field
+   |
+99 -     Rslb203(String),
+99 +     Rslb203(()),
+   |
+
+--- toolchain ---
+spike: r55-spike, edition 2024, built outside the repository
+
+--- A. per-leaf drop preserves siblings ---
+value: ConfigFile { verbose: true, output: Output { format: Text, limit: 7 } }
+warnings: ["ignoring invalid config value /etc/x/config.toml: output.format (unknown variant `yaml`, expected `text` or `json`\nin `output.format`\n)"]
+PASS A1 sibling limit survives: output.limit = 7
+PASS A2 other table survives: verbose = true
+PASS A3 bad leaf fell back to default: output.format = Text
+PASS A4 exactly one warning naming the key path: ["ignoring invalid config value /etc/x/config.toml: output.format (unknown variant `yaml`, expected `text` or `json`\nin `output.format`\n)"]
+
+--- B. two bad leaves ---
+value: ConfigFile { verbose: false, output: Output { format: Text, limit: 7 } }
+warnings: ["ignoring invalid config value b.toml: output.format (unknown variant `yaml`, expected `text` or `json`\nin `output.format`\n)", "ignoring invalid config value b.toml: verbose (invalid type: string \"nope\", expected a boolean\nin `verbose`\n)"]
+PASS B1 two warnings, limit preserved: warnings=2 limit=7
+
+--- C. unknown key ---
+value: ConfigFile { verbose: false, output: Output { format: Text, limit: 3 } }
+warnings: ["ignoring unknown config key c.toml: output.colour"]
+PASS C1 unknown key warned, load succeeded, sibling survives: ["ignoring unknown config key c.toml: output.colour"] limit=3
+
+--- D. unparsable document ---
+error: Rslb202("invalid TOML in config file d.toml: TOML parse error at line 1, column 6\n  |\n1 | this is not = = toml\n  |      ^\nkey with no value, expected `=`\n")
+PASS D1 unparsable maps to RSLB202: Rslb202("invalid TOML in config file d.toml: TOML parse error at line 1, column 6\n  |\n1 | this is not = = toml\n  |      ^\nkey with no value, expected `=`\n")
+
+--- E. fatal branches distinguishable ---
+result: Ok(Table({"verbose": Boolean(true)}))
+warnings: ["ignoring invalid config value e.toml: output (invalid type: integer `5`, expected struct Output\nin `output`\n)"]
+PASS E1 a mis-shaped table is a prunable leaf, not fatal: Ok(Table({"verbose": Boolean(true)}))
+PASS E2 sibling survives the table drop: verbose=true warnings=["ignoring invalid config value e.toml: output (invalid type: integer `5`, expected struct Output\nin `output`\n)"]
+
+--- F. non-localizable fault is RSLB203 ---
+result: Err(Rslb203("invalid config value f.toml: invalid type: integer `5`, expected struct ConfigFile\n"))
+PASS F1 root-level shape fault maps to RSLB203: Err(Rslb203("invalid config value f.toml: invalid type: integer `5`, expected struct ConfigFile\n"))
+
+--- H. flatten and path-based pruning ---
+failing leaf INSIDE the flattened target: path="."
+PASS H1 a leaf inside the flattened target collapses to a non-prunable path: path="."
+failing leaf OUTSIDE the flattened target: path="output.format"
+PASS H2 a leaf outside the flattened target keeps a prunable path: path="output.format"
+
+--- M. sanitize -> merge -> type once (two layers) ---
+value: ConfigFile { verbose: false, output: Output { format: Json, limit: 2 } }
+warnings: ["ignoring invalid config value project.toml: output.format (unknown variant `yaml`, expected `text` or `json`\nin `output.format`\n)"]
+PASS M1 the lower layer's valid value survives the higher layer's invalid one: output.format = Json
+PASS M2 exactly one warning, naming the higher layer: ["ignoring invalid config value project.toml: output.format (unknown variant `yaml`, expected `text` or `json`\nin `output.format`\n)"]
+PASS M3 the final typed pass over the merged document did not fail: output.limit = 2
+
+--- N. merge-then-drop (py's order) on the same inputs ---
+value: ConfigFile { verbose: false, output: Output { format: Text, limit: 2 } }
+warnings: ["ignoring invalid config value <merged>: output.format (unknown variant `yaml`, expected `text` or `json`\nin `output.format`\n)"]
+PASS N1 merge-first falls back to the built-in default, losing user.toml's value: output.format = Text
+
+ALL ASSERTIONS PASSED
+PASS C08: /usr/bin/grep counted 16 PASS and 0 FAIL lines, and the final banner is present
+PASS C08a: a bad leaf is dropped and its sibling survives — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS C08b: serde(flatten) collapses the tracked path when the failing leaf is inside the flattened target — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS C08c: the collapse is confined to leaves inside the flattened target — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS C08d: sanitize-then-merge keeps the lower layer's valid value — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS C08e: merge-then-drop (py's order) loses that value on identical inputs — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+PASS C08f: a fault the tracked path cannot localize stays fatal, so RSLB203 has a target — /usr/bin/grep counted 1 occurrence(s) of the literal needle
+Resolved dependency versions in the spike lockfile:
+  name = "serde"	version = "1.0.229"
+  name = "serde_ignored"	version = "0.1.14"
+  name = "serde_path_to_error"	version = "0.1.20"
+  name = "toml"	version = "1.1.6+spec-1.1.0"
+
+=== summary ===
+PASS=25 FAIL=0 SKIP=0
