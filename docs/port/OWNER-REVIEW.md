@@ -133,6 +133,21 @@ py's Action form, which is `docker`-based, `ubuntu-latest`-only and carries the
 on `pull_request` and `push` to `main` that fails on a live credential) stands;
 Kingfisher becomes the runner-up. R17 revision 7 implements this ruling.
 
+### 2026-09-16 — Release build profile ownership: R68 (W0-R69p)
+
+R69's revision 9 found, by a census over all 85 binding prompts and the
+commonality ledger, that no research item names the Cargo release build
+profile (`[profile.release]`: `lto`, `codegen-units`, `opt-level`, `strip`).
+The owner rules that **R68 `release-binary-artifacts` owns it**: R68's prompt
+is amended before the item is prepared to admit `[profile.*]` keys, evaluated
+against binary size, build time and the fixed target matrix and MSRV policy.
+R49 `build-target-declaration` keeps the manifest's target declarations and is
+not reopened. The owner's reference architecture's `[profile.release]` row
+(`lto = "thin"`, `codegen-units = 1`) is an input to R68 under section 11 of
+`docs/planning/p02/owner-decisions.md`, not a pre-decision. Options declined:
+adding the subject to R49 (reopens an accepted, published decision), a new
+item (an extra research cycle), leaving Cargo's defaults to P03.
+
 ## Wave 0 owner acceptances
 
 Recorded from 2026-09-14 in `docs/port/OWNER-ACCEPTANCES.md` (moved there on
