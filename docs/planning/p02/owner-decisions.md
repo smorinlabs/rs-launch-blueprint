@@ -499,4 +499,5 @@ Same rule as section 10: an acceptance binds the recommendation at one `review/D
 | W1-R61 | R61 interactive-prompts | A accept | 2026-09-16 | `3131e895…` (revision 1) | inquire 0.9.4 behind Prompter; gate at the call site; OV-02 declined confirm exits 0; judgment-only under W1-CODEX |
 | W1-R50 | R50 install-smoke-test | A accept | 2026-09-16 | `316dd29d…` (revision 2) | pack → extract → install → run rslbp --version; ubuntu-only smoke job; judgment-only under W1-CODEX |
 | W1-R03 | R03 port-absence-vs-failure-contract | A accept | 2026-09-16 | `610e3338…` (revision 1) | Result<Option<T>, PortError>, adapter maps 404 → Ok(None), use case owns NotFound (RSLB301); judgment-only under W1-CODEX |
+| W1-R02 | R02 crate-boundary-enforcement + the R69 conflict | A accept R02, revise R69 | 2026-09-16 | `78788f7f…` (revision 1) | four-package workspace (OV-03); R69 web-extra-surface to be revised to name the optional member and the crates/web/** paths (option 1 of R02's disposition); the seven prepared Wave 2 runs re-prepare after R69 republishes; judgment-only under W1-CODEX |
 
