@@ -1,0 +1,3 @@
+OK   mutated scratch copy exits 1 and names the altered max_version assertion
+mutation-script-rc=1
+mutation-control-rc=0

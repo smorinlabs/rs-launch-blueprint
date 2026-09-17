@@ -1,0 +1,16 @@
+{
+  "crate": "hyper",
+  "retrieved_at": "2026-09-13T07:57:55Z",
+  "endpoint": "https://rustsec.org/packages/hyper.html",
+  "http_status": 200,
+  "note": "RustSec serves HTTP 404 for a crate with no advisory",
+  "advisories_listed": [
+    "RUSTSEC-2016-0002",
+    "RUSTSEC-2017-0002",
+    "RUSTSEC-2020-0008",
+    "RUSTSEC-2021-0020",
+    "RUSTSEC-2021-0078",
+    "RUSTSEC-2021-0079",
+    "RUSTSEC-2022-0022"
+  ]
+}

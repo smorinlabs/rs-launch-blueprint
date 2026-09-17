@@ -1,0 +1,427 @@
+R69 revision 8 empirical audit
+argv: git boundary checks; bash review/empirical/parameters-check.sh; bash review/evidence/owner-reference-check-r6.sh; each checker in place and in a clean git archive HEAD extraction
+cwd: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42
+decision sha256: ce7a5dad994e4c5fa87a35674a7172913265cf70cc13456ed105a7018270407a  review/DECISION.md
+toolchain: git version 2.50.1 (Apple Git-155)
+GNU bash, version 3.2.57(1)-release (arm64-apple-darwin25)
+grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+jq-1.8.2
+
+== revision-boundary counts ==
+$ git diff 10a83c4 1187133 -- review/DECISION.md
+@@ -1,7 +1,87 @@
+@@ -489,7 +569,9 @@ audits, 2026-09-15; revision 5 by a fifth fresh Claude Opus 5 context that produ
+@@ -904,10 +986,18 @@ no result set — it serves HTTP and logs to stderr. No safety/action option app
+@@ -1375,7 +1465,7 @@ input, in full) and `docs/planning/p02/owner-decisions.md` section 11;
+@@ -2102,7 +2192,7 @@ research.
+OK   revision-6-to-7 default-context hunk count: 5
+$ git diff -U0 10a83c4 1187133 -- review/DECISION.md
+@@ -1 +1 @@
+@@ -3,2 +3,82 @@
+@@ -492 +572,3 @@ audits, 2026-09-16, folding in the owner-supplied reference architecture under o
+@@ -907,4 +989,12 @@ standard's R5.1 precedence (flag > env > config > default) is satisfied vacuousl
+@@ -1378 +1468 @@ the envelope shape named under *Minimal realistic endpoint*.
+@@ -2105 +2195 @@ research.
+OK   revision-6-to-7 -U0 edited-location count: 6
+$ git diff 1187133 91bfe39 -- review/DECISION.md
+@@ -1,7 +1,35 @@
+@@ -571,7 +599,8 @@ Claude Opus 5 context that produced none of this item's raws, audits, revisions
+OK   revision-7-to-8 default-context hunk count: 2
+$ git diff 10a83c4 91bfe39 -- review/DECISION.md
+@@ -1,7 +1,115 @@
+@@ -489,7 +597,10 @@ audits, 2026-09-15; revision 5 by a fifth fresh Claude Opus 5 context that produ
+@@ -904,10 +1015,18 @@ no result set — it serves HTTP and logs to stderr. No safety/action option app
+@@ -1375,7 +1494,7 @@ input, in full) and `docs/planning/p02/owner-decisions.md` section 11;
+@@ -2102,7 +2221,7 @@ research.
+OK   revision-6-to-8 default-context hunk count: 5
+
+== scope of the no-evidence-change claim ==
+
+$ git show --stat --name-only 3e4c086
+commit 3e4c0864872acc6802e989a244bc3f99ef564538
+Author:     Steve Morin <steve.morin@gmail.com>
+AuthorDate: Wed Sep 16 15:44:55 2026 -0700
+Commit:     Steve Morin <steve.morin@gmail.com>
+CommitDate: Wed Sep 16 15:44:55 2026 -0700
+
+    docs(research): revise R69 to revision 7 answering JF-4
+    
+    The round-6 judgment audit (review/audit-fable.md) rejected revision 6 on one
+    finding, JF-4: the decision stated twice, as present fact, that the CLI parser
+    the serve binary's required global core is parsed with is still R60's open
+    choice, and keyed a re-verify: trigger on that selection. W0-R60 accepted
+    clap 4.6.6 with the derive API on 2026-09-15 at sha256 67d7a7d2, one day before
+    revision 6, so both statements were false and the trigger had already fired.
+    
+    Repaired in place at the three locations the finding names, by revision 6's
+    line numbers: the flag-surface paragraph (908) and the global-core row of the
+    unproven table (2105) now quote revision 6's wording, label it superseded by
+    the acceptance, and state the accepted fact; the re-verify: R60 clause (1378)
+    is replaced, not deleted, with "when R60's published decision moves off its
+    owner-accepted clap 4.6.6 derive selection".
+    
+    Neither the recommendation nor any parameter value moves. The one
+    - owns web-extra-surface line, the five - assumes lines and the H2 set are
+    byte-identical to revision 6; no evidence file is added or edited.
+    
+    Claude-Session: https://claude.ai/code/session_01ULEUr6b17aZ6iTpWjPGtWM
+
+research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md
+OK   3e4c086 changed-path count: 1
+OK   3e4c086 changed path: research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md
+
+$ git show --stat --name-only 1187133
+commit 118713301ae62be8df328a6ca2b26b7745c2a811
+Author:     Steve Morin <steve.morin@gmail.com>
+AuthorDate: Wed Sep 16 15:48:14 2026 -0700
+Commit:     Steve Morin <steve.morin@gmail.com>
+CommitDate: Wed Sep 16 15:48:14 2026 -0700
+
+    docs(research): correct two counts and one quotation in R69's revision-7 note
+    
+    Self-review of the revision-7 note found three statements written from recall
+    rather than from a run, the defect class revision 4 was rejected for:
+    
+    - "the other eight triggers on that line are byte-identical" was a count nobody
+      ran; replaced with "every other clause on that line is byte-identical", which
+      a diff of the line shows;
+    - "the other six checks read no part of this file" miscounted, since check 6 is
+      parameters-check.sh itself; replaced with "checks 1 through 5, and
+      yanked-control-r5.sh";
+    - the round-6 empirical audit is now cited by actor, model, family and verdict
+      read at review/audit-codex.md rather than by family alone;
+    - the new re-verify clause is quoted in full and unbackticked, as that line is
+      written, instead of truncated with markup added;
+    - the enumeration's "re-run after it" claim is now true: both greps were re-run
+      against the edited file;
+    - "no clap feature list is named" is narrowed to "no clap feature set beyond
+      derive is transcribed", since derive is itself a clap feature.
+    
+    Prose inside the revision-7 note only. The recommendation, the one
+    - owns web-extra-surface line, the five - assumes lines, the H2 set and every
+    evidence file are unchanged.
+    
+    Claude-Session: https://claude.ai/code/session_01ULEUr6b17aZ6iTpWjPGtWM
+
+research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md
+OK   1187133 changed-path count: 1
+OK   1187133 changed path: research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md
+
+== revision-7-to-8 scope ==
+diff --git a/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md b/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md
+index 38156e1..d28f00e 100644
+--- a/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md
++++ b/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md
+@@ -1,4 +1,32 @@
+-# R69 web-framework-stack — decision (revision 7, 2026-09-16)
+-
+-**Revision note (revision 7). Prose only: one judgment finding, three locations, and neither
+-the recommendation nor any owned value moves.** Revision 7 rewrites revision 6 (sha256
++# R69 web-framework-stack — decision (revision 8, 2026-09-16)
++
++**Revision note (revision 8). Two record-integrity corrections to the revision-7 note below; no
++sentence of the JF-4 repair, no owned value and no evidence file moves.** Revision 8 rewrites
++revision 7 (sha256 `a64addcff304770e9c114d05d974da4aaa9395e9095dff2f86823a45a29dfcfe`) in place,
++answering both findings of the round-7 empirical audit (`review/audit-codex.md`, actor
++`audit-codex-2026-09-12T204004Z-d02022bf6f42-r7`, model `gpt-5.6-terra`, family openai), which
++confirmed the three JF-4 repairs and rejected only the revision-boundary record, while the
++round-7 judgment audit (`review/audit-fable.md`, actor
++`audit-fable-2026-09-12T204004Z-d02022bf6f42-r7`, family anthropic) returned `approve` with
++`unresolved-findings: none`. **Finding 1 — the hunk count**: the revision-6-to-7 boundary was
++reported as **"six hunks"**, and that figure is corrected to **five**, because
++`git diff 10a83c4 1187133 -- review/DECISION.md` prints five `@@` headers — at git's default
++three-line context the retitled first line and the new revision-7 note are one contiguous hunk,
++followed by the history line and the three JF-4 locations — whereas **six** is the count of
++*edited locations*, which is what `diff -U0` reports because it splits that first pair; "hunk"
++in this decision now means a unified-diff hunk at default context, and an enumeration of
++locations is labelled as such. **Finding 2 — the no-evidence-change claim**: it was made against
++the range `10a83c4..HEAD`, which spans the intervening revision-6 audit-checkpoint commits and
++therefore carries `review/evidence/audit-*` additions belonging to those commits rather than to
++this revision, so it is scoped instead to the commits that produced revision 7 —
++`git show --stat --name-only 3e4c086` and the same command on `1187133` each list exactly one
++path, `research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md`. **Nothing else
++moves**: the title, this note, the revision-7 note's retention heading and the history line are
++the whole of revision 8, whose own revision-7-to-8 boundary is **two unified-diff hunks**, and
++the one `- owns web-extra-surface` line, the five `- assumes` lines, the H2 set, every sentence
++of the JF-4 repair and every evidence file are byte-identical.
++
++**Revision note (revision 7), retained as the record of that revision. It was approved by the
++round-7 judgment audit and rejected by the round-7 empirical audit on the two record-integrity
++findings the revision-8 note above answers; its body is retained verbatim and nothing in it is
++withdrawn.** Revision 7 rewrites revision 6 (sha256
+@@ -574 +602,2 @@ audits, revisions or their audits, 2026-09-16, repairing the round-6 judgment au
+-finding and nothing else; run
++finding and nothing else; revision 8 by that same revision-7 context, 2026-09-16, correcting the
++two record-integrity findings of the round-7 empirical audit and nothing else; run
+OK   changed lines include no ## Parameters line
+OK   changed lines include no re-verify: byte
+revision-7 JF-4 repair heading line: 27
+revision-7-to-8 U0 hunk headers:
+@@ -1,4 +1,32 @@
+@@ -574 +602,2 @@ audits, revisions or their audits, 2026-09-16, repairing the round-6 judgment au
+OK   only the title/revision-note retention and history-line regions change; the JF-4 repair at revision-7 line 27 is outside both hunks
+
+== retained owned line and H2 set ==
+OK   owned line byte-identical to revision 6: - owns web-extra-surface = one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files
+OK   owned line /usr/bin/grep -cFx count: 1
+OK   H2 set unchanged from revision 6
+
+== clean archive and exact checker reruns ==
+OK   archive contains no .git directory
+OK   archive has the run-relative decision and both checkers
+archive root: /private/tmp/r69-r8-audit-clean-final.qGpAcG
+OK   parameters-check in-place exit: 0
+OK   parameters-check archive exit: 0
+OK   owner-reference-check in-place exit: 0
+OK   owner-reference-check archive exit: 0
+
+-- parameters in-place --
+decision: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/../DECISION.md
+registry: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/PARAMETERS.md
+OK   the five expected '- assumes' lines are present and no others
+OK   msrv-policy: byte-identical to the registry (118 bytes)
+OK   rust-edition: byte-identical to the registry (4 bytes)
+OK   target-os-matrix: byte-identical to the registry (27 bytes)
+OK   license: byte-identical to the registry (17 bytes)
+OK   http-transport-injection-seam: byte-identical to the registry (763 bytes)
+OK   exactly one '- owns' line, for web-extra-surface (2638 bytes)
+OK   owns value contains no backticks
+OK   owns value contains no a markdown link
+OK   owns value contains no a double space
+OK   owns value has no leading or trailing whitespace
+OK   control: a deliberately altered value compares unequal
+OK   H2 sections are exactly ## Decision, ## Parameters, ## Empirical check, ## Engines
+parameters-check rc=0
+
+-- parameters archive --
+decision: /private/tmp/r69-r8-audit-clean-final.qGpAcG/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/../DECISION.md
+registry: /private/tmp/r69-r8-audit-clean-final.qGpAcG/docs/port/PARAMETERS.md
+OK   the five expected '- assumes' lines are present and no others
+OK   msrv-policy: byte-identical to the registry (118 bytes)
+OK   rust-edition: byte-identical to the registry (4 bytes)
+OK   target-os-matrix: byte-identical to the registry (27 bytes)
+OK   license: byte-identical to the registry (17 bytes)
+OK   http-transport-injection-seam: byte-identical to the registry (763 bytes)
+OK   exactly one '- owns' line, for web-extra-surface (2638 bytes)
+OK   owns value contains no backticks
+OK   owns value contains no a markdown link
+OK   owns value contains no a double space
+OK   owns value has no leading or trailing whitespace
+OK   control: a deliberately altered value compares unequal
+OK   H2 sections are exactly ## Decision, ## Parameters, ## Empirical check, ## Engines
+parameters-check rc=0
+
+-- owner-reference in-place --
+R69 revision 6 — owner-reference primary-source check
+grep binary: /usr/bin/grep (the POSIX grep, invoked by absolute path; never a shell alias, never ugrep)
+jq binary: /opt/homebrew/bin/jq
+snapshot dir: <run>/review/evidence/snapshots/r6 (committed; written by fetch-owner-reference-r6.sh)
+snapshots retrieved at: 2026-09-16T22:12:37Z
+network: NOT used by this script; every assertion reads a committed snapshot
+OK   snapshot crates-axum-versions.json                       present
+OK   snapshot crates-axum-test.json                           present
+OK   snapshot gh-axum-issue-3809.json                         present
+OK   snapshot gh-axum-issue-3003.json                         present
+OK   snapshot gh-axum-pr-3745.json                            present
+OK   snapshot gh-axum-pr-3819.json                            present
+OK   snapshot gcp-cloudrun-container-contract.txt             present
+OK   snapshot cargo-specifying-dependencies.txt               present
+
+== A. axum's published releases (document TL;DR and Key Finding 1; row 1) ==
+OK   axum newest non-yanked num                               0.8.9
+OK   axum newest non-yanked yanked flag                       false
+OK   axum registry max_version                                0.8.9
+OK   axum registry max_stable_version                         0.8.9
+OK   axum registry newest_version                             0.8.9
+OK   axum published versions >= 0.9                           0
+OK   axum published version count                             94
+OK   axum newest non-yanked rust_version                      1.80
+note: the decision's recommended pin 0.8.9 and its gate-2 figure 1.80 are unchanged by this check.
+
+== B. Cargo's default version-requirement rule (row 1: caret vs an = pin) ==
+OK   cargo book: 0.2.3 := >=0.2.3, <0.3.0                     present
+OK   cargo book: caret is the default strategy                present
+OK   cargo book: bare version == caret                        present
+OK   cargo book: HTTP 200                                     present
+consequence: a bare "0.8.9" is >=0.8.9, <0.9.0 and already cannot resolve to 0.9.
+
+== C. the axum-0.9 state as tokio-rs/axum records it (row 1) ==
+OK   axum#3809 state                                          closed
+OK   axum#3809 is a pull request                              false
+OK   axum#3809 comment count                                  1
+OK   axum#3809 commenter                                      mladedav
+OK   axum#3809 commenter association                          COLLABORATOR
+OK   axum#3809 the no-timeline sentence                       present
+OK   axum#3809 its qualifier                                  present
+OK   axum#3745 state                                          closed
+OK   axum#3745 merged                                         false
+OK   axum#3745 merged_at                                      null
+OK   axum#3745 proposed bump                                  0.8.9 -> 0.9.0
+OK   axum#3745 breaks fn serve                                present
+OK   axum#3745 breaks trait Serve                             present
+OK   axum#3745 breaks WithGracefulShutdown                    present
+OK   axum#3819 state                                          open
+OK   axum#3819 milestone                                      0.9
+OK   axum#3819 moves axum::serve                              present
+consequence: the unreleased 0.9 line's recorded breaking changes land on axum::serve and
+             WithGracefulShutdown - the exact API this item's F338 mechanism uses.
+
+== D. axum-test, the document's C12 pick (row 5) ==
+OK   axum-test newest non-yanked (this item's field rule)     22.0.0-rc.1
+OK   axum-test newest STABLE version                          21.1.0
+OK   axum-test registry max_stable_version                    21.1.0
+OK   axum-test 18.0.0 requires axum                           ^0.8.4
+OK   axum-test 18.3.0 requires axum                           ^0.8.7
+OK   axum-test 18.7.0 requires axum                           ^0.8.8
+OK   axum-test 21.1.0 requires axum                           ^0.8.9
+OK   axum-test 21.1.0 declared rust-version                   1.89
+consequence: the document's 'axum-test 18 (requires axum >= 0.8.7)' is true only from
+             18.3.0 onward - 18.0.0 declares ^0.8.4 - and the 18 line is three majors
+             behind the registry's current 21.1.0, which declares ^0.8.9.
+
+== E. Google's Cloud Run container runtime contract (row 4) ==
+OK   cloud run: HTTP 200                                      present
+OK   cloud run: effective URL                                 present
+OK   cloud run: SERVICES 10-second sentence, verbatim         present
+OK   cloud run: JOBS sentence, which is NOT the services one  present
+consequence: on Cloud Run a drain deadline must be strictly under 10 s measured FROM THE
+             SIGTERM, which is a datum for R77's default and is meaningful only under this
+             item's clock-starts-at-the-signal rule.
+
+== F. axum issue #3003, the WebSocket graceful-shutdown hazard (row 4) ==
+OK   axum#3003 state                                          open
+OK   axum#3003 is a pull request                              false
+OK   axum#3003 reported against version                       axum 0.7.4
+OK   axum#3003 title                                          present
+OK   axum#3003 the claim the document cites                   present
+consequence: the hazard is real and unfixed; it belongs to a later WebSocket layer, for
+             which this programme has no P02 item. Nothing in this decision changes.
+
+== G. control — the same absence test applied to a string that IS present ==
+OK   control (expected to report a present string)            control correctly reports 0.8.9 present (1 hit)
+reading: section A asserts the >= 0.9 set is empty. This control applies the same
+         membership test to 0.8.9, which the same snapshot field does contain, so the
+         emptiness assertion above is capable of failing.
+
+owner-reference-check-r6 rc=0
+
+-- owner-reference archive --
+R69 revision 6 — owner-reference primary-source check
+grep binary: /usr/bin/grep (the POSIX grep, invoked by absolute path; never a shell alias, never ugrep)
+jq binary: /opt/homebrew/bin/jq
+snapshot dir: <run>/review/evidence/snapshots/r6 (committed; written by fetch-owner-reference-r6.sh)
+snapshots retrieved at: 2026-09-16T22:12:37Z
+network: NOT used by this script; every assertion reads a committed snapshot
+OK   snapshot crates-axum-versions.json                       present
+OK   snapshot crates-axum-test.json                           present
+OK   snapshot gh-axum-issue-3809.json                         present
+OK   snapshot gh-axum-issue-3003.json                         present
+OK   snapshot gh-axum-pr-3745.json                            present
+OK   snapshot gh-axum-pr-3819.json                            present
+OK   snapshot gcp-cloudrun-container-contract.txt             present
+OK   snapshot cargo-specifying-dependencies.txt               present
+
+== A. axum's published releases (document TL;DR and Key Finding 1; row 1) ==
+OK   axum newest non-yanked num                               0.8.9
+OK   axum newest non-yanked yanked flag                       false
+OK   axum registry max_version                                0.8.9
+OK   axum registry max_stable_version                         0.8.9
+OK   axum registry newest_version                             0.8.9
+OK   axum published versions >= 0.9                           0
+OK   axum published version count                             94
+OK   axum newest non-yanked rust_version                      1.80
+note: the decision's recommended pin 0.8.9 and its gate-2 figure 1.80 are unchanged by this check.
+
+== B. Cargo's default version-requirement rule (row 1: caret vs an = pin) ==
+OK   cargo book: 0.2.3 := >=0.2.3, <0.3.0                     present
+OK   cargo book: caret is the default strategy                present
+OK   cargo book: bare version == caret                        present
+OK   cargo book: HTTP 200                                     present
+consequence: a bare "0.8.9" is >=0.8.9, <0.9.0 and already cannot resolve to 0.9.
+
+== C. the axum-0.9 state as tokio-rs/axum records it (row 1) ==
+OK   axum#3809 state                                          closed
+OK   axum#3809 is a pull request                              false
+OK   axum#3809 comment count                                  1
+OK   axum#3809 commenter                                      mladedav
+OK   axum#3809 commenter association                          COLLABORATOR
+OK   axum#3809 the no-timeline sentence                       present
+OK   axum#3809 its qualifier                                  present
+OK   axum#3745 state                                          closed
+OK   axum#3745 merged                                         false
+OK   axum#3745 merged_at                                      null
+OK   axum#3745 proposed bump                                  0.8.9 -> 0.9.0
+OK   axum#3745 breaks fn serve                                present
+OK   axum#3745 breaks trait Serve                             present
+OK   axum#3745 breaks WithGracefulShutdown                    present
+OK   axum#3819 state                                          open
+OK   axum#3819 milestone                                      0.9
+OK   axum#3819 moves axum::serve                              present
+consequence: the unreleased 0.9 line's recorded breaking changes land on axum::serve and
+             WithGracefulShutdown - the exact API this item's F338 mechanism uses.
+
+== D. axum-test, the document's C12 pick (row 5) ==
+OK   axum-test newest non-yanked (this item's field rule)     22.0.0-rc.1
+OK   axum-test newest STABLE version                          21.1.0
+OK   axum-test registry max_stable_version                    21.1.0
+OK   axum-test 18.0.0 requires axum                           ^0.8.4
+OK   axum-test 18.3.0 requires axum                           ^0.8.7
+OK   axum-test 18.7.0 requires axum                           ^0.8.8
+OK   axum-test 21.1.0 requires axum                           ^0.8.9
+OK   axum-test 21.1.0 declared rust-version                   1.89
+consequence: the document's 'axum-test 18 (requires axum >= 0.8.7)' is true only from
+             18.3.0 onward - 18.0.0 declares ^0.8.4 - and the 18 line is three majors
+             behind the registry's current 21.1.0, which declares ^0.8.9.
+
+== E. Google's Cloud Run container runtime contract (row 4) ==
+OK   cloud run: HTTP 200                                      present
+OK   cloud run: effective URL                                 present
+OK   cloud run: SERVICES 10-second sentence, verbatim         present
+OK   cloud run: JOBS sentence, which is NOT the services one  present
+consequence: on Cloud Run a drain deadline must be strictly under 10 s measured FROM THE
+             SIGTERM, which is a datum for R77's default and is meaningful only under this
+             item's clock-starts-at-the-signal rule.
+
+== F. axum issue #3003, the WebSocket graceful-shutdown hazard (row 4) ==
+OK   axum#3003 state                                          open
+OK   axum#3003 is a pull request                              false
+OK   axum#3003 reported against version                       axum 0.7.4
+OK   axum#3003 title                                          present
+OK   axum#3003 the claim the document cites                   present
+consequence: the hazard is real and unfixed; it belongs to a later WebSocket layer, for
+             which this programme has no P02 item. Nothing in this decision changes.
+
+== G. control — the same absence test applied to a string that IS present ==
+OK   control (expected to report a present string)            control correctly reports 0.8.9 present (1 hit)
+reading: section A asserts the >= 0.9 set is empty. This control applies the same
+         membership test to 0.8.9, which the same snapshot field does contain, so the
+         emptiness assertion above is capable of failing.
+
+owner-reference-check-r6 rc=0
+--- review/evidence/parameters-check-r2.log	2026-09-15 00:08:56
++++ review/evidence/audit-parameters-check-r8-archive.log	2026-09-16 16:48:53
+@@ -1,5 +1,5 @@
+-decision: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/../DECISION.md
+-registry: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/PARAMETERS.md
++decision: /private/tmp/r69-r8-audit-clean-final.qGpAcG/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/../DECISION.md
++registry: /private/tmp/r69-r8-audit-clean-final.qGpAcG/docs/port/PARAMETERS.md
+ OK   the five expected '- assumes' lines are present and no others
+ OK   msrv-policy: byte-identical to the registry (118 bytes)
+ OK   rust-edition: byte-identical to the registry (4 bytes)
+OK   parameters committed log vs in-place rerun diff exit: 0
+OK   parameters committed log vs archive rerun normalized-path diff exit: 0
+OK   owner-reference committed log vs in-place rerun diff exit: 0
+OK   owner-reference committed log vs archive rerun diff exit: 0
+NOTE parameters raw archive diff exit=1: exactly its two absolute input paths differ because the clean archive has a different root; the root-aware comparison is byte-identical.
+OK   named checker outputs contain no SKIP or FAIL
+
+== five citation HTTP spot checks ==
+https://docs.rs/axum/0.8.9/axum/ HTTP 200
+https://tokio.rs/tokio/topics/shutdown HTTP 200
+https://doc.rust-lang.org/cargo/reference/features.html HTTP 200
+https://docs.cloud.google.com/run/docs/container-contract HTTP 200
+https://raw.githubusercontent.com/tokio-rs/axum/axum-v0.8.9/.github/workflows/CI.yml HTTP 200
+OK   citation spot-check aggregate: 0
+
+== audit result ==
+audit assertions exit: 0

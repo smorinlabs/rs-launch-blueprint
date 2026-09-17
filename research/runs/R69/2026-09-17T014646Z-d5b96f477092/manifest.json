@@ -1,0 +1,37 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-17T01:46:46Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-17T01:46:46Z",
+      "state": "ready"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "88609ba0a3cfaa2a552859c03110c21455c7697eb63ca5a25b59037f87fa0011",
+    "parameters_semantic": "9ab00ca6a5f316a058d743e4bf9b711ccb2c47a5a2ed7f39b7eafa0fcb13377e",
+    "parameters_semantic_file": "53ce162e1b844b2810c92eb62cdda8d1561d56347a374e213291e9256f63b8fc",
+    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+    "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+    "prerequisites": "6401dacf95abff437ed071a81e555023e26589c2dd1d6fde75f9e944b6fcf8f6",
+    "prompt": "8654e010c4f7ae48b1612d56d3ef22a487c7491baa32599c06e62e4f7a2e1a65",
+    "registry": "6560edd363acc5b728aef2c39f61c157281a2b403c7077dd76288e765226f593"
+  },
+  "item": "R69",
+  "model": "claude-fable-5-1",
+  "operations": {},
+  "prompt_source": "research/topics/69-web-framework-stack/prompts/web-framework-stack.prompt.md",
+  "remaining_budget": "USD 0.00 (carried-forward republication; no provider submission)",
+  "required_engines": [
+    "codex",
+    "opus",
+    "doxa"
+  ],
+  "run_id": "2026-09-17T014646Z-d5b96f477092",
+  "schema_version": 1,
+  "state": "ready",
+  "tier": "deep",
+  "updated_at": "2026-09-17T01:46:46Z"
+}

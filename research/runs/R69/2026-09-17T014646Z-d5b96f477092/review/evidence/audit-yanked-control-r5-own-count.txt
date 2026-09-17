@@ -1,0 +1,4 @@
+manual cargo-audit exit=0
+manual /usr/bin/grep -cF yanked errors=54
+manual advisory-db HEAD=b50980aad8b8f14f77e25a97b32dd94bf008b0af
+manual isolated CARGO_HOME=/private/tmp/r69-audit-own-count.OUumSb/cargo-home

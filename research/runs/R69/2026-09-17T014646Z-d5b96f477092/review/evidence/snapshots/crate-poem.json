@@ -1,0 +1,19 @@
+{
+  "crate": "poem",
+  "retrieved_at": "2026-09-13T07:57:55Z",
+  "endpoints": {
+    "crate": "https://crates.io/api/v1/crates/poem",
+    "versions": "https://crates.io/api/v1/crates/poem/versions"
+  },
+  "recent_downloads": 698872,
+  "downloads": 5675632,
+  "repository": "https://github.com/poem-web/poem",
+  "versions_total": 236,
+  "newest_non_yanked": {
+    "num": "3.1.12",
+    "created_at": "2025-07-28T04:39:14.775671Z",
+    "yanked": false,
+    "rust_version": "1.85",
+    "license": "MIT OR Apache-2.0"
+  }
+}

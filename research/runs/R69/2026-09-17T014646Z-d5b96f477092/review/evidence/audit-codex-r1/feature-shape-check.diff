@@ -1,0 +1,25 @@
+--- /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/feature-shape-check.log	2026-09-13 00:44:49
++++ /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-codex-r1/feature-shape-check.log	2026-09-13 01:43:17
+@@ -126,10 +126,12 @@
+ == 8. advisories against the resolved lockfile (cargo audit) ==
+ cargo-audit-audit 0.22.1
+     Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+-      Loaded 1243 security advisories (from /Users/stevemorin/.cargo/advisory-db)
+-    Updating crates.io index
+-    Scanning Cargo.lock for vulnerabilities (55 crate dependencies)
+-cargo-audit exit=0
++error: couldn't fetch advisory database: I/O operation failed: failed to obtain lock file '/Users/stevemorin/.cargo/advisory-db..lock'
++Caused by:
++  -> failed to obtain lock file '/Users/stevemorin/.cargo/advisory-db..lock'
++  -> attempted to take an exclusive lock on a read-only path
++cargo-audit exit=1
++FAIL: cargo audit reported findings
+ 
+ == 9. second probe, base = R01's published crate members (serde + serde_json) ==
+ Why: the opus raw reports base=13 / --features web=52 non-dev packages.
+@@ -139,4 +141,4 @@
+ NOTE: base is 12 here vs the opus report's 13; that probe carried one further
+       base dependency this one does not. The delta is 40 here, 39 there.
+ 
+-feature-shape-check rc=0
++feature-shape-check rc=1

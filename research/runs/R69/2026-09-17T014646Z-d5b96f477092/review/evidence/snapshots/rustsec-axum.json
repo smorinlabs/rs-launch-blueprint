@@ -1,0 +1,8 @@
+{
+  "crate": "axum",
+  "retrieved_at": "2026-09-13T07:57:55Z",
+  "endpoint": "https://rustsec.org/packages/axum.html",
+  "http_status": 404,
+  "note": "RustSec serves HTTP 404 for a crate with no advisory",
+  "advisories_listed": []
+}
