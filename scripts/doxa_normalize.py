@@ -137,10 +137,17 @@ def strip_blank_edges(lines):
 # ------------------------------------------------------- saved-file handling
 
 
-def split_saved(text):
+DELIMITER = re.compile(r"^ {0,3}(`{3,}|~{3,})[ \t]*$")
+
+
+def split_saved(text, prompt_text=None):
     """Return (metadata, answer_body) for one Doxa saved provider file.
 
     The answer begins after the fenced block of the file's `### Prompt` section.
+    Doxa wraps the echo in a plain three-backtick fence, so a prompt that itself
+    contains a fence would close that echo early and leak prompt text into the
+    twin.  Pass the run's `inputs/prompt.md` as `prompt_text` and the split is
+    anchored on the prompt's own last line instead.
     """
     lines = text.splitlines()
     fenced = fence_map(lines)
@@ -154,6 +161,14 @@ def split_saved(text):
     closed = opened
     while closed + 1 < len(lines) and fenced[closed + 1]:
         closed += 1
+    if prompt_text:
+        tail = next((line.rstrip() for line in reversed(prompt_text.splitlines()) if line.strip()), None)
+        anchor = next((i for i in range(opened, len(lines)) if lines[i].rstrip() == tail), None)
+        if anchor is not None and anchor > closed:
+            after = next((i for i in range(anchor + 1, len(lines)) if DELIMITER.match(lines[i])), None)
+            if after is None:
+                raise ValueError("prompt echo is not closed after the prompt's last line")
+            closed = after
     body = strip_blank_edges(lines[closed + 1:])
     if not body:
         raise ValueError("saved file has no answer body after the prompt echo")
@@ -450,7 +465,10 @@ def command_provider(args):
     saved = Path(args.saved)
     out = Path(args.out)
     record_path = Path(args.record)
-    metadata, body = split_saved(saved.read_text(encoding="utf-8"))
+    run_dir = record_path.parent.parent
+    prompt = Path(args.prompt) if args.prompt else run_dir / "inputs" / "prompt.md"
+    prompt_text = prompt.read_text(encoding="utf-8") if prompt.is_file() else None
+    metadata, body = split_saved(saved.read_text(encoding="utf-8"), prompt_text)
     if metadata["provider"] != args.provider:
         raise SystemExit("saved file is provider %r, not %r"
                          % (metadata["provider"], args.provider))
@@ -460,7 +478,6 @@ def command_provider(args):
     out.write_text(text, encoding="utf-8")
 
     errors = validate_answer_text(text, args.kind)
-    run_dir = record_path.parent.parent
     record = load_record(record_path)
     record.setdefault("operation_id", metadata["operation_id"])
     record["kind"] = args.kind
@@ -566,6 +583,9 @@ def main(argv=None):
     one.add_argument("--kind", required=True, choices=sorted(KINDS))
     one.add_argument("--out", required=True, help="raw/doxa-<provider>.normalized.md")
     one.add_argument("--record", required=True, help="doxa/normalization.json")
+    one.add_argument("--prompt", help="the run's inputs/prompt.md; default: <run>/inputs/prompt.md. "
+                                      "Used only to anchor the split when the echoed prompt itself "
+                                      "contains a fence")
     one.set_defaults(handler=command_provider)
 
     both = subparsers.add_parser("merge", help="regroup the provider twins into one answer")

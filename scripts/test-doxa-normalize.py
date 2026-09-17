@@ -123,6 +123,23 @@ class Normalizer(unittest.TestCase):
         self.assertEqual(len(members), len(set(members)))
         self.assertGreaterEqual(len(members), 13)
 
+    def test_prompt_echo_containing_a_fence_does_not_leak(self):
+        """A prompt carrying its own fence must not close the echo early."""
+        sys.path.insert(0, str(HERE))
+        from doxa_normalize import split_saved
+
+        prompt = "# Prompt title\n\n```toml\nedition = \"2024\"\n```\n\n## Answer template\n"
+        saved = ("---\nprompt: # Prompt title\nmode: all_deep_research\nprovider: openai\n"
+                 "model: test-model\noperation_id: op-1\n---\n\n### Prompt\n\n```\n"
+                 "System: research this.\n\nUser: " + prompt + "```\n\n### Landscape\n\nBody.\n")
+        metadata, body = split_saved(saved, prompt)
+        self.assertEqual(metadata["operation_id"], "op-1")
+        self.assertEqual(body, ["### Landscape", "", "Body."])
+        # without the prompt the inner fence closes the echo early and prompt
+        # text leaks into the body, which is why `provider` reads
+        # <run>/inputs/prompt.md
+        self.assertIn("## Answer template", "\n".join(split_saved(saved)[1]))
+
     def test_check_subcommand_reports_both_outcomes(self):
         good = RUNS / "R42/2026-09-05T155503Z-4141a35b69e0/raw/doxa-openai.normalized.md"
         self.assertEqual(self.run_cli("check", "--file", good, "--kind", "bundle").returncode, 0)
