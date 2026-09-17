@@ -1,195 +1,136 @@
-decision-sha256: 6a26da1a9ef708d28c922c3fb8530e58649f4d2f5699fb1ba10800f8bb28df49
-actor: audit-fable-2026-09-05T163018Z-d7ade3a111f8-r11
+decision-sha256: 32b4a3904630f63a964baf5dc5904a0b156a578f180ae37b083a9291f7a69a83
+actor: audit-fable-2026-09-05T163018Z-d7ade3a111f8-r12
 model: claude-opus-5
 family: anthropic
-verdict: reject
-unresolved-findings: JF-9 (blocking): measurement (7)'s rerun-and-diff record at line 227 says "the two files differ in **25** lines and no more — the three that name this run's `mktemp` workspace and its interpreter resolution, and the twenty-two echoed section-08 lines", and adds that "the **25**-line figure above is measured against measurement (5)'s revision-11 log, not carried", but `diff` of the two revision-11 logs reports **28** lines on each side: the twenty-two section-08 echoes plus **six** environment lines, the three unnamed ones being the shim's `placed at:` line and the two per-mutant section-00 `curl=<workspace>/bin/curl` echoes that revision 11's own harness added; the same sentence-family at measurement (8) names "the eleven fixture, shim and source paths that move with the extraction root" where that diff carries seven lines and no fixture line at all, the fixture digests being printed by basename and identical in both logs
+verdict: approve
+unresolved-findings: none
 
 ## Principle and agreement level
 
-Unchanged, and re-checked rather than carried. Revision 11 adds four paragraphs, rewrites four in
-`## Empirical check`, retitles, and adds nine files under `review/empirical/` and four logs. It
+Unchanged, and re-checked rather than carried. Revision 12 edits two lines and adds eight: the
+title, the two corrected measurement sentences inside `## Empirical check`'s measurement list (line
+233), a three-paragraph revision note (lines 77, 79, 81) and an enumeration record (line 251). It
 touches no recommendation, no gate wording, no runner-up, no `BASELINE-REVIEW:` line and no
 fitness-gate row. Part 2 is still the TruffleHog OSS CLI, `>= 3.97.0, < 4.0.0`, a pinned release
 binary in a `run:` step with `--only-verified --fail` under owner ruling W0-R17b; the passing set is
-still `0` alone; `--fail-on-scan-errors` is still required; fitness gate 1 is still `inapplicable`
-under Q7.B and I raise no licence finding. I confirmed by search that the `f7367c6~1`-to-`153705f`
-span touches none of section 13's fourteen anchor prefixes, that the four `- assumes` lines are
-still byte-identical to `docs/port/PARAMETERS.md` (rebuilt from that file's rows and `diff`ed:
-empty), and that `run-checks-r8.sh` (`697ea3b1…`), `mutations-r8.sh` (`0663adc4…`) and
-`mutations-r9.sh` (`774eb8d4…`) are unchanged on disk.
+still `0` alone of the documented `{0,1,183}`; `--fail-on-scan-errors` is still required; fitness
+gate 1 is still `inapplicable` under Q7.B and I raise no licence finding.
+
+`4c7118f` changes one file, with 10 insertions and 2 deletions. I searched the whole
+`4c7118f~1`-to-`4c7118f` diff for section 13's fourteen anchor prefixes and for `- assumes`: **zero
+hits**. The four `- assumes` lines are still byte-identical to `docs/port/PARAMETERS.md`, rebuilt
+from that file's table rows and `diff`ed to empty. The six artefacts line 81 names are unchanged on
+disk — `mutations-r11.sh` `3a29123c…`, `mutations-r11-curl-shim.sh` `a1cf665d…`,
+`fixtures-r11/MANIFEST.txt` `423f97fb…`, `mutations-r9.sh` `774eb8d4…`, `mutations-r8.sh`
+`0663adc4…`, `run-checks-r8.sh` `697ea3b1…` — and no log changed, since the commit touches only
+`DECISION.md`.
 
 ## Design and evidence
 
-**JF-7 is closed, and the repair is better than what I asked for.** I asked for the live-API budget
-to be declared and branched on, or for the set assertion to stop being perturbable by it. Revision
-11 does the second, through a seam the evidence script already had rather than by editing it:
-`run-checks-r8.sh:163` resolves its HTTP client with `resolve_tool curl`, whose probe
-(`run-checks-r8.sh:147`) only checks that `--version` exits `0`, so `mutations-r11.sh:160–161`
-installs `mutations-r11-curl-shim.sh` as `$WORK/bin/curl` and prepends that directory to the
-**mutant's** `PATH` at its line 208 alone — the harness's own `PATH` is untouched, and the real
-`curl` is resolved by probe at line 113, before the shim exists.
+**JF-9 is closed, and I reproduced both diffs from the committed revision-11 logs rather than
+reading the repair paragraph.** The measurement list at line 233 now states each figure per side,
+names each category with an example line, and quotes the superseded wording in place.
 
-*The shim's boundary is exactly what the decision says it is, and I read it rather than the prose.*
-Only host `api.github.com` is intercepted (`mutations-r11-curl-shim.sh:65–70`); every other host is
-`exec`ed to the real curl. Five paths are served from committed bodies (`:74–85`) and **any other
-`api.github.com` path is refused with exit `22` and nothing written** (`:86–88`), so a new endpoint
-cannot be silently satisfied — it fails the assertion that reads it and shows up as an extra label
-in the failing set. The five map to eight labels — `00b`, `03a`, `03b`, `10a`–`10d`, `11c` — and I
-confirmed against the script that those are the script's only `api.github.com` requests: lines
-218/221 (`/rate_limit`), 353, 842, 843 and 884 (`api_fetch`). The decision's own enumeration of
-those five call sites at line 69 is therefore correct.
+*Measurement (7), `…-r11-mutations.log` against `…-r11-mutations-shim-path.log`.* The corrected text
+says "both files are **118** lines and `diff` reports **28 differing lines on each side**, in two
+categories and no others", then "**Six per side carry a path this run generated or a resolution it
+made**" — naming `HOME used by this harness:`, `mutant workspace:`, the shim's `placed at:` line,
+the two per-mutant section-00 `curl=<workspace>/bin/curl` echoes and the interpreter-resolution line
+— and "**The remaining twenty-two per side are the echoed section-08 `RESULT` lines**", whose only
+difference is the `grep -n` prefix. **Measured here:** both logs are 118 lines; `diff` reports 56
+lines, 28 on each side; normalising the prefix and re-running `diff` leaves **12**, and the six that
+remain on each side are exactly the six the sentence names, in that order. So the twenty-two are the
+prefix and nothing else, which is the claim the sentence says it measured, and it does.
 
-*Is fixture-feeding those eight a valid proof of falsifiability for the section-08 targets? Yes,
-and the reason is structural rather than a matter of trust.* **Section 08 makes no network request
-at all** — I swept lines 660–800 of `run-checks-r8.sh` for `CURL` and `https://` and the only hit is
-line 794, which is section 09's `git clone`. **The binary section 08 executes cannot be chosen by a
-fixture**: it is downloaded from `BASE_URL`, `https://github.com/trufflesecurity/trufflehog/releases/download/<tag>`,
-with literal filenames built from the version constant (`:378–387`) — a host the shim passes
-through live — and its identity is pinned by `04a` against a live-fetched `checksums.txt` and by
-`05a`'s version string. So no fixture reaches any input of `08e`, `08f` or `08h`–`08j`, and none of
-the eight fixture-fed labels is a mutation target. What the fixtures remove is a failure mode with
-nothing to do with the mutation; what they cannot do is manufacture the result being proved, and a
-fixture-fed label can still fail — on a refused endpoint, or on content that stopped satisfying its
-assertion.
+*Measurement (8), the same log against `…-r11-mutations-archive.log`.* The corrected text says
+"`diff` reports **7 differing lines on each side**, in two categories and no others. **Five per side
+carry this run's `mktemp` workspace** … **Two per side name a committed file by absolute path, and
+each prints the same digest on both sides**", with "no fixture line differs at all, because the
+harness prints the six recorded bodies by digest and basename rather than by path". **Measured
+here:** `diff` reports 14 lines, 7 on each side; five carry the `mktemp` workspace (`HOME used by
+this harness:`, `mutant workspace:`, `placed at:`, and the two section-00 echoes) and two are the
+shim's `source:` line and the `source under mutation:` line, whose printed digests — `a1cf665d…` and
+`697ea3b1…` — are identical on both sides and equal the files on disk. No fixture line appears in
+the diff, and no `RESULT` line differs.
 
-*The boundary is stated honestly, in three places, and the one consequence is pre-empted rather
-than left for an auditor.* Line 73 names the eight fixture-fed labels and the still-live set,
-`fixtures-r11/MANIFEST.txt` carries the capture instant (2026-09-17T02:04:39Z, under a declared
-token so the capture did not spend the anonymous budget), the six per-file digests and a
-"what each satisfies … and what it does NOT" column — including that the trufflehog fixture's
-`stargazers_count` "is printed by the parent check and asserted by nothing" — and each log prints
-its own `FIXTURE-FED` / `STILL LIVE` block (`…-r11-mutations.log:27–30`). The printed-counter
-consequence is the JF-4 defect class, and line 73 pre-empts it: the star figures inside a mutant
-run are the fixture's, no committed revision-11 log contains them, and this document's own
-section-10 figures still come from `…-r8-repo.log:240–242`. I verified all three: the six digests in
-the log equal the committed files and the manifest; `stargazers_count` and `27960` each return zero
-across all four revision-11 logs.
+*And the two figures are now on the same footing.* Revision 12 records the cause of the original
+defect rather than only its correction: "measurement (7)'s figure was a per-side count and
+measurement (8)'s was a both-sides total, stated side by side as though comparable. Both are now per
+side and say so." That was the ambiguity I declined to make a finding in round 10 and which
+round 11's JF-9 turned on; naming it is what stops it recurring.
 
-*And the runs prove it under a harder condition than the one that broke revision 9.* All four logs
-read `live anonymous api.github.com core budget BEFORE … 60 0` and `AFTER … 60 0` — **remaining
-zero**, where round 10's failing rerun began at `remaining 8` — and all four end
-`mutation-harness failures: 0`, `RESULT: PASS`, with `MUTATION CHECK failing-set: the mutant's
-FAILing labels are exactly the targeted ones` for both mutants, each mutant exiting `1`, and the
-same `FAIL=3` and `FAIL=1` counts recorded since revision 8. Each log shows the mutant resolved the
-shim (`curl=<workspace>/bin/curl` in its own section-00 line, and the shim's banner). The
-verdict-block comparison the decision rests on holds: I diffed measurement (5) against (7) and
-against (8) with the `grep -n` prefix stripped and **zero** `RESULT` / `summary:` /
-`MUTATION CHECK` / `mutation-harness` lines differ in either pair.
+**Nothing else moves, and I checked the claims in line 81 rather than accepting them.** No `RESULT`
+label, verdict, count or exit status changes; the four revision-11 logs still end
+`mutation-harness failures: 0` and `RESULT: PASS` with `60 0` before and after; no measurement's
+conclusion moves; the anchors and `- assumes` lines are untouched. The fixture-boundary reasoning I
+approved in round 11 is unchanged, and revision 12 adds nothing to it.
 
-**JF-8 is closed.** Line 222 now reads "Section 00 prints `UTC now:`, and the scripts that emit a
-section 00 are the two `run-checks` scripts — `run-checks-r8.sh`, which produced measurements (1)
-through (4), and `run-checks-r7.sh`, which produced measurement (6) — so the five are measurements
-(1), (2), (3), (4) and (6)", with the superseded ground quoted and corrected in its own parenthesis
-and the three mutation harnesses named as emitting none. That is exactly the repair I named, and
-the enumeration it justifies is the one I verified in round 10.
-
-**Two residuals, recorded as observations and not as findings.** The harness *prints* but does not
-*assert* that the mutant resolved the shim (`mutations-r11.sh:213`), and *prints* but does not
-assert `BUDGET_BEFORE == BUDGET_AFTER` (`:279–288`, which reports a difference rather than
-explaining it away). Neither can mask what the harness proves, and the direction is the safe one: a
-bypassed shim yields either a true pass on a healthy budget or a loud failure on a depleted one —
-the extra labels appear in the failing set and the harness exits `1` — never a false pass. Both are
-visible in every log.
-
-**Where the evidence does not reach the claim.** One sentence-family, in the rerun-and-diff record
-at line 227. It is JF-9.
+**Line 77's account of the round-11 empirical audit is accurate in every particular, which I checked
+because a compressed quotation of another audit is the kind of claim that has slipped here before.**
+That audit ran `mutations-r11.sh` four times — ordinary ambient `PATH` and the no-credential
+scratch-`HOME` mise-first form, each from the run directory and from a clean `git archive HEAD`
+extraction — with all four exiting `0` (its line 10); mutation 1's observed failing set exactly
+`08h`/`08i`/`08j` and mutation 2's exactly `08e` (line 12); zero `no recorded fixture` and zero
+`mise ERROR` (line 19); the unchanged revision-8 and revision-9 digests (line 21); the five request
+sites at 218/221, 353, 842, 843 and 884 with "Section 08 has zero API request lines" (line 18); and
+the live anonymous budget read as `60 20` before and after its reruns (line 12). The decision's
+gloss on that last figure — "which is the comparison rule working as written, since what the rule
+requires is equality within a run and not a particular remaining figure" — is right, and it is the
+correct reading of its own rule rather than a convenient one.
 
 ## Completeness
 
 | Required item | Status |
 |---|---|
-| `## Decision`, `### Principles and implementation`, `re-verify:` (192), `## Parameters` (194), `## Empirical check` (220), `## Engines` (267) | present, in order |
+| `## Decision`, `### Principles and implementation`, `re-verify:` (198), `## Parameters` (200), `## Empirical check` (226), `## Engines` (275) | present, in order |
 | `## Supersedes` | correctly absent — unpublished revision |
 | Owned / consumed parameters | none; the prompt's `- owns:` and `- consumes:` lines are empty |
 | The four `- assumes` lines | byte-identical to `docs/port/PARAMETERS.md`, verified programmatically |
-| Ledger row, `BASELINE-REVIEW:`, `CONFLICT:` | unchanged and correct; F050 named and not edited, the review carried verbatim and unresolved, no `CONFLICT:` owed |
+| Ledger row, `BASELINE-REVIEW:`, `CONFLICT:` | unchanged and correct |
 | Six fitness gates | all six answered for both candidates; gate 1 `inapplicable` under Q7.B |
-| Round-9 findings JF-4, JF-5, JF-6 | closed in revision 10 and unchanged here; the figures at lines 166/195 and the section-10/12 evidence rows still cite `…-r8-repo.log:240–242` and `:261–262` |
-| New artefacts | `mutations-r11.sh`, `mutations-r11-curl-shim.sh`, `fixtures-r11/` (six bodies plus `MANIFEST.txt`) and four logs, all committed and all digest-matched to what the logs print |
-| Untouched artefacts | `run-checks-r8.sh`, `mutations-r8.sh`, `mutations-r9.sh` and the ten earlier logs are byte-identical, as line 75 claims |
-| audit-codex | round 10 (`review/audit-codex.md`) binds `a4ce36e4…` and rejects on F1, which revision 11 repairs; round 11 is queued and owns the reruns, so this audit binds nothing to it and states consistency with round 10 only |
+| Findings JF-4 to JF-8 | closed in revisions 10 and 11 and unaffected here |
+| JF-9 | closed; both diffs reproduced above from the committed logs |
+| Scripts, shim, fixtures, logs | untouched; the commit changes `DECISION.md` alone and every named digest matches disk |
+| audit-codex | round 11 bound `6a26da1a…`, `verdict: approve`, `unresolved-findings: none` — consistent with this decision and with my round-11 audit's closure of JF-7 and JF-8. Round 12 is queued and owns the reruns; this audit binds nothing to it and states consistency with round 11 only |
 
-## Findings
+**One observation, recorded because it is a count and this document is judged on counts — not a
+finding.** Line 81 reads "`run-checks-r8.sh` `697ea3b1…` and **all fifteen committed logs** are
+byte-identical". `git ls-files review/evidence` lists **25** committed decision-side logs
+(`secret-scanning-ci-workflow*.log`: revision 5's 2, revision 6's 4, revision 7's 5, revision 8's 6,
+revision 9's 4 and revision 11's 4), and the group the sentence's own digest list implies — the logs
+those six artefacts produced, which is revision 11's "all ten of revisions 8's and 9's logs" plus
+revision 11's four — is **14**. No candidate set has fifteen members.
 
-Numbering continues from round 10's JF-8.
-
-**JF-9 (blocking) — the rerun-and-diff record states a line count its own logs contradict, in the
-one sentence that claims to have re-measured it for this revision.** Measurement (7) at line 227
-reads: "Against measurement (5)'s log, **all 39** `RESULT`, `summary:`, `MUTATION CHECK` and
-`mutation-harness` lines are identical once `grep -n`'s line-number prefix is stripped, compared as
-a block by `diff` rather than by eye; **the two files differ in 25 lines and no more** — the three
-that name this run's `mktemp` workspace and its interpreter resolution, and the twenty-two echoed
-section-08 lines whose only difference is that prefix". Three sentences later it adds: "the
-**25**-line figure above is **measured against measurement (5)'s revision-11 log, not carried**".
-
-`diff review/evidence/secret-scanning-ci-workflow-r11-mutations.log
-review/evidence/secret-scanning-ci-workflow-r11-mutations-shim-path.log` reports **28** lines on
-each side, not 25. The composition is the twenty-two section-08 echoes the sentence names — those
-are right — plus **six** environment lines, where the sentence names three: `HOME used by this
-harness`, `python3 first on PATH was …bypassed`, `mutant workspace`, and **three the sentence does
-not name**, all of them added by revision 11's own harness: the shim's
-`placed at: <workspace>/bin/curl` line and the two per-mutant section-00 echoes
-`python3=… curl=<workspace>/bin/curl …`. Revision 9's logs carried none of those three, and
-3 + 22 = 25 was true of them; the figure is revision 9's, restated under a claim of fresh
-measurement.
-
-**A second instance in the same sentence family, folded in here rather than numbered separately
-because it is one defect and one repair.** Measurement (8) says the archive log and measurement
-(5)'s "differ in **14** lines and no more — the three that name this run's `mktemp` workspace, its
-`HOME` and the extraction path, and **the eleven fixture, shim and source paths that move with the
-extraction root**". That diff carries **seven** lines on each side, and **no fixture line at all**:
-the six recorded bodies are printed by basename with their digests (`…-r11-mutations.log:21–26`),
-so they are identical in both logs. The seven are `HOME used by this harness`, the shim's `source:`
-path, its `placed at:` path, `source under mutation:`, `mutant workspace:`, and the two section-00
-toolchain echoes. The total 14 is defensible if lines are counted on both sides, as measurement (8)
-has counted since revision 9; the composition is not.
-
-*Why this blocks, stated against my own round-10 reasoning so the line is visible.* In round 10 I
-declined to make these counts a finding: two counting conventions sat side by side, and each figure
-was consistent with one of them, so nothing was falsified. That is no longer true. Measurement (7)'s
-25 is consistent with **neither** convention — the files differ in 28 lines on each side and 56 in
-total — and the sentence now asserts in its own voice that the number was measured against this
-revision's log rather than carried. That is JF-4's exact shape, which this document accepted as
-blocking and repaired across two revisions: a figure attributed to an artifact of this revision that
-the artifact does not carry, sitting in a printed-never-asserted region where a `RESULT`-line rerun
-is blind by construction. Approving it would hold a claim that advertises itself as freshly measured
-to a looser standard than one that did not.
-
-*What resolves it:* re-run the two `diff`s, state the counts they produce and enumerate the
-composition — for (7), twenty-two section-08 echoes plus six environment lines including the shim
-placement and the two section-00 toolchain echoes; for (8), the seven lines above, with the fixture
-bodies named as identical because they print by basename — and say which side of the `diff` the
-number counts, so the two sentences stop using different conventions. Nothing else need change.
-
-*Does the recommendation move under it? No.* JF-9 touches neither the tool, the install shape, the
-passing set `{0}`, `--fail-on-scan-errors`, the output-format requirement, the runner-up, a
-parameter, an anchor line nor any `RESULT` verdict. The falsifiability proof it sits beside is sound
-and I approve of it: the verdict-block comparison it rests on reproduces exactly, with zero
-differing lines in both pairs.
+I record this as an observation rather than a finding, and the line matters so I state it rather
+than leave it to be inferred. In JF-4 and JF-9 the number *was* the claim: a reader who checked it
+found the claim false — no cited log carried 27,941, and three differing lines were unaccounted for.
+Here the claim is that the logs are byte-identical, that claim is true of **every** log in **every**
+candidate set, and I verified it: the commit touches `DECISION.md` alone. Only the cardinal labelling
+the set is wrong, which is the tier of round 9's JF-6 (a run count contradicting a neighbouring
+count while both instants were correct) and of round 10's JF-8 — both of which I judged
+non-blocking, and JF-8 reached a header only because a blocking finding was already forcing that
+reject. There is no blocking finding this round. *The repair is one word,* and the next edit made
+for any reason should carry it: "fourteen" for the group those digests name, or "twenty-five" for
+all committed logs.
 
 ## Assessment
 
-Revision 11 answers JF-7 with a better instrument than the one I asked for. Rather than declaring
-the depletable budget and branching on it, it removes the dependency: the mutant's `curl` is a
-fixture shim installed through the `PATH` lookup `run-checks-r8.sh` already performs, so that script
-is again not modified; only `api.github.com` is intercepted, only five recorded paths are served, an
-unrecorded path is refused with exit `22` rather than invented, and every other host stays live.
-The boundary is drawn where it has to be for the proof to survive: section 08 — the only section the
-verdict rests on and the only one either mutation touches — makes no network call, and the binary it
-executes is fetched from a passed-through host under literal filenames and pinned by `04a` and
-`05a`, so no fixture can reach it. Eight non-target labels are fixture-fed and every one of them is
-named, in the decision, in a committed manifest that also records what each fixture does *not*
-establish, and in each log's own boundary block. The four runs then pass with the live anonymous
-budget at `60 0` — nothing remaining — which is a harder condition than the one that broke revision
-9, and each mutant's failing set is exactly its targets. JF-8 is closed with the superseded ground
-quoted and corrected.
+Revision 12 does exactly what round 11 asked and nothing else. Both file-difference figures were
+re-taken from the artefacts and written down as they print — 118 lines each, 28 per side for
+measurement (7) and 7 per side for measurement (8) — and both are now given per side, split into
+named categories with an example line rather than a bare number. I ran both `diff`s against the
+committed revision-11 logs and they reproduce exactly, including the part that was previously only
+asserted: normalising `grep -n`'s prefix and re-diffing leaves 12 lines, which is the six-per-side
+category and confirms that the twenty-two section-08 echoes differ in the prefix alone. Measurement
+(8)'s two path-bearing lines carry identical digests on both sides, and no fixture line differs at
+all. The document also records why the original figures were wrong — one per-side count printed
+beside a both-sides total — which is the more useful half of the repair.
 
-I reject on one thing, and it is not the repair. The sentence recording how the four logs differ
-from one another states 25 where `diff` says 28, names three environment lines where there are six,
-misses precisely the three lines revision 11's own shim machinery added, and then says the figure
-was measured against this revision's log rather than carried — which is the one claim `diff`
-disproves. The companion sentence attributes seven differing lines to eleven fixture paths that are
-not in its diff at all. Both are cheap to fix and neither moves a conclusion, but this is the defect
-class this document has been rejected for at rounds 6, 9 and 10, and the fix is to re-run two
-`diff`s and write down what they print.
+The substance I judged in earlier rounds is undisturbed: the recommendation implements owner ruling
+W0-R17b exactly, the gate rule and its runner conditions are unchanged, the fixture-shim
+falsifiability proof and its honestly drawn boundary stand as I approved them in round 11, JF-4
+through JF-8 remain closed, and the round-11 empirical audit approved the revision this one corrects.
+Every digest, anchor and parameter line I checked is unchanged. One count in a
+"what did not change" paragraph names a set of fifteen logs that does not exist; every log it means
+is byte-identical, which is what the sentence asserts, so it is an observation for the next edit and
+not a reason to hold this revision. I approve.
