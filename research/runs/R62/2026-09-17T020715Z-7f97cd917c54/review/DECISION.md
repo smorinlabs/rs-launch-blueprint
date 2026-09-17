@@ -1,4 +1,41 @@
-# 2026-09-17 — R62 — clipboard-integration (bundle, Focused) — decision (revision 1)
+# 2026-09-17 — R62 — clipboard-integration (bundle, Focused) — decision (revision 2)
+
+**Revision note.** Revision 2 revises revision 1 (sha256
+`10caee16f01cb2b39bad301c7669abb65cef4cb24b112fb0821bc23869bc73e7`, commits
+`485f91a` and `4c495f1`) in place. It answers every finding of the revision-1
+judgment audit (`review/audit-fable.md`, commit `b899491`; actor
+`audit-fable-2026-09-17T020715Z-7f97cd917c54-r1`, model `claude-opus-5`, family
+anthropic, verdict **reject**). **The recommendation does not move**: the three
+members, the crate, the version, the feature set, the crate placement and the
+fatal failure policy are unchanged, and the four `- assumes` lines are
+byte-identical to revision 1. No parameter value moved and no `CONFLICT:` line
+is written. The empirical audit is deferred for this item, so no
+`review/audit-codex.md` exists and nothing here stands in for one.
+
+| Finding | Repair |
+|---|---|
+| **JF-1 (blocking)** — *"Acceptance criteria AC2 and AC3 cannot both hold, and the tension with R67's envelope invariant is unrecorded."* | AC3's `**byte-empty stdout**` clause is struck and replaced with what the design actually produces; a new subsection *"What a post-result failure puts on each stream"* states both output modes, quotes R67's `"stdout stays byte-empty on the error path"` clause and its second location, and records the disposition (R62 qualifies the clause for post-result partial failures; R67's owned value need not move; the open end is a new re-verify trigger). The `## Parameters` sentence that repeated the clause is rewritten. Check A95 is no longer cited for two claims it does not assert — new checks `R08`, `R09`, `R11` and `R13` carry those. |
+| **JF-2** — *"fitness gate 3's `unsafe` posture for `arboard` is stated nowhere."* | Gate 3's posture half is now stated and censused rather than asserted: new checks `R14`, `R15` count the `unsafe` keyword across `arboard` `v3.6.1`'s sources, and `R16` cites R06's `--cap-lints allow` scoping. |
+| **JF-3** — *"the §7.6 issue-responsiveness figure is omitted."* | The figures table gains the column, computed here rather than inherited (new checks `R18*`), and the `copypasta` `at-risk` verdict now weighs the countervailing figure instead of omitting it. |
+| **JF-4** — *"the `re-verify:` line names two alternatives the decision never defines."* | Both are defined in `### Principles and implementation` with their promotion condition and migration cost, sourced to `raw/opus.md` (new checks `R25`–`R28`). |
+| **JF-5** — *"standard rule R5.6 is cited for a proposition it does not carry."* | The citation is corrected: R5.6 is motivation, not the governing rule; the operative reasons are stated, and new check `R21` asserts that R5.6's own text contains no mention of `argv`, a process listing or `/proc`. |
+| **JF-6** — *"'verbatim' overstates the `nushell` reference, which pins 3.6.0."* | "verbatim" is replaced with the accurate claim about the dependency-line *shape*; new check `R24` asserts the version difference. |
+| **JF-7** — *"the rejected warning policy is not recorded beside the fatal choice."* | The warning policy, its argument and the ground on which it was rejected are recorded beside the fatal choice, sourced to `raw/opus.md` (new checks `R29`–`R31`). |
+
+**Revision history.** Revision 1 — 2026-09-17, commits `485f91a` (synthesis) and
+`4c495f1` (claim qualification), sha256
+`10caee16f01cb2b39bad301c7669abb65cef4cb24b112fb0821bc23869bc73e7`; rejected by
+the round-1 judgment audit on JF-1 with JF-2 through JF-7 non-blocking.
+Revision 2 — this file. No `## Supersedes` section: this item is unpublished, so
+there is no published file to reverse.
+
+**Artefact discipline for this revision.** `review/evidence/verify.sh`,
+`review/evidence/spike-build.sh` and their two logs are **byte-identical to
+revision 1** — the revision addendum requires that anything an audit reproduced
+stay unedited. Every check this revision needs is new, in
+`review/evidence/verify-r2.sh` with log
+`review/evidence/r62-clipboard-claims-r2.log`, and every new check id is prefixed
+`R` (`R01`–`R32`) so it cannot collide with revision 1's `A`/`S` ids.
 
 ## Decision
 
@@ -26,7 +63,9 @@ The flag is spelled `--copy`, long-only, no short form. The success note goes to
 **stderr** and is suppressed under `--quiet`. A failed copy is **fatal**: the
 adapter composes its own message and hint, carries `arboard::Error` only as
 `#[source]`, and the error boundary maps it to R67's published `RSLB101` → exit
-`1`. R62 does not own that mapping and adds no catalogue row.
+`1`. R62 does not own that mapping and adds no catalogue row. The **rejected**
+alternative policy, and why the owner may want to flip it, is recorded under
+`### Principles and implementation` rather than left implicit.
 
 **Ledger rows settled.** `F281` (clipboard-copy flag for command results) and
 `F282` (clipboard write with headless-degrade handling), both `ts-only`
@@ -249,10 +288,95 @@ and ts kept the capability deliberately after research (D-016(7)).
   action**, so it must not be gated on `IsTerminal`; the *success note* is a
   diagnostic and belongs on stderr under R7.1/R7.4 (check A84), suppressed by
   `--quiet` under R4.4.
-- *No payload in a process listing.* Standard **R5.6** (check A85) is why Member
-  3 hands the text to the child over **stdin** rather than `argv`.
-- *No `unsafe`.* R06 sets `unsafe_code = "forbid"` in the workspace lint table,
-  which is what selects **re-exec** over `libc::fork()` for Member 3.
+- *No payload in a process listing.* Member 3 hands the text to the child over
+  **stdin** rather than `argv` for two operative reasons: on Linux `argv` is
+  world-readable through `/proc/<pid>/cmdline` for the daemon's whole lifetime,
+  and `ARG_MAX` bounds what `argv` can carry while a pipe does not. *Revision 1
+  wrote "Standard **R5.6** (check A85) is why Member 3 hands the text to the
+  child over **stdin** rather than `argv`", which overstated the rule.* R5.6 is
+  *Secret redaction in output*: it requires secret values to be **masked in all
+  output** and says nothing about `argv`, a process listing or `/proc` (checks
+  R19, R20, R21). It is the standard's **motivation** here — a copied result may
+  contain a secret — not the rule that requires the handoff. `code2prompt` makes
+  the same choice in production (check A58).
+- *No `unsafe` in the template's own code.* R06 sets `unsafe_code = "forbid"` in
+  the workspace lint table, which is what selects **re-exec** over the `unsafe
+  fn` `libc::fork()` for Member 3. **This is a statement about first-party
+  crates only, and fitness gate 3's posture half is the separate question:**
+  `arboard` **does** use `unsafe` internally — 67 lines carrying the keyword
+  across its `lib.rs`, `common.rs`, both Linux backend files and the macOS and
+  Windows backends (check R14), which is unsurprising for a crate whose macOS
+  and Windows paths are FFI. That does not break R06's policy and is not covered
+  by it: Cargo compiles dependencies with `--cap-lints allow`, and R06's own
+  decision text says the template *"makes no claim about `unsafe` inside its
+  dependency tree"* (check R16). The surface this template's adapter touches
+  exposes none of it — `arboard`'s public error module contains zero `unsafe`
+  occurrences (check R15) and every operation returns `Result`. **Gate 3,
+  answered in full:** advisories — none, on the paired-control reading in
+  `## Empirical check` section A; `unsafe` posture — **uses `unsafe` in platform
+  FFI, stated, not zero; first-party code adds none.**
+
+#### What a post-result failure puts on each stream, and the R67 clause it meets
+
+**This is the finding revision 1 got wrong**, and it is worth stating at length
+because R62 is the first item in this programme to present the shape. A failed
+`--copy` is a **post-result partial failure**: the command's requested result has
+already been written to its primary sink and is correct; only the additional side
+effect the user asked for did not happen. Two streams are produced, and **neither
+mode withholds the result** — withholding it would break the must-agree row above
+("the write happens after the result has reached its primary sink, and never
+replaces it") and, with it, the requirement this whole item exists to preserve.
+
+| | Human mode | Machine mode (`-o json` / `--json`) |
+|---|---|---|
+| **stdout** (fd 1) | the formatted result, byte-identical to the same command run without `--copy` | the same result, in the selected machine format |
+| **stderr** (fd 2) | the message and the hint, one line each | exactly one R67 object, `{"error":{"code":"RSLB101","message":…,"hint":…}}` |
+| **exit** | `1` | `1` |
+
+Three rules of the binding standard produce that table, each read at its own
+scope. **R7.1** assigns fd 1 the command's *"requested result"* and fd 2
+*"everything else: diagnostics, progress, prompts, warnings, and errors"*, and
+says a diagnostic raised *during* a normal data command goes to stderr *"so it
+never contaminates stdout"* — it routes the diagnostic, it does not withdraw the
+data (checks R04, R04b). **R7.8** requires the single stderr object for ordinary
+command failures *"including a failure that occurs mid-stream"*, and nowhere
+requires stdout to be empty (checks R01, R02). **R8.2** assigns exit `1` to
+runtime failures (check R07). **R6.3 is cited only as a shape analogy, not as a
+governing rule**: its literal scope is *"a command operating on many items"*
+(checks R05, R06), which `--copy` is not.
+
+**The R67 clause, quoted, and this item's disposition.** R67's owned value ends
+its *Envelope* paragraph with *"stdout stays byte-empty on the error path"*, and
+R67's own AC2 repeats it — two locations, and the complete list (checks R08, R09,
+R11). **R62's design does not satisfy that clause literally, and must not.** The
+disposition is that **R62 qualifies the clause for post-result partial failures
+rather than requiring R67's value to move**, on three grounds:
+
+1. **R67's own contract already separates the result stream from the error
+   path.** Its broken-pipe rule says *"a `BrokenPipe` result on the **result**
+   stream ends the process at `0`, silently, with no envelope"* (check R10) — so
+   the contract does contemplate a result stream with its own life, and "the
+   error path" reads naturally as the path on which no result was produced,
+   which is every failure R67 itself had in view.
+2. **The org standard binds above R67** (owner ruling 2026-09-14) and settles the
+   question in the opposite direction from an empty stdout: R7.8's mid-stream
+   clause, and R7.1's routing of a mid-command diagnostic.
+3. **Nothing in R67's value needs to change for R62 to conform.** The code
+   (`RSLB101`), the exit status (`1`), the three envelope keys, the
+   `hint`-omitted-not-`null` rule (check R13) and the `thiserror`/`anyhow`
+   layering all apply to this item unchanged.
+
+**Why no `CONFLICT:` line.** The prompt's grammar is
+`CONFLICT: R## <param> — <needed value> — <reason>` and applies when a
+recommendation *needs a consumed parameter to change*. R62's `## Couplings`
+consumes nothing (checks A86, A87), and under the qualified reading above
+`error-taxonomy-exit-codes` does not move. **What would be needed if the
+controller reads the clause as unqualified and binding on every item** is stated
+so the decision is overrulable rather than merely confident: R67's Envelope
+sentence would become *"stdout stays byte-empty on the error path, except where
+the command's requested result was already written before the failure"*, and the
+same qualification would attach to R67's AC2. That is an R67 edit, not an R62
+one, and it is now a re-verify trigger on this item.
 
 #### Observable acceptance criteria
 
@@ -262,18 +386,66 @@ These are **proposed** criteria for P03, not executed results.
 |---|---|
 | AC1 | On `macos-latest`, `--copy` leaves the normal result on stdout unchanged and the clipboard read back **in a following process** equals it |
 | AC2 | With neither `DISPLAY` nor `WAYLAND_DISPLAY`, the command does not panic, does not hang under an external timeout, emits the result unharmed, and exits `1` |
-| AC3 | Under a machine output format the failure is R67's single stderr object `{"error":{"code","message","hint"?}}` with `code == "RSLB101"`, a non-empty `hint`, and **byte-empty stdout** |
+| AC3 | Under a machine output format the failure puts **exactly one** R67 object on stderr — `{"error":{"code","message","hint"?}}` with `code == "RSLB101"` and a non-empty `hint`, `hint` omitted rather than `null` when absent — while **stdout carries the result, byte-identical to the same command run without `--copy`**. *Revision 1 wrote "and **byte-empty stdout**" here, which its own AC2 and must-agree ordering row contradict; see "What a post-result failure puts on each stream" above.* |
 | AC4 | Under `xvfb-run`, a sentinel copied by a process that has since **exited** is still readable — the one check a naive implementation fails while passing every other |
 | AC5 | `cargo tree -e normal` for the library crate shows no `arboard` under any feature combination; the same for the binary crate with the `clipboard` feature off |
 | AC6 | The success note never reaches stdout, and is absent under `--quiet` |
 | AC7 | `--copy` still copies when stdout is piped (it is a requested action, not a TTY nicety) |
 | AC8 | No `--clipboard-daemon` child is spawned when the probe fails, and the payload never appears in the daemon's `argv` |
 
+#### The failure policy, and the alternative the owner can flip
+
+**Fatal (recommended).** The user asked for the side effect; it did not happen; a
+script writing `rslbp projects --copy && pbpaste | …` would otherwise be lied to.
+This is ts's behaviour at the pin (`throw new CliError`, check A78), it is what
+R8.2 assigns exit `1` to, and the result still reaches stdout unchanged, so a
+pipeline that only wanted the data is unaffected except by the status.
+
+**Warning (rejected, and recorded so the owner sees a choice rather than a
+conclusion).** Print the failure to stderr and exit `0`. It is friendlier for the
+common interactive case, and it is what `py-launch-blueprint`'s own developer
+recipe does today (`Justfile:608`, `… || echo "(Failed to copy command to
+clipboard)"`). **Rejected because a template should teach the stricter default,
+and because the friendlier behaviour is one line away for a fork that wants it**
+(checks R29, R30). The flip costs no change to the port, the error type or
+Member 1 — it is a change in the adapter's caller (check R31) — which is exactly
+why it belongs here as a stated choice.
+
+#### The two alternatives the `re-verify:` line names
+
+Both are defined here so a reader can evaluate the trigger from this document
+alone. Revision 1 named them and defined neither.
+
+**Member 2's ranked runner-up — Alternative 2b, absence as a value.** Return
+`Result<bool, E>` or an `Option`-shaped outcome from `ClipboardPort`, so "no
+clipboard on this machine" is a **value** the caller may treat as success rather
+than an `Err` (check R25). It has a real argument: it makes the warning policy
+above natural. It is not the recommendation because **R03**
+(`port-absence-vs-failure-contract`) owns the port-absence-versus-failure
+question programme-wide and is unresolved; a two-variant error keeps the same
+information (the `Unavailable` variant *is* the absence signal) without
+pre-empting R03's shape. Migration cost if R03 settles toward absence-as-value:
+**one trait signature and one match arm** (check R26). (`raw/opus.md` numbers it
+2b and ranks it above 2a — a free function with no port — and 2c; the audit
+narrative calls it 2a.)
+
+**Member 3's acknowledgement-byte alternative — Alternative 3a.** Probe, spawn,
+then wait for the child to write one acknowledgement byte before the parent
+reports success (check R27). It strictly dominates the recommendation on
+correctness: it closes the probe-to-write race and makes the success message
+unconditionally true. It is not the recommendation because **it introduces a
+timeout constant with no principled value** — too short and a loaded machine
+reports a false failure, too long and the CLI hangs after the result is already
+printed, and neither is tunable by a template author for a user's machine (check
+R28). It becomes the right choice **if the owner inverts the fatal policy above**:
+a warning policy needs to know reliably whether the copy happened, where a fatal
+policy mostly needs to know that it *could*.
+
 #### Reference implementations, and the one gap
 
 | Claim | Maintained reference | Status |
 |---|---|---|
-| The dependency line as recommended | `nushell/nushell` (`nu-command`) ships `arboard = { version = "3.6.0", default-features = false, features = ["wayland-data-control"] }` verbatim (check A49) | verified |
+| The dependency line's **shape** as recommended | `nushell/nushell` (`nu-command`) ships `arboard = { version = "3.6.0", default-features = false, features = ["wayland-data-control"] }` — the same `default-features = false` plus `wayland-data-control` configuration, pinned one patch earlier than this recommendation's 3.6.1 (checks A49, R23, R24). *Revision 1 said "verbatim", which the version difference makes wrong.* | verified |
 | The **optional + feature-gated** shape | `nushell/reedline` ships it behind a `system_clipboard` feature (checks A51, A52) | verified |
 | A short-lived CLI on the same configuration, running the Linux re-exec pattern | `mufeedvh/code2prompt` — hidden `--clipboard-daemon` flag, stdin handoff, `SetExtLinux::wait()` in the child (checks A54, A56–A59) | verified |
 | **Probe-before-spawn** | **none found** | **evidence gap** |
@@ -286,7 +458,7 @@ logs *"Clipboard daemon launched successfully"*. The recommended probe is
 reasoned from documented platform semantics plus that defect analysis, not
 copied from a working example. AC2 and AC8 are what would close it.
 
-re-verify: on the earliest of — a crates.io release after `arboard` 3.6.1 (re-read its changelog for Linux-ownership or `wayland-data-control` changes and re-run the spike); a RustSec advisory against `arboard`, `x11rb`, `wl-clipboard-rs` or the `objc2` family (`https://rustsec.org/packages/arboard.html` returning `200`, or a `crates/arboard` directory appearing in `rustsec/advisory-db`); `1Password/arboard` becoming archived, or `pushed_at` static for six months while no release lands; `arboard` enabling `wayland-data-control` by default or gaining a first-party daemonisation helper, either of which collapses Member 3; `wl-clipboard-rs` changing `foreground` from a thread to a forked process, which makes the Wayland half self-sufficient; **R03** settling the port-absence-versus-failure contract toward absence-as-value, which promotes Member 2's ranked runner-up; **R66** fixing how `hint` renders in human output; **R05**/**R69** selecting an execution model, since the adapter is where a blocking hop would go; **R11** fixing `ci-job-structure`, which determines how AC1–AC8 are wired; a later R67 catalogue append giving clipboard failures a dedicated code; the owner inverting the fatal-versus-warning policy on a failed copy, which promotes Member 3's acknowledgement-byte alternative; `target-os-matrix` gaining `windows-latest`, which adds a `cfg` branch that needs no helper; otherwise figure freshness by 2027-03-17.
+re-verify: on the earliest of — a crates.io release after `arboard` 3.6.1 (re-read its changelog for Linux-ownership or `wayland-data-control` changes and re-run the spike); a RustSec advisory against `arboard`, `x11rb`, `wl-clipboard-rs` or the `objc2` family (`https://rustsec.org/packages/arboard.html` returning `200`, or a `crates/arboard` directory appearing in `rustsec/advisory-db`); `1Password/arboard` becoming archived, or `pushed_at` static for six months while no release lands; `arboard` enabling `wayland-data-control` by default or gaining a first-party daemonisation helper, either of which collapses Member 3; `wl-clipboard-rs` changing `foreground` from a thread to a forked process, which makes the Wayland half self-sufficient; **R03** settling the port-absence-versus-failure contract toward absence-as-value, which promotes Member 2's ranked runner-up; **R67** revisiting its *Envelope* wording — specifically whether *"stdout stays byte-empty on the error path"* is scoped to failures that produced no result, which is the reading this decision records; a controller or owner reading it as unqualified reopens the disposition under `### Principles and implementation`, *"What a post-result failure puts on each stream"*; **R66** fixing how `hint` renders in human output; **R05**/**R69** selecting an execution model, since the adapter is where a blocking hop would go; **R11** fixing `ci-job-structure`, which determines how AC1–AC8 are wired; a later R67 catalogue append giving clipboard failures a dedicated code; the owner inverting the fatal-versus-warning policy on a failed copy, which promotes Member 3's acknowledgement-byte alternative; `target-os-matrix` gaining `windows-latest`, which adds a `cfg` branch that needs no helper; otherwise figure freshness by 2027-03-17.
 
 ## Parameters
 
@@ -346,10 +518,17 @@ How the four fixed parameters bear on the decision.
 **R67's bearing, stated as prose because it is not a parameter of this item.**
 R67's published, owner-accepted catalogue already expresses this item's only
 failure mode: `RSLB101` I/O → exit `1` (check A94), carried in the single stderr
-object `{"error":{"code","message","hint"?}}` with `hint` omitted rather than
-`null` and stdout byte-empty on the error path (check A95). This item decides
-only that the clipboard-write failure **is** a typed, catchable error; it adds
-no catalogue row and moves no value. The reason `RSLB101`/`1` fits and
+object `{"error":{"code","message","hint"?}}` (check A95) with `hint` omitted
+rather than `null` when absent (check R13). *Revision 1's sentence continued "and
+stdout byte-empty on the error path (check A95)", which attributed to A95 two
+claims it does not assert and repeated a clause this item's design does not
+satisfy.* A95 asserts the envelope substring and nothing more; the byte-empty
+clause lives in R67 at two locations (checks R08, R09, R11) and R62's disposition
+toward it — qualify for post-result partial failures, no value moved, no
+`CONFLICT:` line, a re-verify trigger for the open end — is argued in full under
+`### Principles and implementation`, *"What a post-result failure puts on each
+stream"*. This item decides only that the clipboard-write failure **is** a typed,
+catchable error; it adds no catalogue row and moves no value. The reason `RSLB101`/`1` fits and
 `RSLB205`/`2` does not is the standard's own split, quoted in `### Principles
 and implementation`: an absent display server is a runtime environmental
 failure, not required input or consent that prompting cannot supply.
@@ -369,8 +548,8 @@ scripts locate the repository root by walking up to the directory that carries
 `docs/port/PARAMETERS.md`, so they run from any extraction depth. All scratch
 lives in a `mktemp -d` under `$TMPDIR`, removed by an `EXIT` trap.
 
-**Verify claims; never implement the recommendation.** Neither script writes a
-trait, an error type, a flag, an adapter, a helper or a test. The spike's entire
+**Verify claims; never implement the recommendation.** None of the three scripts
+writes a trait, an error type, a flag, an adapter, a helper or a test. The spike's entire
 Rust source is `fn main() { let _ = std::mem::size_of::<arboard::Clipboard>(); }`
 — one line, naming a type so `cargo check` has something to check.
 
@@ -430,11 +609,36 @@ request, which is why check A63 runs next to A64–A66.
 
 **Figures, as retrieved 2026-09-17.**
 
-| Crate | 90-day | all-time | newest non-yanked | stars / archived / pushed | open issues | advisories | maintenance |
-|---|---|---|---|---|---|---|---|
-| `arboard` | 12,957,229 | 46,174,781 | 3.6.1 (2025-08-23) | 967 / false / 2026-09-16 | 19 | none (paired control) | **active** |
-| `copypasta` | 857,282 | 5,559,318 | 0.10.2 (2025-04-25) | 350 / false / 2025-05-09 | 5 | none (paired control) | **at-risk** — 16 months since a release, 16 since a push, and no Ubuntu CI job |
-| `clipboard-rs` | 284,058 | 475,548 | 0.3.5 (2026-06-30) | 180 / false / 2026-06-30 | 5 | none (paired control) | **stable-quiet** |
+| Crate | 90-day | all-time | newest non-yanked | stars / archived / pushed | open issues | issue responsiveness (median days to first maintainer response / unanswered, over the 10 most recently opened issues) | advisories | maintenance |
+|---|---|---|---|---|---|---|---|---|
+| `arboard` | 12,957,229 | 46,174,781 | 3.6.1 (2025-08-23) | 967 / false / 2026-09-16 | 19 | **1.68 / 8 of 10** | none (paired control) | **active** |
+| `copypasta` | 857,282 | 5,559,318 | 0.10.2 (2025-04-25) | 350 / false / 2025-05-09 | 5 | **0.02 / 1 of 10** | none (paired control) | **at-risk** — see below |
+| `clipboard-rs` | 284,058 | 475,548 | 0.3.5 (2026-06-30) | 180 / false / 2026-06-30 | 5 | **7.92 / 5 of 10** | none (paired control) | **stable-quiet** |
+
+The responsiveness column was **omitted by revision 1** and is computed here
+rather than inherited from a raw report (checks `R18*`, and the per-issue lines
+in `r62-clipboard-claims-r2.log` section 4). Method, stated because the endpoint
+mixes pull requests into `/issues`: the 10 most recently opened items with
+`pull_request == null`; a "maintainer response" is the first comment whose
+`author_association` is `OWNER`, `MEMBER` or `COLLABORATOR` and whose author is
+not the issue author; the median is taken over the **answered** subset and the
+unanswered count is reported beside it, never folded into it.
+
+**The figure cuts against the crate this decision selects, and is recorded for
+that reason.** `copypasta` is by a wide margin the most responsive of the three —
+a median first maintainer response of about half an hour, with one unanswered
+issue in ten — while `arboard`, the recommendation, leaves eight of its ten most
+recent issues without a maintainer reply. Two things follow, and only the second
+changes anything. The `at-risk` rubric verdict for `copypasta` **stands**,
+because the rubric asks for concrete signals and there are two that
+responsiveness does not touch: sixteen months with no release and no repository
+push, and a CI matrix with no Ubuntu job (checks A46, A47) against a fixed
+`target-os-matrix` that has one. Responsiveness measures attention to the issue
+tracker; those two measure whether the crate is still being shipped and tested
+where this template needs it. But **the selection is not a claim that `arboard`
+is better maintained on every axis** — on this axis it is worse, and the
+recommendation rests on the platform evidence, the adopters and the executed
+resolution rather than on a maintenance sweep it would not win outright.
 
 Endpoints: `https://crates.io/api/v1/crates/<name>` (`.crate.recent_downloads`,
 `.crate.downloads`); `.../versions` (newest `yanked: false`);
@@ -509,10 +713,44 @@ on `ubuntu-latest`; it does not compile or run anything for that target.
 endpoints with their paired controls, section A above, carry the advisory
 evidence instead.
 
+### C. Revision-2 supplementary checks
+
+    bash verify-r2.sh > r62-clipboard-claims-r2.log 2>&1
+
+Observed: **exit `0` — 35 assertions, 0 failures, 0 skipped.** This file is
+**additive**. `verify.sh`, `spike-build.sh` and their two logs are byte-identical
+to revision 1, because the revision addendum requires anything an audit
+reproduced to stay unedited; every check this revision needs is new here, with
+ids prefixed `R` so they cannot collide with revision 1's `A` and `S` ids.
+
+| Section | Answers | What it establishes |
+|---|---|---|
+| 1 | JF-1 | The standard's own text on a post-result failure: R7.8's mid-stream clause and the absence of any empty-stdout requirement (`R01`, `R02`); R7.1's result/diagnostic split and its mid-command-warning sentence (`R03`, `R04`, `R04b`); R6.3 read at its literal many-items scope so the decision cites it as an analogy, not a rule (`R05`, `R06`); R8.2's exit-`1` assignment (`R07`) |
+| 2 | JF-1 | R67's `"stdout stays byte-empty on the error path"` quoted at both of its two locations, with the count as the complete location list (`R08`, `R09`, `R11`); R67's broken-pipe rule as the internal evidence that the contract separates the result stream (`R10`); what check A95 does and does not assert (`R12`, `R13`) |
+| 3 | JF-2 | `arboard` `v3.6.1`'s `unsafe` census — 67 keyword lines across six surveyed files (`R14`), zero in the public error module (`R15`) — and R06's `--cap-lints allow` scoping (`R16`, `R17`) |
+| 4 | JF-3 | The §7.6 issue-responsiveness figure for all three crates, computed from the issue and comment endpoints (`R18*`) |
+| 5 | JF-5 | R5.6's actual title and text, and that it contains no mention of `argv`, a process listing or `/proc` (`R19`–`R21`) |
+| 6 | JF-6 | `nushell` pins 3.6.0, not 3.6.1 (`R22`–`R24`) |
+| 7 | JF-4, JF-7 | Alternatives 2b and 3a and the rejected warning policy, quoted from `raw/opus.md` (`R25`–`R31`) |
+| 8 | — | No account identity in the GitHub sample this script held (`R32`) |
+
+**Reproducibility, checked rather than asserted.** `verify-r2.sh` was rerun and
+the two logs diffed. The filtered comparison is empty:
+
+    diff <(/usr/bin/grep -v -e '^FIGURE ' -e '^Run started' -e '^Scratch ' a.log) \
+         <(/usr/bin/grep -v -e '^FIGURE ' -e '^Run started' -e '^Scratch ' b.log)
+
+and on this rerun — same UTC day, same 10-issue window — the whole raw diff was
+two lines, the run timestamp and the scratch-directory name, so even the `FIGURE`
+lines happened to reproduce. **The rule is still the filtered one**: the
+responsiveness figures are a snapshot of a moving window and will differ once a
+new issue is opened or answered.
+
 **Logs.** `review/evidence/r62-clipboard-claims.log` (section A),
-`review/evidence/r62-spike-build.log` (section B); scripts
-`review/evidence/verify.sh` and `review/evidence/spike-build.sh`, both
-ShellCheck-clean at 0.11.0.
+`review/evidence/r62-spike-build.log` (section B),
+`review/evidence/r62-clipboard-claims-r2.log` (section C); scripts
+`review/evidence/verify.sh`, `review/evidence/spike-build.sh` and
+`review/evidence/verify-r2.sh`, all three ShellCheck-clean at 0.11.0.
 
 ## Engines
 
@@ -568,7 +806,10 @@ not rest on the point. Settled as fact rather than impression by reading
 `[windows-latest, macos-latest]` and the word `ubuntu` appears **nowhere** in
 the file (checks A46, A47). Combined with 16 months since its last release and
 last push (figures above), `copypasta`'s maintenance rubric is **at-risk**, which
-is Codex's own verdict on independently re-read evidence.
+is Codex's own verdict on independently re-read evidence — and which survives the
+§7.6 responsiveness figure revision 2 adds, where `copypasta` scores best of the
+three (`## Empirical check` section A, figures table and the paragraph beneath
+it).
 
 **Disagreement 5 — the MSRV figure.** Opus states the highest declared
 `rust-version` in the resolved-as-recommended set is 1.71.0; Codex declines to
@@ -577,6 +818,18 @@ partly wrong.** The executed resolution (spike S17, S18) gives **1.71.0 on the
 macOS leg and 1.86 on the Linux leg** — Opus's figure holds for one leg only,
 and Codex's gap is now closed. Neither error changes the verdict: both floors
 sit far below R67's 1.96.
+
+**A defect this item's own engines carried, corrected in revision 2.** Both
+raws are internally inconsistent about what a post-result failure leaves on
+stdout: `raw/opus.md` argues the fatal policy on the ground that *"The result
+still reaches stdout unchanged"* and then writes `[ ! -s out.txt ]` into its own
+A3 validation command, and revision 1 of this decision carried the contradiction
+across into AC2 and AC3. It is settled here from the binding standard rather than
+from either engine — R7.1, R7.8 and R8.2, checks `R01`–`R07` — and the R67 clause
+it meets is quoted and dispositioned under `### Principles and implementation`.
+Codex reaches the same shape without the defect: its acceptance criterion 2 says
+the command *"preserves the already-emitted result"* and says nothing about
+emptying stdout.
 
 **What P03 must validate.** Every acceptance criterion AC1–AC8 is unexecuted;
 none could be run here. In priority order: **AC4** (a copy survives process exit
@@ -612,3 +865,11 @@ user-facing contract and R67's envelope.
    RUSTSEC-2026-0190) is what P03 should re-run against the real lockfile.
 6. **Any runtime clipboard behaviour on any platform.** Nothing was executed
    against a clipboard, including on this macOS host.
+7. **Whether R67's owner reads *"stdout stays byte-empty on the error path"* as
+   scoped to failures that produced no result.** Sections 1 and 2 of
+   `r62-clipboard-claims-r2.log` establish what each document says; the reading
+   is this decision's, argued from the binding standard and from R67's own
+   broken-pipe rule, and it is not an owner ruling. The re-verify line records
+   the trigger, and the exact substitute wording an unqualified reading would
+   require of R67 is written out under `### Principles and implementation` so the
+   controller can overrule this disposition without re-deriving it.
