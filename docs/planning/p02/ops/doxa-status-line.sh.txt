@@ -1,0 +1,11 @@
+#!/bin/zsh
+# usage: doxa-status-line.sh <op> — one line: op-suffix status provider=state ...
+cd /Users/stevemorin/c/rs-launch-blueprint-p02-plan || exit 9
+/Users/stevemorin/c/doxa-research/.venv/bin/python scripts/doxa_no_retry.py --config docs/planning/p02/doxa-pilot.config.toml status "$1" --json 2>/dev/null | python3 -c '
+import json,sys
+try:
+    d=json.load(sys.stdin)["data"]; p=d.get("providers",{})
+    print(d["operation_id"][-16:], d.get("status"), " ".join(k+"="+str(v.get("status")) for k,v in p.items()))
+except Exception as e:
+    print(sys.argv[1][-16:], "status-error", type(e).__name__)
+' "$1"

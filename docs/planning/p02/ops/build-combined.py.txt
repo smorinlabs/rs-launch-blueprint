@@ -1,0 +1,68 @@
+#!/usr/bin/env python3
+"""Build doxa/combined.md in the format of
+doxa_research.output.OutputManager.generate_combined_report: a concatenation of
+the saved provider files, no model call.  Doxa 3.3.0's resume cannot honour the
+submission's --combined flag, so the controller builds it.
+
+usage: build-combined.py <run-dir> <operation-id> [--generated <iso>] [--out <path>]
+"""
+import sys, pathlib, datetime, re
+
+ORDER = ["openai", "perplexity", "gemini"]
+
+def main():
+    args = sys.argv[1:]
+    run_dir = pathlib.Path(args[0]); op = args[1]
+    gen = None; out = None
+    for i, a in enumerate(args):
+        if a == "--generated": gen = args[i+1]
+        if a == "--out": out = args[i+1]
+    outdir = run_dir / "doxa" / "research-outputs"
+    files = {}
+    for f in sorted(outdir.glob("*.md")):
+        m = re.search(r"_(openai|perplexity|gemini)_", f.name)
+        if m: files[m.group(1)] = f
+    missing = [p for p in ORDER if p not in files]
+    if missing:
+        sys.exit(f"missing provider outputs: {missing}")
+
+    first = files["openai"].read_text()
+    # prompt title = the first `prompt:` line of a provider file's frontmatter
+    title = None
+    for line in first.splitlines():
+        if line.startswith("prompt: "):
+            title = line[len("prompt: "):]; break
+    if title is None: sys.exit("no prompt: line in provider frontmatter")
+
+    if gen is None:
+        gen = datetime.datetime.now(datetime.timezone.utc).isoformat()
+
+    parts = []
+    parts.append("---\n")
+    parts.append(f"prompt: {title}\n")
+    parts.append("mode: all_deep_research\n")
+    parts.append("provider: combined\n")
+    parts.append("model: Multiple\n")
+    parts.append(f"operation_id: {op}\n")
+    parts.append("note: built by the P02 controller in the format of "
+                 "doxa_research.output.OutputManager.generate_combined_report "
+                 "(a concatenation of the saved provider files, no model call); "
+                 "Doxa 3.3.0 'resume --async' cannot honour the submission's "
+                 "--combined flag\n")
+    parts.append("---\n")
+    parts.append("\n")
+    parts.append(f"# Combined Research Report: {title}\n")
+    parts.append("\n")
+    parts.append(f"Generated: {gen}\n")
+    for p in ORDER:
+        parts.append(f"\n\n## {p.capitalize()} Results\n\n")
+        parts.append(files[p].read_text())
+        parts.append("\n\n---\n")
+    text = "".join(parts)
+    if out:
+        pathlib.Path(out).write_text(text)
+        print(f"wrote {out} ({len(text)} bytes)")
+    else:
+        sys.stdout.write(text)
+
+main()

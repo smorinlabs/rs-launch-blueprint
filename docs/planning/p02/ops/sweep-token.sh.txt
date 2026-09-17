@@ -1,0 +1,6 @@
+#!/bin/zsh
+# usage: sweep-token.sh <run dir> — exit 1 if the gh token bytes appear anywhere under raw/ or review/
+set -u
+tok="$(gh auth token 2>/dev/null)"; [[ -z "$tok" ]] && { echo "no token to sweep for"; exit 0; }
+if /usr/bin/grep -rqF -- "$tok" "$1/raw" "$1/review" 2>/dev/null; then echo "TOKEN LEAK under $1 — do not register or commit"; exit 1; fi
+echo "sweep clean: $1"

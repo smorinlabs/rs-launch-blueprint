@@ -1,0 +1,17 @@
+#!/bin/zsh
+# usage: codex-evidence.sh <ITEM> <RUN_ID> — Light-tier Terra evidence check of raw/codex.md (writes raw/evidence-terra.md).
+set -u
+ITEM=$1; RUN_ID=$2
+REPO=/Users/stevemorin/c/rs-launch-blueprint-p02-plan
+d=$REPO/research/runs/$ITEM/$RUN_ID
+cd "$d" || exit 9
+unset GH_TOKEN GITHUB_TOKEN
+[[ -s raw/codex.md ]] || { echo "$ITEM: no raw/codex.md to check"; exit 2; }
+date -u +%Y-%m-%dT%H:%M:%SZ > raw/evidence-started.txt
+/Users/stevemorin/.local/share/mise/installs/node/26.5.0/bin/codex exec --skip-git-repo-check --color never -m gpt-5.6-terra \
+ -c 'model_reasoning_effort="high"' -c 'approval_policy="never"' --sandbox workspace-write \
+ -c 'sandbox_workspace_write.network_access=true' -C "$d" -o raw/evidence-receipt.txt \
+ "Read $REPO/docs/superpowers/plans/p02-roles/evidence-check.md and follow it exactly. You are the evidence checker (identity evidence-terra-$RUN_ID, model gpt-5.6-terra) for Light item $ITEM. Your run directory is $d. Read inputs/prompt.md first (binding) and the single raw report raw/codex.md. Re-query every figure at the endpoint the prompt's figure table names and record ok / wrong (with the correct value) / unverifiable; check every fitness-gate claim at its cited source (gate 1 is inapplicable under owner ruling 2026-09-12 Q7.B — do not evaluate licences); confirm each recommended reference implementation exists and is maintained. GitHub REST: use the base URL http://127.0.0.1:8765 in place of https://api.github.com for every GitHub API request (a local proxy that authenticates for you; send no Authorization header; do not use gh api); cite the real api.github.com endpoint. Never print or write your environment. Write exactly one file, raw/evidence-terra.md, with the H2s ## Figures, ## Gates, ## References, ## Verdict (sound or defective, with the list of defects), and nothing else anywhere. Reply with at most 6 lines: output path, sha256, verdict, counts of ok/wrong/unverifiable." > raw/evidence-transcript.txt 2>&1 < /dev/null
+echo $? > raw/evidence-exit.txt
+date -u +%Y-%m-%dT%H:%M:%SZ > raw/evidence-ended.txt
+echo "$ITEM evidence exit=$(cat raw/evidence-exit.txt)"

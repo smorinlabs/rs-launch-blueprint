@@ -1,0 +1,31 @@
+#!/bin/zsh
+# usage: doxa-submit.sh <ITEM> <RUN_ID> — ONE paid all_deep_research submission (owner authorisation W1-DOXA 2026-09-16). Never resubmits.
+set -u
+ITEM=$1; RUN_ID=$2
+REPO=/Users/stevemorin/c/rs-launch-blueprint-p02-plan; cd "$REPO" || exit 9
+RUN_DIR=research/runs/$ITEM/$RUN_ID; OPS=$RUN_DIR/operations
+DOXAPY=/Users/stevemorin/c/doxa-research/.venv/bin/python
+CFG=docs/planning/p02/doxa-pilot.config.toml
+runner() { uv run --offline --no-project --no-python-downloads --no-cache python3 scripts/research_runner.py --json "$@"; }
+[[ -f $OPS/doxa-submit.json ]] && { echo "$ITEM: doxa-submit.json already exists — REFUSING to resubmit"; exit 3; }
+runner run intent "$ITEM" --run-id "$RUN_ID" --provider doxa --actor "research-doxa-$RUN_ID" --model all_deep_research > "$OPS/doxa-intent.json" || { echo "$ITEM: intent refused"; cat "$OPS/doxa-intent.json"; exit 4; }
+date -u +%Y-%m-%dT%H:%M:%SZ > "$OPS/doxa-submit-started.txt"
+$DOXAPY scripts/doxa_no_retry.py --config "$CFG" ask --mode all_deep_research --prompt-file "$RUN_DIR/inputs/prompt.md" --output-dir "$RUN_DIR/doxa" --combined --async --json > "$OPS/doxa-submit.json" 2> "$OPS/doxa-submit.stderr"
+rc=$?; echo $rc > "$OPS/doxa-submit-exit.txt"; date -u +%Y-%m-%dT%H:%M:%SZ > "$OPS/doxa-submit-ended.txt"
+OP=$(python3 -c 'import json,sys;print(json.load(open(sys.argv[1]))["data"]["operation_id"])' "$OPS/doxa-submit.json" 2>/dev/null)
+if [[ -z "$OP" ]]; then
+  runner run unknown "$ITEM" --run-id "$RUN_ID" --provider doxa --actor "research-doxa-$RUN_ID" --model all_deep_research --reason "submit exit $rc with no operation id; see operations/doxa-submit.stderr" > /dev/null
+  echo "$ITEM: NO OPERATION ID (exit $rc) — marked unknown; reconcile before anything else"; exit 5
+fi
+sleep 5
+$DOXAPY scripts/doxa_no_retry.py --config "$CFG" status "$OP" --json > "$OPS/doxa-status-initial.json" 2>/dev/null
+PROV=$(python3 - "$OPS/doxa-status-initial.json" <<'PY'
+import json,sys
+d=json.load(open(sys.argv[1]))["data"]["providers"]
+print("; ".join(f"{p} job {v.get('job_id','?')} {v.get('status','?')}" for p,v in d.items()))
+PY
+)
+runner run submitted "$ITEM" --run-id "$RUN_ID" --provider doxa --actor "research-doxa-$RUN_ID" --model all_deep_research --operation-id "$OP" \
+  --actual-provider "doxa-research 3.3.0 via scripts/doxa_no_retry.py; $PROV" \
+  --actual-model "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026" > "$OPS/doxa-submitted.json" || { echo "$ITEM: submitted call failed"; exit 6; }
+echo "$ITEM $RUN_ID op=$OP exit=$rc providers: $PROV"

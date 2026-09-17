@@ -1,0 +1,19 @@
+#!/bin/zsh
+# usage: codex-research.sh <ITEM> <RUN_ID> "<kind>" — one Codex raw research report.
+set -u
+ITEM=$1; RUN_ID=$2; KIND=$3
+REPO=/Users/stevemorin/c/rs-launch-blueprint-p02-plan
+d=$REPO/research/runs/$ITEM/$RUN_ID
+ACTOR=research-codex-$RUN_ID
+RID=$(python3 -c 'import uuid;print(uuid.uuid4().hex)')
+runner() { uv run --offline --no-project --no-python-downloads --no-cache python3 $REPO/scripts/research_runner.py --root $REPO "$@"; }
+runner run intent "$ITEM" --run-id "$RUN_ID" --actor "$ACTOR" --provider codex --model gpt-5.6-terra --request-id "$RID" > /dev/null
+cd "$d" || exit 9
+date -u +%Y-%m-%dT%H:%M:%SZ > raw/codex-started.txt
+/Users/stevemorin/.local/share/mise/installs/node/26.5.0/bin/codex exec --skip-git-repo-check --color never -m gpt-5.6-terra \
+ -c 'model_reasoning_effort="high"' -c 'approval_policy="never"' --sandbox workspace-write \
+ -c 'sandbox_workspace_write.network_access=true' -C "$d" -o raw/codex-receipt.txt \
+ "Read $REPO/docs/superpowers/plans/p02-roles/research-worker.md and follow it exactly. You are the Codex engine for item $ITEM. Your run directory is $d. Read inputs/prompt.md first; it is binding. Answer template kind: $KIND. Write exactly one file, raw/codex.md, and nothing else anywhere. You are an independent engine: do not list or read the run's raw/ directory, since other engines write there. This is a research programme, not an implementation: the Rust template does not exist yet and P03 builds it, so do not scaffold anything or build what you recommend. Every figure carries its endpoint and retrieval date; every claim carries a source URL and retrieval date. Read the pinned source repositories through their pins as the role file instructs, never from a working tree. Reply with at most 8 lines: the output path, its shasum -a 256, the count of H3 fields written, any CONFLICT: or BASELINE-REVIEW: lines, and anything unverified." > raw/codex-transcript.txt 2>&1 < /dev/null
+echo $? > raw/codex-exit.txt
+date -u +%Y-%m-%dT%H:%M:%SZ > raw/codex-ended.txt
+echo "$ITEM codex exit=$(cat raw/codex-exit.txt)"
