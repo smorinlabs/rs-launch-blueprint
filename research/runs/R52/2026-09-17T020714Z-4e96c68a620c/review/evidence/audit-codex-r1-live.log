@@ -1,0 +1,503 @@
+
+======== 0  toolchain, host, retrieval date ========
+retrieval date (UTC): 2026-09-17
+uname: Darwin 25.4.0 arm64
+sw_vers: macOS 26.4 25E246
+rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+curl: curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+network reachable (crates.io): 1
+gh authenticated: 1
+repository root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+
+======== 1  repository facts read from files (survive a git archive extraction) ========
+--- inputs/prompt.md '## Couplings' ---
+## Couplings
+- id: R52
+- owns:
+- consumes: R67: error-taxonomy-exit-codes
+- effort: focused
+- engines: codex, opus
+- evidence-checks:
+- acceptance-after:
+- related (not a registry dependency): R53 (`config-schema-validation`) validates the value this item's parser produces; this item does not decide the schema or validation mechanism.
+If your recommendation needs a consumed parameter to change, do not change it: write `CONFLICT: R## <param> — <needed value> — <reason>` in the `Parameters` field of your answer.
+
+## Questions
+PASS S01 :: /usr/bin/grep -E matched: ^- owns:[[:space:]]*$
+PASS S02 :: /usr/bin/grep -F found: - consumes: R67: error-taxonomy-exit-codes
+PASS S03 :: /usr/bin/grep -F found: - effort: focused
+PASS S04 :: /usr/bin/grep -F found: - engines: codex, opus
+PASS S05 :: equal: 5
+(count above from /usr/bin/grep -c, not a truncated listing)
+PASS S06 :: all five '- assumes' lines are byte-identical to docs/port/PARAMETERS.md
+PASS S07 :: equal: 0
+(S07: /usr/bin/grep -c counted the '- owns ' lines; R52 owns no registry parameter)
+PASS S08 :: equal: 1
+(S08: /usr/bin/grep -c counted the 're-verify: ' lines)
+PASS S09 :: /usr/bin/grep -F found: ### 2026-09-12 — no licence check for anything the template uses (Q4, superseded and widened by Q7.B)
+PASS S10 :: /usr/bin/grep -F found: ## 5. The licence gate's reach -- ANSWERED 2026-09-12 (Q7.B)
+--- owner-decisions.md section 7 heading, which the Opus raw reported as the wrong pointer ---
+240:## 7. The baseline-review questions
+PASS S11 :: /usr/bin/grep -E matched: ^## 7\. The baseline-review questions
+--- docs/port/COMMONALITY.md rows F224 F225 F226 F227 F243 ---
+228:| F224 | config file format | config-env-logging | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; both standardize on TOML (a language-neutral format); the parse/write libraries are F225/F226 |
+229:| F225 | TOML parse library | config-env-logging | different | DIVERGENT | R52 | bundle; py stdlib `tomllib` vs ts `smol-toml` — Rust's analogue is a TOML crate (e.g. `toml`, `basic-toml`); the shared format is F224, decided together with F226 |
+230:| F226 | TOML write library | config-env-logging | different | DIVERGENT | R52 | bundle, decided together with F225 (py splits parse/write into two libraries; ts's smol-toml does both — whether the Rust crate also does both is part of the same crate-choice question) |
+231:| F227 | config file naming convention (`<tool>_config.toml`) | config-env-logging | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free naming convention, tool name changes per port |
+247:| F243 | config file written with restrictive permissions | config-env-logging | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; tool-free POSIX 0600 convention, the required guarantee is py's shape — mode 0600 from creation, then atomic replace — because `OpenOptionsExt::mode` applies only when the file is cr
+PASS S12 :: equal: 5
+(S12: /usr/bin/grep -c over the whole file, not a head-truncated listing)
+PASS S13 :: /usr/bin/grep -E matched: ^[0-9]+:\| F224 .*COMMON . REUSE
+PASS S14 :: /usr/bin/grep -E matched: ^[0-9]+:\| F225 .*DIVERGENT
+PASS S15 :: /usr/bin/grep -E matched: ^[0-9]+:\| F226 .*DIVERGENT
+PASS S16 :: /usr/bin/grep -E matched: ^[0-9]+:\| F243 .*COMMON . REUSE
+R67 DECISION.md sha256 on disk:      16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497
+R67 sha256 in inputs/prerequisites: 16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497
+PASS S17 :: equal: 16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497
+PASS S18 :: /usr/bin/grep -F found: RSLB202
+PASS S19 :: /usr/bin/grep -F found: RSLB104
+PASS S20 :: /usr/bin/grep -F found: RSLB203
+PASS S21 :: /usr/bin/grep -E matched: ^\| R52 \| toml-crate \| bundle \| different \| DIVERGENT \| — \|
+
+======== 2  org CLI Design Standard v1.4.14 at the pinned blob ========
+cli-design-standard.md blob at HEAD: f9de0437baece3383e73ca2c5f48b7ab399b51c7
+PASS S22 :: equal: f9de0437baece3383e73ca2c5f48b7ab399b51c7
+PASS S23 :: /usr/bin/grep -F found: | **Version** | 1.4.14 |
+--- R5.2 (config format) ---
+303:The canonical config format **MUST** be **TOML**. **YAML MAY** be used instead *only* for tools that live in the Kubernetes/cloud-native ecosystem, where users expect it; this is the single permit
+PASS S24 :: /usr/bin/grep -F found: The canonical config format **MUST** be **TOML**
+--- R5.8 (config validation and shared-state writes) ---
+340:A tool with project/user config **SHOULD** validate config files with precise file/key diagnostics and **SHOULD** provide `acme config validate`. If config schema changes require migration, the tool **SHOULD** provide a documented migration path, back up f
+PASS S25 :: /usr/bin/grep -F found: validate config files with precise file/key diagnostics
+PASS S26 :: /usr/bin/grep -F found: back up files before rewriting them
+PASS S27 :: /usr/bin/grep -F found: Tools that write shared config/state/cache **SHOULD** use atomic writes
+--- Appendix E, the Rust paragraph ---
+**Rust — Clap (derive).**
+Clap defaults already align well: it generates `-h`/`--help` and `-V`/`--version` (capital `V`), so reserve lowercase `-v` for verbose via `#[arg(short, long, action = ArgAction::Count)]`. Use subcommands (`#[derive(Subcommand)]`) for noun-verb; `ArgAction::Count` gives repeatable `-v`; `value_enum` backs `-o/--output` on result-output commands. Pair with `figment`/`config` crates for the precedence chain and `directories`/`etcetera` for XDG paths. Exit with `std::process::exit(code)` using the §6 codes (note: a panic yields `101`, which you should avoid surfacing as a normal failure).
+
+PASS S28 :: /usr/bin/grep -F found: figment
+PASS S29 :: /usr/bin/grep -E correctly found no match for: toml_edit|basic-toml|toml-span|toml = 
+(S28 shows the standard DOES name Rust crates for other roles; S29 shows it names
+ no Rust TOML crate anywhere, so the crate choice here is not org-locked.)
+
+======== 3  crates.io registry figures (endpoint + retrieval date on every line) ========
+--- GET https://crates.io/api/v1/crates/toml (retrieved 2026-09-17) ---
+  crate.recent_downloads = 217379722
+  crate.downloads       = 912211500
+  crate.max_stable_version = 1.1.6+spec-1.1.0
+VOLATILE toml :: download counts above move on every rerun and are not asserted (endpoint above, retrieved 2026-09-17)
+--- GET https://crates.io/api/v1/crates/toml/versions (newest yanked:false) ---
+  num=1.1.6+spec-1.1.0 created_at=2026-09-10T20:28:39.522017Z rust_version=1.85 license=MIT OR Apache-2.0 edition=2024
+--- GET https://crates.io/api/v1/crates/toml_edit (retrieved 2026-09-17) ---
+  crate.recent_downloads = 198995334
+  crate.downloads       = 820233998
+  crate.max_stable_version = 0.25.15+spec-1.1.0
+VOLATILE toml_edit :: download counts above move on every rerun and are not asserted (endpoint above, retrieved 2026-09-17)
+--- GET https://crates.io/api/v1/crates/toml_edit/versions (newest yanked:false) ---
+  num=0.25.15+spec-1.1.0 created_at=2026-09-11T01:44:08.521316Z rust_version=1.85 license=MIT OR Apache-2.0 edition=2024
+--- GET https://crates.io/api/v1/crates/basic-toml (retrieved 2026-09-17) ---
+  crate.recent_downloads = 14324113
+  crate.downloads       = 63353663
+  crate.max_stable_version = 0.1.10
+VOLATILE basic-toml :: download counts above move on every rerun and are not asserted (endpoint above, retrieved 2026-09-17)
+--- GET https://crates.io/api/v1/crates/basic-toml/versions (newest yanked:false) ---
+  num=0.1.10 created_at=2025-03-03T04:41:42.794149Z rust_version=null license=MIT OR Apache-2.0 edition=2021
+--- GET https://crates.io/api/v1/crates/taplo (retrieved 2026-09-17) ---
+  crate.recent_downloads = 716818
+  crate.downloads       = 3481354
+  crate.max_stable_version = 0.14.0
+VOLATILE taplo :: download counts above move on every rerun and are not asserted (endpoint above, retrieved 2026-09-17)
+--- GET https://crates.io/api/v1/crates/taplo/versions (newest yanked:false) ---
+  num=0.14.0 created_at=2025-05-22T23:38:33.537164Z rust_version=1.74 license=MIT edition=2021
+--- GET https://crates.io/api/v1/crates/toml-span (retrieved 2026-09-17) ---
+  crate.recent_downloads = 4822732
+  crate.downloads       = 15289889
+  crate.max_stable_version = 0.7.1
+VOLATILE toml-span :: download counts above move on every rerun and are not asserted (endpoint above, retrieved 2026-09-17)
+--- GET https://crates.io/api/v1/crates/toml-span/versions (newest yanked:false) ---
+  num=0.7.1 created_at=2026-03-06T07:19:38.196432Z rust_version=1.70 license=MIT OR Apache-2.0 edition=2021
+--- GET https://crates.io/api/v1/crates/boml (retrieved 2026-09-17) ---
+  crate.recent_downloads = 116110
+  crate.downloads       = 737176
+  crate.max_stable_version = 2.0.0
+VOLATILE boml :: download counts above move on every rerun and are not asserted (endpoint above, retrieved 2026-09-17)
+--- GET https://crates.io/api/v1/crates/boml/versions (newest yanked:false) ---
+  num=2.0.0 created_at=2026-03-24T01:02:07.710945Z rust_version=1.85.0 license=MIT OR Apache-2.0 edition=2024
+--- GET https://crates.io/api/v1/crates/tomling (retrieved 2026-09-17) ---
+  crate.recent_downloads = 30
+  crate.downloads       = 2280
+  crate.max_stable_version = 0.3.0
+VOLATILE tomling :: download counts above move on every rerun and are not asserted (endpoint above, retrieved 2026-09-17)
+--- GET https://crates.io/api/v1/crates/tomling/versions (newest yanked:false) ---
+  num=0.3.0 created_at=2025-07-09T10:31:56.150136Z rust_version=1.67 license=MIT edition=2021
+PASS S30 :: equal: 1.1.6+spec-1.1.0
+PASS S31 :: equal: 1.85
+PASS S32 :: equal: 2024
+PASS S33 :: equal: 0.25.15+spec-1.1.0
+PASS S34 :: equal: 1.85
+PASS S35 :: equal: 2024
+PASS S36 :: equal: null
+PASS S37 :: equal: 0.1.10
+(S36 is the whole gate-2 exclusion of basic-toml: rust_version is null on the versions endpoint)
+PASS S38 :: equal: 0
+basic-toml published versions counted by jq: 12; of those declaring rust_version: 0
+
+======== 4  GitHub repository metadata and the issue-responsiveness conflict ========
+--- gh api repos/toml-rs/toml (retrieved 2026-09-17) ---
+  stargazers_count=1074 archived=false pushed_at=2026-09-15T14:53:24Z
+VOLATILE toml-rs/toml :: stargazers_count and pushed_at move on every rerun and are not asserted (endpoint above, retrieved 2026-09-17)
+--- gh api repos/dtolnay/basic-toml (retrieved 2026-09-17) ---
+  stargazers_count=83 archived=true pushed_at=2025-03-03T04:43:39Z
+VOLATILE dtolnay/basic-toml :: stargazers_count and pushed_at move on every rerun and are not asserted (endpoint above, retrieved 2026-09-17)
+PASS S40 :: equal: false
+PASS S41 :: equal: true
+--- open issues via search/issues total_count, never open_issues_count ---
+  search/issues total_count = 57 ; repos.open_issues_count = 71 (the latter counts PRs)
+VOLATILE toml-rs/toml :: open-issue totals move; recorded, not asserted (endpoint above, retrieved 2026-09-17)
+--- author_association of every comment on the ten issues both raws named ---
+  issue 1214 : maintainer-association comments = 1
+  issue 1213 : maintainer-association comments = 0
+  issue 1210 : maintainer-association comments = 2
+  issue 1206 : maintainer-association comments = 2
+  issue 1188 : maintainer-association comments = 0
+  issue 1181 : maintainer-association comments = 4
+  issue 1175 : maintainer-association comments = 0
+  issue 1172 : maintainer-association comments = 1
+  issue 1162 : maintainer-association comments = 3
+  issue 1158 : maintainer-association comments = 2
+--- raw associations ---
+issue 1214 epage MEMBER 2026-09-08T13:16:11Z
+issue 1210 epage MEMBER 2026-09-02T12:12:22Z
+issue 1210 epage MEMBER 2026-09-02T16:38:37Z
+issue 1206 epage MEMBER 2026-09-01T21:54:24Z
+issue 1206 kazuk NONE 2026-09-03T10:35:31Z
+issue 1206 kazuk NONE 2026-09-14T15:21:21Z
+issue 1206 epage MEMBER 2026-09-14T17:52:04Z
+issue 1188 abbyssoul NONE 2026-07-14T13:04:21Z
+issue 1181 epage MEMBER 2026-07-01T14:16:02Z
+issue 1181 yashkuceriya CONTRIBUTOR 2026-07-17T03:48:45Z
+issue 1181 koopa1338 NONE 2026-09-01T12:34:34Z
+issue 1181 epage MEMBER 2026-09-01T12:53:09Z
+issue 1181 koopa1338 NONE 2026-09-03T10:40:51Z
+issue 1181 epage MEMBER 2026-09-03T11:49:23Z
+issue 1181 epage MEMBER 2026-09-14T17:32:11Z
+issue 1172 epage MEMBER 2026-06-15T15:51:56Z
+issue 1172 scottanderson NONE 2026-06-15T22:28:21Z
+issue 1162 CharaVerKys NONE 2026-05-22T13:22:57Z
+issue 1162 epage MEMBER 2026-05-22T14:27:23Z
+issue 1162 CharaVerKys NONE 2026-05-22T14:48:47Z
+issue 1162 epage MEMBER 2026-05-22T14:58:06Z
+issue 1162 epage MEMBER 2026-05-22T15:00:10Z
+issue 1158 epage MEMBER 2026-05-12T18:35:15Z
+issue 1158 dimbleby CONTRIBUTOR 2026-05-15T22:08:41Z
+issue 1158 epage MEMBER 2026-09-08T13:08:09Z
+issues with at least one OWNER/MEMBER/COLLABORATOR comment: 7 of 10
+issues with none:                                          3 of 10
+PASS S42 :: 7 >= 1
+maintainer-association comment lines counted by /usr/bin/grep -c: 15
+of those, lines reading ' epage MEMBER ' counted by /usr/bin/grep -c: 15
+PASS S43 :: 15 >= 1
+PASS S44 :: /usr/bin/grep -E matched:  epage MEMBER 
+PASS S45 :: equal: 15
+
+======== 5  advisories: RustSec pages, with a known-vulnerable control ========
+GET https://rustsec.org/packages/toml.html -> HTTP 404 (retrieved 2026-09-17)
+GET https://rustsec.org/packages/toml_edit.html -> HTTP 404 (retrieved 2026-09-17)
+GET https://rustsec.org/packages/basic-toml.html -> HTTP 404 (retrieved 2026-09-17)
+GET https://rustsec.org/packages/time.html -> HTTP 200 (retrieved 2026-09-17)
+PASS S50 :: equal: 200
+PASS S51 :: /usr/bin/grep -F found: RUSTSEC-2020-0071
+PASS S52 :: equal: 404
+PASS S53 :: equal: 404
+PASS S54 :: equal: 404
+(S50/S51 are the control. Without them a 404 proves nothing, which is why the
+ Codex raw recorded gate 3 as unverified; with them it is evidence.)
+--- POST https://api.osv.dev/v1/query {"package":{"name":"toml","ecosystem":"crates.io"}} ---
+{}
+--- POST https://api.osv.dev/v1/query {"package":{"name":"toml_edit","ecosystem":"crates.io"}} ---
+{}
+PASS S55 :: equal: {}
+PASS S56 :: equal: {}
+
+======== 6  published .crate artifacts: manifests, features, unsafe posture ========
+unpacked toml-1.1.6+spec-1.1.0 from https://static.crates.io/crates/toml/toml-1.1.6%2Bspec-1.1.0.crate (retrieved 2026-09-17)
+unpacked toml_edit-0.25.15+spec-1.1.0 from https://static.crates.io/crates/toml_edit/toml_edit-0.25.15%2Bspec-1.1.0.crate (retrieved 2026-09-17)
+--- toml 1.1.6+spec-1.1.0 Cargo.toml (published manifest) ---
+13:edition = "2024"
+14:rust-version = "1.85"
+15:name = "toml"
+16:version = "1.1.6+spec-1.1.0"
+49:license = "MIT OR Apache-2.0"
+98:default = [
+133:name = "toml"
+137:name = "decode"
+146:name = "enum_external"
+155:name = "toml2json"
+163:[dependencies.anstream]
+164:version = "1.0.0"
+167:[dependencies.anstyle]
+168:version = "1.0.14"
+171:[dependencies.foldhash]
+172:version = "0.2.0"
+176:[dependencies.indexmap]
+177:version = "2.13.0"
+181:[dependencies.serde_core]
+182:version = "1.0.228"
+187:[dependencies.serde_spanned]
+188:version = "1.1.1"
+192:[dependencies.toml_datetime]
+193:version = "1.1.1"
+197:[dependencies.toml_parser]
+198:version = "1.1.3"
+203:[dependencies.toml_writer]
+204:version = "1.1.2"
+209:[dependencies.winnow]
+210:version = "1.0.0"
+215:version = "0.14.0"
+218:version = "1.0.228"
+222:version = "0.1.9"
+225:version = "1.0.149"
+228:version = "1.1.0"
+231:version = "2.14.0"
+234:version = "1.14.0"
+238:version = "2.5.0"
+PASS S60 :: /usr/bin/grep -F found: rust-version = "1.85"
+PASS S61 :: /usr/bin/grep -F found: edition = "2024"
+PASS S62 :: /usr/bin/grep -F found: license = "MIT OR Apache-2.0"
+--- toml [features] default (published manifest writes it multi-line) ---
+default = [
+    "std",
+    "serde",
+    "parse",
+    "display",
+]
+PASS S63a :: /usr/bin/grep -F found: "std"
+PASS S63b :: /usr/bin/grep -F found: "serde"
+PASS S63c :: /usr/bin/grep -F found: "parse"
+PASS S63d :: /usr/bin/grep -F found: "display"
+PASS S63e :: /usr/bin/grep -E correctly found no match for: preserve_order
+(S63e: preserve_order is NOT a default feature of toml; enabling it would pull
+ dep:indexmap into toml, which is why this decision leaves it off.)
+PASS S63f :: /usr/bin/grep -E matched: preserve_order = \[
+PASS S64 :: /usr/bin/grep -E correctly found no match for: ^\[dependencies\.toml_edit\]
+PASS S65 :: /usr/bin/grep -E matched: ^\[dependencies\.(serde_core|toml_parser|toml_writer|toml_datetime|serde_spanned|winnow)\]
+--- toml unsafe posture ---
+150:#![forbid(unsafe_code)]
+PASS S66 :: /usr/bin/grep -F found: #![forbid(unsafe_code)]
+files under toml/src containing the token 'unsafe' (/usr/bin/grep -rc, zero-count files removed): 1
+--- toml conformance harnesses wired into the published manifest ---
+230:[dev-dependencies.toml-test-data]
+233:[dev-dependencies.toml-test-harness]
+PASS S67 :: /usr/bin/grep -E matched: toml.test.(harness|data)
+--- toml_edit 0.25.15+spec-1.1.0 Cargo.toml (published manifest) ---
+13:edition = "2024"
+14:rust-version = "1.85"
+15:name = "toml_edit"
+16:version = "0.25.15+spec-1.1.0"
+44:license = "MIT OR Apache-2.0"
+96:default = [
+105:serde = [
+113:name = "toml_edit"
+117:name = "visit"
+125:[dependencies.anstream]
+126:version = "1.0.0"
+129:[dependencies.anstyle]
+130:version = "1.0.14"
+133:[dependencies.indexmap]
+134:version = "2.13.0"
+137:[dependencies.serde_core]
+138:version = "1.0.228"
+141:[dependencies.serde_spanned]
+142:version = "1.1.1"
+146:[dependencies.toml_datetime]
+147:version = "1.1.1"
+149:[dependencies.toml_parser]
+150:version = "1.1.3"
+153:[dependencies.toml_writer]
+154:version = "1.1.2"
+157:[dependencies.winnow]
+158:version = "1.0.0"
+162:version = "1.10.0"
+165:version = "1.0.228"
+169:version = "0.1.9"
+172:version = "1.0.149"
+175:version = "1.1.0"
+178:version = "2.14.0"
+181:version = "1.14.0"
+185:version = "2.5.0"
+PASS S70 :: /usr/bin/grep -F found: rust-version = "1.85"
+PASS S71 :: /usr/bin/grep -F found: edition = "2024"
+PASS S72 :: /usr/bin/grep -F found: license = "MIT OR Apache-2.0"
+--- toml_edit [features] default ---
+default = [
+    "parse",
+    "display",
+]
+PASS S73a :: /usr/bin/grep -F found: "parse"
+PASS S73b :: /usr/bin/grep -F found: "display"
+PASS S73c :: /usr/bin/grep -E correctly found no match for: serde
+(S73c: serde is NOT default for toml_edit. Cargo enables it; this template does
+ not, because toml owns the typed read.)
+--- toml_edit indexmap dependency block ---
+[dependencies.indexmap]
+version = "2.13.0"
+features = ["std"]
+
+[dependencies.serde_core]
+PASS S74 :: /usr/bin/grep -E matched: ^\[dependencies\.indexmap\]
+PASS S76 :: /usr/bin/grep -E correctly found no match for: optional = true
+--- toml_edit unsafe posture: observed absence, not a compiler-enforced forbid ---
+forbid(unsafe_code) occurrences in toml_edit/src/lib.rs (/usr/bin/grep -c): 0
+PASS S77 :: equal: 0
+files under toml_edit/src containing the token 'unsafe' (/usr/bin/grep -rl | wc -l): 0
+PASS S78 :: equal: 0
+
+======== 7  behavioural probe: the two crates run on three literal strings ========
+probe crate: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r52-verify.22933/probe (throwaway; nothing is written into the repository)
+P1_TYPED_READ = Probe { output: Some(Out { color: Some("auto"), format: Some("text") }) }
+P2_PLAIN_KEEPS_HEADER = false
+P2_PLAIN_KEEPS_TRAILING = false
+P3_TOML_DE_SPAN = Some(17..17)
+P3_TOML_DE_FIRSTLINE = TOML parse error at line 2, column 9
+P3_TOML_DE_MESSAGE = string values must be quoted, expected literal string
+P4_EDIT_SPAN = Some(17..17)
+P4_EDIT_FIRSTLINE = TOML parse error at line 2, column 9
+P5_UNMODIFIED_ROUNDTRIP_IDENTICAL = true
+P6_NAIVE_KEEPS_HEADER = true
+P6_NAIVE_KEEPS_PERKEY = true
+P6_NAIVE_KEEPS_TRAILING = false
+P6_NAIVE_APPLIED = true
+P7_DECOR_KEEPS_HEADER = true
+P7_DECOR_KEEPS_PERKEY = true
+P7_DECOR_KEEPS_TRAILING = true
+P7_DECOR_APPLIED = true
+P8_REREAD = Probe { output: Some(Out { color: Some("auto"), format: Some("json") }) }
+PASS S80 :: /usr/bin/grep -F found: P1_TYPED_READ = Probe { output: Some(Out { color: Some("auto"), format: Some("text") }) }
+PASS S81 :: /usr/bin/grep -F found: P2_PLAIN_KEEPS_HEADER = false
+PASS S82 :: /usr/bin/grep -F found: P2_PLAIN_KEEPS_TRAILING = false
+PASS S83 :: /usr/bin/grep -F found: P3_TOML_DE_SPAN = Some(17..17)
+PASS S84 :: /usr/bin/grep -F found: P3_TOML_DE_FIRSTLINE = TOML parse error at line 2, column 9
+PASS S85 :: /usr/bin/grep -F found: P4_EDIT_SPAN = Some(17..17)
+PASS S86 :: /usr/bin/grep -F found: P4_EDIT_FIRSTLINE = TOML parse error at line 2, column 9
+PASS S87 :: /usr/bin/grep -F found: P5_UNMODIFIED_ROUNDTRIP_IDENTICAL = true
+PASS S88 :: /usr/bin/grep -F found: P6_NAIVE_KEEPS_TRAILING = false
+PASS S89 :: /usr/bin/grep -F found: P6_NAIVE_APPLIED = true
+PASS S90 :: /usr/bin/grep -F found: P7_DECOR_KEEPS_HEADER = true
+PASS S91 :: /usr/bin/grep -F found: P7_DECOR_KEEPS_PERKEY = true
+PASS S92 :: /usr/bin/grep -F found: P7_DECOR_KEEPS_TRAILING = true
+PASS S93 :: /usr/bin/grep -F found: P7_DECOR_APPLIED = true
+PASS S94 :: /usr/bin/grep -F found: P8_REREAD = Probe { output: Some(Out { color: Some("auto"), format: Some("json") }) }
+--- cargo tree -e normal (both members) ---
+r52probe v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r52-verify.22933/probe)
+├── serde v1.0.229
+│   ├── serde_core v1.0.229
+│   └── serde_derive v1.0.229 (proc-macro)
+│       ├── proc-macro2 v1.0.107
+│       │   └── unicode-ident v1.0.25
+│       ├── quote v1.0.47
+│       │   └── proc-macro2 v1.0.107 (*)
+│       └── syn v3.0.6
+│           ├── proc-macro2 v1.0.107 (*)
+│           ├── quote v1.0.47 (*)
+│           └── unicode-ident v1.0.25
+├── toml v1.1.6+spec-1.1.0
+│   ├── serde_core v1.0.229
+│   ├── serde_spanned v1.1.1
+│   │   └── serde_core v1.0.229
+│   ├── toml_datetime v1.1.1+spec-1.1.0
+│   │   └── serde_core v1.0.229
+│   ├── toml_parser v1.1.3+spec-1.1.0
+│   │   └── winnow v1.0.4
+│   ├── toml_writer v1.1.2+spec-1.1.0
+│   └── winnow v1.0.4
+└── toml_edit v0.25.15+spec-1.1.0
+    ├── indexmap v2.14.2
+    │   ├── equivalent v1.0.2
+    │   └── hashbrown v0.17.1
+    ├── toml_datetime v1.1.1+spec-1.1.0 (*)
+    ├── toml_parser v1.1.3+spec-1.1.0 (*)
+    ├── toml_writer v1.1.2+spec-1.1.0
+    └── winnow v1.0.4
+--- cargo tree -e normal -p toml (does toml still pull toml_edit?) ---
+toml v1.1.6+spec-1.1.0
+├── serde_core v1.0.229
+├── serde_spanned v1.1.1
+│   └── serde_core v1.0.229
+├── toml_datetime v1.1.1+spec-1.1.0
+│   └── serde_core v1.0.229
+├── toml_parser v1.1.3+spec-1.1.0
+│   └── winnow v1.0.4
+├── toml_writer v1.1.2+spec-1.1.0
+└── winnow v1.0.4
+PASS S95 :: /usr/bin/grep -E correctly found no match for: toml_edit
+PASS S95a :: /usr/bin/grep -E correctly found no match for: tokio|async-std|smol |futures|mio|executor
+(S95a is fitness gate 5's async clause: no runtime, executor or futures crate
+ appears anywhere in the resolved graph for either member.)
+tree lines naming toml_edit/indexmap/equivalent/hashbrown (/usr/bin/grep -cE): 4
+PASS S96 :: /usr/bin/grep -E matched: indexmap v2
+PASS S97 :: /usr/bin/grep -E matched: hashbrown v0
+PASS S98 :: /usr/bin/grep -E matched: equivalent v1
+--- whole-graph MSRV, excluding the probe package itself ---
+maximum rust_version across the resolved graph = 1.85.0
+PASS S99 :: equal: 1.85.0
+PASS S99b :: 85 >= 0
+PASS S99c :: graph MSRV minor 85 <= the 1.96 floor
+(policy floor is stable-minus-2; with stable 1.98.x the floor is 1.96, so 1.85 clears it)
+--- current published stable channel ---
+1.98.1
+PASS S100 :: /usr/bin/grep -E matched: ^1\.[0-9]+\.[0-9]+
+
+======== 8  adopter manifests, read at pinned commits ========
+--- rust-lang/cargo Cargo.toml @ 495c385d0875c4ba51eb72ea0448a2d4c018b8d4 (retrieved 2026-09-17) ---
+115:toml = { version = "1.1.5", default-features = false }
+116:toml_edit = { version = "0.25.10", features = ["serde"] }
+224:toml = { workspace = true, features = ["std", "serde", "parse", "display", "preserve_order"] }
+--- astral-sh/uv Cargo.toml @ 6b40d9e51d246a1492731b59b19659c4b84c82a7 (retrieved 2026-09-17) ---
+311:toml = { version = "1.1.0", default-features = false, features = [
+318:toml_edit = { version = "0.25.8", default-features = false, features = [
+--- starship/starship Cargo.toml @ 4ff40d066af2dd316dcb4742544254436e7e8190 (retrieved 2026-09-17) ---
+88:toml = { version = "1.1.6", features = ["preserve_order"] }
+89:toml_edit = "0.25.15"
+PASS S110 :: /usr/bin/grep -E matched: ^toml = \{ version = "1\.
+PASS S111 :: /usr/bin/grep -E matched: ^toml_edit = \{ version = "0\.25\.
+PASS S112 :: /usr/bin/grep -E matched: ^toml = \{ version = "1\.
+PASS S113 :: /usr/bin/grep -E matched: ^toml_edit = \{ version = "0\.25\.
+PASS S114 :: /usr/bin/grep -E matched: ^toml = \{ version = "1\.
+PASS S115 :: /usr/bin/grep -E matched: ^toml_edit = "0\.25\.
+(All three well-regarded adopters ship BOTH crates. That is the practice
+ evidence for the two-member stack, and it is also the compatibility proof.)
+--- the rust-lang/team Cargo roster, which is what makes epage's docs authoritative ---
+10:    "epage",
+PASS S116 :: /usr/bin/grep -F found: epage
+
+======== 9  upstream CI: gate 4 (OS matrix) and gate 2's 'tested in CI' clause ========
+--- toml-rs/toml .github/workflows/ci.yml @ 3b81b06418e14f83d18eea2cbc3aee4d1a30eace (retrieved 2026-09-17) ---
+29:    runs-on: ubuntu-latest
+39:        os: ["ubuntu-latest", "windows-latest", "macos-latest"]
+42:    runs-on: ${{ matrix.os }}
+67:  msrv:
+68:    name: "Check MSRV"
+71:        os: ["ubuntu-latest"]
+72:    runs-on: ${{ matrix.os }}
+92:        os: ["ubuntu-latest"]
+93:    runs-on: ${{ matrix.os }}
+108:    runs-on: ubuntu-latest
+122:    runs-on: ubuntu-latest
+138:    runs-on: ubuntu-latest
+154:    runs-on: ubuntu-latest
+190:    runs-on: ubuntu-latest
+PASS S120 :: /usr/bin/grep -F found: os: ["ubuntu-latest", "windows-latest", "macos-latest"]
+PASS S121 :: /usr/bin/grep -E matched: ^  msrv:
+PASS S122 :: /usr/bin/grep -F found: Check MSRV
+(S120 satisfies gate 4 for BOTH members: one workspace, one workflow, and it
+ exceeds the required ubuntu-latest + macos-latest. S121/S122 are the second
+ half of the msrv-policy clause, 'tested in CI', met upstream as well as by
+ the template's own planned MSRV job.)
+
+======== summary ========
+assertions run:     108
+assertions failed:  0
+sections skipped:   0
+Exit status is the failure count, so 0 means every assertion above passed.

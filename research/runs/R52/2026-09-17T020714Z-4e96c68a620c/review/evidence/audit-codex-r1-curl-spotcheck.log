@@ -1,0 +1,15 @@
+retrieved_utc=2026-09-17T04:32:08Z
+GET https://crates.io/api/v1/crates/toml
+curl: (56) The requested URL returned error: 403
+GET https://crates.io/api/v1/crates/toml/versions
+curl: (56) The requested URL returned error: 403
+GET https://crates.io/api/v1/crates/toml_edit/versions
+curl: (56) The requested URL returned error: 403
+GET https://crates.io/api/v1/crates/basic-toml/versions
+curl: (56) The requested URL returned error: 403
+GET https://rustsec.org/packages/time.html
+    <a href="/advisories/RUSTSEC-2020-0071.html">
+      RUSTSEC-2020-0071: Vulnerability in time
+HTTP=200
+GET https://rustsec.org/packages/toml.html
+HTTP=404
