@@ -1,0 +1,35 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-17T02:07:15Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-17T02:07:15Z",
+      "state": "ready"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "88609ba0a3cfaa2a552859c03110c21455c7697eb63ca5a25b59037f87fa0011",
+    "parameters_semantic": "4b53a09322fcbb54c91ee13219fd87b44a7af7f92d83d7988f073f0a63d68b26",
+    "parameters_semantic_file": "fdfc2f28ce5816768e6394cc8cf817d81e9bc3421903805de7be9a9823111c9a",
+    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+    "policy_item": "eabae257e92f1d93a2d640cfb627e526d300e7e6b918082d124a964a5f731192",
+    "prerequisites": "7ffab1d4ad148bc4d64ea5d6179fd78f91c1aef8d503ca40370568b5e5c69891",
+    "prompt": "fb094249c366852dbdbdb039877dc915c10cd488cfbb54aee7d4ed2952dee2e5",
+    "registry": "6560edd363acc5b728aef2c39f61c157281a2b403c7077dd76288e765226f593"
+  },
+  "item": "R22",
+  "model": "claude-fable-5-1",
+  "operations": {},
+  "prompt_source": "research/topics/22-runtime-version-accessor/prompts/runtime-version-accessor.prompt.md",
+  "remaining_budget": "no paid engine (Light tier)",
+  "required_engines": [
+    "codex"
+  ],
+  "run_id": "2026-09-17T020715Z-d93731e7353c",
+  "schema_version": 1,
+  "state": "ready",
+  "tier": "light",
+  "updated_at": "2026-09-17T02:07:15Z"
+}

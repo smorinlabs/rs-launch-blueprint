@@ -1,0 +1,36 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-17T02:07:14Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-17T02:07:14Z",
+      "state": "ready"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "88609ba0a3cfaa2a552859c03110c21455c7697eb63ca5a25b59037f87fa0011",
+    "parameters_semantic": "9ab00ca6a5f316a058d743e4bf9b711ccb2c47a5a2ed7f39b7eafa0fcb13377e",
+    "parameters_semantic_file": "53ce162e1b844b2810c92eb62cdda8d1561d56347a374e213291e9256f63b8fc",
+    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+    "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+    "prerequisites": "6401dacf95abff437ed071a81e555023e26589c2dd1d6fde75f9e944b6fcf8f6",
+    "prompt": "7c3ffe88ae6a819f2ea8270daed4d04b20376a15585230c72e56af818434439e",
+    "registry": "6560edd363acc5b728aef2c39f61c157281a2b403c7077dd76288e765226f593"
+  },
+  "item": "R48",
+  "model": "claude-fable-5-1",
+  "operations": {},
+  "prompt_source": "research/topics/48-mocking-crates/prompts/mocking-crates.prompt.md",
+  "remaining_budget": "no paid engine (Focused tier)",
+  "required_engines": [
+    "codex",
+    "opus"
+  ],
+  "run_id": "2026-09-17T020714Z-f9e4f950ea82",
+  "schema_version": 1,
+  "state": "ready",
+  "tier": "focused",
+  "updated_at": "2026-09-17T02:07:14Z"
+}

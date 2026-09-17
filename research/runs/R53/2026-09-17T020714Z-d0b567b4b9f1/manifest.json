@@ -1,0 +1,36 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-17T02:07:14Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-17T02:07:14Z",
+      "state": "ready"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "88609ba0a3cfaa2a552859c03110c21455c7697eb63ca5a25b59037f87fa0011",
+    "parameters_semantic": "3b3137cd2186d1c9203234e5934dc9debb6bab4cac31c7fafa3ba4a34e8870e5",
+    "parameters_semantic_file": "73ed4b1f2bc7cf409580e7014a8681831828156ebd6f51364e09e5521d9b4b27",
+    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+    "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+    "prerequisites": "75faec66766705870375049901dde270a1a038cdfea2725506d6655449910438",
+    "prompt": "d4272fd9c135e7941374a274feab3cf85c6ae47472cf716cb9968639d5e64237",
+    "registry": "6560edd363acc5b728aef2c39f61c157281a2b403c7077dd76288e765226f593"
+  },
+  "item": "R53",
+  "model": "claude-fable-5-1",
+  "operations": {},
+  "prompt_source": "research/topics/53-config-schema-validation/prompts/config-schema-validation.prompt.md",
+  "remaining_budget": "no paid engine (Focused tier)",
+  "required_engines": [
+    "codex",
+    "opus"
+  ],
+  "run_id": "2026-09-17T020714Z-d0b567b4b9f1",
+  "schema_version": 1,
+  "state": "ready",
+  "tier": "focused",
+  "updated_at": "2026-09-17T02:07:14Z"
+}

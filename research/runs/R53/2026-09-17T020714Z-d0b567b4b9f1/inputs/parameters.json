@@ -1,0 +1,32 @@
+[
+  {
+    "kind": "fixed",
+    "owner": "owner",
+    "param": "msrv-policy",
+    "value": "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI"
+  },
+  {
+    "kind": "fixed",
+    "owner": "owner",
+    "param": "rust-edition",
+    "value": "2024"
+  },
+  {
+    "kind": "fixed",
+    "owner": "owner",
+    "param": "target-os-matrix",
+    "value": "ubuntu-latest, macos-latest"
+  },
+  {
+    "kind": "fixed",
+    "owner": "owner",
+    "param": "license",
+    "value": "MIT OR Apache-2.0"
+  },
+  {
+    "kind": "researched",
+    "owner": "R67",
+    "param": "error-taxonomy-exit-codes",
+    "value": "`error-contract/v1`: **Catalog** \u2014 `RSLB` + three digits, stable and append-only, sourced from an explicit `const fn ErrorCode::as_str(&self) -> &'static str` match on a `#[non_exhaustive]` enum in the library crate, never derived from a variant name, `Debug`, `Display`, `type_name`, a discriminant or a `strum` derive; a `pub const ErrorCode::ALL` lists every member and a pinned-row test enforces append-only. **Exit taxonomy** (`#[repr(u8)] enum Exit` \u2192 `std::process::ExitCode`, per the org CLI Design Standard R6.1, org-locked, unchanged from ts D-016(2)): `0` success, `1` generic runtime error, `2` usage/parse error, `3` not found, `4` auth required, `5` conflict, `130` SIGINT, `143` SIGTERM; unlisted failures collapse to `1`. **Initial catalog rows** (hundreds digit = exit code for the `1xx`\u2013`5xx` blocks; `RSLB000` is the UNEXPECTED sentinel): `RSLB000` unexpected \u2192 1; `RSLB101` I/O \u2192 1; `RSLB102` transport (DNS/connect/timeout/TLS) \u2192 1; `RSLB103` remote-API failure \u2192 1; `RSLB104` config layer unreadable \u2192 1; `RSLB201` usage/parse (including the CLI parser's own errors) \u2192 2; `RSLB202` config document unparsable \u2192 2; `RSLB203` config value invalid \u2192 2 (**this template's choice, not derived from the standard \u2014 see `## Engines`, Disagreement 4**); `RSLB204` secret supplied through a prohibited channel \u2192 2 (**likewise this template's choice; the standard assigns secrets no exit code**); `RSLB205` required non-auth input or consent missing because prompting is disabled or unavailable \u2014 `--no-input`, no TTY, or closed stdin \u2014 \u2192 2; `RSLB301` resource not found \u2192 3; `RSLB401` credentials absent \u2192 4; `RSLB402` credentials rejected \u2192 4; `RSLB501` conflict/precondition failed \u2192 5; `RSLB901` SIGINT \u2192 130; `RSLB902` SIGTERM \u2192 143; `RSLB903` prompt interrupted by Ctrl-C \u2192 130 (a closed prompt stdin is **not** this code: it is required input that prompting cannot supply, so it is `RSLB205`/2 \u2014 see `## Engines`, Disagreement 4). **Envelope** \u2014 a single stderr JSON object `{\"error\":{\"code\",\"message\",\"hint\"?}}`; `hint` is an optional structured string field carried beside `code` and `message`, omitted (not `null`) when absent and rendered as its own line in human output \u2014 its Rust return type is P03's choice and must be able to name the offending input per R7.6, so a borrowed-or-owned string is expected rather than a `&'static str`; stdout stays byte-empty on the error path. This item defines exactly those three keys and defines no trace, cause-array or diagnostic field; R7.8 permits further documented fields, and any such field is a separate addition owned by the item that needs it. What a *stack trace* may do is deliberately absent from this contract: it is F301's, and F301's acceptance criteria are an open owner question (see `## Decision`). **Broken pipe** \u2014 a `BrokenPipe` result on the *result* stream ends the process at `0`, silently, with no envelope; a `BrokenPipe` while writing an already-selected error envelope to stderr retains the original application exit status rather than overriding it; a `BrokenPipe` on any other application stream is `RSLB101`/1; no `SIGPIPE` handler is installed and `println!`/`print!` are lint-denied in binary crates. **Boundary precedence** \u2014 signal \u2192 broken pipe \u2192 domain downcast \u2192 unexpected; `main` returns `ExitCode` and does not call `process::exit` on the error path; all streams are flushed before exit on every path including signal. **Crash record** \u2014 CLI surface only, UNEXPECTED class only, an injected best-effort sink writing `0600` newline-delimited JSON with timestamp, version, PID, code and sanitized cause chain and never argv, environment, headers, tokens or config contents; a write failure never changes the envelope or the exit code; **the location is not decided here and the default sink is a no-op until R57 answers**. **Layering** \u2014 `thiserror` in the library crate, `anyhow` (`>= 1.0.103`) in binary crates only; the library crate must not depend on `anyhow`, must install no signal handler or panic hook, and must write to no process stream or file."
+  }
+]
