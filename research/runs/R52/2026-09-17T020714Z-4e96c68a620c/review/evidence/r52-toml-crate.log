@@ -197,8 +197,10 @@ issues with at least one OWNER/MEMBER/COLLABORATOR comment: 7 of 10
 issues with none:                                          3 of 10
 PASS S42 :: 7 >= 1
 maintainer-association comment lines counted by /usr/bin/grep -c: 15
+of those, lines reading ' epage MEMBER ' counted by /usr/bin/grep -c: 15
 PASS S43 :: 15 >= 1
 PASS S44 :: /usr/bin/grep -E matched:  epage MEMBER 
+PASS S45 :: equal: 15
 
 ======== 5  advisories: RustSec pages, with a known-vulnerable control ========
 GET https://rustsec.org/packages/toml.html -> HTTP 404 (retrieved 2026-09-17)
@@ -353,7 +355,7 @@ files under toml_edit/src containing the token 'unsafe' (/usr/bin/grep -rl | wc 
 PASS S78 :: equal: 0
 
 ======== 7  behavioural probe: the two crates run on three literal strings ========
-probe crate: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r52-verify.26794/probe (throwaway; nothing is written into the repository)
+probe crate: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r52-verify.72838/probe (throwaway; nothing is written into the repository)
 P1_TYPED_READ = Probe { output: Some(Out { color: Some("auto"), format: Some("text") }) }
 P2_PLAIN_KEEPS_HEADER = false
 P2_PLAIN_KEEPS_TRAILING = false
@@ -388,7 +390,7 @@ PASS S92 :: /usr/bin/grep -F found: P7_DECOR_KEEPS_TRAILING = true
 PASS S93 :: /usr/bin/grep -F found: P7_DECOR_APPLIED = true
 PASS S94 :: /usr/bin/grep -F found: P8_REREAD = Probe { output: Some(Out { color: Some("auto"), format: Some("json") }) }
 --- cargo tree -e normal (both members) ---
-r52probe v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r52-verify.26794/probe)
+r52probe v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r52-verify.72838/probe)
 ├── serde v1.0.229
 │   ├── serde_core v1.0.229
 │   └── serde_derive v1.0.229 (proc-macro)
@@ -430,6 +432,9 @@ toml v1.1.6+spec-1.1.0
 ├── toml_writer v1.1.2+spec-1.1.0
 └── winnow v1.0.4
 PASS S95 :: /usr/bin/grep -E correctly found no match for: toml_edit
+PASS S95a :: /usr/bin/grep -E correctly found no match for: tokio|async-std|smol |futures|mio|executor
+(S95a is fitness gate 5's async clause: no runtime, executor or futures crate
+ appears anywhere in the resolved graph for either member.)
 tree lines naming toml_edit/indexmap/equivalent/hashbrown (/usr/bin/grep -cE): 4
 PASS S96 :: /usr/bin/grep -E matched: indexmap v2
 PASS S97 :: /usr/bin/grep -E matched: hashbrown v0
@@ -492,7 +497,7 @@ PASS S122 :: /usr/bin/grep -F found: Check MSRV
  the template's own planned MSRV job.)
 
 ======== summary ========
-assertions run:     106
+assertions run:     108
 assertions failed:  0
 sections skipped:   0
 Exit status is the failure count, so 0 means every assertion above passed.

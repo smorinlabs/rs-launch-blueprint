@@ -234,7 +234,7 @@ evidence log behind a `VOLATILE` marker).
 | 2 — MSRV, crate and whole tree | **Pass.** Declares `rust-version = "1.85"` in its published manifest (`S60`). Whole resolved graph, excluding the probe package: maximum `rust_version` = **1.85.0** (`S99`, `S99c`), against a floor of **1.96** derived from published stable **1.98.1** (`https://raw.githubusercontent.com/rust-lang/rust/stable/src/version`, `S100`). The clause's second half, "tested in CI", is met upstream by a dedicated `msrv` job (`S121`, `S122`). | **Pass**, same workspace, same declaration (`S70`), same graph maximum, same CI job. |
 | 3 — advisories and `unsafe` | **Pass.** No RustSec page with a validated control, OSV `{}` (`S50`–`S52`, `S55`). `unsafe` posture: the published `src/lib.rs` carries `#![forbid(unsafe_code)]` (`S66`), a compiler-enforced guarantee. | **Pass, with a stated caveat.** No RustSec page, OSV `{}` (`S53`, `S56`). `unsafe` posture is an **observed absence, not a compiler-enforced one**: no file under the published `src/` contains the token `unsafe` (`S78`) and there is no `forbid` attribute (`S77`). Caveat: its non-optional `indexmap` and that crate's `hashbrown` do use `unsafe` internally — see `## Engines` for what was and was not counted here. |
 | 4 — CI on `ubuntu-latest, macos-latest` | **Pass, exceeded.** The workspace CI declares `os: ["ubuntu-latest", "windows-latest", "macos-latest"]`, read at pinned commit `3b81b064` (`S120`). Windows supported, noted not required. | **Pass, exceeded** — one workspace, one workflow, same line. |
-| 5 — default features and async coupling | **Pass.** Published `[features] default` is `std`, `serde`, `parse`, `display` (`S63a`–`S63d`); `preserve_order` is non-default and pulls `dep:indexmap` (`S63e`, `S63f`). **No async-runtime coupling**: no runtime, executor or futures crate appears anywhere in the resolved graph (`cargo tree -e normal`, executed). | **Pass.** Published `default` is `parse`, `display` (`S73a`, `S73b`); `serde` is non-default (`S73c`). `indexmap` is a **non-optional** dependency (`S74`, `S76`), so it enters the tree at any feature selection. No async-runtime coupling. |
+| 5 — default features and async coupling | **Pass.** Published `[features] default` is `std`, `serde`, `parse`, `display` (`S63a`–`S63d`); `preserve_order` is non-default and pulls `dep:indexmap` (`S63e`, `S63f`). **No async-runtime coupling**: no `tokio`, `async-std`, `smol`, `futures`, `mio` or executor crate appears anywhere in the resolved graph — asserted, not merely printed (`S95a`, over `cargo tree -e normal`). | **Pass.** Published `default` is `parse`, `display` (`S73a`, `S73b`); `serde` is non-default (`S73c`). `indexmap` is a **non-optional** dependency (`S74`, `S76`), so it enters the tree at any feature selection. No async-runtime coupling — same graph, same assertion (`S95a`). |
 | 6 — binary size and compile-time cost | **Stated qualitatively, and one figure is carried rather than re-measured.** Qualitatively: a parser plus a writer plus serde support — small, and dominated by the `serde_derive` proc-macro chain (`syn`, `quote`, `proc-macro2`) the template pays for regardless. The Opus raw measured +190,032 stripped bytes over a `println!`-only binary on an Apple M4 Pro at `rustc 1.98.0`; this decision did **not** re-measure it. See `## Engines`. | **Same treatment.** Qualitatively: a document model plus `indexmap`. The Opus raw measured +135,920 stripped bytes on top of `toml` (about +26%) with the build-time delta inside measurement noise; not re-measured here. The graph cost **was** re-measured: exactly four added crates (`S96`–`S98`). |
 
 **Candidates excluded by gate.**
@@ -364,8 +364,8 @@ a pipeline cannot be masked by a succeeding `grep` or `head` after it. Every loa
 goes through one of five helpers that compare the **content** expected — `assert_has` (a
 literal substring must be present), `assert_hasre` (a pattern must match), `assert_absent` (a
 pattern must **not** match), `assert_eq` (two values compared, both printed when they differ)
-and `assert_ge` (an integer floor). There are **106** such assertions, each printed inline with
-its identifier (`S01`…`S122`), and this run reported **106 run, 0 failed, 0 skipped**. That the
+and `assert_ge` (an integer floor). There are **108** such assertions, each printed inline with
+its identifier (`S01`…`S122`), and this run reported **108 run, 0 failed, 0 skipped**. That the
 script can fail is not asserted but observed and retained: `review/evidence/r52-first-run.log`
 is an **earlier** draft's output, in which 19 assertions failed and the run exited `19` —
 because that draft computed the repository root one directory too shallow, looked for `uv` on
@@ -389,11 +389,13 @@ it is. The rule for comparing across a rerun: the `VOLATILE` lines, the `retriev
 and the two lines carrying the probe's `$TMPDIR` path (which embeds the shell's PID) may
 differ; the `HTTP 404`/`HTTP 200` lines, version strings, `rust_version` values, manifest
 contents, feature arrays, pinned-commit manifests, the probe's `P1`…`P8` outputs and every
-`PASS` line must not. **This was checked, not assumed**: the exact committed script was re-run
-immediately before this sentence was written and its output diffed against the log cited here.
-The diff was **two lines**, both the `$TMPDIR` probe path — everything else, including the
-download counts, was identical at that interval. Over a longer interval the `VOLATILE` figures
-will move as well, which is what the marker is for.
+`PASS` line must not. **This was checked against the final script, not an earlier draft**: after
+the last edit to `verify.sh` (which added assertions `S45` and `S95a`), the committed script was
+run to produce the log cited here and then run again immediately, and the two outputs were
+diffed. The diff was **two lines**, both carrying the probe's `$TMPDIR` path, which embeds the
+shell's PID — everything else, including the download counts, was identical at that interval.
+Over a longer interval the `VOLATILE` figures will move as well, which is what the marker is
+for.
 
 **What the check covers, by section.**
 
@@ -410,7 +412,8 @@ will move as well, which is what the marker is for.
         newest unyanked version, created_at, rust_version, license, edition
     4   GitHub: archived state for both repositories; open issues by search/issues total_count
         against open_issues_count; and the issue-responsiveness re-query that settles the
-        engine conflict, printing every comment's author_association
+        engine conflict, printing every comment's author_association and asserting that the
+        maintainer-association count and the epage count are the same number
     5   RustSec pages for toml, toml_edit, basic-toml with a `time` control that returns 200
         and lists advisories; OSV cross-check for both members
     6   the published .crate artifacts: manifests, rust-version, edition, licence, the
@@ -448,8 +451,8 @@ will move as well, which is what the marker is for.
 
 | File | sha256 | What it is |
 |---|---|---|
-| `review/evidence/verify.sh` | `1da3c38126a12e948adeafe3b4c036a61e29a95c507e965da67718823f4a4254` | the script, 681 lines, ShellCheck-clean with no file-level `disable` directive |
-| `review/evidence/r52-toml-crate.log` | `7e13c66153c8992caef324b2ea44325521f5d240ff9af9c22477a44cdc690174` | its output, exit `0`, 106 assertions run, 0 failed, 0 skipped |
+| `review/evidence/verify.sh` | `4fec11fd742bde7867bfe40304b819dcbe4ccc4f8fd4babd1fbf7a36284bdd22` | the script, 690 lines, ShellCheck-clean with no file-level `disable` directive |
+| `review/evidence/r52-toml-crate.log` | `3b4b087b5ecbfa3d580087e5feffb6c83b63019b80d9504106dbb73148fae2e2` | its output, exit `0`, 108 assertions run, 0 failed, 0 skipped |
 | `review/evidence/r52-first-run.log` | `7e51352a43f6d115470e25897db61cb29879d324cc8f7264ebe8065228ec5241` | an **earlier draft's** output, exit `19`, retained as proof the harness can fail; its own first line says so |
 
 ## Engines
@@ -503,9 +506,10 @@ Opus: "median 0.67 days to first maintainer response; 3 of 10 unanswered". **Re-
 and Codex is wrong.** Across the ten issues both raws named (#1214, #1213, #1210, #1206,
 #1188, #1181, #1175, #1172, #1162, #1158), **7 carry at least one maintainer-association
 comment and 3 do not** — matching Opus's unanswered count exactly — and `/usr/bin/grep -c`
-counts **15** such comment lines, every one of them by `epage` with
-`author_association: MEMBER` (`S42`, `S43`, `S44`; the raw associations are printed in full in
-section 4 of the log). Nothing in the recommendation turned on this figure, but a false
+counts **15** such comment lines, of which **15** read `epage MEMBER` — the two counts are
+asserted equal, so "all of them are `epage`'s" is a checked claim rather than an impression
+from reading (`S42`, `S43`, `S44`, `S45`; the raw associations are printed in full in section 4
+of the log). Nothing in the recommendation turned on this figure, but a false
 "the maintainers never reply" would have been carried into a future re-verification, so it is
 corrected here rather than averaged. **Opus's median of 0.67 days is not re-verified**: this
 check counted responders, not elapsed time.

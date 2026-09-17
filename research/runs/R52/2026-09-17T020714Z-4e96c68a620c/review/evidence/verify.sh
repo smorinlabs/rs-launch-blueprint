@@ -371,11 +371,16 @@ if [ "$gh_ok" = 1 ]; then
     # Codex's claim is that `answered` is 0. Any non-zero count refutes it.
     assert_ge S42 "1" "$answered"
     member_lines="$(/usr/bin/grep -cE ' (OWNER|MEMBER|COLLABORATOR) ' "$WORK/assoc.txt")"
+    epage_lines="$(/usr/bin/grep -cE ' epage MEMBER ' "$WORK/assoc.txt")"
     say "maintainer-association comment lines counted by /usr/bin/grep -c: $member_lines"
+    say "of those, lines reading ' epage MEMBER ' counted by /usr/bin/grep -c: $epage_lines"
     assert_ge S43 "1" "$member_lines"
     assert_hasre S44 ' epage MEMBER ' "$WORK/assoc.txt"
+    # Every maintainer-association comment is epage's, or this fails and the decision's
+    # "all of them by epage" sentence is wrong.
+    assert_eq S45 "$member_lines" "$epage_lines"
 else
-    for id in S40 S41 S42 S43 S44; do skip "$id" "gh not authenticated"; done
+    for id in S40 S41 S42 S43 S44 S45; do skip "$id" "gh not authenticated"; done
 fi
 
 hdr "5  advisories: RustSec pages, with a known-vulnerable control"
@@ -592,6 +597,10 @@ RUST
         say "--- cargo tree -e normal -p toml (does toml still pull toml_edit?) ---"
         (cd "$P" && cargo tree -e normal -p toml 2>/dev/null) | tee "$WORK/tree-toml.txt"
         assert_absent S95 'toml_edit' "$WORK/tree-toml.txt"
+        # Gate 5's async-coupling clause, asserted rather than merely printed.
+        assert_absent S95a 'tokio|async-std|smol |futures|mio|executor' "$WORK/tree.txt"
+        say "(S95a is fitness gate 5's async clause: no runtime, executor or futures crate"
+        say " appears anywhere in the resolved graph for either member.)"
         added="$(/usr/bin/grep -cE '(toml_edit|indexmap|equivalent|hashbrown) v' "$WORK/tree.txt")"
         say "tree lines naming toml_edit/indexmap/equivalent/hashbrown (/usr/bin/grep -cE): $added"
         assert_hasre S96 'indexmap v2' "$WORK/tree.txt"
@@ -619,12 +628,12 @@ RUST
     else
         say "probe build failed:"
         cat "$WORK/probe.err"
-        for id in S80 S81 S82 S83 S84 S85 S86 S87 S88 S89 S90 S91 S92 S93 S94 S95 S96 S97 S98 S99 S99b S99c S100; do
+        for id in S80 S81 S82 S83 S84 S85 S86 S87 S88 S89 S90 S91 S92 S93 S94 S95 S95a S96 S97 S98 S99 S99b S99c S100; do
             fail "$id" "probe crate did not build or run"
         done
     fi
 else
-    for id in S80 S81 S82 S83 S84 S85 S86 S87 S88 S89 S90 S91 S92 S93 S94 S95 S96 S97 S98 S99 S99b S99c S100; do
+    for id in S80 S81 S82 S83 S84 S85 S86 S87 S88 S89 S90 S91 S92 S93 S94 S95 S95a S96 S97 S98 S99 S99b S99c S100; do
         skip "$id" "cargo and/or network unavailable"
     done
 fi
