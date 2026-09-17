@@ -1,0 +1,11 @@
+disable-and-enable-workflows http=200 bytes=297754
+PASS exact 60-day rule
+workflow-syntax http=200 bytes=2049175
+PASS paths-ignore content
+rest-workflows http=200 bytes=354465
+PASS disabled_inactivity content
+rs-repository http=200 bytes=7447
+PASS public-visibility content
+contributors-action-readme http=200 bytes=5131
+PASS action loop-protection guidance
+RESULT: PASS

@@ -1,0 +1,142 @@
+archive-root: /private/tmp/r07-audit-full-archive.IUDXKN
+assert-ok: full project archive includes both the run and published topic without .git
+== full archive revision-2 ==
+== toolchain ==
+date: 2026-09-16T23:54:07Z
+os: macOS 26.4 arm64
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+actionlint: 1.7.12
+Python 3.14.7
+pyyaml 6.0.3
+act: not installed -> form (b)
+cwd: research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical/r2
+
+== 1. actionlint on the revision-2 recommended workflow (expect exit 0 and no diagnostics) ==
+exit: 0
+assert-ok: actionlint accepts the push + schedule + workflow_dispatch block
+assert-ok: actionlint emitted no diagnostic line for the recommended block
+
+== 2. structure of the recommended on: block, asserted field by field ==
+assert-ok: set of on: keys == ['push', 'schedule', 'workflow_dispatch']
+assert-ok: on.push.branches == ['main']
+assert-ok: on.push.paths-ignore == ['CONTRIBUTORS.md', '.contributors.jsonl']
+assert-ok: on.schedule == [{'cron': '17 6 1 * *'}]
+assert-ok: on.workflow_dispatch == None
+assert-ok: keys of every on.schedule entry == ['cron']
+assert-ok: paths-ignore == {output-file, state-file} == ['.contributors.jsonl', 'CONTRIBUTORS.md']
+assert-ok: cron minute (not the top of the hour, per GitHub's high-load advice) == '17'
+assert-ok: cron hour == '6'
+assert-ok: cron day-of-month == '1'
+assert-ok: cron month (every month) == '*'
+assert-ok: cron day-of-week (unrestricted) == '*'
+assert-ok: cron field count == 5
+longest gap between two monthly runs, in days: 31 (the longest calendar month)
+exit: 0
+
+== 3. negative control: the same block with paths-ignore moved under schedule (expect non-zero) ==
+alternatives/hybrid-paths-ignore-under-schedule.yml:13:7: unexpected key "paths-ignore" for element of "schedule" section. expected one of "cron", "timezone" [syntax-check]
+   |
+13 |       paths-ignore:
+   |       ^~~~~~~~~~~~~
+exit: 1
+assert-ok: actionlint rejects paths-ignore under schedule
+assert-ok: rejection names the expected cause: unexpected key "paths-ignore" for element of "schedule" section
+
+== 4. the two fixtures differ only in where the guard sits ==
+assert-ok: both fixtures declare the same three triggers: push, schedule, workflow_dispatch
+
+== 5. documentation snapshots: the two facts that decide the backstop's cost ==
+assert-ok: /usr/bin/grep: snapshot carries the sentence defining what disabling does — stop the workflow from being TRIGGERED, no trigger named or excepted
+assert-ok: /usr/bin/grep: snapshot carries the 60-day inactivity sentence
+assert-ok: /usr/bin/grep: snapshot carries the fork-default sentence
+assert-ok: /usr/bin/grep: snapshot carries the documented re-enable command
+-- the REST Workflow schema's state field, printed from the snapshot --
+["active", "deleted", "disabled_fork", "disabled_inactivity", "disabled_manually"]
+assert-ok: `state` is ONE required field of the whole workflow, whose enum carries disabled_fork and disabled_inactivity; there is no per-trigger state, and passage 0 defines disabling as stopping the workflow from being triggered without naming or excepting a trigger, so a workflow disabled by either rule fires on NO event, push and workflow_dispatch included
+exit: 0
+drift rule: these two files are snapshots taken 2026-09-16 UTC (2026-09-15 local),
+not live fetches.
+A re-run of this script therefore cannot change them. To test for drift, re-fetch
+each URL named in the snapshot header and re-run this section against the new text;
+a difference there is a documentation change and a re-verify trigger, not noise.
+
+== 6. what the monthly backstop retries: py's post-guard push-run outcomes ==
+post-guard push runs (same scoping as revision 1 step 5b): 134
+conclusions: {"failure": 12, "success": 122}
+ts scheduled runs for comparison: {"failure": 3, "success": 6}
+assert-ok: 134 post-guard push runs, the figure revision 1 cites
+assert-ok: 12 of those 134 push runs concluded `failure` — the unretried-failure cost revision 1 accepted qualitatively and revision 2's backstop bounds at 31 days
+exit: 0
+
+overall failed assertions: 0
+RESULT: PASS
+archive-r2-exit: 0
+== full archive revision-3 ==
+== toolchain ==
+date: 2026-09-16T23:54:08Z
+os: macOS 26.4 arm64
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+actionlint: 1.7.12
+Python 3.14.7
+pyyaml 6.0.3
+act: not installed -> form (b)
+cwd: research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical/r3
+
+== 1. the recommended fixture is revision 1's, restored byte for byte, and actionlint accepts it ==
+sha256 revision-3 fixture: ecee9ea674107e7470c4b31449e6642798a09d87c172264716f68a95f1721a15
+sha256 revision-1 fixture: ecee9ea674107e7470c4b31449e6642798a09d87c172264716f68a95f1721a15
+assert-ok: the revision-3 fixture is byte-identical to revision 1's fixture, so the block is restored and not retyped
+exit: 0
+assert-ok: actionlint accepts the push + workflow_dispatch block (A5 clause 1)
+assert-ok: actionlint emitted no diagnostic line for the recommended block
+
+== 2. structure of the recommended on: block, asserted field by field ==
+assert-ok: set of on: keys == ['push', 'workflow_dispatch']
+assert-ok: the recommended block carries NO `schedule` key, so neither disabled_inactivity nor disabled_fork has a precondition this workflow can meet (owner ruling W0-R07b)
+assert-ok: on.push.branches == ['main']
+assert-ok: on.push.paths-ignore == ['CONTRIBUTORS.md', '.contributors.jsonl']
+assert-ok: on.workflow_dispatch == None
+assert-ok: paths-ignore == {output-file, state-file} == ['.contributors.jsonl', 'CONTRIBUTORS.md']
+assert-ok: keys option E adds to the recommendation == ['schedule']
+assert-ok: keys the recommendation adds to option E == []
+exit: 0
+assert-ok: /usr/bin/grep: the string `cron` and the string `schedule` appear nowhere in the recommended fixture, comments included
+
+== 3. the lag the declined backstop would have retried: py's post-guard push-run outcomes ==
+post-guard push runs (same scoping as revision 1 step 5b): 134
+conclusions: {"failure": 12, "success": 122}
+ts scheduled runs for comparison: {"failure": 3, "success": 6}
+assert-ok: 134 post-guard push runs, the figure revisions 1 and 2 cite
+assert-ok: 12 of those 134 push runs concluded `failure` — the bounded lag revision 3 accepts on owner ruling W0-R07b: each is a red run on a merge commit, recoverable with one `workflow_dispatch`, and no scheduled retry attempt is claimed to bound it
+exit: 0
+
+== 4. the two documentation facts that decided the decline, re-asserted against revision 2's snapshots ==
+assert-ok: /usr/bin/grep: snapshot carries the sentence defining what disabling does — stop the workflow from being TRIGGERED, no trigger named or excepted
+assert-ok: /usr/bin/grep: snapshot carries the 60-day inactivity sentence
+assert-ok: /usr/bin/grep: snapshot carries the fork-default sentence
+assert-ok: /usr/bin/grep: snapshot carries the documented re-enable command
+-- the REST Workflow schema's state field, printed from the snapshot --
+["active", "deleted", "disabled_fork", "disabled_inactivity", "disabled_manually"]
+assert-ok: `state` is ONE required field of the whole workflow file, whose enum carries disabled_fork and disabled_inactivity; there is no per-trigger state, so a `schedule` key would expose the push trigger to both rules. This is the fact the owner ruled on (W0-R07b) and the reason option E is declined rather than selected; the recommended block, having no `schedule` key, meets neither rule's precondition
+exit: 0
+drift rule: these two files are snapshots taken 2026-09-16 UTC (2026-09-15 local) by
+revision 2, not live fetches, and revision 3 left them byte-identical.
+A re-run of this script therefore cannot change them. To test for drift, re-fetch
+each URL named in the snapshot header and re-run this section against the new text;
+a difference there is a documentation change and a re-verify trigger, not noise.
+
+== 5. ## Supersedes ends with the published revision-1 bytes (audit-codex.md finding 1) ==
+published file:        ../../../../../../topics/07-contributors-bot-trigger-cadence/DECISION.md
+published sha256:      0b3dde8f9a15f22e60a01542065c53c122881e8c48bf3ee6c172ba5b70499346  (26203 bytes)
+tail -c 26203 of DECISION.md: 0b3dde8f9a15f22e60a01542065c53c122881e8c48bf3ee6c172ba5b70499346
+assert-ok: the published file still hashes to the sha256 the owner acceptance and both revision-1 audits cite
+assert-ok: the published file is 26203 bytes
+assert-ok: the last 26203 bytes of this run's DECISION.md are the published revision 1, byte for byte and with nothing after them — unfenced and unwrapped, which is what revision 2 failed
+assert-ok: /usr/bin/grep: DECISION.md carries the `## Supersedes` heading that opens those bytes
+
+overall failed assertions: 0
+RESULT: PASS
+archive-r3-exit: 0
+archive-assertion-failures: 0
