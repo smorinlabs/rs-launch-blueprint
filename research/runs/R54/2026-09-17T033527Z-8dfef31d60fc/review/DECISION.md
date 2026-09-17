@@ -241,9 +241,11 @@ PASS P2-any-cargo-toml-loses-root      cwd=A/crates/foo/src got=None            
 
 `P2` is the defect, reproduced: under "any `Cargo.toml` stops", the workspace-root
 config file is unreachable from a member crate. `P5` proves the `.git`-as-a-file
-case (the shape this repository is itself checked out as), `P6` proves a boundary
-below the file blocks it, `P7` proves nearest-only, and `P9` proves that
-`[workspace.package]` alone counts as a declaration. **What the probe does not
+case in the *found* direction (the shape this repository is itself checked out
+as), `P6` and `P6b` prove that a boundary between the working directory and the
+file blocks it — `P6` with `.git` as a directory, `P6b` with `.git` as a file —
+`P7` proves nearest-only, and `P9` proves that `[workspace.package]` alone counts
+as a declaration. **What the probe does not
 prove** is the detection method: it matches the section header by line, whereas P03
 should parse the manifest with R52's `toml` and test for a top-level `workspace`
 key. The probe is an approximation of that test, and is labelled so in its source.
@@ -270,7 +272,7 @@ for P03; **none was executed in this run**, because the template does not exist.
 | AC4 | `--config <path>` makes the three discovered files invisible: a key set only in the project file is absent from the resolved config, while an `RSLBP_*` variable and a flag still override the explicit file. |
 | AC5 | `RSLBP_CONFIG=<path>` behaves as AC4; an explicit `--config` on the command line beats it; `RSLBP_CONFIG=` (set but empty) is ignored and ordinary discovery runs. |
 | AC6 | **F247.** `XDG_CONFIG_HOME` set to an absolute path relocates the user tier on **both** `ubuntu-latest` and `macos-latest`; set to `""` **or to a relative path** it is ignored and `~/.config/rslbp/` is used. The relative half is the open owner question this decision proposes answering "required". |
-| AC7 | Project discovery finds `.rslbp/rslbp_config.toml` in an ancestor directory, and does not find one that sits above the nearest boundary marker. `.git` is exercised as a directory **and** as a file. |
+| AC7 | Project discovery finds `.rslbp/rslbp_config.toml` in an ancestor directory, and does not find one that sits above the nearest boundary marker. `.git` is exercised as a directory **and** as a file, in **both** directions — as the marker at a root below the file (found) and as the marker between the working directory and the file (blocked). |
 | AC7b | **Nested-manifest case.** In `root/{Cargo.toml with [workspace], .rslbp/rslbp_config.toml}` plus `root/crates/foo/{Cargo.toml without [workspace], src/}`, running from `root/crates/foo/src/` finds the root file. Executed here as probe case `P1`; its negative twin is `P2`. |
 | AC8 | A missing file in any *discovered* tier produces no warning, no stderr output and no exit-code change — absence is not a fault (R55 clause 1). |
 | AC9 | The precedence chain printed in the generated documentation is byte-compared against `R5.1`'s six rungs by a test, because `R5.1` says "MUST document it verbatim". |
@@ -406,9 +408,9 @@ shellcheck check.sh                 # → exit 0, no output; saved as shellcheck
 diff check.log check-rerun.log      # → no differences
 ```
 
-**Observed result: 62 checks, 62 `PASS`, 0 `FAIL`, 0 `SKIP`; `failures=0
+**Observed result: 64 checks, 64 `PASS`, 0 `FAIL`, 0 `SKIP`; `failures=0
 skipped=0`; exit status 0.** The full output is `review/evidence/check.log`. The
-probe's nine cases are printed inside it, indented, under `PR1`.
+probe's ten cases are printed inside it, indented, under `PR1`.
 
 **What each group proves, and which claim in `## Decision` it carries.**
 
@@ -418,6 +420,7 @@ probe's nine cases are printed inside it, indented, under `PR1`.
 | `E01`–`E05` | 5 | `etcetera` 0.11.0, read from `https://static.crates.io/crates/etcetera/etcetera-0.11.0.crate`: **zero** matches for `CONFIG_DIRS`/`DATA_DIRS` across its whole `src` tree; a singular `fn config_dir(&self) -> PathBuf;` on `BaseStrategy`; the `create_strategies!(Apple, Xdg)` macOS arm; the `is_absolute` filter; `rust-version = "1.87.0"`. The first two are the reason rung 5 needs a template-owned resolver; the third and fourth are F247 on `macos-latest` and the absoluteness half of the F247 `BASELINE-REVIEW:` line. |
 | `X01`–`X04` | 4 | `xdg` 3.0.0 does enumerate the system tier correctly (`get_config_dirs`, `split_paths`, the `/etc/xdg` default) and is Unix-only. This is the runner-up's evidence, and the honest counterweight to J3. |
 | `C01`–`C03` | 3 | `clap_builder` 4.6.6: env is applied **only when the flag is absent** (flag beats env, `R5.1` rungs 1–2, free), and the env value is tested for **presence only** — there is no emptiness filter on that path, which is why F242 needs one line of template code. |
+| `A01`, `A02` | 2 | `config` 0.15.25, the layering crate the Doxa providers add, read from `https://static.crates.io/crates/config/config-0.15.25.crate`: `Environment::with_prefix` exists, and its own documentation describes the prefix as limiting access "to only keys that begin with the defined prefix" — every such variable, not a curated set. This is the `R5.4` half of Disagreement 2. |
 | `F01`–`F06` | 6 | Registry figures. `etcetera`'s `max_stable_version` is `0.11.0` and **no 0.12.x version exists** — which settles the Doxa/Gemini provider's `etcetera = "0.12"` recommendation. `xdg`'s is `3.0.0`. `cfgmatic-paths` and `cfg-rs`, the two crates the Doxa/Perplexity provider recommends in place of `etcetera`, both **exist** but carry all-time download counts of **874** and **69,755** against `etcetera`'s **108,625,667** on the same endpoint in the same run. |
 | `G01`, `G02`, `R01`, `R02` | 4 | `lunacookies/etcetera` is not archived; `soc/directories-rs` **is** archived, which is the gate-4 exclusion for `directories` 6.0.0 quite apart from its macOS behaviour. `rustsec.org/packages/etcetera.html` is HTTP 404 — no advisory — with `anyhow.html` as the control proving the site serves pages. |
 | `Z01`–`Z04` | 4 | The XDG Base Directory Specification, read from the DocBook source: paths in the `XDG_*` variables must be absolute; `/etc/xdg` is the `XDG_CONFIG_DIRS` default; the first directory listed is the most important; `$XDG_CONFIG_HOME` outranks every `$XDG_CONFIG_DIRS` entry. The last two are the ordering rule AC2 pins. |
@@ -425,12 +428,12 @@ probe's nine cases are printed inside it, indented, under `PR1`.
 | `D00a`–`D08` | 12 | The sibling decisions, by sha256, and the three sentences this synthesis rests on: R55's "the merge over sanitized tables in R54's order followed by the single final pass", its assignment of "merge depth and precedence order" to R54, and its F238 finding that layers are validated before the merge; R57's fixed four-accessor surface and its handover of `config_dir()`; R53's per-key loop over R52's `toml::Table`. `D08` records that `raw/opus.md` cites R55 at **revision 1**, which is the ground for Disagreement 1. |
 | `P01`–`P06` | 6 | The five `- assumes` values are byte-identical to `docs/port/PARAMETERS.md`, and the run's `inputs/PARAMETERS.md` differs from the current registry only in the `web-extra-surface` row. |
 | `Y01`–`Y03` | 3 | The pinned py source at `b08bccfb55d05f15e46a83b52c5660b1881d19f5`: `project_config_file` exists and contains **no** parent walk, and `config_dirs()` enumerates the system tier. This is the F232 `BASELINE-REVIEW:` line's py half, re-verified rather than carried. |
-| `PR1` | 1 (9 cases) | The bounded walk-up, executed. |
+| `PR1` | 1 (10 cases) | The bounded walk-up, executed. |
 | `H01` | 1 | The Codex engine's absence has a recorded cause in the run itself. |
 
 **The probe, in full.** `review/evidence/walkup_probe.rs` is a single dependency-free
 file compiled with `rustc --edition 2024 -O` into the script's `$TMPDIR` working
-directory and run against nine temporary trees it builds there. It implements the
+directory and run against the eight temporary trees it builds there, in ten cases. It implements the
 walk under two policies — `WorkspaceQualified` (this decision's rule) and
 `AnyCargoToml` (the naive reading of `R5.2`'s example list) — and prints paths
 relative to the tree root so the output is byte-stable. Observed:
@@ -442,6 +445,7 @@ PASS P3-workspace-root-inclusive cwd=A got=A/.rslbp/rslbp_config.toml want=A/.rs
 PASS P4-git-dir-root-found cwd=B/a/b got=B/.rslbp/rslbp_config.toml want=B/.rslbp/rslbp_config.toml
 PASS P5-git-file-root-found cwd=C/a/b got=C/.rslbp/rslbp_config.toml want=C/.rslbp/rslbp_config.toml
 PASS P6-boundary-below-blocks cwd=D/a/b got=None want=None
+PASS P6b-boundary-below-git-file-blocks cwd=D2/a/b got=None want=None
 PASS P7-nearest-only cwd=E/a/b got=E/a/.rslbp/rslbp_config.toml want=E/a/.rslbp/rslbp_config.toml
 PASS P8-no-marker-no-file cwd=F/a/b got=None want=None
 PASS P9-workspace-package-counts cwd=G/crates/bar/src got=G/.rslbp/rslbp_config.toml want=G/.rslbp/rslbp_config.toml
@@ -570,10 +574,12 @@ the sanitize step). None of the three providers could have known that: the Doxa
 prompt is `inputs/prompt.md`, which names R52, R53, R55 and R57 as *related items*
 without carrying their decisions. Two further grounds are independent of the
 sibling decisions. First, Doxa/OpenAI and Doxa/Gemini both route the ordinary
-`RSLBP_*` environment layer through `config::Environment::with_prefix`, which binds
-the whole prefix; `R5.4` says "the tool **MUST NOT** auto-expose every flag as an
-env var" and requires a curated subset (`S08`), so that mechanism is not usable as
-specified. Second, `raw/opus.md`'s six-project manifest census found no layering
+`RSLBP_*` environment layer through `config::Environment::with_prefix`, whose own
+documentation at `config-0.15.25/src/env.rs` describes the prefix as one "that will
+limit access to the environment to only keys that begin with the defined prefix"
+(`A01`, `A02`) — that is, it admits every `RSLBP_*` variable rather than a named
+set. `R5.4` says "the tool **MUST NOT** auto-expose every flag as an env var" and
+requires a curated subset (`S08`), so that mechanism is not usable as specified. Second, `raw/opus.md`'s six-project manifest census found no layering
 crate in helix, ruff, uv, bat, jj or starship — carried, not re-run.
 
 **Disagreement 3 — which crate resolves the user tier.** Opus and Doxa/Gemini say
@@ -604,10 +610,11 @@ failure, so the version and its MSRV appear to be unsourced.
 
 **Disagreement 5 — the project tier's shape.** All three Doxa providers propose a
 **bare filename** walked up (`plbp.toml`, `<tool>_config.toml`), and none proposes a
-boundary marker: Doxa/OpenAI and Doxa/Perplexity walk "toward the filesystem root",
-and Doxa/Gemini contradicts itself, saying both "until a project marker is
-identified" and "terminating only when the root of the filesystem is reached",
-never defining the marker. Opus proposes the dot-*directory* with a bounded walk.
+boundary marker. Doxa/OpenAI walks "toward the filesystem root"; Doxa/Perplexity
+stops "when it finds one or when it reaches the filesystem root"; Doxa/Gemini
+contradicts itself, saying both "until a project marker is identified" and
+"terminating only when the root of the filesystem is reached", and never defines
+the marker. Opus proposes the dot-*directory* with a bounded walk.
 **Settled by the standard, which none of the Doxa providers was given.** `R5.1`
 rung 3 and `R5.2` both specify `.<tool>/<tool>_config.toml` and a boundary stop
 (`S02`, `S06`). The unbounded variants would let a walk started in a user's home

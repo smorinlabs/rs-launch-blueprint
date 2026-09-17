@@ -175,6 +175,21 @@ fn main() {
         None,
     );
 
+    // Tree D2 — the same blocked case as D, but with `.git` present as a FILE
+    // rather than a directory, so the blocked direction is exercised in both shapes.
+    let d2 = root.join("D2");
+    mkfile(&d2.join(".rslbp/rslbp_config.toml"), "# must NOT be reached\n");
+    mkfile(&d2.join("a/.git"), "gitdir: /elsewhere/.git/worktrees/y\n");
+    std::fs::create_dir_all(d2.join("a/b")).expect("mkdir a/b");
+    case(
+        &mut failures,
+        "P6b-boundary-below-git-file-blocks",
+        &root,
+        &d2.join("a/b"),
+        Marker::WorkspaceQualified,
+        None,
+    );
+
     // Tree E — two project files; only the nearest is returned (R5.1 rung 3 says
     // "nearest", singular — one project layer, not Cargo's merged ancestor chain).
     let e = root.join("E");

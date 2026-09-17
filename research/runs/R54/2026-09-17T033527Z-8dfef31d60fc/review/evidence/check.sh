@@ -147,6 +147,14 @@ else
   for id in C01 C02 C03; do skip "$id" "could not download clap_builder-4.6.6.crate"; done
 fi
 
+# A — the layering crate the three Doxa providers add, read at the version they name.
+if get_crate config 0.15.25; then
+  assert_contains A01 "$SRC/config-0.15.25/src/env.rs" 'Optional prefix that will limit access to the environment to only keys that' 'config::Environment binds every variable carrying the prefix, not a curated subset (R5.4)'
+  assert_contains A02 "$SRC/config-0.15.25/src/env.rs" 'pub fn with_prefix(s: &str) -> Self {' 'with_prefix is the constructor both providers name'
+else
+  for id in A01 A02; do skip "$id" "could not download config-0.15.25.crate"; done
+fi
+
 # ---------------------------------------------------------------------------
 # F — crates.io figures. Bodies are snapshotted; assertions are on stable fields.
 # ---------------------------------------------------------------------------
@@ -311,7 +319,7 @@ assert_contains D03 "$R55_DEC" 'validate each layer'"'"'s leaves before preceden
 assert_contains D04 "$R57_DEC" 'accessor and no free-function surface.' 'R57 fixes the Paths accessor set at four'
 assert_contains D05 "$R57_DEC" 'This item supplies `config_dir()` as the single resolver so R54 does not resolve it a second time' 'R57 hands config_dir() to R54'
 assert_contains D06 "$R53_DEC" 'A per-key deserialization loop over R52'"'"'s `toml::Table`' 'R53 revision 2 validates per key over a toml::Table, not via a generated partial struct'
-assert_contains D07 "$REPO_ROOT/research/topics/52-toml-crate/DECISION.md" 'toml' 'R52 is published'
+assert_contains D07 "$REPO_ROOT/research/topics/52-toml-crate/DECISION.md" '1.1.6+spec-1.1.0' 'R52 is published and pins toml 1.1.6+spec-1.1.0'
 
 # The ground for Engines disagreement 1: the Opus raw read R55 at revision 1.
 assert_contains D08 "$RUN_DIR/raw/opus.md" '(revision 1, `## Decision`, clauses 1–3)' 'raw/opus.md cites R55 at revision 1, before the sanitize-then-merge sequence was published'

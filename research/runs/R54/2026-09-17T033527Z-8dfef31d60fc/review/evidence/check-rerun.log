@@ -25,6 +25,8 @@ PASS X04 xdg 3.0.0 splits XDG_CONFIG_DIRS with std::env::split_paths (/usr/bin/g
 PASS C01 clap applies env only when the flag is absent (flag beats env) (/usr/bin/grep -c -F matches=1)
 PASS C02 clap tests env PRESENCE only — an empty value is not filtered (/usr/bin/grep -c -F matches=1)
 PASS C03 Arg::env snapshots the variable with no emptiness check (/usr/bin/grep -c -F matches=1)
+PASS A01 config::Environment binds every variable carrying the prefix, not a curated subset (R5.4) (/usr/bin/grep -c -F matches=2)
+PASS A02 with_prefix is the constructor both providers name (/usr/bin/grep -c -F matches=1)
 PASS F01 crates.io etcetera max_stable_version=0.11.0 — no 0.12 is published
 PASS F02 etcetera 0.11.0 is published and unyanked; no 0.12.x version exists
 PASS F03 cfgmatic-paths exists but carries no adoption evidence (crate.downloads=874, under 100000)
@@ -53,7 +55,7 @@ PASS D03 R55 BASELINE-REVIEW F238 requires per-layer validation before the merge
 PASS D04 R57 fixes the Paths accessor set at four (/usr/bin/grep -c -F matches=1)
 PASS D05 R57 hands config_dir() to R54 (/usr/bin/grep -c -F matches=1)
 PASS D06 R53 revision 2 validates per key over a toml::Table, not via a generated partial struct (/usr/bin/grep -c -F matches=1)
-PASS D07 R52 is published (/usr/bin/grep -c -F matches=89)
+PASS D07 R52 is published and pins toml 1.1.6+spec-1.1.0 (/usr/bin/grep -c -F matches=3)
 PASS D08 raw/opus.md cites R55 at revision 1, before the sanitize-then-merge sequence was published (/usr/bin/grep -c -F matches=1)
 PASS P01 - assumes msrv-policy is byte-identical to docs/port/PARAMETERS.md (118 bytes)
 PASS P02 - assumes rust-edition is byte-identical to docs/port/PARAMETERS.md (4 bytes)
@@ -70,11 +72,12 @@ PASS Y03 py enumerates XDG_CONFIG_DIRS, which is the tier this item must reprodu
   PASS P4-git-dir-root-found cwd=B/a/b got=B/.rslbp/rslbp_config.toml want=B/.rslbp/rslbp_config.toml
   PASS P5-git-file-root-found cwd=C/a/b got=C/.rslbp/rslbp_config.toml want=C/.rslbp/rslbp_config.toml
   PASS P6-boundary-below-blocks cwd=D/a/b got=None want=None
+  PASS P6b-boundary-below-git-file-blocks cwd=D2/a/b got=None want=None
   PASS P7-nearest-only cwd=E/a/b got=E/a/.rslbp/rslbp_config.toml want=E/a/.rslbp/rslbp_config.toml
   PASS P8-no-marker-no-file cwd=F/a/b got=None want=None
   PASS P9-workspace-package-counts cwd=G/crates/bar/src got=G/.rslbp/rslbp_config.toml want=G/.rslbp/rslbp_config.toml
   PROBE-FAILURES 0
-PASS PR1 walk-up probe: every case passed (9 cases)
+PASS PR1 walk-up probe: every case passed (10 cases)
 SHA256 raw/opus.md 7356d9d786122df6c27474ef4e8b4af112cccdd0a6c9161f2d62cbaa35070d8d
 SHA256 raw/doxa.md a414c72f8391972c902c48def851c3a97c1ae9c9138afddbfd3de328bc074f2b
 SHA256 raw/doxa.normalized.md b79e8db77b294eefdcba4bb4d3dc7f74b8008a47c4c11496b69fb716b06eec5e
