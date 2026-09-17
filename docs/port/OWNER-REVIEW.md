@@ -148,6 +148,28 @@ not reopened. The owner's reference architecture's `[profile.release]` row
 adding the subject to R49 (reopens an accepted, published decision), a new
 item (an extra research cycle), leaving Cargo's defaults to P03.
 
+### 2026-09-17 — R69 `web-extra-surface` revised to name the optional web member (W1-R02)
+
+R02 `crate-boundary-enforcement` (accepted at revision 1, judgment-only under
+W1-CODEX) recommends a four-package Cargo workspace — the root facade
+`rs-launch-blueprint` carrying the `rslbp` and `rslbp-serve` binaries and the
+composition root, `crates/core`, `crates/cli`, and `crates/web` as an optional
+dependency of the facade (`OVERRIDE (OV-03)` against F021) — and raised a
+`CONFLICT:` against R69's owner-accepted value `web-extra-surface`, whose
+feature body assumes `axum` and `tokio` are dependencies of the declaring
+package. The owner rules for R02's option 1: **R69 is revised** so that the
+feature reads `web = ["dep:rs-launch-blueprint-web"]` with `axum` 0.8.9 and
+`tokio` 1.53.1 declared inside `crates/web`, the gated tree reads
+`crates/web/src/`, the web integration tests live in `crates/web/tests/` with
+no file-level `#![cfg(feature = "web")]`, and the skip-gating paths read
+`crates/web/**`; every other clause of R69's value is unchanged, and R02's
+topology stands. Options declined: keeping R69 byte-for-byte and dropping
+`crates/web` (R02's check `H` built that shape and observed `src/web/` naming
+the CLI crate with no error, so the web-to-cli boundary would fall back to
+convention or a `cargo-deny` row), and folding both front ends into the facade.
+The seven prepared Wave 2 runs that pin R69 (R51, R70, R76, R77, R79, R80, R83)
+are re-prepared after R69 republishes.
+
 ## Wave 0 owner acceptances
 
 Recorded from 2026-09-14 in `docs/port/OWNER-ACCEPTANCES.md` (moved there on
