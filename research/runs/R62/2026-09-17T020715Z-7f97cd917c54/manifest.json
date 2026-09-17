@@ -7,6 +7,60 @@
       "actor": "controller-fable-5-1",
       "at": "2026-09-17T02:07:15Z",
       "state": "ready"
+    },
+    {
+      "actor": "research-codex-2026-09-17T020715Z-7f97cd917c54",
+      "at": "2026-09-17T04:14:35Z",
+      "operation": {
+        "actor": "research-codex-2026-09-17T020715Z-7f97cd917c54",
+        "at": "2026-09-17T04:14:35Z",
+        "model": "gpt-5.6-terra",
+        "provider": "codex",
+        "request_id": "c17fc604b29a4d8f8cc3b89a29858fe8",
+        "state": "submitting"
+      },
+      "provider": "codex",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-codex-2026-09-17T020715Z-7f97cd917c54",
+      "at": "2026-09-17T04:19:56Z",
+      "operation": {
+        "actor": "research-codex-2026-09-17T020715Z-7f97cd917c54",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-17T04:14:35Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a0ad92-d446-79e1-af26-d1d3c0e6a019",
+        "provider": "codex",
+        "request_id": "c17fc604b29a4d8f8cc3b89a29858fe8",
+        "returned_at": "2026-09-17T04:19:56Z",
+        "state": "submitted"
+      },
+      "provider": "codex",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-codex-2026-09-17T020715Z-7f97cd917c54",
+      "at": "2026-09-17T04:19:56Z",
+      "operation": {
+        "actor": "research-codex-2026-09-17T020715Z-7f97cd917c54",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-17T04:14:35Z",
+        "collected_at": "2026-09-17T04:19:56Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a0ad92-d446-79e1-af26-d1d3c0e6a019",
+        "provider": "codex",
+        "raw": "research/runs/R62/2026-09-17T020715Z-7f97cd917c54/raw/codex-db997f3eab0c364a2f78dad4d149af504aa88a44c81701799595c73cc8da908b.md",
+        "raw_sha256": "db997f3eab0c364a2f78dad4d149af504aa88a44c81701799595c73cc8da908b",
+        "reason": "",
+        "request_id": "c17fc604b29a4d8f8cc3b89a29858fe8",
+        "returned_at": "2026-09-17T04:19:56Z",
+        "state": "succeeded"
+      },
+      "provider": "codex",
+      "state": "succeeded"
     }
   ],
   "input_hashes": {
@@ -21,7 +75,24 @@
   },
   "item": "R62",
   "model": "claude-fable-5-1",
-  "operations": {},
+  "operations": {
+    "codex": {
+      "actor": "research-codex-2026-09-17T020715Z-7f97cd917c54",
+      "actual_model": "gpt-5.6-terra",
+      "actual_provider": "codex-cli-0.153.2",
+      "at": "2026-09-17T04:14:35Z",
+      "collected_at": "2026-09-17T04:19:56Z",
+      "model": "gpt-5.6-terra",
+      "operation_id": "01a0ad92-d446-79e1-af26-d1d3c0e6a019",
+      "provider": "codex",
+      "raw": "research/runs/R62/2026-09-17T020715Z-7f97cd917c54/raw/codex-db997f3eab0c364a2f78dad4d149af504aa88a44c81701799595c73cc8da908b.md",
+      "raw_sha256": "db997f3eab0c364a2f78dad4d149af504aa88a44c81701799595c73cc8da908b",
+      "reason": "",
+      "request_id": "c17fc604b29a4d8f8cc3b89a29858fe8",
+      "returned_at": "2026-09-17T04:19:56Z",
+      "state": "succeeded"
+    }
+  },
   "prompt_source": "research/topics/62-clipboard-integration/prompts/clipboard-integration.prompt.md",
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
@@ -30,7 +101,7 @@
   ],
   "run_id": "2026-09-17T020715Z-7f97cd917c54",
   "schema_version": 1,
-  "state": "ready",
+  "state": "partial",
   "tier": "focused",
-  "updated_at": "2026-09-17T02:07:15Z"
+  "updated_at": "2026-09-17T04:19:56Z"
 }

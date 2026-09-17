@@ -1,0 +1,4 @@
+Output: `raw/codex.md`  
+SHA-256: `db997f3eab0c364a2f78dad4d149af504aa88a44c81701799595c73cc8da908b`  
+H3 fields: 10  
+Unverified: RustSec endpoint status, resolved MSRV dependency graph, and empirical desktop/headless behavior.
