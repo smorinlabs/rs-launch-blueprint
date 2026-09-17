@@ -1,0 +1,3 @@
+Redaction record, 2026-09-17 (controller).
+The Codex research sandbox had GH_TOKEN in its environment (owner ruling W1-GH) and the worker echoed it into its output despite the instruction not to. The token bytes were replaced before registration; no content other than the token changed.
+codex-transcript.txt: 1 occurrence(s) of the gh login token replaced with [REDACTED:GH_TOKEN]; sha256 before 0042fa9e1500edc4b7005dba8a313cfe6dbe3f266d9387f63a41944342f3b5e4, after 66012e2463d760df2c38cdfff4250e2b77f03518e4bfec7506fcb48882002f0f

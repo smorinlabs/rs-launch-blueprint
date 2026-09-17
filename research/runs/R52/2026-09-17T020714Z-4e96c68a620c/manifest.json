@@ -7,6 +7,74 @@
       "actor": "controller-fable-5-1",
       "at": "2026-09-17T02:07:14Z",
       "state": "ready"
+    },
+    {
+      "actor": "research-opus-2026-09-17T020714Z-4e96c68a620c",
+      "at": "2026-09-17T02:08:15Z",
+      "operation": {
+        "actor": "research-opus-2026-09-17T020714Z-4e96c68a620c",
+        "at": "2026-09-17T02:08:15Z",
+        "model": "claude-opus-5",
+        "provider": "opus",
+        "request_id": "4696ca629bcc44dab0df9903c6119657",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-codex-2026-09-17T020714Z-4e96c68a620c",
+      "at": "2026-09-17T03:44:46Z",
+      "operation": {
+        "actor": "research-codex-2026-09-17T020714Z-4e96c68a620c",
+        "at": "2026-09-17T03:44:46Z",
+        "model": "gpt-5.6-terra",
+        "provider": "codex",
+        "request_id": "d8de33237657456c80e03214ac10cac4",
+        "state": "submitting"
+      },
+      "provider": "codex",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-codex-2026-09-17T020714Z-4e96c68a620c",
+      "at": "2026-09-17T03:53:42Z",
+      "operation": {
+        "actor": "research-codex-2026-09-17T020714Z-4e96c68a620c",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-17T03:44:46Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a0ad77-888d-7bd1-a70a-ac2eb51b6674",
+        "provider": "codex",
+        "request_id": "d8de33237657456c80e03214ac10cac4",
+        "returned_at": "2026-09-17T03:53:42Z",
+        "state": "submitted"
+      },
+      "provider": "codex",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-codex-2026-09-17T020714Z-4e96c68a620c",
+      "at": "2026-09-17T03:53:42Z",
+      "operation": {
+        "actor": "research-codex-2026-09-17T020714Z-4e96c68a620c",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.153.2",
+        "at": "2026-09-17T03:44:46Z",
+        "collected_at": "2026-09-17T03:53:42Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a0ad77-888d-7bd1-a70a-ac2eb51b6674",
+        "provider": "codex",
+        "raw": "research/runs/R52/2026-09-17T020714Z-4e96c68a620c/raw/codex-8918f7a9845eb66ac84cac97c85cb6436448577a42e28a655548ce398af1edd6.md",
+        "raw_sha256": "8918f7a9845eb66ac84cac97c85cb6436448577a42e28a655548ce398af1edd6",
+        "reason": "",
+        "request_id": "d8de33237657456c80e03214ac10cac4",
+        "returned_at": "2026-09-17T03:53:42Z",
+        "state": "succeeded"
+      },
+      "provider": "codex",
+      "state": "succeeded"
     }
   ],
   "input_hashes": {
@@ -21,7 +89,32 @@
   },
   "item": "R52",
   "model": "claude-fable-5-1",
-  "operations": {},
+  "operations": {
+    "codex": {
+      "actor": "research-codex-2026-09-17T020714Z-4e96c68a620c",
+      "actual_model": "gpt-5.6-terra",
+      "actual_provider": "codex-cli-0.153.2",
+      "at": "2026-09-17T03:44:46Z",
+      "collected_at": "2026-09-17T03:53:42Z",
+      "model": "gpt-5.6-terra",
+      "operation_id": "01a0ad77-888d-7bd1-a70a-ac2eb51b6674",
+      "provider": "codex",
+      "raw": "research/runs/R52/2026-09-17T020714Z-4e96c68a620c/raw/codex-8918f7a9845eb66ac84cac97c85cb6436448577a42e28a655548ce398af1edd6.md",
+      "raw_sha256": "8918f7a9845eb66ac84cac97c85cb6436448577a42e28a655548ce398af1edd6",
+      "reason": "",
+      "request_id": "d8de33237657456c80e03214ac10cac4",
+      "returned_at": "2026-09-17T03:53:42Z",
+      "state": "succeeded"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-17T020714Z-4e96c68a620c",
+      "at": "2026-09-17T02:08:15Z",
+      "model": "claude-opus-5",
+      "provider": "opus",
+      "request_id": "4696ca629bcc44dab0df9903c6119657",
+      "state": "submitting"
+    }
+  },
   "prompt_source": "research/topics/52-toml-crate/prompts/toml-crate.prompt.md",
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
@@ -30,7 +123,7 @@
   ],
   "run_id": "2026-09-17T020714Z-4e96c68a620c",
   "schema_version": 1,
-  "state": "ready",
+  "state": "partial",
   "tier": "focused",
-  "updated_at": "2026-09-17T02:07:14Z"
+  "updated_at": "2026-09-17T03:53:42Z"
 }
