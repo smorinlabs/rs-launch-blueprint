@@ -1,5 +1,5 @@
 === R68 artifact-source checks ===
-date(UTC): 2026-09-17T15:30:34Z
+date(UTC): 2026-09-17T15:41:34Z
 gh: gh version 2.98.0 (2026-08-20)
 curl: curl 8.7.1
 
@@ -56,6 +56,13 @@ PINNED endpoint: repos/axodotdev/cargo-dist/contents/book/src/reference/concepts
 68-
 69-The other 3 fields are defining the various Artifacts that should be produced for each App in the workspace (because this is `[workspace.metadata]` and not `[package.metadata]`).
 ASSERT ok   PINNED dist's own documentation shows the [profile.dist] stub it generates carrying lto = "thin" — byte-for-byte the owner reference architecture's profile row, and the stub that must be trimmed or it silently overrides the recommended lto = "fat"
+/usr/bin/grep -c 'non-target-specific tasks using the `global` key' dist-config.md = 1
+1534:In addition to defining runners for a target, it's also possible to specify a runner for the global, non-target-specific tasks using the `global` key. This runner will be used for tasks like `plan`, `host`, generating installers, and so on.
+ASSERT ok   PINNED dist documents a 'global' key inside [dist.github-custom-runners] for the non-target-specific tasks, which is what the recommended configuration pins to ubuntu-latest
+PINNED endpoint: repos/axodotdev/cargo-dist/contents/CHANGELOG.md?ref=v0.33.0 (161451 bytes)
+/usr/bin/grep -n 'delete `[profile.dist]`' CHANGELOG.md first hit at line = 2274
+the nearest preceding '# Version' heading above that line is: 2270:# Version 0.0.3 (2023-02-27)
+ASSERT ok   PINNED the 'delete [profile.dist]' instruction belongs to dist's Version 0.0.3 migration notes (2023-02-27), not to 0.32.0 — so the Doxa/Perplexity report that current dist tells users to delete the profile is a misattribution, and the v0.33.0 book still shows the stub being generated
 PINNED endpoint: repos/axodotdev/cargo-dist/contents/book/src/installers/other.md?ref=v0.33.0
 /usr/bin/grep -c -i 'auto-detected' book/src/installers/other.md = 1
 4-

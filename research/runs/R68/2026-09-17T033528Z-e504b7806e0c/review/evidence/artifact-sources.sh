@@ -21,6 +21,7 @@
 set -euo pipefail
 
 GREP=/usr/bin/grep
+AWK=/usr/bin/awk
 UA="rs-launch-blueprint-r68-research"
 DIST_TAG="v0.33.0"
 
@@ -120,6 +121,33 @@ echo "/usr/bin/grep -c 'lto = \"thin\"' book/src/reference/concepts.md = ${PROF_
 "$GREP" -n -A4 '\[profile.dist\]' "$WORK/dist-concepts.md" | head -12 || true
 assert "$(has "$PROF_LTO")" \
   "PINNED dist's own documentation shows the [profile.dist] stub it generates carrying lto = \"thin\" — byte-for-byte the owner reference architecture's profile row, and the stub that must be trimmed or it silently overrides the recommended lto = \"fat\""
+
+# The Decision states `global` as a key of [dist.github-custom-runners]; it is
+# only legitimate to state that if dist documents it.
+# shellcheck disable=SC2016  # the pattern contains literal backticks from the prose, not command substitution
+GLOBAL_KEY=$("$GREP" -c 'non-target-specific tasks using the `global` key' "$WORK/dist-config.md" || true)
+echo "/usr/bin/grep -c 'non-target-specific tasks using the \`global\` key' dist-config.md = ${GLOBAL_KEY}"
+# shellcheck disable=SC2016
+"$GREP" -n 'using the `global` key' "$WORK/dist-config.md" || true
+assert "$(has "$GLOBAL_KEY")" \
+  "PINNED dist documents a 'global' key inside [dist.github-custom-runners] for the non-target-specific tasks, which is what the recommended configuration pins to ubuntu-latest"
+
+# Doxa/Perplexity reported that dist's 0.32.0 changelog tells users to delete
+# [profile.dist]. Locating the sentence decides whether that is current advice.
+gh api -H "Accept: application/vnd.github.raw" \
+  "repos/axodotdev/cargo-dist/contents/CHANGELOG.md?ref=${DIST_TAG}" >"$WORK/dist-changelog.md"
+echo "PINNED endpoint: repos/axodotdev/cargo-dist/contents/CHANGELOG.md?ref=${DIST_TAG} ($(wc -c <"$WORK/dist-changelog.md" | tr -d ' ') bytes)"
+# shellcheck disable=SC2016  # literal backticks in the changelog prose
+DEL_LINE=$("$GREP" -n 'delete `\[profile.dist\]`' "$WORK/dist-changelog.md" | "$AWK" -F: 'NR == 1 { print $1 }')
+echo "/usr/bin/grep -n 'delete \`[profile.dist]\`' CHANGELOG.md first hit at line = ${DEL_LINE:-none}"
+OWNING_VERSION=""
+if [ -n "${DEL_LINE:-}" ]; then
+  # shellcheck disable=SC2016  # $1 and v are awk fields and variables
+  OWNING_VERSION=$("$GREP" -n '^# Version' "$WORK/dist-changelog.md" | "$AWK" -F: -v n="$DEL_LINE" '$1 < n { v = $0 } END { print v }')
+  echo "the nearest preceding '# Version' heading above that line is: ${OWNING_VERSION}"
+fi
+assert "$(if [ -n "${DEL_LINE:-}" ] && printf '%s' "${OWNING_VERSION:-}" | "$GREP" -q 'Version 0.0.3'; then echo 1; else echo 0; fi)" \
+  "PINNED the 'delete [profile.dist]' instruction belongs to dist's Version 0.0.3 migration notes (2023-02-27), not to 0.32.0 — so the Doxa/Perplexity report that current dist tells users to delete the profile is a misattribution, and the v0.33.0 book still shows the stub being generated"
 
 gh api -H "Accept: application/vnd.github.raw" \
   "repos/axodotdev/cargo-dist/contents/book/src/installers/other.md?ref=${DIST_TAG}" >"$WORK/dist-other.md"

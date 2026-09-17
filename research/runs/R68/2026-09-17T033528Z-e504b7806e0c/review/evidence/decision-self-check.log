@@ -1,12 +1,12 @@
 === R68 decision self-check ===
-date(UTC): 2026-09-17T15:37:57Z
-decision: DECISION.md (47578 bytes)
+date(UTC): 2026-09-17T15:43:01Z
+decision: DECISION.md (48317 bytes)
 
 --- 1. heading set ---
 3:## Decision
-268:## Parameters
-298:## Empirical check
-424:## Engines
+256:## Parameters
+286:## Empirical check
+415:## Engines
 ASSERT ok   the H2 set is exactly Decision, Parameters, Empirical check, Engines, in that order
 ASSERT ok   the required H3 'Principles and implementation' is present
 ASSERT ok   no '## Supersedes' section is present, this being revision 1

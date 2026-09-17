@@ -251,19 +251,7 @@ takes the other side of the custom-profile trade with a separate `[profile.relea
 Those manifests were read by Opus at `raw.githubusercontent.com` on 2026-09-17 and are
 reported here as its practice census, not as this synthesis's own retrieval.
 
-re-verify: on any of these mechanical triggers, whichever comes first — (1) re-run
-`review/evidence/artifact-sources.sh`; a `registry-gap-present=1` line for a **second**
-consecutive dist release promotes `at-risk` to a decision to move to the runner-up, and a
-`registry-gap-present=0` line permits re-verifying the maintenance state upward; check no
-later than the template's second release; (2) any `cargo-dist` version bump, because
-`dist init` regenerates the `[profile.dist]` stub and would silently restore
-`lto = "thin"`; (3) any change to R49's `[[bin]]` name or to the package name, which
-re-opens the binstall-metadata question that the `{ name }` / `{ bin }` pairing currently
-closes; (4) any raise of the MSRV floor under `msrv-policy`, which is also the moment to
-re-read the Cargo Book's `release` default block and re-run
-`review/evidence/profile-probe.sh` at the new toolchain; (5) `target-os-matrix` gaining a
-Windows or ARM-Linux runner, which re-opens the target list; (6) F301 defining a
-stack-trace or symbol-bundle requirement, which re-opens `strip` and `debug`.
+re-verify: on any of these mechanical triggers, whichever comes first — (1) re-run `review/evidence/artifact-sources.sh`; a `registry-gap-present=1` line for a **second** consecutive dist release promotes `at-risk` to a decision to move to the runner-up, and a `registry-gap-present=0` line permits re-verifying the maintenance state upward; check no later than the template's second release; (2) any `cargo-dist` version bump, because `dist init` regenerates the `[profile.dist]` stub and would silently restore `lto = "thin"`; (3) any change to R49's `[[bin]]` name or to the package name, which re-opens the binstall-metadata question that the `{ name }` / `{ bin }` pairing currently closes; (4) any raise of the MSRV floor under `msrv-policy`, which is also the moment to re-read the Cargo Book's `release` default block and re-run `review/evidence/profile-probe.sh` at the new toolchain; (5) `target-os-matrix` gaining a Windows or ARM-Linux runner, which re-opens the target list; (6) F301 defining a stack-trace or symbol-bundle requirement, which re-opens `strip` and `debug`.
 
 ## Parameters
 
@@ -307,7 +295,7 @@ Working directory for both scripts:
 
 ```
 ./profile-probe.sh        > profile-probe.log        2>&1   # exit 0, RESULT: PASS, 21 assertions
-./artifact-sources.sh     > artifact-sources.log     2>&1   # exit 0, RESULT: PASS, 24 assertions
+./artifact-sources.sh     > artifact-sources.log     2>&1   # exit 0, RESULT: PASS, 26 assertions
 ./decision-self-check.sh  > decision-self-check.log  2>&1   # exit 0, RESULT: PASS, 22 assertions
 ```
 
@@ -388,12 +376,15 @@ because the incremental penalty lands only on `--release` rebuilds, which neithe
 contributor loop (dev profile) nor R50's install smoke test (`--debug`) performs.
 
 **What `artifact-sources.sh` verified,** with every figure carrying its endpoint and the
-retrieval date 2026-09-17. Twenty-four assertions passed, each asserting on *content*
+retrieval date 2026-09-17. Twenty-six assertions passed, each asserting on *content*
 rather than on an exit code: the Cargo Book's `.crate`, dependency-profile-ignored,
 `split-debuginfo unpacked` and `inherits` statements; dist's `create-release = false`
 undrafting sentence and its pinned-point-release runner map (`ubuntu-latest` count **0**)
 including the ARM Linux label that excludes `aarch64-unknown-linux-gnu` from the fixed
-matrix; the `[profile.dist] inherits = "release" / lto = "thin"` stub in dist's own book;
+matrix; the documented `global` key inside `[dist.github-custom-runners]` that the
+recommended configuration pins; the `[profile.dist] inherits = "release" / lto = "thin"`
+stub in dist's own book, and the 2023-era `# Version 0.0.3` changelog entry that is the
+real home of the "delete `[profile.dist]`" instruction;
 dist's generated workflow installing dist from its GitHub Release installer script and
 **not** from crates.io (`cargo install cargo-dist` count **0**); the 23-asset list of
 dist's `v0.33.0` release; cargo-binstall's documented versionless `{ name }-{ target
@@ -403,10 +394,10 @@ runner-up's `$bin-$target` archive default; release-please's `draft` and
 tools' declared `rust_version` floors. `gh` was already authenticated and no token or
 environment was printed.
 
-**Reproduction rule, stated after re-running both scripts against the logs cited here.**
-`artifact-sources.log` was re-run twice and diffed both times against the committed log:
-**one line differed each time, the `date(UTC):` line** — every `ASSERT`, `PINNED`, `HEAD`
-and `FIGURE` line was byte-identical over that interval. That is not a promise that it
+**Reproduction rule, stated after re-running each script against the exact log committed
+beside it.** `artifact-sources.sh` was re-run against the committed `artifact-sources.log`
+and the two were diffed: **exactly one line differed, the `date(UTC):` line** — all 26
+`ASSERT` lines and every `PINNED`, `HEAD` and `FIGURE` line were byte-identical. That is not a promise that it
 always will be: `FIGURE` lines carry live counters (download totals, star counts, open-issue
 totals, `pushed_at`) and `HEAD` lines carry a moving default-branch commit sha, so those
 lines will drift; the script prints the resolved sha and quotes the matched text beside each
@@ -424,8 +415,10 @@ and the fix is to re-run the script, not to edit the log.
 ## Engines
 
 - Claude Opus 5 `raw/opus.md` (sha256 `b75fa7ab…`, 15 H3 sections) — the only engine that
-  measured anything. Its macOS figures were reproduced independently here to within 0.8
-  percentage points on every profile row, and every directional finding it reported
+  measured anything. Its macOS figures were reproduced independently here to within one
+  percentage point on every profile row — the largest gap is `lto = "fat"` alone, −19.8%
+  here against Opus's −18.8%, and the recommended row differs by 0.1 pp (−24.5% against
+  −24.4%) — and every directional finding it reported
   (`"fat"` beats `"thin"`; `"s"`/`"z"` are larger, not smaller; `strip` empties the
   backtrace; `strip = "debuginfo"` is a no-op on `release`; macOS line tables do not travel)
   reproduced exactly.
@@ -473,7 +466,11 @@ and the fix is to re-run the script, not to edit the log.
    **Unresolved and recorded:** whether dist 0.33.0 *requires* the stub was not tested —
    dist was never executed in this item — so the decision says "trim the stub if `dist init`
    writes one" rather than "delete it", and AC6 plus the guard check below are the executable
-   form of it. Perplexity's changelog claim was not verified at the changelog.
+   form of it. **Perplexity's changelog claim is settled and is a misattribution:** the
+   instruction "(optional) delete `[profile.dist]` from your Cargo.toml" appears once in
+   dist's `CHANGELOG.md` at `ref=v0.33.0`, at line 2274, and the nearest preceding
+   `# Version` heading above it is `# Version 0.0.3 (2023-02-27)` — a 2023 migration note,
+   not 0.32.0 advice (`artifact-sources.log`, section C).
 5. **Four targets including `aarch64-unknown-linux-gnu` (Doxa/OpenAI) versus three (Opus).**
    Settled at dist's source: `cargo-dist/src/backend/ci/github.rs` at `ref=v0.33.0` maps the
    ARM Linux target to `ubuntu-22.04-arm`, and the fixed `target-os-matrix` names no ARM
