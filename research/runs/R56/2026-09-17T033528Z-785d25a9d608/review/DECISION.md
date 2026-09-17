@@ -386,7 +386,7 @@ complete output is the committed log beside it.
 |---|---|---|---|---|
 | `review/evidence/check-standard.sh` | that the standard really says what this decision rests on, at the blob and line numbers cited; that both sources violate `R5.5` at their pins; that no CI standard document exists | 32, plus 3 detail lines | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-standard.log` |
 | `review/evidence/check-siblings.sh` | every claim this decision makes about R67, R60, R53, R55, R57, R61, R52 and R17, and about this run's own engine inventory | 29, plus 10 detail lines | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-siblings.log` |
-| `review/evidence/check-registry.sh` | the crate versions, release dates, MSRV floors, licences, download figures, the `secrecy`→`zeroize` edge, the `forbid(unsafe_code)` posture and the advisory status, read from committed snapshots | 37, plus 3 detail lines | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-registry.log` |
+| `review/evidence/check-registry.sh` | the crate versions, release dates, MSRV floors, licences, download figures, the `secrecy`→`zeroize` edge, the `forbid(unsafe_code)` posture and the advisory status, read from committed snapshots | 38, plus 3 detail lines | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-registry.log` |
 | `review/evidence/check-probe.sh` | the behavioural claims, the dependency-tree sizes and the tree MSRV maxima, by building and running the probe | 35 (15 from the probe, 20 from the script), plus 1 detail line | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-probe.log` |
 | `review/evidence/check-parameters.sh` | that `## Parameters` carries no `- owns` line and that its five `- assumes` values `diff` empty against lines regenerated from the current `docs/port/PARAMETERS.md`; the H2 set, the title, the single `re-verify:` line; and that no personal email, credential pattern or probe fixture reaches any log | 15 | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-parameters.log` |
 
@@ -461,8 +461,10 @@ version, retrieved 2026-09-17:
 `GET https://crates.io/api/v1/crates/secrecy/0.10.3/dependencies` shows `zeroize` at
 `^1.6` with `default_features: false, features: ["alloc"]` and `serde` at `^1` **optional**,
 which is the declared edge the compatibility claim rests on. The crate's own published
-source at 0.10.3 carries `#![forbid(unsafe_code)]` in `src/lib.rs`, declares
-`edition = "2021"` and has **no `[features]` table at all** — so `serde` is off unless the
+source at 0.10.3 — snapshotted as extracted text rather than as the `.crate` tarball,
+which `.gitignore` excludes under `research/runs/**/*.crate`, so that a rerun can actually
+read it back — carries `#![forbid(unsafe_code)]` in `src/lib.rs`, declares
+`edition = "2021"` and `rust-version = "1.60"`, and has **no `[features]` table at all** — so `serde` is off unless the
 implicit optional-dependency feature is turned on, and a `SecretString` cannot be
 `Serialize`d into a config file or a log line by accident. `unsafe` posture, therefore:
 `secrecy` forbids it outright and the volatile writes live in `zeroize`, which uses

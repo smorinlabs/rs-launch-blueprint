@@ -67,15 +67,18 @@ print(d["optional"])')"
 want 'R-secrecy-serde-optional' 'True' "$serde_opt"
 
 # --- secrecy 0.10.3 source: the unsafe posture, read rather than asserted ---------
-if [ -f "$snap/secrecy-0.10.3.crate" ]; then
-  work="$(mktemp -d "${TMPDIR:-/tmp}/r56src-XXXXXX")"
-  trap 'rm -rf "$work"' EXIT
-  tar xzf "$snap/secrecy-0.10.3.crate" -C "$work"
-  forbid="$(/usr/bin/grep -c '^#!\[forbid(unsafe_code)\]' "$work/secrecy-0.10.3/src/lib.rs" || true)"
+#     A silent guard here would make the decision cite three assertions the rerun does not
+#     emit, so an absent snapshot SKIPs BY NAME instead.
+if [ -f "$snap/secrecy-0.10.3-lib.rs" ] && [ -f "$snap/secrecy-0.10.3-Cargo.toml" ]; then
+  forbid="$(/usr/bin/grep -c '^#!\[forbid(unsafe_code)\]' "$snap/secrecy-0.10.3-lib.rs" || true)"
   want 'R-secrecy-forbid-unsafe' '1' "$forbid"
-  features="$(/usr/bin/grep -c '^\[features\]' "$work/secrecy-0.10.3/Cargo.toml" || true)"
+  features="$(/usr/bin/grep -c '^\[features\]' "$snap/secrecy-0.10.3-Cargo.toml" || true)"
   want 'R-secrecy-no-features-table' '0' "$features"
-  want 'R-secrecy-edition' 'edition = "2021"' "$(/usr/bin/grep '^edition = ' "$work/secrecy-0.10.3/Cargo.toml")"
+  want 'R-secrecy-edition' 'edition = "2021"' "$(/usr/bin/grep '^edition = ' "$snap/secrecy-0.10.3-Cargo.toml")"
+  want 'R-secrecy-declared-msrv-in-source' 'rust-version = "1.60"' \
+    "$(/usr/bin/grep '^rust-version = ' "$snap/secrecy-0.10.3-Cargo.toml")"
+else
+  printf 'SKIP R-secrecy-forbid-unsafe, R-secrecy-no-features-table, R-secrecy-edition, R-secrecy-declared-msrv-in-source — the extracted secrecy 0.10.3 source snapshots are absent\n'
 fi
 
 # --- advisories. A rustsec package page exists only where an advisory does, so a 404

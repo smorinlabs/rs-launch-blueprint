@@ -1,4 +1,4 @@
-date-utc: 2026-09-17T15:39:22Z
+date-utc: 2026-09-17T15:40:32Z
 snapshot manifest (file, endpoint, retrieved-utc):
   crate-secrecy.json	GET https://crates.io/api/v1/crates/secrecy	2026-09-17T15:22:39Z
   versions-secrecy.json	GET https://crates.io/api/v1/crates/secrecy/versions	2026-09-17T15:22:39Z
@@ -22,7 +22,8 @@ snapshot manifest (file, endpoint, retrieved-utc):
   gh-keyring-core.json	GET https://api.github.com/repos/open-source-cooperative/keyring-core	2026-09-17T15:22:48Z
   gh-issues-iqlusioninc-crates.json	GET https://api.github.com/search/issues?q=repo:iqlusioninc/crates+is:issue+is:open	2026-09-17T15:22:49Z
   gh-issues-RustCrypto-utils.json	GET https://api.github.com/search/issues?q=repo:RustCrypto/utils+is:issue+is:open	2026-09-17T15:22:50Z
-  secrecy-0.10.3.crate	GET https://static.crates.io/crates/secrecy/secrecy-0.10.3.crate	2026-09-17T15:22:50Z
+  secrecy-0.10.3-lib.rs	src/lib.rs from GET https://static.crates.io/crates/secrecy/secrecy-0.10.3.crate	2026-09-17T15:22:39Z
+  secrecy-0.10.3-Cargo.toml	Cargo.toml from GET https://static.crates.io/crates/secrecy/secrecy-0.10.3.crate	2026-09-17T15:22:39Z
 PASS R-secrecy-version — 0.10.3
 PASS R-secrecy-msrv — 1.60
 PASS R-secrecy-license — Apache-2.0 OR MIT
@@ -53,6 +54,7 @@ PASS R-secrecy-serde-optional — True
 PASS R-secrecy-forbid-unsafe — 1
 PASS R-secrecy-no-features-table — 0
 PASS R-secrecy-edition — edition = "2021"
+PASS R-secrecy-declared-msrv-in-source — rust-version = "1.60"
 PASS R-rustsec-secrecy — 404
 PASS R-rustsec-zeroize — 404
 PASS R-rustsec-keyring-core — 404

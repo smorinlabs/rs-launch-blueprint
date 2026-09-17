@@ -55,8 +55,18 @@ gh api "search/issues?q=repo:RustCrypto/utils+is:issue+is:open" \
   --jq '{total_count}' > "$snap/gh-issues-RustCrypto-utils.json"
 note "$snap/gh-issues-RustCrypto-utils.json" 'GET https://api.github.com/search/issues?q=repo:RustCrypto/utils+is:issue+is:open'
 
-# secrecy's own source at the pinned version, for the unsafe-posture question.
-curl -sS -A "$ua" -L "https://static.crates.io/crates/secrecy/secrecy-0.10.3.crate" -o "$snap/secrecy-0.10.3.crate"
-note "$snap/secrecy-0.10.3.crate" 'GET https://static.crates.io/crates/secrecy/secrecy-0.10.3.crate'
+# secrecy's own published source at the pinned version, for the unsafe-posture question.
+# The .crate tarball itself is NOT snapshotted: .gitignore excludes research/runs/**/*.crate
+# deliberately, so an ignored file could never be read back by a rerun. The two text files
+# the check actually reads are extracted and snapshotted instead.
+crate_work="$(mktemp -d "${TMPDIR:-/tmp}/r56crate-XXXXXX")"
+curl -sS -A "$ua" -L "https://static.crates.io/crates/secrecy/secrecy-0.10.3.crate" \
+  -o "$crate_work/secrecy-0.10.3.crate"
+tar xzf "$crate_work/secrecy-0.10.3.crate" -C "$crate_work"
+cp "$crate_work/secrecy-0.10.3/src/lib.rs"     "$snap/secrecy-0.10.3-lib.rs"
+cp "$crate_work/secrecy-0.10.3/Cargo.toml"     "$snap/secrecy-0.10.3-Cargo.toml"
+note "$snap/secrecy-0.10.3-lib.rs" 'src/lib.rs from GET https://static.crates.io/crates/secrecy/secrecy-0.10.3.crate'
+note "$snap/secrecy-0.10.3-Cargo.toml" 'Cargo.toml from GET https://static.crates.io/crates/secrecy/secrecy-0.10.3.crate'
+rm -rf "$crate_work"
 
 printf 'refreshed %s snapshot files\n' "$(/usr/bin/grep -c . "$manifest")"
