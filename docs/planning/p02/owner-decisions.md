@@ -495,4 +495,6 @@ Same rule as section 10: an acceptance binds the recommendation at one `review/D
 | W1-R48 | R48 mocking-crates | A accept | 2026-09-16 | `dc1ef152…` (revision 3) | fakes + spy default; mockall 0.15.0 optional behind `mock`; httpmock 0.8.3 dev-only; wiremock out on gate 2 |
 | W1-R53 | R53 config-schema-validation | A accept | 2026-09-16 | `be59d65b…` (revision 2) | serde only, type-state, per-key loop; garde runner-up; judgment-only under W1-CODEX |
 | W1-R44 | R44 devcontainer-environment | A accept | 2026-09-16 | `ea398dda…` (revision 1) | image-only digest-pinned devcontainer; omission runner-up; digest refreshed by hand; judgment-only under W1-CODEX |
+| W1-R10 | R10 dependency-cache-action | A accept | 2026-09-16 | `3ebb09ce…` (revision 1) | rust-cache v2.9.2 by commit; ImageOS assertion mandatory; judgment-only under W1-CODEX |
+| W1-R61 | R61 interactive-prompts | A accept | 2026-09-16 | `3131e895…` (revision 1) | inquire 0.9.4 behind Prompter; gate at the call site; OV-02 declined confirm exits 0; judgment-only under W1-CODEX |
 
