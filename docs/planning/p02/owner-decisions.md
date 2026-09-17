@@ -492,4 +492,7 @@ Same rule as section 10: an acceptance binds the recommendation at one `review/D
 |---|---|---|---|---|---|
 | W1-R52 | R52 toml-crate (TOML crate) | A accept | 2026-09-16 | `4287ea4d…` (revision 1) | toml 1.1.6 read + toml_edit 0.25.15 write; basic-toml out on gate 2; F243 stays inherited; codex's responsiveness figure corrected (7/10 answered) |
 | W1-R57 | R57 xdg-directory-set | A accept | 2026-09-16 | `44e94504…` (revision 2) | etcetera 0.11.0 on a template-owned Paths, namespace rslbp; R5.3 MUST makes the location rule unconditional; judgment-only acceptance under W1-CODEX; publication waits for the empirical audit |
+| W1-R48 | R48 mocking-crates | A accept | 2026-09-16 | `dc1ef152…` (revision 3) | fakes + spy default; mockall 0.15.0 optional behind `mock`; httpmock 0.8.3 dev-only; wiremock out on gate 2 |
+| W1-R53 | R53 config-schema-validation | A accept | 2026-09-16 | `be59d65b…` (revision 2) | serde only, type-state, per-key loop; garde runner-up; judgment-only under W1-CODEX |
+| W1-R44 | R44 devcontainer-environment | A accept | 2026-09-16 | `ea398dda…` (revision 1) | image-only digest-pinned devcontainer; omission runner-up; digest refreshed by hand; judgment-only under W1-CODEX |
 
