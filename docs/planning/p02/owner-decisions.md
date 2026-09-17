@@ -386,6 +386,7 @@ reject.
 | W0-R65 | R65 color-enablement-chain | A accept | 2026-09-15 | `4b9b21a1…` | seven-tier chain; `NO_COLOR` beats force variables |
 | W0-R66 | R66 output-format-surface (decision) | A accept | 2026-09-15 | `a7958d3f…` | the surface rests on standard MUSTs plus the stale-port finding; `tabled` medium with a named swap trigger; `table` kept as the default's name |
 | W0-R69 | R69 web-framework-stack | DECLINED as put (2026-09-15/16): the owner rejected the first ask and supplied the reference architecture with "Include things like bacon, and here is a bunch of information of things to fold in" | 2026-09-16 | — | recorded as the standing input of section 11; revisions 6-9 reconcile it row by row; re-put pending both round-9 audits |
+| W0-R60b | R60 cli-parsing-framework: removal of the clap `string` feature | A accept the three-feature set (`derive`, `env`, `wrap_help`) | 2026-09-16 | `16d2db72…` (revision 9) | both recorded grounds gone (runtime `long_version` — removed by OV-01 option (b); the `mut_args` env pass — forbidden by standard R5.4); no replacement ground found (r60-feature-ground-r8.sh); adding the feature back is one additive Cargo.toml line if P03 needs it; crate, pins, build.rs, option (b) unchanged |
 
 ## 11. Owner-supplied reference architecture (2026-09-16) -- STANDING INPUT
 
