@@ -1,0 +1,37 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-16-W1-DOXA",
+  "created_at": "2026-09-17T03:35:27Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-17T03:35:27Z",
+      "state": "ready"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "88609ba0a3cfaa2a552859c03110c21455c7697eb63ca5a25b59037f87fa0011",
+    "parameters_semantic": "3b3137cd2186d1c9203234e5934dc9debb6bab4cac31c7fafa3ba4a34e8870e5",
+    "parameters_semantic_file": "73ed4b1f2bc7cf409580e7014a8681831828156ebd6f51364e09e5521d9b4b27",
+    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+    "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+    "prerequisites": "d1f669f46d960d3376792be39772dfa53edda1862a9fd6569d97e5d62dcde2a4",
+    "prompt": "782ea53a545580a546421908972525fee4c55538562f132cd4bf307730e3be3b",
+    "registry": "6560edd363acc5b728aef2c39f61c157281a2b403c7077dd76288e765226f593"
+  },
+  "item": "R03",
+  "model": "claude-fable-5-1",
+  "operations": {},
+  "prompt_source": "research/topics/03-port-absence-vs-failure-contract/prompts/port-absence-vs-failure-contract.prompt.md",
+  "remaining_budget": "USD 238.50 to 263.50 remaining of USD 300.00 bulk Deep ceiling (owner authorisation W1-DOXA 2026-09-16; Doxa in batches of three, no automatic retry)",
+  "required_engines": [
+    "codex",
+    "opus",
+    "doxa"
+  ],
+  "run_id": "2026-09-17T033527Z-cd9e6a9555b6",
+  "schema_version": 1,
+  "state": "ready",
+  "tier": "deep",
+  "updated_at": "2026-09-17T03:35:27Z"
+}

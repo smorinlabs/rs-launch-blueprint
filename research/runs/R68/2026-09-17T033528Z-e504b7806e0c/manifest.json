@@ -1,0 +1,37 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-16-W1-DOXA",
+  "created_at": "2026-09-17T03:35:28Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-17T03:35:28Z",
+      "state": "ready"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "88609ba0a3cfaa2a552859c03110c21455c7697eb63ca5a25b59037f87fa0011",
+    "parameters_semantic": "4b53a09322fcbb54c91ee13219fd87b44a7af7f92d83d7988f073f0a63d68b26",
+    "parameters_semantic_file": "fdfc2f28ce5816768e6394cc8cf817d81e9bc3421903805de7be9a9823111c9a",
+    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+    "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+    "prerequisites": "7ffab1d4ad148bc4d64ea5d6179fd78f91c1aef8d503ca40370568b5e5c69891",
+    "prompt": "996e588a08897fd621d21e41d6dba893835892737489db576a38f37980e6376d",
+    "registry": "6560edd363acc5b728aef2c39f61c157281a2b403c7077dd76288e765226f593"
+  },
+  "item": "R68",
+  "model": "claude-fable-5-1",
+  "operations": {},
+  "prompt_source": "research/topics/68-release-binary-artifacts/prompts/release-binary-artifacts.prompt.md",
+  "remaining_budget": "USD 238.50 to 263.50 remaining of USD 300.00 bulk Deep ceiling (owner authorisation W1-DOXA 2026-09-16; Doxa in batches of three, no automatic retry)",
+  "required_engines": [
+    "codex",
+    "opus",
+    "doxa"
+  ],
+  "run_id": "2026-09-17T033528Z-e504b7806e0c",
+  "schema_version": 1,
+  "state": "ready",
+  "tier": "deep",
+  "updated_at": "2026-09-17T03:35:28Z"
+}
