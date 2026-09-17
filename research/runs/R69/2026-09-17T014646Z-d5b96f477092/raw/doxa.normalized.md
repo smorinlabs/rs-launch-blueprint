@@ -1335,22 +1335,22 @@ The pattern is inferred from the Python Justfile behavior and general Rust pract
 
 #### axum (Gemini)
 
-##### Landscape
+###### Landscape
 In the landscape of Rust web development, `axum` is firmly categorized in the "Established Industry Standard" bin. Maintained directly by the Tokio project—the organization responsible for Rust's de facto standard asynchronous runtime—`axum` benefits from first-party status within the ecosystem's foundational infrastructure [cite: 6, 10]. 
 
-##### Principles and implementation
+###### Principles and implementation
 `axum` serves as the core capability provider for the optional web surface (F017) and the application factory (F303). By structuring its routing mechanism around the `Router` struct, `axum` completely decouples route definition and middleware attachment from the underlying network listener. This guarantees that the application graph can be instantiated and validated in isolated unit tests without binding to a local port. Furthermore, its macro-free routing syntax aligns with idiomatic Rust, preventing the obfuscation and increased compile times frequently associated with heavy procedural macros.
 
-##### Dominant choice
+###### Dominant choice
 `axum` is the definitive, dominant choice for new enterprise API services in 2026. This dominance is not merely anecdotal; it is substantiated by its overwhelming lifetime downloads (exceeding 458 million) and its deep integration with the `tower::Service` ecosystem, which grants it access to a vast, shared repository of battle-tested middleware [cite: 9, 10, 11]. 
 
-##### Qualified shortlist
+###### Qualified shortlist
 The evaluation considered several significant alternatives:
 1.  **actix-web**: A highly mature framework with a legacy of dominating raw-throughput benchmarks due to its actor-model heritage. It remains a heavily utilized option [cite: 9, 28].
 2.  **rocket**: Renowned for its unparalleled ergonomics and developer experience, heavily relying on attribute macros to define routes and guards [cite: 9, 29].
 3.  **poem**: A minimalist framework offering a highly composable architecture and native, seamless integration with OpenAPI generation via `poem-openapi` [cite: 1, 30].
 
-##### Excluded by gate
+###### Excluded by gate
 The shortlisted frameworks were subjected to the required fitness gates to ensure baseline viability.
 
 | Fitness Gate | `axum` | `actix-web` | `rocket` | `poem` |
@@ -1364,36 +1364,36 @@ The shortlisted frameworks were subjected to the required fitness gates to ensur
 
 While none of the shortlisted candidates outright failed the strict binary gates, `rocket` exhibits significant compile-time costs due to its macro-heavy design, and `actix-web` historically relies on a larger surface area of `unsafe` code to achieve its throughput metrics.
 
-##### Up-and-comers
+###### Up-and-comers
 `salvo` is gaining traction as an up-and-coming framework featuring built-in HTTP/3 support and integrated OpenAPI documentation. However, it lacks the deep enterprise adoption and vast middleware ecosystem required for a foundational blueprint template [cite: 6, 31].
 
-##### Fit for this template
+###### Fit for this template
 `axum` represents the optimal fit for the `rs-launch-blueprint` template. Because this template must eventually host tracing pipelines (R78), Prometheus metrics (R79), and OpenAPI generation (R71), `axum`'s structural compatibility with the `tower` trait is invaluable. The template can seamlessly inject `tower_http::trace::TraceLayer` for observability without requiring framework-specific wrapper crates [cite: 11]. Furthermore, for JSON handling, `axum` provides native, zero-cost `Json<T>` extractors backed by `serde`, enabling seamless, validated payload deserialization with minimal boilerplate [cite: 6, 10]. 
 
-##### Recommendation
+###### Recommendation
 Select `axum` (latest 0.8.x series) as the web framework and HTTP server capability.
 
-##### Ranked runner-up
+###### Ranked runner-up
 `actix-web` stands as the ranked runner-up. In scenarios where a development team possesses deep, pre-existing expertise in the Actix actor model, or where specific raw-throughput architectural constraints demand microsecond optimization, `actix-web` remains a highly viable, production-grade alternative [cite: 9, 32].
 
-##### Tradeoffs
+###### Tradeoffs
 The primary tradeoff in adopting `axum` is its steep learning curve regarding Rust's type system. Because `axum` utilizes heavily generic traits (such as `Handler` and `Service`) to ensure compile-time safety, providing an incorrect function signature to a router (e.g., extracting state that was not provided, or returning a type that does not implement `IntoResponse`) results in notoriously complex, multi-page compiler error messages that can severely degrade the developer experience for junior engineers [cite: 6, 33].
 
-##### Parameters
+###### Parameters
 - `owns web-extra-surface = "web"`: The literal Cargo feature flag value to be exposed in `Cargo.toml`. This feature will gate the `axum` crate, the `tokio` crate (requiring the `rt-multi-thread`, `net`, and `signal` features), and the `tower-http` crate (requiring the `trace` and `timeout` features).
 - `assumes http-transport-injection-seam`: The framework strictly demands that injected application state satisfies the `Clone + Send + Sync` bounds. Consequently, if R01 defines the adapter seam as a dynamic trait object, it must be wrapped in an `Arc<dyn Seam>` to satisfy Axum's concurrency constraints. 
 
-##### Migration implications
+###### Migration implications
 The workspace `Cargo.toml` will require the addition of a `[features]` block defining the `web` surface and marking the web crates as optional dependencies. The template will introduce a new `src/web/mod.rs` module, strictly conditionally compiled using `#[cfg(feature = "web")]`.
 
-##### Validation strategy
+###### Validation strategy
 To prove the structural isolation principle (F017), the validation command `cargo check --no-default-features` will be executed against the blueprint. 
 *Expected Behavior:* The compiler will verify the CLI and library targets successfully, and an inspection of the resulting dependency graph (via `cargo tree`) will confirm the complete absence of `axum`, `tokio`, and `hyper`, validating the zero-cost abstraction for non-web consumers.
 
-##### Confidence & re-verify trigger
+###### Confidence & re-verify trigger
 Confidence in this selection is **High**. A re-verification should be triggered if the Tokio organization formally deprecates `axum` in favor of a new paradigm, or if a highly-adopted framework merges directly into the Rust standard library toolchain.
 
-##### Sources
+###### Sources
 Authoritative evidence drawn from the State of Rust Surveys [cite: 3, 4], crates.io API metric queries [cite: 10, 34], and Tokio project architectural publications [cite: 7, 16].
 
 | Figure | Source | Value |
@@ -1410,120 +1410,120 @@ Authoritative evidence drawn from the State of Rust Surveys [cite: 3, 4], crates
 
 #### axum::extract::State (Gemini)
 
-##### Landscape
+###### Landscape
 State management and configuration injection in Rust web frameworks are fundamentally defined by the language's strict ownership and concurrency model. The landscape consists of global statics (widely considered an anti-pattern), dynamic request-local extensions, and strongly-typed compile-time state injection. `axum::extract::State` resides in the "Established Industry Standard" bin for the latter [cite: 7, 19].
 
-##### Principles and implementation
+###### Principles and implementation
 Requirement F330 mandates that validated configuration is made available to handlers and tests through an idiomatic lifecycle. `axum::extract::State` implements this by requiring the configuration object to be explicitly passed during the instantiation of the `Router` via the `.with_state(config)` builder method. Handler functions then declare `State<Arc<Config>>` in their parameters. The framework leverages Rust's trait system (`FromRef`) to ensure that the required state type is definitively present in the router's definition; otherwise, the application fails to compile [cite: 19]. This guarantees that configuration is injected safely and deterministically, directly fulfilling the F330 principle.
 
-##### Dominant choice
+###### Dominant choice
 `axum::extract::State` is the dominant and universally endorsed mechanism for static dependency injection in modern Axum applications. Introduced in Axum 0.6, it was designed specifically to supersede older, error-prone dynamic extension patterns [cite: 7].
 
-##### Qualified shortlist
+###### Qualified shortlist
 - `axum::Extension`: The legacy mechanism for passing state via the request's internal dynamic type map.
 
-##### Excluded by gate
+###### Excluded by gate
 `axum::Extension` is excluded from managing core configuration because it bypasses compile-time type safety. If a developer forgets to register the `.layer(Extension(config))` middleware, the application compiles successfully but will panic at runtime when a handler attempts to extract the missing configuration [cite: 7, 19]. This violates the predictability and safety guarantees expected in a production Rust blueprint.
 
-##### Up-and-comers
+###### Up-and-comers
 Inapplicable, as this is an internal architectural pattern governed by the chosen framework.
 
-##### Fit for this template
+###### Fit for this template
 The implementation of `State` perfectly satisfies the `rs-launch-blueprint` requirements. The F330 precedent in Python required a lazy-load fallback because raw ASGI clients could bypass the application lifespan events. In Rust, test harnesses construct the `Router` directly and execute the application graph via `oneshot` requests. Because the `Router` structurally demands the state during construction, there is no physical mechanism to bypass the configuration lifecycle in Rust. Consequently, the Python-specific lazy-load hack is cleanly discarded while the core principle of robust, non-global configuration injection is maintained and elevated to a compile-time guarantee.
 
-##### Recommendation
+###### Recommendation
 Adopt `axum::extract::State<Arc<Config>>` as the exclusive mechanism for threading validated configuration into request handlers.
 
-##### Ranked runner-up
+###### Ranked runner-up
 `axum::Extension` remains a valid pattern, but its use must be strictly confined to highly dynamic, request-scoped context (such as an authenticated user session generated mid-flight by authorization middleware), never for static application configuration [cite: 16, 35].
 
-##### Tradeoffs
+###### Tradeoffs
 The primary tradeoff of the `State` extractor is its requirement for the injected object to implement the `Clone` trait, as the framework must clone the state reference for each concurrent request. To prevent unacceptable performance degradation from deep-copying large configuration structs or database connection pools, the application state must be wrapped in a thread-safe atomic reference counter (`std::sync::Arc`). Developers must be careful not to wrap the state twice (e.g., `Arc<Arc<Config>>`), as Axum internally manages its own cloning logic [cite: 19, 35].
 
-##### Parameters
+###### Parameters
 This pattern assumes no new parameters and operates entirely within the capabilities granted by the `web-extra-surface` feature gate.
 
-##### Migration implications
+###### Migration implications
 Template handler function signatures will be rewritten. A simple health-check handler will evolve from `async fn health()` to `async fn health(State(config): State<Arc<Config>>)`. The main application factory function will accept the parsed configuration and append `.with_state(Arc::new(config))` to the router chain.
 
-##### Validation strategy
+###### Validation strategy
 To validate the compile-time safety principle of F330, a deliberate fault will be injected into the template during CI testing. 
 *Planned Check:* Remove the `.with_state(config)` call from the router construction while leaving `State<Arc<Config>>` in a handler signature. Execute `cargo check --features web`.
 *Expected Behavior:* The compiler will halt with a trait bound error (`the trait bound... is not satisfied`), proving that missing configuration is caught instantaneously at compile time, eliminating a class of runtime panics.
 
-##### Confidence & re-verify trigger
+###### Confidence & re-verify trigger
 Absolute confidence. This pattern represents the core design philosophy of the Axum framework. 
 
-##### Sources
+###### Sources
 Architectural guidance from Tokio developer publications and advanced Rust state management tutorials [cite: 7, 19, 35]. Metrics tables and fitness gates are explicitly inapplicable to this entry, as it is an internal structural pattern of the `axum` crate evaluated above, not an independent, published package.
 
 #### tokio::signal combined with with_graceful_shutdown (Gemini)
 
-##### Landscape
+###### Landscape
 The orchestration of operating system signals and process termination falls squarely into the "Built-in or First-Party Toolchain" bin. `tokio::signal` is the foundational, cross-platform primitive provided by the Tokio runtime for intercepting OS events, while `axum` provides the integration seam [cite: 21, 23].
 
-##### Principles and implementation
+###### Principles and implementation
 Requirement F338 mandates a production entrypoint capable of graceful shutdown. When an orchestration platform (e.g., Kubernetes) scales down a pod, it issues a SIGTERM signal. A robust web service must intercept this signal, instantly fail readiness probes to stop receiving new traffic from the load balancer, and allow already in-flight requests a window of time to complete their processing before forcibly dropping connections and terminating the process [cite: 20, 21, 23]. 
 
-##### Dominant choice
+###### Dominant choice
 The universally recognized dominant pattern in the Rust ecosystem is orchestrating a `tokio::signal` future and passing it into Axum's `axum::serve(listener, app).with_graceful_shutdown(signal_future)` method [cite: 22, 36].
 
-##### Qualified shortlist
+###### Qualified shortlist
 - **Third-party macro crates** (e.g., `simple_on_shutdown`): Libraries attempting to automate exit callbacks.
 
-##### Excluded by gate
+###### Excluded by gate
 Third-party automated shutdown crates are explicitly excluded. They frequently rely on unsafe drop mechanics or hidden lifecycle hooks that provide absolutely zero guarantees regarding the asynchronous draining of active network connections [cite: 37]. Relying on opaque macros for critical network teardown violates the dependability requirements of the template.
 
-##### Up-and-comers
+###### Up-and-comers
 None applicable to this fundamental systems pattern.
 
-##### Fit for this template
+###### Fit for this template
 This explicit orchestration pattern fits F338 perfectly. By mirroring the explicit timeout semantics of Python's `uvicorn.run(timeout_graceful_shutdown=...)`, the Rust entrypoint can utilize `tower_http::timeout::TimeoutLayer`. This is critical: without a bounded timeout, a maliciously slow client or a stalled upstream dependency could hold a connection open indefinitely, effectively freezing the shutdown process until the orchestration platform resorts to a forceful `SIGKILL` [cite: 23, 36].
 
 
 
-##### Recommendation
+###### Recommendation
 Implement a dedicated asynchronous function `shutdown_signal()` that awaits both `tokio::signal::unix::signal(SignalKind::terminate())` and `tokio::signal::ctrl_c()` via a `tokio::select!` block. Pass the resolution of this future into `axum::serve(listener, app).with_graceful_shutdown(shutdown_signal())`.
 
-##### Ranked runner-up
+###### Ranked runner-up
 There are no viable runner-up patterns; this approach is the singular idiomatic standard for managing the TCP listener lifecycle in modern Tokio applications.
 
-##### Tradeoffs
+###### Tradeoffs
 A notable tradeoff is the cognitive overhead placed on the developer to manually orchestrate resource cleanup. While `axum` manages the HTTP connection draining, external resources like database connection pools or background tasks must be explicitly flushed and dropped after the `axum::serve` future resolves, rather than relying lazily on the operating system to reclaim resources upon process death [cite: 20, 21].
 
-##### Parameters
+###### Parameters
 This capability utilizes the `signal` feature flag of the `tokio` crate, which is already mandated within the `web-extra-surface` definition. 
 
-##### Migration implications
+###### Migration implications
 The `src/web/main.rs` (or the equivalent binary entrypoint gated by the web feature) will be fundamentally structured around a `#[tokio::main]` runtime instantiation. It will explicitly wire the signal listener and enforce a `TimeoutLayer` bounding the application's maximum response duration.
 
-##### Validation strategy
+###### Validation strategy
 To validate the reliability of the graceful shutdown mechanism (F338), a timing test will be performed.
 *Planned Check:* Launch the web service and initiate an HTTP request (via `curl`) to a dedicated test endpoint configured to sleep for 3 seconds. Immediately after initiating the request, issue a `SIGINT` (Ctrl+C) to the server process.
 *Expected Behavior:* The server must log the interception of the shutdown signal but must not instantly crash. It must hold the process alive, complete the 3-second sleep, return a valid 200 OK response to the `curl` client, and only then terminate the process with a successful exit code (0).
 
-##### Confidence & re-verify trigger
+###### Confidence & re-verify trigger
 Absolute confidence. Re-verification is only necessary if fundamental changes to Unix signaling mechanics are introduced in future operating system architectures.
 
-##### Sources
+###### Sources
 Authoritative documentation from the Axum repository examples and comprehensive production deployment guides [cite: 20, 21, 22, 23, 36]. Metrics tables and fitness gates are inapplicable, as this leverages the core standard library and `tokio` primitives evaluated previously.
 
 #### bacon (Gemini)
 
-##### Landscape
+###### Landscape
 The orchestration of the local development environment sits in the "Established Industry Standard" bin. For over a decade, `cargo-watch` was the ubiquitous tool for this purpose. However, the landscape experienced a definitive shift when the creator of `cargo-watch` officially placed the project on life support, acknowledging its architectural limitations and explicitly passing the torch to a modern successor: `bacon` [cite: 12, 13].
 
-##### Principles and implementation
+###### Principles and implementation
 Requirement F339 dictates a dev-server recipe that provides a seamless auto-rebuild-and-restart loop with human-readable console logging. This allows developers to experience the rapid iteration cycle typical of interpreted languages while maintaining the safety guarantees of a compiled language. `bacon` operates as a highly optimized background compiler and runner, explicitly designed to avoid lockfile contention with language servers (like `rust-analyzer`), a frequent pain point in legacy tooling [cite: 12, 24, 38].
 
-##### Dominant choice
+###### Dominant choice
 `bacon` is the dominant and officially endorsed successor for Rust development orchestration in 2026.
 
-##### Qualified shortlist
+###### Qualified shortlist
 - **cargo-watch**: The historical standard tool.
 - **watchexec**: A generalized, language-agnostic file watcher capable of executing arbitrary shell commands.
 
-##### Excluded by gate
+###### Excluded by gate
 `cargo-watch` is definitively excluded. Its primary maintainer (`@passcod`) archived the repository in late 2024, citing a lack of overarching design, non-existent pager support, and persistent conflicts with modern IDE tooling. The maintainer explicitly stated: "Bacon today is what I wanted Overwatch to be... It's time to let it go. Use Bacon" [cite: 12, 13]. Adopting an abandoned tool for a new blueprint contradicts the mandate for dependability.
 
 | Fitness Gate | `bacon` | `cargo-watch` (Legacy) |
@@ -1537,36 +1537,36 @@ Requirement F339 dictates a dev-server recipe that provides a seamless auto-rebu
 
 *Note: While `bacon` uses an AGPL-3.0 license, this is entirely permissible because it functions exclusively as an external, developer-installed command-line tool. It is never compiled into, linked against, or distributed with the `rs-launch-blueprint` application binary.*
 
-##### Up-and-comers
+###### Up-and-comers
 None present in this specific niche; `bacon` has effectively captured the market transitioning away from `cargo-watch`.
 
-##### Fit for this template
+###### Fit for this template
 `bacon` seamlessly fulfills the F339 requirement. By default, it provides a rich Terminal UI, but it can be seamlessly configured within a `Justfile` to emulate standard, continuous log output via specific command flags. It perfectly orchestrates the compilation and restarting of the `axum` web server upon any detected source file modification.
 
-##### Recommendation
+###### Recommendation
 Adopt `bacon` as the mandated development environment orchestrator, wired directly into the `Justfile` dev-server recipe.
 
-##### Ranked runner-up
+###### Ranked runner-up
 `watchexec` stands as the runner-up. It is highly robust but requires significantly more manual configuration to achieve the tailored, Rust-specific build semantics that `bacon` provides out of the box [cite: 12, 39].
 
-##### Tradeoffs
+###### Tradeoffs
 Unlike Node.js ecosystems where tools like `nodemon` can be automatically installed via `npm install` dev-dependencies, Cargo does not support installing binary tools directly via the project's `Cargo.toml`. Therefore, `bacon` requires a separate, explicit installation step by the developer (`cargo install bacon`). The `rs-launch-blueprint` bootstrap documentation and internal verification scripts must explicitly enforce this prerequisite.
 
-##### Parameters
+###### Parameters
 This selection does not modify any consumed or owned parameters, as it operates entirely outside the application's compiled dependency tree and acts solely as a local execution wrapper.
 
-##### Migration implications
+###### Migration implications
 The project's `Justfile` will be substantially refactored. The primary development loop (e.g., `just serve`) will replace legacy `cargo run` invocations with a robust `bacon run --features web` configuration, ensuring the auto-reload mechanics are standardized across the team.
 
-##### Validation strategy
+###### Validation strategy
 To validate the seamless developer experience mandated by F339, an interactive workflow test is required.
 *Planned Check:* Execute `just serve` in the terminal. While the server is actively running, modify a static string within one of the `axum` request handlers in `src/web/mod.rs` and save the file.
 *Expected Behavior:* The `bacon` process must instantly detect the file modification, cleanly terminate the active `axum` process (preventing "address already in use" socket errors), recompile the binary, and launch the new instance. A subsequent `curl` request must immediately reflect the modified string without requiring any manual developer intervention.
 
-##### Confidence & re-verify trigger
+###### Confidence & re-verify trigger
 Confidence is High. A re-verification should only be triggered if the official Rust toolchain introduces a native, first-party `cargo watch` subcommand that renders external orchestrators obsolete.
 
-##### Sources
+###### Sources
 Evidence is derived from maintainer deprecation notices, community transition guides, and modern Rust workflow analyses [cite: 12, 13, 24].
 
 | Figure | Source | Value |
