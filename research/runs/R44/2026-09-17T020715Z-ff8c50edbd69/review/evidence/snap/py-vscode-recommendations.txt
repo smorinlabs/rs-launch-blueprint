@@ -1,0 +1,11 @@
+Anthropic.claude-code
+charliermarsh.ruff
+coderabbit.coderabbit-vscode
+eamodio.gitlens
+GitHub.vscode-github-actions
+GitHub.vscode-pull-request-github
+ms-python.python
+ms-python.vscode-pylance
+redhat.vscode-yaml
+streetsidesoftware.code-spell-checker
+tamasfe.even-better-toml
