@@ -1,0 +1,35 @@
+case 1 — HOME=/fixed/fake, no XDG_* set
+config = /fixed/fake/.config/
+data   = /fixed/fake/.local/share/
+state  = Some("/fixed/fake/.local/state/")
+cache  = /fixed/fake/.cache/
+runtime= None
+
+case 2 — HOME=/fixed/fake, XDG_STATE_HOME=/abs/state (absolute)
+config = /fixed/fake/.config/
+data   = /fixed/fake/.local/share/
+state  = Some("/abs/state")
+cache  = /fixed/fake/.cache/
+runtime= None
+
+case 3 — HOME=/fixed/fake, XDG_STATE_HOME= (empty)
+config = /fixed/fake/.config/
+data   = /fixed/fake/.local/share/
+state  = Some("/fixed/fake/.local/state/")
+cache  = /fixed/fake/.cache/
+runtime= None
+
+case 4 — HOME=/fixed/fake, XDG_STATE_HOME=rel/ative (relative)
+config = /fixed/fake/.config/
+data   = /fixed/fake/.local/share/
+state  = Some("/fixed/fake/.local/state/")
+cache  = /fixed/fake/.cache/
+runtime= None
+
+case 5 — no HOME and no XDG_* at all. The absolute paths are this
+machine passwd entry home, so only the shape is printed:
+config = <passwd-home>/.config/
+data   = <passwd-home>/.local/share/
+state  = Some("<passwd-home>/.local/state/")
+cache  = <passwd-home>/.cache/
+runtime= None
