@@ -229,9 +229,9 @@ incompatible license" is recorded as struck rather than as a passing gate.
 | Candidate | 1 licence (recorded only) | 2 MSRV vs the 1.96 floor | 3 advisory / `unsafe` | 4 `ubuntu-latest, macos-latest` | 5 default features / async coupling | 6 binary size and compile cost |
 |---|---|---|---|---|---|---|
 | `mockall` 0.15.0 **(selected)** | `MIT OR Apache-2.0` | **passes** — declares `rust-version = "1.77.0"` (C01), enforced by a CI job pinned to that image; its six required dependencies are pure Rust and older-MSRV (C08) | **passes** — `rustsec.org/packages/mockall.html` HTTP 404, evidenced as "no advisory" by the `lock_api` control (C07). `unsafe`: the crate is safe Rust; `downcast` uses `unsafe` for type erasure and `fragile` for a thread-affinity check — **stated from manifests and documentation, not a line-by-line audit** | **passes by adopter evidence.** Its own CI is `ubuntu-latest` only; closed by `tokio-rs/tokio`, which carries `mockall` as a dev dependency and runs its matrix on `macos-latest`. **Version caveat: that adopter evidence is for 0.13.0, not 0.15.0** — the crate is pure Rust with no platform-conditional code, so the risk is low, but macOS support for 0.15.0 specifically is **inferred, not observed** | **passes** — the only feature is `nightly`, not default; no async runtime anywhere in the required dependency list (C08), so enabling `mock` does not drag `tokio` into a sync build. Composes with `async-trait` subject to `automock` preceding `#[async_trait]` | **passes** — zero bytes in the shipped binary (feature-and-dev-only). Compile cost is one extra proc-macro tree (`mockall_derive` → `syn`), paid only under `--features mock`, which is the reason for the gate. **No wall-clock figure: nothing was compiled** |
-| `httpmock` 0.8.3 **(selected)** | `MIT` | **passes** — declares `rust-version = "1.88.0"` (C02), four minors of headroom below the 1.96 floor, enforced on master by `cargo hack check --rust-version --each-feature --no-dev-deps` | **passes** — `rustsec.org/packages/httpmock.html` HTTP 404 with the same control (C07). `unsafe`: **corrected here.** `unsafe_code = "forbid"` appears in the **master** manifest, which is already versioned 0.9.0; the released **v0.8.3 tag's manifest carries no such lint and declares `edition = "2021"`** (C06). For 0.8.3 the posture is "safe Rust over `hyper`/`tokio`", stated from manifests, not audited | **passes on its own CI** — `.github/workflows/platform.yml` runs the matrix `os: [ubuntu-latest, macos-latest, windows-latest]` (C09). It is the only candidate in the category whose own CI covers macOS, and `target-os-matrix` is owner-fixed, so this is the gate-4 discriminator | **passes with a change** — default feature set is exactly `["cookies"]` (C05), which this recommendation turns off with `default-features = false`; nothing here matches on cookies. `standalone`, `https`, `proxy`, `record`, `remote` stay off. `tokio` is a required dependency of the crate, but the **API** is sync-and-async, so the dev tree contains `tokio` while the template's test code need not be async | **passes** — zero bytes in the shipped binary. Heaviest dependency list of the four (26 required normal dependencies against `wiremock`'s 15 and `mockito`'s 16) because it bundles diffing and pretty-printing for readable mismatch output; paid only when the test suite compiles. **No wall-clock figure: nothing was compiled** |
-| `mockito` 1.7.2 (**ranked runner-up**) | `MIT` | **passes** — declares 1.70 (C04); its master branch moves to 1.85, still inside the floor, so the headroom is narrowing | **passes** — HTTP 404 (C07) | **unverified for macOS test execution, not failed** — its own CI covers `ubuntu-latest` and `windows-latest` and no macOS; the best adopter evidence, `apache/iceberg-rust`, runs macOS in its `build` matrices but its `tests` job on `ubuntu-latest` only, so macOS *compilation* is evidenced and macOS *test execution* is not | **passes** — sync and async APIs; `tokio` required; one optional feature | **passes** — zero bytes shipped; 16 required dependencies, the lightest of the three full-featured options |
-| `wiremock` 0.6.5 (**second runner-up; the crate the owner reference names**) | `MIT/Apache-2.0` | **passes on substance, fails on declaration** — it declares **no** `rust-version` at all (C03), so the MSRV-aware resolver offers no protection; its *effective* floor is at least 1.88, since its own issue #173 reports a let-chain compile error against 0.6.5 and let chains stabilized in Rust 1.88.0 | **passes** — HTTP 404 (C07) | **passes by adopter evidence** — its own CI has 0 macOS mentions across 5 `ubuntu-latest` jobs (C10); closed by `matrix-org/matrix-rust-sdk`, which runs its full suite against `wiremock = "0.6.5"` on `macos-latest` | **passes with a coupling to record** — `tokio` required; **API async-only** (C11), tested against both `tokio` and `async-std` | **passes** — zero bytes shipped; 15 required dependencies, the lightest of the three |
+| `httpmock` 0.8.3 **(selected)** | `MIT` | **passes** — declares `rust-version = "1.88.0"` (C02), four minors of headroom below the 1.96 floor, enforced on master by `cargo hack check --rust-version --each-feature --no-dev-deps` | **passes** — `rustsec.org/packages/httpmock.html` HTTP 404 with the same control (C07). `unsafe`: **corrected here.** `unsafe_code = "forbid"` appears in the **master** manifest, which is already versioned 0.9.0; the released **v0.8.3 tag's manifest carries no such lint and declares `edition = "2021"`** (C06). For 0.8.3 the posture is "safe Rust over `hyper`/`tokio`", stated from manifests, not audited | **passes on its own CI** — `.github/workflows/platform.yml` runs the matrix `os: [ubuntu-latest, macos-latest, windows-latest]` (C09). It is the only candidate in the category whose own CI covers macOS, and `target-os-matrix` is owner-fixed, so this is the gate-4 discriminator | **passes with a change** — default feature set is exactly `["cookies"]` (C05), which this recommendation turns off with `default-features = false`; nothing here matches on cookies. `standalone`, `https`, `proxy`, `record`, `remote` stay off. `tokio` is a required dependency of the crate, but the **API** is sync-and-async, so the dev tree contains `tokio` while the template's test code need not be async | **passes** — zero bytes in the shipped binary. Heaviest dependency list of the three full-featured candidates — **25** required normal dependencies against `wiremock`'s 15 and `mockito`'s 16, re-read at the endpoint (C19), which corrects the opus report's 26 — because it bundles diffing and pretty-printing for readable mismatch output; paid only when the test suite compiles. **No wall-clock figure: nothing was compiled** |
+| `mockito` 1.7.2 (**ranked runner-up**) | `MIT` | **passes** — declares 1.70 (C04); its master branch moves to 1.85, still inside the floor, so the headroom is narrowing | **passes** — HTTP 404 (C07) | **unverified for macOS test execution, not failed** — its own CI covers `ubuntu-latest` and `windows-latest` and no macOS; the best adopter evidence, `apache/iceberg-rust`, runs macOS in its `build` matrices but its `tests` job on `ubuntu-latest` only, so macOS *compilation* is evidenced and macOS *test execution* is not | **passes** — sync and async APIs; `tokio` required; one optional feature | **passes** — zero bytes shipped; **16** required normal dependencies (C19), the lightest of the three full-featured options |
+| `wiremock` 0.6.5 (**second runner-up; the crate the owner reference names**) | `MIT/Apache-2.0` | **passes on substance, fails on declaration** — it declares **no** `rust-version` at all (C03), so the MSRV-aware resolver offers no protection; its *effective* floor is at least 1.88, since its own issue #173 ("Error: `let` expressions in this position are unstable", opened 2025-08-27, since closed) reports a let-chain compile failure against 0.6.5 (C20) and let chains stabilized in Rust 1.88.0 | **passes** — HTTP 404 (C07) | **passes by adopter evidence** — its own CI has 0 macOS mentions across 5 `ubuntu-latest` jobs (C10); closed by `matrix-org/matrix-rust-sdk`, which runs its full suite against `wiremock = "0.6.5"` on `macos-latest` | **passes with a coupling to record** — `tokio` required; **API async-only** (C11), tested against both `tokio` and `async-std` | **passes** — zero bytes shipped; 15 required dependencies, the lightest of the three |
 
 *Excluded by gate.* `faux` 0.1.13 — gate 1 `inapplicable`, and it is **not** excluded on a
 licence; excluded on **gate 3** (its own documentation records liberal use of `unsafe`) and
@@ -335,7 +335,7 @@ it runs from a `git archive HEAD` extraction as well as from the worktree.
 bash research/runs/R48/2026-09-17T020714Z-f9e4f950ea82/review/evidence/r48-claims-check.sh
 ```
 
-**Result: 18 checks, 18 PASS, 0 FAIL, 0 SKIP; exit status 0.** Full output:
+**Result: 20 checks, 20 PASS, 0 FAIL, 0 SKIP; exit status 0.** Full output:
 `review/evidence/r48-claims-check.log`.
 
 | Check | What it asserts | Endpoint (all retrieved 2026-09-17) |
@@ -355,6 +355,8 @@ bash research/runs/R48/2026-09-17T020714Z-f9e4f950ea82/review/evidence/r48-claim
 | C16 | all **5** `- assumes` lines in this file are byte-identical to column 4 of the matching `docs/port/PARAMETERS.md` row — the publication guard | `docs/port/PARAMETERS.md` |
 | C17 | the sha256 of `research/topics/01-ports-and-adapters-seam/DECISION.md` matches `inputs/prerequisites.json` `R01.decision` — the R01 read here is the revision this run pinned | repository files |
 | C18 | py at pin `b08bccfb` pairs `responses>=0.25` with the comment "HTTP mock for the port-contract suite" and its contract-suite docstring names "the in-memory fake and the real HTTP adapter" — the evidence under `BASELINE-REVIEW: F120` | `git -C ~/c/py-launch-blueprint show b08bccfb:…` |
+| C19 | required normal dependency counts: `wiremock` **15**, `mockito` **16**, `httpmock` **25** — the gate-6 figures, and the correction of the opus report's 26 for `httpmock` | `https://crates.io/api/v1/crates/<name>/<version>/dependencies` |
+| C20 | `LukeMathWalker/wiremock-rs` issue **#173**, title "Error: `let` expressions in this position are unstable", opened 2025-08-27, state closed — the evidence that `wiremock`'s *effective* MSRV is at least 1.88 despite declaring none | `https://api.github.com/repos/LukeMathWalker/wiremock-rs/issues/173` |
 
 **Reproducibility, stated after re-running the script against the committed log rather than
 before.** Every line beginning `# ` is volatile: the retrieval timestamp, the host banner,
@@ -383,8 +385,9 @@ HEAD` extraction into a temporary directory — a tree with no `.git`, carrying 
 `review/DECISION.md` and `review/evidence/r48-claims-check.sh` at their paths — and
 produced `PASS` lines identical to the committed log and exit status 0; that run is
 recorded in `review/evidence/r48-archive-rerun.log`, with its procedure in the log's own
-header. No other check depends on anything outside this repository and the six endpoints
-named above. The script sets `set -uo pipefail`, invokes `/usr/bin/grep` by absolute path,
+header. No other check depends on anything outside this repository and five network hosts:
+`crates.io`, `raw.githubusercontent.com`, `rustsec.org`, `docs.rs` and `api.github.com`
+(reached through the machine's authenticated `gh`). The script sets `set -uo pipefail`, invokes `/usr/bin/grep` by absolute path,
 names that binary beside every count it prints, checks each `curl` status separately rather
 than trusting a pipeline, contains no personal email in its `User-Agent`, and passes
 `shellcheck` with no findings.
@@ -405,8 +408,11 @@ Two engines, the Focused tier: no Doxa.
 
 **The engines agree on the two crates and on their versions.** Both name `mockall` 0.15.0
 and `httpmock` 0.8.3; both rank `mockito` 1.7.2 the HTTP runner-up; both keep hand-written
-fakes as the normal mechanism; both report that nothing was compiled. Five things they
-settle differently, each settled here on evidence rather than on a vote.
+fakes as the normal mechanism; both report that nothing was compiled. Six numbered items
+follow: items **1 to 4** are genuine disagreements between the engines, each settled here
+on evidence rather than on a vote; items **5 and 6** are corrections to figures a single
+engine reported, which no disagreement raised and which this synthesis found by re-reading
+the source.
 
 1. **Does the HTTP condition fire?** Codex writes "Do not add an HTTP-mocking dependency
    for R01's registered trait/fake branch"; opus says the condition is met and puts
@@ -452,6 +458,13 @@ settle differently, each settled here on evidence rather than on a vote.
    stated from manifests, not audited" — and the `default-features = false` recommendation
    is *unaffected*, because C05 confirms `default = ["cookies"]` on the released version
    from the registry rather than from master.
+6. **`httpmock`'s dependency count — a second correction to opus.** Opus states 26
+   required normal dependencies for `httpmock` 0.8.3. Check C19 re-read the endpoint for
+   all three HTTP candidates in one pass: `wiremock` **15**, `mockito` **16**, `httpmock`
+   **25**. The gate-6 row is restated with 25. The correction does not change the ranking
+   — `httpmock` still carries the heaviest tree of the three, which is the honest cost the
+   decision records against the selected member. Codex offered no dependency counts, so
+   this is a correction rather than a disagreement settled.
 
 **Evidence the two engines did not both collect.** Codex did not compute `httpmock`'s
 issue responsiveness and said so, recording it as a re-verification task rather than

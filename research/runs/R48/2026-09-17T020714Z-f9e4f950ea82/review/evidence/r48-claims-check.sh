@@ -378,6 +378,55 @@ else
   skip C18 "py-launch-blueprint clone absent at $PY_REPO (expected in a clean git archive extraction); py pin evidence not re-read"
 fi
 
+# ---------------------------------------------------------------------------
+# C19 — gate 6: the required-normal dependency counts the decision cites for the
+# three HTTP candidates. The opus report gives httpmock 26; this check re-reads
+# the endpoint and records 25.
+# ---------------------------------------------------------------------------
+counts=""
+c19_ok=1
+for spec in wiremock/0.6.5 mockito/1.7.2 httpmock/0.8.3; do
+  name=${spec%%/*}
+  code=$(fetch "https://crates.io/api/v1/crates/$spec/dependencies" "$WORK/$name-deps.json")
+  if [ "$code" != "200" ]; then
+    c19_ok=0
+    counts="$counts $name=HTTP$code"
+    continue
+  fi
+  n=$(python3 - "$WORK/$name-deps.json" <<'PY'
+import json, sys
+with open(sys.argv[1]) as fh:
+    deps = json.load(fh)["dependencies"]
+print(len([d for d in deps if d["kind"] == "normal" and not d["optional"]]))
+PY
+  )
+  counts="$counts $name=$n"
+done
+if [ "$c19_ok" = "1" ] && [ "$counts" = " wiremock=15 mockito=16 httpmock=25" ]; then
+  pass C19 "required normal dependencies at the newest non-yanked version:$counts — httpmock carries the heaviest tree of the three, and the figure is 25, not the 26 the opus report states"
+else
+  fail C19 "required normal dependency counts are$counts; expected ' wiremock=15 mockito=16 httpmock=25'"
+fi
+
+# ---------------------------------------------------------------------------
+# C20 — the evidence for wiremock's *effective* MSRV being at least 1.88 even
+# though it declares none: a user-reported let-chain compile error against
+# 0.6.5, let chains having stabilized in Rust 1.88.0.
+# ---------------------------------------------------------------------------
+if command -v gh > /dev/null 2>&1; then
+  issue=$(gh api repos/LukeMathWalker/wiremock-rs/issues/173 \
+    --jq '[.title, (.created_at | split("T")[0]), .state] | join(" | ")' 2> /dev/null)
+  if [ -z "$issue" ]; then
+    fail C20 "gh api repos/LukeMathWalker/wiremock-rs/issues/173 returned nothing"
+  elif [ "$issue" = "Error: \`let\` expressions in this position are unstable | 2025-08-27 | closed" ]; then
+    pass C20 "api.github.com repos/LukeMathWalker/wiremock-rs/issues/173: title 'Error: \`let\` expressions in this position are unstable', created 2025-08-27, state closed — a let-chain compile failure reported against 0.6.5, so the crate's effective floor is at least Rust 1.88.0 even though it declares no rust-version"
+  else
+    fail C20 "repos/LukeMathWalker/wiremock-rs/issues/173 reads '$issue'; expected the let-expressions title, created 2025-08-27, state closed"
+  fi
+else
+  skip C20 "gh not on PATH; api.github.com repos/LukeMathWalker/wiremock-rs/issues/173 not queried"
+fi
+
 printf '#\n'
 if [ "$FAILED" = "0" ]; then
   printf 'RESULT: all checks passed (0 FAIL)\n'

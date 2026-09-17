@@ -8,7 +8,7 @@
 # carries the py-launch-blueprint clone; it prints SKIP by name where that is absent.
 #
 # R48 mocking-crates — empirical check, revision 1
-# retrieved: 2026-09-17T04:18:43Z
+# retrieved: 2026-09-17T04:22:22Z
 # host: Darwin arm64
 # rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
 # cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
@@ -33,5 +33,7 @@ PASS C15: inputs/owner-reference-axum-companion-stack-2026-09-16.md carries 1 pi
 PASS C16: all 5 '- assumes' lines in review/DECISION.md are byte-identical to column 4 of the matching docs/port/PARAMETERS.md row (lines selected by /usr/bin/grep, compared by shell string equality)
 PASS C17: research/topics/01-ports-and-adapters-seam/DECISION.md sha256 matches inputs/prerequisites.json R01.decision — the published R01 read here is the revision this run pinned
 PASS C18: py at pin b08bccfb: 1 pyproject.toml line pairing 'responses>=0.25' with 'HTTP mock for the port-contract suite' and 1 contract-suite docstring line naming 'the in-memory fake and the real HTTP adapter' (counts by /usr/bin/grep -c) — the contract suite is run against the real adapter over a mocked network
+PASS C19: required normal dependencies at the newest non-yanked version: wiremock=15 mockito=16 httpmock=25 — httpmock carries the heaviest tree of the three, and the figure is 25, not the 26 the opus report states
+PASS C20: api.github.com repos/LukeMathWalker/wiremock-rs/issues/173: title 'Error: `let` expressions in this position are unstable', created 2025-08-27, state closed — a let-chain compile failure reported against 0.6.5, so the crate's effective floor is at least Rust 1.88.0 even though it declares no rust-version
 #
 RESULT: all checks passed (0 FAIL)
