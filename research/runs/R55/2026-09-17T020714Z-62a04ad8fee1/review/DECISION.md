@@ -1,8 +1,43 @@
-# 2026-09-17 — R55 — config-error-tolerance (bundle, Focused) — decision (revision 2)
+# 2026-09-17 — R55 — config-error-tolerance (bundle, Focused) — decision (revision 3)
 
 ## Decision
 
-**Revision note.** Revision 1 (sha256 `eab34b2d…`) was **approved** by its round-1
+**Revision note (revision 3).** Revision 2 (sha256 `b4ad24de…`) was **rejected**
+by its round-2 judgment audit (`review/audit-fable.md`) on one blocking finding.
+**The recommendation does not move**: the provenance-aware two-phase loader with
+no R55-added crate, the four clauses, the `RSLB203` reservation, the `CONFLICT:`
+rejection, the no-`flatten` rule, the R8a requirement, the ten acceptance criteria
+and the five parameter lines all stand exactly as revision 2 wrote them. The audit
+found the crate drop grounded and confirmed the R8a reading at R53's own source.
+What failed was the harness.
+
+**JF-7 (blocking)** — "four of revision 2's checks cannot fail the run, and the
+summary the decision cites undercounts its own script by four". Granted, and
+reproduced here rather than accepted on report: `evidence/check-r2.sh` fed four
+checks (`JF4a`, `JF4b`, `JF5a`, `JF5b`) from the tail of a pipeline, whose last
+element bash runs in a subshell, so their `ok`/`no` incremented a copy of
+`pass`/`fail`. The counters lost four increments — the log's 22 script-level
+`PASS` lines against a printed `PASS=18` — and, the real defect, a **failing** one
+of the four would print `FAIL` and still leave `fail=0`, so the closing
+`[ "$fail" -eq 0 ]` could not trip. That is "a check that cannot fail is not
+evidence", and two of the four underwrite the evidence revision 2 uses to narrow
+Disagreement 2. Repair: a **new** `evidence/check-r3.sh` feeds `assert_stream`
+from a here-string. `evidence/check-r2.sh` and `evidence/check-r2.log` are **not
+edited**; they stay as the record of what revision 2 ran. The repair is
+demonstrated, not asserted: check `JF7` proves at run time that the pipeline form
+loses both counters and the here-string form keeps both, and
+`evidence/check-r3-negative-control.log` forces one of the four checks to fail in
+both scripts — revision 2's reports `FAIL=0` and exits `0`, revision 3's reports
+`FAIL=1` and exits `1`. **JF-8 (non-blocking)** — "the sentence routing R8a denies
+more than it should". Granted; the sentence is narrowed in both places it appears,
+below and under `## Parameters`. **JF-9 (non-blocking)** — "two claims new to
+revision 2 carry no pin of their own". Granted; the unknown-key precedent now
+carries py and ts file:line pins checked as `JF9a`/`JF9b`, and the probe's helper
+provenance is corrected from `:650-657` to `:649-657`, checked as `JF9c`.
+**JF-10 (non-blocking)** — a stray `**` in the restored F237 line. Granted;
+deleted, and the line re-diffed against `raw/opus.md:227`.
+
+**Revision note (revision 2).** Revision 1 (sha256 `eab34b2d…`) was **approved** by its round-1
 judgment audit (`review/audit-fable.md`, `verdict: approve`, `unresolved-findings:
 none`). This revision exists for the forward coupling that audit recorded, and it
 **moves the recommendation**. R53 (`config-schema-validation`) published thirteen
@@ -50,9 +85,13 @@ verbatim from the raws, with every change moved into the disposition beneath.
 R67's `thiserror`; rejected codex's `RSLB203` `CONFLICT:`; approved by
 `review/audit-fable.md` with six non-blocking findings. Revision 2, 2026-09-17:
 reconciled against R53 revision 2; member list moved to no R55-added crate; two
-measured constraints added; JF-1 through JF-6 folded in. The `CONFLICT:` ruling,
-the four-clause rule, the parameter lines and the ledger dispositions are
-unchanged.
+measured constraints added; JF-1 through JF-6 folded in; rejected by
+`review/audit-fable.md` round 2 on JF-7. Revision 3, 2026-09-17: the evidence
+harness repaired in a new `evidence/check-r3.sh` and its gate demonstrated by a
+negative control; the counts restated to what the repaired run prints; JF-8
+through JF-10 folded in. Across all three revisions the `CONFLICT:` ruling, the
+four-clause rule, the parameter lines and the ledger dispositions are
+unchanged, and the recommendation moved exactly once, at revision 2.
 
 **Recommendation — one stack, and R55 adds no crate of its own.** The
 **provenance-aware two-phase config loader** is a pattern in the template's own
@@ -135,7 +174,11 @@ fourth is the composition order they force.
      R55 in terms ("*Whether unknown keys are tolerated* — also R55's… That tension
      is R55's to resolve, not this item's") and supplies the detection. Decided for
      warn-and-continue on three grounds: both sources tolerate unknown keys (py
-     sets `model_config = {"extra": "ignore"}`, zod's `z.object` strips them), so
+     sets `model_config = {"extra": "ignore"}` on all three models,
+     `b08bccfb:src/py_launch_blueprint/core/settings.py:43,52,63`; ts declares
+     `z.object({…})` at `cb1cbcb2:src/lib/config.ts:37-41` with neither
+     `.strict()` nor `.passthrough()`, so zod strips unknown keys by default —
+     both verified at their pins, checks `JF9a` and `JF9b`), so
      failing would be a new strictness neither precedent supports; a config file
      written by a newer version of the template must not brick an older binary; and
      the standard's R5.8 example *diagnoses* an unknown key
@@ -145,11 +188,26 @@ fourth is the composition order they force.
    - **A section key that is present but is not a table is a value-level fault at
      the section's own path.** Measured: R53's loop as published skips such a
      section silently, returning built-in defaults with no issue and no unconsumed
-     entry (`## Empirical check`, R8a). That violates P2, so this is a requirement
-     R55 places on how P03 writes the loop, not an observation about R53's
-     decision: the loop must push an `Issue` at the section's path when the key
-     exists and is not a table. With that one-line repair the fault becomes
-     localizable, prunable and reported (R8b).
+     entry (`## Empirical check`, R8a). The gap is in R53's **published loop shape** —
+     it reaches a section through
+     `table.get("output").and_then(toml::Value::as_table)`
+     (`R53 review/evidence/verify.sh:620`, check `JF8b`), and a non-table value
+     makes `as_table()` return `None`, so the body never runs and no `Issue` is
+     pushed — and it bears on a row in **R53's own must-agree table**: "A value
+     outside a key's allowed set is rejected, never silently coerced"
+     (`R53 DECISION.md:184`, check `JF8a`), which `output = 5` under the loop as
+     published does not satisfy. It also violates this item's P2. The **repair
+     belongs to P03**, one line inside R53's own module, so **R53 need not
+     revise** and no `CONFLICT:` arises — R53 owns no parameter to conflict with:
+     the loop must push an `Issue` at the section's path when the key exists and
+     is not a table. With that repair the fault becomes localizable, prunable and
+     reported (R8b).
+
+     > Superseded wording, revision 2: "That violates P2, so this is a
+     > requirement R55 places on how P03 writes the loop, **not an observation
+     > about R53's decision**". **JF-8 is granted**: the destination was right,
+     > but the denial obscured where the gap sits, and a reader of R53 told this
+     > was "not an observation about R53's decision" would not go looking.
    - **The fatal branch is `RSLB203` at exit `2`, reserved and currently
      unreached.** Under R53's loop every leaf fault is addressed by name at the
      call site, so nothing the leaf pass produces is non-localizable. The reachable
@@ -351,7 +409,7 @@ asserting each of these:
 10. `RSLB203` is unreachable from any of the above; the first cross-field rule R53
     adds is the test that reaches it.
 
-**`BASELINE-REVIEW: F237 — a corrupt config file the user explicitly named is a hard failure, not a degraded load — keep the row inherited but record that "inherited as-is" cannot be literal in `rs-launch-blueprint`: the single `ConfigError` both sources raise becomes two catalogue rows, `RSLB104` (config layer unreadable → exit 1) and `RSLB202` (config document unparsable → exit 2); affected items: R55 (this item, which routes to both rows) and R52/R53, which must not assume one error type covers both faults — evidence: py raises one `ConfigError` for both `tomllib.TOMLDecodeError` and `OSError` (`git -C ~/c/py-launch-blueprint show b08bccfb:src/py_launch_blueprint/core/config.py`, `_read_explicit` lines 114-120, retrieved 2026-09-17) and ts throws one `ConfigError` for both a failed `readFileSync` and a failed `parse` (`git -C ~/c/ts-launch-blueprint show cb1cbcb2:src/lib/config.ts`, read catch at lines 109-115, parse catch at 117-123, retrieved 2026-09-17), while R67 — owner-accepted, consumed here — assigns the two faults different exit codes (`research/topics/67-error-and-exit-code-contract/DECISION.md:258-263`). The split is R67's, not a new proposal by this item; it is recorded so F237's "inherited as-is" is not read as a promise that one error type survives the port.**`**
+**`BASELINE-REVIEW: F237 — a corrupt config file the user explicitly named is a hard failure, not a degraded load — keep the row inherited but record that "inherited as-is" cannot be literal in `rs-launch-blueprint`: the single `ConfigError` both sources raise becomes two catalogue rows, `RSLB104` (config layer unreadable → exit 1) and `RSLB202` (config document unparsable → exit 2); affected items: R55 (this item, which routes to both rows) and R52/R53, which must not assume one error type covers both faults — evidence: py raises one `ConfigError` for both `tomllib.TOMLDecodeError` and `OSError` (`git -C ~/c/py-launch-blueprint show b08bccfb:src/py_launch_blueprint/core/config.py`, `_read_explicit` lines 114-120, retrieved 2026-09-17) and ts throws one `ConfigError` for both a failed `readFileSync` and a failed `parse` (`git -C ~/c/ts-launch-blueprint show cb1cbcb2:src/lib/config.ts`, read catch at lines 109-115, parse catch at 117-123, retrieved 2026-09-17), while R67 — owner-accepted, consumed here — assigns the two faults different exit codes (`research/topics/67-error-and-exit-code-contract/DECISION.md:258-263`). The split is R67's, not a new proposal by this item; it is recorded so F237's "inherited as-is" is not read as a promise that one error type survives the port.`**
 Raised by the opus raw report (`raw/opus.md:227`) and restored verbatim here under
 **JF-6**; revision 1 paraphrased it. **Accepted and carried.** Disposition: the
 split is already published in R67 and is not a new proposal by this item; this
@@ -494,8 +552,10 @@ R52 selected `toml` 1.1.6+spec-1.1.0 for the read path with `toml_edit` 0.25.15 
 the `config set` write path, so this constraint is **discharged, not outstanding**.
 **R53** owns the leaf pass; two requirements land on how P03 writes its loop
 (the per-level unconsumed-key set, and a non-table section key reported at the
-section's path), both measured, and both inside what R53 left to R55 rather than
-changes to R53's decision. **R54** must tag each layer it discovers with provenance
+section's path), both measured. The second is a gap in R53's published loop shape
+that touches R53's own must-agree row at `R53 DECISION.md:184`; the repair is one
+line inside R53's module and belongs to P03, so R53 need not revise, and no
+`CONFLICT:` arises because R53 owns no parameter. **R54** must tag each layer it discovers with provenance
 — the document-level tolerance rule is a function of that tag, not of the tier
 count — and owns merge depth and precedence order; this item fixes only the
 *sequence*. **R58** must accept a `Vec<ConfigWarning>` rendered by the binary after
@@ -508,10 +568,13 @@ logging is initialized.
 `shellcheck` on `PATH`, `/usr/bin/grep` (BSD grep) as the counting binary.
 Working directory: `research/runs/R55/2026-09-17T020714Z-62a04ad8fee1/review/`.
 
-**Revision 1's script and logs are unchanged and are not re-run into new files.**
-`evidence/check.sh`, `evidence/check.log` and `evidence/rerun.diff` are
-byte-identical to what revision 1 committed (sha256 `ed0029f0…`, `d83a1fea…`,
-`3dda6290…`); revision 2 adds files rather than editing them. Revision 1's result
+**Every earlier revision's script and logs are unchanged and are not re-run into
+new files.** `evidence/check.sh`, `evidence/check.log` and `evidence/rerun.diff`
+are byte-identical to what revision 1 committed (sha256 `ed0029f0…`, `d83a1fea…`,
+`3dda6290…`), and `evidence/check-r2.sh`, `evidence/check-r2.log` and
+`evidence/r2-rerun.diff` are byte-identical to what revision 2 committed — JF-7 is
+repaired in a new file, never by editing the script whose output is already cited.
+Each revision adds files rather than editing them. Revision 1's result
 stands: **`PASS=25 FAIL=0 SKIP=0`, exit `0`**, covering R67's delegation sentence
 (C01–C03), the four ledger rows (C04), the `- assumes` byte-identity (C05), the org
 CLI Design Standard at blob `f9de0437baece3383e73ca2c5f48b7ab399b51c7` (C06), the
@@ -529,18 +592,45 @@ committed `evidence/spike/Cargo.lock` and asserts exactly **20**. Revision 1's
 `check.sh` was not edited to add this, because the revision rules keep a cited
 script byte-identical.
 
-**Command (new in revision 2).**
+**Command (revision 3; supersedes revision 2's `check-r2.sh`).**
 
 ```
-./evidence/check-r2.sh 2>&1 | tee evidence/check-r2.log
+./evidence/check-r3.sh 2>&1 | tee evidence/check-r3.log
 ```
 
-**Result: `PASS=18 FAIL=0 SKIP=0`, exit status `0`.** The full output is
-`evidence/check-r2.log`; the script is shellcheck-clean, asserts on content in
+**Result: `PASS=29 FAIL=0 SKIP=0`, exit status `0`.** The full output is
+`evidence/check-r3.log`. The script is shellcheck-clean, asserts on content in
 every check, finds the repository root by content rather than `.git`, and skips by
 name (`JF3-cli-standard-absent`, `JF4-py-repo-absent`, `JF5-ts-repo-absent`,
-`D05-cargo-absent`) where an external input is unavailable. The eighteen script
-checks and the nine probe assertions nested inside `D05` are:
+`JF9a-py-repo-absent`, `JF9b-ts-repo-absent`, `D05-cargo-absent`) where an
+external input is unavailable. It carries every revision-2 check plus seven new
+ones — `JF7`, `JF7b`, `JF8a`, `JF8b`, `JF9a`, `JF9b`, `JF9c` — so **29 script
+checks**, and the nine probe assertions nested inside `D05` bring the log to 38
+`PASS` lines in total.
+
+> Superseded wording, revision 2: "**Result: `PASS=18 FAIL=0 SKIP=0`, exit status
+> `0`.** The full output is `evidence/check-r2.log`… The eighteen script checks
+> and the nine probe assertions nested inside `D05` are:". **JF-7 is granted.**
+> `PASS=18` was the number four broken counters printed; the same log carried 22
+> script-level `PASS` lines and the bullet list below enumerated 22 identifiers,
+> so the prose disagreed with its own log and its own enumeration. Neither
+> `evidence/check-r2.sh` nor `evidence/check-r2.log` is edited; both stay as the
+> record of what revision 2 ran, and the negative control reads them.
+
+**Why the repaired script's gate can close, shown twice.** Check `JF7` runs the
+counter experiment in the live shell and requires both halves of it: a function
+invoked as a pipeline's tail leaves `pass=0 fail=0`, the same function invoked
+with a here-string leaves `pass=1 fail=1`. Check `JF7b` asserts that this script
+contains exactly four here-string-fed `assert_stream` calls, one per repaired
+check, so the fix cannot silently regress. Beyond the script,
+`evidence/check-r3-negative-control.log` records a forced failure of `JF5b` — its
+needle replaced with text absent from the file — run against **both** scripts from
+a `git archive HEAD` extraction, neither script edited in place: revision 2's
+prints the `FAIL` line, reports `FAIL=0` and exits **`0`**; revision 3's prints the
+identical `FAIL` line, reports `FAIL=1` and exits **`1`**. That log states its own
+reproduction procedure.
+
+The 29 script checks and the nine probe assertions nested inside `D05` are:
 
 - **D01–D04 — the R53 decision this revision reconciles against.** `D01` pins it at
   sha256 `be59d65bfa7ee087766a315af09c0ba4c93a8fa211927091314c86222cbb9af9`, so a
@@ -550,6 +640,19 @@ checks and the nine probe assertions nested inside `D05` are:
   `D03a` the `Issue { path, message, span }` type; `D03b`–`D03d` the three sentences
   in which R53 names the coupling, states that unknown-key detection is free, and
   hands unknown-key policy to R55; `D04` that R53 adds no dependency.
+- **JF7, JF7b — the harness gate itself** (round-2 JF-7), described above: the
+  counter experiment in the live shell, and the four-here-string count that keeps
+  the repair from regressing.
+- **JF8a, JF8b — where the R8a gap sits** (round-2 JF-8): `JF8a` asserts R53's own
+  must-agree row "A value outside a key's allowed set is rejected, never silently
+  coerced" (`R53 DECISION.md:184`), and `JF8b` asserts the line that produces the
+  silence, `if let Some(t) = table.get("output").and_then(toml::Value::as_table) {`
+  (`R53 review/evidence/verify.sh:620`).
+- **JF9a, JF9b, JF9c — the pins revision 2 left off** (round-2 JF-9): three
+  `model_config = {"extra": "ignore"}` occurrences in py `settings.py` at
+  `b08bccfb`; one `z.object` declaration and **zero** `.strict()`/`.passthrough()`
+  calls in ts `config.ts:37-41` at `cb1cbcb2`, which is why zod strips unknown
+  keys; and `R53 review/evidence/verify.sh:649` as the helper's first line.
 - **JF2a, JF2b, JF3, JF4a, JF4b, JF5a, JF5b — the round-1 finding repairs**, each
   verified at its source: the 20-package count; the archive log's summary; R5.7's
   anti-pattern line `❌ no way to see why a setting took the value it did` at the
@@ -559,12 +662,15 @@ checks and the nine probe assertions nested inside `D05` are:
   `b08bccfb` pin; py `config.py:103` as the line returning the discovered-layer
   warning; and ts `config.ts:154` as the `click.Path(exists=True)` parity comment,
   read through `cb1cbcb2`.
-- **D05 — the reconciliation probe**, source at `evidence/spike-r2/`, copied to a
+- **D05, D05a–D05g — the reconciliation probe**, unchanged from revision 2 and
+  rerun by this script. Source at `evidence/spike-r2/`, copied to a
   temporary directory and **built outside the repository**. It depends on
   `serde_ignored` and `serde_path_to_error` **only in order to measure them against
   R53's loop**; the decision recommends neither. It reproduces R53's published
   `field::<T>(table, section, key, &mut issues)` helper in shape from
-  `R53 review/evidence/verify.sh:650-657`. Resolved versions: `serde` 1.0.229,
+  `R53 review/evidence/verify.sh:649-657` — the range corrected from revision 2's
+  `:650-657` under **JF-9**, the helper's first line being `:649` (check `JF9c`).
+  Resolved versions: `serde` 1.0.229,
   `toml` 1.1.6+spec-1.1.0, `serde_ignored` 0.1.14, `serde_path_to_error` 0.1.20, in
   a 20-package graph. Nine assertions, all passing:
 
@@ -585,11 +691,15 @@ two-level schema of this synthesis's own construction, not against the template'
 real schema, which does not exist. R5/R6 use two layers; three or more, and R54's
 actual merge depth, are unexercised. Everything ran on macOS arm64 only.
 
-**Reproducibility, stated exactly.** `evidence/check-r2.log` is the output of one
-executed run of `evidence/check-r2.sh`. The script was then rerun and diffed
+**Reproducibility, stated exactly.** `evidence/check-r3.log` is the output of one
+executed run of `evidence/check-r3.sh`. The script was then rerun and diffed
 against that log before this sentence was written. The complete diff is
-`evidence/r2-rerun.diff`, and it is **one line**: the `date (UTC)` value in the
-environment header. Every assertion line, every count and every figure is
+`evidence/r3-rerun.diff`, and it is **one line**: the `date (UTC)` value in the
+environment header. It was also run from a clean `git archive HEAD` extraction,
+saved as `evidence/check-r3-archive.log`: same `PASS=29 FAIL=0 SKIP=0`, same exit
+`0`, differing from `evidence/check-r3.log` in two header lines (`date (UTC)` and
+`repository root`) and in no assertion. Revision 2's `evidence/r2-rerun.diff` is
+likewise a one-line diff and is unchanged. Every assertion line, every count and every figure is
 byte-identical across the two runs. The same claim holds for revision 1's
 `evidence/rerun.diff`, which is likewise a one-line diff and is unchanged. The
 crates.io and GitHub figures revision 1 cites are read from snapshots committed
