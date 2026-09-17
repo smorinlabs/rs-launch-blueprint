@@ -1,4 +1,55 @@
-# 2026-09-17 — R50 — install-smoke-test (bundle, Focused) — decision (revision 1)
+# 2026-09-17 — R50 — install-smoke-test (bundle, Focused) — decision (revision 2)
+
+**Revision note, revision 2.** Revision 2 answers the round-1 judgment audit
+(`review/audit-fable.md`, verdict `reject`, findings JF-1 to JF-3) and changes
+**nothing in the recommendation**: still `cargo package --no-verify` → extract the
+`.crate` outside the repository → `cargo install --path … --root <scratch> --locked
+--debug --no-track --target-dir …` → run `<scratch>/bin/rslbp --version`, still one
+`just` recipe `install-check` and one `install-smoke` job on **`ubuntu-latest`
+only**, still option B as the ranked runner-up, no parameter value moved, no gate
+disposition reversed, and the F222 `BASELINE-REVIEW` still carried and endorsed.
+The blocking finding is a coverage claim in the unproven table that this run's own
+log refutes; correcting it makes the table **narrower and more honest**, and
+narrows nothing else. This was a single-auditor pass — the empirical (Codex) audit
+was deferred by the task message and `review/audit-codex.md` does not exist — so no
+artifact was reproduced by a second engine; even so, `review/evidence/r50-check.sh`
+and `review/evidence/r50-check.log` are carried into revision 2 **byte-identical**,
+and the one new check is a new file pair
+(`r50-r2-archive-rerun.sh` / `r50-r2-archive-rerun.log`).
+
+| Finding | Disposition in this revision |
+|---|---|
+| **JF-1** (blocking) — the `--debug` trade's unproven row claims the release path "is exercised by R68's release build and R26's publish-time `cargo publish --dry-run`"; the dry-run clause is refuted by this run's own log, and the surviving ground is an open item | **Accepted in full.** The audit is right, and right about *why* it happened: the clause was the one engine claim (`raw/opus.md:975`) this synthesis carried without testing, in a decision that elsewhere insisted on testing exactly this class of assertion. `cargo publish --dry-run` runs the same packaging-and-verification build this run measured, and that build compiles with the **dev** profile — `r50-check.log:89-91`, `Verifying r50spike v0.4.2` → `Compiling …` → ``Finished `dev` profile [unoptimized + debuginfo] target(s)``. The row now says so, names **R68 as the only remaining release-profile compile and states that R68 is `open`**, and quotes revision 1's superseded wording in place. A thirteenth `re-verify:` trigger was added for R68 resolving. One location, enumerated below; the `--debug` lever itself, its flip condition and the recommendation are unchanged. |
+| **JF-2** (non-blocking) — two citations name the line before the behaviour they describe | **Accepted.** (a) ts `Justfile:307` is the **assignment** `EXPECTED="{{command_name}} $VERSION"`; the comparison is `:308-310`. The raw report's `:306-310` for the run-and-compare pair was right and revision 1 narrowed it wrongly — the `BASELINE-REVIEW` paragraph now states both lines, and the disposition paragraph records that the imprecision was this synthesis's and not the engine's. The evidence script's assertion matched the literal `EXPECTED=` string inside the `:299-312` slice, which is the `:307` assignment, so it is correct as written and is carried byte-identical. (b) py `ci.yml:220-223` was cited for a pair of steps whose sdist half is at `:224`; both locations (the `### Principles and implementation` sentence and the B1 table cell) now cite `:222` (wheel) and `:224` (sdist). **Beyond the brief:** the same paragraph cited the `build-smoke` job block as `ci.yml:204-223`, which truncates the job one line before its last step, and is widened to `:204-224`. |
+| **JF-3** (non-blocking, observation) — the archive rerun's counts are asserted with no retained artifact | **Accepted, and closed with a new check rather than a restatement.** `review/evidence/r50-r2-archive-rerun.sh` extracts `git archive HEAD`, proves the extraction carries no `.git` entry, proves the archived `r50-check.sh` is byte-identical to the working tree's, runs that archived copy with `$HOME` pointed at an empty directory, and **asserts** the counts (54 `PASS`, 0 `FAIL`, 1 `SKIP`, 0 `PASS ts-pin/`) instead of reporting them. Its log is committed. The `## Empirical check` paragraph now cites the committed pair, and states the one thing a reader would otherwise miscount: the wrapper echoes the inner output, so `^PASS` over its log returns 64, not 54. |
+
+**Revision history.** Revision 1 — sha256
+`a1ad3736d627f6038a86564dc5c9a0dcc314a0bb5a10fdec825aa1cb795053dd`, commits
+`6fbad22` (first write) and `a38493e` (`re-verify:` collapsed onto one physical
+line for the packager, two cargo-install URLs added, the spike's `--offline` use
+recorded); rejected by the round-1 judgment audit (`review/audit-fable.md`, commit
+`a6e402e`) on JF-1, with JF-2 and JF-3 non-blocking. The round-1 empirical audit
+did not run. Revision 2 — this file, plus the new `r50-r2-archive-rerun` check and
+its log. Revision 1's `r50-check.sh` and `r50-check.log` are carried forward
+byte-identical.
+
+**Mechanical enumeration performed before editing** (`/usr/bin/grep -n` over
+revision 1, every location touching each finding's subject, edited from the list
+rather than by re-reading): JF-1 — `dry-run|release profile|release path|release
+build|R68|already exercised|exercised by` matched lines 94, 186, 250, 451, 582, of
+which **only 582** carries the refuted coverage claim (94 is ts's `npm pack
+--dry-run`, 186 is option E's correct "never runs the command", 250 is uv's PR
+gate, 451 is the unstable `--dry-run` flag); one edit, plus the new `re-verify:`
+trigger (13). JF-2a — `:307|equality` matched 83, 84, 139, 268, 271, 337, 579, of
+which **83-84** carry the citation (139, 268, 271, 337 and 579 describe ts's
+equality *form*, which is unaffected); one edit, plus one sentence in the
+disposition paragraph. JF-2b — `220-223` matched **126 and 136**; both edited, and
+`204-223` matched **54**, widened. JF-3 — `54 \`PASS\`|archive|Rerunnable` matched
+426-431 as the claim; one paragraph replaced.
+
+Actor `synth-opus-2026-09-17T020715Z-b7ef95f12806-r2`, model `claude-opus-5`, item
+kind `bundle`, effort tier `focused` (two engines, no Doxa). Nothing has been
+published for R50, so there is no `## Supersedes`.
 
 ## Decision
 
@@ -51,7 +102,7 @@ and one of them is an observation rather than an argument.
    the tree is caught by the ordinary test job, which does run on `macos-latest`.
 2. *This is py's cadence, not a narrowing of it.* py's own `build-smoke` runs on
    **one** runner (`runs-on: ${{ vars.RUNNER_UBUNTU || 'ubuntu-latest' }}`,
-   `.github/workflows/ci.yml:204-223` at pin `b08bccfb`, read by the Opus engine
+   `.github/workflows/ci.yml:204-224` at pin `b08bccfb`, read by the Opus engine
    2026-09-17) despite py testing on three operating systems. Adopting py's
    cadence therefore means one runner, and the "path-filtered subset" the prompt
    offers as a third option is what py already does (`needs: changes`,
@@ -80,8 +131,10 @@ exactly that check. Verified here, mechanically, by
 `Justfile:299` `SCRATCH=$(mktemp -d /private/tmp/ts-pack-check.XXXXXX)`; `:302`
 `npm pack --ignore-scripts --pack-destination "$SCRATCH"`; `:304`
 `npm install --no-save --no-package-lock "$SCRATCH/$TARBALL"`; `:306` runs
-`"$SCRATCH/node_modules/.bin/{{command_name}}" --version`; `:307` compares it for
-equality against `"{{command_name}} $VERSION"`; `:312` imports the installed
+`"$SCRATCH/node_modules/.bin/{{command_name}}" --version`; `:307` **assigns** the
+expected string, `EXPECTED="{{command_name}} $VERSION"`, and `:308-310` compare
+the two for equality (`if [ "$BIN_VERSION" != "$EXPECTED" ]; then … fi`); `:312`
+imports the installed
 package and asserts `VERSION`. The recipe's own header comment says so at
 `:268-269`: *"then pack + install into a /private/tmp scratch project and
 smoke-test the bin + ESM lib import"*. The three statements contradicted are
@@ -100,7 +153,13 @@ contribution from "absent" to "present, and stronger than py's on the assertion"
 
 **Disposition of that finding: carried forward and endorsed.** The Opus engine
 raised it; every line citation it made was re-read here at the pin and every one
-held. It is recorded as a finding for the ledger's owner to apply — a ledger
+held, including its `:306-310` for the run-and-compare pair — revision 1 narrowed
+that to `:307` for the comparison, which was one line off and is corrected above;
+the raw was right and the imprecision was this synthesis's. The evidence script's
+assertion is unaffected and is carried into this revision byte-identical: it
+matches the literal `EXPECTED="{{command_name}} $VERSION"` inside the `:299-312`
+slice, which is exactly the `:307` assignment. The finding
+is recorded for the ledger's owner to apply — a ledger
 wording change is a *disposition*, not an edit — and **no ledger row, area file,
 index row, prompt or registry file was modified by this synthesis.** F221's own
 evidence is untouched and stands: no workflow at the ts pin invokes the recipe, by
@@ -123,8 +182,9 @@ rather than a measurement.
 required.** *The artifact that ships is installed the way a consumer installs it,
 into a location that is not the developer's environment, and the resulting command
 is executed.* Source: both source repositories, read at the programme pins — py
-`.github/workflows/ci.yml:220-223` at `b08bccfb`
-(`uvx --from "$(ls dist/*.whl)" plbp --version`, and the same for the sdist) and
+`.github/workflows/ci.yml:222` and `:224` at `b08bccfb` — the wheel step
+(`uvx --from "$(ls dist/*.whl)" plbp --version`) and the sdist step that repeats it
+against `dist/*.tar.gz` — and
 ts `Justfile:299-312` at `cb1cbcb2`. Agreement level: **capability** for the check
 existing at all, and **architectural pattern** for the artifact under test being
 the *packaged* one rather than the working tree. Both are present in **both**
@@ -133,7 +193,7 @@ shared principle and the mechanism is the free variable.
 
 | # | Behavior | py at `b08bccfb` | ts at `cb1cbcb2` | Level | Must agree? |
 |---|---|---|---|---|---|
-| B1 | the packaged artifact is installed into a throwaway location and the command is executed | `ci.yml:220-223` | `Justfile:299-312` | capability | **yes** |
+| B1 | the packaged artifact is installed into a throwaway location and the command is executed | `ci.yml:222` (wheel) and `:224` (sdist) | `Justfile:299-312` | capability | **yes** |
 | B2 | the subject is the packaged artifact, not the working tree | `uv build` (`ci.yml:216`), then `dist/*.whl` and `dist/*.tar.gz` | the `npm pack` tarball (`Justfile:302`) | architectural pattern | **yes** |
 | B3 | what a failure blocks | a required CI job | only a developer who runs the recipe | policy | **no — this is F221** |
 | B4 | how strong the assertion is | `--version` exits 0, output unchecked | `--version` output compared for equality, plus a library-surface import | policy | **no — may vary** |
@@ -334,7 +394,7 @@ literal string `target/`, because R49's `build-tool-output-shape` states the
 directory is relocatable; a hardcoded `target/` would break the recipe in the very
 job that invokes it.
 
-re-verify: 2027-03-17, or earlier on any of — (1) a Cargo release that changes `cargo install`'s default lockfile handling, its default target directory, or the semantics of `--root`, `--debug`, `--no-track` or `--target-dir`; (2) a Cargo release that changes `cargo package`'s output path, its default verification, or `--no-verify` semantics — in particular, if `--no-verify` ever leaves an extracted copy in the tree, the ground for the scratch extraction moves; (3) R49 changing the binary name `rslbp`, the single `[[bin]]`, or the `[package] include` allow-list; (4) R11 fixing `ci-job-structure` in a way that makes a dedicated, path-filtered job unavailable; (5) R69 resolving its serve binary's placeholder name to a literal, or changing its `required-features` gate; (6) R22 or R60 fixing `--version`'s exact output, at which point AC4 tightens from a substring to ts's equality form; (7) `src/main.rs` ceasing to depend on the library crate, which makes the scratch-consumer library check necessary; (8) a macOS-only packaging failure being observed, which widens the job to the two-runner matrix; (9) R26's elements moving from the publish workflow to pull-request CI, which changes this item's marginal coverage; (10) R34 accepting or declining the unlocked `latest-deps` leg recommended above; (11) the F222 ledger correction above being applied or rejected; or (12) the first execution of the recipe against the real template in P03, which is when every cost figure in this decision first becomes measurable
+re-verify: 2027-03-17, or earlier on any of — (1) a Cargo release that changes `cargo install`'s default lockfile handling, its default target directory, or the semantics of `--root`, `--debug`, `--no-track` or `--target-dir`; (2) a Cargo release that changes `cargo package`'s output path, its default verification, or `--no-verify` semantics — in particular, if `--no-verify` ever leaves an extracted copy in the tree, the ground for the scratch extraction moves; (3) R49 changing the binary name `rslbp`, the single `[[bin]]`, or the `[package] include` allow-list; (4) R11 fixing `ci-job-structure` in a way that makes a dedicated, path-filtered job unavailable; (5) R69 resolving its serve binary's placeholder name to a literal, or changing its `required-features` gate; (6) R22 or R60 fixing `--version`'s exact output, at which point AC4 tightens from a substring to ts's equality form; (7) `src/main.rs` ceasing to depend on the library crate, which makes the scratch-consumer library check necessary; (8) a macOS-only packaging failure being observed, which widens the job to the two-runner matrix; (9) R26's elements moving from the publish workflow to pull-request CI, which changes this item's marginal coverage; (10) R34 accepting or declining the unlocked `latest-deps` leg recommended above; (11) the F222 ledger correction above being applied or rejected; (12) the first execution of the recipe against the real template in P03, which is when every cost figure in this decision first becomes measurable; or (13) R68 (`release-binary-artifacts`) resolving, which fixes where the template's only release-profile compile lives and therefore what the `--debug` trade costs
 
 ## Parameters
 
@@ -423,12 +483,32 @@ drops any `Blocking waiting for file lock` line. Two values that a reader might
 expect to vary do **not**, and are asserted on directly rather than normalized: the
 observed exit statuses, and the `0.4.2` the installed fixture binary prints.
 
-**Rerunnable from a clean extraction.** The repository root is derived from the
-script's own path, never from `git rev-parse`, and no phase reads this
-repository's git history. Verified: `git archive HEAD` was extracted to a scratch
-directory with no `.git`, the script copied in and run with `$HOME` pointed at an
-empty directory — exit **0**, **54 `PASS`, 0 `FAIL`**, with the one checkout-dependent
-phase announcing itself by name, `SKIP ts-pin/all — checkout absent at …`.
+**Rerunnable from a clean extraction, with the rerun retained.** The repository
+root is derived from the script's own path, never from `git rev-parse`, and no
+phase reads this repository's git history. Revision 1 asserted this rerun without
+keeping its output; revision 2 keeps it. A second, separate wrapper,
+`review/evidence/r50-r2-archive-rerun.sh`, extracts `git archive HEAD` into a
+scratch directory, confirms the extraction carries no `.git` entry, confirms the
+archived `r50-check.sh` is byte-identical to the one in the working tree
+(`sha256 bdd7bc3c3c0e7fb025b92382342403cd32250da074c150496537a90ad6d55a39`), runs
+**that archived copy** with `$HOME` pointed at an empty directory, and asserts the
+counts rather than reporting them. Its output is
+`review/evidence/r50-r2-archive-rerun.log` (216 lines; sha256
+`9f2010087b00b51cab453fde9a23d95834877ad2c3786b250d7b38e99a849ec5`), exit **0**,
+**10 `PASS` of its own** and 0 `FAIL`, recording the inner run at exit **0**,
+**54 `PASS`, 0 `FAIL`, 1 `SKIP`**. The wrapper echoes the inner run's normalised
+output into its own log, so `/usr/bin/grep -c '^PASS'` over that log returns
+**64** — the wrapper's 10 plus the inner run's 54 — and `^PASS archive` returns
+the wrapper's 10. The inner run's one skip names its own phase
+(`SKIP ts-pin/all — checkout absent at …`), and the wrapper asserts **0**
+`PASS ts-pin/` lines in it — so the 54 is 68 minus phase C's 14 ts-pin
+assertions and nothing else. That wrapper
+was itself run twice and the outputs `diff`ed byte-identical before this
+paragraph was written. It needs `git archive`, so it announces
+`SKIP archive-rerun/all` by name when no `.git` entry is present at the
+repository root. **`r50-check.sh` and `r50-check.log` were not edited for this
+revision and are carried forward byte-identical**, which `git diff` over those two
+paths confirms as empty.
 
 **What was checked, and the result.** Nothing was built in this repository and the
 template was not scaffolded: every compile below is a throwaway fixture crate with
@@ -579,7 +659,7 @@ that this synthesis independently confirmed.
 | The exact `--version` output | **not this item's** — R22 and R60 own it; hence a substring, not ts's equality assertion | R22/R60 resolve |
 | R69's serve binary's concrete name | **not this item's** — R69's own text carries the placeholder `<app>-serve`; this decision names only R49's `rslbp` | R69/P03 fix the literal |
 | A well-regarded project installing from an extracted `.crate` | **none found** — GitHub code search for `"cargo install --path target/package"` returned `total_count: 7`, all documents or fixtures (retrieved 2026-09-17) | a future survey, or P03's own experience standing in for it |
-| `--debug` installs a profile a consumer does not get | **acknowledged trade, not a defect** — the release path is exercised by R68's release build and R26's publish-time `cargo publish --dry-run`; the dev profile is also the stricter smoke profile | if a release-only failure is ever observed, the leg switches to the release profile and pays the compile |
+| `--debug` installs a profile a consumer does not get, and **no release-profile compile happens at pull-request time** | **acknowledged trade, not a defect — with narrower coverage than revision 1 claimed.** The dev profile is also the stricter smoke profile (`debug-assertions`, `overflow-checks`). But `cargo publish --dry-run` does **not** exercise the release path: it runs the same packaging-and-verification build this run measured, and that build compiles with the **dev** profile — `r50-check.log:89-91`, `Verifying r50spike v0.4.2` → `Compiling …` → ``Finished `dev` profile [unoptimized + debuginfo] target(s)``. That leaves R68's release build as the only release-profile compile the template is currently expected to perform, and **R68 (`release-binary-artifacts`) is `open`** in `research/CLAUDE.md`, so no resolved item covers it today. Superseded wording, revision 1: *"the release path is exercised by R68's release build and R26's publish-time `cargo publish --dry-run`"* — the second half is refuted by this run's own log and the first half is unresolved | if a release-only failure is ever observed, the leg switches to the release profile and pays the compile; and R68 resolving is what fixes where the release-profile compile lives (`re-verify:` (13)) |
 | The AC7 negative control in the real template | **proven on a fixture, unproven on the template** | P03 removes an `include` entry, confirms `install-check` fails, restores it |
 
 **What P03 must validate.** (1) The recipe runs green against the real template on
