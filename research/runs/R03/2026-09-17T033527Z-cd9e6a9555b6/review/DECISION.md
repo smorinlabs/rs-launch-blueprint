@@ -579,9 +579,12 @@ template's default. Every disagreement below is downstream of that agreement.
 8. *Provenance of the two source repositories.* `raw/opus.md` states that both
    are private and answer HTTP 404, and reads them only through local pinned
    checkouts; `raw/doxa-openai.normalized.md` cites public `github.com` URLs for
-   the same files. **Opus's provenance sentence is wrong as observed on
-   2026-09-17**: all three `smorinlabs` repositories report `.private = false`
-   and every cited URL returns 200 unauthenticated (§3.6). This corrects a
+   the same files. **Opus's provenance sentence does not hold at this run's
+   retrieval time**: on 2026-09-17 all three `smorinlabs` repositories report
+   `.private = false` and every cited URL returns 200 unauthenticated (§3.6).
+   Whether the visibility changed between Opus's retrieval and this check is not
+   determinable from either record, so this is recorded as an observation with
+   its date, not as a finding that the engine misreported. This corrects a
    statement *about* the evidence, not the evidence: Opus's py and ts readings
    are quoted here as its readings, at their pins, and were **not** re-read by
    this synthesis (see below). openai's citations were therefore fetchable, but

@@ -1,13 +1,13 @@
-   Compiling absence_probe v0.0.0 (/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.iEdf4bpsFt/absence_probe)
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.54s
-     Running tests/absence_vs_failure.rs (/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.iEdf4bpsFt/absence_probe/target/debug/deps/absence_vs_failure-ec3512bf9c51006f)
+   Compiling absence_probe v0.0.0 (/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.ZRjJ1FMwEK/absence_probe)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.74s
+     Running tests/absence_vs_failure.rs (/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.ZRjJ1FMwEK/absence_probe/target/debug/deps/absence_vs_failure-ec3512bf9c51006f)
 
 running 7 tests
-test absence_is_rslb301_exit3_names_the_input_and_has_no_source ... ok
 test empty_list_is_success_not_absence ... ok
+test absence_is_rslb301_exit3_names_the_input_and_has_no_source ... ok
+test present_is_ok ... ok
 test local_io_failure_is_rslb101_exit1 ... ok
 test transpose_converts_the_other_nesting ... ok
-test present_is_ok ... ok
 test unavailable_adapter_state_is_a_failure_not_an_absence ... ok
 test transport_failure_is_rslb102_exit1_and_keeps_its_cause_chain ... ok
 
