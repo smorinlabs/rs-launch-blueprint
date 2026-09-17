@@ -1,5 +1,5 @@
-decision-sha256: a6193794a65cec1de30639e41ba22a147ead8c376898b9b55917e7af750e36dd
-actor: audit-codex-2026-09-05T162400Z-58ba22bff8ca-r3
+decision-sha256: cb183382237157405fc09b00fd67a2f60475b52959df078f7fe2e830730dde27
+actor: audit-codex-2026-09-05T162400Z-58ba22bff8ca-r4
 model: gpt-5.6-terra
 family: openai
 verdict: approve
@@ -7,21 +7,24 @@ unresolved-findings: none
 
 ## Rerun
 
-- argv: `./run-check-r3.sh`; stdout and stderr were captured with `tee` to `review/evidence/audit-contributors-bot-trigger-cadence-r3.log`.
-- cwd: isolated copy at `/private/tmp/r07-audit-r3-isolated.wdEQG3/research/runs/R07/2026-09-05T162400Z-58ba22bff8ca/review/empirical/r3`; the copied decision, fixtures, snapshots, JSON evidence, and published revision-1 file match commit `f6150ab` for every R07 check input.
-- toolchain: macOS 26.4 arm64; Rust 1.98.0; `actionlint` 1.7.12; Python 3.14.7 with PyYAML 6.0.3; `act` absent (form (b)).
-- exit code: 0. Complete output: `review/evidence/audit-contributors-bot-trigger-cadence-r3.log`.
-- output match: yes. The diff after normalizing the sole `date:` line is empty both between the two audit runs (`review/evidence/audit-contributors-bot-trigger-cadence-r3-reproducibility.diff`) and between the first audit run and the recorded log (`review/evidence/audit-contributors-bot-trigger-cadence-r3-vs-recorded.diff`).
-- falsifiability: in the isolated copy outside the repository, adding `schedule: - cron: '17 6 1 * *'` made the script emit the identity, key-set, explicit-no-`schedule`, option-E-difference, structural, and `/usr/bin/grep` failures; the captured script exit code is 1 (`review/evidence/audit-contributors-bot-trigger-cadence-r3-falsification-rerun.log`).
+argv: `(cd review/empirical && ./run-check.sh)`, `(cd review/empirical/r2 && ./run-check-r2.sh)`, and `(cd review/empirical/r3 && ./run-check-r3.sh)`; each was run in this run and again from a clean full-project `git archive HEAD` extraction. `runner.check_history(published_topic_decision, run_decision_bytes)` was also called directly with `scripts` on `PYTHONPATH`.
+
+cwd: `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R07/2026-09-05T162400Z-58ba22bff8ca`; archive run root recorded in `review/evidence/audit-contributors-bot-trigger-cadence-r4-full-archive-path.txt`. The archive had no `.git` directory and included both this run and the published R07 topic.
+
+toolchain: macOS 26.4 arm64; Rust 1.98.0; Cargo 1.98.0; actionlint 1.7.12; Python 3.14.7 with PyYAML 6.0.3; `act` absent (form b).
+
+exit code: revision 1 = 0 in place and 0 from the full archive; revision 2 = 0 in place and 0 from the full archive; revision 3 = 0 in place and 0 from the full archive; `check_history` returned normally. Logs: `review/evidence/audit-contributors-bot-trigger-cadence-r4-r1-inplace.log`, `review/evidence/audit-contributors-bot-trigger-cadence-r4-r1-full-archive.log`, `review/evidence/audit-contributors-bot-trigger-cadence-r4.log`, and `review/evidence/audit-contributors-bot-trigger-cadence-r4-full-archive.log`.
+
+output comparison: revisions 2 and 3 match their committed logs after replacing only `date:` with a placeholder; the zero-length diffs are `review/evidence/audit-contributors-bot-trigger-cadence-r4-r2-archive.diff` and `review/evidence/audit-contributors-bot-trigger-cadence-r4-r3-archive.diff`. Revision 1 exits successfully but differs from its committed log because its live REST query advanced from 203 to 217 py runs and from 9 to 10 ts scheduled runs; the exact diff is `review/evidence/audit-contributors-bot-trigger-cadence-r4-r1-full-archive.diff`. The decision explicitly identifies that evidence as live and bounds the cited figures to the 2026-09-07 retrieval, so the current response does not contradict a recorded historical claim. The two regenerated live-API JSON files were restored to their pre-rerun committed bytes after comparison.
 
 ## Findings
 
-1. **All revision-3 empirical claims pass.** Check 1 produced the revision-1/revision-3 fixture hash `ecee9ea674107e7470c4b31449e6642798a09d87c172264716f68a95f1721a15`; `actionlint` 1.7.12 exited 0 with no diagnostics. Check 2 established exactly `push` and `workflow_dispatch`, the two expected ignored paths, equality with the action inputs, no `schedule` key, and no `cron` or `schedule` text anywhere in the fixture. Check 3 independently counted 134 post-guard push runs: 12 `failure`, 122 `success`. Check 4 asserted both snapshots, including the required workflow `state` enum. The revision-3 check is content-asserting, not exit-code-only.
-
-2. **The two historical identities hold.** The revision-3 commit `f6150ab` changes no revision-1 or revision-2 empirical script, fixture, snapshot, or log; it adds only the revision-3 fixture, script, and log. The one `## Supersedes` heading is at line 1100. Within that section, the published revision-1 payload begins at line 1151; independently extracting that payload through EOF hashes to `0b3dde8f9a15f22e60a01542065c53c122881e8c48bf3ee6c172ba5b70499346`, and a direct diff against `research/topics/07-contributors-bot-trigger-cadence/DECISION.md` is empty. The published payload is unfenced and is the last 26,203 bytes.
-
-3. **The decision’s surrounding claims are supported.** The four `- assumes` values exactly match `docs/port/PARAMETERS.md`. Gate 1 is correctly `inapplicable`: R07 selects no crate or dependency. The owner records contain W0-R07 and W0-R07b, and the ranked runner-up’s condition now concerns a workflow-level auto-disable change or path filters becoming available for `schedule`; the current recommendation says a monthly schedule is an attempt, not a 31-day staleness or successful-retry guarantee. Five live citation probes returned HTTP 200 and found the cited 60-day rule, `paths-ignore`, `disabled_inactivity`, public visibility, and the action’s loop-protection guidance (`review/evidence/audit-contributors-bot-trigger-cadence-r3-citation-probes.log`).
+1. `git diff f15ccf8^ HEAD -- review/DECISION.md` contains only the date-first H1, the revision-4 explanation, and one revision-history row. `git diff --stat f15ccf8^..HEAD -- review/evidence review/empirical` is empty.
+2. The exact SHA-256 of `review/DECISION.md` is the required value. The active four `- assumes` lines, before the exact `## Supersedes` heading, are byte-identical to the matching values in `docs/port/PARAMETERS.md`.
+3. The published R07 decision is the final 26,203-byte suffix under `## Supersedes`, with SHA-256 `0b3dde8f9a15f22e60a01542065c53c122881e8c48bf3ee6c172ba5b70499346`. `check_history` accepts the revision; the new date-first H1 is before the first substring occurrence that its implementation splits on.
+4. Five cited URLs were fetched with `curl`; each returned HTTP 200 and contained the asserted topic. The probe log is `review/evidence/audit-contributors-bot-trigger-cadence-r4-citation-probes.log`.
+5. Fitness gate 1 is correctly inapplicable: this decision selects only a workflow trigger and no dependency. That also conforms to owner ruling Q7.B.
 
 ## Assessment
 
-Approve. Revision 3 restores the owner-directed push-only block and preserves the published revision-1 decision byte-for-byte as the terminal Supersedes payload. Its five checks rerun cleanly from an isolated committed-input copy, reproduce apart from the timestamp, and fail on a meaningful outside-repository mutation. No unresolved empirical finding requires a decision change.
+Approve. Revision 4 changes only the publication-history representation required by `check_history`; it preserves the substantive decision, evidence, parameters, and published historical bytes. The one non-byte-identical replay is a correctly disclosed live-data refresh, not a defect in this date-bounded research record.
