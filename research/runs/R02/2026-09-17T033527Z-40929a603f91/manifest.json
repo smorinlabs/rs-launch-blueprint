@@ -7,6 +7,38 @@
       "actor": "controller-fable-5-1",
       "at": "2026-09-17T03:35:27Z",
       "state": "ready"
+    },
+    {
+      "actor": "research-doxa-2026-09-17T033527Z-40929a603f91",
+      "at": "2026-09-17T03:44:27Z",
+      "operation": {
+        "actor": "research-doxa-2026-09-17T033527Z-40929a603f91",
+        "at": "2026-09-17T03:44:27Z",
+        "model": "all_deep_research",
+        "provider": "doxa",
+        "request_id": "32c68c14c2ed4774a2e2cad2482d7894",
+        "state": "submitting"
+      },
+      "provider": "doxa",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-doxa-2026-09-17T033527Z-40929a603f91",
+      "at": "2026-09-17T03:44:38Z",
+      "operation": {
+        "actor": "research-doxa-2026-09-17T033527Z-40929a603f91",
+        "actual_model": "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026",
+        "actual_provider": "doxa-research 3.3.0 via scripts/doxa_no_retry.py; openai job resp_0c29fe0e4880500b006aab621e0c5c87d0844d07f0d496c568 running; perplexity job 7cf4c788-2f56-430b-9102-1581eb43144f running; gemini job v1_ChdIMktyYXNIZkctdTJfUFVQcVBDeHNBWRIXSDJLcmFzSGZHLXUyX1BVUHFQQ3hzQVk running",
+        "at": "2026-09-17T03:44:27Z",
+        "model": "all_deep_research",
+        "operation_id": "research-20260916-204428-51b352f774314e76",
+        "provider": "doxa",
+        "request_id": "32c68c14c2ed4774a2e2cad2482d7894",
+        "returned_at": "2026-09-17T03:44:38Z",
+        "state": "submitted"
+      },
+      "provider": "doxa",
+      "state": "submitted"
     }
   ],
   "input_hashes": {
@@ -21,7 +53,20 @@
   },
   "item": "R02",
   "model": "claude-fable-5-1",
-  "operations": {},
+  "operations": {
+    "doxa": {
+      "actor": "research-doxa-2026-09-17T033527Z-40929a603f91",
+      "actual_model": "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026",
+      "actual_provider": "doxa-research 3.3.0 via scripts/doxa_no_retry.py; openai job resp_0c29fe0e4880500b006aab621e0c5c87d0844d07f0d496c568 running; perplexity job 7cf4c788-2f56-430b-9102-1581eb43144f running; gemini job v1_ChdIMktyYXNIZkctdTJfUFVQcVBDeHNBWRIXSDJLcmFzSGZHLXUyX1BVUHFQQ3hzQVk running",
+      "at": "2026-09-17T03:44:27Z",
+      "model": "all_deep_research",
+      "operation_id": "research-20260916-204428-51b352f774314e76",
+      "provider": "doxa",
+      "request_id": "32c68c14c2ed4774a2e2cad2482d7894",
+      "returned_at": "2026-09-17T03:44:38Z",
+      "state": "submitted"
+    }
+  },
   "prompt_source": "research/topics/02-crate-boundary-enforcement/prompts/crate-boundary-enforcement.prompt.md",
   "remaining_budget": "USD 238.50 to 263.50 remaining of USD 300.00 bulk Deep ceiling (owner authorisation W1-DOXA 2026-09-16; Doxa in batches of three, no automatic retry)",
   "required_engines": [
@@ -31,7 +76,7 @@
   ],
   "run_id": "2026-09-17T033527Z-40929a603f91",
   "schema_version": 1,
-  "state": "ready",
+  "state": "submitted",
   "tier": "deep",
-  "updated_at": "2026-09-17T03:35:27Z"
+  "updated_at": "2026-09-17T03:44:38Z"
 }
