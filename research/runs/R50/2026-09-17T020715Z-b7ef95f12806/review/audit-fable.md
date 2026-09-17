@@ -1,212 +1,157 @@
-decision-sha256: a1ad3736d627f6038a86564dc5c9a0dcc314a0bb5a10fdec825aa1cb795053dd
-actor: audit-fable-2026-09-17T020715Z-b7ef95f12806-r1
+decision-sha256: 316dd29d9681948a8e82623093b0aa450fde7c09c9aadbeeae7652cb0882c461
+actor: audit-fable-2026-09-17T020715Z-b7ef95f12806-r2
 model: claude-opus-5
 family: anthropic
-verdict: reject
-unresolved-findings: JF-1 (blocking) — the `--debug` trade names `cargo publish --dry-run` as exercising the release path, which the run's own log refutes, and its surviving ground is an open item; JF-2 (non-blocking) — two line citations name the line before the behaviour they describe; JF-3 (non-blocking) — the archive rerun's counts are asserted without a retained log
+verdict: approve
+unresolved-findings: none
 
-Empirical (Codex) audit deferred by the task message; this is a single-auditor pass, so `review/audit-codex.md` was neither read nor expected. No `audit-fable.md` existed before this one.
+Round 2, same auditor, fresh read of the revised file and of the whole revision-1
+diff. Round 1's audit is archived byte-identical at `review/audit-fable.r1.md`
+(sha256 `744ca6752bbbe9fc860b26451f4490c6c7baa9e5e23e3fc4b3d18f14d91beaca`), verdict
+`reject`, findings JF-1 (blocking), JF-2 and JF-3 (non-blocking). The empirical
+(Codex) audit remains deferred; `review/audit-codex.md` does not exist, which the
+revision note states rather than leaving to be inferred. Revision 1 is
+`git show cca20fe~1:…/review/DECISION.md`, which still hashes to
+`a1ad3736d627f6038a86564dc5c9a0dcc314a0bb5a10fdec825aa1cb795053dd` — the file I
+audited.
 
 ## Principle and agreement level
 
-The shared requirement is stated at the level the evidence supports and not above it:
-*the artifact that ships is installed the way a consumer installs it, into a location
-that is not the developer's environment, and the resulting command is executed.* I
-re-read both pins rather than taking the decision's word. py
-`.github/workflows/ci.yml` at `b08bccfb` carries `build-smoke` at `:204`, `uv build` at
-`:216`, and the two `uvx --from … plbp --version` steps at `:222` (wheel) and `:224`
-(sdist). ts `Justfile` at `cb1cbcb2` carries the pack-install-run half at `:299-312`.
-Both sources have the capability; the mechanisms differ. `capability` for the check
-existing and `architectural pattern` for the subject being the *packaged* artifact are
-therefore the right levels, and the B1–B4 table separates them from what may vary
-(cadence, which is F221's policy question, and assertion strength, which is B4's) rather
-than asserting agreement where none is required.
-
-The native design is justified rather than inherited. rs follows py on cadence and ts
-one step short on assertion strength, and each of those is argued from a fact, not from
-repository agreement: the cadence from py's own path-filtered gate, the assertion from
-the measured `required-features` behaviour, and the one-step-short position from R22 and
-R60 still owning the exact `--version` string. Declining `uvx`'s literal twin (a fresh,
-unlocked resolution) in favour of `--locked` is argued on determinism and handed to R34
-as a recommendation rather than taken from it — correct handling of another item's
-parameter.
+Unmoved, and correctly so. The shared requirement, its two agreement levels
+(`capability` for the check existing, `architectural pattern` for the packaged
+artifact being the subject), the B1–B4 split between what must agree and what may
+vary, and the F221/F222 dispositions are all untouched by this revision. What
+changed in this section is a citation: B1's py cell now reads `ci.yml:222` (wheel)
+and `:224` (sdist) instead of the range `:220-223`. I re-read the pin: at
+`b08bccfb`, `.github/workflows/ci.yml:222` is
+`uvx --from "$(ls dist/*.whl)" plbp --version` and `:224` is the same against
+`dist/*.tar.gz`, so both cells and the `### Principles and implementation`
+sentence now name exactly the two steps the principle rests on. The evidence for
+the principle is therefore stronger than in revision 1, and the principle itself is
+identical.
 
 ## Design and evidence
 
-**The alternatives were genuinely compared, and the winner was measured.** Five options
-(A–E) are compared on what each puts under test before any tool is named, and the
-discriminator between the recommendation and its runner-up is an executed result, not a
-preference: against one fixture with a hole in `[package] include`, option C fails with
-`error[E0583]: file not found for module 'helper'`, exit 101, and option B succeeds with
-exit 0 and installs a working binary (`review/evidence/r50-check.log:162-186`). The
-ledger's own recorded guess (`cargo install --path . --root <tmp>`) is demoted to
-runner-up *with* a live adopter retained for P03 to fall back to. That is the required
-posture: a recorded pattern treated as evidence rather than as the winner.
+I read the complete `git show cca20fe` diff rather than the revised file alone.
+**The diff is the revision note plus eight hunks, and every hunk is one of the
+edits the revision note enumerates in advance.** For the record, since the count was
+relayed to me as six: the hunks are (1) the preamble, (2) `ci.yml:204-223` →
+`:204-224` in runner ground 2, (3) the `BASELINE-REVIEW` sentence on ts
+`Justfile:307`, (4) the disposition paragraph's new credit to the raw's `:306-310`,
+(5) the `### Principles and implementation` py citation, (6) the B1 table cell, (7)
+`re-verify:` gaining trigger (13), and (8) the archive-rerun paragraph, plus the
+`--debug` unproven row. That is eight content hunks after the preamble, and the
+note's own enumeration lists exactly these edits (one for JF-1 plus the trigger,
+one plus a sentence for JF-2a, three for JF-2b, one paragraph for JF-3). Nothing
+else in the file moved: the recommendation block, the five-option table, AC1–AC7,
+the cost model and its levers, the lockfile paragraph, the recipe-vocabulary
+paragraph, the reference implementations and every figure in them, `## Parameters`
+in full, the `## Empirical check` phase table, and Disagreements 1–5 are all
+byte-identical to the text I approved on the merits in round 1.
 
-**The figures are the raw report's, carried without inflation.** I traced every number
-in `## Decision` to `raw/opus.md`: `sharkdp/bat` 60 472 stars / 330 open issues and
-`astral-sh/uv` 89 890 stars / 2 360 open issues (opus.md:60-61); `just` 533 628 90-day
-and 2 597 663 all-time downloads, `1.58.0` `created_at` `2026-08-03T20:29:15Z`, 35 828
-stars, 171 open issues, median 0.53 days with 0 unanswered (opus.md:544-553); the
-RustSec 404-with-a-`time`-200-control (opus.md:43-47); and the GitHub code search
-`total_count: 7` (opus.md:1060). Each carries its endpoint and its 2026-09-17 retrieval
-date in the decision. No figure was invented and none was rounded into a stronger claim.
+**JF-1 is closed, and closed on the evidence rather than by softening the claim.**
+The unproven row now states that no release-profile compile happens at pull-request
+time; that `cargo publish --dry-run` does **not** exercise the release path because
+it runs the same packaging-and-verification build this run measured, citing
+`r50-check.log:89-91` (`Verifying r50spike v0.4.2` → `Compiling …` → ``Finished
+`dev` profile [unoptimized + debuginfo] target(s)``); that R68's release build is
+consequently the only release-profile compile the template is currently expected to
+perform; and that **R68 is `open`**, which I confirmed in `research/CLAUDE.md`
+(`R68 | release-binary-artifacts | crate | different | DIVERGENT | — | open`). The
+superseded revision-1 wording is quoted in place, so the correction is legible
+rather than silent. The flip condition survives unchanged and is now joined by
+`re-verify:` trigger (13), R68 resolving, which is the right trigger: it is the
+event that fixes where the release-profile compile lives. The row is narrower than
+revision 1's and matches what the run can support. The revision note also names the
+cause — the one engine claim (`raw/opus.md:975`) carried without testing in a
+decision that elsewhere tested exactly this class of assertion — which is the
+accurate diagnosis.
 
-**The `ubuntu-latest`-only choice is grounded, and its trigger is named.** Two of the
-three grounds I verified independently. py's `build-smoke` does run on one runner —
-`.github/workflows/ci.yml:206`, `runs-on: ${{ vars.RUNNER_UBUNTU || 'ubuntu-latest' }}`,
-with `needs: changes` and `if: needs.changes.outputs.code == 'true'` at `:207-208` —
-while py's test matrix is `os: [ubuntu, macos, windows]` at `:155`, so "py's cadence is
-one runner despite a three-OS test matrix" holds exactly as stated. The macOS execution
-is in the log's phase A (Darwin arm64, macOS 26.4) and phase F. Ground 1 is correct and
-correctly bounded: a `.crate` genuinely has no per-OS variant, and the decision does not
-over-extend that into a claim that the *compile* is OS-independent — it says the
-opposite, names the residual (a macOS-only failure of the packaged tree appearing first
-in CI), declines to close it, and records the widen trigger at `re-verify:` (8). The
-unproven table then marks `ubuntu-latest` alone as **partly proven**, noting that the
-Linux leg the job actually uses was never run. That is the honest form of this claim.
+**JF-2 is closed, at the pin.** I re-read `cb1cbcb2:Justfile`: `:307` is
+`EXPECTED="{{command_name}} $VERSION"`, an assignment, and the comparison is
+`:308-310` (`if [ "$BIN_VERSION" != "$EXPECTED" ]; then` … `fi`) — which is now
+exactly what the `BASELINE-REVIEW` paragraph says. The disposition paragraph credits
+the raw report's `:306-310` as having been right and records the imprecision as the
+synthesis's own; that is the correct attribution, since `raw/opus.md:105` does cite
+`:306-310`. The evidence script is untouched and the decision explains why it needs
+no change: its assertion matches the literal `EXPECTED="{{command_name}} $VERSION"`,
+which is the `:307` assignment, so `PASS ts-pin/version-equality-307` remains a true
+statement about the line it names. The py citations are corrected in both places,
+and the beyond-the-brief widening of the job block to `:204-224` is right — the
+`build-smoke` job runs from `:204` to its last step at `:224`, with `:225` blank.
 
-**The disagreements are settled on grounds, not by authority.** Disagreement 1 by the
-phase G measurement plus the scope fact that R26 binds its elements to the publish
-workflow — which I confirmed in `research/topics/26-packed-artifact-content-guard/DECISION.md`
-(elements 1–4 "bound to the publish workflow's verify job"; a pull-request copy of
-element 1 recorded as "recommended hardening, **not bound here**", deferred to R11).
-Disagreement 2 is the strongest piece of work in the run: the Opus engine's
-workspace-membership ground was tested, did not reproduce on cargo 1.98.0 in either live
-layout (log `:104-125`), and the recommendation's ground was replaced by an observed
-fact — with `--no-verify` there is no in-tree extracted copy at all (log `:79-81` against
-`:92-95`) — and the re-verify trigger narrowed to match. Disagreement 4's assertion
-strength rests on the reproduced `required-features` outcome (exit 0, nothing installed,
-log `:192-197`), which is what makes AC3's second half load-bearing. Disagreement 5
-separates a lifecycle test from an install-and-run assertion rather than splitting the
-difference.
-
-**The F222 disposition is a legitimate ledger disposition.** The finding is recorded for
-the ledger's owner and nothing was applied. I re-verified *every* Opus line citation at
-the pin myself, not two: `git -C ~/c/ts-launch-blueprint show cb1cbcb2…:Justfile` gives
-the header comment at `:268-269`, `[group('releases'), group('build')]` at `:275`,
-`mktemp -d /private/tmp/ts-pack-check.XXXXXX` at `:299`, `npm pack … --pack-destination
-"$SCRATCH"` at `:302`, `npm install --no-save --no-package-lock` at `:304`, the installed
-bin's `--version` at `:306`, `EXPECTED="{{command_name}} $VERSION"` at `:307`, and the
-ESM import asserting `VERSION` at `:312`. All held. I also re-ran the three contradicted
-statements against the live tree: `docs/port/COMMONALITY.md:226` still records origin
-`py-only`, `docs/port/areas/packaging-distribution.md:20` still carries `—` in the ts
-cell, and `inputs/prompt.md:9` still carries the "ts: none" gloss — so the decision's
-claim that no ledger, area, index, prompt or registry file was edited is supported, and
-the prompt's gloss is disputed in the answer rather than silently overridden. The
-proposed origin `different` (rather than `same`) is the right proposal on the evidence:
-both repositories have the capability, and the mechanism, cadence and assertion strength
-all differ. F221's own evidence is untouched, and its 0-matches-across-8-workflow-files
-count is in the log at `:44-54`.
-
-**The web surface is handled honestly.** The snapshot/live discrepancy is asserted in
-both directions mechanically (log `:26-27`), the reason no `- assumes web-extra-surface`
-line can be written is the prompt's empty `- consumes:` line rather than a preference,
-and R69's second binary is correctly treated as a placeholder — `research/topics/69-web-framework-stack/DECISION.md`
-does carry `src/bin/<app>-serve.rs` and `[[bin]] required-features = ["web"]`, so AC6's
-one-versus-two expectation is anchored in R69's actual shape while its literal name is
-left to R69 and P03.
-
-**The cost treatment is a model and says so.** Every lever carries its documented source,
-and the `--target-dir` caching rationale traces to the Cargo Book text quoted in
-`raw/opus.md:241` and `:1047` ("this can be useful for caching build artifacts on
-continuous integration systems"). The HIGH-2 answer (no, Rust's compile time does not
-argue for ts's local-only cadence) is labelled a cost model backed by documented
-behaviour and two compile-heavy PR gates, "**not** a measurement", and the unproven table
-repeats it. The one place where this discipline slips is JF-1.
+**JF-3 is closed with an artifact, not a restatement, and I verified the artifact
+rather than the sentence.** `review/evidence/r50-r2-archive-rerun.log` hashes to
+`9f2010087b00b51cab453fde9a23d95834877ad2c3786b250d7b38e99a849ec5` and is 216
+lines, both as stated. Counted directly over that log: `^PASS` returns **64**,
+`^PASS archive` returns **10**, `^FAIL` returns **0**, `^SKIP` returns **1**, and
+`^PASS ts-pin/` returns **0** — every number the paragraph states, including the
+64-versus-54 miscount it warns a reader about. The wrapper asserts rather than
+reports: `r50-r2-archive-rerun.sh:108-119` hard-codes exit 0, 54, 0, 1, a named
+skip and 0 ts-pin assertions, and fails otherwise, and `:102` runs
+`"$SCRATCH/tree/$REL"` — the copy extracted from `git archive HEAD` — with `HOME`
+pointed at `$SCRATCH/nohome`, which is what makes `SKIP ts-pin/all — checkout
+absent at <SCRATCH>/nohome/c/ts-launch-blueprint` (log `:45`) the expected outcome.
+The no-`.git` and byte-identity assertions are in the log at `:8` and `:11`, and the
+inner script's sha256 recorded at `:10`,
+`bdd7bc3c3c0e7fb025b92382342403cd32250da074c150496537a90ad6d55a39`, equals the
+working tree's `r50-check.sh` as I hashed it. The claim that `r50-check.sh` and
+`r50-check.log` are carried forward byte-identical is confirmed by
+`git diff cca20fe~1 cca20fe` over those two paths, which is empty, and
+`r50-check.log` still hashes to `310e9f61…`. The wrapper's own "run twice and
+`diff`ed byte-identical" sentence is an unretained reproducibility claim of the same
+kind revision 1 made for the inner script, which I did not fault then and do not
+fault now: the artifact whose counts mattered is retained, its output is normalised
+so byte-identity is plausible, and the claim adds nothing the log does not carry.
 
 ## Completeness
 
-Every required field is present and correct.
+Every field the role requires is still present and still correct, and the revision
+adds three things the runbook wants rather than subtracting anything.
 
-- **Fitness gates.** All six answered, none omitted. Gate 1 is `inapplicable` under the
-  owner ruling recorded at `docs/port/OWNER-REVIEW.md:47` ("2026-09-12 — no licence check
-  for anything the template uses (Q4, superseded and widened by Q7.B)"), and the decision
-  states that nothing was excluded on licence grounds. Gates 2, 3 and 5 are `inapplicable`
-  each with its reason (no crate added). Gate 4 is answered by the macOS execution plus
-  Cargo's presence on both images. Gate 6 is the cadence question itself.
-- **Parameters.** Exactly four `- assumes` lines, and I byte-compared all four rows
-  against the live `docs/port/PARAMETERS.md`: `msrv-policy`, `rust-edition`,
-  `target-os-matrix` and `license` are identical. The prompt's `- owns:` and `- consumes:`
-  lines are empty (`inputs/prompt.md:20-21`), so four is the complete set and the absence
-  of a `CONFLICT:` line is correct rather than an omission. The prerequisite R49 is
-  bound at the sha the decision quotes — `shasum -a 256` of
-  `research/topics/49-build-target-declaration/DECISION.md` is
-  `86b7f925ef89ac682ea00bb0b6fea8a809c1abc712d9e0e0ced8e5082990d948`, and its binary is
-  `rslbp`.
-- **The empirical check verifies what it is cited for.** `review/evidence/r50-check.log`
-  hashes to `310e9f612c085f79d76d543e481f6da31098595986805b7d9377fd636316cfa4` and is 213
-  lines, both as stated. I counted the PASS lines by phase rather than trusting the
-  summary: B 8, C 14, D 3, E 9, F 22, G 5, H 5, I 2 — 68, with no `FAIL` and no `SKIP`
-  line anywhere in the file. Every per-phase line range the decision cites resolves to the
-  assertions it names, and the four quoted results (AC7, `required-features`, the
-  `--no-verify` fact, the workspace claim that did not reproduce) are quoted accurately
-  from the log, including the exit statuses 101 and 0.
-- **Unproven rows are honest.** macOS-only execution, no transferable timing, no
-  well-regarded adopter of the composition (with the search that establishes it), AC7
-  proven on a fixture and not on the template, the exact `--version` string assigned to
-  R22/R60, and R69's placeholder binary are each recorded with what would prove them.
-  The decision does not implement its own recommendation and is not faulted for that; the
-  P03 validation list is specific enough to be executed.
+- **Revision provenance.** The revision note names the actor
+  (`synth-opus-2026-09-17T020715Z-b7ef95f12806-r2`), the model, the kind and tier,
+  the revision-1 sha and its commits, the audit that rejected it, and the absence of
+  a `## Supersedes` because nothing has been published for R50 — which is right:
+  R50 is `open` in `research/CLAUDE.md`.
+- **Mechanical enumeration before editing.** The note lists the `/usr/bin/grep -n`
+  hit sets it worked from. I checked them against revision 1 as I read it: for JF-1,
+  lines 94, 186, 250, 451 and 582, of which only 582 carried the refuted coverage
+  claim, and the other four are correctly characterised (ts's `npm pack --dry-run`,
+  option E's "never runs the command", uv's pull-request gate, and phase E's
+  unstable `--dry-run`); for JF-2a, 83-84 as the citation with 139, 268, 271, 337
+  and 579 describing ts's equality *form*, which is indeed unaffected; for JF-2b,
+  126 and 136 plus 54; for JF-3, 426-431. Each set matches the revision-1 text, and
+  the edit count matches the hunk count.
+- **Parameters and gates.** Untouched, and still correct: four `- assumes` lines,
+  no `CONFLICT:`, gate 1 `inapplicable` under the 2026-09-12 owner ruling, gates 2,
+  3 and 5 `inapplicable` with reasons, gate 4 answered by the macOS execution, gate
+  6 treated as the cadence question.
+- **Unproven rows.** Still honest, and one of them is now more honest: macOS-only
+  execution, no timing, no adopter of the composition, AC7 proven only on a fixture,
+  R69's placeholder binary, the exact `--version` string assigned to R22/R60, and
+  the `--debug` trade with its coverage stated at the size the evidence supports.
+- **Evidence integrity.** Two scripts and two logs, all committed, all four hashes
+  stated in the decision and all four confirmed here.
 
 ## Findings
 
-**JF-1 — blocking. The `--debug` trade's coverage claim is refuted by this run's own
-log, and its surviving ground is an open item.** The unproven table's row reads:
-"`--debug` installs a profile a consumer does not get | **acknowledged trade, not a
-defect** — the release path is exercised by R68's release build and R26's publish-time
-`cargo publish --dry-run`". Cargo's verification build compiles with the **dev** profile,
-which this run measured: `review/evidence/r50-check.log:89-91` shows `Verifying r50spike
-v0.4.2` followed by `Finished 'dev' profile [unoptimized + debuginfo] target(s)`.
-`cargo publish --dry-run` performs that same packaging-and-verification path, so it does
-not exercise the release profile at all. The clause is carried verbatim from
-`raw/opus.md:975` — the one place where the synthesis accepted an engine claim it
-elsewhere insisted on testing (Disagreement 2 corrected precisely this class of
-inherited assertion). Removing the refuted clause leaves R68's release build as the only
-exerciser, and R68 is `open` in `research/CLAUDE.md`, which the row does not say. The
-consequence is narrow but real: a reader of the unproven table is told the release path
-is covered twice when it is covered at most once, by an unresolved item. The trade's
-flip condition ("if a release-only failure is ever observed, the leg switches to the
-release profile and pays the compile") is correctly stated and is not at issue. Repair is
-a clause: drop `cargo publish --dry-run`, say that R68's release build is the only
-release-profile compile the template is currently expected to perform and that R68 is
-open, or record the release profile as unexercised at pull-request time.
-
-**JF-2 — non-blocking. Two citations name the line before the behaviour described.** The
-`BASELINE-REVIEW` paragraph says "`:307` compares it for equality against
-`"{{command_name}} $VERSION"`"; at the pin, `:307` is the assignment of that expected
-string and the comparison is `:308-310` (`if [ "$BIN_VERSION" != "$EXPECTED" ]` … `fi`).
-The Opus raw cited this correctly as `:306-310` (`raw/opus.md:105`), so the imprecision
-was introduced by the synthesis, not carried. Similarly, `## Principles and
-implementation` cites py `ci.yml:220-223` for "`uvx --from "$(ls dist/*.whl)" plbp
---version`, and the same for the sdist", but the sdist invocation is at `:224`; the same
-range appears in the B1 table row. The quoted text is right in both cases and the F222
-disposition does not turn on either, so this is precision, not substance.
-
-**JF-3 — non-blocking, observation. The archive rerun's counts have no retained
-artifact.** "54 `PASS`, 0 `FAIL`" with `SKIP ts-pin/all — checkout absent at …`, and the
-twice-run byte-identical `diff`, are stated as executed but no second log is archived;
-only run 1 is saved, which the decision does say. Both claims are corroborated as far as
-the repository allows: `review/evidence/r50-check.sh:139` contains
-`skip "ts-pin/all" "checkout absent at $TS_REPO"` with `TS_REPO="$HOME/c/ts-launch-blueprint"`,
-so pointing `$HOME` at an empty directory does skip exactly that phase, and 68 minus
-phase C's 14 assertions is 54. I did not rerun anything. No repair is required; retaining
-the second log would make the claim checkable rather than merely consistent.
+None. JF-1 is closed in full, JF-2 in both locations plus one beyond the brief, and
+JF-3 with a committed, self-asserting artifact whose every stated number I
+reproduced by counting its log. No new finding arose from the revised text, from the
+diff, or from the two new evidence files, and nothing I approved on the merits in
+round 1 has been weakened to close a finding.
 
 ## Assessment
 
-Rejected at revision 1 on JF-1 alone. The research is strong and the reasoning is
-unusually well disciplined about the difference between what was argued and what was
-measured: the option C/B choice, the assertion strength, the placement of the extraction,
-and the correction of the engine's own unreproduced ground are each settled by an
-executed result, and the limits (no timing, macOS-only, no adopter of the composition)
-are stated where a weaker decision would have implied coverage. JF-1 is the single place
-that discipline lapses, and it lapses in the table whose whole purpose is to state
-coverage honestly.
-
-**The recommendation does not move under any finding.** Under JF-1 the procedure, the
-`--debug` lever, the recipe and job names, the single `ubuntu-latest` runner and the
-cadence are all unchanged; what changes is one clause of justification and, with it, the
-honest description of what the release profile costs the template today. JF-2 changes two
-line numbers and JF-3 changes nothing. A revision 2 repairing JF-1, and preferably JF-2,
-should be approvable as it stands otherwise.
+Approved at revision 2. The correction went the direction an audit wants: the
+coverage claim got narrower and the evidence got larger, with the superseded wording
+quoted rather than erased, the cause named, and a re-verify trigger added for the
+open item the trade now depends on. The recommendation is untouched — `cargo package
+--locked --no-verify` → extract outside the repository → `cargo install --path …
+--root <scratch>/root --locked --debug --no-track --target-dir …` → assert the file
+exists and `rslbp --version` exits 0 carrying the manifest version, one `just`
+recipe `install-check`, one `install-smoke` job on `ubuntu-latest` only, option B as
+the ranked runner-up — as are every parameter value, every gate disposition, the
+F222 `BASELINE-REVIEW` and its endorsement, and the empirical check that grounds
+them. Nothing moved that a finding did not require.
