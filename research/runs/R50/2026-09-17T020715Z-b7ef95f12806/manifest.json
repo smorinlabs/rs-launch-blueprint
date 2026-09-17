@@ -61,6 +61,60 @@
       },
       "provider": "codex",
       "state": "succeeded"
+    },
+    {
+      "actor": "research-opus-2026-09-17T020715Z-b7ef95f12806",
+      "at": "2026-09-17T04:31:25Z",
+      "operation": {
+        "actor": "research-opus-2026-09-17T020715Z-b7ef95f12806",
+        "at": "2026-09-17T04:31:25Z",
+        "model": "claude-opus-5",
+        "provider": "opus",
+        "request_id": "23b3699544744625863344d88f3d980d",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-opus-2026-09-17T020715Z-b7ef95f12806",
+      "at": "2026-09-17T05:02:37Z",
+      "operation": {
+        "actor": "research-opus-2026-09-17T020715Z-b7ef95f12806",
+        "actual_model": "claude-opus-5",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-17T04:31:25Z",
+        "model": "claude-opus-5",
+        "operation_id": "agent:research-opus-2026-09-17T020715Z-b7ef95f12806:266a269202b7053d",
+        "provider": "opus",
+        "request_id": "23b3699544744625863344d88f3d980d",
+        "returned_at": "2026-09-17T05:02:37Z",
+        "state": "submitted"
+      },
+      "provider": "opus",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-opus-2026-09-17T020715Z-b7ef95f12806",
+      "at": "2026-09-17T05:02:37Z",
+      "operation": {
+        "actor": "research-opus-2026-09-17T020715Z-b7ef95f12806",
+        "actual_model": "claude-opus-5",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-17T04:31:25Z",
+        "collected_at": "2026-09-17T05:02:37Z",
+        "model": "claude-opus-5",
+        "operation_id": "agent:research-opus-2026-09-17T020715Z-b7ef95f12806:266a269202b7053d",
+        "provider": "opus",
+        "raw": "research/runs/R50/2026-09-17T020715Z-b7ef95f12806/raw/opus-266a269202b7053dca0cf3b0339558f689748d463dc537ac83b2c25abda0efbf.md",
+        "raw_sha256": "266a269202b7053dca0cf3b0339558f689748d463dc537ac83b2c25abda0efbf",
+        "reason": "",
+        "request_id": "23b3699544744625863344d88f3d980d",
+        "returned_at": "2026-09-17T05:02:37Z",
+        "state": "succeeded"
+      },
+      "provider": "opus",
+      "state": "succeeded"
     }
   ],
   "input_hashes": {
@@ -91,6 +145,22 @@
       "request_id": "a6b83949745f45b18d4077e9166b0ea0",
       "returned_at": "2026-09-17T04:31:25Z",
       "state": "succeeded"
+    },
+    "opus": {
+      "actor": "research-opus-2026-09-17T020715Z-b7ef95f12806",
+      "actual_model": "claude-opus-5",
+      "actual_provider": "claude-agent-tool",
+      "at": "2026-09-17T04:31:25Z",
+      "collected_at": "2026-09-17T05:02:37Z",
+      "model": "claude-opus-5",
+      "operation_id": "agent:research-opus-2026-09-17T020715Z-b7ef95f12806:266a269202b7053d",
+      "provider": "opus",
+      "raw": "research/runs/R50/2026-09-17T020715Z-b7ef95f12806/raw/opus-266a269202b7053dca0cf3b0339558f689748d463dc537ac83b2c25abda0efbf.md",
+      "raw_sha256": "266a269202b7053dca0cf3b0339558f689748d463dc537ac83b2c25abda0efbf",
+      "reason": "",
+      "request_id": "23b3699544744625863344d88f3d980d",
+      "returned_at": "2026-09-17T05:02:37Z",
+      "state": "succeeded"
     }
   },
   "prompt_source": "research/topics/50-install-smoke-test/prompts/install-smoke-test.prompt.md",
@@ -101,7 +171,7 @@
   ],
   "run_id": "2026-09-17T020715Z-b7ef95f12806",
   "schema_version": 1,
-  "state": "partial",
+  "state": "collected",
   "tier": "focused",
-  "updated_at": "2026-09-17T04:31:25Z"
+  "updated_at": "2026-09-17T05:02:37Z"
 }
