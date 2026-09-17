@@ -1,0 +1,72 @@
+date-utc: 2026-09-17T15:39:22Z
+snapshot manifest (file, endpoint, retrieved-utc):
+  crate-secrecy.json	GET https://crates.io/api/v1/crates/secrecy	2026-09-17T15:22:39Z
+  versions-secrecy.json	GET https://crates.io/api/v1/crates/secrecy/versions	2026-09-17T15:22:39Z
+  crate-zeroize.json	GET https://crates.io/api/v1/crates/zeroize	2026-09-17T15:22:40Z
+  versions-zeroize.json	GET https://crates.io/api/v1/crates/zeroize/versions	2026-09-17T15:22:40Z
+  crate-keyring-core.json	GET https://crates.io/api/v1/crates/keyring-core	2026-09-17T15:22:41Z
+  versions-keyring-core.json	GET https://crates.io/api/v1/crates/keyring-core/versions	2026-09-17T15:22:41Z
+  crate-apple-native-keyring-store.json	GET https://crates.io/api/v1/crates/apple-native-keyring-store	2026-09-17T15:22:41Z
+  versions-apple-native-keyring-store.json	GET https://crates.io/api/v1/crates/apple-native-keyring-store/versions	2026-09-17T15:22:41Z
+  crate-zbus-secret-service-keyring-store.json	GET https://crates.io/api/v1/crates/zbus-secret-service-keyring-store	2026-09-17T15:22:42Z
+  versions-zbus-secret-service-keyring-store.json	GET https://crates.io/api/v1/crates/zbus-secret-service-keyring-store/versions	2026-09-17T15:22:42Z
+  deps-secrecy-0.10.3.json	GET https://crates.io/api/v1/crates/secrecy/0.10.3/dependencies	2026-09-17T15:22:45Z
+  rustsec-secrecy.status	GET https://rustsec.org/packages/secrecy.html	2026-09-17T15:22:46Z
+  rustsec-zeroize.status	GET https://rustsec.org/packages/zeroize.html	2026-09-17T15:22:46Z
+  rustsec-keyring-core.status	GET https://rustsec.org/packages/keyring-core.html	2026-09-17T15:22:46Z
+  rustsec-apple-native-keyring-store.status	GET https://rustsec.org/packages/apple-native-keyring-store.html	2026-09-17T15:22:47Z
+  rustsec-zbus-secret-service-keyring-store.status	GET https://rustsec.org/packages/zbus-secret-service-keyring-store.html	2026-09-17T15:22:47Z
+  rustsec-nix.status	GET https://rustsec.org/packages/nix.html	2026-09-17T15:22:47Z
+  gh-iqlusioninc-crates.json	GET https://api.github.com/repos/iqlusioninc/crates	2026-09-17T15:22:47Z
+  gh-RustCrypto-utils.json	GET https://api.github.com/repos/RustCrypto/utils	2026-09-17T15:22:48Z
+  gh-keyring-core.json	GET https://api.github.com/repos/open-source-cooperative/keyring-core	2026-09-17T15:22:48Z
+  gh-issues-iqlusioninc-crates.json	GET https://api.github.com/search/issues?q=repo:iqlusioninc/crates+is:issue+is:open	2026-09-17T15:22:49Z
+  gh-issues-RustCrypto-utils.json	GET https://api.github.com/search/issues?q=repo:RustCrypto/utils+is:issue+is:open	2026-09-17T15:22:50Z
+  secrecy-0.10.3.crate	GET https://static.crates.io/crates/secrecy/secrecy-0.10.3.crate	2026-09-17T15:22:50Z
+PASS R-secrecy-version — 0.10.3
+PASS R-secrecy-msrv — 1.60
+PASS R-secrecy-license — Apache-2.0 OR MIT
+PASS R-secrecy-created — 2024-10-09
+R-secrecy-downloads — crate.recent_downloads=39955248 crate.downloads=162048552 (GET https://crates.io/api/v1/crates/secrecy, retrieved per snapshots/MANIFEST.txt)
+PASS R-zeroize-version — 1.9.0
+PASS R-zeroize-msrv — 1.85
+PASS R-zeroize-license — Apache-2.0 OR MIT
+PASS R-zeroize-created — 2026-06-12
+R-zeroize-downloads — crate.recent_downloads=176274852 crate.downloads=695051028 (GET https://crates.io/api/v1/crates/zeroize, retrieved per snapshots/MANIFEST.txt)
+PASS R-keyring-core-version — 1.0.0
+PASS R-keyring-core-msrv — 1.85
+PASS R-keyring-core-license — MIT OR Apache-2.0
+PASS R-keyring-core-created — 2026-04-21
+R-keyring-core-downloads — crate.recent_downloads=2413858 crate.downloads=2739732 (GET https://crates.io/api/v1/crates/keyring-core, retrieved per snapshots/MANIFEST.txt)
+PASS R-apple-native-keyring-store-version — 1.0.2
+PASS R-apple-native-keyring-store-msrv — 1.85
+PASS R-apple-native-keyring-store-license — MIT OR Apache-2.0
+PASS R-apple-native-keyring-store-created — 2026-08-06
+R-apple-native-keyring-store-downloads — crate.recent_downloads=1414598 crate.downloads=1584784 (GET https://crates.io/api/v1/crates/apple-native-keyring-store, retrieved per snapshots/MANIFEST.txt)
+PASS R-zbus-secret-service-keyring-store-version — 1.0.1
+PASS R-zbus-secret-service-keyring-store-msrv — 1.88
+PASS R-zbus-secret-service-keyring-store-license — MIT OR Apache-2.0
+PASS R-zbus-secret-service-keyring-store-created — 2026-08-15
+R-zbus-secret-service-keyring-store-downloads — crate.recent_downloads=1384369 crate.downloads=1480639 (GET https://crates.io/api/v1/crates/zbus-secret-service-keyring-store, retrieved per snapshots/MANIFEST.txt)
+PASS R-secrecy-depends-zeroize — ^1.6 False alloc False
+PASS R-secrecy-serde-optional — True
+PASS R-secrecy-forbid-unsafe — 1
+PASS R-secrecy-no-features-table — 0
+PASS R-secrecy-edition — edition = "2021"
+PASS R-rustsec-secrecy — 404
+PASS R-rustsec-zeroize — 404
+PASS R-rustsec-keyring-core — 404
+PASS R-rustsec-apple-native-keyring-store — 404
+PASS R-rustsec-zbus-secret-service-keyring-store — 404
+PASS R-rustsec-nix-positive-control — 200
+PASS R-rustsec-control-content — the nix page lists RUSTSEC-2021-0119, so a 200 really carries advisory text (2 occurrences, binary /usr/bin/grep)
+PASS R-gh-iqlusioninc-crates-archived — False
+R-gh-iqlusioninc-crates-detail — {"archived":false,"pushed_at":"2026-09-09T15:52:06Z","stargazers_count":579}
+PASS R-gh-RustCrypto-utils-archived — False
+R-gh-RustCrypto-utils-detail — {"archived":false,"pushed_at":"2026-09-15T13:36:52Z","stargazers_count":672}
+PASS R-gh-keyring-core-archived — False
+R-gh-keyring-core-detail — {"archived":false,"pushed_at":"2026-04-21T18:53:26Z","stargazers_count":37}
+R-open-issues — iqlusioninc/crates=30 RustCrypto/utils=24 (GET https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+is:open, total_count, never open_issues_count)
+PASS R-gemini-secrecy-version-wrong — the newest unyanked secrecy is 0.10.3, not the 0.8.0 the Doxa/Gemini report states
+PASS R-gemini-secrecy-downloads-wrong — crate.downloads is 162048552, not the 24,105,992 the Doxa/Gemini report states
+CHECK_FAILURES=0

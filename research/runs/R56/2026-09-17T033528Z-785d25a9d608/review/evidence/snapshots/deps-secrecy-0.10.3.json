@@ -1,0 +1,1 @@
+{"dependencies":[{"id":12221394,"version_id":1296430,"crate_id":"zeroize","req":"^1.6","optional":false,"default_features":false,"features":["alloc"],"target":null,"kind":"normal","downloads":0},{"id":12221393,"version_id":1296430,"crate_id":"serde","req":"^1","optional":true,"default_features":false,"features":["alloc"],"target":null,"kind":"normal","downloads":0}]}
