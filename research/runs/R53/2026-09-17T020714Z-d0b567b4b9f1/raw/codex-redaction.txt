@@ -1,0 +1,3 @@
+Redaction record, 2026-09-17 (controller).
+The wrapper's double-quoted prompt string expanded $GH_TOKEN into the prompt (controller bug, fixed by the local proxy from the next job); the transcript echoes the prompt. Token bytes replaced before registration; nothing else changed.
+codex-transcript.txt: 1 occurrence(s) of the gh login token replaced with [REDACTED:GH_TOKEN]; sha256 before 2e6eaad31e49615935cfbbac029c30ed493844eb124b302417724783bb8aae56, after aacff54b63c94752b4f60561b54c94731faf770aaa464c79d21e557f50c46c38
