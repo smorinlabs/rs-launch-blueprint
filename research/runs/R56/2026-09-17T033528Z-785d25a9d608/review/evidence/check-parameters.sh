@@ -10,7 +10,7 @@ set -o pipefail
 
 here="$(cd "$(dirname "$0")" && pwd)"
 root="$(cd "$here/../../../../../.." && pwd)"
-decision="$here/../DECISION.md"
+decision="$(cd "$here/.." && pwd)/DECISION.md"
 cd "$root"
 
 fail=0
@@ -19,7 +19,9 @@ bad()  { printf 'FAIL %s — %s\n' "$1" "$2"; fail=$((fail + 1)); }
 want() { if [ "$2" = "$3" ]; then ok "$1" "$3"; else bad "$1" "expected [$2], got [$3]"; fi; }
 
 printf 'date-utc: %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-printf 'decision: %s\n' "$decision"
+# Printed relative to the repository root, so this log does not differ between a working
+# tree and a `git archive HEAD` extraction.
+printf 'decision: %s\n' "${decision#"$root"/}"
 printf 'decision sha256: %s\n' "$(shasum -a 256 "$decision" | cut -d' ' -f1)"
 
 work="$(mktemp -d "${TMPDIR:-/tmp}/r56params-XXXXXX")"

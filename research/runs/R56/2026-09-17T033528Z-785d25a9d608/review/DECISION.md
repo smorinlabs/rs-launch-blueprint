@@ -16,8 +16,8 @@ fact, read from the crates.io snapshot named beside it.
 **Recommendation — `config-secret-policy/v1`. Adopt neither source repository's recorded
 shape.**
 
-> The layered configuration file — `rslbp_config.toml`, at every discovery tier R54 lands
-> on — is **never** a token source, which is what py's ADR-0002 rules. The precedence
+> The layered configuration file — per `R5.2` it is `rslbp_config.toml`, though the name and
+> the tier set are R54's and unresolved — at every discovery tier R54 lands on, is **never** a token source, which is what py's ADR-0002 rules. The precedence
 > chain nonetheless has **three** tiers, as ts's does, because the org CLI Design Standard
 > `R10.1` **(MUST)** requires three — but the third tier is a **dedicated credential
 > store**, not the config file. The chain is
@@ -385,7 +385,7 @@ complete output is the committed log beside it.
 | Script | What it decides | PASS assertions | Result | Log |
 |---|---|---|---|---|
 | `review/evidence/check-standard.sh` | that the standard really says what this decision rests on, at the blob and line numbers cited; that both sources violate `R5.5` at their pins; that no CI standard document exists | 32, plus 3 detail lines | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-standard.log` |
-| `review/evidence/check-siblings.sh` | every claim this decision makes about R67, R60, R53, R55, R57, R61, R52 and R17, and about this run's own engine inventory | 29, plus 10 detail lines | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-siblings.log` |
+| `review/evidence/check-siblings.sh` | every claim this decision makes about R67, R60, R53, R55, R57, R61, R52 and R17, and about this run's own engine inventory | 30, plus 10 detail lines | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-siblings.log` |
 | `review/evidence/check-registry.sh` | the crate versions, release dates, MSRV floors, licences, download figures, the `secrecy`→`zeroize` edge, the `forbid(unsafe_code)` posture and the advisory status, read from committed snapshots | 38, plus 3 detail lines | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-registry.log` |
 | `review/evidence/check-probe.sh` | the behavioural claims, the dependency-tree sizes and the tree MSRV maxima, by building and running the probe | 35 (15 from the probe, 20 from the script), plus 1 detail line | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-probe.log` |
 | `review/evidence/check-parameters.sh` | that `## Parameters` carries no `- owns` line and that its five `- assumes` values `diff` empty against lines regenerated from the current `docs/port/PARAMETERS.md`; the H2 set, the title, the single `re-verify:` line; and that no personal email, credential pattern or probe fixture reaches any log | 15 | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-parameters.log` |
@@ -474,7 +474,30 @@ subject. Advisories: `https://rustsec.org/packages/<name>.html` returns **404** 
 `secrecy`, `zeroize`, `keyring-core`, `apple-native-keyring-store` and
 `zbus-secret-service-keyring-store`, and **200** for `nix`, whose page lists
 RUSTSEC-2021-0119 — the positive control proving the `404`s are real absences rather than a
-broken fetch. Repository state, via the authenticated `gh` binary with `--jq` (no token, no
+broken fetch. **Maintenance state by rubric, each verdict earned rather than assumed.** `zeroize` is
+**`active`**: released 2026-06-12, repository pushed 2026-09-15, not archived.
+`secrecy` is **`stable-quiet`**. The rubric's "no release in 6 months" fires — `0.10.3` is
+dated 2024-10-09 — and a trigger is an instruction to investigate, never a verdict, so the
+investigation was run here rather than carried over:
+`gh api "repos/iqlusioninc/crates/commits?path=secrecy&per_page=6" --jq …`, snapshotted as
+`snapshots/gh-commits-secrecy.json` (retrieved 2026-09-17), shows the `0.10.3` release
+commit on 2024-10-09 followed by **five** further commits touching `secrecy/` — three in
+late 2024, `Rust edition 2024 & MSRV 1.85 (#1347)` on 2026-01-21, and
+`doc_auto_cfg => doc_cfg (#1387)` on 2026-09-02. The directory is being carried forward
+in-tree, including an edition-2024 move, without a publish; the monorepo is not archived
+and was pushed 2026-09-09; there is no advisory and no maintainer notice of abandonment.
+`at-risk` needs a concrete signal and `dormant` needs an unpatched advisory, a broken build
+on current stable or a maintainer's own notice — none is present, and the probe compiled
+`secrecy 0.10.3` on current stable here. `keyring-core` is **`stable-quiet`** on the same
+reasoning: one release, `1.0.0` on 2026-04-21, and a repository untouched since
+2026-04-21, which trips the trigger — but the parent `keyring-rs` was pushed 2026-09-15 and
+`apple-native-keyring-store` published `1.0.2` on 2026-08-06, so the quiet reads as a
+frozen 1.0 API rather than abandonment. The two platform store crates are **`active`**.
+No issue-responsiveness median is asserted anywhere in this decision; Opus computed some,
+they are monorepo-scoped and use "first comment by someone other than the issue author" as
+a proxy for "first maintainer response", and no claim here rests on them.
+
+Repository state, via the authenticated `gh` binary with `--jq` (no token, no
 header and no environment is ever printed):
 `iqlusioninc/crates` 579 stars, `archived: false`, pushed `2026-09-09T15:52:06Z`, 30 open
 issues; `RustCrypto/utils` 672 stars, `archived: false`, pushed `2026-09-15T13:36:52Z`,
@@ -530,12 +553,23 @@ committed log. Package counts come from
 and MSRV maxima from `cargo metadata --locked --format-version 1 --filter-platform <triple>`,
 excluding the root package, whose own `rust-version` is the floor being tested.
 
-**Reproducibility, stated exactly rather than claimed generally.** Every script was rerun
-after its log was written and the rerun was diffed against the committed log. Each is
+**Reproducibility, stated exactly rather than claimed generally, and tested the way an
+auditor tests it.** Every script was rerun in place and the rerun diffed against the
+committed log; then the whole tree was extracted with
+`git archive HEAD | tar -x -C "$TMPDIR/<dir>"` and all five were rerun from that
+extraction, with no `.git` and from a different absolute path, and diffed again. Each is
 byte-reproducible **except for its own `date-utc:` stamp**, which the script prints itself
 at the top of its output; `check-parameters.log` additionally carries the decision's own
 sha256, which changes whenever the decision is edited and is therefore regenerated last.
-No other line differs in any of the five. The volatile sources — crates.io counters, GitHub repository fields, RustSec pages
+No other line differs in place. From the extraction **exactly one further line differs**,
+and it is named here so the diff is expected rather than surprising: `check-siblings.sh`'s
+`X23` becomes `SKIP X23 codex-refusal-recorded — raw/codex-transcript.txt is absent
+(gitignored: research/runs/*/*/raw/*-transcript.txt)`, because `.gitignore` excludes that
+transcript from the archive. All five scripts still exit `0` there. One thing was changed
+to make the rest true rather than asserted: no script prints an absolute path into its log,
+since two of them did and their logs would otherwise have differed between a working tree
+and an extraction. The SKIP is **by name** for the same reason a silent guard would be a
+defect — it would make this decision cite an assertion the rerun does not emit. The volatile sources — crates.io counters, GitHub repository fields, RustSec pages
 — are *not* re-fetched by any check: they live in `review/evidence/snapshots/` with their
 endpoints and retrieval timestamps, and `refresh-snapshots.sh` is the only thing that
 touches the network. That is the rule for comparing across the variance: **diff the logs
@@ -555,7 +589,7 @@ relied on by any claim in this decision.
 
 - **Claude Opus 5** — `raw/opus.md`, sha256 `c02aebdd90cb21ca36ce7626b27fba7ca03f0250d6b8501c1546cc3a85d93bef` (asserted, `check-siblings.log` `X24`). Ten H3 fields, four members, a probe of its own under `$TMPDIR` on `rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)` / `cargo 1.98.0 (797e8a9bc 2026-08-05)`, `aarch64-apple-darwin`, 2026-09-17. The only engine that read the org CLI Design Standard.
 - **Doxa** — `raw/doxa.md`, sha256 `a2d31b37e504b3a7146d421cf3abb649fc3ed00da5cd18ea48dafe674c9c24d6` (asserted, `X25`), operation `research-20260916-220330-c7921c22a58240c5`, with the normalized twin `raw/doxa.normalized.md` and three per-provider normalizations: `raw/doxa-openai.normalized.md`, `raw/doxa-perplexity.normalized.md`, `raw/doxa-gemini.normalized.md`. Each provider is treated as a separate voice below, because they disagree with Opus in the same direction but on different evidence and with different defects.
-- **Codex — absent.** No `raw/codex.md` exists (asserted, `X21`); `raw/codex-exit.txt` reads `1` and `raw/codex-transcript.txt` records the run refusing with a usage-limit message between `2026-09-17T04:40:00Z` and `2026-09-17T04:40:04Z` (asserted, `X22`, `X23`). The engine is **skipped by owner direction** — `docs/planning/p02/owner-decisions.md` section 12, `W1-CODEX` — so this is a recorded absence under a standing ruling, not a gap in the run. The practical cost is that the independent second model family, which this programme uses as the adversarial lens, did not read this item: the disagreements below are settled by primary sources rather than by a third opinion.
+- **Codex — absent.** No `raw/codex.md` exists (asserted, `X21`); `raw/codex-exit.txt` reads `1` and `raw/codex-transcript.txt` records the run refusing with a usage-limit message between `2026-09-17T04:40:00Z` and `2026-09-17T04:40:04Z` (asserted, `X22`, `X23`). The engine is **skipped by owner direction**: `docs/planning/p02/owner-decisions.md:485` records `W1-CODEX` — "the Codex CLI account hit its usage limit … with fourteen research legs and every empirical audit waiting on it", owner answer "Let's skip codex for now", 2026-09-16, with the consequence that "Opus legs, syntheses, judgment audits, Doxa and acceptance asks continue" while "no item publishes without its empirical audit" (asserted, `check-siblings.log` `X26`). So this is a recorded absence under a standing ruling, not a gap in the run — and it is also why publication of this item waits on its own empirical audit. The practical cost is that the independent second model family, which this programme uses as the adversarial lens, did not read this item: the disagreements below are settled by primary sources rather than by a third opinion.
 
 **Disagreement 1 — may the layered config file carry the token? (the item's whole
 question).** Opus: never. All three Doxa providers: yes, as the lowest-precedence tier —

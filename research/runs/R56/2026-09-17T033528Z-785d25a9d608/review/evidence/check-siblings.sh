@@ -22,7 +22,9 @@ want() { if [ "$2" = "$3" ]; then ok "$1" "$3"; else bad "$1" "expected [$2], go
 count() { /usr/bin/grep -c "$@" || true; }
 
 printf 'date-utc: %s\n' "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-printf 'repo root: %s\n' "$root"
+# The repository root is deliberately NOT printed: it differs between a working tree and a
+# `git archive HEAD` extraction, and this log is cited as byte-reproducible across both.
+printf 'working directory: the repository root (resolved from this script, not printed)\n'
 
 r67=research/topics/67-error-and-exit-code-contract/DECISION.md
 r60=research/topics/60-cli-parsing-framework/DECISION.md
@@ -137,10 +139,24 @@ want 'X20 prompt-consumes-R67'    '1' "$(count -x -- '- consumes: R67: error-tax
 raw=research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw
 want 'X21 no-codex-report' '0' "$(/bin/ls "$raw" | count -x -- 'codex.md')"
 want 'X22 codex-exit'      '1' "$(cat "$raw/codex-exit.txt")"
-if /usr/bin/grep -q 'usage limit' "$raw/codex-transcript.txt"; then
+# .gitignore excludes research/runs/*/*/raw/*-transcript.txt, so this one assertion cannot
+# run from a `git archive HEAD` extraction. It SKIPs BY NAME there rather than failing or,
+# worse, vanishing silently.
+if [ ! -f "$raw/codex-transcript.txt" ]; then
+  printf 'SKIP X23 codex-refusal-recorded — raw/codex-transcript.txt is absent (gitignored: research/runs/*/*/raw/*-transcript.txt)\n'
+elif /usr/bin/grep -q 'usage limit' "$raw/codex-transcript.txt"; then
   ok 'X23 codex-refusal-recorded' 'raw/codex-transcript.txt records a usage-limit refusal, not an empty run'
 else
   bad 'X23 codex-refusal-recorded' 'the transcript does not record why Codex produced nothing'
+fi
+
+# --- the owner direction that makes Codex's absence a ruling rather than a gap.
+owner=docs/planning/p02/owner-decisions.md
+codex_line="$(/usr/bin/grep -n 'W1-CODEX: the Codex CLI account hit its usage limit' "$owner" | cut -d: -f1 || true)"
+if [ -n "$codex_line" ]; then
+  ok 'X26 W1-CODEX-direction' "docs/planning/p02/owner-decisions.md:${codex_line} records the owner direction \"Let's skip codex for now\" (2026-09-16)"
+else
+  bad 'X26 W1-CODEX-direction' 'no W1-CODEX row found; the engine-absence citation must be restated'
 fi
 want 'X24 opus-report-sha' 'c02aebdd90cb21ca36ce7626b27fba7ca03f0250d6b8501c1546cc3a85d93bef' \
   "$(shasum -a 256 "$raw/opus.md" | cut -d' ' -f1)"

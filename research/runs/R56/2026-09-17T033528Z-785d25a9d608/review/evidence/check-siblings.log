@@ -1,5 +1,5 @@
-date-utc: 2026-09-17T15:39:22Z
-repo root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+date-utc: 2026-09-17T15:44:14Z
+working directory: the repository root (resolved from this script, not printed)
 X0-detail research/topics/67-error-and-exit-code-contract/DECISION.md sha256=16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497
 X0-detail research/topics/60-cli-parsing-framework/DECISION.md sha256=16d2db72028bc368e0f857e2a168d488d40dffdbea78b99b01519d02dd120651
 X0-detail research/topics/52-toml-crate/DECISION.md sha256=4287ea4daa3b13c4efc6d6229052123bf3ea16e0ebfd4a3f964aa29015ab86d8
@@ -37,6 +37,7 @@ PASS X20 prompt-consumes-R67 — 1
 PASS X21 no-codex-report — 0
 PASS X22 codex-exit — 1
 PASS X23 codex-refusal-recorded — raw/codex-transcript.txt records a usage-limit refusal, not an empty run
+PASS X26 W1-CODEX-direction — docs/planning/p02/owner-decisions.md:485 records the owner direction "Let's skip codex for now" (2026-09-16)
 PASS X24 opus-report-sha — c02aebdd90cb21ca36ce7626b27fba7ca03f0250d6b8501c1546cc3a85d93bef
 PASS X25 doxa-report-sha — a2d31b37e504b3a7146d421cf3abb649fc3ed00da5cd18ea48dafe674c9c24d6
 CHECK_FAILURES=0
