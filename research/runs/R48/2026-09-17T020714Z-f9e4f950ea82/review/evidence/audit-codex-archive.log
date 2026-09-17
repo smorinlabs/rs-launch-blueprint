@@ -1,0 +1,30 @@
+# R48 mocking-crates — empirical check, revision 1
+# retrieved: 2026-09-17T04:24:51Z
+# host: Darwin arm64
+# rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+# cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+# grep binary: /usr/bin/grep (grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+# nothing below compiles Rust; the template does not exist (P03 builds it)
+#
+PASS C01: mockall newest non-yanked = 0.15.0, declared rust-version = 1.77.0, licence recorded as MIT OR Apache-2.0 (not evaluated — gate 1 inapplicable, owner ruling 2026-09-12 Q7.B)
+PASS C02: httpmock newest non-yanked = 0.8.3, declared rust-version = 1.88.0, licence recorded as MIT (not evaluated — gate 1 inapplicable, owner ruling 2026-09-12 Q7.B)
+PASS C03: wiremock newest non-yanked = 0.6.5, declared rust-version = NONE, licence recorded as MIT/Apache-2.0 (not evaluated — gate 1 inapplicable, owner ruling 2026-09-12 Q7.B)
+PASS C04: mockito newest non-yanked = 1.7.2, declared rust-version = 1.70, licence recorded as MIT (not evaluated — gate 1 inapplicable, owner ruling 2026-09-12 Q7.B)
+PASS C05: httpmock 0.8.3 default feature set is exactly [cookies] — default-features = false is a real change, not a no-op
+PASS C06: tag v0.8.3 Cargo.toml: 0 unsafe_code lines and edition = "2021"; master Cargo.toml: 1 unsafe_code line (counts by /usr/bin/grep -c) — the forbid lint and edition 2024 are unreleased 0.9.0 facts
+PASS C07: rustsec.org control lock_api = HTTP 200 (RUSTSEC-2020-0070 exists), candidates mockall=404 httpmock=404 wiremock=404 mockito=404 — the probe distinguishes, so 404 is evidence of no open advisory, gate 3 passes for all four
+PASS C08: mockall 0.15.0 required normal dependencies are exactly: cfg-if downcast fragile mockall_derive predicates predicates-tree — no tokio, no hyper, no async runtime
+PASS C09: httpmock .github/workflows/platform.yml carries 1 matrix line 'os: [ubuntu-latest, macos-latest, windows-latest]' (count by /usr/bin/grep -c) — gate 4 closed on the crate's own CI
+PASS C10: wiremock-rs .github/workflows/general.yml: 0 macos mentions and 5 'runs-on: ubuntu-latest' jobs (counts by /usr/bin/grep -ci and /usr/bin/grep -c) — its own CI does not cover macOS; gate 4 therefore rests on adopter evidence, not on the crate's CI
+PASS C11: wiremock's own README comparison table: 1 row 'wiremock … Async', 1 row 'httpmock … Async/Sync', 1 row 'mockito … Async/Sync' (counts by /usr/bin/grep -c) — choosing wiremock would make the test suite async before R05 decides
+PASS C12: docs.rs httpmock 0.8.3: struct.Then.html carries method.respond_with and struct.When.html carries method.is_true (present, counts by /usr/bin/grep -c are 2 and 2) — the dynamic responder and the closure matcher the F121 suite needs are in the released version, not only on master
+PASS C13: api.github.com repos/LukeMathWalker/wiremock-rs: archived = false, pushed_at date = 2025-08-24 — not archived, but not pushed since the 0.6.5 release; at-risk, not dormant
+PASS C14: contentauth/c2pa-rs sdk/Cargo.toml carries 1 'mockall = "0.15.0"' line and 1 'httpmock = "0.8.3"' line (counts by /usr/bin/grep -c) — both members at the recommended versions resolve in one lockfile in a shipping project
+PASS C15: inputs/owner-reference-axum-companion-stack-2026-09-16.md carries 1 pin line 'wiremock = "0.6"' and 1 C12 Testing row naming wiremock (counts by /usr/bin/grep -c) — the row this decision differs from, with ground
+PASS C16: all 5 '- assumes' lines in review/DECISION.md are byte-identical to column 4 of the matching docs/port/PARAMETERS.md row (lines selected by /usr/bin/grep, compared by shell string equality)
+PASS C17: research/topics/01-ports-and-adapters-seam/DECISION.md sha256 matches inputs/prerequisites.json R01.decision — the published R01 read here is the revision this run pinned
+PASS C18: py at pin b08bccfb: 1 pyproject.toml line pairing 'responses>=0.25' with 'HTTP mock for the port-contract suite' and 1 contract-suite docstring line naming 'the in-memory fake and the real HTTP adapter' (counts by /usr/bin/grep -c) — the contract suite is run against the real adapter over a mocked network
+PASS C19: required normal dependencies at the newest non-yanked version: wiremock=15 mockito=16 httpmock=25 — httpmock carries the heaviest tree of the three, and the figure is 25, not the 26 the opus report states
+PASS C20: api.github.com repos/LukeMathWalker/wiremock-rs/issues/173: title 'Error: `let` expressions in this position are unstable', created 2025-08-27, state closed — a let-chain compile failure reported against 0.6.5, so the crate's effective floor is at least Rust 1.88.0 even though it declares no rust-version
+#
+RESULT: all checks passed (0 FAIL)
