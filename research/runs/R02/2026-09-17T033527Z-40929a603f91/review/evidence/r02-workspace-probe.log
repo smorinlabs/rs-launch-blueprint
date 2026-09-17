@@ -1,0 +1,284 @@
+
+=== C0 toolchain ===
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+clippy 0.1.98
+Darwin arm64
+sw_vers: macOS 26.4
+probe workspace: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r02-probe.FFqKbI (deleted on exit)
+
+=== A single package, core module names the cli module ===
+   Compiling single-demo v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/single)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.30s
+PASS A: core->cli inside one package COMPILES: pub(crate) grants naming rights crate-wide
+PASS A: no compiler error is raised for the upward dependency (absent: error[)
+
+=== workspace scaffold ===
+
+=== B1 default build (root package scope, web feature off) ===
+   Compiling rs-launch-blueprint-core v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/core)
+   Compiling rs-launch-blueprint-cli v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/cli)
+   Compiling rs-launch-blueprint v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.72s
+PASS B1: the default root-scoped build succeeds
+PASS B1: the optional web member is not compiled by a root-scoped default build (absent: Compiling rs-launch-blueprint-web)
+
+=== B2 --features web (root package scope) ===
+   Compiling rs-launch-blueprint-web v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/web)
+   Compiling rs-launch-blueprint v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.41s
+PASS B2: enabling the feature pulls the optional member in
+
+=== B3 cargo build --workspace with the web feature OFF (case the Opus raw did not run) ===
+   Compiling rs-launch-blueprint-core v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/core)
+   Compiling rs-launch-blueprint-cli v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/cli)
+   Compiling rs-launch-blueprint-web v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/web)
+   Compiling rs-launch-blueprint v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.74s
+PASS B3: a workspace-scoped build succeeds
+PASS B3: workspace membership, not the root feature, decides that crates/web is built: --workspace compiles it with web off
+
+=== B4 binary targets actually produced by the default build ===
+build
+deps
+examples
+incremental
+librs_launch_blueprint.d
+librs_launch_blueprint.rlib
+rslbp
+rslbp.d
+PASS B4: the rslbp binary is built by default
+PASS B4: the feature-gated serve binary is skipped by default (required-features) (absent: rslbp-serve)
+
+=== C1 F004 -- core names the cli crate in code ===
+   Compiling rs-launch-blueprint-core v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/core)
+error[E0433]: cannot find module or crate `rs_launch_blueprint_cli` in this scope
+ --> crates/core/src/lib.rs:8:24
+  |
+8 | pub fn oops() -> u32 { rs_launch_blueprint_cli::run(&InMemoryProjectsPort) }
+  |                        ^^^^^^^^^^^^^^^^^^^^^^^ use of unresolved module or unlinked crate `rs_launch_blueprint_cli`
+  |
+  = help: if you wanted to use a crate named `rs_launch_blueprint_cli`, use `cargo add rs_launch_blueprint_cli` to add it to your `Cargo.toml`
+
+For more information about this error, try `rustc --explain E0433`.
+error: could not compile `rs-launch-blueprint-core` (lib) due to 1 previous error
+PASS C1: F004 is a build error at the code tier
+
+=== C2 F004 -- core declares the cli crate in its manifest ===
+error: cyclic package dependency: package `rs-launch-blueprint-cli v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/cli)` depends on itself. Cycle:
+package `rs-launch-blueprint-cli v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/cli)`
+    ... which satisfies path dependency `rs-launch-blueprint-cli` (locked to 0.1.0) of package `rs-launch-blueprint-core v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/core)`
+    ... which satisfies path dependency `rs-launch-blueprint-core` (locked to 0.1.0) of package `rs-launch-blueprint-cli v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/cli)`
+    ... which satisfies path dependency `rs-launch-blueprint-cli` (locked to 0.1.0) of package `rs-launch-blueprint v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws)`
+PASS C2: F004 is refused by Cargo resolution before rustc runs
+
+=== C3 F005 -- cli names the web crate ===
+   Compiling rs-launch-blueprint-core v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/core)
+   Compiling rs-launch-blueprint-cli v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/cli)
+error[E0433]: cannot find module or crate `rs_launch_blueprint_web` in this scope
+ --> crates/cli/src/lib.rs:2:45
+  |
+2 | pub fn run<P: ProjectsPort>(p: &P) -> u32 { rs_launch_blueprint_web::router(p) }
+  |                                             ^^^^^^^^^^^^^^^^^^^^^^^ use of unresolved module or unlinked crate `rs_launch_blueprint_web`
+  |
+help: there is a crate or module with a similar name
+  |
+2 - pub fn run<P: ProjectsPort>(p: &P) -> u32 { rs_launch_blueprint_web::router(p) }
+2 + pub fn run<P: ProjectsPort>(p: &P) -> u32 { rs_launch_blueprint_core::router(p) }
+  |
+
+For more information about this error, try `rustc --explain E0433`.
+error: could not compile `rs-launch-blueprint-cli` (lib) due to 1 previous error
+PASS C3: F005 is a build error
+
+=== C4 F003 -- core names the facade's composition root ===
+   Compiling rs-launch-blueprint-core v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/core)
+error[E0433]: cannot find module or crate `rs_launch_blueprint` in this scope
+ --> crates/core/src/lib.rs:8:25
+  |
+8 | pub fn oops() { let _ = rs_launch_blueprint::composition::production_service(); }
+  |                         ^^^^^^^^^^^^^^^^^^^ use of unresolved module or unlinked crate `rs_launch_blueprint`
+  |
+  = help: if you wanted to use a crate named `rs_launch_blueprint`, use `cargo add rs_launch_blueprint` to add it to your `Cargo.toml`
+
+For more information about this error, try `rustc --explain E0433`.
+error: could not compile `rs-launch-blueprint-core` (lib) due to 1 previous error
+PASS C4: F003 is a build error
+
+=== C5 baseline restored ===
+   Compiling rs-launch-blueprint-core v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/core)
+   Compiling rs-launch-blueprint-cli v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/cli)
+   Compiling rs-launch-blueprint v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.35s
+PASS C5: the restored workspace builds clean
+PASS C5: no error survives the restore (absent: error[)
+
+=== D1 package-root clippy.toml in the SINGLE package flags every layer ===
+    Checking single-demo v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/single)
+warning: struct `CliThing` is never constructed
+ --> src/cli_layer.rs:2:12
+  |
+2 | pub struct CliThing;
+  |            ^^^^^^^^
+  |
+  = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `m` is never used
+ --> src/cli_layer.rs:3:8
+  |
+3 | pub fn m() -> HashMap<u32, u32> { HashMap::new() }
+  |        ^
+
+error: use of a disallowed type `std::collections::HashMap`
+ --> src/core_layer.rs:1:1
+  |
+1 | use std::collections::HashMap;
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: probe
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#disallowed_types
+  = note: requested on the command line with `-D clippy::disallowed-types`
+
+error: use of a disallowed type `std::collections::HashMap`
+ --> src/core_layer.rs:2:15
+  |
+2 | pub fn m() -> HashMap<u32, u32> { HashMap::new() }
+  |               ^^^^^^^^^^^^^^^^^
+  |
+  = note: probe
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#disallowed_types
+
+error: use of a disallowed type `std::collections::HashMap`
+ --> src/core_layer.rs:2:35
+  |
+2 | pub fn m() -> HashMap<u32, u32> { HashMap::new() }
+  |                                   ^^^^^^^
+  |
+  = note: probe
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#disallowed_types
+
+error: use of a disallowed type `std::collections::HashMap`
+ --> src/cli_layer.rs:1:1
+  |
+1 | use std::collections::HashMap;
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: probe
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#disallowed_types
+
+error: use of a disallowed type `std::collections::HashMap`
+ --> src/cli_layer.rs:3:15
+  |
+3 | pub fn m() -> HashMap<u32, u32> { HashMap::new() }
+  |               ^^^^^^^^^^^^^^^^^
+  |
+  = note: probe
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#disallowed_types
+
+error: use of a disallowed type `std::collections::HashMap`
+ --> src/cli_layer.rs:3:35
+  |
+3 | pub fn m() -> HashMap<u32, u32> { HashMap::new() }
+  |                                   ^^^^^^^
+  |
+  = note: probe
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#disallowed_types
+
+warning: `single-demo` (lib) generated 2 warnings
+error: could not compile `single-demo` (lib) due to 6 previous errors; 2 warnings emitted
+PASS D1: a package-root clippy.toml cannot be scoped to one layer
+
+=== D2 a nested src/clippy.toml (py's subtree shape) is IGNORED ===
+    Checking single-demo v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/single)
+warning: struct `CliThing` is never constructed
+ --> src/cli_layer.rs:2:12
+  |
+2 | pub struct CliThing;
+  |            ^^^^^^^^
+  |
+  = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `m` is never used
+ --> src/cli_layer.rs:3:8
+  |
+3 | pub fn m() -> HashMap<u32, u32> { HashMap::new() }
+  |        ^
+
+warning: `single-demo` (lib) generated 2 warnings
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.27s
+PASS D2: a subtree-scoped clippy.toml produces no disallowed-type diagnostic (0 occurrences of disallowed type, by /usr/bin/grep)
+PASS D2: the crate still compiles, so the zero is not a compile failure
+
+=== D3 a per-member crates/core/clippy.toml flags ONLY that member ===
+    Checking rs-launch-blueprint-core v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/core)
+error: use of a disallowed type `std::collections::HashMap`
+ --> crates/core/src/lib.rs:8:15
+  |
+8 | pub fn m() -> std::collections::HashMap<u32, u32> { std::collections::HashMap::new() }
+  |               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: core is framework- and container-agnostic (F009)
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#disallowed_types
+  = note: requested on the command line with `-D clippy::disallowed-types`
+
+error: use of a disallowed type `std::collections::HashMap`
+ --> crates/core/src/lib.rs:8:53
+  |
+8 | pub fn m() -> std::collections::HashMap<u32, u32> { std::collections::HashMap::new() }
+  |                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^
+  |
+  = note: core is framework- and container-agnostic (F009)
+  = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.98.0/index.html#disallowed_types
+
+error: could not compile `rs-launch-blueprint-core` (lib) due to 2 previous errors
+PASS D3: the rule fires inside the protected member
+PASS D3: the identical use in the CLI member is untouched (absent: crates/cli/src/lib.rs)
+
+=== E workspace.lints reaches a member from one place ===
+   Compiling rs-launch-blueprint-core v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/ws/crates/core)
+warning: struct `Leaked` is never constructed
+ --> crates/core/src/lib.rs:8:30
+  |
+8 | mod private_mod { pub struct Leaked; }
+  |                              ^^^^^^
+  |
+  = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+error: unreachable `pub` item
+ --> crates/core/src/lib.rs:8:19
+  |
+8 | mod private_mod { pub struct Leaked; }
+  |                   ---^^^^^^^^^^^^^^
+  |                   |
+  |                   help: consider restricting its visibility: `pub(crate)`
+  |
+  = help: or consider exporting it for use by other crates
+  = note: requested on the command line with `-D unreachable-pub`
+
+warning: `rs-launch-blueprint-core` (lib) generated 1 warning
+error: could not compile `rs-launch-blueprint-core` (lib) due to 1 previous error; 1 warning emitted
+PASS E: a root [workspace.lints] deny reaches the member through [lints] workspace = true
+
+=== F cargo metadata --no-deps intra-workspace edge set ===
+rs-launch-blueprint          -> ['rs-launch-blueprint-cli', 'rs-launch-blueprint-core', 'rs-launch-blueprint-web[opt]']
+rs-launch-blueprint-cli      -> ['rs-launch-blueprint-core']
+rs-launch-blueprint-core     -> []
+rs-launch-blueprint-web      -> ['rs-launch-blueprint-core']
+PASS F: the manifests project to exactly the intended four-row edge set
+
+=== G cargo tree -i axum on a clean tree ===
+error: package ID specification `axum` did not match any packages
+exit status: 101
+PASS G: a CLEAN tree makes cargo tree -i exit non-zero (101), so the check must be inverted
+PASS G: and it says why
+
+=== H R69-literal shape -- web module and its optional deps inside the binary-hosting package ===
+   Compiling rs-launch-blueprint-core v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/r69/crates/core)
+   Compiling rs-launch-blueprint-cli v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/r69/crates/cli)
+   Compiling rs-launch-blueprint v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-probe.FFqKbI/r69)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.58s
+PASS H: the R69-literal shape builds: src/web/ is a gated module of the binary-hosting package
+PASS H: and nothing stops that web module naming the CLI front-end crate, so F005's web->cli half is NOT a build error under this shape (absent: error[)
+
+=== SUMMARY ===
+CHECKS RUN: 26 FAILURES: 0

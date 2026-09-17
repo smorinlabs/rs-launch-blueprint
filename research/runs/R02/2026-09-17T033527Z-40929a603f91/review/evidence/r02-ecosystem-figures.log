@@ -1,0 +1,82 @@
+
+=== C0 environment ===
+retrieval date for every figure below: 2026-09-17
+curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+Python 3.14.7
+gh authenticated: yes
+
+=== 1 boundary / boundary-rust -- GET https://crates.io/api/v1/crates/<name> (2026-09-17) ===
+PASS EF1a: crates.io serves a crate named boundary (no errors key) == False
+PASS EF1b: its newest version == 0.27.0
+PASS EF1c: its repository == https://github.com/rebelopsio/boundary
+PASS EF1d: crates.io serves a crate named boundary-rust (the Rust analyzer member) == False
+boundary-rust newest non-yanked (num created_at license): 0.27.0 2026-04-02T20:24:40.350514Z MIT OR Apache-2.0
+PASS EF1e: boundary-rust's newest non-yanked release and its licence
+PASS EF1f: published release count -- this is an actively released crate, not a stub == 30
+VOLATILE (not asserted), 2026-09-17: boundary recent_downloads=185 downloads=611 ; boundary-rust recent_downloads=262 downloads=916
+
+=== 1g rebelopsio/boundary -- GET https://api.github.com/repos/<o>/<r> (2026-09-17) ===
+PASS EF1g: archived == False
+PASS EF1h: stargazers_count -- the adoption figure that decides watch-not-adopt == 5
+PASS EF1i: pushed_at -- last repository activity == 2026-04-02T20:17:15Z
+PASS EF1j: open issues by search total_count (never open_issues_count) == 1
+
+=== 1k what boundary can actually express ===
+PASS EF1k: it declares Rust support, a layer-glob contract file and a failing exit mode
+PASS EF1l: and it records monorepo / multi-service support as an UNCHECKED roadmap item, which is what a Cargo workspace is
+
+=== 1m the ArchUnit ports the Opus raw excluded ===
+PASS EF1m: archunit_rs is not published to crates.io == True
+
+=== 2 cargo-deny -- GET https://crates.io/api/v1/crates/cargo-deny[/versions] (2026-09-17) ===
+cargo-deny newest non-yanked (num created_at license): 0.20.2 2026-07-09T17:58:09.303885Z MIT OR Apache-2.0
+PASS EF2a: cargo-deny's newest non-yanked release is 0.20.2 -- the Opus figure, not gemini's 0.19.0 or perplexity's 0.18.3
+PASS EF2b: repository == https://github.com/EmbarkStudios/cargo-deny
+PASS EF2c: archived == False
+VOLATILE (not asserted), 2026-09-17: cargo-deny stars=2426 pushed_at=2026-09-03T18:06:48Z recent_downloads=1625668 downloads=5746345
+PASS EF2d: cargo-deny has 2426 stars, an order of magnitude above the 190 the gemini leg reported for what it labelled the "Actions repo"
+
+=== 3 RustSec pages -- https://rustsec.org/packages/<name>.html (2026-09-17) ===
+  cargo-deny -> HTTP 404
+PASS EF3-cargo-deny: RustSec HTTP status for cargo-deny == 404
+  boundary -> HTTP 404
+PASS EF3-boundary: RustSec HTTP status for boundary == 404
+  boundary-rust -> HTTP 404
+PASS EF3-boundary-rust: RustSec HTTP status for boundary-rust == 404
+  cargo_metadata -> HTTP 404
+PASS EF3-cargo_metadata: RustSec HTTP status for cargo_metadata == 404
+  cargo-modules -> HTTP 404
+PASS EF3-cargo-modules: RustSec HTTP status for cargo-modules == 404
+control: a package that DOES have a RustSec page must not also return 404
+PASS EF3-control: RustSec HTTP status for atty (positive control -- proves the 404s above are not a blanket failure) == 200
+
+=== 4 crates named by the Doxa legs -- GET https://crates.io/api/v1/crates/<name> (2026-09-17) ===
+PASS EF4-cargo_metadata: newest version of cargo_metadata == 0.23.1
+  VOLATILE (not asserted), 2026-09-17: cargo_metadata recent_downloads=53323115 downloads=247070477
+PASS EF4-cargo-depgraph-check: newest version of cargo-depgraph-check == 0.1.0
+  VOLATILE (not asserted), 2026-09-17: cargo-depgraph-check recent_downloads=684 downloads=849
+PASS EF4-dep_graph_rs: newest version of dep_graph_rs == 0.2.0
+  VOLATILE (not asserted), 2026-09-17: dep_graph_rs recent_downloads=61 downloads=2055
+PASS EF4-hexser: newest version of hexser == 0.6.0
+  VOLATILE (not asserted), 2026-09-17: hexser recent_downloads=501 downloads=3960
+PASS EF4-guppy: newest version of guppy == 0.18.0
+  VOLATILE (not asserted), 2026-09-17: guppy recent_downloads=3764567 downloads=16383214
+
+=== 5 registry values assumed by this decision ===
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+- assumes license = MIT OR Apache-2.0
+PASS EF5: the four fixed parameters, exactly as the DECISION.md ## Parameters list must write them
+PASS EF5b: the registry carries exactly 4 fixed parameters, so the assumes list is complete at 4 lines
+PASS EF5c: the R69 clause this decision CONFLICTs with is present in the live registry, quoted verbatim
+PASS EF5d: R49's clause that excludes an xtask boundary checker, quoted verbatim
+
+=== 6 next free OVERRIDE number ===
+PASS EF6a: files claiming OV-03 outside this item (by /usr/bin/grep over docs/port, every published topic DECISION.md and every run review DECISION.md) == 0
+/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R61/2026-09-17T020714Z-98ef5e1e7d37/review/DECISION.md
+PASS EF6b: OV-02 is taken (1 file(s)), so the zero above is not a vacuous search
+PASS EF6c: and R61's run decision is where OV-02 lives
+
+=== SUMMARY ===
+CHECKS RUN: 35 FAILURES: 0 SKIPPED: 0
