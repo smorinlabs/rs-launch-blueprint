@@ -37,8 +37,11 @@ the prompt's gloss on it, recorded as a finding below.
 
 **Member 3 is not polish.** On X11 and on Wayland the *copying process itself*
 owns the selection and answers paste requests; a one-shot write from a
-short-lived CLI dies with the CLI. Without Member 3 the feature is broken on
-every Linux desktop while appearing to succeed. That finding, traced to
+short-lived CLI dies with the CLI. Without Member 3 the copy is lost on every
+Linux desktop that runs no clipboard manager, and racily on those that do — the
+qualification is stated in full in the platform table under `### Principles and
+implementation` and holds everywhere this claim appears — while the command
+reports success either way. That finding, traced to
 `arboard`'s own source and README at tag `v3.6.1`, is what makes this a
 three-member stack and is developed below.
 
@@ -384,7 +387,7 @@ can only run after the file is written. The committed log is the post-write
 run.) The script's exit status **is** its failure count, so a non-zero exit is a
 failed assertion and nothing else.
 
-Fourteen sections: crates.io figures (1); GitHub repository figures (2); RustSec
+Sections 0-14: run header and toolchain (0); crates.io figures (1); GitHub repository figures (2); RustSec
 with its paired positive control (3); `arboard` at tag `v3.6.1` — manifest,
 error type, headless path, ownership, CI (4); `wl-clipboard-rs` and `x11rb`
 (5); `copypasta`'s CI (6); adopters and the `code2prompt` defect (7); the py
@@ -437,8 +440,9 @@ Endpoints: `https://crates.io/api/v1/crates/<name>` (`.crate.recent_downloads`,
 `.crate.downloads`); `.../versions` (newest `yanked: false`);
 `https://api.github.com/repos/<o>/<r>` (`.stargazers_count`, `.archived`,
 `.pushed_at`); `https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+is:open`
-(`.total_count`, **never** `.open_issues_count`). GitHub endpoints were polled no
-more than once per 21 seconds.
+(`.total_count`, **never** `.open_issues_count`). Consecutive `search/issues`
+calls are 21 seconds apart; the two `gh` reads for one repository, and the four
+advisory-db reads in section 3, are issued back to back.
 
 **The advisory reading, and why a 404 is evidence here.** `https://rustsec.org/packages/arboard.html`
 returns **404**, and so do `copypasta` and `clipboard-rs` (checks A06–A08). A
@@ -488,6 +492,16 @@ Three things fall out, and two of them correct the raw reports.
    versions. No fitness gate forbids duplicate resolutions, so this is a cost to
    record for P03, not a gate failure.
 
+**Comparison rule for a rerun.** `cargo generate-lockfile` resolves the
+*latest* compatible versions, so every number in the table above is a property
+of the resolution on the run date and toolchain, not a fixed property of
+`arboard` 3.6.1. A transitive release can move the package counts, the duplicate
+report and the Linux-leg floor `S18` asserts; a rerun that fails `S18` after
+such a release is expected drift and re-reads the new floor against the policy,
+not a broken claim. What does not drift is the shape: `default-features = false`
+keeps `image` off both legs, the macOS leg stays AppKit-only, and the Linux leg
+carries both display backends.
+
 `cargo tree --target x86_64-unknown-linux-gnu` resolves the Linux leg from the
 lockfile without a Linux toolchain or host. It proves what **would** be linked
 on `ubuntu-latest`; it does not compile or run anything for that target.
@@ -528,8 +542,9 @@ A33); the X11 backend's `std::thread::spawn` serving thread (A34); the Wayland
 backend's `foreground(matches!(wait, WaitConfig::Forever))` (A35); and
 `wl-clipboard-rs` documenting `foreground` as a **thread** switch (A41). All four
 read as Opus describes. Codex's one-member stack would therefore produce a CLI
-whose `--copy` appears to work and loses the clipboard contents on every Linux
-desktop.
+whose `--copy` reports success and loses the clipboard contents on every Linux
+desktop that runs no clipboard manager, and racily on those that do (the
+qualification in the platform table under `### Principles and implementation`).
 
 **Disagreement 2 — where the dependency goes.** Codex says "the CLI-facing
 package manifest"; Opus says optional in the **binary crate only**, behind a
