@@ -1,0 +1,15 @@
+retrieved_utc=2026-09-17T04:32:22Z
+GET https://crates.io/api/v1/crates/toml
+{"recent_downloads":217379722,"downloads":912211500,"max_stable_version":"1.1.6+spec-1.1.0"}
+GET https://crates.io/api/v1/crates/toml/versions
+{"num":"1.1.6+spec-1.1.0","created_at":"2026-09-10T20:28:39.522017Z","rust_version":"1.85","edition":"2024","license":"MIT OR Apache-2.0"}
+GET https://crates.io/api/v1/crates/toml_edit/versions
+{"num":"0.25.15+spec-1.1.0","created_at":"2026-09-11T01:44:08.521316Z","rust_version":"1.85","edition":"2024","license":"MIT OR Apache-2.0"}
+GET https://crates.io/api/v1/crates/basic-toml/versions
+{"published_versions":12,"versions_with_rust_version":0,"newest_unyanked":{"num":"0.1.10","rust_version":null}}
+GET https://rustsec.org/packages/time.html
+    <a href="/advisories/RUSTSEC-2020-0071.html">
+      RUSTSEC-2020-0071: Vulnerability in time
+HTTP=200
+GET https://rustsec.org/packages/toml.html
+HTTP=404
