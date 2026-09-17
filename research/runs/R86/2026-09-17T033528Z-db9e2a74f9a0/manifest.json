@@ -7,6 +7,60 @@
       "actor": "controller-fable-5-1",
       "at": "2026-09-17T03:35:28Z",
       "state": "ready"
+    },
+    {
+      "actor": "research-opus-2026-09-17T033528Z-db9e2a74f9a0",
+      "at": "2026-09-17T06:00:57Z",
+      "operation": {
+        "actor": "research-opus-2026-09-17T033528Z-db9e2a74f9a0",
+        "at": "2026-09-17T06:00:57Z",
+        "model": "claude-opus-5",
+        "provider": "opus",
+        "request_id": "ce554761433f43cbbe46703131401730",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
+    },
+    {
+      "actor": "research-opus-2026-09-17T033528Z-db9e2a74f9a0",
+      "at": "2026-09-17T15:06:55Z",
+      "operation": {
+        "actor": "research-opus-2026-09-17T033528Z-db9e2a74f9a0",
+        "actual_model": "claude-opus-5",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-17T06:00:57Z",
+        "model": "claude-opus-5",
+        "operation_id": "agent:research-opus-2026-09-17T033528Z-db9e2a74f9a0:7122daa4e1279754",
+        "provider": "opus",
+        "request_id": "ce554761433f43cbbe46703131401730",
+        "returned_at": "2026-09-17T15:06:55Z",
+        "state": "submitted"
+      },
+      "provider": "opus",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-opus-2026-09-17T033528Z-db9e2a74f9a0",
+      "at": "2026-09-17T15:06:55Z",
+      "operation": {
+        "actor": "research-opus-2026-09-17T033528Z-db9e2a74f9a0",
+        "actual_model": "claude-opus-5",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-17T06:00:57Z",
+        "collected_at": "2026-09-17T15:06:55Z",
+        "model": "claude-opus-5",
+        "operation_id": "agent:research-opus-2026-09-17T033528Z-db9e2a74f9a0:7122daa4e1279754",
+        "provider": "opus",
+        "raw": "research/runs/R86/2026-09-17T033528Z-db9e2a74f9a0/raw/opus-7122daa4e1279754f6ed5508274f9a6afb5a7369eab7c8e6171daafdd11ca94d.md",
+        "raw_sha256": "7122daa4e1279754f6ed5508274f9a6afb5a7369eab7c8e6171daafdd11ca94d",
+        "reason": "",
+        "request_id": "ce554761433f43cbbe46703131401730",
+        "returned_at": "2026-09-17T15:06:55Z",
+        "state": "succeeded"
+      },
+      "provider": "opus",
+      "state": "succeeded"
     }
   ],
   "input_hashes": {
@@ -21,7 +75,24 @@
   },
   "item": "R86",
   "model": "claude-fable-5-1",
-  "operations": {},
+  "operations": {
+    "opus": {
+      "actor": "research-opus-2026-09-17T033528Z-db9e2a74f9a0",
+      "actual_model": "claude-opus-5",
+      "actual_provider": "claude-agent-tool",
+      "at": "2026-09-17T06:00:57Z",
+      "collected_at": "2026-09-17T15:06:55Z",
+      "model": "claude-opus-5",
+      "operation_id": "agent:research-opus-2026-09-17T033528Z-db9e2a74f9a0:7122daa4e1279754",
+      "provider": "opus",
+      "raw": "research/runs/R86/2026-09-17T033528Z-db9e2a74f9a0/raw/opus-7122daa4e1279754f6ed5508274f9a6afb5a7369eab7c8e6171daafdd11ca94d.md",
+      "raw_sha256": "7122daa4e1279754f6ed5508274f9a6afb5a7369eab7c8e6171daafdd11ca94d",
+      "reason": "",
+      "request_id": "ce554761433f43cbbe46703131401730",
+      "returned_at": "2026-09-17T15:06:55Z",
+      "state": "succeeded"
+    }
+  },
   "prompt_source": "research/topics/86-codex-assisted-review-workflows/prompts/codex-assisted-review-workflows.prompt.md",
   "remaining_budget": "USD 238.50 to 263.50 remaining of USD 300.00 bulk Deep ceiling (owner authorisation W1-DOXA 2026-09-16; Doxa in batches of three, no automatic retry)",
   "required_engines": [
@@ -31,7 +102,7 @@
   ],
   "run_id": "2026-09-17T033528Z-db9e2a74f9a0",
   "schema_version": 1,
-  "state": "ready",
+  "state": "partial",
   "tier": "deep",
-  "updated_at": "2026-09-17T03:35:28Z"
+  "updated_at": "2026-09-17T15:06:55Z"
 }
