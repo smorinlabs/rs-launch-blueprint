@@ -1,4 +1,45 @@
-# 2026-09-17 — R57 — xdg-directory-set (pattern, Focused) — decision (revision 1)
+# 2026-09-17 — R57 — xdg-directory-set (pattern, Focused) — decision (revision 2)
+
+Synthesized 2026-09-17 by a fresh context that produced none of this item's raw
+reports, from the two engine reports in `raw/` plus the verification run recorded
+under `## Empirical check`. No template code exists and none was written in any
+revision.
+
+Revised 2026-09-17 after the revision-1 decision (sha256
+`78d7256f6bd9ac21c78560ffffeea343bee6c46fa98de1aeb20ed1e7071be8d9`) was
+**rejected** by the round-1 judgment audit (`review/audit-fable.md`, actor
+`audit-fable-2026-09-17T020714Z-8fdb5c2010e7-r1`) on five sentence-level
+findings. That audit recorded that **no finding moves the recommendation**, and
+none does: the crate, the version, the accessor set, the `rslbp` namespace, the
+Runtime omission, the F249 disposition and the four `- assumes` lines are all
+unchanged from revision 1. The repairs, one line each:
+
+| Finding | Revision 1 said | Revision 2 says |
+|---|---|---|
+| **JF-1** (blocking) | `snap/` "holds 12 artifacts; **10 are committed and 2 are not**" | **11 held, 9 tracked in HEAD**, 2 gitignored — recounted with `/usr/bin/grep -c` and `git ls-files` in the new `evidence/r57-claims-r2.log` |
+| **JF-2** | "`R5.9` and `R10.1` print as quoted above" — neither was quoted above | both rules are now **quoted**, from the same pinned blob §1 already reads |
+| **JF-3** | py and ts namespace constants carried from `raw/opus.md` with no file or line, `xdg-paths.ts` never named | both read **at their pins with line numbers** in `r57-claims-r2.log`; `raw/opus.md`'s own line numbers were **wrong** and are corrected |
+| **JF-4** (blocking) | "The accessor surface is a struct, and **one edition-2024 fact decides it**" | edition 2024 plus `forbid` rules out *internal environment reads* — it forces **injection, not a struct**; the struct is now attributed to resolve-once, the composition root and the embedding consumer, which revision 1 already argued elsewhere |
+| **JF-5** | "roughly 2.4× less raw adoption", no number, endpoint or date | both figures given with endpoint and retrieval date — and the comparison was **backwards**: `etcetera` has 2.66× *more* 90-day downloads than `directories`; the 2.4× is `dirs`, a different crate |
+
+**One correction beyond the five findings, found while repairing JF-5 and
+reported rather than made quietly.** Revision 1's "`directories` … roughly 2.4×
+less raw adoption" was not merely unsourced, it was false in direction. The
+multiplier came from `raw/opus.md:688`, which compares **`dirs`**
+(77,979,289 ninety-day downloads) against `etcetera` (32,829,812) = 2.38×;
+revision 1 attached it to **`directories`** (12,362,480), which has *fewer*
+downloads than the recommended crate, not more. The correction weakens nothing
+the decision relies on — the pick never rested on download counts — but it
+removes a tradeoff the recommendation was not actually paying against
+`directories`. Figures and endpoint in `## Tradeoffs`.
+
+Everything the round-1 audit reproduced is byte-identical in this revision:
+`evidence/r57-claims.sh`, `evidence/r57-claims.log` (still sha256
+`fbbe9fae82267a67d220b71536095e82edc38776ed845bc4017b478252332143`),
+`evidence/toolchain.txt` and every file under `evidence/snap/`. The three new
+checks are a **new** script and log, `evidence/r57-claims-r2.sh` and
+`evidence/r57-claims-r2.log`, with their own `evidence/snap-r2/` snapshots. What
+changed and what did not is enumerated at the end of `## Engines`.
 
 ## Decision
 
@@ -84,9 +125,15 @@ disagree; the standard is the higher authority.
   pin `b08bccfb` divides them the same way).
 - `XDG_*` variables are honoured on every POSIX platform **including macOS**, and
   ignored when empty or relative.
-- One namespace segment, the *binary* name — py `APP_NAME = "plbp"`, ts
-  `TOOL_DIR_NAME = 'ts-projects'`, rs `rslbp` (the `[[bin]]` name fixed by R49's
-  `build-tool-output-shape`), never the package name `rs-launch-blueprint`.
+- One namespace segment, the *binary* name — py `APP_NAME = "plbp"`
+  (`src/py_launch_blueprint/core/paths.py:58` at pin `b08bccfb`), ts
+  `TOOL_DIR_NAME = 'ts-projects'` (`src/lib/xdg-paths.ts:14` at pin `cb1cbcb2`),
+  rs `rslbp` (the `[[bin]]` name fixed by R49's `build-tool-output-shape`), never
+  the package name `rs-launch-blueprint`. Revision 1 carried both constants from
+  `raw/opus.md` with no file or line and never named `xdg-paths.ts` at all; both
+  are now read at their pins in `evidence/r57-claims-r2.log`, which also corrects
+  `raw/opus.md`'s line numbers — it cites `paths.py:56` and `xdg-paths.ts:13`,
+  and the pins have 58 and 14.
 - Resolve once; nothing else in the workspace reads a raw `XDG_*` variable.
 
 **What may vary by ecosystem.**
@@ -137,7 +184,14 @@ own position**, not a backlog item: on `directories-rs` issue #117 (2026-06-16)
 supported"* — carried from `raw/opus.md` at its retrieval date 2026-09-17 and
 **not independently re-fetched here** (see `## Engines`, unproven row U4).
 
-**The accessor surface is a struct, and one edition-2024 fact decides it.**
+**The accessor surface is a struct — but be exact about which constraint forces
+what.** Revision 1 headed this paragraph "**The accessor surface is a struct, and
+one edition-2024 fact decides it.**" That is superseded, because it overstated
+the edition's reach: what the edition settles is that resolution must take its
+environment **injected** rather than read it internally, which a *free function*
+can also satisfy. The struct is chosen on separate grounds, given below.
+
+*What edition 2024 does settle.*
 Edition 2024 makes `std::env::set_var` and `std::env::remove_var` `unsafe`, and
 R06 is resolved with `unsafe_code = "forbid"` in `[workspace.lints.rust]`,
 inherited by every member (`research/topics/06-unsafe-code-policy/DECISION.md`,
@@ -147,9 +201,31 @@ targets. **Free functions that read the process environment internally — py's
 exact shape, and `etcetera`'s own `choose_base_strategy()` — therefore cannot be
 unit-tested hermetically in this template at all.** A value constructed from an
 *injected* strategy can. Python monkeypatches `os.environ`; TypeScript injects
-`env` and `homedir` as parameters (`configDir(env, homedir)`); Rust must do the
-TypeScript thing. The principle — resolve once, and the resolution is testable —
-is preserved in all three; the mechanism differs because the language does.
+`env` and `homedir` as parameters — and note that ts's `configDir` is a **free
+function** doing exactly that (`src/lib/xdg-paths.ts:21` at pin `cb1cbcb2`,
+`export function configDir(env, homedir)`, verified in
+`evidence/r57-claims-r2.log`). Rust must do the TypeScript thing, and the
+TypeScript thing is injection, not a value type. The principle — resolve once,
+and the resolution is testable — is preserved in all three; the mechanism differs
+because the language does.
+
+*What actually selects a struct over injected free functions.* Three
+requirements, none of them about `unsafe`, all of them stated under *Per target
+shape* below and gathered here so the deciding force is not misattributed:
+
+1. **Resolve once.** A struct resolves the four roots at one call and stores
+   them. Injected free functions — `pub fn config_dir(s: &impl BaseStrategy) ->
+   PathBuf`, which is hermetically testable and violates nothing — re-derive a
+   path at every call site, so "resolve once; never read the raw env vars
+   elsewhere" (py's own rule, `src/py_launch_blueprint/core/paths.py:50` at pin
+   `b08bccfb`) becomes a convention rather than a structure.
+2. **R01's composition root.** The root constructs values and hands them down
+   rather than exposing functions that each reach for a strategy; a `Paths`
+   value is what gets handed down.
+3. **The embedding consumer.** A library embedded twice in one process must be
+   able to *supply* two different roots. That is a value per embedding, which
+   `from_strategy(&impl BaseStrategy)` gives; a free-function surface would make
+   the caller thread a strategy through every call instead.
 
 The injection point costs nothing, because `BaseStrategy` is an ordinary public
 trait with six methods and no sealing, verified in the published 0.11.0 source:
@@ -185,7 +261,8 @@ impl Paths {
     pub fn from_strategy(s: &impl BaseStrategy) -> Self {
         // `state_dir()` is `None` on the Windows and Apple strategies; collapsing
         // it onto the data dir keeps this accessor total on every platform and
-        // reproduces py's documented Windows shape. It is unreachable under
+        // reproduces py's documented Windows shape — "Windows has no data/state
+        // split", paths.py:36 at pin b08bccfb. It is unreachable under
         // `choose_base_strategy()` on ubuntu-latest and macos-latest, both of
         // which select `Xdg`, whose `state_dir()` is always `Some`.
         let data = s.data_dir().join(TOOL_NAME);
@@ -342,15 +419,25 @@ wins only if the template will never support Windows in any form.
 **Tradeoffs.** Against `directories`: no `preference_dir`, no
 `config_local_dir`/`data_local_dir` split, no user-directories family — accepted,
 because `R5.3` asks for five purposes and nothing here wants the user's Downloads
-folder; and roughly 2.4× less raw adoption — accepted under the explicit
-gate-before-popularity rule, since a download count does not create a macOS state
-directory. Against a hand-rolled `std` implementation: zero dependencies and total
+folder. On raw adoption the recommendation gives up **nothing** against
+`directories`, and revision 1 was wrong to say it did: at `GET
+https://crates.io/api/v1/crates/<name>`, `crate.recent_downloads` (90-day),
+retrieved 2026-09-16, `etcetera` has **32,829,812** against `directories`'
+**12,362,480** — the recommended crate has 2.66× *more*. Revision 1's "roughly
+2.4× less raw adoption" is superseded: that multiplier is `raw/opus.md:688`
+comparing the sibling crate **`dirs`** (**77,979,289**, same endpoint and date)
+against `etcetera`, at 2.38×. So the adoption tradeoff exists only against
+`dirs`, and it is accepted under the explicit gate-before-popularity rule, since
+a download count does not create a macOS state directory. Figures in
+`evidence/r57-claims-r2.log`. Against a hand-rolled `std` implementation: zero dependencies and total
 control of the fallback table — accepted, and the second is a gain rather than a
 loss, since the crate's fallbacks were verified here to be the specification's,
 absoluteness rule included. The one real ergonomic cost: `Xdg::new()` is the sole
 constructor and takes no injected environment (verified, §4), so the env-reading
 path itself must be covered by a child-process integration test rather than a unit
-test — which is precisely why the surface is a struct. Against ts's config-only
+test. Revision 1 called that "precisely why the surface is a struct"; superseded,
+per JF-4 — the child-process test is needed whatever the surface shape, so it is a
+cost of injection, not an argument for a value type. Against ts's config-only
 shape: three accessors and a crate the template could have deferred — accepted,
 because `R5.3` fixes the rule and R67 removes the "for now"; and a slightly larger
 public API surface for R04 to keep stable — four functions returning `&Path`, with
@@ -377,9 +464,11 @@ byte-identical to the run's `inputs/PARAMETERS.md` (verified, §3). No `CONFLICT
 line is raised.
 
 How each bears on the decision: `rust-edition` is load-bearing and is the reason
-the accessor surface is a struct rather than py's free functions, because edition
-2024 makes `std::env::set_var` and `std::env::remove_var` `unsafe` and R06
-forbids `unsafe`. `target-os-matrix` is load-bearing and is the entire reason
+resolution cannot read the process environment internally, because edition 2024
+makes `std::env::set_var` and `std::env::remove_var` `unsafe` and R06 forbids
+`unsafe` — so the strategy is injected. That the injected surface is then a
+*struct* rather than free functions rests on resolve-once, R01's composition root
+and the embedding consumer, not on the edition (JF-4). `target-os-matrix` is load-bearing and is the entire reason
 `directories` loses: `macos-latest` is a required leg, and `directories` has no
 state directory there. `msrv-policy` evaluates to a floor of 1.96 against the
 local stable 1.98.0 recorded in `review/evidence/toolchain.txt`, which
@@ -472,10 +561,13 @@ toolchain — and none of them skipped on this run.
 **Files.** `review/evidence/r57-claims.sh` (the script, `shellcheck`-clean),
 `review/evidence/r57-claims.log` (its complete output, sha256
 `fbbe9fae82267a67d220b71536095e82edc38776ed845bc4017b478252332143`),
-`review/evidence/toolchain.txt`, and `review/evidence/snap/`. `snap/` holds 12
-artifacts; **10 are committed and 2 are not** — the `.crate` tarballs match this
-repository's `.gitignore:12` rule `research/runs/**/*.crate`, which is respected
-rather than overridden. Their absence costs nothing, because the script re-fetches
+`review/evidence/toolchain.txt`, and `review/evidence/snap/`. `snap/` holds **11**
+files, of which **9 are tracked in `HEAD` and 2 are not** — revision 1 said 12 and
+10, and both numbers were wrong; the corrected pair is recounted file by file in
+`evidence/r57-claims-r2.log` with `ls -1`, `git ls-files` and `/usr/bin/grep -c`.
+The two untracked files are the `.crate` tarballs, which match this repository's
+`.gitignore:12` rule `research/runs/**/*.crate`, respected rather than
+overridden. Their absence costs nothing, because the script re-fetches
 each one and refuses to read it unless its sha256 equals the constant in the
 script. That was checked rather than assumed: extracting `git archive HEAD` into a
 clean directory, copying in only the files this commit stages, and running the
@@ -501,8 +593,28 @@ Provenance row 10 prints verbatim as
 The document states `| **Version** | 1.4.14 |`. Appendix E's Rust sentence prints:
 *"Pair with `figment`/`config` crates for the precedence chain and
 `directories`/`etcetera` for XDG paths."* — so the standard's normative rule
-selects between the two candidates its own advisory appendix offers. `R5.9` and
-`R10.1` print as quoted above. 7 passing checks in this section.
+selects between the two candidates its own advisory appendix offers. `R5.9` and `R10.1` also print, and are quoted here rather than
+back-referenced, because revision 1 said they "print as quoted above" when
+neither was quoted anywhere in the decision:
+
+`R5.9`'s heading and its first sentence — the rest of the rule is about
+`--offline` and `--refresh`, which this item does not use:
+
+```
+**R5.9 — Cache and offline controls. (MAY / SHOULD)**
+A tool that caches remote data **SHOULD** document cache location, invalidation behavior, and staleness guarantees, and **SHOULD** offer a cache-clearing command or equivalent.
+```
+
+and the one sentence of `R10.1` that bears on this item, extracted from the
+middle of its paragraph:
+
+```
+Stored credentials **SHOULD** use the OS keychain when available, falling back to a `0600` file under `$XDG_STATE_HOME/acme/` (R5.3).
+```
+
+`R5.9` is the ground for shipping `cache_dir()` before anything caches, and
+`R10.1` is a second rule inside the standard that routes a real file to the State
+directory this item resolves. 7 passing checks in this section.
 
 *§2 — prerequisite decisions and ledger rows, read in this repository.*
 `research/topics/67-error-and-exit-code-contract/DECISION.md:33` prints the
@@ -738,3 +850,37 @@ not `master`'s 1.95.0. Opus's acceptance criterion B6 is corrected outright — 
    comments name the same four paths the binary prints, so `R5.3`'s "documented"
    obligation cannot silently rot, and `R5.9`'s cache-location obligation is met
    before anything caches.
+
+**Revision 2 — what changed, and what did not.** Ten passages changed, all of
+them prose about evidence or attribution, none about what is recommended.
+Changed: the title and the revision note above; the `snap/` inventory figures
+under `## Empirical check` (JF-1); the `R5.9`/`R10.1` back-reference, replaced by
+the two quotations (JF-2); the py and ts namespace citations and the example's
+Windows comment (JF-3); the four locations that attributed the struct surface to
+edition 2024 — the paragraph heading, the injection argument, the *Tradeoffs*
+sentence and the `## Parameters` prose (JF-4); and the adoption comparison under
+*Tradeoffs* (JF-5). Every one of those four JF-4 locations was found by searching
+the file for `struct` and working from the resulting line list, not by re-reading.
+
+Unchanged, deliberately: the recommendation (`etcetera` 0.11.0 through
+`choose_base_strategy()`, wrapped in a template-owned `Paths`, four accessors,
+`rslbp` namespace, no runtime accessor); the force-gradation table; the F249
+disposition and its `BASELINE-REVIEW:` line; the B1–B7 criteria including the B6
+correction; the `RSLB101` gradation; all five engine disagreements; the seven
+`U#` rows; the `re-verify:` line; and the four `- assumes` lines, which are
+byte-identical to revision 1 and to `docs/port/PARAMETERS.md`. Also unchanged,
+because the round-1 audit reproduced them: `evidence/r57-claims.sh`,
+`evidence/r57-claims.log`, `evidence/toolchain.txt` and every file under
+`evidence/snap/`. The three new checks live in a new script and log
+(`evidence/r57-claims-r2.sh`, `evidence/r57-claims-r2.log`, 13 passing
+assertions, 0 failing, 0 skipped) with their own `evidence/snap-r2/` snapshots;
+nothing cited by revision 1 was edited in place.
+
+**One limit on this revision, recorded rather than glossed.** The addendum
+governing judgment revisions states that the item's empirical audit
+(`review/audit-codex.md`) approved revision 1. There is no `review/audit-codex.md`
+in this run directory; `review/audit-fable.md` records why — "the Codex account is
+out of usage, so this audit ran alone" — and notes that acceptance still needs a
+second approving verdict. This revision therefore answers one audit, not two, and
+the empirical verdict remains outstanding on whatever revision it eventually runs
+against.
