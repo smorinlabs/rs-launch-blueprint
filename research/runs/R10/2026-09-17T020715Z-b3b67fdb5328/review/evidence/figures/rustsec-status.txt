@@ -1,0 +1,6 @@
+# endpoint: https://rustsec.org/packages/<name>.html
+# retrieved: 2026-09-17 (UTC)
+rust-cache 404
+sccache 404
+atty 200
+serde 404

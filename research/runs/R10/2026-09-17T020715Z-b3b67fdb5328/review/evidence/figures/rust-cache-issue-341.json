@@ -1,0 +1,1 @@
+{"closed_at":"2026-05-29T18:54:53Z","comments":5,"created_at":"2026-05-13T21:29:13Z","endpoint":"https://api.github.com/repos/Swatinem/rust-cache/issues/341","number":341,"retrieved":"2026-09-17 (UTC)","state":"closed","title":"`cache-bin: true` breaks cargo subcommands on new github macos runner"}
