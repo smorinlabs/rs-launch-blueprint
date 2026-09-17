@@ -1,0 +1,5 @@
+Output: `raw/codex.md`
+SHA-256: `39dcb56937109b40d46a7efb31fcc47467cfbf2015e6ff7e1aeaedb7b75dd45d`
+H3 fields: 15
+BASELINE-REVIEW: F249 emitted.
+Unverified: RustSec 404 for `etcetera`/`xdg`; `xdg` lacks macOS CI evidence; planned checks unrun.
