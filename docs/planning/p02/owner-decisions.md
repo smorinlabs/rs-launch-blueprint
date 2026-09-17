@@ -154,7 +154,10 @@ a job condition cannot read at all, and that is the case requiring the preflight
 job you chose. Your instruction reads as the secret path. The revision cannot be
 written correctly without the answer.
 
-## 5. The licence gate's reach
+## 5. The licence gate's reach -- ANSWERED 2026-09-12 (Q7.B)
+
+**Status.** Answered by the owner's ruling recorded verbatim in `docs/port/OWNER-REVIEW.md` under "2026-09-12 — no licence check for anything the template uses (Q4, superseded and widened by Q7.B)": licence compatibility is not evaluated for any dependency or tool; every decision records fitness gate 1 as `inapplicable — owner ruling 2026-09-12 (Q7.B)`. The text below is the original ask, kept as history.
+
 
 **What is being asked.** Whether the fixed `license` fitness gate reaches a
 developer tool that runs as a separate process and is never linked into the
