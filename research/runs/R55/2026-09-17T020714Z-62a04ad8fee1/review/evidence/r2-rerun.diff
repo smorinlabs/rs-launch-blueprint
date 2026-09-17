@@ -1,0 +1,10 @@
+# Reproducibility record for evidence/check-r2.log
+#
+# evidence/check-r2.sh was run once, its output saved as evidence/check-r2.log,
+# then rerun immediately and diffed against that log. The complete diff follows.
+# Produced 2026-09-17 on Darwin arm64 with: diff evidence/check-r2.log <rerun>
+#
+2c2
+< date (UTC):      2026-09-17T06:09:48Z
+---
+> date (UTC):      2026-09-17T06:10:04Z
