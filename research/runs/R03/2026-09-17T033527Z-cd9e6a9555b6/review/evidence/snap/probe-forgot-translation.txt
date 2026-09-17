@@ -1,0 +1,17 @@
+   Compiling absence_probe v0.0.0 (/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.iEdf4bpsFt/absence_probe)
+error[E0308]: `?` operator has incompatible types
+ --> tests/forgot_translation.rs:4:8
+  |
+4 |     Ok(port.get(id)?)
+  |        ^^^^^^^^^^^^^ expected `Project`, found `Option<Project>`
+  |
+  = note: `?` operator cannot convert from `Option<absence_probe::Project>` to `absence_probe::Project`
+  = note: expected struct `absence_probe::Project`
+               found enum `Option<absence_probe::Project>`
+help: consider using `Option::expect` to unwrap the `Option<absence_probe::Project>` value, panicking if the value is an `Option::None`
+  |
+4 |     Ok(port.get(id)?.expect("REASON"))
+  |                     +++++++++++++++++
+
+For more information about this error, try `rustc --explain E0308`.
+error: could not compile `absence_probe` (test "forgot_translation") due to 1 previous error
