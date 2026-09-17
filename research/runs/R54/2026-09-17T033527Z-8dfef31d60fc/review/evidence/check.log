@@ -1,0 +1,86 @@
+=== R54 evidence checks ===
+repo-root  /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+run-dir    research/runs/R54/2026-09-17T033527Z-8dfef31d60fc
+toolchain  rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew) | cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew) | Darwin 25.4.0
+grep       /usr/bin/grep (grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+PASS S01 R5.1 exists and is a MUST (/usr/bin/grep -c -F matches=1)
+PASS S02 R5.1 rung 3 is a dot-DIRECTORY walked up (/usr/bin/grep -c -F matches=1)
+PASS S03 R5.1 rung 5 enumerates XDG_CONFIG_DIRS (/usr/bin/grep -c -F matches=1)
+PASS S04 R5.1 merge semantics (/usr/bin/grep -c -F matches=1)
+PASS S05 R5.2 --config replaces discovery (/usr/bin/grep -c -F matches=1)
+PASS S06 R5.2 boundary stop (/usr/bin/grep -c -F matches=1)
+PASS S07 R5.3 system search path and default (/usr/bin/grep -c -F matches=1)
+PASS S08 R5.4 curated env subset (/usr/bin/grep -c -F matches=1)
+PASS S09 R5.4 names the config path in the curated subset (/usr/bin/grep -c -F matches=1)
+PASS E01 etcetera 0.11.0 source has no XDG_CONFIG_DIRS support at all (/usr/bin/grep -rc -E total=0)
+PASS E02 etcetera honours the XDG absoluteness rule (F247) (/usr/bin/grep -c -F matches=1)
+PASS E03 choose_base_strategy() is XDG on macOS (F247 on macos-latest) (/usr/bin/grep -c -F matches=1)
+PASS E04 etcetera 0.11.0 declared MSRV (/usr/bin/grep -c -F matches=1)
+PASS E05 BaseStrategy exposes a singular config_dir only (/usr/bin/grep -c -F matches=1)
+PASS X01 xdg 3.0.0 compiles to an empty crate off Unix (/usr/bin/grep -c -F matches=1)
+PASS X02 xdg 3.0.0 is the one surveyed crate that enumerates the system tier (/usr/bin/grep -c -F matches=1)
+PASS X03 xdg 3.0.0 applies the /etc/xdg default (/usr/bin/grep -c -F matches=1)
+PASS X04 xdg 3.0.0 splits XDG_CONFIG_DIRS with std::env::split_paths (/usr/bin/grep -c -F matches=1)
+PASS C01 clap applies env only when the flag is absent (flag beats env) (/usr/bin/grep -c -F matches=1)
+PASS C02 clap tests env PRESENCE only — an empty value is not filtered (/usr/bin/grep -c -F matches=1)
+PASS C03 Arg::env snapshots the variable with no emptiness check (/usr/bin/grep -c -F matches=1)
+PASS F01 crates.io etcetera max_stable_version=0.11.0 — no 0.12 is published
+PASS F02 etcetera 0.11.0 is published and unyanked; no 0.12.x version exists
+PASS F03 cfgmatic-paths exists but carries no adoption evidence (crate.downloads=874, under 100000)
+PASS F04 cfg-rs exists but carries no adoption evidence (crate.downloads=69755, under 1000000)
+PASS F06 etcetera crate.downloads=108625667, three orders of magnitude above either (same endpoint, same run)
+PASS F05 crates.io xdg max_stable_version is 3.0.0 (/usr/bin/grep -c -F matches=1)
+PASS G01 lunacookies/etcetera is not archived (/usr/bin/grep -c -F matches=1)
+PASS G02 soc/directories-rs IS archived (/usr/bin/grep -c -F matches=1)
+PASS R01 rustsec.org publishes no advisory page for etcetera (HTTP 404)
+PASS R02 control: rustsec.org/packages/anyhow.html returned HTTP 200, so the site serves pages and R01's 404 means no advisory
+PASS Z01 XDG spec requires absolute paths in the XDG_* variables (/usr/bin/grep -c -F matches=1)
+PASS Z02 XDG spec names /etc/xdg as the XDG_CONFIG_DIRS default (/usr/bin/grep -c -F matches=1)
+PASS Z03 XDG spec fixes the intra-system-tier order (/usr/bin/grep -c -F matches=1)
+PASS Z04 XDG spec puts the user tier above every system directory (/usr/bin/grep -c -F matches=1)
+PASS U01 uv depends on etcetera 0.11.0 (/usr/bin/grep -c -F matches=1)
+PASS U02 uv documents an $XDG_CONFIG_DIRS system tier that etcetera cannot supply (/usr/bin/grep -c -F matches=1)
+PASS U03 uv documents an upward project search (/usr/bin/grep -c -F matches=1)
+PASS U04 ruff depends on etcetera 0.11.0 (/usr/bin/grep -c -F matches=1)
+PASS D00a be59d65bfa7ee087766a315af09c0ba4c93a8fa211927091314c86222cbb9af9  research/runs/R53/2026-09-17T020714Z-d0b567b4b9f1/review/DECISION.md
+PASS D00b 5d358c1fda2a5ff2782b916f3ca81cf52bbbafd75748774b114345c72a6edd9b  research/runs/R55/2026-09-17T020714Z-62a04ad8fee1/review/DECISION.md
+PASS D00c 44e945045f0e2c964520918801f5c8f3921a3cfefc4ef5c72b0bc497038139ba  research/runs/R57/2026-09-17T020714Z-8fdb5c2010e7/review/DECISION.md
+PASS D00d 16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497  research/topics/67-error-and-exit-code-contract/DECISION.md
+PASS D01 R55 already fixes the loader sequence: sanitize per layer, THEN merge (/usr/bin/grep -c -F matches=1)
+PASS D02 R55 assigns merge depth and precedence order to R54 (/usr/bin/grep -c -F matches=1)
+PASS D03 R55 BASELINE-REVIEW F238 requires per-layer validation before the merge (/usr/bin/grep -c -F matches=1)
+PASS D04 R57 fixes the Paths accessor set at four (/usr/bin/grep -c -F matches=1)
+PASS D05 R57 hands config_dir() to R54 (/usr/bin/grep -c -F matches=1)
+PASS D06 R53 revision 2 validates per key over a toml::Table, not via a generated partial struct (/usr/bin/grep -c -F matches=1)
+PASS D07 R52 is published (/usr/bin/grep -c -F matches=89)
+PASS D08 raw/opus.md cites R55 at revision 1, before the sanitize-then-merge sequence was published (/usr/bin/grep -c -F matches=1)
+PASS P01 - assumes msrv-policy is byte-identical to docs/port/PARAMETERS.md (118 bytes)
+PASS P02 - assumes rust-edition is byte-identical to docs/port/PARAMETERS.md (4 bytes)
+PASS P03 - assumes target-os-matrix is byte-identical to docs/port/PARAMETERS.md (27 bytes)
+PASS P04 - assumes license is byte-identical to docs/port/PARAMETERS.md (17 bytes)
+PASS P05 - assumes error-taxonomy-exit-codes is byte-identical to docs/port/PARAMETERS.md (4057 bytes)
+PASS P06 inputs/PARAMETERS.md differs from the current registry only in the web-extra-surface row (R69, not consumed here)
+PASS Y01 py has a project_config_file (/usr/bin/grep -c -F matches=1)
+PASS Y02 py project_config_file inspects only the cwd — no parent walk (F232: py's shape is not adoptable)
+PASS Y03 py enumerates XDG_CONFIG_DIRS, which is the tier this item must reproduce (/usr/bin/grep -c -F matches=1)
+  PASS P1-workspace-qualified-finds-root cwd=A/crates/foo/src got=A/.rslbp/rslbp_config.toml want=A/.rslbp/rslbp_config.toml
+  PASS P2-any-cargo-toml-loses-root cwd=A/crates/foo/src got=None want=None
+  PASS P3-workspace-root-inclusive cwd=A got=A/.rslbp/rslbp_config.toml want=A/.rslbp/rslbp_config.toml
+  PASS P4-git-dir-root-found cwd=B/a/b got=B/.rslbp/rslbp_config.toml want=B/.rslbp/rslbp_config.toml
+  PASS P5-git-file-root-found cwd=C/a/b got=C/.rslbp/rslbp_config.toml want=C/.rslbp/rslbp_config.toml
+  PASS P6-boundary-below-blocks cwd=D/a/b got=None want=None
+  PASS P7-nearest-only cwd=E/a/b got=E/a/.rslbp/rslbp_config.toml want=E/a/.rslbp/rslbp_config.toml
+  PASS P8-no-marker-no-file cwd=F/a/b got=None want=None
+  PASS P9-workspace-package-counts cwd=G/crates/bar/src got=G/.rslbp/rslbp_config.toml want=G/.rslbp/rslbp_config.toml
+  PROBE-FAILURES 0
+PASS PR1 walk-up probe: every case passed (9 cases)
+SHA256 raw/opus.md 7356d9d786122df6c27474ef4e8b4af112cccdd0a6c9161f2d62cbaa35070d8d
+SHA256 raw/doxa.md a414c72f8391972c902c48def851c3a97c1ae9c9138afddbfd3de328bc074f2b
+SHA256 raw/doxa.normalized.md b79e8db77b294eefdcba4bb4d3dc7f74b8008a47c4c11496b69fb716b06eec5e
+SHA256 raw/doxa-openai.normalized.md ff2d29891039ff6d880931c5ea69e5ef80071817f8c12bac8ec21e170727a32d
+SHA256 raw/doxa-perplexity.normalized.md b42d668cedf9fe0b6fa6055d803147e1e59fe2abb983f70a8d570ee20d5f9744
+SHA256 raw/doxa-gemini.normalized.md 58521eb96f646f2ff3a7ad62190b0dc179e2b9731578b21f74cdda3c2696a693
+PASS H01 the Codex engine is absent because its provider refused the run (/usr/bin/grep -c -F matches=2)
+
+failures=0 skipped=0
