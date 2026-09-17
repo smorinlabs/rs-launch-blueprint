@@ -1,0 +1,19 @@
+== fetch-owner-reference-r6 ==
+user-agent: rs-launch-blueprint-research/R69 (+https://github.com/smorinlabs/rs-launch-blueprint)
+axum/versions: 200 https://crates.io/api/v1/crates/axum/versions
+axum: 200 https://crates.io/api/v1/crates/axum
+axum-test: 200 https://crates.io/api/v1/crates/axum-test
+axum-test 18.0.0 deps: 200 https://crates.io/api/v1/crates/axum-test/18.0.0/dependencies
+axum-test 18.3.0 deps: 200 https://crates.io/api/v1/crates/axum-test/18.3.0/dependencies
+axum-test 18.7.0 deps: 200 https://crates.io/api/v1/crates/axum-test/18.7.0/dependencies
+axum-test 21.1.0 deps: 200 https://crates.io/api/v1/crates/axum-test/21.1.0/dependencies
+axum-test 22.0.0-rc.1 deps: 200 https://crates.io/api/v1/crates/axum-test/22.0.0-rc.1/dependencies
+axum#3809: 200 https://api.github.com/repos/tokio-rs/axum/issues/3809
+axum#3809 comments: 200 https://api.github.com/repos/tokio-rs/axum/issues/3809/comments?per_page=20
+axum#3003: 200 https://api.github.com/repos/tokio-rs/axum/issues/3003
+axum#3745: 200 https://api.github.com/repos/tokio-rs/axum/pulls/3745
+axum#3819: 200 https://api.github.com/repos/tokio-rs/axum/pulls/3819
+cloud-run contract: 200 https://docs.cloud.google.com/run/docs/container-contract
+cargo specifying-dependencies: 200 https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
+retrieved-at: 2026-09-16T22:28:55Z
+fetch-owner-reference-r6 rc=0

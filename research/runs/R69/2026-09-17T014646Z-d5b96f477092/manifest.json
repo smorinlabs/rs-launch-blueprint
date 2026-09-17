@@ -7,6 +7,15 @@
       "actor": "controller-fable-5-1",
       "at": "2026-09-17T01:46:46Z",
       "state": "ready"
+    },
+    {
+      "at": "2026-09-17T03:37:08Z",
+      "publication": {
+        "acceptance_sha256": "48a7dce8ff07a17296ab5ac30369fe6bf02074c6adfe5d44a6c8fdf84e197338",
+        "decision_sha256": "d4507f5b2ca4201d9837caf013de16f30070cb3e2f5558eb66f7ded9dfd2c10d",
+        "transaction": "c1ca5c663dd143a980d8c910322222e9"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -23,6 +32,11 @@
   "model": "claude-fable-5-1",
   "operations": {},
   "prompt_source": "research/topics/69-web-framework-stack/prompts/web-framework-stack.prompt.md",
+  "publication": {
+    "acceptance_sha256": "48a7dce8ff07a17296ab5ac30369fe6bf02074c6adfe5d44a6c8fdf84e197338",
+    "decision_sha256": "d4507f5b2ca4201d9837caf013de16f30070cb3e2f5558eb66f7ded9dfd2c10d",
+    "transaction": "c1ca5c663dd143a980d8c910322222e9"
+  },
   "remaining_budget": "USD 0.00 (carried-forward republication; no provider submission)",
   "required_engines": [
     "codex",
@@ -31,7 +45,7 @@
   ],
   "run_id": "2026-09-17T014646Z-d5b96f477092",
   "schema_version": 1,
-  "state": "ready",
+  "state": "published",
   "tier": "deep",
-  "updated_at": "2026-09-17T01:46:46Z"
+  "updated_at": "2026-09-17T03:37:08Z"
 }

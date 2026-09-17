@@ -1,0 +1,36 @@
+host: Darwin arm64; rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+== 1. cargo install bacon --version 3.25.0 --locked ==
+     Ignored package `bacon v3.25.0` is already installed, use --force to override
+warning: be sure to add `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/toolcheck/bin` to your PATH to be able to run the installed binaries
+exit=0
+== 2. the installed binary reports the pinned version ==
+bacon 3.25.0
+exit=0
+== 3. --list-jobs: the effective job set in a project with NO bacon.toml ==
+┌──────────┬────────────────────────────────────────────────────────────┐
+│   job    │command                                                     │
+├──────────┼────────────────────────────────────────────────────────────┤
+│  check   │cargo check                                                 │
+│check-all │cargo check --all-targets                                   │
+│  clippy  │cargo clippy                                                │
+│clippy-all│cargo clippy --all-targets                                  │
+│   doc    │cargo doc --no-deps                                         │
+│ doc-open │cargo doc --no-deps --open                                  │
+│    ex    │cargo run --example                                         │
+│ nextest  │cargo nextest run --hide-progress-bar --failure-output final│
+│ pedantic │cargo clippy -- -W clippy::pedantic                         │
+│   run    │cargo run                                                   │
+│ run-long │cargo run                                                   │
+│   test   │cargo test                                                  │
+└──────────┴────────────────────────────────────────────────────────────┘
+default job: check
+OK: 'run-long' is a default job, so no bacon.toml is needed to reach it
+== 4. the two flags F339's recipe depends on exist ==
+OK: --headless present
+OK: --features present
+│        │--headless                 │Run without user interface: just run the │
+│        │                           │default job on change                    │
+== 5. control: a flag that does not exist must NOT be reported present ==
+OK: absent flag reported absent (the assertion can fail)
+bacon-install-check rc=0
+exit=0

@@ -1,0 +1,663 @@
+foreign-cwd: /private/tmp/r69-audit.Ne4S5T
+toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew) / cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+
+===== state-bound-check =====
+argv: bash /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/state-bound-check.sh
+cwd: /private/tmp/r69-audit.Ne4S5T
+toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew) / cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+host: Darwin arm64
+
+==================================================================
+case: positive   expect: expect-pass
+------------------------------------------------------------------
+
+exit=0
+OK: built clean, no diagnostics
+==================================================================
+case: neg-by-value   expect: expect-fail
+------------------------------------------------------------------
+error[E0277]: the trait bound `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>: Clone` is not satisfied
+  --> src/main.rs:23:31
+   |
+23 |     assert_axum_state_bound::<ErasedProjectsService>();
+   |                               ^^^^^^^^^^^^^^^^^^^^^ the trait `Clone` is not implemented for `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>`
+   |
+note: required by a bound in `assert_axum_state_bound`
+  --> src/main.rs:18:35
+   |
+18 | pub fn assert_axum_state_bound<S: Clone + Send + Sync + 'static>() {}
+   |                                   ^^^^^ required by this bound in `assert_axum_state_bound`
+help: consider annotating `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>` with `#[derive(Clone)]`
+   |
+ 9 + #[derive(Clone)]
+10 | pub struct ProjectsService<P: ProjectsPort> { _port: P }
+   |
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `r69_state_bound_neg_by_value` (bin "r69_state_bound_neg_by_value") due to 1 previous error
+exit=101
+OK: failed to compile, and the diagnostic contains: the trait `Clone` is not implemented for `ProjectsService<Arc<(dyn ProjectsPort
+==================================================================
+case: neg-no-supertraits   expect: expect-fail
+------------------------------------------------------------------
+error[E0277]: `(dyn ProjectsPort + 'static)` cannot be shared between threads safely
+  --> src/main.rs:14:31
+   |
+14 |     assert_axum_state_bound::<std::sync::Arc<ErasedProjectsService>>();
+   |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `(dyn ProjectsPort + 'static)` cannot be shared between threads safely
+   |
+   = help: the trait `Sync` is not implemented for `(dyn ProjectsPort + 'static)`
+   = note: required for `Arc<(dyn ProjectsPort + 'static)>` to implement `Sync`
+note: required because it appears within the type `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>`
+  --> src/main.rs:7:12
+   |
+ 7 | pub struct ProjectsService<P: ProjectsPort> { _port: P }
+   |            ^^^^^^^^^^^^^^^
+   = note: required for `Arc<ProjectsService<Arc<(dyn ProjectsPort + 'static)>>>` to implement `Send`
+note: required by a bound in `assert_axum_state_bound`
+  --> src/main.rs:11:43
+   |
+11 | pub fn assert_axum_state_bound<S: Clone + Send + Sync + 'static>() {}
+   |                                           ^^^^ required by this bound in `assert_axum_state_bound`
+
+error[E0277]: `(dyn ProjectsPort + 'static)` cannot be sent between threads safely
+  --> src/main.rs:14:31
+   |
+14 |     assert_axum_state_bound::<std::sync::Arc<ErasedProjectsService>>();
+   |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `(dyn ProjectsPort + 'static)` cannot be sent between threads safely
+   |
+   = help: the trait `Send` is not implemented for `(dyn ProjectsPort + 'static)`
+   = note: required for `Arc<(dyn ProjectsPort + 'static)>` to implement `Sync`
+note: required because it appears within the type `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>`
+  --> src/main.rs:7:12
+   |
+ 7 | pub struct ProjectsService<P: ProjectsPort> { _port: P }
+   |            ^^^^^^^^^^^^^^^
+   = note: required for `Arc<ProjectsService<Arc<(dyn ProjectsPort + 'static)>>>` to implement `Send`
+note: required by a bound in `assert_axum_state_bound`
+  --> src/main.rs:11:43
+   |
+11 | pub fn assert_axum_state_bound<S: Clone + Send + Sync + 'static>() {}
+   |                                           ^^^^ required by this bound in `assert_axum_state_bound`
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `r69_state_bound_neg_no_supertraits` (bin "r69_state_bound_neg_no_supertraits") due to 2 previous errors
+exit=101
+OK: failed to compile, and the diagnostic contains: the trait `Sync` is not implemented for `(dyn ProjectsPort
+
+state-bound-check rc=0
+
+rerun-exit=0
+recorded-match=byte-identical
+
+===== feature-shape-check =====
+argv: bash /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/feature-shape-check.sh
+cwd: /private/tmp/r69-audit.Ne4S5T
+toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew) / cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+host: Darwin arm64 / macOS 26.4
+manifest floor: rust-version = rust-version = "1.96"
+
+== 1. feature OFF: cargo tree -e normal ==
+r69_feature_shape v0.0.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/feature-shape)
+exit=0
+OK: ' axum v' absent
+OK: ' tokio v' absent
+OK: ' hyper v' absent
+OK: ' tower v' absent
+distinct packages in the NON-DEV base tree: 1  (base deps are deliberately empty, so this is the root alone)
+
+== 2. feature ON: cargo tree -e normal --features web ==
+r69_feature_shape v0.0.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/feature-shape)
+├── axum v0.8.9
+│   ├── axum-core v0.5.6
+│   │   ├── bytes v1.12.1
+│   │   ├── futures-core v0.3.34
+│   │   ├── http v1.5.0
+│   │   │   ├── bytes v1.12.1
+│   │   │   └── itoa v1.0.18
+│   │   ├── http-body v1.1.0
+│   │   │   ├── bytes v1.12.1
+│   │   │   └── http v1.5.0 (*)
+│   │   ├── http-body-util v0.1.5
+│   │   │   ├── bytes v1.12.1
+│   │   │   ├── futures-core v0.3.34
+│   │   │   ├── http v1.5.0 (*)
+│   │   │   ├── http-body v1.1.0 (*)
+│   │   │   └── pin-project-lite v0.2.17
+│   │   ├── mime v0.3.17
+│   │   ├── pin-project-lite v0.2.17
+│   │   ├── sync_wrapper v1.0.2
+│   │   ├── tower-layer v0.3.3
+│   │   ├── tower-service v0.3.3
+│   │   └── tracing v0.1.44
+│   │       ├── log v0.4.34
+│   │       ├── pin-project-lite v0.2.17
+│   │       └── tracing-core v0.1.36
+│   │           └── once_cell v1.21.4
+│   ├── bytes v1.12.1
+│   ├── form_urlencoded v1.2.2
+│   │   └── percent-encoding v2.3.2
+│   ├── futures-util v0.3.34
+│   │   ├── futures-core v0.3.34
+│   │   ├── futures-task v0.3.34
+│   │   ├── pin-project-lite v0.2.17
+│   │   └── slab v0.4.12
+│   ├── http v1.5.0 (*)
+│   ├── http-body v1.1.0 (*)
+│   ├── http-body-util v0.1.5 (*)
+│   ├── hyper v1.11.1
+│   │   ├── atomic-waker v1.1.2
+  ... (full tree truncated for readability; counts below)
+exit=0
+OK: found ' axum v'
+OK: found ' tokio v'
+OK: found ' hyper v'
+OK: found ' tower v'
+OK: found 'axum v0.8.9'
+OK: found 'tokio v1.53.1'
+distinct packages in the NON-DEV tree with the feature on: 51
+the feature's own non-dev dependency cost: 50 packages
+
+== 3. the feature's own dependency cost (unique packages, cargo metadata) ==
+cargo metadata packages, feature off: 4
+cargo metadata packages, feature on : 55
+NOTE: cargo metadata resolves dev-dependencies too, so these are not the
+      cargo-tree -e normal numbers; the comparable figure is the delta.
+
+== 4. non-dev resolved tree: highest declared rust-version (gate 2, resolved tree) ==
+once_cell 1.21.4  rust-version=1.65  license=MIT OR Apache-2.0
+tracing 0.1.44  rust-version=1.65.0  license=MIT
+tracing-core 0.1.36  rust-version=1.65.0  license=MIT
+itoa 1.0.18  rust-version=1.68  license=MIT OR Apache-2.0
+socket2 0.6.5  rust-version=1.70  license=MIT OR Apache-2.0
+futures-channel 0.3.34  rust-version=1.71  license=MIT OR Apache-2.0
+futures-task 0.3.34  rust-version=1.71  license=MIT OR Apache-2.0
+futures-util 0.3.34  rust-version=1.71  license=MIT OR Apache-2.0
+mio 1.2.3  rust-version=1.71  license=MIT
+proc-macro2 1.0.107  rust-version=1.71  license=MIT OR Apache-2.0
+quote 1.0.47  rust-version=1.71  license=MIT OR Apache-2.0
+ryu 1.0.23  rust-version=1.71  license=Apache-2.0 OR BSL-1.0
+serde_derive 1.0.229  rust-version=1.71  license=MIT OR Apache-2.0
+serde_json 1.0.151  rust-version=1.71  license=MIT OR Apache-2.0
+syn 3.0.5  rust-version=1.71  license=MIT OR Apache-2.0
+tokio 1.53.1  rust-version=1.71  license=MIT
+tokio-macros 2.7.2  rust-version=1.71  license=MIT
+unicode-ident 1.0.24  rust-version=1.71  license=(MIT OR Apache-2.0) AND Unicode-3.0
+windows-link 0.2.1  rust-version=1.71  license=MIT OR Apache-2.0
+windows-sys 0.61.2  rust-version=1.71  license=MIT OR Apache-2.0
+zmij 1.0.23  rust-version=1.71  license=MIT
+log 0.4.34  rust-version=1.71.0  license=MIT OR Apache-2.0
+axum-core 0.5.6  rust-version=1.78  license=MIT
+axum 0.8.9  rust-version=1.80  license=MIT
+r69_feature_shape 0.0.0  rust-version=1.96  license=none
+(the probe package's own rust-version, 1.96, IS the floor and is excluded)
+highest declared rust-version among the DEPENDENCIES: 1.80
+OK: found 'axum 0.8.9  rust-version=1.80'
+dependencies declaring no rust-version at all: 9
+OK: 1.80 is inside the 1.96 floor
+control: a floor this tree does NOT satisfy must be reported as a failure
+OK: the same test rejects a 1.70 floor, so it can fail
+
+== 5. does tower arrive transitively through axum? (settles dev-dep vs gated runtime dep) ==
+tower v0.5.3
+└── axum v0.8.9
+    └── r69_feature_shape v0.0.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/feature-shape)
+OK: found 'axum v0.8.9'
+-> tower is already in the non-dev tree via axum; a DIRECT tower entry is
+   needed only to bring tower::ServiceExt into scope in tests, so it belongs
+   under [dev-dependencies], not inside the web feature.
+
+== 6. the serve binary target is gated by required-features (cargo metadata) ==
+{"name":"r69_feature_shape","kind":["lib"],"rf":null}
+{"name":"probe-serve","kind":["bin"],"rf":["web"]}
+OK: found '"name":"probe-serve"'
+OK: found '"rf":["web"]'
+OK: found '"name":"r69_feature_shape","kind":["lib"],"rf":null'
+
+== 7. behavioral confirmation: with no features, no serve binary is produced ==
+build exit=0
+OK: target/debug/probe-serve: No such file or directory
+
+== 8. advisories against the resolved lockfile (cargo audit) ==
+cargo-audit-audit 0.22.1
+    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+error: couldn't fetch advisory database: I/O operation failed: failed to obtain lock file '/Users/stevemorin/.cargo/advisory-db..lock'
+Caused by:
+  -> failed to obtain lock file '/Users/stevemorin/.cargo/advisory-db..lock'
+  -> attempted to take an exclusive lock on a read-only path
+cargo-audit exit=1
+FAIL: cargo audit reported findings
+
+== 9. second probe, base = R01's published crate members (serde + serde_json) ==
+Why: the opus raw reports base=13 / --features web=52 non-dev packages.
+An empty base cannot reproduce that, so this probe carries R01's members.
+feature OFF = 12 non-dev packages; feature ON = 52; delta = 40
+OK: the feature-on tree is 52 packages, matching the opus report exactly
+NOTE: base is 12 here vs the opus report's 13; that probe carried one further
+      base dependency this one does not. The delta is 40 here, 39 there.
+
+feature-shape-check rc=1
+
+rerun-exit=1
+recorded-match=DIFFERENT
+
+===== assert-figures =====
+argv: bash /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/assert-figures.sh
+cwd: /private/tmp/r69-audit.Ne4S5T
+snapshot retrieved-at: 2026-09-13T07:57:55Z
+field rules (prompt, Required evidence): crates.io crate.recent_downloads
+and crate.downloads; the newest non-yanked /versions entry for num,
+created_at, rust_version and license; the GitHub repos endpoint for
+stargazers_count, archived and pushed_at; the search endpoint's
+total_count for open issues, never open_issues_count.
+
+GATE 1 (licence compatibility) IS NOT ASSERTED ANYWHERE IN THIS SCRIPT.
+Owner ruling 2026-09-12 (Q7.B) makes it inapplicable to every dependency
+and tool. Licences are printed below as published metadata, not as a gate.
+
+### A. the three recommended compiled members
+OK   axum newest non-yanked = 0.8.9
+OK   axum rust_version = 1.80
+OK   axum archived = false
+OK   tokio newest non-yanked = 1.53.1
+OK   tokio rust_version = 1.71
+OK   tokio archived = false
+OK   tower newest non-yanked = 0.5.3
+OK   tower rust_version = 1.64.0
+  axum   90-day=114795000 all-time=466425972 released=2026-04-14T07:55:20.258398Z stars=27100 pushed=2026-09-11T19:28:52Z open-issues=34 licence=MIT
+  tokio  90-day=222551461 all-time=961082746 released=2026-07-20T17:06:09.996426Z stars=33136 pushed=2026-09-13T06:37:03Z open-issues=316 licence=MIT
+  tower  90-day=169723285 all-time=656241115 released=2026-01-12T18:43:05.227461Z stars=4293 pushed=2026-06-22T13:58:59Z open-issues=69 licence=MIT
+  reverse dependencies: axum 8598, tokio 72187
+
+### B. the dev-reload sub-field -- the one answer the licence ruling changes
+OK   bacon newest non-yanked = 3.25.0
+OK   bacon rust_version (gate 2: PASS) = 1.85
+OK   bacon archived = false
+OK   bacon licence (reported, NOT gated) = AGPL-3.0
+OK   watchexec-cli newest non-yanked = 2.7.2
+OK   watchexec-cli rust_version (gate 2: FAIL, none declared) = null
+OK   cargo-watch newest non-yanked = 8.5.3
+OK   cargo-watch rust_version (gate 2: PASS -- it is excluded on MAINTENANCE, not a gate) = 1.75.0
+OK   cargo-watch archived (the maintenance exclusion) = true
+OK   cargo-watch README at tag v8.5.3 carries the maintainer's own end-of-life notice
+OK   that notice names Bacon as a recommended successor
+  bacon         90-day=21763 all-time=328857 released=2026-08-23T16:21:08.727147Z licence=AGPL-3.0
+  watchexec-cli 90-day=8702 all-time=659914 released=2026-09-06T04:28:41.425571Z licence=Apache-2.0
+  cargo-watch   90-day=174663 all-time=1970345 released=2024-10-02T08:38:09.256209Z licence=CC0-1.0
+  repos: bacon stars=3410 pushed=2026-09-12T19:26:10Z issues=47 | watchexec stars=7180 pushed=2026-09-07T15:11:55Z issues=31 | cargo-watch stars=2861 pushed=2025-01-14T14:57:47Z
+  bacon CI runners (Canop/bacon .github/workflows/tests.yml @ tag v3.25.0):
+         runs-on: ubuntu-latest
+         runs-on: ubuntu-latest
+OK   bacon CI names no macOS runner -- gate 4's macOS leg is closed instead by the executed cargo install in bacon-install-check.log
+
+### C. framework candidates -- gate 2 (declared MSRV), answered before popularity
+    floor = 1.96 (stable 1.98.x minus two minors)
+  actix-web    newest=4.15.0             released=2026-08-21T19:31:31.356389Z  rust_version=1.88     licence=MIT OR Apache-2.0
+  warp         newest=0.4.3              released=2026-05-04T19:33:48.290142Z  rust_version=null     licence=MIT
+  poem         newest=3.1.12             released=2025-07-28T04:39:14.775671Z  rust_version=1.85     licence=MIT OR Apache-2.0
+  salvo        newest=0.96.0             released=2026-08-27T01:10:25.881378Z  rust_version=1.94     licence=Apache-2.0
+  rocket       newest=0.5.1              released=2024-05-23T20:35:24.403919Z  rust_version=1.64     licence=MIT OR Apache-2.0
+  ntex         newest=4.0.0-beta.10      released=2026-09-12T13:33:34.498468Z  rust_version=1.95     licence=MIT OR Apache-2.0
+  xitca-web    newest=0.8.3              released=2026-08-29T05:45:37.596691Z  rust_version=1.98     licence=Apache-2.0
+  pavex        newest=0.2.10             released=2025-11-10T08:07:56.165138Z  rust_version=null     licence=Apache-2.0
+  viz          newest=0.11.0             released=2025-11-17T08:59:42.522292Z  rust_version=null     licence=MIT
+  tide         newest=0.17.0-beta.1      released=2021-12-06T20:13:27.242719Z  rust_version=null     licence=MIT OR Apache-2.0
+  loco-rs      newest=1.1.0              released=2026-08-16T07:20:05.314328Z  rust_version=1.94     licence=Apache-2.0
+  dropshot     newest=0.17.1             released=2026-06-02T17:01:56.874507Z  rust_version=1.85     licence=Apache-2.0
+OK   warp declares no rust_version (gate 2 FAIL) = null
+OK   viz declares no rust_version (gate 2 FAIL) = null
+OK   pavex declares no rust_version (gate 2 FAIL) = null
+OK   tide declares no rust_version (gate 2 FAIL) = null
+OK   xitca-web rust_version is above the 1.96 floor (gate 2 FAIL) = 1.98
+OK   actix-web rust_version (gate 2 pass; excluded on fit) = 1.88
+OK   salvo rust_version (gate 2 pass; excluded on MSRV-policy fit) = 1.94
+OK   poem rust_version (gate 2 pass; excluded on maintenance) = 1.85
+  rocket MSRV: the gemini raw says 1.89.0, the opus raw says 1.64 -- the registry settles it:
+OK   rocket rust_version = 1.64
+  rocket last release 2024-05-23T20:35:24.403919Z, repo pushed_at 2025-12-28T18:27:39Z -- the maintenance exclusion
+  poem   last release 2025-07-28T04:39:14.775671Z, repo pushed_at 2026-08-03T02:01:09Z, open issues 179
+  ntex   newest non-yanked is a prerelease: 4.0.0-beta.10 -- the opus raw cited 3.12.3 / 1.88
+  tide   newest non-yanked is 0.17.0-beta.1 (2021-12-06T20:13:27.242719Z) -- the opus raw cited 0.16.0 (2021-01-29)
+
+### D. gate 3, advisories (RustSec package pages)
+OK   rustsec/packages/axum.html status (404 = no advisory) = 404
+OK   rustsec/packages/tower.html status (404 = no advisory) = 404
+OK   rustsec/packages/bacon.html status (404 = no advisory) = 404
+OK   rustsec/packages/watchexec-cli.html status (404 = no advisory) = 404
+OK   rustsec/packages/tokio.html status (page exists) = 200
+    historic advisory ids listed: RUSTSEC-2021-0072 RUSTSEC-2021-0124 RUSTSEC-2023-0001 RUSTSEC-2023-0005 RUSTSEC-2025-0023
+OK   rustsec/packages/hyper.html status (page exists) = 200
+    historic advisory ids listed: RUSTSEC-2016-0002 RUSTSEC-2017-0002 RUSTSEC-2020-0008 RUSTSEC-2021-0020 RUSTSEC-2021-0078 RUSTSEC-2021-0079 RUSTSEC-2022-0022
+  the decisive check is executed, not read: cargo audit over the resolved
+  --features web lockfile is check 8 of feature-shape-check.log.
+
+### E. gate 4, platform CI read from the upstream workflow at each pinned tag
+  axum  (tag axum-v0.8.9):  runs-on: ubuntu-24.04 
+OK   axum CI names no macOS runner -- a gate 4 gap, closed for this version only by this run's macOS resolve-and-build
+  tokio (tag tokio-1.53.1): macos-latest ubuntu-latest windows-latest 
+OK   tokio CI covers ubuntu-latest
+OK   tokio CI covers macos-latest
+
+### F. the reference implementation, rust-lang/crates.io at commit 3df99c2
+OK   pins axum =0.8.9
+OK   pins tokio =1.53.1
+OK   uses edition 2024, this template's fixed rust-edition
+OK   builds its router with .with_state(state) -- the F330 mechanism
+OK   router.rs has no ROUTERS registry and no registration loop -- the F331 finding holds
+OK   serves with axum::serve(..).with_graceful_shutdown(..)
+OK   selects over SIGTERM via tokio::signal::unix
+OK   awaits the serve future directly -- the drain is NOT wrapped in a timeout
+OK   the only Duration in that file is a metrics logging interval, not a drain deadline
+OK   axum's own graceful-shutdown example at tag axum-v0.8.9 also handles SIGTERM
+
+### G. published-artifact facts this decision rests on
+OK   axum's state-carrying impl<S> Router<S> is bounded S: Clone + Send + Sync + 'static
+OK   with_state is what turns a Router<S> into a Router<S2> -- no state, no service
+OK   axum documents FromRef substates on one State type
+OK   the graceful drain awaits close_tx.closed()
+OK   occurrences of 'timeout' or 'deadline' in axum src/serve/mod.rs (the drain is unbounded) = 0
+OK   axum::serve exists only with the tokio feature plus http1 or http2
+OK   axum declares [lints.rust] unsafe_code = "forbid"
+OK   occurrences of 'unsafe' in axum src/ = 0
+  axum default features: form,http1,json,matched-path,original-uri,query,tokio,tower-log,tracing
+OK   tokio default = [] -- every feature is opted into explicitly
+OK   tokio feature 'signal' does NOT enable sync
+OK   tokio feature 'net' does NOT enable sync
+OK   tokio feature 'rt-multi-thread' does NOT enable sync
+OK   tokio feature 'time' does NOT enable sync
+OK   tokio feature 'macros' does NOT enable sync
+OK   tokio 'sync' is its own leaf feature, so it must be listed explicitly
+OK   bacon declared rust-version in its published manifest = 1.85
+OK   watchexec-cli rust-version lines in its published manifest (gate 2 FAIL) = 0
+OK   bacon ships a run-long job that restarts on change (kill_then_restart)
+OK   that job captures the child's stdout
+OK   bacon's DEFAULT job interruption on unix is SIGKILL -- so a bacon.toml 'kill' override is required for a dev restart to run the production drain
+OK   in --headless mode bacon prints the child's stdout/stderr straight to the terminal, not into a TUI pane
+OK   bacon plumbs its --features flag into the cargo command
+OK   arguments after -- are appended to the job's command tokens
+OK   the -j argument is stored as settings.arg_job (src/conf/settings.rs)
+OK   the initial job is settings.arg_job, falling back to default_job (src/jobs/job_stack.rs)
+OK   references to 'headless' in bacon src/cli/mod.rs (all of them screen setup, none job selection) = 4
+OK   headless only guards the alternate-screen setup around tui::app::run -- it does not touch job selection
+
+### H. control -- an assertion that MUST report FAIL, proving these checks can fail
+FAIL deliberate control (expected to FAIL): expected '0.0.0-not-a-real-version', got '0.8.9'
+  -> the line above must read FAIL. If it reads OK, the harness is broken
+     and every OK above is worthless.
+
+assertions passed: 75   failures: 1 (exactly 1 expected: the control)
+assert-figures rc=0
+
+rerun-exit=0
+recorded-match=byte-identical
+
+===== issue-responsiveness =====
+argv: bash /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/issue-responsiveness.sh
+cwd: /private/tmp/r69-audit.Ne4S5T
+snapshot retrieved-at: 2026-09-13T07:57:55Z
+rule: prompt table: 10 most recently opened issues; first comment whose author_association is OWNER/MEMBER/COLLABORATOR, excluding bots and the issue author
+
+=== tokio-rs/axum ===
+window: 2026-06-16T08:01:59Z -> 2026-09-07T08:48:42Z
+  #3880    opened 2026-09-07T08:48:42Z by mladedav               first maintainer response: NONE
+  #3878    opened 2026-09-04T18:53:24Z by mladedav               first maintainer response: NONE
+  #3846    opened 2026-07-25T19:17:33Z by Darckfast              first maintainer response: 2026-07-26T20:15:42Z (1.04 days)
+  #3834    opened 2026-07-14T01:13:21Z by m-novotny              first maintainer response: NONE
+  #3832    opened 2026-07-11T22:10:30Z by hgiesel                first maintainer response: 2026-07-12T07:55:05Z (0.41 days)
+  #3826    opened 2026-07-09T04:43:05Z by bardiharborow          first maintainer response: 2026-07-09T06:45:24Z (0.08 days)
+  #3817    opened 2026-07-05T13:47:13Z by DarkFenX               first maintainer response: NONE
+  #3814    opened 2026-07-01T07:10:18Z by mladedav               first maintainer response: NONE
+  #3809    opened 2026-06-26T06:54:31Z by halo-space             first maintainer response: 2026-06-30T19:49:47Z (4.54 days)
+  #3799    opened 2026-06-16T08:01:59Z by breard-r               first maintainer response: 2026-06-16T11:26:16Z (0.14 days)
+  -> answered: 5   unanswered: 5   median days to first maintainer response (answered only): 0.41
+
+=== Canop/bacon ===
+window: 2026-02-17T18:30:46Z -> 2026-08-24T07:07:07Z
+  #460     opened 2026-08-24T07:07:07Z by PuercoPop              first maintainer response: 2026-08-24T09:05:20Z (0.08 days)
+  #458     opened 2026-08-22T19:24:30Z by kpbaks                 first maintainer response: 2026-08-22T19:47:11Z (0.02 days)
+  #450     opened 2026-07-24T11:42:53Z by Axlefublr              first maintainer response: 2026-07-24T12:01:36Z (0.01 days)
+  #449     opened 2026-07-24T11:08:59Z by Axlefublr              first maintainer response: NONE
+  #447     opened 2026-07-22T19:34:39Z by narpfel                first maintainer response: NONE
+  #446     opened 2026-07-22T18:42:00Z by narpfel                first maintainer response: 2026-07-22T18:45:32Z (0.00 days)
+  #443     opened 2026-05-17T22:14:16Z by c-git                  first maintainer response: NONE
+  #438     opened 2026-03-18T21:44:31Z by marcospb19             first maintainer response: 2026-03-19T07:33:50Z (0.41 days)
+  #437     opened 2026-02-27T17:09:56Z by c-git                  first maintainer response: 2026-02-27T17:27:47Z (0.01 days)
+  #435     opened 2026-02-17T18:30:46Z by narpfel                first maintainer response: 2026-02-18T18:40:17Z (1.01 days)
+  -> answered: 7   unanswered: 3   median days to first maintainer response (answered only): 0.02
+
+=== tokio-rs/tokio ===
+window: 2026-08-27T08:17:23Z -> 2026-09-09T16:05:23Z
+  #8437    opened 2026-09-09T16:05:23Z by Daksh14                first maintainer response: NONE
+  #8434    opened 2026-09-08T19:11:21Z by marcbowes              first maintainer response: 2026-09-09T08:36:28Z (0.56 days)
+  #8433    opened 2026-09-08T17:19:04Z by glaziermag             first maintainer response: 2026-09-09T08:37:58Z (0.64 days)
+  #8429    opened 2026-09-07T14:41:03Z by botirkhaltaev          first maintainer response: 2026-09-07T14:46:03Z (0.00 days)
+  #8423    opened 2026-09-07T06:23:01Z by rifuki                 first maintainer response: NONE
+  #8411    opened 2026-09-05T08:38:11Z by Darksonn               first maintainer response: NONE
+  #8409    opened 2026-09-04T18:00:10Z by dfoxfranke             first maintainer response: 2026-09-04T18:06:55Z (0.00 days)
+  #8406    opened 2026-09-04T04:13:37Z by coremail-cyt           first maintainer response: 2026-09-04T12:05:26Z (0.33 days)
+  #8399    opened 2026-08-29T00:30:11Z by carllerche             first maintainer response: 2026-08-29T13:25:05Z (0.54 days)
+  #8395    opened 2026-08-27T08:17:23Z by Rachit2323             first maintainer response: 2026-08-27T09:00:21Z (0.03 days)
+  -> answered: 7   unanswered: 3   median days to first maintainer response (answered only): 0.33
+
+controls -- these assertions must be able to fail:
+OK   an empty comment list yields no maintainer response
+OK   the issue author, a bot and a non-maintainer are all excluded
+issue-responsiveness rc=0
+
+rerun-exit=0
+recorded-match=byte-identical
+
+===== bacon-install-check =====
+argv: bash /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/bacon-install-check.sh
+cwd: /private/tmp/r69-audit.Ne4S5T
+host: Darwin arm64; rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+== 1. cargo install bacon --version 3.25.0 --locked ==
+     Ignored package `bacon v3.25.0` is already installed, use --force to override
+warning: be sure to add `/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/toolcheck/bin` to your PATH to be able to run the installed binaries
+exit=0
+== 2. the installed binary reports the pinned version ==
+bacon 3.25.0
+exit=0
+== 3. --list-jobs: the effective job set in a project with NO bacon.toml ==
+┌──────────┬────────────────────────────────────────────────────────────┐
+│   job    │command                                                     │
+├──────────┼────────────────────────────────────────────────────────────┤
+│  check   │cargo check                                                 │
+│check-all │cargo check --all-targets                                   │
+│  clippy  │cargo clippy                                                │
+│clippy-all│cargo clippy --all-targets                                  │
+│   doc    │cargo doc --no-deps                                         │
+│ doc-open │cargo doc --no-deps --open                                  │
+│    ex    │cargo run --example                                         │
+│ nextest  │cargo nextest run --hide-progress-bar --failure-output final│
+│ pedantic │cargo clippy -- -W clippy::pedantic                         │
+│   run    │cargo run                                                   │
+│ run-long │cargo run                                                   │
+│   test   │cargo test                                                  │
+└──────────┴────────────────────────────────────────────────────────────┘
+default job: check
+OK: 'run-long' is a default job, so no bacon.toml is needed to reach it
+== 4. the two flags F339's recipe depends on exist ==
+OK: --headless present
+OK: --features present
+│        │--headless                 │Run without user interface: just run the │
+│        │                           │default job on change                    │
+== 5. control: a flag that does not exist must NOT be reported present ==
+OK: absent flag reported absent (the assertion can fail)
+bacon-install-check rc=0
+
+rerun-exit=0
+recorded-match=byte-identical
+
+===== parameters-check =====
+argv: bash /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/parameters-check.sh
+cwd: /private/tmp/r69-audit.Ne4S5T
+decision: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/../DECISION.md
+registry: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/PARAMETERS.md
+OK   the five expected '- assumes' lines are present and no others
+OK   msrv-policy: byte-identical to the registry (118 bytes)
+OK   rust-edition: byte-identical to the registry (4 bytes)
+OK   target-os-matrix: byte-identical to the registry (27 bytes)
+OK   license: byte-identical to the registry (17 bytes)
+OK   http-transport-injection-seam: byte-identical to the registry (763 bytes)
+OK   exactly one '- owns' line, for web-extra-surface (1787 bytes)
+OK   owns value contains no backticks
+OK   owns value contains no a markdown link
+OK   owns value contains no a double space
+OK   owns value has no leading or trailing whitespace
+OK   control: a deliberately altered value compares unequal
+OK   H2 sections are exactly ## Decision, ## Parameters, ## Empirical check, ## Engines
+parameters-check rc=0
+
+rerun-exit=0
+recorded-match=byte-identical
+
+audit-rerun rc=1
+logs=/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/audit-codex-r1
+
+===== feature-shape-check (private Cargo-home replay) =====
+reason: sandbox denies a lock in the shared read-only advisory DB; script and inputs unchanged, DB copied byte-for-byte to a private Cargo home.
+toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew) / cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+host: Darwin arm64 / macOS 26.4
+manifest floor: rust-version = rust-version = "1.96"
+
+== 1. feature OFF: cargo tree -e normal ==
+r69_feature_shape v0.0.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/feature-shape)
+exit=0
+OK: ' axum v' absent
+OK: ' tokio v' absent
+OK: ' hyper v' absent
+OK: ' tower v' absent
+distinct packages in the NON-DEV base tree: 1  (base deps are deliberately empty, so this is the root alone)
+
+== 2. feature ON: cargo tree -e normal --features web ==
+r69_feature_shape v0.0.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/feature-shape)
+├── axum v0.8.9
+│   ├── axum-core v0.5.6
+│   │   ├── bytes v1.12.1
+│   │   ├── futures-core v0.3.34
+│   │   ├── http v1.5.0
+│   │   │   ├── bytes v1.12.1
+│   │   │   └── itoa v1.0.18
+│   │   ├── http-body v1.1.0
+│   │   │   ├── bytes v1.12.1
+│   │   │   └── http v1.5.0 (*)
+│   │   ├── http-body-util v0.1.5
+│   │   │   ├── bytes v1.12.1
+│   │   │   ├── futures-core v0.3.34
+│   │   │   ├── http v1.5.0 (*)
+│   │   │   ├── http-body v1.1.0 (*)
+│   │   │   └── pin-project-lite v0.2.17
+│   │   ├── mime v0.3.17
+│   │   ├── pin-project-lite v0.2.17
+│   │   ├── sync_wrapper v1.0.2
+│   │   ├── tower-layer v0.3.3
+│   │   ├── tower-service v0.3.3
+│   │   └── tracing v0.1.44
+│   │       ├── log v0.4.34
+│   │       ├── pin-project-lite v0.2.17
+│   │       └── tracing-core v0.1.36
+│   │           └── once_cell v1.21.4
+│   ├── bytes v1.12.1
+│   ├── form_urlencoded v1.2.2
+│   │   └── percent-encoding v2.3.2
+│   ├── futures-util v0.3.34
+│   │   ├── futures-core v0.3.34
+│   │   ├── futures-task v0.3.34
+│   │   ├── pin-project-lite v0.2.17
+│   │   └── slab v0.4.12
+│   ├── http v1.5.0 (*)
+│   ├── http-body v1.1.0 (*)
+│   ├── http-body-util v0.1.5 (*)
+│   ├── hyper v1.11.1
+│   │   ├── atomic-waker v1.1.2
+  ... (full tree truncated for readability; counts below)
+exit=0
+OK: found ' axum v'
+OK: found ' tokio v'
+OK: found ' hyper v'
+OK: found ' tower v'
+OK: found 'axum v0.8.9'
+OK: found 'tokio v1.53.1'
+distinct packages in the NON-DEV tree with the feature on: 51
+the feature's own non-dev dependency cost: 50 packages
+
+== 3. the feature's own dependency cost (unique packages, cargo metadata) ==
+cargo metadata packages, feature off: 4
+cargo metadata packages, feature on : 55
+NOTE: cargo metadata resolves dev-dependencies too, so these are not the
+      cargo-tree -e normal numbers; the comparable figure is the delta.
+
+== 4. non-dev resolved tree: highest declared rust-version (gate 2, resolved tree) ==
+once_cell 1.21.4  rust-version=1.65  license=MIT OR Apache-2.0
+tracing 0.1.44  rust-version=1.65.0  license=MIT
+tracing-core 0.1.36  rust-version=1.65.0  license=MIT
+itoa 1.0.18  rust-version=1.68  license=MIT OR Apache-2.0
+socket2 0.6.5  rust-version=1.70  license=MIT OR Apache-2.0
+futures-channel 0.3.34  rust-version=1.71  license=MIT OR Apache-2.0
+futures-task 0.3.34  rust-version=1.71  license=MIT OR Apache-2.0
+futures-util 0.3.34  rust-version=1.71  license=MIT OR Apache-2.0
+mio 1.2.3  rust-version=1.71  license=MIT
+proc-macro2 1.0.107  rust-version=1.71  license=MIT OR Apache-2.0
+quote 1.0.47  rust-version=1.71  license=MIT OR Apache-2.0
+ryu 1.0.23  rust-version=1.71  license=Apache-2.0 OR BSL-1.0
+serde_derive 1.0.229  rust-version=1.71  license=MIT OR Apache-2.0
+serde_json 1.0.151  rust-version=1.71  license=MIT OR Apache-2.0
+syn 3.0.5  rust-version=1.71  license=MIT OR Apache-2.0
+tokio 1.53.1  rust-version=1.71  license=MIT
+tokio-macros 2.7.2  rust-version=1.71  license=MIT
+unicode-ident 1.0.24  rust-version=1.71  license=(MIT OR Apache-2.0) AND Unicode-3.0
+windows-link 0.2.1  rust-version=1.71  license=MIT OR Apache-2.0
+windows-sys 0.61.2  rust-version=1.71  license=MIT OR Apache-2.0
+zmij 1.0.23  rust-version=1.71  license=MIT
+log 0.4.34  rust-version=1.71.0  license=MIT OR Apache-2.0
+axum-core 0.5.6  rust-version=1.78  license=MIT
+axum 0.8.9  rust-version=1.80  license=MIT
+r69_feature_shape 0.0.0  rust-version=1.96  license=none
+(the probe package's own rust-version, 1.96, IS the floor and is excluded)
+highest declared rust-version among the DEPENDENCIES: 1.80
+OK: found 'axum 0.8.9  rust-version=1.80'
+dependencies declaring no rust-version at all: 9
+OK: 1.80 is inside the 1.96 floor
+control: a floor this tree does NOT satisfy must be reported as a failure
+OK: the same test rejects a 1.70 floor, so it can fail
+
+== 5. does tower arrive transitively through axum? (settles dev-dep vs gated runtime dep) ==
+tower v0.5.3
+└── axum v0.8.9
+    └── r69_feature_shape v0.0.0 (/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/feature-shape)
+OK: found 'axum v0.8.9'
+-> tower is already in the non-dev tree via axum; a DIRECT tower entry is
+   needed only to bring tower::ServiceExt into scope in tests, so it belongs
+   under [dev-dependencies], not inside the web feature.
+
+== 6. the serve binary target is gated by required-features (cargo metadata) ==
+{"name":"r69_feature_shape","kind":["lib"],"rf":null}
+{"name":"probe-serve","kind":["bin"],"rf":["web"]}
+OK: found '"name":"probe-serve"'
+OK: found '"rf":["web"]'
+OK: found '"name":"r69_feature_shape","kind":["lib"],"rf":null'
+
+== 7. behavioral confirmation: with no features, no serve binary is produced ==
+build exit=0
+OK: target/debug/probe-serve: No such file or directory
+
+== 8. advisories against the resolved lockfile (cargo audit) ==
+cargo-audit-audit 0.22.1
+    Fetching advisory database from `https://github.com/RustSec/advisory-db.git`
+      Loaded 1243 security advisories (from /private/tmp/r69-cargo-home.Gh2ILa/advisory-db)
+    Updating crates.io index
+    Scanning Cargo.lock for vulnerabilities (55 crate dependencies)
+cargo-audit exit=0
+
+== 9. second probe, base = R01's published crate members (serde + serde_json) ==
+Why: the opus raw reports base=13 / --features web=52 non-dev packages.
+An empty base cannot reproduce that, so this probe carries R01's members.
+feature OFF = 12 non-dev packages; feature ON = 52; delta = 40
+OK: the feature-on tree is 52 packages, matching the opus report exactly
+NOTE: base is 12 here vs the opus report's 13; that probe carried one further
+      base dependency this one does not. The delta is 40 here, 39 there.
+
+feature-shape-check rc=0
+
+recorded-diff: one absolute advisory-db path only; semantic results and exit code match.

@@ -1,0 +1,83 @@
+toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew) / cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+host: Darwin arm64
+
+==================================================================
+case: positive   expect: expect-pass
+------------------------------------------------------------------
+
+exit=0
+OK: built clean, no diagnostics
+==================================================================
+case: neg-by-value   expect: expect-fail
+------------------------------------------------------------------
+error[E0277]: the trait bound `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>: Clone` is not satisfied
+  --> src/main.rs:23:31
+   |
+23 |     assert_axum_state_bound::<ErasedProjectsService>();
+   |                               ^^^^^^^^^^^^^^^^^^^^^ the trait `Clone` is not implemented for `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>`
+   |
+note: required by a bound in `assert_axum_state_bound`
+  --> src/main.rs:18:35
+   |
+18 | pub fn assert_axum_state_bound<S: Clone + Send + Sync + 'static>() {}
+   |                                   ^^^^^ required by this bound in `assert_axum_state_bound`
+help: consider annotating `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>` with `#[derive(Clone)]`
+   |
+ 9 + #[derive(Clone)]
+10 | pub struct ProjectsService<P: ProjectsPort> { _port: P }
+   |
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `r69_state_bound_neg_by_value` (bin "r69_state_bound_neg_by_value") due to 1 previous error
+exit=101
+OK: failed to compile, and the diagnostic contains: the trait `Clone` is not implemented for `ProjectsService<Arc<(dyn ProjectsPort
+==================================================================
+case: neg-no-supertraits   expect: expect-fail
+------------------------------------------------------------------
+error[E0277]: `(dyn ProjectsPort + 'static)` cannot be shared between threads safely
+  --> src/main.rs:14:31
+   |
+14 |     assert_axum_state_bound::<std::sync::Arc<ErasedProjectsService>>();
+   |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `(dyn ProjectsPort + 'static)` cannot be shared between threads safely
+   |
+   = help: the trait `Sync` is not implemented for `(dyn ProjectsPort + 'static)`
+   = note: required for `Arc<(dyn ProjectsPort + 'static)>` to implement `Sync`
+note: required because it appears within the type `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>`
+  --> src/main.rs:7:12
+   |
+ 7 | pub struct ProjectsService<P: ProjectsPort> { _port: P }
+   |            ^^^^^^^^^^^^^^^
+   = note: required for `Arc<ProjectsService<Arc<(dyn ProjectsPort + 'static)>>>` to implement `Send`
+note: required by a bound in `assert_axum_state_bound`
+  --> src/main.rs:11:43
+   |
+11 | pub fn assert_axum_state_bound<S: Clone + Send + Sync + 'static>() {}
+   |                                           ^^^^ required by this bound in `assert_axum_state_bound`
+
+error[E0277]: `(dyn ProjectsPort + 'static)` cannot be sent between threads safely
+  --> src/main.rs:14:31
+   |
+14 |     assert_axum_state_bound::<std::sync::Arc<ErasedProjectsService>>();
+   |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ `(dyn ProjectsPort + 'static)` cannot be sent between threads safely
+   |
+   = help: the trait `Send` is not implemented for `(dyn ProjectsPort + 'static)`
+   = note: required for `Arc<(dyn ProjectsPort + 'static)>` to implement `Sync`
+note: required because it appears within the type `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>`
+  --> src/main.rs:7:12
+   |
+ 7 | pub struct ProjectsService<P: ProjectsPort> { _port: P }
+   |            ^^^^^^^^^^^^^^^
+   = note: required for `Arc<ProjectsService<Arc<(dyn ProjectsPort + 'static)>>>` to implement `Send`
+note: required by a bound in `assert_axum_state_bound`
+  --> src/main.rs:11:43
+   |
+11 | pub fn assert_axum_state_bound<S: Clone + Send + Sync + 'static>() {}
+   |                                           ^^^^ required by this bound in `assert_axum_state_bound`
+
+For more information about this error, try `rustc --explain E0277`.
+error: could not compile `r69_state_bound_neg_no_supertraits` (bin "r69_state_bound_neg_no_supertraits") due to 2 previous errors
+exit=101
+OK: failed to compile, and the diagnostic contains: the trait `Sync` is not implemented for `(dyn ProjectsPort
+
+state-bound-check rc=0
+exit=0

@@ -71,7 +71,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R66 | output-format-surface | bundle | different | DIVERGENT | — | [prompt](topics/66-output-format-surface/prompts/output-format-surface.prompt.md) | resolved |
 | R67 | error-and-exit-code-contract | bundle | different | DIVERGENT | error-taxonomy-exit-codes | [prompt](topics/67-error-and-exit-code-contract/prompts/error-and-exit-code-contract.prompt.md) | resolved |
 | R68 | release-binary-artifacts | crate | different | DIVERGENT | — | [prompt](topics/68-release-binary-artifacts/prompts/release-binary-artifacts.prompt.md) | open |
-| R69 | web-framework-stack | bundle | py-only | DIVERGENT | web-extra-surface | [prompt](topics/69-web-framework-stack/prompts/web-framework-stack.prompt.md) | open |
+| R69 | web-framework-stack | bundle | py-only | DIVERGENT | web-extra-surface | [prompt](topics/69-web-framework-stack/prompts/web-framework-stack.prompt.md) | resolved |
 | R70 | http-problem-envelope | bundle | py-only | DIVERGENT | — | [prompt](topics/70-http-problem-envelope/prompts/http-problem-envelope.prompt.md) | open |
 | R71 | openapi-generation-pipeline | bundle | py-only | DIVERGENT | — | [prompt](topics/71-openapi-generation-pipeline/prompts/openapi-generation-pipeline.prompt.md) | open |
 | R72 | api-pagination | bundle | py-only | DIVERGENT | — | [prompt](topics/72-api-pagination/prompts/api-pagination.prompt.md) | open |

@@ -1,0 +1,92 @@
+R69 revision 6 — owner-reference primary-source check
+grep binary: /usr/bin/grep (the POSIX grep, invoked by absolute path; never a shell alias, never ugrep)
+jq binary: /opt/homebrew/bin/jq
+snapshot dir: <run>/review/evidence/snapshots/r6 (committed; written by fetch-owner-reference-r6.sh)
+snapshots retrieved at: 2026-09-16T22:12:37Z
+network: NOT used by this script; every assertion reads a committed snapshot
+OK   snapshot crates-axum-versions.json                       present
+OK   snapshot crates-axum-test.json                           present
+OK   snapshot gh-axum-issue-3809.json                         present
+OK   snapshot gh-axum-issue-3003.json                         present
+OK   snapshot gh-axum-pr-3745.json                            present
+OK   snapshot gh-axum-pr-3819.json                            present
+OK   snapshot gcp-cloudrun-container-contract.txt             present
+OK   snapshot cargo-specifying-dependencies.txt               present
+
+== A. axum's published releases (document TL;DR and Key Finding 1; row 1) ==
+OK   axum newest non-yanked num                               0.8.9
+OK   axum newest non-yanked yanked flag                       false
+FAIL axum registry max_version                                expected=0.8.9 actual=0.8.8
+OK   axum registry max_stable_version                         0.8.9
+OK   axum registry newest_version                             0.8.9
+OK   axum published versions >= 0.9                           0
+OK   axum published version count                             94
+OK   axum newest non-yanked rust_version                      1.80
+note: the decision's recommended pin 0.8.9 and its gate-2 figure 1.80 are unchanged by this check.
+
+== B. Cargo's default version-requirement rule (row 1: caret vs an = pin) ==
+OK   cargo book: 0.2.3 := >=0.2.3, <0.3.0                     present
+OK   cargo book: caret is the default strategy                present
+OK   cargo book: bare version == caret                        present
+OK   cargo book: HTTP 200                                     present
+consequence: a bare "0.8.9" is >=0.8.9, <0.9.0 and already cannot resolve to 0.9.
+
+== C. the axum-0.9 state as tokio-rs/axum records it (row 1) ==
+OK   axum#3809 state                                          closed
+OK   axum#3809 is a pull request                              false
+OK   axum#3809 comment count                                  1
+OK   axum#3809 commenter                                      mladedav
+OK   axum#3809 commenter association                          COLLABORATOR
+OK   axum#3809 the no-timeline sentence                       present
+OK   axum#3809 its qualifier                                  present
+OK   axum#3745 state                                          closed
+OK   axum#3745 merged                                         false
+OK   axum#3745 merged_at                                      null
+OK   axum#3745 proposed bump                                  0.8.9 -> 0.9.0
+OK   axum#3745 breaks fn serve                                present
+OK   axum#3745 breaks trait Serve                             present
+OK   axum#3745 breaks WithGracefulShutdown                    present
+OK   axum#3819 state                                          open
+OK   axum#3819 milestone                                      0.9
+OK   axum#3819 moves axum::serve                              present
+consequence: the unreleased 0.9 line's recorded breaking changes land on axum::serve and
+             WithGracefulShutdown - the exact API this item's F338 mechanism uses.
+
+== D. axum-test, the document's C12 pick (row 5) ==
+OK   axum-test newest non-yanked (this item's field rule)     22.0.0-rc.1
+OK   axum-test newest STABLE version                          21.1.0
+OK   axum-test registry max_stable_version                    21.1.0
+OK   axum-test 18.0.0 requires axum                           ^0.8.4
+OK   axum-test 18.3.0 requires axum                           ^0.8.7
+OK   axum-test 18.7.0 requires axum                           ^0.8.8
+OK   axum-test 21.1.0 requires axum                           ^0.8.9
+OK   axum-test 21.1.0 declared rust-version                   1.89
+consequence: the document's 'axum-test 18 (requires axum >= 0.8.7)' is true only from
+             18.3.0 onward - 18.0.0 declares ^0.8.4 - and the 18 line is three majors
+             behind the registry's current 21.1.0, which declares ^0.8.9.
+
+== E. Google's Cloud Run container runtime contract (row 4) ==
+OK   cloud run: HTTP 200                                      present
+OK   cloud run: effective URL                                 present
+OK   cloud run: SERVICES 10-second sentence, verbatim         present
+OK   cloud run: JOBS sentence, which is NOT the services one  present
+consequence: on Cloud Run a drain deadline must be strictly under 10 s measured FROM THE
+             SIGTERM, which is a datum for R77's default and is meaningful only under this
+             item's clock-starts-at-the-signal rule.
+
+== F. axum issue #3003, the WebSocket graceful-shutdown hazard (row 4) ==
+OK   axum#3003 state                                          open
+OK   axum#3003 is a pull request                              false
+OK   axum#3003 reported against version                       axum 0.7.4
+OK   axum#3003 title                                          present
+OK   axum#3003 the claim the document cites                   present
+consequence: the hazard is real and unfixed; it belongs to a later WebSocket layer, for
+             which this programme has no P02 item. Nothing in this decision changes.
+
+== G. control — the same absence test applied to a string that IS present ==
+OK   control (expected to report a present string)            control correctly reports 0.8.9 present (1 hit)
+reading: section A asserts the >= 0.9 set is empty. This control applies the same
+         membership test to 0.8.9, which the same snapshot field does contain, so the
+         emptiness assertion above is capable of failing.
+
+owner-reference-check-r6 rc=1

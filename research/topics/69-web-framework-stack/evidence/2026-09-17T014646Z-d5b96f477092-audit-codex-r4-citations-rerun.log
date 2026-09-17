@@ -1,0 +1,138 @@
+successful citation spot checks, live endpoints retrieved 2026-09-15
+
+[1 GitHub axum repository]
+archived=false pushed_at=2026-09-15T07:20:31Z stars=27145
+
+[2 axum 0.8.9 CI workflow]
+16:    runs-on: ubuntu-24.04
+
+[3 tokio 1.53.1 CI workflow]
+47:    runs-on: ubuntu-latest
+64:          - ubuntu-latest
+65:          - macos-latest
+
+[4 bacon 3.25.0 CI workflow]
+15:    runs-on: ubuntu-latest
+26:    runs-on: ubuntu-latest
+
+[5 Cargo feature documentation]
+Features
+
+[6 cargo-watch v8.5.3 README]
+
+[7 cargo-audit source tag]
+113-        }
+114-
+115:        let registry_index = if config.yanked.enabled {
+116-            if config.yanked.update_index && config.database.fetch {
+117-                if !config.output.is_quiet() {
+--
+119-                }
+120-
+121:                let mut result = registry::CachedIndex::fetch(Duration::from_secs(0));
+122-
+123-                // If the directory is locked, print a message and wait for it to become unlocked.
+--
+130-                            DEFAULT_LOCK_TIMEOUT.as_secs()
+131-                        );
+132:                        result = registry::CachedIndex::fetch(DEFAULT_LOCK_TIMEOUT);
+133-                    }
+134-                }
+--
+145-                }
+146-            } else {
+147:                let mut result = registry::CachedIndex::open(Duration::from_secs(0));
+148-
+149-                // If the directory is locked, print a message and wait for it to become unlocked.
+--
+156-                            DEFAULT_LOCK_TIMEOUT.as_secs()
+157-                        );
+158:                        result = registry::CachedIndex::open(DEFAULT_LOCK_TIMEOUT)
+159-                    }
+160-                }
+
+[cargo-audit branch completion]
+        let registry_index = if config.yanked.enabled {
+            if config.yanked.update_index && config.database.fetch {
+                if !config.output.is_quiet() {
+                    status_ok!("Updating", "crates.io index");
+                }
+
+                let mut result = registry::CachedIndex::fetch(Duration::from_secs(0));
+
+                // If the directory is locked, print a message and wait for it to become unlocked.
+                // If we don't print the message, `cargo audit` would just hang with no explanation.
+                if let Err(e) = &result {
+                    if e.kind() == ErrorKind::LockTimeout {
+                        status_warn!(
+                            "directory {} is locked, waiting for up to {} seconds for it to become available",
+                            advisory_db_path.display(),
+                            DEFAULT_LOCK_TIMEOUT.as_secs()
+                        );
+                        result = registry::CachedIndex::fetch(DEFAULT_LOCK_TIMEOUT);
+                    }
+                }
+
+                match result {
+                    Ok(index) => Some(index),
+                    Err(err) => {
+                        if !config.output.is_quiet() {
+                            status_warn!("couldn't update crates.io index: {}", err);
+                        }
+
+                        None
+                    }
+                }
+            } else {
+                let mut result = registry::CachedIndex::open(Duration::from_secs(0));
+
+                // If the directory is locked, print a message and wait for it to become unlocked.
+                // If we don't print the message, `cargo audit` would just hang with no explanation.
+                if let Err(e) = &result {
+                    if e.kind() == ErrorKind::LockTimeout {
+                        status_warn!(
+                            "directory {} is locked, waiting for up to {} seconds for it to become available",
+                            advisory_db_path.display(),
+                            DEFAULT_LOCK_TIMEOUT.as_secs()
+                        );
+                        result = registry::CachedIndex::open(DEFAULT_LOCK_TIMEOUT)
+                    }
+                }
+
+                match result {
+                    Ok(index) => Some(index),
+                    Err(err) => {
+                        if !config.output.is_quiet() {
+                            status_warn!("couldn't open crates.io index: {}", err);
+                        }
+
+                        None
+                    }
+                }
+            }
+
+[cargo-audit CARGO_HOME configuration resolution]
+21-///
+22-/// This file allows setting some default auditing options.
+23:pub const CONFIG_FILE: &str = "audit.toml";
+24-
+25-/// `cargo audit` subcommands (presently only `audit`)
+--
+52-impl Configurable<AuditConfig> for CargoAuditCommand {
+53-    /// Location of `audit.toml` (if it exists)
+54:    fn config_path(&self) -> Option<PathBuf> {
+55-        // Check if the config file exists, and if it does not, ignore it.
+56-        //
+--
+59-        // 2. The current user's home directory configuration.
+60-
+61:        let project_config_filename = PathBuf::from("./.cargo").join(CONFIG_FILE);
+62-        if project_config_filename.exists() {
+63-            return Some(project_config_filename);
+64-        }
+65-
+66:        let home_config_filename = home::cargo_home()
+67-            .ok()
+68:            .map(|cargo_home| cargo_home.join(CONFIG_FILE))?;
+69-
+70-        if home_config_filename.exists() {
