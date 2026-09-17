@@ -1,0 +1,21 @@
+decision sha256:
+32b4a3904630f63a964baf5dc5904a0b156a578f180ae37b083a9291f7a69a83  review/DECISION.md
+revision-12 diff scope:
+10	2	research/runs/R17/2026-09-05T163018Z-d7ade3a111f8/review/DECISION.md
+M	research/runs/R17/2026-09-05T163018Z-d7ade3a111f8/review/DECISION.md
+assumes comparison:
+ordinary-shim raw count (binary /usr/bin/grep):
+28
+28
+ordinary-shim normalized count (binary /usr/bin/grep):
+6
+6
+ordinary-archive raw count (binary /usr/bin/grep):
+7
+7
+citation spot checks (binary /usr/bin/curl):
+https://docs.github.com/en/code-security/secret-scanning/introduction/about-secret-scanning HTTP=200 bytes=  578066
+https://raw.githubusercontent.com/trufflesecurity/trufflehog/v3.95.9/action.yml HTTP=200 bytes=    3885
+https://github.com/orgs/community/discussions/25777 HTTP=200 bytes=  347516
+https://github.com/actions/runner/issues/1866 HTTP=200 bytes=  251947
+https://github.com/trufflesecurity/trufflehog/releases HTTP=200 bytes=  597706

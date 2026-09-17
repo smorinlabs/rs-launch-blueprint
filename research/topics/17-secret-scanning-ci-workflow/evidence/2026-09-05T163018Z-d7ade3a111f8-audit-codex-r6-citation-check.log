@@ -1,0 +1,29 @@
+=== 1 TruffleHog action v3.95.9 ===
+c3847cdbebcf469ef336c9b3f32dc6075ed65523e80e661cf404daebd57e5ba9  /private/tmp/r17-citation-check.Pvg1bL/action.yml
+34:  using: "composite"
+71:            echo "::error::BASE and HEAD commits are the same. TruffleHog won't scan anything. Please see documentation (https://github.com/trufflesecurity/trufflehog#octocat-trufflehog-github-action)."
+101:        docker run --rm -v .:/tmp -w /tmp \
+=== 2 Kingfisher v2.2.0 usage ===
+28cbe0cabac3c4f0ad69ed25d882ca33bae3ed699cce1a1d7d2df4634d0a0b84  /private/tmp/r17-citation-check.Pvg1bL/usage.md
+## Exit Codes
+
+| Code | Meaning                       |
+| ---- | ----------------------------- |
+| 0    | No findings                   |
+| 200  | Findings discovered           |
+| 205  | Validated findings discovered |
+64:`--only-valid` is a compatibility alias for `--validation-filter active`. To retain active
+=== 3 GitHub Actions shell documentation pin ===
+49b49c756f8c6f47a91111d5e46363526ff101d4d3095012b9b9df3b4cb733cf  /private/tmp/r17-citation-check.Pvg1bL/shells.md
+4:| Linux / macOS      | unspecified       | The default shell on non-Windows platforms. Note that this runs a different command to when `bash` is specified explicitly. If `bash` is not found in the path, this is treated as `sh`.                                                                                                | `bash -e {0}`                                   |
+5:| All                | `bash`            | The default shell on non-Windows platforms with a fallback to `sh`. When specifying a bash shell on Windows, the bash shell included with Git for Windows is used.                                                                                                                      | `bash --noprofile --norc -eo pipefail {0}`      |
+=== 4 Kingfisher repository metadata ===
+{'archived': False, 'license': {'key': 'apache-2.0', 'name': 'Apache License 2.0', 'spdx_id': 'Apache-2.0', 'url': 'https://api.github.com/licenses/apache-2.0', 'node_id': 'MDc6TGljZW5zZTI='}, 'created_at': '2025-05-08T17:27:15Z'}
+Apache-2.0
+=== 5 GitHub secret-scanning availability ===
+<li><strong>Public repositories</strong>: Secret scanning runs automatically for free.</li>
+enable public monitoring to detect secrets leaked by your enterprise members in public repositories across GitHub. This extends secret scanning beyond the repositories your enterprise owns to follow your members&#x27; a
+epository types:\u003c/p\u003e\n\u003cul\u003e\n\u003cli\u003e\u003cstrong\u003ePublic repositories\u003c/strong\u003e: Secret scanning runs automatically for free.\u003c/li\u003e\n\u003cli\u003e\u003cstrong\u003eOrgani
+enable public monitoring to detect secrets leaked by your enterprise members in public repositories across GitHub. This extends secret scanning beyond the repositories your enterprise owns to follow your members' activi
+element","tagName":"strong","properties":{},"children":[{"type":"text","value":"Public repositories"}]},{"type":"text","value":": Secret scanning runs automatically for free."}]},{"type":"text","value":"\n"},{"type":"el
+enable public monitoring to detect secrets leaked by your enterprise members in public repositories across GitHub. This extends secret scanning beyond the repositories your enterprise owns to follow your members' activi

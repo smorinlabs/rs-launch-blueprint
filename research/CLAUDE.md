@@ -20,7 +20,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R14 | large-file-guard-strategy | bundle | py-only | DIVERGENT | — | [prompt](topics/14-large-file-guard-strategy/prompts/large-file-guard-strategy.prompt.md) | open |
 | R15 | template-drift-receipt-guard | pattern | py-only | DIVERGENT | — | [prompt](topics/15-template-drift-receipt-guard/prompts/template-drift-receipt-guard.prompt.md) | resolved |
 | R16 | codeql-config-customization | pattern | py-only | DIVERGENT | — | [prompt](topics/16-codeql-config-customization/prompts/codeql-config-customization.prompt.md) | resolved |
-| R17 | secret-scanning-ci-workflow | crate | py-only | DIVERGENT | — | [prompt](topics/17-secret-scanning-ci-workflow/prompts/secret-scanning-ci-workflow.prompt.md) | open |
+| R17 | secret-scanning-ci-workflow | crate | py-only | DIVERGENT | — | [prompt](topics/17-secret-scanning-ci-workflow/prompts/secret-scanning-ci-workflow.prompt.md) | resolved |
 | R18 | ai-assisted-review-workflows | bundle | py-only | DIVERGENT | — | [prompt](topics/18-ai-assisted-review-workflows/prompts/ai-assisted-review-workflows.prompt.md) | resolved |
 | R19 | dependabot-config-shape | bundle | different | DIVERGENT | — | [prompt](topics/19-dependabot-config-shape/prompts/dependabot-config-shape.prompt.md) | resolved |
 | R20 | third-party-action-pinning-policy | pattern | different | DIVERGENT | — | [prompt](topics/20-third-party-action-pinning-policy/prompts/third-party-action-pinning-policy.prompt.md) | resolved |
