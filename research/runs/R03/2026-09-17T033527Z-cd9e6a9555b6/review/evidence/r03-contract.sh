@@ -78,6 +78,15 @@ param_value() {
   ' "$1"
 }
 
+# A partial extraction (the run directory alone) has no docs/ or research/topics/
+# tree to read. Say so by name once, rather than failing every assertion.
+if [ ! -f "$REGISTRY" ] || [ ! -f "$R67" ]; then
+  skip 'every repository-file check' \
+    'this extraction contains the run directory only; docs/port/ and research/topics/ are absent. Extract the whole tree (git archive HEAD) and rerun.'
+  printf '\n========== RESULT ==========\nSKIPPED (partial extraction)\n'
+  exit 0
+fi
+
 section '1. The five `- assumes` values, byte-for-byte against the registry'
 
 # The validator reads everything after `= ` and compares it with the registry
