@@ -28,7 +28,10 @@ Status as of 2026-09-10. Fourteen items are published. The programme is
 Decisions 4 through 9 block no research. They can be answered at any time. Only
 1, 2 and 3 change what happens next.
 
-## 1. The Wave 0 review gate
+## 1. The Wave 0 review gate -- SATISFIED 2026-09-16
+
+**Status (2026-09-16).** The review this gate waited on is complete: every Wave 0 item is accepted at a named sha (section 10, W0-R01 through W0-R69b; `docs/port/OWNER-ACCEPTANCES.md`). Wave 1 admission proceeds under the schedule; paid Doxa for the Deep tier remains a separate authorisation (section 12). The text below is the original ask, kept as history.
+
 
 **What is being asked.** You set a gate: no Wave 1 item is admitted until you
 review the Wave 0 keystones. Wave 0 is close to finishing. The question is what
@@ -335,7 +338,7 @@ the conforming alternative.
 **Response that settles both.** "The CLI standard binds, and OV-01 is waived",
 or either half negated.
 
-## 10. The Wave 0 review walk -- IN PROGRESS from 2026-09-14
+## 10. The Wave 0 review walk -- COMPLETE 2026-09-16 (started 2026-09-14)
 
 One question per item, asked in order, each answered before the next is put.
 Every acceptance binds the recommendation at a `DECISION.md` sha256 and is
