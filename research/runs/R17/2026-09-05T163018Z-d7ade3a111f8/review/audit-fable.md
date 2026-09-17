@@ -85,7 +85,8 @@ not reproduce under its recorded ordinary invocation because its `PY3=$(command 
 accepts the host's failing `mise` shim; neither mutation is applied, so its claimed falsifiability
 evidence depends on an undeclared clean PATH.**" The answering text is lines 53–57 and
 measurements (5), (7), (8) and (9) in `## Empirical check`. `mutations-r9.sh` exports
-`HOME="$WORK/home"` at line 74 — **before** `resolve_tool` is defined or called at lines 78–92 —
+`HOME="$WORK/home"` at line 73 — **before** `tool_ok` and `resolve_tool` are defined (lines 77–90)
+or called (line 91) —
 resolves `python3` by probing each candidate for `print(7*6)` = `42`, exits `2` by name when none
 passes, and prints the interpreter, its `--version` and either `python3 first on PATH was
 BYPASSED: …` or `… was NOT bypassed: …`. I read all four new logs: each ends `mutation-harness
@@ -97,7 +98,7 @@ exactly as line 213 states. The shim-path and auditor-form logs print the `BYPAS
 `/Users/stevemorin/.local/share/mise/shims/python3`. **Closed.**
 
 **The falsifiability claim is itself falsifiable, which is the part worth saying.** The added
-set assertion (`mutations-r9.sh:170–184`) collects the mutant's FAILing labels and compares them
+set assertion (`mutations-r9.sh:167–181`) collects the mutant's FAILing labels and compares them
 **as a set** with the targets, and `mutate_and_run`'s mutator exits when a target string does not
 match exactly once, so a mutation that silently failed to apply is a harness failure rather than a
 pass. Revision 9's claim at line 59 that this is new relative to revision 8 is accurate.
