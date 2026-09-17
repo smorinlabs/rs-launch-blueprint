@@ -1,34 +1,25 @@
-decision-sha256: a4ce36e4868ff1c6a7d5c345135ba14bdbf77530f856688e1a0592247710323e
-actor: audit-codex-2026-09-05T163018Z-d7ade3a111f8-r10
+decision-sha256: 6a26da1a9ef708d28c922c3fb8530e58649f4d2f5699fb1ba10800f8bb28df49
+actor: audit-codex-2026-09-05T163018Z-d7ade3a111f8-r11
 model: gpt-5.6-terra
 family: openai
-verdict: reject
-unresolved-findings: F1: mutations-r9.sh did not reproduce under the required no-credential scratch-HOME invocation; both mutants had unrelated failed assertions, so neither proved that only its targeted assertions failed
+verdict: approve
+unresolved-findings: none
 
 ## Rerun
 
-Working directory: `research/runs/R17/2026-09-05T163018Z-d7ade3a111f8`. I invoked each recorded harness in place with `HOME` set to a fresh `/private/tmp` directory; `GH_TOKEN`, `GITHUB_TOKEN`, `R17_GH_TOKEN`, and `GH_BIN` unset; and the declared pinned `PY_REPO` and `TS_REPO` inputs supplied. The harnesses themselves resolved their toolchains under their own empty scratch homes; the complete resolved-tool output is in the log.
+I ran `mutations-r11.sh` four times against the available pinned sibling repositories: ordinary ambient `PATH` and the required no-credential, scratch-`HOME`, mise-first form; each from this run directory and from a clean `git archive HEAD` extraction. The no-credential runs unset `GH_TOKEN`, `GITHUB_TOKEN`, `R17_GH_TOKEN`, and `GH_BIN`. All four exited `0`; their complete outputs are `review/evidence/audit-codex-r11-worktree-ordinary.log`, `review/evidence/audit-codex-r11-worktree-noauth.log`, `review/evidence/audit-codex-r11-archive-ordinary.log`, and `review/evidence/audit-codex-r11-archive-noauth.log`. Each ends `mutation-harness failures: 0` and the specified passing result.
 
-- `bash review/empirical/run-checks-r8.sh` exited `0`: `PASS=68 FAIL=0 SKIP=2`. Its output does not byte-match the recorded run, as the decision correctly allows changing live counters and timestamps; all assertions, including section 13, passed.
-- `bash review/empirical/mutations-r9.sh` exited `1`: `mutation-harness failures: 2`. Its output does not match the claimed target-only mutation results.
-- Complete output: `review/evidence/audit-secret-scanning-ci-workflow-r10.log` (sha256 `97e363d6127e3e2463d3c69be98cdc6e0e12bbafcda8f8bab824f1ffc30cd671`).
+The two mutants exit `1` as required. Mutation 1 has only `08h`, `08i`, and `08j` in its observed failing set; mutation 2 has only `08e`. Every rerun prints the matching `MUTATION CHECK failing-set` result. The no-token runs name `04g`, `04h`, and `13q` as skips; archive runs also name the no-`.git` `13q` skip. The live anonymous core reading was `60 20` before and after each of my reruns. That differs from the recorded historical `60 0`, but satisfies the decision's stated rerun rule: equality within the run, rather than a mutable remaining-budget value.
 
-I also used `/usr/bin/grep` to confirm the revision-10 source facts: the cited repository log has `27,960`, `1,233`, and `2026-09-16T22:25:39Z` at lines 240–242, and Rust `1.98.1 (48a229cea 2026-09-01)` at `2026-09-16T22:25:41Z` at lines 261–262. `27941` occurs zero times in all six revision-8 and four revision-9 recorded logs. Exactly five revision-8 run-check logs contain `UTC now:`; the mutation logs contain none. The three harness digests, all ten recorded-log digests, the four `assumes` values, and all section-13 anchors matched. `git diff --check c5098e6~1 c5098e6 -- review/DECISION.md` passed and the commit changes only `review/DECISION.md` (14 insertions, 6 deletions).
-
-Five cited endpoints were probed with `curl`. The Rust channel manifest returned HTTP 200. The four GitHub API endpoints returned HTTP 403 after the no-token rerun consumed the remaining anonymous request budget; no contrary source content was obtained from those four probes.
+Toolchain: `/usr/bin/grep`, `/usr/bin/curl`, Bash, Python 3.14.7, and the pinned local py and ts Git repositories. Five cited primary-source URLs returned HTTP 200 through `/usr/bin/curl`; full command output and verification evidence are in `review/evidence/audit-codex-r11-verification.log`.
 
 ## Findings
 
-### F1 — The recorded no-credential mutation check is not reproducible under the required invocation
-
-The decision records `mutations-r9.sh` as a passing, target-only falsifiability check, including its no-token auditor-form measurement. My required no-credential rerun instead exited `1`.
-
-Mutation 1 correctly failed `08h`, `08i`, and `08j`, but it also failed `11c-gitleaks-action-license-not-osi`. Mutation 2 correctly failed `08e`, but it additionally failed `03a`, `03b`, `10a`–`10d`, and `11c`. The harness therefore printed `MUTATION CHECK failing-set: the mutant FAILED a different set than the mutation targets` twice, then `mutation-harness failures: 2`. See `review/evidence/audit-secret-scanning-ci-workflow-r10.log:351-391`.
-
-The parent check began on the anonymous API branch with only 8 of 60 GitHub core requests remaining. The later direct GitHub API citation probes returned HTTP 403 for rate limiting. This supports, but is not needed for, the observed failure: the mutation harness reruns a live-network check twice and treats unrelated API-dependent assertions as part of the target-only proof.
-
-Before approval, revise the evidence claim and its check so the mutation proof does not depend on a depletable anonymous live API budget. A declared credential with a recorded sufficient budget, or fixed local responses for the non-mutated API assertions, would allow the required target-only result to be rerun and diffed.
+- `run-checks-r8.sh` has exactly the stated request sites: one of its two `/rate_limit` branches at lines 218/221 and four `api_fetch` calls at lines 353, 842, 843, and 884. Section 08 has zero API request lines. The mutation proof therefore still executes its target section live.
+- The installed shim boundary is effective: an unrecorded GitHub API path exits 22 with an empty body and `no recorded fixture`; a non-GitHub Rust-host request passes through to the real curl. All four rerun logs contain zero `no recorded fixture` and zero `mise ERROR` occurrences.
+- The fixture sweep found no credential-shaped value. The lexical word `token` occurs only in manifest prose and public JSON field names, including empty `temp_clone_token` fields; it is not a credential value. The committed revision-11 mutation logs contain zero `stargazers_count` fixture-counter fields.
+- The unchanged digests match: `mutations-r9.sh` `774eb8d4cdb1693a5168196c8082d5af0d04b3e72b2f72970b96125ce06ecb61`, `mutations-r8.sh` `0663adc43b52b35a88008865944604306850ecadfce9ba9899b4a628cd088fcb`, and `run-checks-r8.sh` `697ea3b1d47e0284e494a6c7279e994370ba0ad0ddca168cdb8b4a78a0a540bd`. `git diff f7367c6^ f7367c6 -- review/evidence` reports no changed r8/r9 log. The four `- assumes` lines equal the corresponding `docs/port/PARAMETERS.md` values.
 
 ## Assessment
 
-The three revision-10 prose corrections themselves are supported by their cited revision-8 log lines, and the scope/integrity checks passed. The decision nevertheless claims a mutation-evidence result that this required no-credential rerun did not reproduce. F1 is therefore unresolved and requires a decision/evidence repair before acceptance.
+Revision 11 repairs round-10 F1/JF-7: the target-only falsifiability check no longer depends on the anonymous GitHub API budget. JF-8's section-00 explanation correctly names both `run-checks-r7.sh` and `run-checks-r8.sh`. The decision accurately limits the fixture boundary and does not treat the fixture-fed, non-target labels as proof for section 08.
