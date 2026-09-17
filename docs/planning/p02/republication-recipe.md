@@ -74,3 +74,9 @@ Further corrections, binding for the remaining items:
 - identities.json may already name the current round (R18): copy, then verify each actor against the audit headers; edit only what differs.
 - check_history splits at the FIRST SUBSTRING `## Supersedes` (a backticked prose mention counts) and needs a date-first `# YYYY-MM-DD …` or `### YYYY-MM-DD …` heading before it. Use the date-first H1 title form (as R38) for every revision of a published decision; a retitle is a revision (both audits re-run).
 - Republishing an item stales every prepared-but-unpublished run that snapshotted it (R01 → R69): give that run a carried-forward run at its own publication.
+
+## Amendments from the R69 carried-forward run (2026-09-17)
+
+- Carry the source run's `review/.gitignore` (some runs ignore large or copyleft `evidence/sources/` trees); without it `git add` of the new run dir sweeps them in.
+- Exclude files that are untracked in the source run (e.g. stray `.diff`); carry only tracked bytes.
+- The staged validation checks every staged raw report against the item's answer template (bundle members, H3 order); a derived `.normalized.md` twin with a broken heading structure refuses the publication. Run the validator's answer check on each twin BEFORE prepare (see the scratch checker written for R69).
