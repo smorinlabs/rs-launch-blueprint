@@ -1,5 +1,5 @@
 == environment ==
-date-utc: 2026-09-18T23:06:25Z
+date-utc: 2026-09-18T23:08:27Z
 repository root resolved by walking up from the script path: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
 context: a git worktree (.git is a FILE, which is why the test is -e and not -d)
 grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
@@ -8,7 +8,7 @@ PASS  required input present: research/runs/R79/2026-09-17T034011Z-2e1043da0e00/
 PASS  required input present: research/runs/R79/2026-09-17T034011Z-2e1043da0e00/raw/opus.md
 PASS  required input present: docs/port/PARAMETERS.md
 PASS  required input present: research/CLAUDE.md
-DECISION.md sha256 43923b1e0feb29988b0664a78ee0c6bf7c1f993b64ae78d6532d80ff1c65a2ce
+DECISION.md sha256 9199e68694f36285b06557b03f323e91f94d94ca0e1d405745e3e4d24664f280
 
 == the engine report this decision synthesizes ==
 raw/opus.md sha256 c1d02b81cd0929881f66c7810af782496a84f73a8f45472e86e773a0300145ac
@@ -59,8 +59,8 @@ PASS  the exact gate-1 'inapplicable' string is recorded
     581: **Qualified shortlist.** Five candidates cleared gate 2 and carry no RustSec advisory. Gate 1
     662:   (the Codex account is at its usage limit; the ruling is to proceed without it). This Focused
     682: | crates.io figures for all nine surveyed crates (downloads, newest non-yanked version, `created_at`, `rust_version`, `license`) | `GET https://crates
-    717: 3. **`cargo deny --all-features check bans licenses advisories`** in the real four-package
-    730:    named projects, and that limit is stated rather than filled.
+    718: 3. **`cargo deny --all-features check bans licenses advisories`** in the real four-package
+    731:    named projects, and that limit is stated rather than filled.
 lines carrying a licence subject: 21
 PASS  no line asserts a gate-1 pass verdict anywhere in the decision
 PASS  the fixed 'license' parameter line survives the ruling, as it must
