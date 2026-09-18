@@ -25,12 +25,16 @@ the two crates every axum middleware composes through.
 |---|---|---|
 | **Built-in / first-party toolchain** | `tower-http` `cors` feature (`tower_http::cors::CorsLayer`), maintained in `tower-rs/tower-http` — the same GitHub organisation as `tower` itself, which axum's own `Cargo.toml` and examples depend on | axum ships **no** CORS of its own; the maintainers' own example (`tokio-rs/axum`, `examples/cors/Cargo.toml`, `tower-http = { version = "0.6.1", features = ["cors"] }`, retrieved 2026-09-18) reaches for `tower-http` |
 | **Established industry standard (framework-bound)** | `actix-cors` 0.7.2 (Actix Web), `rocket_cors` 0.6.0 (Rocket), `salvo-cors` 0.96.0 (Salvo), `ntex-cors` 4.0.0 (ntex), `iron-cors` 0.8.0 / `corsware` 0.2.0 (Iron, both legacy), `routerify-cors` 3.0.0 (Routerify), `trillium-cors` 0.1.0 (Trillium) | each is bound to a framework other than the one R69 fixed; none exposes a `tower::Layer` |
-| **Up-and-comer** | `tower-http-cors-config` 0.1.3 (deserializable config types *for* `tower_http::cors`), `axum_cors` 0.1.8, `axum-stack` 0.2.0, `bunner_cors_rs` 0.1.2, `blazingly-middleware` 0.2.2, `corx-core`/`corx-server` 0.2.0 (a CORS *forwarding proxy*, a different problem) | all four-to-five-figure-or-smaller download counts; see `### Up-and-comers` |
+| **Up-and-comer** | `tower-http-cors-config` 0.1.3 (deserializable config types *for* `tower_http::cors`), `hyper-cors` 0.2.0, `axum_cors` 0.1.8, `rok-cors` 0.1.0, `cors-core` 0.1.1, `axum-stack` 0.2.0, `bunner_cors_rs` 0.1.2, `blazingly-middleware` 0.2.2, `lily_middleware` 0.1.0, `corx-core`/`corx-server` 0.2.0 and `corx` 0.2.0 (a CORS *forwarding proxy*, a different problem), `vary-header` 0.1.0 (a `Vary`-header helper, not CORS) | all four-to-five-figure-or-smaller download counts, most of them two-figure; see `### Up-and-comers` |
 
 Enumeration method, so the map is not recall: `GET https://crates.io/api/v1/crates?q=cors&per_page=40`
-(1,452 matches, first 40 read) and `GET https://crates.io/api/v1/crates?keyword=cors&per_page=30&sort=downloads`
-(36 crates carry the `cors` keyword, all 30 read), both retrieved 2026-09-18 with a
-`User-Agent` header. `tower-http` does not appear in either list because its name does
+(1,452 name matches, the first 40 read) and
+`GET https://crates.io/api/v1/crates?keyword=cors&per_page=30&sort=downloads` plus its
+`&page=2` (36 crates carry the `cors` keyword; **all 36 read** across the two pages), all
+retrieved 2026-09-18 with a `User-Agent` header. The six on page 2 are the download tail —
+`hyper-cors` 0.2.0 (37 all-time), `cors-core` 0.1.1 (33), `vary-header` 0.1.0 (26),
+`corx` 0.2.0 (22), `rok-cors` 0.1.0 (21), `lily_middleware` 0.1.0 (15) — and each is
+dispositioned in `### Excluded by gate` or `### Up-and-comers`; none changes the outcome. `tower-http` does not appear in either list because its name does
 not contain "cors" and it does not carry the keyword; it was reached from the axum side
 (axum's own example) and confirmed by `GET https://crates.io/api/v1/crates/tower-http`.
 
@@ -200,7 +204,10 @@ item touches:
 | The recommended layer order placing `CorsLayer` between `CatchPanicLayer` and `NormalizePathLayer` (line 114) | **Differ on the *unconditional* framing; position itself is R75's, not this item's** | The reference lists `CorsLayer` as an always-present member of the stack. This item installs it only when the allowlist is non-empty, on the ground measured in check `Q3`: an always-installed layer changes `OPTIONS` from `405` to `200` and adds `vary: origin` to every response even with nothing allowed, which contradicts `F322`'s recorded intent. Where in the order it sits **when present** is R75's (`F317`) and is not decided here; py places request-id and security headers outermost precisely so preflight short-circuits still carry them (`py: src/py_launch_blueprint/web/app.py:126-129`, `py: docs/adr/0013-web-service-best-practices.md:48-50`), which is a fact R75 should consume |
 | Variant B's "serve the SPA from the same Cloud Run service … no CORS" (lines 49, 87, 421) | **Agree in principle; not applicable to R69's surface** | See alternative F above |
 
-Tally: **2 agree, 1 agree-with-a-measured-version-difference, 1 differ, 1 agree-but-not-applicable.**
+Tally over the four rows above: **1 agree** (Level One, line 80) · **1 agree on the feature
+and differ on the version** (line 141, `tower-http` 0.6 versus the measured 0.7.1) ·
+**1 differ** (line 114, the unconditional framing) · **1 agree in principle but not
+applicable to R69's surface** (Variant B same-origin, lines 49/87/421).
 
 **How py's defaults differ from tower-http's**, read from Starlette 1.3.1 — the version
 `py-launch-blueprint` locks at pin `b08bccfb` (`uv.lock:2528-2529`) — at
@@ -219,7 +226,13 @@ retrieved 2026-09-18, against `tower-http-0.7.1/src/cors/`:
 | Disallowed preflight | `400` with a `Disallowed CORS <reasons>` body (`cors.py:143-148`) | `200` with the CORS headers simply absent | a justified difference: both are spec-legal, since the browser enforces the policy; py's is more informative, tower-http's is more minimal. Not worth reimplementing |
 
 The one default worth importing is `max_age = 600 s`; the rest are justified ecosystem
-differences that preserve the principle.
+differences that preserve the principle. **Provenance of the `.max_age` call**, stated
+because the distinction matters: the probe checks below exercised
+`allow_origin`/`allow_methods`/`allow_headers` only, so `.max_age(Duration::from_secs(600))`
+appears in the recommended snippet on the strength of the method's signature in
+`tower-http-0.7.1/src/cors/mod.rs` and of `loco-rs/loco`'s own call to it
+(`src/controller/middleware/cors.rs`, `if let Some(max_age) = self.max_age { cors = cors.max_age(Duration::from_secs(max_age)); }`),
+**not** on an executed check in this run. P03 should compile it.
 
 **Minimal realistic example** (the shape P03 writes, using R69 revision 10's paths):
 
@@ -263,6 +276,10 @@ alternative. The enumeration of all 36 `cors`-keyword crates and the first 40 of
 name matches on crates.io (both retrieved 2026-09-18) produced **no** second crate that
 exposes a `tower::Layer` implementing the Fetch CORS protocol and clears the fitness
 gates; every other serious candidate is bound to a different framework's middleware API.
+The two near-misses are named so the claim is auditable: `hyper-cors` 0.2.0 clears gates 1
+through 5 but implements `hyper::service::Service`, not `tower_layer::Layer`, so
+`Router::layer` cannot take it; `rok-cors` 0.1.0 targets axum but declares no
+`rust-version` and so fails gate 2. Both are detailed in `### Excluded by gate`.
 Its position is corroborated from three independent directions: axum's own maintained
 example depends on it (`tokio-rs/axum`, `examples/cors/Cargo.toml`), the Tokio project's
 own `console-subscriber` and the gRPC organisation's `tonic-web` both activate exactly
@@ -308,17 +325,45 @@ a quiet-but-live triage pattern, not a stalled one: it does not reach the rubric
 
 Each entry names the exact ground. Gate numbers refer to the prompt's fitness gates.
 
-- **`axum_cors` 0.1.8** — *fails gate 2 and gate 1.* `rust_version` is `null`
+- **`axum_cors` 0.1.8** — *fails gate 2; gate 1 unresolved.* `rust_version` is `null`
   (`GET https://crates.io/api/v1/crates/axum_cors/versions`, retrieved 2026-09-18), and
   under the owner's withdrawn-then-corrected reading recorded in
   `docs/planning/p02/owner-decisions.md` ("an unknown version is insufficient to clear a
   bar the prompt says must be cleared") an undeclared MSRV is a **failure**, not merely
-  unproven. Gate 1: its license is `MulanPSL-2.0`, not a member of the permissive set this
-  repository's `MIT OR Apache-2.0` is assembled from, and it would need a licence review no
-  other candidate needs. Corroborating context, not itself a gate: 161 90-day downloads,
-  10,672 all-time, and its declared `repository` is `https://github.com/webc-site/npm.git`
-  — a repository literally named `npm` carrying **0** stars
-  (`GET https://api.github.com/repos/webc-site/npm`, retrieved 2026-09-18).
+  unproven. That alone excludes it. On gate 1 the honest statement is *unresolved, not
+  failed*: its licence is `MulanPSL-2.0`, which is OSI-approved and permissive in substance,
+  but it is not one of the licences this repository's `MIT OR Apache-2.0` offer is assembled
+  from, so it would need a licence review no other candidate needs. Corroborating context,
+  not itself a gate: 161 90-day downloads, 10,672 all-time, and its declared `repository` is
+  `https://github.com/webc-site/npm.git` — a repository literally named `npm` carrying
+  **0** stars (`GET https://api.github.com/repos/webc-site/npm`, retrieved 2026-09-18).
+- **`hyper-cors` 0.2.0** — *excluded on integration, and it is worth being precise because
+  it passes gates 1 through 5.* Licence `BSD-2-Clause` (permissive, compatible);
+  `rust-version = "1.80"`, inside the 1.96 floor; `unsafe_code = "deny"` in
+  `[lints.rust]`; its CI matrix is `os: [ubuntu-latest, macos-latest]`
+  (`.github/workflows/ci.yml:19-20`), covering `target-os-matrix` exactly. It fails on the
+  one thing that matters here: it implements **`hyper::service::Service`**, not
+  `tower_layer::Layer` — its own module docs open "`[Cors]` is a `[hyper::service::Service]`
+  that wraps an inner service" (`src/lib.rs:1-7`) and its manifest carries no `tower`,
+  `tower-layer` or `tower-service` dependency (`Cargo.toml:28-33`). `axum::Router::layer`
+  takes a `tower_layer::Layer`, so this crate cannot be installed by the mechanism this
+  item recommends. Context: released **2026-08-28**, 37 all-time downloads, **0** stars
+  (`GET https://api.github.com/repos/ogital-net/hyper-cors`), and a module layout
+  (`allow_credentials.rs`, `allow_headers.rs`, `allow_methods.rs`, `allow_origin.rs`,
+  `expose_headers.rs`) that mirrors `tower-http`'s `cors` module file for file.
+- **`rok-cors` 0.1.0** ("CORS middleware for Axum") and **`cors-core` 0.1.1** — *both fail
+  gate 2*: `rust_version` is `null` for each
+  (`GET https://crates.io/api/v1/crates/rok-cors/versions`,
+  `GET https://crates.io/api/v1/crates/cors-core/versions`, retrieved 2026-09-18). Context:
+  21 and 33 all-time downloads respectively; `rok-cors` is a component of the `rok`
+  framework (`https://github.com/ateeq1999/axum-rok-http`).
+- **`lily_middleware` 0.1.0** — *fails gate 2 the other way*: it declares
+  `rust-version = "1.96.1"`, which is **above** the `msrv-policy` floor of 1.96 derived
+  from `rustc 1.98.0`. It is also bound to the Lilyrs framework. 15 all-time downloads,
+  first published 2026-09-18.
+- **`vary-header` 0.1.0** and **`corx` 0.2.0** — *excluded on scope, not on a gate.*
+  `vary-header` manipulates the `Vary` header and implements no part of the CORS protocol;
+  `corx` is the front end of the `corx-core`/`corx-server` forwarding proxy described below.
 - **`tower-http-cors-config` 0.1.3** — *fails gate 2.* `rust_version` is `null`
   (`GET https://crates.io/api/v1/crates/tower-http-cors-config/versions`). Also not an
   alternative: it supplies `serde`-deserializable config *types for* `tower_http::cors`,
@@ -414,8 +459,9 @@ Each entry names the exact ground. Gate numbers refer to the prompt's fitness ga
 ### Up-and-comers
 
 Named, with figures, and none recommended. All from
-`GET https://crates.io/api/v1/crates?keyword=cors&per_page=30&sort=downloads` and
-`GET https://crates.io/api/v1/crates?q=cors&per_page=40`, retrieved 2026-09-18.
+`GET https://crates.io/api/v1/crates?keyword=cors&per_page=30&sort=downloads` (and its
+`&page=2`) and `GET https://crates.io/api/v1/crates?q=cors&per_page=40`, retrieved
+2026-09-18.
 
 - **`tower-http-cors-config` 0.1.3** — 1,255 90-day / 5,192 all-time, last release
   2025-09-17, 2 GitHub stars. The most *interesting* of the group, because it addresses the
@@ -423,8 +469,17 @@ Named, with figures, and none recommended. All from
   gate 2 today (no `rust-version`) and is a two-star single-maintainer crate; the twenty
   lines it replaces are not worth a supply-chain edge. **Watch, do not adopt** — if R77's
   settings shape grows beyond a `Vec<HeaderValue>`, revisit it.
+- **`hyper-cors` 0.2.0** — 37 90-day / 37 all-time, first published 2026-08-28, 0 stars.
+  The *best-engineered* newcomer found: declared MSRV, `deny(unsafe_code)`, a two-OS CI
+  matrix, and a module layout mirroring `tower-http`'s. It is nonetheless unusable here
+  because it targets `hyper::service::Service` rather than `tower_layer::Layer` (excluded
+  above). **Watch** only if a future item ever needs a CORS layer below axum, at the raw
+  hyper level — which nothing in this programme does.
 - **`axum_cors` 0.1.8** — 161 / 10,672, released 2026-06-18, `MulanPSL-2.0`, no declared
   MSRV, repository field pointing at a 0-star repository named `npm`. Excluded above.
+- **`rok-cors` 0.1.0** (8 / 21) and **`cors-core` 0.1.1** (33 / 33) — both 2026 first
+  releases with no declared `rust-version`; `rok-cors` is bound to the `rok` framework and
+  `cors-core` is a decision engine with no `tower` integration. Excluded above.
 - **`axum-stack` 0.2.0** — 68 / 68, a grab-bag ("shutdown, CORS, request ID, health
   routes") that would pull one opinionated bundle across four of this programme's
   independent research items (R75, R76, R80). Wrong granularity for a template that is
@@ -432,7 +487,8 @@ Named, with figures, and none recommended. All from
 - **`bunner_cors_rs` 0.1.2** (22 / 842), **`blazingly-middleware` 0.2.2** (216 / 216),
   **`toxi-middleware` 3.1.0** (96 / 96), **`volter-middleware` 0.1.0** (67 / 67),
   **`rok-guard` 0.6.0** (47 / 65), **`churust-cors` 0.3.3** (165 / 165),
-  **`sova-cors` 0.1.1** (62 / 62), **`apollo-cors` 0.3.0** (86 / 98) — each belongs to a
+  **`sova-cors` 0.1.1** (62 / 62), **`apollo-cors` 0.3.0** (86 / 98),
+  **`lily_middleware` 0.1.0** (15 / 15) — each belongs to a
   young framework of its own with two- or three-digit download counts. None is a candidate
   for a template that must still build in three years.
 - **Genuinely new in the incumbent, and worth flagging to R75 rather than to this item:**
@@ -736,8 +792,9 @@ patched since 0.2.1.
 
 **Confidence: high on the crate, high on the mechanism, medium on the version choice.**
 
-High on the crate because the enumeration was exhaustive over crates.io's `cors` keyword
-and the first 40 name matches, three independent well-regarded projects were shown
+High on the crate because the enumeration was exhaustive over crates.io's `cors` keyword —
+all **36** keyword-carrying crates were read across two pages — and covered the 40
+highest-ranked of 1,452 name matches, three independent well-regarded projects were shown
 activating this exact feature by reading their manifest lines, and the framework's own
 maintainers document the idiom in their own example. High on the mechanism because the
 alternative was not argued away but **measured away**: checks `Q1`/`Q2`/`Q3` show that
@@ -824,7 +881,8 @@ consistent with `F322` being a `DIVERGENT` row rather than an inherited baseline
 
 **Registry and forge endpoints** (all retrieved **2026-09-18**, UTC).
 `GET https://crates.io/api/v1/crates?q=cors&per_page=40`;
-`GET https://crates.io/api/v1/crates?keyword=cors&per_page=30&sort=downloads`;
+`GET https://crates.io/api/v1/crates?keyword=cors&per_page=30&sort=downloads` and the same
+query with `&page=2` (together, all 36 keyword-carrying crates);
 `GET https://crates.io/api/v1/crates/tower-http`;
 `GET https://crates.io/api/v1/crates/tower-http/versions`;
 `GET https://crates.io/api/v1/crates/tower-http/reverse_dependencies?per_page=25`;
@@ -832,6 +890,11 @@ consistent with `F322` being a `DIVERGENT` row rather than an inherited baseline
 `GET https://crates.io/api/v1/crates/tower-http-cors-config` and `/versions`;
 `GET https://crates.io/api/v1/crates/actix-cors` and `/versions`;
 `GET https://crates.io/api/v1/crates/loco-rs` and `/versions`;
+`GET https://crates.io/api/v1/crates/{rok-cors,hyper-cors,cors-core,lily_middleware}` and
+their `/versions`;
+`GET https://api.github.com/repos/ogital-net/hyper-cors` and
+`GET https://api.github.com/repos/ogital-net/hyper-cors/contents/.github/workflows`;
+`https://raw.githubusercontent.com/ogital-net/hyper-cors/main/{Cargo.toml,src/lib.rs,.github/workflows/ci.yml}`;
 `GET https://api.github.com/repos/tower-rs/tower-http`;
 `GET https://api.github.com/search/issues?q=repo:tower-rs/tower-http+is:issue+is:open`;
 `GET https://api.github.com/repos/tower-rs/tower-http/issues?state=all&sort=created&direction=desc&per_page=100`;
@@ -889,5 +952,9 @@ one, so a single median would be an invention. Whether `RUSTSEC-2022-0043` is ev
 against 0.7.1 by `cargo audit` was not executed — the advisory's own `patched` range was
 read instead. Windows behaviour was not exercised; `target-os-matrix` does not include it
 and the only Windows-specific code in `tower-http` is in the `fs` feature this item does not
-enable. The Codex research leg for this item is deferred under owner ruling W1-CODEX3, so no
+enable. `.max_age(Duration::from_secs(600))` appears in the recommended snippet but was not
+compiled by any check in this run; its basis is the method signature in the shipped source
+plus loco's own call, as stated beside the defaults table. The name-match enumeration read
+the 40 highest-ranked of 1,452 results, not all 1,452 — the keyword enumeration (all 36) is
+the complete one, and the name search was a cross-check against it. The Codex research leg for this item is deferred under owner ruling W1-CODEX3, so no
 second engine's findings were available to cross-check these figures against.
