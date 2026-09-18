@@ -295,7 +295,10 @@ the org REST API Design Standard v2.0.0 §6, split across `crates/core` and
 Concretely, and this is the whole recommendation:
 
 - **`crates/core`** declares `Limit` (a newtype whose only constructor enforces
-  `1..=100`, with `DEFAULT = 50`), `PageRequest { after: Option<ProjectId>, limit: Limit }`,
+  `1..=100`, with `DEFAULT = 50`), `PageRequest { after: Option<ProjectId>, limit: Limit }`
+  — where **`ProjectId` is shorthand in this report for whatever type R01's
+  `Project::id` field carries; no accepted decision names that type, and the probe
+  used `String`** —
   and `Page<T> { items: Vec<T>, next: Option<ProjectId> }`. `ProjectsService`
   gains `list_projects(&self, req: PageRequest) -> Result<Page<Project>, DomainError>`,
   which applies a keyset seek over the `Vec<Project>` the port returns. **`ProjectsPort`
@@ -1034,7 +1037,7 @@ document contains **no pagination row** — searches for `pagina`, `page_size`,
 | **C11 Middleware suite & security headers** | **Not applicable, stated rather than skipped.** Pagination is not middleware in the recommended design — architecture D would have made it middleware, and is refused. Nothing in C11's layer order changes |
 | **C12 Testing** — axum-test 18 preferred over tower `oneshot` | **Agree with R69, not with the document, and this item does not re-rule.** R69's accepted value selects `tower` 0.5.3 `ServiceExt::oneshot` as the in-process idiom; this run's probe used that idiom so its evidence composes with R69's. Whether axum-test displaces it is R32's and R69's, not R72's |
 
-Tally: **3 agree, 1 differ (with ground), 1 not applicable.**
+Tally: **2 agree (Level One, C3), 1 differ with ground (C4), 1 hand-off to R69/R32 (C12), 1 not applicable (C11).** C12 is counted as a hand-off rather than an agreement because this item follows R69's accepted `oneshot` selection *instead of* the document's `axum-test 18` pick, and does not re-rule the row either way.
 
 ### Migration implications
 
@@ -1072,18 +1075,24 @@ nothing written outside the run directory) declaring `axum = "=0.8.9"`,
 `tower = "=0.5.3"` (dev), `edition = "2024"`, `rust-version = "1.96"`. Commands:
 `cargo build`, then `cargo test -- --nocapture --test-threads=1`, then the same
 under `rustup run 1.96.0`. Result at both toolchains: **5 passed, 0 failed.**
-Verbatim output, which is the evidence for criteria 1–9:
+The complete captured output follows — every line the run printed, in order, with
+one edit named so it is not mistaken for the original: the test harness's own
+progress dots, which prefix three of these lines in the raw capture
+(`.CUSTOM limit=abc`, `.PAGE1`, `.OFFSET seen`), are stripped. Nothing else is
+changed, abridged or re-spaced. This is the evidence for criteria 1–9:
 
 ```
-NAIVE  limit=abc                  -> 400 Bad Request ct=Some("text/plain; charset=utf-8") body="Failed to deserialize query string: limit: invalid digit found in string"
-NAIVE  limit=-1                   -> 400 Bad Request ct=Some("text/plain; charset=utf-8") body="Failed to deserialize query string: limit: invalid digit found in string"
-NAIVE  limit=99999999999999999999 -> 400 Bad Request ct=Some("text/plain; charset=utf-8") body="Failed to deserialize query string: limit: number too large to fit in target type"
-NAIVE  limit=0                    -> 200 OK ct=Some("text/plain; charset=utf-8") body="PageQuery { cursor: None, limit: Some(0) }"
-NAIVE  limit=101                  -> 200 OK ct=Some("text/plain; charset=utf-8") body="PageQuery { cursor: None, limit: Some(101) }"
-CUSTOM limit=abc                  -> 400 Bad Request ct=Some("application/json") body={"code":"bad_query","detail":"Failed to deserialize query string: limit: invalid digit found in string"}
-CUSTOM limit=0                    -> 400 Bad Request ct=Some("application/json") body={"code":"limit_out_of_range","detail":"limit 0 is outside 1..=100"}
-CUSTOM limit=101                  -> 400 Bad Request ct=Some("application/json") body={"code":"limit_out_of_range","detail":"limit 101 is outside 1..=100"}
-CUSTOM cursor=!!!not-base64!!!    -> 400 Bad Request ct=Some("application/json") body={"code":"bad_cursor","detail":"cursor is not a valid token"}
+NAIVE  limit=abc                              -> 400 Bad Request ct=Some("text/plain; charset=utf-8") body="Failed to deserialize query string: limit: invalid digit found in string"
+NAIVE  limit=-1                               -> 400 Bad Request ct=Some("text/plain; charset=utf-8") body="Failed to deserialize query string: limit: invalid digit found in string"
+NAIVE  limit=99999999999999999999             -> 400 Bad Request ct=Some("text/plain; charset=utf-8") body="Failed to deserialize query string: limit: number too large to fit in target type"
+NAIVE  limit=0                                -> 200 OK ct=Some("text/plain; charset=utf-8") body="PageQuery { cursor: None, limit: Some(0) }"
+NAIVE  limit=101                              -> 200 OK ct=Some("text/plain; charset=utf-8") body="PageQuery { cursor: None, limit: Some(101) }"
+CUSTOM limit=abc                              -> 400 Bad Request ct=Some("application/json") body={"code":"bad_query","detail":"Failed to deserialize query string: limit: invalid digit found in string"}
+CUSTOM limit=-1                               -> 400 Bad Request ct=Some("application/json") body={"code":"bad_query","detail":"Failed to deserialize query string: limit: invalid digit found in string"}
+CUSTOM limit=99999999999999999999             -> 400 Bad Request ct=Some("application/json") body={"code":"bad_query","detail":"Failed to deserialize query string: limit: number too large to fit in target type"}
+CUSTOM limit=0                                -> 400 Bad Request ct=Some("application/json") body={"code":"limit_out_of_range","detail":"limit 0 is outside 1..=100"}
+CUSTOM limit=101                              -> 400 Bad Request ct=Some("application/json") body={"code":"limit_out_of_range","detail":"limit 101 is outside 1..=100"}
+CUSTOM cursor=!!!not-base64!!!                -> 400 Bad Request ct=Some("application/json") body={"code":"bad_cursor","detail":"cursor is not a valid token"}
 PAGE1  -> 200 OK ct=Some("application/json") body={"items":[{"id":"p000","name":"Project 0"},{"id":"p001","name":"Project 1"}],"next_cursor":"cDAwMQ"}
 PAGE2  -> 200 OK body={"items":[{"id":"p002","name":"Project 2"}],"next_cursor":null}
 EMPTY  -> 200 OK body={"items":[],"next_cursor":null}
