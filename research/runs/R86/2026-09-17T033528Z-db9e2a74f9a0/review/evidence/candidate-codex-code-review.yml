@@ -1,0 +1,134 @@
+# R86 fixture — the recommended `.github/workflows/codex-code-review.yml` (F361).
+#
+# This file is INPUT TO A CHECK, not template code. It exists so `actionlint`
+# can decide whether the recommended guard set, the credential-presence relay
+# and the three-job permission split are expressible and type-correct. P03
+# authors the real file; nothing here is a shipped artifact.
+#
+# What an adopter accepts by installing OPENAI_API_KEY on a public repository
+# (carried from the vendor's own docs/security.md at v1.12, and from R18's
+# equivalent header):
+#   * a trusted-author prompt-injection residual that no `author_association`
+#     prefilter removes — a maintainer who pastes an issue body, a fork diff or
+#     a stack trace into text this lane reads is quoting untrusted content;
+#   * the lane's model output is published verbatim by the poster job;
+#   * `openai/codex-action` runs its OWN write-access check on the run's actor,
+#     which this template cannot remove: an organisation MEMBER holding only
+#     `read` passes the preflight's association guard and then FAILS this job.
+# A repository that does not want this lane DELETES THIS FILE. There is no
+# enable variable and no other opt-out.
+#
+# Pin format (tag vs commit SHA) is R20's decision, not this item's.
+name: Codex code review
+
+on:
+  pull_request:
+    types: [opened, ready_for_review, reopened]
+
+permissions: {}
+
+jobs:
+  credential-preflight:
+    # Fork guard, draft clause and two type-based bot checks. All four sit here
+    # so an event the guards reject spends no runner minutes in the model job.
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.draft == false &&
+      github.event.pull_request.user.type != 'Bot' &&
+      github.event.sender.type != 'Bot'
+    runs-on: ubuntu-latest
+    permissions: {}
+    timeout-minutes: 5
+    outputs:
+      credential: ${{ steps.detect.outputs.credential }}
+    steps:
+      # `secrets` is unavailable in `jobs.<job_id>.if` and available in
+      # `jobs.<job_id>.env`; the published output is a LITERAL string, never a
+      # secret-derived value, which the runner would mask.
+      - name: Detect credential presence
+        id: detect
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -n "${OPENAI_API_KEY}" ]; then
+            shape=present
+          else
+            shape=none
+          fi
+          echo "credential=${shape}" >> "$GITHUB_OUTPUT"
+          if [ "${shape}" = none ]; then
+            echo "::notice title=Codex code review is not configured::Set the repository secret OPENAI_API_KEY to enable this lane, or delete .github/workflows/codex-code-review.yml to remove it."
+            {
+              echo "### Codex code review did not run"
+              echo
+              echo "No \`OPENAI_API_KEY\` repository secret is configured, so this lane was skipped."
+              echo "It did not fail."
+              echo
+              echo "* To enable it: add a repository secret named \`OPENAI_API_KEY\`."
+              echo "* To remove it: delete \`.github/workflows/codex-code-review.yml\`."
+            } >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "OPENAI_API_KEY is configured, so Codex code review will run on this pull request."
+            echo "Delete .github/workflows/codex-code-review.yml to remove this lane."
+          fi
+
+  codex-review:
+    needs: credential-preflight
+    # POSITIVE predicate. A skipped preflight publishes an EMPTY output, and a
+    # negative form (`!= 'none'`) would evaluate TRUE on it — so the gate would
+    # then rest entirely on skip propagation. Written positively, the guards
+    # bind this job through the value as well as through the dependency.
+    if: needs.credential-preflight.outputs.credential == 'present'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    timeout-minutes: 20
+    outputs:
+      final_message: ${{ steps.codex.outputs.final-message }}
+    steps:
+      # The TRUSTED base branch is the working tree. The Codex CLI reads
+      # AGENTS.md from its working directory, so checking out the pull
+      # request's tree would hand the agent instructions written by the pull
+      # request's author (vendor docs/security.md, "Repository instruction
+      # files"). The head is fetched as a REF and never materialised.
+      - name: Check out the base branch
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.base.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Fetch the pull request head as a ref
+        env:
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          git fetch --no-tags --depth=1 origin "${HEAD_SHA}"
+      - name: Run Codex
+        id: codex
+        uses: openai/codex-action@v1.12
+        with:
+          openai-api-key: ${{ secrets.OPENAI_API_KEY }}
+          codex-version: "0.154.0"
+          permission-profile: ":read-only"
+          safety-strategy: drop-sudo
+          prompt-file: .github/codex/review-pr.md
+
+  post-review:
+    needs: codex-review
+    if: needs.codex-review.outputs.final_message != ''
+    runs-on: ubuntu-latest
+    # No model credential reaches this job; it only publishes finished text.
+    permissions:
+      pull-requests: write
+    timeout-minutes: 5
+    steps:
+      - name: Post the review as a pull-request comment
+        env:
+          GH_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          CODEX_FINAL_MESSAGE: ${{ needs.codex-review.outputs.final_message }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          gh pr comment "$PR_NUMBER" --body "$CODEX_FINAL_MESSAGE"

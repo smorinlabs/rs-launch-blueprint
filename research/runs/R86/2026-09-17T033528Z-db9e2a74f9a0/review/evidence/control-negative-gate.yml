@@ -1,0 +1,31 @@
+# R86 negative control 2 — the NEGATIVE credential gate. It is expressible and
+# lint-clean, which is exactly why linting alone does not establish that the
+# recommended positive gate is the correct one: the argument for the positive
+# form is the empty-output semantics of a skipped dependency, not the linter.
+name: Control - negative credential gate
+on:
+  pull_request:
+    types: [opened]
+permissions: {}
+jobs:
+  credential-preflight:
+    runs-on: ubuntu-latest
+    permissions: {}
+    outputs:
+      credential: ${{ steps.detect.outputs.credential }}
+    steps:
+      - name: Detect
+        id: detect
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          set -euo pipefail
+          if [ -n "${OPENAI_API_KEY}" ]; then echo "credential=present" >> "$GITHUB_OUTPUT"; else echo "credential=none" >> "$GITHUB_OUTPUT"; fi
+  consumer:
+    needs: credential-preflight
+    if: needs.credential-preflight.outputs.credential != 'none'
+    runs-on: ubuntu-latest
+    permissions: {}
+    steps:
+      - name: Nothing
+        run: echo "runs on an empty output too"
