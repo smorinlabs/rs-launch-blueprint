@@ -1,0 +1,69 @@
+{
+  "meta": {
+    "total": 6488,
+    "next_page": "?q=health&per_page=12&sort=downloads&seek=WzY3Nzg1NjksMTg4MjcxMF0",
+    "prev_page": null
+  },
+  "crates": [
+    {
+      "name": "tonic",
+      "recent_downloads": 88368437,
+      "description": "A gRPC over HTTP/2 implementation focused on high performance, interoperability, and flexibility.\n"
+    },
+    {
+      "name": "deadpool",
+      "recent_downloads": 33287510,
+      "description": "Dead simple async pool"
+    },
+    {
+      "name": "tonic-health",
+      "recent_downloads": 11044769,
+      "description": "Health Checking module of `tonic` gRPC implementation.\n"
+    },
+    {
+      "name": "bb8",
+      "recent_downloads": 7224248,
+      "description": "Full-featured async (tokio-based) connection pool (like r2d2)"
+    },
+    {
+      "name": "r2d2",
+      "recent_downloads": 5945986,
+      "description": "A generic connection pool"
+    },
+    {
+      "name": "rmcp",
+      "recent_downloads": 14275587,
+      "description": "Rust SDK for Model Context Protocol"
+    },
+    {
+      "name": "rmcp-macros",
+      "recent_downloads": 12612972,
+      "description": "Rust SDK for Model Context Protocol macros library"
+    },
+    {
+      "name": "axum-tracing-opentelemetry",
+      "recent_downloads": 2082944,
+      "description": "Middlewares and tools to integrate axum + tracing + opentelemetry"
+    },
+    {
+      "name": "vaultrs",
+      "recent_downloads": 2356876,
+      "description": "An asynchronous Rust client library for the Hashicorp Vault API."
+    },
+    {
+      "name": "sentry-actix",
+      "recent_downloads": 3330667,
+      "description": "Sentry integration for actix-web 4.\n"
+    },
+    {
+      "name": "lazy_format",
+      "recent_downloads": 786405,
+      "description": "A utility crate for lazily formatting values for later"
+    },
+    {
+      "name": "connectrpc",
+      "recent_downloads": 4277640,
+      "description": "A Tower-based Rust implementation of the ConnectRPC protocol"
+    }
+  ]
+}

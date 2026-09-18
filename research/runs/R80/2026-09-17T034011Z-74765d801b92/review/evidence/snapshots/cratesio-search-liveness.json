@@ -1,0 +1,69 @@
+{
+  "meta": {
+    "total": 28357,
+    "next_page": "?q=liveness&per_page=12&sort=downloads&seek=WzE0MDM0MzcxNCwyMTEyXQ",
+    "prev_page": null
+  },
+  "crates": [
+    {
+      "name": "serde_json",
+      "recent_downloads": 317743616,
+      "description": "A JSON serialization file format"
+    },
+    {
+      "name": "yoke",
+      "recent_downloads": 193754988,
+      "description": "Abstraction allowing borrowed data to be carried along with the backing data it borrows from"
+    },
+    {
+      "name": "serde_urlencoded",
+      "recent_downloads": 127639787,
+      "description": "`x-www-form-urlencoded` meets Serde"
+    },
+    {
+      "name": "sharded-slab",
+      "recent_downloads": 130069323,
+      "description": "A lock-free concurrent slab.\n"
+    },
+    {
+      "name": "wasm-bindgen-futures",
+      "recent_downloads": 82364068,
+      "description": "Bridging the gap between Rust Futures and JavaScript Promises"
+    },
+    {
+      "name": "brotli",
+      "recent_downloads": 60451055,
+      "description": "A brotli compressor and decompressor that with an interface avoiding the rust stdlib. This makes it suitable for embedded devices and kernels. It is designed with a pluggable allocator so that the standard lib's allocator may be employed. The default build also includes a stdlib allocator and stream interface. Disable this with --features=no-stdlib. All included code is safe."
+    },
+    {
+      "name": "web-time",
+      "recent_downloads": 81824797,
+      "description": "Drop-in replacement for std::time for Wasm in browsers"
+    },
+    {
+      "name": "aws-lc-sys",
+      "recent_downloads": 85289737,
+      "description": "AWS-LC is a general-purpose cryptographic library maintained by the AWS Cryptography team for AWS and their customers. It іs based on code from the Google BoringSSL project and the OpenSSL project."
+    },
+    {
+      "name": "ureq",
+      "recent_downloads": 59610375,
+      "description": "Simple, safe HTTP client"
+    },
+    {
+      "name": "semver-parser",
+      "recent_downloads": 21587169,
+      "description": "Parsing of the semver spec.\n"
+    },
+    {
+      "name": "rustls-platform-verifier",
+      "recent_downloads": 72846170,
+      "description": "rustls-platform-verifier supports verifying TLS certificates in rustls with the operating system verifier"
+    },
+    {
+      "name": "rmp",
+      "recent_downloads": 27529764,
+      "description": "Pure Rust MessagePack serialization implementation"
+    }
+  ]
+}

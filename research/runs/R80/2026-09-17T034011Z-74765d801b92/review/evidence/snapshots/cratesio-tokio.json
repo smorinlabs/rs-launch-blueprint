@@ -1,0 +1,10 @@
+{
+  "crate": {
+    "name": "tokio",
+    "newest_version": "1.53.1",
+    "max_stable_version": "1.53.1",
+    "recent_downloads": 228862107,
+    "downloads": 978381970,
+    "repository": "https://github.com/tokio-rs/tokio"
+  }
+}

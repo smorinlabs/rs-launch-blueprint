@@ -1,0 +1,10 @@
+{
+  "crate": {
+    "name": "axum",
+    "newest_version": "0.8.9",
+    "max_stable_version": "0.8.9",
+    "recent_downloads": 118234751,
+    "downloads": 475506585,
+    "repository": "https://github.com/tokio-rs/axum"
+  }
+}

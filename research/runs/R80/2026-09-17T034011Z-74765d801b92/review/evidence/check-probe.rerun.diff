@@ -1,0 +1,73 @@
+9a10,12
+>     Blocking waiting for file lock on package cache
+>     Blocking waiting for file lock on package cache
+>     Blocking waiting for file lock on package cache
+16d18
+<    Compiling futures-core v0.3.34
+17a20
+>    Compiling futures-core v0.3.34
+22d24
+<    Compiling log v0.4.34
+25,27c27,28
+<    Compiling httpdate v1.0.3
+<    Compiling serde_json v1.0.151
+<    Compiling futures-channel v0.3.34
+---
+>    Compiling log v0.4.34
+>    Compiling futures-task v0.3.34
+28a30,32
+>    Compiling futures-channel v0.3.34
+>    Compiling slab v0.4.12
+>    Compiling tower-layer v0.3.3
+29a34,35
+>    Compiling httpdate v1.0.3
+>    Compiling smallvec v1.16.1
+32,35c38
+<    Compiling futures-task v0.3.34
+<    Compiling tower-layer v0.3.3
+<    Compiling smallvec v1.16.1
+<    Compiling slab v0.4.12
+---
+>    Compiling serde_json v1.0.151
+38c41,42
+<    Compiling mime v0.3.17
+---
+>    Compiling tracing v0.1.44
+>    Compiling http v1.5.0
+40a45
+>    Compiling mime v0.3.17
+42,43d46
+<    Compiling http v1.5.0
+<    Compiling tracing v0.1.44
+44a48
+>    Compiling syn v3.0.6
+48d51
+<    Compiling syn v3.0.6
+50d52
+<    Compiling mio v1.2.3
+51a54
+>    Compiling mio v1.2.3
+53d55
+<    Compiling serde_path_to_error v0.1.20
+55a58
+>    Compiling serde_path_to_error v0.1.20
+64c67
+<     Finished `test` profile [unoptimized + debuginfo] target(s) in 16.48s
+---
+>     Finished `test` profile [unoptimized + debuginfo] target(s) in 18.75s
+83c86
+<     Finished `test` profile [unoptimized + debuginfo] target(s) in 1.28s
+---
+>     Finished `test` profile [unoptimized + debuginfo] target(s) in 1.26s
+100c103
+<     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.74s
+---
+>     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.73s
+132,133d134
+<     Blocking waiting for file lock on package cache
+<     Blocking waiting for file lock on package cache
+137,138d137
+<     Blocking waiting for file lock on package cache
+<     Blocking waiting for file lock on package cache
+265d263
+<     Blocking waiting for file lock on package cache

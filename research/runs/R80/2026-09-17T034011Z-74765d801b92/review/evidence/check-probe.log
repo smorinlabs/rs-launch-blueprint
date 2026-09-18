@@ -1,0 +1,280 @@
+=== R80 check-probe.sh ===
+date(UTC): 2026-09-18T22:51:22Z
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+uname: Darwin 25.4.0 arm64
+rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+workspace: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r80-probe.JUZN8YjR (deleted on exit)
+cargo network flags: '--offline'
+--- variant a (no [workspace.package] version) ---
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.26
+   Compiling quote v1.0.47
+   Compiling libc v0.2.189
+   Compiling itoa v1.0.18
+   Compiling pin-project-lite v0.2.17
+   Compiling futures-core v0.3.34
+   Compiling serde_core v1.0.229
+   Compiling bytes v1.12.1
+   Compiling once_cell v1.21.4
+   Compiling serde v1.0.229
+   Compiling httparse v1.10.1
+   Compiling log v0.4.34
+   Compiling zmij v1.0.23
+   Compiling tower-service v0.3.3
+   Compiling httpdate v1.0.3
+   Compiling serde_json v1.0.151
+   Compiling futures-channel v0.3.34
+   Compiling tracing-core v0.1.36
+   Compiling percent-encoding v2.3.2
+   Compiling sync_wrapper v1.0.2
+   Compiling atomic-waker v1.1.2
+   Compiling futures-task v0.3.34
+   Compiling tower-layer v0.3.3
+   Compiling smallvec v1.16.1
+   Compiling slab v0.4.12
+   Compiling form_urlencoded v1.2.2
+   Compiling futures-util v0.3.34
+   Compiling mime v0.3.17
+   Compiling ryu v1.0.23
+   Compiling memchr v2.8.3
+   Compiling matchit v0.8.4
+   Compiling http v1.5.0
+   Compiling tracing v0.1.44
+   Compiling facade v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR)
+   Compiling http-body v1.1.0
+   Compiling http-body-util v0.1.5
+   Compiling axum-core v0.5.6
+   Compiling syn v3.0.6
+   Compiling errno v0.3.14
+   Compiling mio v1.2.3
+   Compiling socket2 v0.6.5
+   Compiling signal-hook-registry v1.4.8
+   Compiling serde_path_to_error v0.1.20
+   Compiling tokio-macros v2.7.2
+   Compiling serde_derive v1.0.229
+   Compiling tokio v1.53.1
+   Compiling serde_urlencoded v0.7.1
+   Compiling probe-core v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR/crates/core)
+   Compiling hyper v1.11.1
+   Compiling tower v0.5.3
+   Compiling hyper-util v0.1.20
+   Compiling axum v0.8.9
+   Compiling probe-web v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR/crates/web)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 16.48s
+     Running tests/version_hazard.rs (target/debug/deps/version_hazard-c1d92548506f7c7a)
+
+running 1 test
+facade_env_CARGO_PKG_VERSION=0.4.2
+web_member_env_CARGO_PKG_VERSION=0.1.0
+core_member_env_CARGO_PKG_VERSION=0.1.0
+std_env_consts_OS=macos
+std_env_consts_ARCH=aarch64
+os_and_arch_are_static_str=true
+test version_hazard ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+PASS A — env!(CARGO_PKG_VERSION) inside a member reports the MEMBER's version (facade 0.4.2, web member 0.1.0); std::env::consts::{OS,ARCH} resolve as &'static str with no build.rs in the tree
+--- variant b ([workspace.package] version + version.workspace = true) ---
+   Compiling probe-core v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR/crates/core)
+   Compiling probe-web v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR/crates/web)
+   Compiling facade v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.28s
+     Running tests/version_hazard.rs (target/debug/deps/version_hazard-c7b3c0400a71f184)
+
+running 1 test
+facade_env_CARGO_PKG_VERSION=0.4.2
+web_member_env_CARGO_PKG_VERSION=0.4.2
+core_member_env_CARGO_PKG_VERSION=0.4.2
+std_env_consts_OS=macos
+std_env_consts_ARCH=aarch64
+os_and_arch_are_static_str=true
+test version_hazard ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+PASS B — [workspace.package] version = 0.4.2 with version.workspace = true makes every member report 0.4.2
+--- probe handler tests T1-T8 (variant b) ---
+   Compiling probe-web v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR/crates/web)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.74s
+     Running tests/probes.rs (target/debug/deps/probes-1f675244184fffef)
+
+running 8 tests
+test t1_healthz_200_and_four_fields ... T1 GET /healthz status=200 OK body={"status":"ok","version":"0.4.2","os":"macos","arch":"aarch64"}
+ok
+test t2_healthz_body_is_byte_stable ... T2 byte-stable=true
+ok
+test t3_warn_only_checks_keep_readiness ... T3 GET /readyz status=200 OK body={"diagnostics":{"checks":[{"detail":"0.4.2 on macos/aarch64","name":"build","status":"ok"},{"detail":"no config file at /nonexistent-r80-probe/config.toml","name":"config-file","status":"warn"},{"detail":"no credential configured","name":"credential","status":"warn"}]},"status":"ok"}
+ok
+test t4_drain_latch_removes_traffic ... T4 GET /readyz (draining) status=503 Service Unavailable body={"diagnostics":{"checks":[{"detail":"0.4.2 on macos/aarch64","name":"build","status":"ok"},{"detail":"no config file at /nonexistent-r80-probe/config.toml","name":"config-file","status":"warn"},{"detail":"no credential configured","name":"credential","status":"warn"}]},"status":"unavailable"}
+ok
+test t5_draining_is_not_a_restart_signal ... T5 GET /healthz (draining) status=200 OK
+ok
+test t6_error_report_yields_503_without_touching_the_environment ... T6 readiness_response(false, <one error check>) status=503 Service Unavailable
+ok
+test t7_post_healthz_is_405_with_allow ... T7 POST /healthz status=405 Method Not Allowed allow=Some("GET,HEAD")
+ok
+test t8_head_is_served_by_the_get_handler ... T8 HEAD /healthz status=200 OK body_len=0
+ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+PASS T1 — GET /healthz answers 200 with exactly {status,version,os,arch}, version from the core accessor
+PASS T2 — two successive liveness bodies are byte-identical
+PASS T3 — a missing config file and a missing credential are warn-level and readiness holds at 200
+PASS T4 — after Readiness::begin_draining() readiness answers 503 and still carries the report
+PASS T5 — liveness stays 200 while the process drains, so draining is not a restart signal
+PASS T6 — one error-level check yields 503 through the pure response function, with no environment read
+PASS T7 — axum 0.8.9's MethodRouter answers POST with 405 and Allow: GET,HEAD, with no code written for it
+PASS T8 — HEAD /healthz is served by the GET handler and answers 200 with an empty body
+--- C9: cargo tree -p facade --edges normal (feature off) ---
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+facade v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR)
+PASS C9 — a default build's normal dependency graph contains axum on 0 lines (counted with grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+--- C10: cargo tree -p facade --features web --edges normal ---
+    Blocking waiting for file lock on package cache
+    Blocking waiting for file lock on package cache
+facade v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR)
+└── probe-web v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR/crates/web)
+    ├── axum v0.8.9
+    │   ├── axum-core v0.5.6
+    │   │   ├── bytes v1.12.1
+    │   │   ├── futures-core v0.3.34
+    │   │   ├── http v1.5.0
+    │   │   │   ├── bytes v1.12.1
+    │   │   │   └── itoa v1.0.18
+    │   │   ├── http-body v1.1.0
+    │   │   │   ├── bytes v1.12.1
+    │   │   │   └── http v1.5.0 (*)
+    │   │   ├── http-body-util v0.1.5
+    │   │   │   ├── bytes v1.12.1
+    │   │   │   ├── futures-core v0.3.34
+    │   │   │   ├── http v1.5.0 (*)
+    │   │   │   ├── http-body v1.1.0 (*)
+    │   │   │   └── pin-project-lite v0.2.17
+    │   │   ├── mime v0.3.17
+    │   │   ├── pin-project-lite v0.2.17
+    │   │   ├── sync_wrapper v1.0.2
+    │   │   ├── tower-layer v0.3.3
+    │   │   ├── tower-service v0.3.3
+    │   │   └── tracing v0.1.44
+    │   │       ├── log v0.4.34
+    │   │       ├── pin-project-lite v0.2.17
+    │   │       └── tracing-core v0.1.36
+    │   │           └── once_cell v1.21.4
+    │   ├── bytes v1.12.1
+    │   ├── form_urlencoded v1.2.2
+    │   │   └── percent-encoding v2.3.2
+    │   ├── futures-util v0.3.34
+    │   │   ├── futures-core v0.3.34
+    │   │   ├── futures-task v0.3.34
+    │   │   ├── pin-project-lite v0.2.17
+    │   │   └── slab v0.4.12
+    │   ├── http v1.5.0 (*)
+    │   ├── http-body v1.1.0 (*)
+    │   ├── http-body-util v0.1.5 (*)
+    │   ├── hyper v1.11.1
+    │   │   ├── atomic-waker v1.1.2
+    │   │   ├── bytes v1.12.1
+    │   │   ├── futures-channel v0.3.34
+    │   │   │   └── futures-core v0.3.34
+    │   │   ├── futures-core v0.3.34
+    │   │   ├── http v1.5.0 (*)
+    │   │   ├── http-body v1.1.0 (*)
+    │   │   ├── httparse v1.10.1
+    │   │   ├── httpdate v1.0.3
+    │   │   ├── itoa v1.0.18
+    │   │   ├── pin-project-lite v0.2.17
+    │   │   ├── smallvec v1.16.1
+    │   │   └── tokio v1.53.1
+    │   │       ├── libc v0.2.189
+    │   │       ├── mio v1.2.3
+    │   │       │   └── libc v0.2.189
+    │   │       ├── pin-project-lite v0.2.17
+    │   │       ├── signal-hook-registry v1.4.8
+    │   │       │   ├── errno v0.3.14
+    │   │       │   │   └── libc v0.2.189
+    │   │       │   └── libc v0.2.189
+    │   │       ├── socket2 v0.6.5
+    │   │       │   └── libc v0.2.189
+    │   │       └── tokio-macros v2.7.2 (proc-macro)
+    │   │           ├── proc-macro2 v1.0.107
+    │   │           │   └── unicode-ident v1.0.26
+    │   │           ├── quote v1.0.47
+    │   │           │   └── proc-macro2 v1.0.107 (*)
+    │   │           └── syn v3.0.6
+    │   │               ├── proc-macro2 v1.0.107 (*)
+    │   │               ├── quote v1.0.47 (*)
+    │   │               └── unicode-ident v1.0.26
+    │   ├── hyper-util v0.1.20
+    │   │   ├── bytes v1.12.1
+    │   │   ├── http v1.5.0 (*)
+    │   │   ├── http-body v1.1.0 (*)
+    │   │   ├── hyper v1.11.1 (*)
+    │   │   ├── pin-project-lite v0.2.17
+    │   │   ├── tokio v1.53.1 (*)
+    │   │   └── tower-service v0.3.3
+    │   ├── itoa v1.0.18
+    │   ├── matchit v0.8.4
+    │   ├── memchr v2.8.3
+    │   ├── mime v0.3.17
+    │   ├── percent-encoding v2.3.2
+    │   ├── pin-project-lite v0.2.17
+    │   ├── serde_core v1.0.229
+    │   ├── serde_json v1.0.151
+    │   │   ├── itoa v1.0.18
+    │   │   ├── memchr v2.8.3
+    │   │   ├── serde_core v1.0.229
+    │   │   └── zmij v1.0.23
+    │   ├── serde_path_to_error v0.1.20
+    │   │   ├── itoa v1.0.18
+    │   │   └── serde_core v1.0.229
+    │   ├── serde_urlencoded v0.7.1
+    │   │   ├── form_urlencoded v1.2.2 (*)
+    │   │   ├── itoa v1.0.18
+    │   │   ├── ryu v1.0.23
+    │   │   └── serde v1.0.229
+    │   │       ├── serde_core v1.0.229
+    │   │       └── serde_derive v1.0.229 (proc-macro)
+    │   │           ├── proc-macro2 v1.0.107 (*)
+    │   │           ├── quote v1.0.47 (*)
+    │   │           └── syn v3.0.6 (*)
+    │   ├── sync_wrapper v1.0.2
+    │   ├── tokio v1.53.1 (*)
+    │   ├── tower v0.5.3
+    │   │   ├── futures-core v0.3.34
+    │   │   ├── futures-util v0.3.34 (*)
+    │   │   ├── pin-project-lite v0.2.17
+    │   │   ├── sync_wrapper v1.0.2
+    │   │   ├── tokio v1.53.1 (*)
+    │   │   ├── tower-layer v0.3.3
+    │   │   ├── tower-service v0.3.3
+    │   │   └── tracing v0.1.44 (*)
+    │   ├── tower-layer v0.3.3
+    │   ├── tower-service v0.3.3
+    │   └── tracing v0.1.44 (*)
+    ├── probe-core v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR/crates/core)
+    │   └── serde v1.0.229 (*)
+    ├── serde v1.0.229 (*)
+    ├── serde_json v1.0.151 (*)
+    └── tokio v1.53.1 (*)
+PASS C10 — --features web brings the optional web member and axum v0.8.9 back into the normal graph (1 axum line(s))
+--- C11: cargo tree -p probe-core --edges normal ---
+    Blocking waiting for file lock on package cache
+probe-core v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR/crates/core)
+└── serde v1.0.229
+    ├── serde_core v1.0.229
+    └── serde_derive v1.0.229 (proc-macro)
+        ├── proc-macro2 v1.0.107
+        │   └── unicode-ident v1.0.26
+        ├── quote v1.0.47
+        │   └── proc-macro2 v1.0.107 (*)
+        └── syn v3.0.6
+            ├── proc-macro2 v1.0.107 (*)
+            ├── quote v1.0.47 (*)
+            └── unicode-ident v1.0.26
+PASS C11 — the member holding run_diagnostics resolves serde v1.0.229 and names no web crate (axum|tokio|hyper|tower matched on 0 lines)
+
+=== 13 PASS, 0 FAIL, 0 SKIP ===

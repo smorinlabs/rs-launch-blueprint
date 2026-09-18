@@ -1,0 +1,10 @@
+{
+  "crate": {
+    "name": "git-version",
+    "newest_version": "0.3.9",
+    "max_stable_version": "0.3.9",
+    "recent_downloads": 5528772,
+    "downloads": 24871629,
+    "repository": "https://github.com/fusion-engineering/rust-git-version"
+  }
+}
