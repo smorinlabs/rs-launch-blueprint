@@ -359,7 +359,22 @@ the recording path.
 
 ### Qualified shortlist
 
-All five passed every fitness gate. Figures from `GET https://crates.io/api/v1/crates/<name>`
+Five candidates cleared gates 1 and 2 and carry no RustSec advisory. The per-candidate gate
+table below records how far the evidence actually reaches for each, because the depth is not
+uniform: the recommended pair and `axum-prometheus` were resolved, built or tree-walked in this
+run, while `prometheus` and `opentelemetry-prometheus` were assessed from their published
+manifests and sources only. Nothing here was assumed from familiarity, and where a gate was not
+executed the row says so rather than claiming a pass it did not earn.
+
+| Candidate | 1 · Licence | 2 · MSRV (floor 1.96) | 3 · Advisory / `unsafe` | 4 · `ubuntu-latest, macos-latest` | 5 · Default features / runtime coupling | 6 · Size and compile cost |
+|---|---|---|---|---|---|---|
+| `metrics` 0.24.6 | MIT — pass | 1.71.1 — pass | RustSec 404; 34 `unsafe` lines, all in `src/cow.rs` | Built and tested on macOS arm64 in this run; pure Rust, no C dependency, no platform-gated code path — **Linux not executed here** | No `[features]` at all; no runtime coupling | Measured jointly with the exporter: +28 crates, +352 KiB stripped |
+| `metrics-exporter-prometheus` 0.18.3 | MIT AND Apache-2.0 — pass | 1.71.1 — pass | RustSec 404; **one** `unsafe` (`src/recorder.rs:38`); its dep `metrics-util` 0.20.4 is past `RUSTSEC-2021-0113`'s `>=0.7.0` patch | same as above | `default = ["http-listener", "push-gateway"]` — **turned off**; with them off there is no `tokio` edge, and `install_recorder`/`build_recorder` are not feature-gated | same measurement; with defaults **on** it would be +44 further crates including `aws-lc-sys` |
+| `axum-prometheus` 0.10.1 | MIT — pass | 1.75 — pass | RustSec 404; **zero** `unsafe` in `src/` | Not built in this run — only `cargo tree` was run against it; pure Rust, and its deps are the ones axum already pulls plus `tower-http` | `default = ["prometheus"]`, which enables `metrics-exporter-prometheus` with `default-features = false`; **non-optional** `tokio` with `rt-multi-thread` and `macros`, and it spawns an upkeep task, so it requires a running runtime at layer construction | +31 crates over the same axum base (82 vs 51); binary delta not measured |
+| `prometheus` 0.14.0 | Apache-2.0 — pass (one arm of the dual licence; a consumer choosing MIT for the template still complies with Apache-2.0 for this dependency, the ordinary situation for any dependency licence) | 1.81 — pass | RustSec 404; **5** `unsafe` lines — `clock_gettime` in `src/histogram.rs:567` and four `libc`/FFI sites in `process_collector.rs`/`push.rs`, all behind the optional `process`/`push` features | Not built in this run. `procfs` is `cfg(target_os = "linux")` and optional; the `process` feature is Linux-shaped, so a macOS build must leave it off — noted, not a failure, since this template would not enable it | `default = ["protobuf"]`, which pulls `protobuf ^3.7.2`; `push` additionally pulls a **blocking** `reqwest`. For scrape-only use it would be `default-features = false`. No async runtime required | Not measured. Qualitatively: smaller than the recommended pair with `default-features = false`, larger with its `protobuf` default on |
+| `opentelemetry-prometheus` 0.33.0 | Apache-2.0 — pass (same reading) | 1.81.0 — pass | RustSec 404; **zero** `unsafe` in `src/` | Not built in this run; pure Rust | `default = ["internal-logs"]` (pulls `tracing`). Requires `opentelemetry` + `opentelemetry_sdk` with `metrics` and `experimental_metrics_custom_reader`, and depends on `prometheus` 0.14 — so it carries both the OTel SDK and a second client library | Not measured. Qualitatively the heaviest of the five: two metrics stacks in one graph |
+
+Figures from `GET https://crates.io/api/v1/crates/<name>`
 (`crate.recent_downloads`, `crate.downloads`) and `/versions` (newest `yanked: false`), plus
 `GET https://api.github.com/repos/<o>/<r>` and
 `GET https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+is:open`
@@ -371,7 +386,7 @@ All five passed every fitness gate. Figures from `GET https://crates.io/api/v1/c
 | `metrics-exporter-prometheus` 0.18.3 | Recorder + Prometheus text renderer | 13,007,165 | 47,578,577 | 1,486 (same repo) | 2026-04-30 | **active** (same repo signals) | reth (`default-features = false`), apalis, coerce | Default features pull an entire HTTP/TLS stack you do not want (measured below); upkeep is the caller's job |
 | `axum-prometheus` 0.10.1 | axum middleware over the `metrics` facade | 1,388,212 | 5,658,682 | 92 (`Ptrskay3/axum-prometheus`) | 2026-07-31 | **active** — `pushed_at` 2026-07-31T07:07:09Z, 10 open issues, single maintainer | `axum-metrics` and downstream service templates; 460-strong exporter reverse-dep set includes it | Gives you an in-flight gauge, body-size metric and ignore patterns; costs `tower-http` 0.7 in the graph and a per-axum-major upgrade treadmill |
 | `prometheus` 0.14.0 | Registry-object client (tikv) | 24,842,546 | 145,764,833 | 1,181 (`tikv/rust-prometheus`) | 2025-03-27 | **stable-quiet** — 18 months since release and `pushed_at` 2025-12-31T07:01:42Z, 66 open issues, but no advisory, no maintainer notice and no broken build, so the rubric forbids `at-risk` | TiKV, Neon (0.13), `opentelemetry-prometheus` 0.33.0 depends on it | Highest raw volume of any candidate, but you thread `HistogramVec` handles through app state and it has the slowest release cadence here |
-| `opentelemetry-prometheus` 0.33.0 | OTel-metrics → Prometheus bridge | 2,518,260 | 14,203,757 | 2,708 (`open-telemetry/opentelemetry-rust`, whole-project repo) | 2026-09-18 | **active** — released the day of retrieval, `pushed_at` 2026-09-18T17:44:05Z, 218 open issues across the whole OTel Rust project | OTel users needing scrape instead of OTLP | Passes every gate but its own README steers new projects to `opentelemetry-otlp`; also drags `prometheus` 0.14 in transitively |
+| `opentelemetry-prometheus` 0.33.0 | OTel-metrics to Prometheus bridge | 2,518,260 | 14,203,757 | 2,708 (`open-telemetry/opentelemetry-rust`, whole-project repo) | 2026-09-18 | **active** — released the day of retrieval, `pushed_at` 2026-09-18T17:44:05Z, 218 open issues across the whole OTel Rust project | OTel users needing scrape instead of OTLP | Passes every gate but its own README steers new projects to `opentelemetry-otlp`; also drags `prometheus` 0.14 in transitively |
 
 **Issue responsiveness (rubric: 10 most recently opened issues; median days to first
 maintainer response; unanswered count).** For both repositories the API returned **7** non-pull-request
@@ -858,7 +873,11 @@ Crate sources, read from the published `.crate` tarballs at
 (`axum = "0.8"`, `tower-http = "0.7"`, `metrics-exporter-prometheus … default-features = false`),
 `src/lib.rs:8-28, :73-81, :443-455, :870-895`, `src/builder.rs:23-38, :89, :114, :187-207`;
 `prometheus-client-0.25.1/Cargo.toml.orig` (no `rust-version`);
-`opentelemetry-prometheus-0.33.0/README.md` and `Cargo.toml.orig`.
+`opentelemetry-prometheus-0.33.0/README.md`, `Cargo.toml.orig` and `src/` (`default = ["internal-logs"]`,
+`opentelemetry_sdk` with `experimental_metrics_custom_reader`, `prometheus = { version = "0.14",
+default-features = false }`, zero `unsafe`); `prometheus-0.14.0/Cargo.toml.orig` and `src/`
+(`default = ["protobuf"]`, optional `process`/`push` features, 5 `unsafe` sites at
+`src/histogram.rs:567`, `src/process_collector.rs:130, :196, :203`, `src/push.rs:232`).
 
 Framework and standards documentation (retrieved 2026-09-18):
 `https://raw.githubusercontent.com/tokio-rs/axum/axum-v0.8.9/examples/prometheus-metrics/src/main.rs`
@@ -902,9 +921,12 @@ projects only. (2) Only 7 non-pull-request issues appeared among the 20 most
 recently created items for each shortlisted repository, so the responsiveness rubric's "10 most
 recent" is reported over 7 in both cases, not padded; responsiveness for the three
 non-shortlisted repositories was not collected. (3) Whether a `MEMBER`/`OWNER` reply is
-substantive rather than triage was not judged; the figure is time-to-first-maintainer-comment. (4) Neither CI run was executed on `ubuntu-latest`: gate 4 for the recommended pair is
-argued from both crates being pure Rust with no C dependency once `default-features = false`
-removes `aws-lc-sys`, plus the executed macOS build — not from a green Linux job I watched.
+substantive rather than triage was not judged; the figure is time-to-first-maintainer-comment. (4) Nothing was built on `ubuntu-latest`: gate 4 for the recommended
+pair is argued from both crates being pure Rust with no C dependency once
+`default-features = false` removes `aws-lc-sys`, plus the executed macOS build — not from a
+green Linux job I watched. Gates 3–6 for `axum-prometheus`, `prometheus` and
+`opentelemetry-prometheus` were assessed from published manifests and crate sources without
+building them; the shortlist table states that per row rather than implying uniform depth.
 (5) Compile-time figures are noisy at this scale and are reported as approximate; the crate
 count and stripped-binary bytes are exact. (6) The `promtool check metrics` validation of the
 exposition text is **proposed**, not executed — the format assertions that did run are
