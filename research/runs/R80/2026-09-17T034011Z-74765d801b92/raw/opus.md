@@ -173,9 +173,18 @@ substance of the item; the crate question turns out to be nearly empty.
 revision 10 puts `shutdown_signal()` and `serve_until(..)` in `crates/web/src/lib.rs`, and its
 `serve_until` starts the grace clock **at the signal**. Kubernetes removes a Pod from its
 EndpointSlices only once a readiness probe has *failed*, which takes at least one probe period.
-If `/readyz` keeps answering 200 through the drain, new requests keep arriving at a server that
-has stopped accepting connections. Flipping the latch inside `shutdown_signal()` before it
-resolves closes that window at the cost of one atomic store. R69 itself records the surrounding
+**Flipping the latch is necessary but, on its own, not sufficient, and this report says so
+rather than overclaiming.** Once `shutdown_signal()` resolves, `axum::serve` stops accepting,
+so a kubelet opening a *fresh* connection to `/readyz` gets a connection refusal — already a
+probe failure — and never reads the latch at all. A flip immediately followed by resolution
+therefore changes nothing observable on a fresh-connection probe; what it changes is the answer
+given on a connection that is already open. **What actually closes the race is a nonzero
+pre-drain pause inside `shutdown_signal()`**: flip the latch, keep the listener open for a
+readiness-propagation window during which `/readyz` answers 503 and the EndpointSlice controller
+removes the Pod, *then* resolve and let the drain begin. The latch is what makes that pause do
+anything — without it the endpoint would answer 200 throughout — and the pause is what makes the
+latch observable to a probe. **R77 owns the window's value, and the mechanism is inert if that
+value is zero.** R69 itself records the surrounding
 platform datum, verified at Google's own page: Cloud Run *"sends a SIGTERM signal … indicating
 the start of a 10 second period before the actual shutdown occurs, at which point Cloud Run
 sends a SIGKILL signal."* Whatever window R77 chooses must hold *both* the readiness-propagation
@@ -349,7 +358,7 @@ set). Row-by-row for every row that touches this item:
 | **C13**, *Project structure* | "feature-vertical modules" | **Agree**, as realized by R69 revision 10: the probe handlers are one module, `crates/web/src/routes/ops.rs` |
 | **Reference `Cargo.toml`** | `edition = "2021"`, `rust-version = "1.85"` | **Differ — owner-fixed parameters override**, per section 11's own rule: `rust-edition` = `2024` and `msrv-policy` as registered. The executed probe workspace uses edition 2024 throughout |
 
-Tally: **4 agree, 2 differ** (both differences on the grounds section 11 requires — one measured
+Tally over the six rows: **3 agree, 2 differ** (both differences on the grounds section 11 requires — one measured
 and sourced, one an owner-fixed parameter), plus 2 rows recorded as belonging to other items.
 
 **The R51 coupling, stated and not fixed.** R51 (`container-image`, being researched in
@@ -951,7 +960,12 @@ feature does not gate `serde`/`serde_json`. The byte-identical `assumes` line fo
 
 ##### Migration implications
 
-None to any manifest. Five `#[derive(Serialize)]` attributes across the two new source files.
+`crates/core/Cargo.toml`: **no change** — R66 already places `serde` with `derive` there.
+`crates/web/Cargo.toml`: **one added row**, `serde = { version = "1.0.229", features =
+["derive"] }`, because R69 revision 10's manifest row for that member lists only `axum`, `tokio`
+and the `tower` dev-dependency, and `LivenessReport`'s derive lives in the web member. The
+executed probe workspace required this row to compile. Plus five `#[derive(Serialize)]`
+attributes across the two new source files.
 
 ##### Validation strategy
 
@@ -1315,8 +1329,9 @@ in this run**, not by assertion. A throwaway workspace was created under `$TMPDI
 **2024** throughout, `rust-version = "1.96"` declared on every manifest, resolving **axum
 0.8.9 · tokio 1.53.1 · serde 1.0.229 · serde_json 1.0.151 · tower 0.5.3** (dev-dependency, for
 the `ServiceExt::oneshot` idiom) — the exact versions R69 revision 10 and R66 select. It compiled
-in 18.0 s on macOS 26.4 `arm64` under rustc 1.98.0 and cargo 1.98.0, and all **eight** behavioral
-tests plus **three** graph assertions passed. That is the compatibility evidence: the members were
+in 18.0 s on macOS 26.4 `arm64` under rustc 1.98.0 and cargo 1.98.0, and all **thirteen**
+checks passed — the two version-hazard checks `A` and `B`, eight behavioral tests `T1`-`T8`,
+and three graph assertions `C9`-`C11`. That is the compatibility evidence: the members were
 not merely shown to resolve, they were shown to serve the recommended contract.
 
 Three graph facts from the same matrix, each a compatibility claim in its own right:
@@ -1405,7 +1420,7 @@ accepted paths.
 | `crates/web/src/routes/ops.rs` | filled in. `LiveStatus`, `LivenessReport`, `async fn healthz()` (no `State`), `pub fn readiness_response(draining: bool, report: Diagnostics) -> Response`, `async fn readyz(State(..))`, `pub(crate) fn router() -> Router<AppState>` registering `/healthz` and `/readyz`. R69's file map already reserves this file with the note "`/healthz` now; `/readyz` and its payload are R80's" |
 | `crates/web/src/lib.rs` | a `Readiness(Arc<AtomicBool>)` newtype with `accepting()`, `is_accepting()`, `begin_draining()`; one `readiness: Readiness` field on `AppState`; one `readiness.begin_draining()` call inside `shutdown_signal()`, **before** that future resolves. `build_router`'s `.merge(ops::router())` line is already in R69's recorded snippet |
 | `crates/web/tests/web_api.rs` | the eight probe tests `T1`–`T8` of this report, adapted to the template's types |
-| `crates/web/Cargo.toml` | **no change** — `axum` 0.8.9, `tokio` 1.53.1 with `sync`, `serde`, `serde_json` and the `tower` dev-dependency are all already R69's rows |
+| `crates/web/Cargo.toml` | **gains `serde = { version = "1.0.229", features = ["derive"] }`**, and `serde_json` only if R70's envelope is constructed in this member directly. R69 revision 10's row for this manifest lists **only** `axum` 0.8.9 (defaults on), `tokio` 1.53.1 with `rt-multi-thread`/`net`/`signal`/`macros`/`time`/`sync`, and `tower` 0.5.3 under `[dev-dependencies]` — R66 places `serde` in the *library* crate, which under R02's topology is `crates/core`, not here. The executed probe workspace had to add exactly these rows to compile `#[derive(Serialize)]` on `LivenessReport`; a manifest written from "no change" would not build. `axum`, `tokio` and `tower` are unchanged |
 | `Cargo.toml` (root) | **no change from this item.** If R22 selects workspace version inheritance — which check `A` shows is required for `/healthz` to report the facade's version — the `[workspace.package] version` key and each member's `version.workspace = true` are R22's and R02's edit, not this one's |
 
 **Not created by this item**, and named so a later reader does not look for them here:
@@ -1424,7 +1439,8 @@ config document, R57 for an unusable directory).
 run, and deleted), edition 2024, `rust-version = "1.96"`, on macOS 26.4 `arm64` with rustc 1.98.0
 / cargo 1.98.0, resolving axum 0.8.9, tokio 1.53.1, serde 1.0.229, serde_json 1.0.151, tower
 0.5.3. Commands: `cargo build --offline -p probe-web`, `cargo test --offline -p probe-web --test
-probes -- --nocapture`, and three `cargo tree --offline` invocations. **All eleven checks passed.**
+probes -- --nocapture`, and three `cargo tree --offline` invocations. **All thirteen checks in
+the table below passed** — `A` and `B`, `T1`-`T8`, and `C9`-`C11`.
 
 | Check | What it asserts | Observed |
 |---|---|---|
