@@ -395,7 +395,10 @@ recorded under `## Decision`.
 
 **Toolchain and host.** No Rust toolchain is involved and none was required:
 this item adds no crate and no Rust source, so `rustc --version` and `cargo
---version` have no subject here. The check runs on macOS `arm64`
+--version` have no subject here. Both are recorded in
+`review/evidence/toolchain.txt` all the same — `rustc 1.98.0 (88d9e12ae
+2026-08-18) (Homebrew)` and `cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)` —
+and neither is used by any check. The check runs on macOS `arm64`
 (`Darwin 25.4.0`) with `node v26.5.0`, `npm 12.0.1`, `shellcheck 0.11.0`,
 `gh` reading its own keyring credential, and `/usr/bin/grep` —
 `grep (BSD grep, GNU compatible) 2.6.0-FreeBSD` — as the counting binary. The
@@ -485,9 +488,12 @@ the two mechanism-5 pushes. The four heading sets:
 **Endpoints and retrieval dates.** Everything but section 8 comes from the npm
 registry: `npm install release-please@17.11.2`, whose package ships both the
 compiled sources and `schemas/config.json`, so **no GitHub API call was needed to
-read release-please's source or its schema**. Section 8 made exactly two GitHub
-REST calls, spaced more than 20 seconds apart, both on **2026-09-18 (UTC)**,
-through keyring-authenticated `gh api`, which reads its own credential:
+read release-please's source or its schema**. Two GitHub REST calls were made by
+hand on **2026-09-18 (UTC)**, spaced more than 20 seconds apart, through
+keyring-authenticated `gh api`, which reads its own credential; their exact
+commands are recorded in `review/evidence/snap/RETRIEVED.txt`, section 8 asserts
+on their snapshotted responses, and **the script itself makes no network call
+outside section 7's npm install**. The two endpoints:
 `GET https://api.github.com/repos/googleapis/release-please/releases/latest` and
 `GET https://api.github.com/repos/googleapis/release-please-action/contents/package.json?ref=v5.0.0`.
 No token byte was printed, written or committed; no personal email address
@@ -500,7 +506,11 @@ retrieval date.
 log was produced, then the script was re-run twice and both outputs `diff`ed
 against it:
 
-- a plain rerun in place — **byte-identical**.
+- a plain rerun in place — **byte-identical**;
+- a rerun from a **clean `git archive HEAD` extraction** of commit
+  `9fce93c43cd66000bf320bb7b7ca1ba74f7a59c6`, which has no `.git` at all (the
+  extraction was tested with `[ -e .git ]`, because this repository's own `.git`
+  is a worktree *file*, not a directory) — **byte-identical**.
 
 The rule: **the log is byte-identical on any rerun on this host while `./snap/`
 is present and `node`, `npm` and the npm registry are reachable.** Two classes of
@@ -516,8 +526,15 @@ lines alone.
 asserted to.** The same script was re-run from the same clean extraction with
 `PATH` restricted to `/usr/bin:/bin:/usr/sbin:/sbin`, which removes `node` and
 `npm`: `review/evidence/r24-checks-skip-control.log` records 109 `PASS`, **3 named `SKIP`s** and 0 `FAIL` at exit 0, each
-naming what was missing. Re-running that control reproduces its saved log
-byte-for-byte.
+naming what was missing (`7a-install`, `7b-upstream-bytes`, `7c-rendered-bytes`
+— all three `node is not on PATH`). The control was re-run twice and both
+outputs `diff`ed against the saved log — once in place and once from the same
+clean `git archive HEAD` extraction — **byte-identical** both times. The exact
+invocation is:
+
+```bash
+PATH=/usr/bin:/bin:/usr/sbin:/sbin bash r24-checks.sh
+```
 
 **The scratch directory.** Section 7 creates it with `mktemp -d
 "${TMPDIR:-/tmp}/r24.XXXXXX"` and deletes it in an `EXIT` trap. Nothing is

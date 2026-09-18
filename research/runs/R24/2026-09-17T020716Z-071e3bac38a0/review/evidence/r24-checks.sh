@@ -114,6 +114,8 @@ RECOMMENDED_TYPES_SORTED=$(printf '%s\n' "${RECOMMENDED_TYPES[@]}" | /usr/bin/so
   printf 'grep: %s (%s)\n' "$GREP" "$GREP_VERSION"
   printf 'node: %s\n' "$(command -v node >/dev/null 2>&1 && node --version || echo absent)"
   printf 'npm: %s\n' "$(command -v npm >/dev/null 2>&1 && npm --version || echo absent)"
+  printf 'rustc: %s\n' "$(command -v rustc >/dev/null 2>&1 && rustc --version || echo absent)"
+  printf 'cargo: %s\n' "$(command -v cargo >/dev/null 2>&1 && cargo --version || echo absent)"
   printf 'shellcheck: %s\n' "$(command -v shellcheck >/dev/null 2>&1 && shellcheck --version | "$GREP" '^version:' || echo absent)"
   printf 'evidence dir: %s\n' "$EVID"
   printf 'repository root: %s\n' "$REPO"
