@@ -1,9 +1,13 @@
-# R77 — rerun from a clean extraction (no .git anywhere in the tree)
-# produced 2026-09-18T23:24:07Z
-# Extraction: git write-tree over the staged review/ paths, then
-#   git archive <tree> | tar -x -C <tmpdir>. The extracted tree has no .git
-#   (tested with -e, not -d, because a worktree's .git is a FILE, not a directory).
-# tree object: d6fd60a546fdbe9053460af5cc0138c4209037b3
+# R77 — rerun from a clean extraction: git archive 484fd2e | tar -x -C <tmpdir>
+# produced 2026-09-18T23:35:57Z
+# extracted commit: 484fd2efa5f12db598264f54678f53fd4487bc27
+# its tree:          45b89164a926b2d7669e21801d16dbaddd9a2d63
+# 484fd2e is the revision the DECISION.md paragraph citing this log was written
+# against. The commit that records that paragraph differs from 484fd2e only by the
+# paragraph itself, four further file_has lines in sources.sh (so sources.sh reads
+# PASS=80 here and PASS=84 in place), and the regenerated logs.
+# The extracted tree has no .git — tested with -e, not -d, because a worktree's
+# .git is a FILE rather than a directory.
 # .git present in extraction: no
 
 === figures.sh, run from the extraction ===
@@ -22,10 +26,10 @@ PASS=34 FAIL=0 SKIP=0 TOTAL=34
 # the same extraction with HOME pointed at an empty directory, which hides the org
 # CLI Design Standard clone, the py and ts clones, and the Cargo registry cache.
 --- sources.sh with HOME=<empty dir> ---
-SKIP org CLI Design Standard blob f9de0437baece3383e73ca2c5f48b7ab399b51c7 — /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r77-emptyhome.l2qpUb/c/cli-standards absent or blob unknown (9 checks)
+SKIP org CLI Design Standard blob f9de0437baece3383e73ca2c5f48b7ab399b51c7 — /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r77-emptyhome.mpr7iu/c/cli-standards absent or blob unknown (9 checks)
 SKIP py-launch-blueprint pin b08bccfb55d05f15e46a83b52c5660b1881d19f5 — repository or pin absent (9 checks)
 SKIP ts-launch-blueprint pin cb1cbcb2e88b898e8c081b0abbfabc1630079c00 — repository or pin absent (1 check)
 SKIP local Cargo registry cache absent — candidate source and unsafe checks (18 checks)
 PASS=43 FAIL=0 SKIP=4 TOTAL=47
 # 43 PASS + the 9 + 9 + 1 + 18 = 37 checks the four SKIPs stand for = 80, the
-# in-place total. Nothing is lost silently.
+# in-place total at 484fd2e. Nothing is lost silently.

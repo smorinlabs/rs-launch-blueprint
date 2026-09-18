@@ -1,4 +1,4 @@
-# R77 sources — 2026-09-18T23:21:04Z
+# R77 sources — 2026-09-18T23:32:38Z
 # /usr/bin/grep version: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
 PASS repository root resolves from this script's own location
 ## IN-REPO — ledger, index, owner rulings, prompt
@@ -32,6 +32,10 @@ PASS R69 revision 10 hands R77 the Cloud Run drain datum
 PASS R69 revision 10 carries BASELINE-REVIEW: F330 (drop py's lazy-load fallback)
 PASS R69's owned value makes every service knob an environment variable named by R77
 PASS R57 revision 2 fixes the single namespace segment this prefix derives from
+PASS R54 revision 3's recorded ground for rejecting a layering engine (quoted in alternative A1)
+PASS R56 revision 2 fixes the credential chain that keeps the token out of WebSettings
+PASS R53 revision 2 chose serde with no validation crate — the house shape argument
+PASS R67 requires hint to be able to name the offending input
 
 ## IN-REPO — items researched in parallel, whose knobs this item only names
 PASS R76 (cors) states that R77 owns the variable name and the parse
@@ -96,4 +100,4 @@ PASS DECISION.md records fitness gate 1 with the owner's exact ruling string
 PASS DECISION.md carries exactly one re-verify: line (1)
 PASS DECISION.md has no Supersedes section (this is revision 1) (0)
 
-PASS=80 FAIL=0 SKIP=0 TOTAL=80
+PASS=84 FAIL=0 SKIP=0 TOTAL=84

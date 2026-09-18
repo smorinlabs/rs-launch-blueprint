@@ -1,4 +1,4 @@
-# R77 probes — 2026-09-18T23:21:05Z
+# R77 probes — 2026-09-18T23:32:39Z
 # /usr/bin/grep version: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
 # rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
 # cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
@@ -63,9 +63,9 @@ PASS P3.11 confique has NO injected seam: it silently returns defaults
 
 ## P4 — four tests over real axum 0.8.9 / tokio 1.53.1 / tower 0.5.3
    Compiling axum v0.8.9
-   Compiling p4 v0.0.0 (/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r77-probes.sJZMIe/p4)
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.48s
-     Running tests/settings.rs (/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r77-probes.sJZMIe/p4/target/debug/deps/settings-85b39c8b0e5e99a9)
+   Compiling p4 v0.0.0 (/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r77-probes.2srAC4/p4)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.30s
+     Running tests/settings.rs (/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r77-probes.2srAC4/p4/target/debug/deps/settings-85b39c8b0e5e99a9)
 
 running 4 tests
 test prefix_is_derived_from_the_single_app_name_constant ... ok

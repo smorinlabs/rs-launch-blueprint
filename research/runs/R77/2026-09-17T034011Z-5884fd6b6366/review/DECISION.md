@@ -809,9 +809,16 @@ from its own location, so it runs from anywhere.
 | `review/evidence/probes.sh` | `bash research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/evidence/probes.sh` | `review/evidence/probes.log` | exit **0** |
 
 `review/evidence/fetch-snapshots.sh` is **not** an evidence check and makes no
-assertions: it is the one-shot retriever that wrote
-`review/evidence/snapshots/` on 2026-09-18, with GitHub REST called no more often than
-once per 21 seconds. Its output is `review/evidence/fetch-snapshots.log`.
+assertions: it is the one-shot retriever that wrote `review/evidence/snapshots/` on
+2026-09-18, with GitHub REST called no more often than once per 21 seconds. Its output
+is `review/evidence/fetch-snapshots.log`. **That log lists nine crates; the directory
+holds eleven.** The two extra rows, `pathdiff` and `winnow`, were retrieved by hand later
+the same day — same endpoints, same User-Agent, same date — when `config`'s transitive
+dependencies became load-bearing for the gate-2 reading, and the script's crate list was
+then extended to include them so that any future refresh covers all eleven. The committed
+`fetch-snapshots.log` is therefore the record of the first fetch rather than of the
+script's current list; `figures.sh` asserts against all eleven snapshots regardless of
+which run produced each one.
 
 **What each script proves.**
 
@@ -828,14 +835,15 @@ once per 21 seconds. Its output is `review/evidence/fetch-snapshots.log`.
   decision makes: the ledger rows, the owner rulings, the prompt's empty `owns`/`consumes`
   lines, the eight owner-reference rows, R69 revision 10's owned value and `AppState`
   sketch, R57 revision 2's `TOOL_NAME`, R76/R79/R80's coupling sentences, nine lines of
-  the org CLI Design Standard at blob `f9de0437baece3383e73ca2c5f48b7ab399b51c7`, nine py
-  claims and one ts claim at their pins, nine candidate source lines at exact published
-  versions, the `unsafe` posture of eight crates, and each `- assumes` line against the
-  live registry row.
+  the org CLI Design Standard at blob `f9de0437baece3383e73ca2c5f48b7ab399b51c7`, the four
+  quotations this decision takes from R53, R54, R56 and R67, nine py claims and one ts
+  claim at their pins, nine candidate source lines at exact published versions, the
+  `unsafe` posture of eight crates, and each `- assumes` line against the live registry
+  row.
 - **`probes.sh`** re-executes the six Rust probes described above.
 
-**Counts, in place.** `figures.sh` **PASS=121 FAIL=0 SKIP=0**; `sources.sh` **PASS=80
-FAIL=0 SKIP=0**; `probes.sh` **PASS=34 FAIL=0 SKIP=0**. Total **235 PASS, 0 FAIL,
+**Counts, in place.** `figures.sh` **PASS=121 FAIL=0 SKIP=0**; `sources.sh` **PASS=84
+FAIL=0 SKIP=0**; `probes.sh` **PASS=34 FAIL=0 SKIP=0**. Total **239 PASS, 0 FAIL,
 0 SKIP**.
 
 **Reproducibility, established rather than asserted.** Each script was re-run
@@ -856,23 +864,27 @@ of line vary, and this is the rule for comparing across a re-run:
 
 Nothing else differs.
 
-**Rerun from a clean extraction.** The `review/` paths were staged, `git write-tree`
-produced the tree that this commit records, and `git archive <tree> | tar -x -C <tmpdir>`
-extracted it. The extracted tree has no `.git` at all — tested with `-e`, not `-d`,
-because a worktree's `.git` is a *file* rather than a directory. All three scripts were
-re-run from that extraction and gave the same counts as in place: `figures.sh`
-**PASS=121 FAIL=0 SKIP=0**, `sources.sh` **PASS=80 FAIL=0 SKIP=0**, `probes.sh`
-**PASS=34 FAIL=0 SKIP=0**. The full output is `review/evidence/archive-rerun.log`.
+**Rerun from a clean extraction.** `git archive 484fd2e | tar -x -C <tmpdir>` extracted
+commit `484fd2e`, the revision this paragraph was written against. The commit that
+records this paragraph differs from `484fd2e` only by this text, four further `file_has`
+lines added to `sources.sh`, and the regenerated logs. The extracted tree has no `.git`
+at all — tested with `-e`, not `-d`, because a worktree's `.git` is a *file* rather than
+a directory. All three scripts were re-run from that extraction and gave the same counts
+as in place at that commit: `figures.sh` **PASS=121 FAIL=0 SKIP=0**, `sources.sh`
+**PASS=80 FAIL=0 SKIP=0** — 84 after the four additions — and `probes.sh` **PASS=34
+FAIL=0 SKIP=0**. The full output, with the extracted commit named in its header, is
+`review/evidence/archive-rerun.log`.
 
 **The SKIP branches, exercised rather than assumed.** That extraction SKIPped nothing,
 because every out-of-repository input — the org CLI Design Standard clone, the py and ts
 clones, the local Cargo registry cache — was still present on this machine. A run in
 which nothing SKIPs proves nothing about the SKIP paths, so `sources.sh` was run once
 more from the same extraction with `HOME` pointed at an empty directory, which hides all
-three. It produced **PASS=43 FAIL=0 SKIP=4** with each group named individually: the
-standard blob (9 checks), the py pin (9), the ts pin (1) and the registry cache (18).
-43 plus those 37 is 80, the in-place total — so nothing is lost silently, and a missing
-external input is a named SKIP rather than a FAIL or an invisible pass.
+three. It produced, at commit `484fd2e`, **PASS=43 FAIL=0 SKIP=4** with each group named
+individually: the standard blob (9 checks), the py pin (9), the ts pin (1) and the
+registry cache (18). 43 plus those 37 is 80, that commit's in-place total — so nothing is
+lost silently, and a missing external input is a named SKIP rather than a FAIL or an
+invisible pass.
 
 **Answer-shape validation.** `validate_answer_text(text, "crate")` from
 `scripts/research_validation.py` returns no diagnostics for this item's raw report,

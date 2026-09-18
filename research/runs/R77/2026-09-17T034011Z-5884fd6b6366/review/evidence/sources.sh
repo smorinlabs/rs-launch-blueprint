@@ -103,6 +103,17 @@ file_has "R69 revision 10 carries BASELINE-REVIEW: F330 (drop py's lazy-load fal
 file_has "R69's owned value makes every service knob an environment variable named by R77" "$r69" "stays an environment variable named by R77"
 file_has "R57 revision 2 fixes the single namespace segment this prefix derives from" \
   "$root/research/runs/R57/2026-09-17T020714Z-8fdb5c2010e7/review/DECISION.md" 'pub const TOOL_NAME: &str = "rslbp";'
+file_has "R54 revision 3's recorded ground for rejecting a layering engine (quoted in alternative A1)" \
+  "$root/research/runs/R54/2026-09-17T033527Z-8dfef31d60fc/review/DECISION.md" \
+  "It takes ownership of three things already decided elsewhere: the parse (R52's \`toml\` 1.1.6), the typed pass (R53's per-key loop over \`toml::Table\`, \`D06\`), and the per-layer sanitize step and warning list (R55, \`D01\`, \`D03\`)"
+file_has "R56 revision 2 fixes the credential chain that keeps the token out of WebSettings" \
+  "$root/research/runs/R56/2026-09-17T033528Z-785d25a9d608/review/DECISION.md" \
+  "\`RSLBP_TOKEN\` > stored credential"
+file_has "R53 revision 2 chose serde with no validation crate — the house shape argument" \
+  "$root/research/runs/R53/2026-09-17T020714Z-d0b567b4b9f1/review/DECISION.md" "no validation crate"
+file_has "R67 requires hint to be able to name the offending input" \
+  "$root/research/runs/R67/2026-09-05T155124Z-2271e140a7ef/review/DECISION.md" \
+  "must be able to name the offending input per R7.6"
 
 echo
 echo '## IN-REPO — items researched in parallel, whose knobs this item only names'
