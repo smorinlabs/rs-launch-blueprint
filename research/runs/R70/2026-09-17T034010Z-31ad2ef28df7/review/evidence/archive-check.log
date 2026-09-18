@@ -1,0 +1,23 @@
+=== R70 archive re-run ===
+date (UTC): 2026-09-18T22:58:37Z
+worktree:  /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+evidence:  research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/evidence
+HEAD:      00b02932c48929f4b7b442235a61978365e2a733
+PASS  repository marker present (.git file — this is a worktree)
+PASS  git archive HEAD extracted to a clean tree
+PASS  the extraction contains no nested repository
+PASS  registry.sh is present and executable in HEAD
+PASS  probe.sh is present and executable in HEAD
+
+--- registry.sh from the extracted tree
+PASS  registry.sh exited 0 from the extracted tree
+PASS  registry.log and registry-archive.log are identical below the banner
+
+--- probe.sh from the extracted tree
+PASS  probe.sh exited 0 from the extracted tree
+PASS  probe.log and probe-archive.log agree on every verdict and every captured body
+PASS  probe.log summary is PASS 33  FAIL 0  SKIP 0
+PASS  probe-archive.log summary is PASS 33  FAIL 0  SKIP 0
+
+=== summary ===
+PASS 11  FAIL 0  SKIP 0  TOTAL 11
