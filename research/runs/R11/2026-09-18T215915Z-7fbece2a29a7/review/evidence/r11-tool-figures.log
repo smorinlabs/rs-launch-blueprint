@@ -1,0 +1,19 @@
+PASS T1 cargo-hack-crate.json .recent_downloads = 219720 (2026-09-18T22:51:28Z) - 90-day downloads, crate.recent_downloads
+PASS T2 cargo-hack-crate.json .downloads = 1893214 (2026-09-18T22:51:28Z) - all-time downloads, crate.downloads
+PASS T3 cargo-hack-versions.json .newest_non_yanked.num = 0.6.45 (2026-09-18T22:51:28Z) - newest non-yanked version
+PASS T4 cargo-hack-versions.json .newest_non_yanked.created_at = 2026-05-30T14:50:51.511255Z (2026-09-18T22:51:28Z) - its release date - inside six months of this decision, so the no-release-in-6-months trigger does not fire
+PASS T5 cargo-hack-versions.json .newest_non_yanked.license = Apache-2.0 OR MIT (2026-09-18T22:51:28Z) - recorded only; fitness gate 1 is inapplicable under the owner ruling of 2026-09-12 (Q7.B)
+PASS T6 cargo-hack-versions.json .newest_non_yanked.rust_version = 1.85 (2026-09-18T22:51:28Z) - its own declared rust-version, relevant to gate 2 only if the MSRV gate reaches a non-linked developer tool at all, which is an open owner question
+PASS T7 cargo-hack-repo.json .stargazers_count = 862 (2026-09-18T22:51:51Z) - stars
+PASS T8 cargo-hack-repo.json .archived = false (2026-09-18T22:51:51Z) - not archived
+PASS T9 cargo-hack-repo.json .pushed_at = 2026-09-02T12:45:59Z (2026-09-18T22:51:51Z) - last push - sixteen days before this decision, so maintenance state is active
+PASS T10 cargo-hack-open-issues.json .total_count = 35 (2026-09-18T22:51:56Z) - open issues, from search/issues total_count and never open_issues_count
+PASS T11 dorny-paths-filter-repo.json .stargazers_count = 3337 (2026-09-18T22:52:33Z) - stars - the long-standing third-party detector action
+PASS T12 dorny-paths-filter-repo.json .archived = false (2026-09-18T22:52:33Z) - not archived
+PASS T13 dorny-paths-filter-repo.json .pushed_at = 2026-08-05T12:20:34Z (2026-09-18T22:52:33Z) - last push
+PASS T14 tj-actions-advisory.json .ghsa_id = GHSA-mrrh-fwg8-r2c3 (2026-09-18T22:52:43Z) - the advisory that disqualifies the newer detector action
+PASS T15 tj-actions-advisory.json .severity = high (2026-09-18T22:52:43Z) - severity
+PASS T16 tj-actions-advisory.json .published_at = 2025-03-15T06:30:34Z (2026-09-18T22:52:43Z) - published
+PASS T17 rustsec.org/packages/cargo-hack.html returned 404 while the atty control returned 200, so the absence of an advisory is a real absence and not a broken fetch (fitness gate 3)
+
+PASS=17 FAIL=0 SKIP=0 TOTAL=17

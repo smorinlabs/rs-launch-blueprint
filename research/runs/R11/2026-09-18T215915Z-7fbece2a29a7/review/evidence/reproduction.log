@@ -1,0 +1,10 @@
+=== R11 reproduction record ===
+host: Darwin 25.4.0 arm64; date (UTC): 2026-09-18T22:59:09Z
+
+--- PART 1: rerun in place, diffed against the committed log ---
+IDENTICAL  r11-actionlint.log   (diff is empty: the committed log IS the command's output)
+IDENTICAL  r11-detector.log   (diff is empty: the committed log IS the command's output)
+IDENTICAL  r11-cache-budget.log   (diff is empty: the committed log IS the command's output)
+IDENTICAL  r11-platform-docs.log   (diff is empty: the committed log IS the command's output)
+IDENTICAL  r11-programme-inputs.log   (diff is empty: the committed log IS the command's output)
+IDENTICAL  r11-tool-figures.log   (diff is empty: the committed log IS the command's output)

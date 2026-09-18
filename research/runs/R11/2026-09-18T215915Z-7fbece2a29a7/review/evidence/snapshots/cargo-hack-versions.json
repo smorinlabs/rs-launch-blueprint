@@ -1,0 +1,10 @@
+{
+  "endpoint": "GET https://crates.io/api/v1/crates/cargo-hack/versions",
+  "newest_non_yanked": {
+    "created_at": "2026-05-30T14:50:51.511255Z",
+    "license": "Apache-2.0 OR MIT",
+    "num": "0.6.45",
+    "rust_version": "1.85"
+  },
+  "retrieved_utc": "2026-09-18T22:51:28Z"
+}

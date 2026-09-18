@@ -1,0 +1,8 @@
+{
+  "endpoint": "GET https://api.github.com/advisories/GHSA-mrrh-fwg8-r2c3",
+  "ghsa_id": "GHSA-mrrh-fwg8-r2c3",
+  "published_at": "2025-03-15T06:30:34Z",
+  "retrieved_utc": "2026-09-18T22:52:43Z",
+  "severity": "high",
+  "summary": "tj-actions changed-files through 45.0.7 allows remote attackers to discover secrets by reading actions logs."
+}
