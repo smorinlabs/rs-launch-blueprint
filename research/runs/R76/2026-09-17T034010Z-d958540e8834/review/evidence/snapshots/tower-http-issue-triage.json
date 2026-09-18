@@ -1,0 +1,180 @@
+{
+  "_note": "Field-projected snapshot. Comment bodies are deliberately omitted; only issue number, timestamp, author login and author_association are kept.",
+  "fetched_utc": "2026-09-18T22:41:00Z",
+  "endpoints": [
+    "GET https://api.github.com/repos/tower-rs/tower-http/issues?state=all&sort=created&direction=desc&per_page=100",
+    "GET https://api.github.com/repos/tower-rs/tower-http/issues/comments?sort=created&direction=desc&per_page=100"
+  ],
+  "comments_page_covers_from": "2026-05-22T05:58:35Z",
+  "comments_page_size": 100,
+  "issues": [
+    {
+      "number": 737,
+      "created_at": "2026-09-16T12:15:33Z",
+      "state": "open",
+      "user_login": "doxxx93",
+      "author_association": "NONE"
+    },
+    {
+      "number": 736,
+      "created_at": "2026-09-15T04:15:22Z",
+      "state": "closed",
+      "user_login": "De-ASI-INTERFACE",
+      "author_association": "NONE"
+    },
+    {
+      "number": 732,
+      "created_at": "2026-09-01T00:37:34Z",
+      "state": "open",
+      "user_login": "jus7n",
+      "author_association": "NONE"
+    },
+    {
+      "number": 731,
+      "created_at": "2026-08-31T17:27:45Z",
+      "state": "open",
+      "user_login": "Jelenkee",
+      "author_association": "NONE"
+    },
+    {
+      "number": 725,
+      "created_at": "2026-08-16T16:56:03Z",
+      "state": "closed",
+      "user_login": "jlizen",
+      "author_association": "MEMBER"
+    },
+    {
+      "number": 713,
+      "created_at": "2026-07-15T19:07:22Z",
+      "state": "closed",
+      "user_login": "skeet70",
+      "author_association": "CONTRIBUTOR"
+    },
+    {
+      "number": 702,
+      "created_at": "2026-05-30T14:47:50Z",
+      "state": "closed",
+      "user_login": "yawn",
+      "author_association": "CONTRIBUTOR"
+    },
+    {
+      "number": 701,
+      "created_at": "2026-05-30T14:47:47Z",
+      "state": "open",
+      "user_login": "yawn",
+      "author_association": "CONTRIBUTOR"
+    },
+    {
+      "number": 676,
+      "created_at": "2026-05-11T17:51:43Z",
+      "state": "closed",
+      "user_login": "seun-ja",
+      "author_association": "CONTRIBUTOR"
+    },
+    {
+      "number": 668,
+      "created_at": "2026-05-05T20:51:52Z",
+      "state": "closed",
+      "user_login": "jlizen",
+      "author_association": "MEMBER"
+    }
+  ],
+  "comments": [
+    {
+      "issue_number": 702,
+      "created_at": "2026-05-30T19:21:07Z",
+      "user_login": "seanmonstar",
+      "author_association": "COLLABORATOR"
+    },
+    {
+      "issue_number": 702,
+      "created_at": "2026-05-31T14:02:22Z",
+      "user_login": "yawn",
+      "author_association": "CONTRIBUTOR"
+    },
+    {
+      "issue_number": 702,
+      "created_at": "2026-05-31T18:10:23Z",
+      "user_login": "jlizen",
+      "author_association": "MEMBER"
+    },
+    {
+      "issue_number": 702,
+      "created_at": "2026-06-02T08:20:57Z",
+      "user_login": "yawn",
+      "author_association": "CONTRIBUTOR"
+    },
+    {
+      "issue_number": 702,
+      "created_at": "2026-06-02T10:27:34Z",
+      "user_login": "FiloSottile",
+      "author_association": "NONE"
+    },
+    {
+      "issue_number": 702,
+      "created_at": "2026-06-02T10:31:07Z",
+      "user_login": "FiloSottile",
+      "author_association": "NONE"
+    },
+    {
+      "issue_number": 702,
+      "created_at": "2026-06-02T17:36:17Z",
+      "user_login": "jlizen",
+      "author_association": "MEMBER"
+    },
+    {
+      "issue_number": 702,
+      "created_at": "2026-06-03T12:55:03Z",
+      "user_login": "yawn",
+      "author_association": "CONTRIBUTOR"
+    },
+    {
+      "issue_number": 702,
+      "created_at": "2026-06-03T15:14:56Z",
+      "user_login": "jlizen",
+      "author_association": "MEMBER"
+    },
+    {
+      "issue_number": 702,
+      "created_at": "2026-06-03T15:36:07Z",
+      "user_login": "jlizen",
+      "author_association": "MEMBER"
+    },
+    {
+      "issue_number": 702,
+      "created_at": "2026-06-03T15:52:17Z",
+      "user_login": "yawn",
+      "author_association": "CONTRIBUTOR"
+    },
+    {
+      "issue_number": 702,
+      "created_at": "2026-06-03T16:03:36Z",
+      "user_login": "jlizen",
+      "author_association": "MEMBER"
+    },
+    {
+      "issue_number": 713,
+      "created_at": "2026-07-15T19:10:14Z",
+      "user_login": "jlizen",
+      "author_association": "MEMBER"
+    },
+    {
+      "issue_number": 713,
+      "created_at": "2026-07-15T19:43:09Z",
+      "user_login": "skeet70",
+      "author_association": "CONTRIBUTOR"
+    },
+    {
+      "issue_number": 737,
+      "created_at": "2026-09-16T12:25:49Z",
+      "user_login": "doxxx93",
+      "author_association": "NONE"
+    },
+    {
+      "issue_number": 737,
+      "created_at": "2026-09-17T04:15:10Z",
+      "user_login": "doxxx93",
+      "author_association": "NONE"
+    }
+  ]
+}

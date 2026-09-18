@@ -1,0 +1,218 @@
+=== R76 registry, forge and crate-source checks ===
+date(UTC): 2026-09-18T22:55:21Z
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+curl: curl 8.7.1
+gh:   gh version 2.98.0 (2026-08-20)
+jq:   jq-1.8.2
+
+--- A. tower-http on crates.io: the version this decision pins ---
+endpoint: GET https://crates.io/api/v1/crates/tower-http
+FIGURE crate.recent_downloads (90-day) = 149725960
+FIGURE crate.downloads (all-time)      = 462114603
+endpoint: GET https://crates.io/api/v1/crates/tower-http/versions
+FIGURE newest non-yanked num       = 0.7.1
+FIGURE newest non-yanked created_at= 2026-08-31T14:49:25.697237Z
+FIGURE newest non-yanked rust_version = 1.65
+FIGURE 0.7.0 created_at            = 2026-06-15T14:01:18.432430Z
+FIGURE versions: 33 non-yanked of 39 published
+ASSERT ok   the newest non-yanked tower-http version is 0.7.1 — the version this decision recommends
+ASSERT ok   tower-http 0.7.1 was published 2026-08-31T14:49:25.697237Z, which is what the decision states
+ASSERT ok   tower-http 0.7.0 was published 2026-06-15, before the owner reference's own 2026-09-16 date
+ASSERT ok   tower-http 0.7.1 declares rust-version 1.65, inside the 1.96 floor msrv-policy yields from rustc 1.98.0
+
+--- B. the cors category on crates.io, enumerated rather than recalled ---
+endpoint: GET https://crates.io/api/v1/crates?keyword=cors&per_page=30&sort=downloads (and &page=2)
+FIGURE keyword=cors meta.total = 36; page1 returned 30, page2 returned 6
+endpoint: GET https://crates.io/api/v1/crates?q=cors&per_page=40
+FIGURE q=cors meta.total = 1452; this run read the 40 highest-ranked
+--- every crate carrying the cors keyword, name / newest stable / 90-day / all-time ---
+  actix-cors 0.7.2 2843244 20974423
+  rocket_cors 0.6.0 78837 1124663
+  tauri-plugin-cors-fetch 5.0.0 4319 35062
+  routerify-cors 3.0.0 708 26738
+  pdk-cors-lib 1.10.0 8162 17817
+  reinhardt-middleware 0.3.18 6648 14869
+  corsware 0.2.0 301 14585
+  axum_cors 0.1.8 161 10672
+  warp-cors 0.3.0 98 5787
+  tower-http-cors-config 0.1.3 1255 5192
+  wasm-dev-server 0.1.1 9 2748
+  cors-proxy 1.0.2 22 2478
+  rocket_ext 0.3.1 17 2119
+  elif-security 0.2.2 28 1394
+  bunner_cors_rs 0.1.2 22 842
+  armature-security 0.4.0 327 773
+  oxidite-middleware null 161 631
+  just-serve 0.1.0 8 527
+  htmstd 0.8.6 155 403
+  tauri-plugin-better-cors-fetch 1.8.0 248 386
+  blazingly-middleware 0.2.2 216 216
+  fandhe-backend-plugin-cors 0.4.0 127 127
+  apollo-cors 0.3.0 86 98
+  toxi-middleware 3.1.0 96 96
+  corx-core 0.2.0 76 91
+  axum-stack 0.2.0 68 68
+  volter-middleware 0.1.0 67 67
+  rok-guard 0.6.0 47 65
+  corx-server 0.2.0 44 58
+  trillium-cors 0.1.0 45 45
+  hyper-cors 0.2.0 37 37
+  cors-core 0.1.1 33 33
+  vary-header 0.1.0 26 26
+  corx 0.2.0 10 22
+  rok-cors 0.1.0 8 21
+  lily_middleware 0.1.0 15 15
+ASSERT ok   every crate carrying the cors keyword was read in this run (36 of 36), so the category map is an enumeration
+ASSERT ok   tower-http appears on neither keyword page — it was reached from the axum side, not from the keyword search, and the decision says so
+ASSERT ok   rok-cors is on the enumerated list, so its exclusion is a disposition and not an omission
+ASSERT ok   hyper-cors is on the enumerated list, so its exclusion is a disposition and not an omission
+
+--- C. the declared MSRV of every candidate the decision excludes on gate 2 ---
+FIGURE axum_cors 0.1.8: rust_version = null   (GET https://crates.io/api/v1/crates/axum_cors/versions)
+ASSERT ok   axum_cors declares no rust-version, so gate 2 cannot be cleared
+FIGURE rok-cors 0.1.0: rust_version = null   (GET https://crates.io/api/v1/crates/rok-cors/versions)
+ASSERT ok   rok-cors declares no rust-version, so gate 2 cannot be cleared
+FIGURE cors-core 0.1.1: rust_version = null   (GET https://crates.io/api/v1/crates/cors-core/versions)
+ASSERT ok   cors-core declares no rust-version, so gate 2 cannot be cleared
+FIGURE tower-http-cors-config 0.1.3: rust_version = null   (GET https://crates.io/api/v1/crates/tower-http-cors-config/versions)
+ASSERT ok   tower-http-cors-config declares no rust-version, so gate 2 cannot be cleared
+FIGURE lily_middleware 0.1.0: rust_version = 1.96.1   (GET https://crates.io/api/v1/crates/lily_middleware/versions)
+ASSERT ok   lily_middleware declares 1.96.1, above the 1.96 floor, so gate 2 fails the other way
+FIGURE hyper-cors 0.2.0: rust_version = 1.80   (GET https://crates.io/api/v1/crates/hyper-cors/versions)
+ASSERT ok   hyper-cors declares 1.80 and clears gate 2 - it is excluded on integration, not on MSRV
+FIGURE actix-cors 0.7.2: rust_version = 1.88   (GET https://crates.io/api/v1/crates/actix-cors/versions)
+ASSERT ok   actix-cors declares 1.88 and clears gate 2 - it is excluded on gate 5 and on fit
+
+--- D. hyper-cors implements no tower Layer: read its dependency list ---
+endpoint: GET https://crates.io/api/v1/crates/hyper-cors/0.2.0/dependencies
+FIGURE hyper-cors 0.2.0 normal dependencies = bytes, http, hyper, itoa, pin-project-lite
+ASSERT ok   hyper-cors depends on no tower, tower-layer or tower-service crate, so axum::Router::layer cannot take it — the ground the decision excludes it on
+
+--- E. advisories: RustSec on tower-http, with a control that must also answer ---
+endpoint: https://rustsec.org/packages/tower-http.html -> HTTP 200
+endpoint: https://rustsec.org/packages/atty.html (control) -> HTTP 200
+ASSERT ok   the control page answers 200, so a 404 elsewhere would mean the site changed rather than that an advisory cleared
+ASSERT ok   RustSec serves a page for tower-http
+PINNED advisory ids listed for tower-http = RUSTSEC-2021-0135 RUSTSEC-2022-0043 
+FIGURE occurrences of the word 'withdrawn' on that page = 2
+ASSERT ok   RustSec lists exactly two tower-http entries, which is the pair the decision dispositions
+ASSERT ok   the page marks at least one entry withdrawn, which is RUSTSEC-2021-0135
+PINNED RUSTSEC-2022-0043, the lines that decide whether 0.7.1 is exposed:
+  12:os = ["windows"]
+  15:patched = [">= 0.2.1", ">= 0.1.3, < 0.2.0"]
+  20:`tower_http::services::fs::ServeDir` didn't correctly validate Windows paths
+ASSERT ok   RUSTSEC-2022-0043 declares patched >= 0.2.1, so 0.7.1 is many minor lines past it
+ASSERT ok   RUSTSEC-2022-0043 is Windows-only, an operating system target-os-matrix does not name
+ASSERT ok   RUSTSEC-2022-0043 concerns ServeDir in the fs feature, which the cors-only dependency line never enables
+
+--- F. what 0.7.0 changed for the cors module, read from the maintainers' changelog ---
+HEAD  tower-http CHANGELOG.md, section '# 0.7.0' (default branch main)
+FIGURE entries beginning '- `cors`' in the 0.7.0 section = 1
+FIGURE entries carrying 'breaking:' in the 0.7.0 section = 7
+the cors entry, quoted:
+  - `cors`: relax the `Vary` header defaults ([#674])
+every breaking entry, quoted by its module:
+  - **breaking:** `compression`: the middleware now handles the `*` wildcard and
+  - **breaking:** `compression`: upgrade the `SizeAbove` predicate threshold from `u16` to `u64`, allowing minimum sizes
+  - **breaking:** remove the implicit no-op `tokio` and `async-compression` features.
+  - **breaking:** `trace`/`classify`: include the gRPC error message in tracing output. `GrpcCode` and `GrpcFailureClass
+  - **breaking:** `follow-redirect`: `FollowRedirect` now forwards request
+  - **breaking:** `follow-redirect`: header and extension filtering is now
+  - **breaking:** `services`: reject a trailing slash for file paths. File requests with a trailing slash now return `40
+ASSERT ok   the 0.7.0 section carries exactly one cors entry — 'relax the Vary header defaults (#674)'
+ASSERT ok   no breaking entry in the 0.7.0 section names the cors module
+ASSERT ok   the 0.7.0 section does carry breaking entries, so this check can fail; they land in other modules, which R75 must read for whatever features it adds
+
+--- G. the shipped source: read the published .crate artifacts, not a branch ---
+PINNED tower-http-0.6.11.crate sha256 = 4cfcf7e2740e6fc6d4d688b4ef00650406bb94adf4731e43c096c3a19fe40840
+PINNED tower-http-0.7.1.crate sha256 = 08a05a66a4fdd61cbbe0a1d755ffe0ca6aba159dd4820936a0ff8a8278245b9c
+PINNED tower-http-0.7.1/Cargo.toml feature declarations:
+  117:cors = []
+  161:default = []
+ASSERT ok   tower-http declares default = [], so the dependency line must name cors explicitly and pulls in nothing else
+ASSERT ok   the cors feature activates no optional dependency at all, which is why it adds no async-runtime coupling
+ASSERT ok   tower-http declares #![deny(unsafe_code)] at the crate root
+ASSERT ok   no file in the cors module contains the token 'unsafe'
+ASSERT ok   Cors::call short-circuits on any OPTIONS request regardless of the allowlist — the source cause of the 405-to-200 change an unconditional install produces
+ASSERT ok   Cors::call emits the derived Vary header on every response it handles, preflight or not
+ASSERT ok   ensure_usable_cors_rules exists — the runtime assertion that panics when allow_credentials(true) meets a wildcard
+ASSERT ok   AllowOrigin::list takes a runtime iterator, so the allowlist is runtime-configured and not compile-time
+ASSERT ok   AllowOrigin carries a Default, which the bare-CorsLayer::new() case resolves through
+ASSERT ok   OriginInner::default() is an empty List, not a Const — which is why a bare CorsLayer::new() still derives Vary: origin in 0.7.1
+PINNED what 0.7.1 changed in src/cors relative to 0.6.11 — the files that differ:
+  Files tower-http-0.6.11/src/cors/allow_headers.rs and tower-http-0.7.1/src/cors/allow_headers.rs differ
+  Files tower-http-0.6.11/src/cors/allow_methods.rs and tower-http-0.7.1/src/cors/allow_methods.rs differ
+  Files tower-http-0.6.11/src/cors/allow_origin.rs and tower-http-0.7.1/src/cors/allow_origin.rs differ
+  Files tower-http-0.6.11/src/cors/mod.rs and tower-http-0.7.1/src/cors/mod.rs differ
+  Files tower-http-0.6.11/src/cors/tests.rs and tower-http-0.7.1/src/cors/tests.rs differ
+  Files tower-http-0.6.11/src/cors/vary.rs and tower-http-0.7.1/src/cors/vary.rs differ
+FIGURE files differing under src/cors between 0.6.11 and 0.7.1 = 6
+ASSERT ok   the cors module did change between 0.6.11 and 0.7.1, so 'no change' would be the wrong claim; probe-checks.sh measures what the change is observable as
+ASSERT ok   0.7.1 derives the Vary header in update_vary_header from whether each CORS response header is request-dependent — the #674 relaxation
+ASSERT ok   0.6.11 has no such derivation: its Vary default is the fixed preflight_request_headers() list, which is the difference the probe measures
+
+--- H. GitHub, through the authenticated CLI, one call every 21 s ---
+endpoint: GET https://api.github.com/repos/tower-rs/tower-http
+FIGURE stargazers_count = 913; archived = false; pushed_at = 2026-09-13T22:53:22Z
+FIGURE open_issues_count = 37  (NOT used: it counts pull requests too, per the prompt's rule)
+ASSERT ok   tower-rs/tower-http is not archived
+ASSERT ok   the repository figure resolved rather than returning an empty body
+endpoint: GET https://api.github.com/search/issues?q=repo:tower-rs/tower-http+is:issue+is:open
+FIGURE open issues (total_count, the field the prompt requires) = 30
+ASSERT ok   the open-issue search resolved; the decision quotes this number with today's date
+endpoint: GET https://api.github.com/repos/rust-lang/crates.io/contents/Cargo.toml (default branch)
+HEAD  the Rust project's own registry service pins tower-http at:
+  170:tower-http = { version = "=0.7.1", features = ["add-extension", "fs", "catch-panic", "timeout", "compression-full"] }
+ASSERT ok   rust-lang/crates.io pins tower-http at exactly =0.7.1 in production, which is the practice evidence for recommending the 0.7 line over the owner reference's 0.6
+
+--- I. practice evidence: who activates the cors feature, and on what CI ---
+HEAD  tokio-rs/axum/examples/cors/Cargo.toml:
+  10:tower-http = { version = "0.6.1", features = ["cors"] }
+ASSERT ok   tokio-rs/axum activates the tower-http cors feature in examples/cors/Cargo.toml
+HEAD  tokio-rs/console/console-subscriber/Cargo.toml:
+  65:tower-http = { version = "0.6.6", features = ["cors"] }
+ASSERT ok   tokio-rs/console activates the tower-http cors feature in console-subscriber/Cargo.toml
+HEAD  hyperium/tonic/tonic-web/Cargo.toml:
+  31:tower-http = { version = "0.6", features = ["cors"] }
+ASSERT ok   hyperium/tonic activates the tower-http cors feature in tonic-web/Cargo.toml
+HEAD  tower-rs/tower-http .github/workflows/CI.yml, the OS and MSRV rows:
+  81:        os: [macos-latest, windows-latest]
+  105:    - uses: dtolnay/rust-toolchain@1.65
+ASSERT ok   upstream CI runs a macos-latest job, and its other jobs run on ubuntu-latest, so both members of target-os-matrix are covered upstream
+ASSERT ok   upstream CI tests the declared 1.65 MSRV, so the declaration is enforced and not decorative
+HEAD  loco-rs/loco, the config-gated-middleware pattern this decision compares against:
+  loco-cors.rs:21:    pub enable: bool,
+  loco-cors.rs:152:            cors = cors.max_age(Duration::from_secs(max_age));
+  loco-cors.rs:188:    fn is_enabled(&self) -> bool {
+  loco-mod.rs:55:    fn is_enabled(&self) -> bool {
+ASSERT ok   loco's MiddlewareLayer trait carries is_enabled(), so a registry of switchable layers is a real named pattern in a 9k-star framework — the shape this decision hands to R75 rather than adopting for one layer
+ASSERT ok   loco calls CorsLayer::max_age from deserialized config, corroborating the .max_age(600) call this decision recommends to match py's always-emitted max-age
+
+--- J. issue responsiveness, recomputed from the committed snapshot ---
+SNAP  /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R76/2026-09-17T034010Z-d958540e8834/review/evidence/snapshots/tower-http-issue-triage.json
+  fetched_utc: 2026-09-18T22:41:00Z
+  comments page covers back to 2026-05-22T05:58:35Z (100 comments)
+  the 10 most recently opened non-PR issues: #737, #736, #732, #731, #725, #713, #702, #701, #676, #668
+    #737 opened 2026-09-16T12:15:33Z by doxxx93 (NONE) state=open -> no maintainer comment on the fetched page
+    #736 opened 2026-09-15T04:15:22Z by De-ASI-INTERFACE (NONE) state=closed -> no maintainer comment on the fetched page
+    #732 opened 2026-09-01T00:37:34Z by jus7n (NONE) state=open -> no maintainer comment on the fetched page
+    #731 opened 2026-08-31T17:27:45Z by Jelenkee (NONE) state=open -> no maintainer comment on the fetched page
+    #725 opened 2026-08-16T16:56:03Z by jlizen (MEMBER) state=closed -> no maintainer comment on the fetched page
+    #713 opened 2026-07-15T19:07:22Z by skeet70 (CONTRIBUTOR) state=closed -> first maintainer reply after 0.05 h (0.002 d)
+    #702 opened 2026-05-30T14:47:50Z by yawn (CONTRIBUTOR) state=closed -> first maintainer reply after 4.55 h (0.190 d)
+    #701 opened 2026-05-30T14:47:47Z by yawn (CONTRIBUTOR) state=open -> no maintainer comment on the fetched page
+    #676 opened 2026-05-11T17:51:43Z by seun-ja (CONTRIBUTOR) state=closed -> no maintainer comment on the fetched page  [opened BEFORE the comment page's window — absence not established]
+    #668 opened 2026-05-05T20:51:52Z by jlizen (MEMBER) state=closed -> no maintainer comment on the fetched page  [opened BEFORE the comment page's window — absence not established]
+  answered_by_maintainer_comment=2 unanswered=8
+  closed_without_a_maintainer_comment=4
+  outside_comment_page_window=2
+  median_over_answered_subset_hours=2.30
+  median_over_answered_subset_days=0.096
+ASSERT ok   2 of the 10 most recently opened issues carry a maintainer comment, which is why the decision reports two figures and not one median
+ASSERT ok   8 of the 10 carry no maintainer comment on the fetched page
+ASSERT ok   4 of those 8 were nonetheless closed, which is the second figure
+ASSERT ok   at least one of the 8 was opened before the fetched comment page's window, so its silence is unproven rather than measured — a limit the decision states
+
+=== RESULT ===
+PASS=54 FAIL=0 SKIP=0 TOTAL=54
+RESULT: PASS

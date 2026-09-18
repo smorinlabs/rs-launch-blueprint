@@ -1,0 +1,78 @@
+=== R76 decision self-check ===
+date(UTC): 2026-09-18T23:13:48Z
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+decision:  /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R76/2026-09-17T034010Z-d958540e8834/review/DECISION.md
+raw:       /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R76/2026-09-17T034010Z-d958540e8834/raw/opus.md
+registry:  /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/PARAMETERS.md
+
+--- A. the document's shape, which the revision rules fix exactly ---
+H1: # 2026-09-18 — R76 — cors-middleware (crate, Focused) — decision (revision 1)
+ASSERT ok   the H1 is the date-first form the revision rules require, naming the item, kind, tier and revision
+H2 headings: ## Decision|## Parameters|## Empirical check|## Engines|
+ASSERT ok   the four required H2 sections appear exactly once each, in the required order, and no other H2 was added
+ASSERT ok   no Supersedes section heading: this is a first revision, which the rules say must not carry one
+ASSERT ok   the Decision section carries its one required H3 heading, exactly once
+trigger line at 481; Parameters heading at 483
+ASSERT ok   exactly one line begins with the re-verify marker, which is the rule
+ASSERT ok   and it is the closing line of the Decision section rather than floating elsewhere in the document
+ASSERT ok   that line carries a dated horizon as well as its event triggers
+
+--- B. the parameter lines, compared byte-for-byte with the live registry ---
+registry rows extracted: 6
+assumes lines in the decision: 6
+ASSERT ok   every '- assumes' line is byte-identical to its docs/port/PARAMETERS.md row, in the same order — the comparison the packaging validator performs
+ASSERT ok   the decision records exactly six assumed parameters: the four owner-fixed ones plus the two researched values the design rests on
+ASSERT ok   no '- owns' line: the prompt's Couplings block carries an empty '- owns:' and the registry names no R76-owned row, so inventing one would be a registry edit
+ASSERT ok   no CONFLICT: line, which matches the decision's own statement that no consumed parameter has to change
+ASSERT ok   the rust-edition line carries its value bare, with no backticks, citation or commentary after the '= '
+ASSERT ok   and so does target-os-matrix
+
+--- C. the licence gate: recorded with the exact string, and no residue elsewhere ---
+ASSERT ok   gate 1 is recorded with the required 'inapplicable — owner ruling 2026-09-12 (Q7.B)' string rather than deleted
+ASSERT ok   and the string is completed by 'not evaluated for any dependency or tool', so the row states the ruling in full
+lines containing 'licen' (case-insensitive) = 4; enumerated:
+  111:1. **Licence — `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is
+  113:   `docs/port/OWNER-REVIEW.md`, section *"2026-09-12 — no licence check for anything the
+  497:- assumes license = MIT OR Apache-2.0
+  521:it is also why no Windows behaviour was exercised. `license` is recorded and, per the
+ASSERT ok   exactly four lines mention a licence: the two that carry the inapplicable string and its source, the bare '- assumes license' registry line, and the prose that says the parameter is recorded and evaluated against nothing — no candidate is selected or excluded on a licence ground anywhere
+ASSERT ok   the decision contains no 'MulanPSL' reasoning, which the owner ruling struck
+ASSERT ok   the decision contains no 'copyleft' reasoning, which the owner ruling struck
+ASSERT ok   the decision contains no 'AGPL' reasoning, which the owner ruling struck
+ASSERT ok   the decision contains no 'patent grant' reasoning, which the owner ruling struck
+ASSERT ok   the decision contains no 'licence-compatible' reasoning, which the owner ruling struck
+ASSERT ok   the decision contains no 'license-compatible' reasoning, which the owner ruling struck
+
+--- D. no personal address anywhere in this run's review directory ---
+files containing an email-shaped token: (none)
+ASSERT ok   no file under review/ contains an email-shaped token: the scripts identify themselves with the repository URL instead
+
+--- E. the engine record matches the artifact it names ---
+sha256(raw/opus.md) = c2792a6957df5b84fcb6438f2f14312fcae8bbd801055e07f1235e63333a5cf4
+ASSERT ok   raw/opus.md hashes to the value the decision's ## Engines section cites, so the record names the artifact actually read
+ASSERT ok   and that hash appears in the decision, so the citation is checkable without leaving the document
+  errors=0
+ASSERT ok   validate_answer_text(raw, 'crate') reports no shape error: the report carries all fifteen H3 fields, in order, each with a body
+ASSERT ok   the absent Codex leg is recorded against the owner ruling that deferred it, by identifier
+ASSERT ok   and the decision states in so many words that it is synthesized from a single engine
+
+--- F. every figure the decision quotes from a sibling log is in that log ---
+ASSERT ok   the binary-size cost of the dependency: probe-checks.log prints it as '= +166480 bytes' and the decision quotes it as '+166,480 B'
+ASSERT ok   the stripped size without the dependency: probe-checks.log prints it as 'arm=without: 502264 bytes' and the decision quotes it as '502,264 → 668,744 bytes'
+ASSERT ok   the stripped size with the dependency: probe-checks.log prints it as 'arm=with: 668744 bytes' and the decision quotes it as '502,264 → 668,744 bytes'
+ASSERT ok   the preflight short-circuit, measured from the handler's side: probe-checks.log prints it as 'handler_hits=0' and the decision quotes it as 'handler_hits=0'
+ASSERT ok   the max-age default imported from py and compiled in this run: probe-checks.log prints it as 'access-control-max-age=600' and the decision quotes it as 'access-control-max-age: 600'
+ASSERT ok   the dependency-tree delta: probe-checks.log prints it as 'resolved packages: with the tower-http line 57, without it 55' and the decision quotes it as '**57** packages against **55**'
+ASSERT ok   tower-http 0.7.1's publication timestamp: registry-figures.log prints it as '2026-08-31T14:49:25.697237Z' and the decision quotes it as '2026-08-31T14:49:25.697237Z'
+ASSERT ok   tower-http 0.7.0's publication timestamp: registry-figures.log prints it as '2026-06-15T14:01:18.432430Z' and the decision quotes it as '2026-06-15T14:01:18.432430Z'
+ASSERT ok   the 90-day download figure: registry-figures.log prints it as '(90-day) = 149725960' and the decision quotes it as '149,725,960'
+ASSERT ok   the all-time download figure: registry-figures.log prints it as '(all-time)      = 462114603' and the decision quotes it as '462,114,603'
+ASSERT ok   the size of the enumerated cors category: registry-figures.log prints it as 'meta.total = 36' and the decision quotes it as '**36**'
+ASSERT ok   registry-figures.log ends in RESULT: PASS, so the decision is citing a passing run
+ASSERT ok   registry-figures.log records no ASSERT FAIL line
+ASSERT ok   probe-checks.log ends in RESULT: PASS, so the decision is citing a passing run
+ASSERT ok   probe-checks.log records no ASSERT FAIL line
+
+=== RESULT ===
+PASS=43 FAIL=0 SKIP=0 TOTAL=43
+RESULT: PASS
