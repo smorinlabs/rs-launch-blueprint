@@ -1,4 +1,4 @@
-INFO repository root: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r11-archive.FL49lU
+INFO repository root: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r11-arch.tw8QBD
 INFO grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
 INFO .git is absent - this is a git archive extraction; no assertion below needs git
 PASS I01 research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md: check B3 - workspace membership, not the root package feature, decides which members are built, so a --workspace command on a CLI-only pull request already compiles axum and tokio
