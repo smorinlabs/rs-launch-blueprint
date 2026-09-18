@@ -170,7 +170,7 @@ convention or a `cargo-deny` row), and folding both front ends into the facade.
 The seven prepared Wave 2 runs that pin R69 (R51, R70, R76, R77, R79, R80, R83)
 are re-prepared after R69 republishes.
 
-### 2026-09-18 — R67's byte-empty-stdout clause read as before-result failures only (W1-R62)
+### 2026-09-17 — R67's byte-empty-stdout clause read as before-result failures only (W1-R62)
 
 R62 `clipboard-integration` (accepted at revision 2, judgment-only under
 W1-CODEX) makes a failed `--copy` a post-result partial failure: stdout carries
