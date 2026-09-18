@@ -7,17 +7,21 @@ unresolved-findings: none
 
 I read `review/DECISION.md` whole (748 lines) at the sha256 above, recomputed
 twice with `shasum -a 256` — once on opening and once immediately before writing
-this file — `raw/codex.md` whole, `inputs/prompt.md`,
+this file — `raw/codex.md` whole (115 lines), `inputs/prompt.md`,
 `docs/superpowers/plans/p02-roles/judgment-auditor.md`, `docs/port/PARAMETERS.md`,
 `docs/port/COMMONALITY.md` rows F063, F064, F133 and F267,
 `docs/port/BASELINE-REVIEW.md:69`, `:143`, `:250`, `docs/port/OWNER-REVIEW.md:47`,
 `docs/planning/p02/execution-ledger.md:1000` (owner rulings W1-CODEX2 and
-W1-CODEX3) and `:1028`, `research/topics/49-build-target-declaration/DECISION.md`,
-`research/topics/60-cli-parsing-framework/DECISION.md`, the org CLI Design
-Standard v1.4.14 at blob `f9de0437baece3383e73ca2c5f48b7ab399b51c7` in
-`/Users/stevemorin/c/cli-standards`, and
-`research/runs/R44/2026-09-17T020715Z-ff8c50edbd69/review/DECISION.md` with its
-`review/audit-fable.md` for proportion and for the findings convention.
+W1-CODEX3) and `:1028`, the org CLI Design Standard v1.4.14 at blob
+`f9de0437baece3383e73ca2c5f48b7ab399b51c7` in `/Users/stevemorin/c/cli-standards`,
+and `research/runs/R44/2026-09-17T020715Z-ff8c50edbd69/review/DECISION.md` with
+its `review/audit-fable.md` for proportion and for the findings convention.
+`research/topics/49-build-target-declaration/DECISION.md` and
+`research/topics/60-cli-parsing-framework/DECISION.md` I read at the passages
+this decision cites rather than end to end — R49's `no build.rs and no
+build-orchestration crate` clause, and R60's `## Parameters`, its candidate
+table's MSRV row, its P3 row, its JSON version object and its R22 paragraphs —
+which is the scope checks A10a–A10f cover and the scope this item consumes.
 
 `review/audit-codex.md` does not exist. The role doc lists it as required
 reading; the empirical audit is deferred under owner ruling W1-CODEX3 of
@@ -291,7 +295,7 @@ at JF-1 and JF-2.
 
 ## Findings
 
-Three findings, **all non-blocking**. None is an unresolved finding in the
+Four findings, **all non-blocking**. None is an unresolved finding in the
 acceptance sense, and the recommendation does not move under any of them.
 
 **JF-1 (non-blocking) — one control figure is asserted outside what the run's
@@ -301,10 +305,13 @@ inference "took controls in both directions, run live on **2026-09-18 UTC**:
 sentence names the controls as "checks `L1-serde`, `L1-tokio` and `L1-git2` in
 `r22-live-recheck.sh`". `clap` is not among them. The script's six
 `check_rustsec` calls are `serde`, `tokio`, `git2`, `built`, `vergen-gix`,
-`shadow-rs`; `clap` appears nowhere in `r22-live-recheck.log`, nowhere in
-`r22-sources.log`, and in `snapshots/MANIFEST.txt` only as the three clap-source
-rows. So the `clap → 404` figure is the one number in the document that no
-committed log or snapshot backs. *It is true* — I read
+`shadow-rs`; `clap` appears nowhere in `r22-live-recheck.log`, appears in
+`r22-sources.log` only in the clap-*source* checks (`:30` pinning
+`clap-rs/clap main`, and `:44`–`:49` for A6a–A6e2), and appears in
+`snapshots/MANIFEST.txt` only as the three clap-source rows. In no log and no
+snapshot does `clap` appear in a RustSec context at all. So the `clap → 404`
+figure is the one number in the document that no committed log or snapshot
+backs. *It is true* — I read
 `https://rustsec.org/packages/clap.html` at 2026-09-18T22:34:52Z UTC and got
 **404** — and it carries a date, with its endpoint given by the URL template
 three sentences earlier. *What resolves it:* add a
@@ -318,9 +325,17 @@ it independently in any case.
 `inapplicable`.** The prompt's `## Required evidence` table requires, per
 candidate, `Open issues | GET https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+is:open | total_count (never open_issues_count)`
 and `Adopters | reverse-dependencies page + the projects' Cargo.toml`. The
-decision reports neither for `built`, `vergen-gix` or `shadow-rs`: no open-issue
-total appears anywhere in the document, and no reverse-dependency adopter is
-named for any of the three. The tier guidance is explicit that a figure
+decision reports neither row as the prompt specifies for `built`, `vergen-gix`
+or `shadow-rs`. No open-issue `total_count` appears anywhere in the document —
+nor, for that matter, in `raw/codex.md`, which reports response-time samples over
+"eight most recently opened issues" and "four recent open issues" but never the
+total. No reverse-dependencies page is consulted for any of the three, and no
+adopter is named for `vergen-gix` or `shadow-rs`. The exception is `built`: the
+rav1e paragraph at `:341`–`:342` names rav1e including `built`'s generated module
+(`include!(concat!(env!("OUT_DIR"), "/built.rs"));` at `src/lib.rs:54`, at a
+pinned commit, with the source read) — an adopter demonstrated at source, though
+it is framed there as evidence for the base-version/provenance layering rather
+than as `built`'s adoption evidence. The tier guidance is explicit that a figure
 inapplicable to the item kind must be stated as `inapplicable` with its reason
 and "not omit[ted] silently", and the decision does exactly that for the selected
 mechanism's crate figures and for gate 1 — so the standard it applies elsewhere
@@ -359,6 +374,30 @@ tier anyway, because C9a–C9c show Cargo refusing to parse a manifest whose
 `version` carries a leading `v`, so the value cannot acquire one under either
 reading.
 
+**JF-4 (non-blocking) — three of the report's practice citations are dropped
+without the accounting the section otherwise gives.** `## Engines` accounts
+carefully for what it takes from the luna report and what it does not: four
+corrections, two smaller ones "reported rather than fixed quietly", what is
+carried, and six claims carried unverified. Three practice citations fall outside
+that accounting entirely. `raw/codex.md:47` names
+`vicanso/pingap` and `QuestPackageManager/QPM.CLI` as projects practicing the
+vergen build-script family, and `:48` names `rustfs/rustfs` for `shadow-rs`; all
+three reappear in the report's `### Sources` at `:111` and two in its GitHub
+endpoint list at `:113`. The decision mentions none of them — I grepped it for
+`pingap`, `QPM` and `rustfs` and got nothing — and does not say they were set
+aside. One deserves saying out loud, because it is the same defect class the
+decision repairs elsewhere: Pingap's adoption is cited through
+`https://github.com/vicanso/pingap/blob/main/CLAUDE.md`, an agent-instruction
+file, not the `Cargo.toml` the prompt's Adopters row requires. *What resolves
+it:* one line in `## Engines` saying the three were not carried, with the
+Pingap citation's file type as the reason for that one. *Why non-blocking:* all
+three are adopter evidence for `vergen-gix` and `shadow-rs`, the two candidates
+rejected on scope and on gate 3 respectively, so carrying them could change no
+gate outcome; and dropping an adopter cited through an agent-instruction file is
+the right call, merely an unstated one. This finding and JF-2's adopters half are the
+same gap seen from the two sides — the required row is unreported, and the only
+evidence the run had for it went unmentioned.
+
 ## Assessment
 
 The recommendation follows from the evidence as written. One public compile-time
@@ -389,12 +428,14 @@ with their load-bearing status, five things left for P03, a named Linux gap, a
 named binary-size and compile-time gap, and an out-of-scope tension between R49's
 and R60's published values recorded rather than quietly resolved.
 
-The recommendation would not move under JF-1, JF-2 or JF-3. JF-1 removes a
+The recommendation would not move under JF-1, JF-2, JF-3 or JF-4. JF-1 removes a
 redundant control from a four-way inference that two executable controls already
 establish and that I re-ran independently; JF-2 concerns two popularity figures
 for three candidates already excluded on grounds those figures cannot reach; JF-3
 is a prose reading of a standard whose evidence the decision quotes correctly and
-whose conclusion an independent structural measurement already secures. All three
-are reporting-precision defects, not evidentiary ones.
+whose conclusion an independent structural measurement already secures; JF-4 is
+adopter evidence for the two candidates rejected on scope and on gate 3, one
+piece of it cited through an agent-instruction file that should not be carried
+anyway. All four are reporting-precision defects, not evidentiary ones.
 
 Approved.
