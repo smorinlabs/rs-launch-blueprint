@@ -63,8 +63,9 @@ No blog post is used as an authority anywhere in this report.
   generator is `src/arbitrary.rs`, **335 lines** mapping `openapiv3` schema kinds onto
   `proptest::strategy::Strategy` values, and its runner `src/fuzzer.rs` is **281 lines**
   (`wc -l` on the extracted `openapi-fuzzer-0.2.0.crate`, 2026-09-18).
-- `schemathesis` itself is maintained by Dmitry Dygalo, who also maintains the Rust `jsonschema`
-  crate (`https://crates.io/api/v1/crates/jsonschema` → `repository`
+- `schemathesis` is published by GitHub user **`Stranger6667`** (named by the PyPI record's
+  `project_urls.Funding` → `https://github.com/sponsors/Stranger6667`), who also maintains the Rust
+  `jsonschema` crate (`https://crates.io/api/v1/crates/jsonschema` → `repository`
   `https://github.com/Stranger6667/jsonschema`, 0.56.0 of 2026-09-10, 22,074,141 downloads in 90
   days). That is the sharpest evidence available for the gap: the same maintainer ships a
   best-in-class Rust *validator* and ships the *generator* only in Python.
@@ -175,7 +176,9 @@ including comments) fetches `/openapi.json` through `tower::ServiceExt::oneshot`
 - **A measured design requirement, not a guess:** the *first* version of the mapper drew integers
   uniformly from the documented range and the suite **passed while the defect was present** — 16
   uniform draws from `0..=100` missed `0`. Hypothesis (and therefore `schemathesis`) biases toward
-  boundary values for free; an assembled mapper must ask for it. Adding an explicit
+  boundary values for free — that behaviour is understood from Hypothesis's documented strategy
+  design and was **not** re-verified here; what *was* measured is the Rust side: uniform draws
+  missed the defect and an explicit bias found it. An assembled mapper must ask for that bias. Adding an explicit
   `proptest::strategy::Union` over `{minimum, maximum, 0-if-in-range, uniform}` for integers and
   `{shortest, longest, uniform}` for strings — roughly 20 lines — turned the pass into the failure
   above. Any synthesis of this item must keep that requirement.
@@ -186,7 +189,14 @@ including comments) fetches `/openapi.json` through `tower::ServiceExt::oneshot`
   machine: the test target roughly doubles CPU work at near-equal wall time.
 - `cargo audit` over that workspace's lockfile (advisory-db at commit
   `2b34578f89884736e0fcbd42f7ba8d6b10b4a0ce`, 1,251 advisories loaded, 124 crate dependencies
-  scanned) exited **0** with no vulnerable package.
+  scanned) exited **0** with no vulnerable package. **How that exit status was established:** the
+  first run read `$?` after a pipeline, which in zsh reports the *last* command's status, not
+  `cargo audit`'s — so the check was re-run **unpiped** on 2026-09-18 against a regenerated
+  lockfile of the same manifest (`cargo generate-lockfile`; 1,175-line lock; same 124 crate
+  dependencies), redirecting to a file and reading `$?` directly: `AUDIT_EXIT:0`. The advisory
+  database for both runs is the default `~/.cargo/advisory-db` at commit
+  `2b34578f89884736e0fcbd42f7ba8d6b10b4a0ce` (`git log -1`, 2026-09-18T11:06:23+02:00), 1,251
+  advisories loaded.
 - `oas3` 0.22.0 and the OpenAPI version, measured in the same workspace: a **3.1.0** document
   parses and `Spec::validate_version()` returns `Ok("3.1.0")`; the same document relabelled
   **3.0.3** still parses permissively (`from_json` ok, 2 operations enumerated) but
@@ -204,7 +214,7 @@ touch this item.
 
 | Reference row | Position | Ground |
 |---|---|---|
-| **C3 OpenAPI** — "utoipa 5 + utoipa-axum 0.2" (line 50), spec emitted from serde types | **Agree**, as a hand-off: `utoipa` 5 emits OpenAPI **3.1**, which is exactly what `oas3` 0.22.0 requires (measured above). Not decided here — R71 owns F307/F312/F332/F333. R83's requirement on it is stated as a coupling, not a decision. |
+| **C3 OpenAPI** — "utoipa 5 + utoipa-axum 0.2" (line 50), spec emitted from serde types | **Agree**, as a hand-off: `utoipa` emits OpenAPI **3.1**, verified in its own published source rather than asserted: `utoipa` 5.5.0 (newest stable, 2026-05-04, MIT OR Apache-2.0, `rust-version` 1.75) declares `pub enum OpenApiVersion` with a single variant carrying `#[serde(rename = "3.1.0")]` and the comment "Will serialize to `3.1.0` the latest released OpenAPI version" (`src/openapi.rs:383-385`), and its `Deserialize` impl accepts only `"3.1.0"` (`:421-423`). That is exactly what `oas3` 0.22.0 requires (measured above). Not decided here — R71 owns F307/F312/F332/F333. R83's requirement on it is stated as a coupling, not a decision. |
 | **C12 Testing** — "axum-test 18 … tower `oneshot` [alternative]: oneshot lower-level, more boilerplate" (lines 72, 117) | **Differ**, on recorded ground rather than preference: R69 revision 10 (owner-accepted 2026-09-18) already selects `tower::ServiceExt::oneshot` as the in-process idiom and makes `tower` 0.5.3 a `crates/web` dev-dependency. Using `axum-test` here would add a dependency whose fitness gates nothing in this programme has evaluated, to gain ergonomics the 220-line harness does not need (it issues one request type). The "more boilerplate" criticism did not materialise: the `oneshot` call is 3 lines of the 220. |
 | **CI outline** — "cargo fmt --check → clippy -D warnings → sqlx prepare --check → cargo test → cargo deny check → OpenAPI export + diff" (lines 117, 377) | **Differ / extend**: the reference's CI has no contract-fuzz step at all. R83 adds one, after the OpenAPI export-and-diff step and inside the web job, excluded from the default local `cargo test`. Nothing in the reference is contradicted; a step it does not contain is added. |
 
@@ -245,8 +255,8 @@ zero is the honest result is the item's central finding.**
 | Crate | Role in the design | 90-day downloads | All-time | Stars | Last release | Maintenance | Notable adopters | One-line trade-off |
 |---|---|---|---|---|---|---|---|---|
 | `oas3` 0.22.0 | parse the served OpenAPI 3.1 document; enumerate operations; expose each schema's JSON-Schema keywords with `$ref` resolution | 786,524 | 2,000,625 | 79 | 0.22.0, 2026-05-06 | **active** (`pushed_at` 2026-09-09; release PR open 2026-09-09; Dependabot merges through 2026-09-06) | `slumber_import` 5.3.0 (`slumber`, 1,228 stars); `roast` 0.12.0; `oas3-gen` 0.28.0; `openapi_type` 0.6.1 — 36 dependents in total | OpenAPI **3.1 only** at `validate_version()`; a 3.0 document parses but is not validated (measured) |
-| `proptest` 1.11.0 | the generative engine, shrinking and failure reporting | 48,579,875 | 189,599,555 | — (workspace `proptest-rs/proptest`) | 1.11.0, 2026-03-24 | **active** | already this template's property engine (R33, published) | generic: it has no schema front end, which is exactly the ~220 lines this item owns |
-| `jsonschema` 0.56.0 | **optional, not adopted now**: response-schema conformance if P3 is ever widened | 22,074,141 | 90,900,038 | — (`Stranger6667/jsonschema`) | 0.56.0, 2026-09-10 | **active** | — | validation only; it cannot generate, so it does not shorten the assembly |
+| `proptest` 1.11.0 | the generative engine, shrinking and failure reporting | 48,579,875 | 189,599,555 | 2,239 (`proptest-rs/proptest`, `pushed_at` 2026-08-21, 148 open issues+PRs) | 1.11.0, 2026-03-24 | **active** | already this template's property engine (R33, published) | generic: it has no schema front end, which is exactly the ~220 lines this item owns |
+| `jsonschema` 0.56.0 | **optional, not adopted now**: response-schema conformance if P3 is ever widened | 22,074,141 | 90,900,038 | 816 (`Stranger6667/jsonschema`, `pushed_at` 2026-09-16, 12 open issues+PRs) | 0.56.0, 2026-09-10 | **active** | — | validation only; it cannot generate, so it does not shorten the assembly |
 
 Declared `rust-version` (gate 2), licence (reported, not gated), advisories (gate 3, from
 `https://rustsec.org/packages/<name>.html`, 2026-09-18) and platform posture (gate 4):
@@ -270,7 +280,7 @@ Issue responsiveness (gate-adjacent maintenance evidence), `oas3`, from the 10 m
 opened **issues** (`https://api.github.com/search/issues?q=repo:x52dev/oas3-rs+is:issue&sort=created&order=desc&per_page=10`,
 window 2025-01-07 → 2026-05-03, comment authors read per issue):
 
-| Issue | Opened | First maintainer (`robjtede`) response | Days |
+| Issue | Opened | First maintainer response (`robjtede` — confirmed sole crate owner by `https://crates.io/api/v1/crates/oas3/owners`, 2026-09-18) | Days |
 |---|---|---|---|
 | #333 | 2026-05-03 | 2026-05-05 | 2 |
 | #318 | 2026-03-25 | none (closed with no comment) | unanswered |
@@ -298,7 +308,7 @@ fix-and-release rather than neglect; 5 open issues total
 | `noson` 0.2.2 | 2026-08-08 | MIT OR Apache-2.0 | **Gate 2 — FAIL (no `rust-version` declared)** | The single closest thing to `hypothesis-jsonschema` in Rust — "Generate random JSON values from a JSON Schema", 5,947 lines including a `xeger` regex-to-string module for `pattern` support, edition 2024, actively pushed (2026-09-12). Adoption 313 / 1,526 downloads, **1 star**. Had it declared an MSRV it would have shortened this item's assembly considerably; as it stands the assembly implements the keyword subset itself. This is the candidate to re-check first (see re-verify triggers). |
 | `momus-fuzz` 0.9.3 | 2026-08-13 | Apache-2.0 | **Gate 2 — FAIL (no `rust-version` declared)** | "Payload mutation engine — boundary, encoding, type mismatch, cardinality mutators"; 1,943 downloads (all inside 90 days), **63 published versions between 2026-08-04 and 2026-08-13**, repo `jlcoulter/momus` 1 star, 1 open issue. A release cadence of six versions a day with no adoption is a stability signal against it independent of the gate. |
 | `mockforge-contracts` 0.3.223 | 2026-09-18 | MIT OR Apache-2.0 (repo `NOASSERTION`) | **Gate 2 — FAIL (no `rust-version` declared)**, and **fit** | Part of MockForge, a mocking framework (repo 11 stars, 50 open issues, 97 published versions). Its "contract testing, drift detection" validates mocks and recorded traffic against a spec; it does not generate a case per documented operation against the service under test. Wrong problem, before the gate. |
-| `openapiv3` 2.2.0 | 2025-06-02 | MIT/Apache-2.0 | **Gate 2 — FAIL (no `rust-version` declared)** | The most-downloaded OpenAPI parser by a wide margin (2,978,577 in 90 days; 12,992,586 all-time) and the one `openapi-fuzzer` itself uses — and it declares no MSRV on its newest non-yanked version, so under the strict reading it cannot be this item's parser. It is also **OpenAPI 3.0-shaped**, while `utoipa` (the reference architecture's C3 pick) emits 3.1. Both facts point the same way: `oas3`. |
+| `openapiv3` 2.2.0 | 2025-06-02 | MIT/Apache-2.0 | **Gate 2 — FAIL (no `rust-version` declared)** | The most-downloaded OpenAPI parser by a wide margin (2,978,577 in 90 days; 12,992,586 all-time) and the one `openapi-fuzzer` itself uses — and it declares no MSRV on its newest non-yanked version, so under the strict reading it cannot be this item's parser. It is also **OpenAPI 3.0-shaped** by its own declaration — `Cargo.toml:23`: "This crate provides data structures that represent the OpenAPI v3.0.x specification easily deserializable with serde" — while `utoipa` (the reference architecture's C3 pick) emits 3.1. Both facts point the same way: `oas3`. |
 
 ### Up-and-comers
 
@@ -323,7 +333,8 @@ fix-and-release rather than neglect; 5 open issues total
 - **CLI** (`rslbp`): **no effect**. The recommendation adds nothing to the binary, its dependency
   tree or its size — every crate named is a `[dev-dependencies]` entry of the optional web member,
   and dev-dependencies never enter a shipped artefact. `cargo build` for the CLI with the `web`
-  feature off resolves none of them.
+  feature off compiles none of them (they are still resolved into `Cargo.lock`, as every
+  dev-dependency is; resolution is not compilation and costs the binary nothing).
 - **Library** (`rs-launch-blueprint` core): **no effect**, and deliberately so. R01's port seam,
   R05's synchronous core and the domain types are untouched; the fuzz suite exercises the service
   through its HTTP surface only, which is the same boundary py's suite uses
@@ -356,7 +367,7 @@ Concretely, and matching each principle:
 | Exclusion from the default run | **R32 owns the mechanism**; this item states the requirement and the three Rust mechanisms available: (a) `#[ignore]` plus `cargo test -- --ignored`; (b) a dedicated `[[test]]` target selected by name (`cargo test --test contract_fuzz`); (c) a dedicated Cargo feature such as `contract-fuzz`. **The `web` feature cannot serve as the marker**: R02 revision 1's check `B3` observed `cargo build --workspace` compiling the optional web member with the feature off, because workspace membership decides the build set — so a `--workspace` test run would run this suite unless one of (a)–(c) is applied | P4 |
 
 Why `oas3` and not the obvious alternative: `openapiv3` 2.2.0 is 6.5× more downloaded, and fails
-gate 2 by declaring no `rust-version`; it is also 3.0-shaped while the reference architecture's
+gate 2 by declaring no `rust-version`; it is also 3.0-shaped by its own crate description while the reference architecture's
 OpenAPI generator (`utoipa` 5, C3) emits 3.1. `oas3` declares 1.87, is actively released, models
 OpenAPI 3.1 natively, and — measured here — exposes exactly the two APIs this design needs
 (`Spec::operations()`, `Schema::resolve`) plus every JSON-Schema keyword as a typed field.
@@ -379,8 +390,9 @@ in-repo one.
 **What it costs today, which is why it is second:** it needs (a) a **listening server**, so the
 web binary must be started and torn down in CI rather than the router exercised in process; (b) a
 **second language runtime** in a Rust template's CI (`uvx schemathesis` or `pip install`), or a
-container image — and `macos-latest` GitHub runners have no Docker daemon, so the container route
-cannot satisfy the fixed `target-os-matrix` and the Python route must run on both legs; (c) a
+container image — and `macos-latest` GitHub runners are documented as carrying no Docker daemon (a
+GitHub runner-image property taken as understood here, **not** re-verified against the runner image
+manifest), so the container route cannot satisfy the fixed `target-os-matrix` and the Python route must run on both legs; (c) a
 tension with R42's published `package-manager-invocation` value, which says to invoke tools as
 bare executables on `PATH` with "no provisioner, runner or package-manager prefix in any Justfile
 recipe or lefthook job" — `uvx schemathesis …` is exactly such a prefix. **That tension is named,
@@ -487,7 +499,7 @@ Coupling hand-offs, none of which this item decides:
 | 1 | `cargo test --test contract_fuzz` with a seeded 5xx on a documented-valid input | fail, naming a minimized request | **FAILED**: `projects-create: Test failed: 500 Internal Server Error for /projects body={"name":"a","limit":0}.` + `minimal failing input: ("/projects", Some(Object {"name": String("a"), "limit": Number(0)}))` |
 | 2 | the same after the handler returns 400 for that input | pass | `test result: ok. 1 passed`, `finished in 0.01s` |
 | 3 | operation enumeration from the **served** document | every documented operation, from the document alone | `operations discovered: 2`, both fuzzed, no operation names in the test |
-| 4 | `cargo audit` on the probe lockfile (advisory-db `2b34578f…`, 1,251 advisories) | no vulnerable package | exit 0, 124 crate dependencies scanned |
+| 4 | `cargo audit` on the probe lockfile, **unpiped**, `$?` read directly (advisory-db `2b34578f…` in `~/.cargo/advisory-db`, 1,251 advisories) | no vulnerable package | `AUDIT_EXIT:0`, 124 crate dependencies scanned (the first attempt read `$?` after a pipeline and was redone) |
 | 5 | `cargo tree -e normal` vs `-e normal,dev` | the suite is dev-only | 50 vs 114 packages |
 | 6 | `cargo build` vs `cargo build --tests` (clean target dir) | modest added compile cost | 22.21 s / 34.65 s user vs 22.33 s / 69.30 s user |
 | 7 | `oas3::from_json` + `Spec::validate_version()` on 3.1.0 and on the same document relabelled 3.0.3 | 3.1 accepted | `Ok("3.1.0")` and `Err("Unsupported spec file version (3.0.3)")` |
@@ -522,7 +534,9 @@ eventuality. Also medium: the case count (16) and the exact keyword subset, both
 tune without changing the decision.
 
 **Explicitly not established:** the Linux leg of gate 4 by observation; the median
-time-to-first-response for `oas3` issue #157 (comment authors not read); any figure for
+time-to-first-response for `oas3` issue #157 (comment authors not read); issue responsiveness for
+`proptest` (R33 published figures on 2026-09-13; not re-derived here) and for `jsonschema` (not
+measured — the crate is recorded for a possible later widening of P3, not adopted); any figure for
 `momus-fuzz`/`mockforge-contracts` beyond registry and repository metadata, since both fail gate 2
 before fit is weighed.
 
@@ -559,9 +573,9 @@ comes first:
 `q=jsonschema%20generate%20arbitrary`, `q=openapi%20spec%20parse`; crate endpoints
 `crates/openapi-fuzzer`, `crates/apifuzz`, `crates/apifuzz-core`, `crates/apifuzz-runner`,
 `crates/noson`, `crates/momus-fuzz`, `crates/mockforge-contracts`, `crates/openapiv3`,
-`crates/oas3`, `crates/proptest`, `crates/jsonschema` (fields `crate.recent_downloads`,
+`crates/oas3`, `crates/proptest`, `crates/jsonschema`, `crates/utoipa` (fields `crate.recent_downloads`,
 `crate.downloads`, and `versions[]` filtered to `yanked: false` for `num`, `created_at`, `license`,
-`rust_version`, `edition`); `crates/oas3/reverse_dependencies?per_page=15`.
+`rust_version`, `edition`); `crates/oas3/reverse_dependencies?per_page=15`; `crates/oas3/owners` (sole owner `robjtede`, "Rob Ede").
 
 **GitHub REST** (`https://api.github.com/…`, retrieved 2026-09-18, one call per ≥20 s):
 `repos/matusf/openapi-fuzzer`, `repos/matusf/openapi-fuzzer/issues?state=all&sort=created&direction=desc&per_page=10`,
@@ -574,7 +588,8 @@ comes first:
 `search/issues?q=repo:x52dev/oas3-rs+is:issue&sort=created&order=desc&per_page=10`, and
 `repos/x52dev/oas3-rs/issues/{333,300,275,236,234}/comments`; `repos/glennib/noson`;
 `repos/jlcoulter/momus`; `repos/SaaSy-Solutions/mockforge`;
-`repos/LucasPickering/slumber`; `repos/schemathesis/schemathesis`.
+`repos/LucasPickering/slumber`; `repos/schemathesis/schemathesis`; `repos/proptest-rs/proptest`;
+`repos/Stranger6667/jsonschema`.
 
 **RustSec** (retrieved 2026-09-18): `https://rustsec.org/packages/{openapi-fuzzer,apifuzz,apifuzz-core,apifuzz-runner,noson,oas3,proptest,openapiv3}.html`
 — every one HTTP **404**, i.e. no advisory page exists for any of them; and `cargo audit` 0.22.x
@@ -590,7 +605,9 @@ against `RustSec/advisory-db` at commit `2b34578f89884736e0fcbd42f7ba8d6b10b4a0c
 8 modules), `apifuzz-runner-0.1.3` (`src/datagen.rs` 922 lines), `noson-0.2.2` (`Cargo.toml`,
 5,947 lines across 5 modules), `oas3-0.22.0` (`src/lib.rs`, `src/spec/mod.rs` including
 `OPENAPI_SUPPORTED_VERSION_RANGE = "~3.1"` at line 75 and `Spec::operations()` at line 205,
-`src/spec/schema.rs`, `src/spec/parameter.rs`).
+`src/spec/schema.rs`, `src/spec/parameter.rs`), `utoipa-5.5.0` (`src/openapi.rs:383-385,421-423`,
+the `OpenApiVersion` enum) and `openapiv3-2.2.0` (`Cargo.toml:23`, the crate description naming
+OpenAPI v3.0.x).
 
 **Repository and programme documents:** py@b08bccfb `tests/web/test_contract.py:1-30`,
 `pyproject.toml:80,277-278`, `Justfile:300-301`; `ts@cb1cbcb2` full tree listing (no web, OpenAPI
@@ -615,9 +632,17 @@ read from a live response on 2026-09-18 rather than from documentation prose. Gi
 spaced at ≥20 s. Two early attempts to batch those calls in a backgrounded shell script were
 terminated by the harness after their first call, which produced a small number of duplicate
 requests inside one 20 s window before the pattern was abandoned; the duplicates returned identical
-payloads and no figure depends on which copy was read. The executed probes ran under a directory
-created beneath `$TMPDIR` and deleted afterwards; no file outside this report's own path was
-written. **What I could not verify:** the Linux leg of fitness gate 4 for any candidate (no
+payloads and no figure depends on which copy was read. The executed probes ran under directories created beneath `$TMPDIR` and deleted afterwards; no
+file outside this report's own path was written. **One self-correction is recorded rather than
+quietly fixed:** the first `cargo audit` of the probe lockfile read `$?` after a pipeline, which
+in zsh reports the last command's status; that is the same defect shape this programme rejected a
+decision for previously, so the check was re-run unpiped against a regenerated lockfile of the
+same manifest before the claim was kept (`AUDIT_EXIT:0`). Three statements that were first drafted
+from background knowledge were either sourced before publication (`utoipa` emitting 3.1;
+`openapiv3` being 3.0-shaped; `robjtede` being `oas3`'s owner) or are now labelled as understood
+rather than verified (Hypothesis's boundary bias; the absence of a Docker daemon on `macos-latest`
+runners). The `schemathesis` maintainer is named only by the GitHub handle the PyPI record
+supplies. **What I could not verify:** the Linux leg of fitness gate 4 for any candidate (no
 `ubuntu-latest` runner was available to this report — the recommended stack was built and run on
 macOS/arm64 only, and `apifuzz`'s CI was read rather than executed); the comment authors of `oas3`
 issue #157, so its first-maintainer-response time is recorded as not verified; whether
