@@ -1,0 +1,536 @@
+{
+    "meta": {
+        "next_page": null,
+        "total": 8
+    },
+    "versions": [
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2026-04-15T17:00:09.393719Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/11785959?v=4",
+                        "created_at": "2015-04-03T13:26:02Z",
+                        "github_username_matches": true,
+                        "id": 114622,
+                        "login": "wyatt-herkamp",
+                        "name": "Wyatt Herkamp",
+                        "url": "https://github.com/wyatt-herkamp"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "f9d29a4f822b7a7e7eada47da087a9d29d9b266dba45edc375fdc700965860d7",
+            "crate": "serde-env",
+            "crate_size": 21055,
+            "created_at": "2026-04-15T17:00:09.393719Z",
+            "description": "deserialize env into structs via serde",
+            "dl_path": "/api/v1/crates/serde-env/0.3.0/download",
+            "documentation": "https://docs.rs/serde-env",
+            "downloads": 777575,
+            "edition": "2021",
+            "features": {},
+            "has_lib": true,
+            "homepage": null,
+            "id": 2261318,
+            "lib_links": null,
+            "license": "Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 1024,
+                        "comment_lines": 51,
+                        "files": 4
+                    }
+                },
+                "total_code_lines": 1024,
+                "total_comment_lines": 51
+            },
+            "links": {
+                "authors": "/api/v1/crates/serde-env/0.3.0/authors",
+                "dependencies": "/api/v1/crates/serde-env/0.3.0/dependencies",
+                "version_downloads": "/api/v1/crates/serde-env/0.3.0/downloads"
+            },
+            "num": "0.3.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/11785959?v=4",
+                "created_at": "2015-04-03T13:26:02Z",
+                "github_username_matches": true,
+                "id": 114622,
+                "login": "wyatt-herkamp",
+                "name": "Wyatt Herkamp",
+                "url": "https://github.com/wyatt-herkamp"
+            },
+            "readme_path": "/api/v1/crates/serde-env/0.3.0/readme",
+            "repository": "https://github.com/Xuanwo/serde-env",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2026-04-15T17:00:09.393719Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2024-08-05T08:52:40.869968Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/5351546?v=4",
+                        "created_at": "2013-08-31T06:22:45Z",
+                        "github_username_matches": true,
+                        "id": 94042,
+                        "login": "Xuanwo",
+                        "name": "Xuanwo",
+                        "url": "https://github.com/Xuanwo"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "d13536c0c431652192b75c7d5afa83dedae98f91d7e687ff30a009e9d15284fb",
+            "crate": "serde-env",
+            "crate_size": 12687,
+            "created_at": "2024-08-05T08:52:40.869968Z",
+            "description": "deserialize env into structs via serde",
+            "dl_path": "/api/v1/crates/serde-env/0.2.0/download",
+            "documentation": "https://docs.rs/serde-env",
+            "downloads": 1372184,
+            "edition": "2021",
+            "features": {},
+            "has_lib": true,
+            "homepage": null,
+            "id": 1224146,
+            "lib_links": null,
+            "license": "Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 888,
+                        "comment_lines": 9,
+                        "files": 4
+                    }
+                },
+                "total_code_lines": 888,
+                "total_comment_lines": 9
+            },
+            "links": {
+                "authors": "/api/v1/crates/serde-env/0.2.0/authors",
+                "dependencies": "/api/v1/crates/serde-env/0.2.0/dependencies",
+                "version_downloads": "/api/v1/crates/serde-env/0.2.0/downloads"
+            },
+            "num": "0.2.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/5351546?v=4",
+                "created_at": "2013-08-31T06:22:45Z",
+                "github_username_matches": true,
+                "id": 94042,
+                "login": "Xuanwo",
+                "name": "Xuanwo",
+                "url": "https://github.com/Xuanwo"
+            },
+            "readme_path": "/api/v1/crates/serde-env/0.2.0/readme",
+            "repository": "https://github.com/Xuanwo/serde-env",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2024-08-05T08:52:40.869968Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2023-01-19T11:46:33.984337Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/5351546?v=4",
+                        "created_at": "2013-08-31T06:22:45Z",
+                        "github_username_matches": true,
+                        "id": 94042,
+                        "login": "Xuanwo",
+                        "name": "Xuanwo",
+                        "url": "https://github.com/Xuanwo"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "c68119a0846249fd6f4b38561b4b4727dbc4fd9fea074f1253bca7d50440ce58",
+            "crate": "serde-env",
+            "crate_size": 11998,
+            "created_at": "2023-01-19T11:46:33.984337Z",
+            "description": "deserialize env into structs via serde",
+            "dl_path": "/api/v1/crates/serde-env/0.1.1/download",
+            "documentation": "https://docs.rs/serde-env",
+            "downloads": 423850,
+            "edition": "2021",
+            "features": {},
+            "has_lib": true,
+            "homepage": null,
+            "id": 706740,
+            "lib_links": null,
+            "license": "Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 876,
+                        "comment_lines": 9,
+                        "files": 4
+                    }
+                },
+                "total_code_lines": 876,
+                "total_comment_lines": 9
+            },
+            "links": {
+                "authors": "/api/v1/crates/serde-env/0.1.1/authors",
+                "dependencies": "/api/v1/crates/serde-env/0.1.1/dependencies",
+                "version_downloads": "/api/v1/crates/serde-env/0.1.1/downloads"
+            },
+            "num": "0.1.1",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/5351546?v=4",
+                "created_at": "2013-08-31T06:22:45Z",
+                "github_username_matches": true,
+                "id": 94042,
+                "login": "Xuanwo",
+                "name": "Xuanwo",
+                "url": "https://github.com/Xuanwo"
+            },
+            "readme_path": "/api/v1/crates/serde-env/0.1.1/readme",
+            "repository": "https://github.com/Xuanwo/serde-env",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2023-01-19T11:46:33.984337Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-09-15T14:19:51.666877Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/5351546?v=4",
+                        "created_at": "2013-08-31T06:22:45Z",
+                        "github_username_matches": true,
+                        "id": 94042,
+                        "login": "Xuanwo",
+                        "name": "Xuanwo",
+                        "url": "https://github.com/Xuanwo"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "9f31ed60434054f2e2fceeba651f4e8ec2bb89269828323c1673a31606ac35db",
+            "crate": "serde-env",
+            "crate_size": 11877,
+            "created_at": "2022-09-15T14:19:51.666877Z",
+            "description": "deserialize env into structs via serde",
+            "dl_path": "/api/v1/crates/serde-env/0.1.0/download",
+            "documentation": "https://docs.rs/serde-env",
+            "downloads": 113109,
+            "edition": "2021",
+            "features": {},
+            "has_lib": true,
+            "homepage": null,
+            "id": 622140,
+            "lib_links": null,
+            "license": "Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 852,
+                        "comment_lines": 9,
+                        "files": 4
+                    }
+                },
+                "total_code_lines": 852,
+                "total_comment_lines": 9
+            },
+            "links": {
+                "authors": "/api/v1/crates/serde-env/0.1.0/authors",
+                "dependencies": "/api/v1/crates/serde-env/0.1.0/dependencies",
+                "version_downloads": "/api/v1/crates/serde-env/0.1.0/downloads"
+            },
+            "num": "0.1.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/5351546?v=4",
+                "created_at": "2013-08-31T06:22:45Z",
+                "github_username_matches": true,
+                "id": 94042,
+                "login": "Xuanwo",
+                "name": "Xuanwo",
+                "url": "https://github.com/Xuanwo"
+            },
+            "readme_path": "/api/v1/crates/serde-env/0.1.0/readme",
+            "repository": "https://github.com/Xuanwo/serde-env",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-09-15T14:19:51.666877Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-08-05T12:38:22.830965Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/5351546?v=4",
+                        "created_at": "2013-08-31T06:22:45Z",
+                        "github_username_matches": true,
+                        "id": 94042,
+                        "login": "Xuanwo",
+                        "name": "Xuanwo",
+                        "url": "https://github.com/Xuanwo"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "4e3db12214f282126b26c31a959a880721f669a5133de8041541d8060ea30a20",
+            "crate": "serde-env",
+            "crate_size": 11830,
+            "created_at": "2022-08-05T12:38:22.830965Z",
+            "description": "deserialize env into structs via serde",
+            "dl_path": "/api/v1/crates/serde-env/0.0.3/download",
+            "documentation": "https://docs.rs/serde-env",
+            "downloads": 2062,
+            "edition": "2021",
+            "features": {},
+            "has_lib": true,
+            "homepage": null,
+            "id": 596865,
+            "lib_links": null,
+            "license": "Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 848,
+                        "comment_lines": 9,
+                        "files": 4
+                    }
+                },
+                "total_code_lines": 848,
+                "total_comment_lines": 9
+            },
+            "links": {
+                "authors": "/api/v1/crates/serde-env/0.0.3/authors",
+                "dependencies": "/api/v1/crates/serde-env/0.0.3/dependencies",
+                "version_downloads": "/api/v1/crates/serde-env/0.0.3/downloads"
+            },
+            "num": "0.0.3",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/5351546?v=4",
+                "created_at": "2013-08-31T06:22:45Z",
+                "github_username_matches": true,
+                "id": 94042,
+                "login": "Xuanwo",
+                "name": "Xuanwo",
+                "url": "https://github.com/Xuanwo"
+            },
+            "readme_path": "/api/v1/crates/serde-env/0.0.3/readme",
+            "repository": "https://github.com/Xuanwo/serde-env",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-08-05T12:38:22.830965Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-05-18T06:18:11.932368Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/5351546?v=4",
+                        "created_at": "2013-08-31T06:22:45Z",
+                        "github_username_matches": true,
+                        "id": 94042,
+                        "login": "Xuanwo",
+                        "name": "Xuanwo",
+                        "url": "https://github.com/Xuanwo"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "4e03cfb2aa71df46bc21892a343552041c8712e97ace1a535e7f7e6eabeca6c0",
+            "crate": "serde-env",
+            "crate_size": 11149,
+            "created_at": "2022-05-18T06:18:11.932368Z",
+            "description": "deserialize env into structs via serde",
+            "dl_path": "/api/v1/crates/serde-env/0.0.2/download",
+            "documentation": "https://docs.rs/serde-env",
+            "downloads": 179578,
+            "edition": "2021",
+            "features": {},
+            "has_lib": true,
+            "homepage": null,
+            "id": 551088,
+            "lib_links": null,
+            "license": "Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 686,
+                        "comment_lines": 7,
+                        "files": 4
+                    }
+                },
+                "total_code_lines": 686,
+                "total_comment_lines": 7
+            },
+            "links": {
+                "authors": "/api/v1/crates/serde-env/0.0.2/authors",
+                "dependencies": "/api/v1/crates/serde-env/0.0.2/dependencies",
+                "version_downloads": "/api/v1/crates/serde-env/0.0.2/downloads"
+            },
+            "num": "0.0.2",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/5351546?v=4",
+                "created_at": "2013-08-31T06:22:45Z",
+                "github_username_matches": true,
+                "id": 94042,
+                "login": "Xuanwo",
+                "name": "Xuanwo",
+                "url": "https://github.com/Xuanwo"
+            },
+            "readme_path": "/api/v1/crates/serde-env/0.0.2/readme",
+            "repository": "https://github.com/Xuanwo/serde-env",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-05-18T06:18:11.932368Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-04-23T07:52:35.267769Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/5351546?v=4",
+                        "created_at": "2013-08-31T06:22:45Z",
+                        "github_username_matches": true,
+                        "id": 94042,
+                        "login": "Xuanwo",
+                        "name": "Xuanwo",
+                        "url": "https://github.com/Xuanwo"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "9e25cbc2db78bdf2b85ae2bb9894106e14092f87e2c47191dc3d704d7dca78be",
+            "crate": "serde-env",
+            "crate_size": 10448,
+            "created_at": "2022-04-23T07:52:35.267769Z",
+            "description": "deserialize env into structs via serde",
+            "dl_path": "/api/v1/crates/serde-env/0.0.1/download",
+            "documentation": "https://docs.rs/serde-env",
+            "downloads": 10638,
+            "edition": "2021",
+            "features": {},
+            "has_lib": true,
+            "homepage": null,
+            "id": 536743,
+            "lib_links": null,
+            "license": "Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 554,
+                        "comment_lines": 2,
+                        "files": 4
+                    }
+                },
+                "total_code_lines": 554,
+                "total_comment_lines": 2
+            },
+            "links": {
+                "authors": "/api/v1/crates/serde-env/0.0.1/authors",
+                "dependencies": "/api/v1/crates/serde-env/0.0.1/dependencies",
+                "version_downloads": "/api/v1/crates/serde-env/0.0.1/downloads"
+            },
+            "num": "0.0.1",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/5351546?v=4",
+                "created_at": "2013-08-31T06:22:45Z",
+                "github_username_matches": true,
+                "id": 94042,
+                "login": "Xuanwo",
+                "name": "Xuanwo",
+                "url": "https://github.com/Xuanwo"
+            },
+            "readme_path": "/api/v1/crates/serde-env/0.0.1/readme",
+            "repository": "https://github.com/Xuanwo/serde-env",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-04-23T07:52:35.267769Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-04-21T02:10:07.073271Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/5351546?v=4",
+                        "created_at": "2013-08-31T06:22:45Z",
+                        "github_username_matches": true,
+                        "id": 94042,
+                        "login": "Xuanwo",
+                        "name": "Xuanwo",
+                        "url": "https://github.com/Xuanwo"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "ea2a0d6a8e872c9406f9d447129221850d1b5f81ee24451b8e6dfa113297d753",
+            "crate": "serde-env",
+            "crate_size": 855,
+            "created_at": "2022-04-21T02:10:07.073271Z",
+            "description": "Layered configuration system built upon serde",
+            "dl_path": "/api/v1/crates/serde-env/0.0.0/download",
+            "documentation": "https://docs.rs/serde-env",
+            "downloads": 1117,
+            "edition": "2021",
+            "features": {},
+            "has_lib": true,
+            "homepage": null,
+            "id": 535694,
+            "lib_links": null,
+            "license": "Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 0,
+                        "comment_lines": 0,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 0,
+                "total_comment_lines": 0
+            },
+            "links": {
+                "authors": "/api/v1/crates/serde-env/0.0.0/authors",
+                "dependencies": "/api/v1/crates/serde-env/0.0.0/dependencies",
+                "version_downloads": "/api/v1/crates/serde-env/0.0.0/downloads"
+            },
+            "num": "0.0.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/5351546?v=4",
+                "created_at": "2013-08-31T06:22:45Z",
+                "github_username_matches": true,
+                "id": 94042,
+                "login": "Xuanwo",
+                "name": "Xuanwo",
+                "url": "https://github.com/Xuanwo"
+            },
+            "readme_path": "/api/v1/crates/serde-env/0.0.0/readme",
+            "repository": "https://github.com/Xuanwo/serde-env",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-04-21T02:10:07.073271Z",
+            "yank_message": null,
+            "yanked": false
+        }
+    ]
+}

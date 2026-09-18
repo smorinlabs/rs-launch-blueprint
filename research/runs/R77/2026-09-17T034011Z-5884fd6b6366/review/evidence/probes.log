@@ -1,0 +1,105 @@
+# R77 probes — 2026-09-18T23:21:05Z
+# /usr/bin/grep version: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+# rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+# cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+# host: Darwin arm64
+
+## P1 — const-fn prefix derived from R57 revision 2 TOOL_NAME
+WEB_ENV_PREFIX=RSLBP_WEB_
+FORK_ENV_PREFIX=ACME_WEB_
+PROBE-P1 OK (const-derived prefix, no unsafe, stable)
+PASS P1.a WEB_ENV_PREFIX is RSLBP_WEB_
+PASS P1.b renaming TOOL_NAME alone gives ACME_WEB_
+PASS P1.c compiles under #![forbid(unsafe_code)]
+
+## P2 — edition 2024 makes std::env::set_var unsafe (2021 control)
+error[E0133]: call to unsafe function `set_var` is unsafe and requires unsafe block
+ --> src/main.rs:2:5
+  |
+2 |     std::env::set_var("RSLBP_WEB_PORT", "8000");
+  |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ call to unsafe function
+  |
+  = note: consult the function's documentation for information on how to avoid undefined behavior
+
+PASS P2.a edition 2024 rejects set_var
+edition-2021 control: Ok("8000")
+PASS P2.b the same source compiles under edition 2021 (the edition, not the API, is the change)
+
+## P5 — confique 0.4.0 requires a string literal in #[config(env = ...)]
+error: expected string literal
+ --> src/main.rs:3:27
+  |
+3 | struct S { #[config(env = ENV_PORT, default = 8000)] port: u16 }
+  |                           ^^^^^^^^
+
+PASS P5 confique rejects a const env name
+
+## P3 — one malformed variable through five mechanisms
+--- P3 run 1: the process environment carries RSLBP_WEB_PORT=eighty ---
+process RSLBP_WEB_PORT=Some("eighty")
+template-code | ERR | RSLBP_WEB_PORT: invalid value "eighty": expected a TCP port in 0..=65535 (invalid digit found in string)
+envy-0.4.2 | ERR | invalid digit found in string while parsing value 'eighty' provided by PORT
+config-0.15.25 | ERR | invalid type: string "eighty", expected an integer for key `port` in the environment
+figment-0.10.19 | ERR | invalid type: found string "eighty", expected u16 for key "PORT" in `RSLBP_WEB_` environment variable(s)
+confique-0.4.0 | ERR | failed to deserialize value `WebSettingsC::port` from environment variable `RSLBP_WEB_PORT`: invalid value 'eighty' for type u16: invalid digit found in string
+PASS P3.1 template code names variable, value and a domain expectation
+PASS P3.2 envy names PORT without the prefix and gives no expectation
+PASS P3.3 config names a lowercased key, not the operator's variable
+PASS P3.4 figment names prefix + key
+PASS P3.5 confique names the field path and the full variable
+--- P3 run 2: the process environment is clean; only the injected map carries it ---
+process RSLBP_WEB_PORT=None
+template-code | ERR | RSLBP_WEB_PORT: invalid value "eighty": expected a TCP port in 0..=65535 (invalid digit found in string)
+envy-0.4.2 | ERR | invalid digit found in string while parsing value 'eighty' provided by PORT
+config-0.15.25 | ERR | invalid type: string "eighty", expected an integer for key `port` in the environment
+figment-0.10.19 | OK | SerdeSettings { host: "127.0.0.1", port: 8000 }
+confique-0.4.0 | OK | WebSettingsC { host: "127.0.0.1", port: 8000 }
+PASS P3.6 process environment really is clean
+PASS P3.7 template code still fails from the injected map alone
+PASS P3.8 envy has an injected-iterator seam
+PASS P3.9 config has an injected-source seam
+PASS P3.10 figment has NO injected seam: it silently returns defaults
+PASS P3.11 confique has NO injected seam: it silently returns defaults
+
+## P4 — four tests over real axum 0.8.9 / tokio 1.53.1 / tower 0.5.3
+   Compiling axum v0.8.9
+   Compiling p4 v0.0.0 (/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r77-probes.sJZMIe/p4)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.48s
+     Running tests/settings.rs (/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r77-probes.sJZMIe/p4/target/debug/deps/settings-85b39c8b0e5e99a9)
+
+running 4 tests
+test prefix_is_derived_from_the_single_app_name_constant ... ok
+test unprefixed_and_empty_are_ignored ... ok
+test malformed_port_names_variable_value_and_expectation ... ok
+test settings_reach_a_handler_through_state_with_no_process_env ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+PASS P4 prefix_is_derived_from_the_single_app_name_constant
+PASS P4 unprefixed_and_empty_are_ignored
+PASS P4 malformed_port_names_variable_value_and_expectation
+PASS P4 settings_reach_a_handler_through_state_with_no_process_env
+PASS P4 all four passed, none failed
+PASS P4 the test file contains no std::env call
+
+## P6 — normal-dependency package count and stripped release size
+mechanism           packages stripped_bytes
+baseline                   8         286048
+PASS P6 package count for baseline
+envy                       9         302624
+PASS P6 package count for envy
+confique                  12         302528
+PASS P6 package count for confique
+confignodefault           11         369248
+PASS P6 package count for confignodefault
+figment                   16         385968
+PASS P6 package count for figment
+configdefault             55         418960
+PASS P6 package count for configdefault
+stripped-size deltas over the hand-written baseline: envy=16576 confique=16480 config-no-default=83200 figment=99920 config-default=132912
+PASS P6 config(no-default) costs > 50 KB of stripped binary over the hand-written baseline (83200 B)
+PASS P6 figment costs > 50 KB of stripped binary over the hand-written baseline (99920 B)
+PASS P6 envy costs under 50 KB of stripped binary (16576 B) — it is not excluded on size
+PASS P6 confique costs under 50 KB of stripped binary (16480 B) — it is not rejected on cost
+PASS P6 config with default features costs > 100 KB of stripped binary (132912 B)
+
+PASS=34 FAIL=0 SKIP=0 TOTAL=34

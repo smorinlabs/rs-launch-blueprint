@@ -1,0 +1,2334 @@
+{
+    "meta": {
+        "next_page": null,
+        "total": 26
+    },
+    "versions": [
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2024-05-17T02:54:57.543501Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "8cb01cd46b0cf372153850f4c6c272d9cbea2da513e07538405148f95bd789f3",
+            "crate": "figment",
+            "crate_size": 70111,
+            "created_at": "2024-05-17T02:54:57.543501Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.19/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 30740033,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1146978,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3963,
+                        "comment_lines": 134,
+                        "files": 22
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 4031,
+                "total_comment_lines": 141
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.19/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.19/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.19/downloads"
+            },
+            "num": "0.10.19",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.19/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2024-05-17T02:54:57.543501Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2024-04-18T00:26:27.768354Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "d032832d74006f99547004d49410a4b4218e4c33382d56ca3ff89df74f86b953",
+            "crate": "figment",
+            "crate_size": 69856,
+            "created_at": "2024-04-18T00:26:27.768354Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.18/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 295453,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1118262,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3950,
+                        "comment_lines": 134,
+                        "files": 22
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 4018,
+                "total_comment_lines": 141
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.18/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.18/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.18/downloads"
+            },
+            "num": "0.10.18",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.18/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2024-04-18T00:26:27.768354Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2024-04-16T08:48:10.302989Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "752eb150770d6f51eb24d60e3ff84a2c24ccc5e5b3b0f550917ce5ec77c13fe4",
+            "crate": "figment",
+            "crate_size": 67890,
+            "created_at": "2024-04-16T08:48:10.302989Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.17/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 18903,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1116503,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3815,
+                        "comment_lines": 134,
+                        "files": 22
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3883,
+                "total_comment_lines": 141
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.17/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.17/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.17/downloads"
+            },
+            "num": "0.10.17",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.17/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2024-04-16T08:48:10.302989Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2024-04-10T01:17:26.290829Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "fdefe49ed1057d124dc81a0681c30dd07de56ad96e32adc7b64e8f28eaab31c4",
+            "crate": "figment",
+            "crate_size": 67523,
+            "created_at": "2024-04-10T01:17:26.290829Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.16/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 63891,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1109894,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3808,
+                        "comment_lines": 134,
+                        "files": 22
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3876,
+                "total_comment_lines": 141
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.16/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.16/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.16/downloads"
+            },
+            "num": "0.10.16",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.16/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2024-04-10T01:17:26.290829Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2024-03-16T02:20:44.392424Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "7270677e7067213e04f323b55084586195f18308cd7546cfac9f873344ccceb6",
+            "crate": "figment",
+            "crate_size": 67356,
+            "created_at": "2024-03-16T02:20:44.392424Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.15/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 316125,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1084375,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3803,
+                        "comment_lines": 134,
+                        "files": 22
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3871,
+                "total_comment_lines": 141
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.15/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.15/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.15/downloads"
+            },
+            "num": "0.10.15",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.15/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2024-03-16T02:20:44.392424Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2024-01-17T22:22:01.779976Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "2b6e5bc7bd59d60d0d45a6ccab6cf0f4ce28698fb4e81e750ddf229c9b824026",
+            "crate": "figment",
+            "crate_size": 66496,
+            "created_at": "2024-01-17T22:22:01.779976Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.14/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 1225204,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1017441,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3770,
+                        "comment_lines": 134,
+                        "files": 22
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3838,
+                "total_comment_lines": 141
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.14/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.14/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.14/downloads"
+            },
+            "num": "0.10.14",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.14/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2024-01-17T22:22:01.779976Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2023-12-31T04:20:15.144535Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "7629b8c7bcd214a072c2c88b263b5bb3ceb54c34365d8c41c1665461aeae0993",
+            "crate": "figment",
+            "crate_size": 66115,
+            "created_at": "2023-12-31T04:20:15.144535Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.13/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 162988,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1000077,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3766,
+                        "comment_lines": 134,
+                        "files": 22
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3834,
+                "total_comment_lines": 141
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.13/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.13/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.13/downloads"
+            },
+            "num": "0.10.13",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.13/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2023-12-31T04:20:15.144535Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2023-10-30T16:28:49.282087Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "649f3e5d826594057e9a519626304d8da859ea8a0b18ce99500c586b8d45faee",
+            "crate": "figment",
+            "crate_size": 66109,
+            "created_at": "2023-10-30T16:28:49.282087Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.12/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 1430905,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 939602,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3766,
+                        "comment_lines": 134,
+                        "files": 22
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3834,
+                "total_comment_lines": 141
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.12/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.12/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.12/downloads"
+            },
+            "num": "0.10.12",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.12/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2023-10-30T16:28:49.282087Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2023-10-02T19:50:24.943020Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "a014ac935975a70ad13a3bff2463b1c1b083b35ae4cb6309cfc59476aa7a181f",
+            "crate": "figment",
+            "crate_size": 65801,
+            "created_at": "2023-10-02T19:50:24.943020Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.11/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 198010,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 913451,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3756,
+                        "comment_lines": 134,
+                        "files": 22
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3824,
+                "total_comment_lines": 141
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.11/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.11/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.11/downloads"
+            },
+            "num": "0.10.11",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.11/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2023-10-02T19:50:24.943020Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2023-06-02T05:46:47.256681Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "4547e226f4c9ab860571e070a9034192b3175580ecea38da34fcdb53a018c9a5",
+            "crate": "figment",
+            "crate_size": 64594,
+            "created_at": "2023-06-02T05:46:47.256681Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.10/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 731764,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 813917,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3727,
+                        "comment_lines": 110,
+                        "files": 22
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3795,
+                "total_comment_lines": 117
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.10/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.10/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.10/downloads"
+            },
+            "num": "0.10.10",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.10/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2023-06-02T05:46:47.256681Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2023-05-24T21:28:51.920823Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "05d79dace1d256182aa00f1ead2e5042558f420af2e1ed24dd79e00214e9ed99",
+            "crate": "figment",
+            "crate_size": 64169,
+            "created_at": "2023-05-24T21:28:51.920823Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.9/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 66075,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 807877,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3722,
+                        "comment_lines": 110,
+                        "files": 22
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3790,
+                "total_comment_lines": 117
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.9/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.9/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.9/downloads"
+            },
+            "num": "0.10.9",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.9/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2023-05-24T21:28:51.920823Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-10-05T23:38:42.573339Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "4e56602b469b2201400dec66a66aec5a9b8761ee97cd1b8c96ab2483fcc16cc9",
+            "crate": "figment",
+            "crate_size": 63390,
+            "created_at": "2022-10-05T23:38:42.573339Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.8/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 1366795,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 635187,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3713,
+                        "comment_lines": 110,
+                        "files": 22
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3781,
+                "total_comment_lines": 117
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.8/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.8/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.8/downloads"
+            },
+            "num": "0.10.8",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.8/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-10-05T23:38:42.573339Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-09-06T09:38:20.182499Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "6e3bd154d9ae2f1bb0ada5b7eebd56529513efa5de7d2fc8c6adf33bc43260cf",
+            "crate": "figment",
+            "crate_size": 61225,
+            "created_at": "2022-09-06T09:38:20.182499Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.7/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 150482,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 615303,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3703,
+                        "comment_lines": 110,
+                        "files": 22
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3771,
+                "total_comment_lines": 117
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.7/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.7/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.7/downloads"
+            },
+            "num": "0.10.7",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.7/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-09-06T09:38:20.182499Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2021-06-25T17:55:56.651119Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "790b4292c72618abbab50f787a477014fe15634f96291de45672ce46afe122df",
+            "crate": "figment",
+            "crate_size": 60523,
+            "created_at": "2021-06-25T17:55:56.651119Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.6/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 1570521,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 394080,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3664,
+                        "comment_lines": 110,
+                        "files": 22
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3732,
+                "total_comment_lines": 117
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.6/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.6/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.6/downloads"
+            },
+            "num": "0.10.6",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.6/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2021-06-25T17:55:56.651119Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2021-04-02T20:09:28.183421Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "0ca029e813a72b7526d28273d25f3e4a2f365d1b7a1018a6f93ec9053a119763",
+            "crate": "figment",
+            "crate_size": 57890,
+            "created_at": "2021-04-02T20:09:28.183421Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.5/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 117703,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 360499,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3552,
+                        "comment_lines": 100,
+                        "files": 21
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3620,
+                "total_comment_lines": 107
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.5/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.5/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.5/downloads"
+            },
+            "num": "0.10.5",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.5/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2021-04-02T20:09:28.183421Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2021-03-31T02:33:20.937365Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "708a94ecb9ca72e347442fef4563e459035b950c78091a355ed8a40180b33367",
+            "crate": "figment",
+            "crate_size": 57497,
+            "created_at": "2021-03-31T02:33:20.937365Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.4/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 6717,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 358746,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3550,
+                        "comment_lines": 100,
+                        "files": 21
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3618,
+                "total_comment_lines": 107
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.4/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.4/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.4/downloads"
+            },
+            "num": "0.10.4",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.4/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2021-03-31T02:33:20.937365Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2021-02-14T11:10:20.418267Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "c38799b106530aa30f774f7fca6d8f7e5f6234a79f427c4fad3c975eaf678931",
+            "crate": "figment",
+            "crate_size": 56790,
+            "created_at": "2021-02-14T11:10:20.418267Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.3/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 66564,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 339529,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3526,
+                        "comment_lines": 100,
+                        "files": 21
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3594,
+                "total_comment_lines": 107
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.3/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.3/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.3/downloads"
+            },
+            "num": "0.10.3",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.3/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2021-02-14T11:10:20.418267Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2021-01-14T23:13:51.042147Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "a3add2ec7727c9584a0ce75ee3c0f54f0ab692c7934450cc3a0287251e3a4f06",
+            "crate": "figment",
+            "crate_size": 56013,
+            "created_at": "2021-01-14T23:13:51.042147Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.2/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 41665,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 327629,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3537,
+                        "comment_lines": 100,
+                        "files": 21
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3605,
+                "total_comment_lines": 107
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.2/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.2/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.2/downloads"
+            },
+            "num": "0.10.2",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.2/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2021-01-14T23:13:51.042147Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2021-01-12T11:16:25.927818Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "b6e3690df2e950edb0ddf388f31926964b50232eb7767e35f210c41f981eed44",
+            "crate": "figment",
+            "crate_size": 55608,
+            "created_at": "2021-01-12T11:16:25.927818Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.1/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 4435,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 326382,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3517,
+                        "comment_lines": 96,
+                        "files": 21
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3585,
+                "total_comment_lines": 103
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.1/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.1/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.1/downloads"
+            },
+            "num": "0.10.1",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.1/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2021-01-12T11:16:25.927818Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2020-12-22T06:35:27.207192Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "f273b2f81f067bb5553f562feb98794d6c704f049d333f920d69211965a30448",
+            "crate": "figment",
+            "crate_size": 55281,
+            "created_at": "2020-12-22T06:35:27.207192Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.10.0/download",
+            "documentation": "https://docs.rs/figment/0.10",
+            "downloads": 9823,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 317542,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3480,
+                        "comment_lines": 95,
+                        "files": 21
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3548,
+                "total_comment_lines": 102
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.10.0/authors",
+                "dependencies": "/api/v1/crates/figment/0.10.0/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.10.0/downloads"
+            },
+            "num": "0.10.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.10.0/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2020-12-22T06:35:27.207192Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2020-10-30T03:18:18.526265Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "b13e2d266426f89e45fc544117ade84fad2a58ff676f34cc34e123fe4391b856",
+            "crate": "figment",
+            "crate_size": 54529,
+            "created_at": "2020-10-30T03:18:18.526265Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.9.4/download",
+            "documentation": "https://docs.rs/figment/0.9",
+            "downloads": 31158,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "magic": [],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 300268,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3398,
+                        "comment_lines": 95,
+                        "files": 21
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3466,
+                "total_comment_lines": 102
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.9.4/authors",
+                "dependencies": "/api/v1/crates/figment/0.9.4/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.9.4/downloads"
+            },
+            "num": "0.9.4",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.9.4/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2020-10-30T03:18:18.526265Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2020-10-26T21:17:32.532784Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "1d408be17cf2638273745ed2b95853ba82819074b4ef58c14d72d47c7052c282",
+            "crate": "figment",
+            "crate_size": 53325,
+            "created_at": "2020-10-26T21:17:32.532784Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.9.3/download",
+            "documentation": "https://docs.rs/figment/0.9",
+            "downloads": 5924,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "magic": [],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 299260,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3369,
+                        "comment_lines": 95,
+                        "files": 21
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3437,
+                "total_comment_lines": 102
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.9.3/authors",
+                "dependencies": "/api/v1/crates/figment/0.9.3/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.9.3/downloads"
+            },
+            "num": "0.9.3",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.9.3/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2020-10-26T21:17:32.532784Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2020-10-20T11:22:55.322365Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "0eede085e552099a1058b158c0a41d8024ea4d5772d465049657d7d2b053e471",
+            "crate": "figment",
+            "crate_size": 52746,
+            "created_at": "2020-10-20T11:22:55.322365Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.9.2/download",
+            "documentation": "https://docs.rs/figment/0.9",
+            "downloads": 4843,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "magic": [],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 297124,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3297,
+                        "comment_lines": 95,
+                        "files": 21
+                    },
+                    "Shell": {
+                        "code_lines": 68,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 3365,
+                "total_comment_lines": 102
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.9.2/authors",
+                "dependencies": "/api/v1/crates/figment/0.9.2/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.9.2/downloads"
+            },
+            "num": "0.9.2",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.9.2/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2020-10-20T11:22:55.322365Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2020-10-12T21:06:14.266460Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "41c1e1c32cd9d3d89899f138abd45d69d149254f3012e9ee232fb24d0616903d",
+            "crate": "figment",
+            "crate_size": 49882,
+            "created_at": "2020-10-12T21:06:14.266460Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.9.0/download",
+            "documentation": "https://docs.rs/figment/0.9",
+            "downloads": 2874,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "magic": [
+                    "serde/derive"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 292863,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 2618,
+                        "comment_lines": 86,
+                        "files": 21
+                    },
+                    "Shell": {
+                        "code_lines": 69,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 2687,
+                "total_comment_lines": 93
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.9.0/authors",
+                "dependencies": "/api/v1/crates/figment/0.9.0/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.9.0/downloads"
+            },
+            "num": "0.9.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.9.0/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2020-10-12T21:06:14.266460Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2020-10-10T11:47:15.914401Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "efb0077bdbd1f46afe5b650fb7306410f3ff897aa20a707f2fe6d502e2a263a9",
+            "crate": "figment",
+            "crate_size": 48610,
+            "created_at": "2020-10-10T11:47:15.914401Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.8.1/download",
+            "documentation": "https://docs.rs/figment/0.8",
+            "downloads": 3043,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "magic": [
+                    "serde/derive"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 292003,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 2531,
+                        "comment_lines": 93,
+                        "files": 21
+                    },
+                    "Shell": {
+                        "code_lines": 69,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 2600,
+                "total_comment_lines": 100
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.8.1/authors",
+                "dependencies": "/api/v1/crates/figment/0.8.1/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.8.1/downloads"
+            },
+            "num": "0.8.1",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.8.1/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2020-10-10T11:47:15.914401Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2020-10-10T11:43:02.488221Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                        "created_at": "2012-02-28T01:07:11Z",
+                        "github_username_matches": true,
+                        "id": 3864,
+                        "login": "SergioBenitez",
+                        "name": "Sergio Benitez",
+                        "url": "https://github.com/SergioBenitez"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "705005ed52605093accf20b412aca5e7aac4ff82f4eb936387eb2587e07abdef",
+            "crate": "figment",
+            "crate_size": 48587,
+            "created_at": "2020-10-10T11:43:02.488221Z",
+            "description": "A configuration library so con-free, it's unreal.",
+            "dl_path": "/api/v1/crates/figment/0.8.0/download",
+            "documentation": "https://docs.rs/figment/0.8",
+            "downloads": 2883,
+            "edition": "2018",
+            "features": {
+                "env": [
+                    "pear",
+                    "parse-value"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "magic": [
+                    "serde/derive"
+                ],
+                "parse-value": [
+                    "pear"
+                ],
+                "test": [
+                    "tempfile",
+                    "parking_lot"
+                ],
+                "yaml": [
+                    "serde_yaml"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 292002,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 2531,
+                        "comment_lines": 93,
+                        "files": 21
+                    },
+                    "Shell": {
+                        "code_lines": 69,
+                        "comment_lines": 7,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 2600,
+                "total_comment_lines": 100
+            },
+            "links": {
+                "authors": "/api/v1/crates/figment/0.8.0/authors",
+                "dependencies": "/api/v1/crates/figment/0.8.0/dependencies",
+                "version_downloads": "/api/v1/crates/figment/0.8.0/downloads"
+            },
+            "num": "0.8.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1480321?v=4",
+                "created_at": "2012-02-28T01:07:11Z",
+                "github_username_matches": true,
+                "id": 3864,
+                "login": "SergioBenitez",
+                "name": "Sergio Benitez",
+                "url": "https://github.com/SergioBenitez"
+            },
+            "readme_path": "/api/v1/crates/figment/0.8.0/readme",
+            "repository": "https://github.com/SergioBenitez/Figment",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2020-10-10T11:43:02.488221Z",
+            "yank_message": null,
+            "yanked": false
+        }
+    ]
+}

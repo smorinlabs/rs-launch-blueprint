@@ -1,0 +1,587 @@
+{
+    "categories": [],
+    "crate": {
+        "badges": [],
+        "categories": [],
+        "created_at": "2022-02-28T19:06:25.238818Z",
+        "default_version": "0.15.7",
+        "description": "A well-maintained fork of the dotenv crate",
+        "documentation": null,
+        "downloads": 167331109,
+        "exact_match": false,
+        "homepage": "https://github.com/allan2/dotenvy",
+        "id": "dotenvy",
+        "keywords": [
+            "env",
+            "config",
+            "environment",
+            "dotenv",
+            "settings"
+        ],
+        "links": {
+            "owner_team": "/api/v1/crates/dotenvy/owner_team",
+            "owner_user": "/api/v1/crates/dotenvy/owner_user",
+            "owners": "/api/v1/crates/dotenvy/owners",
+            "reverse_dependencies": "/api/v1/crates/dotenvy/reverse_dependencies",
+            "version_downloads": "/api/v1/crates/dotenvy/downloads",
+            "versions": null
+        },
+        "max_stable_version": "0.15.7",
+        "max_version": "0.15.7",
+        "name": "dotenvy",
+        "newest_version": "0.15.7",
+        "num_versions": 7,
+        "recent_downloads": 46188632,
+        "repository": "https://github.com/allan2/dotenvy",
+        "trustpub_only": false,
+        "updated_at": "2023-03-22T16:04:41.028594Z",
+        "versions": [
+            756327,
+            644090,
+            624613,
+            624441,
+            611151,
+            607063,
+            508043
+        ],
+        "yanked": false
+    },
+    "keywords": [
+        {
+            "crates_cnt": 413,
+            "created_at": "2014-11-20T20:53:09.574192Z",
+            "id": "env",
+            "keyword": "env"
+        },
+        {
+            "crates_cnt": 1241,
+            "created_at": "2014-11-20T20:53:09.617076Z",
+            "id": "config",
+            "keyword": "config"
+        },
+        {
+            "crates_cnt": 432,
+            "created_at": "2014-11-20T20:53:09.560005Z",
+            "id": "environment",
+            "keyword": "environment"
+        },
+        {
+            "crates_cnt": 180,
+            "created_at": "2014-11-20T20:53:09.589277Z",
+            "id": "dotenv",
+            "keyword": "dotenv"
+        },
+        {
+            "crates_cnt": 228,
+            "created_at": "2014-11-20T20:53:09.603210Z",
+            "id": "settings",
+            "keyword": "settings"
+        }
+    ],
+    "versions": [
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2023-03-22T16:04:41.028594Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/6740989?v=4",
+                        "created_at": "2014-02-20T19:16:51Z",
+                        "github_username_matches": true,
+                        "id": 142283,
+                        "login": "allan2",
+                        "name": "Allan Zhang",
+                        "url": "https://github.com/allan2"
+                    }
+                }
+            ],
+            "bin_names": [
+                "dotenvy"
+            ],
+            "checksum": "1aaf95b3e5c8f23aa320147307562d361db0ae0d51242340f558153b4eb2439b",
+            "crate": "dotenvy",
+            "crate_size": 20293,
+            "created_at": "2023-03-22T16:04:41.028594Z",
+            "description": "A well-maintained fork of the dotenv crate",
+            "dl_path": "/api/v1/crates/dotenvy/0.15.7/download",
+            "documentation": null,
+            "downloads": 162957502,
+            "edition": "2018",
+            "features": {
+                "cli": [
+                    "clap"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/allan2/dotenvy",
+            "id": 756327,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 1044,
+                        "comment_lines": 15,
+                        "files": 6
+                    }
+                },
+                "total_code_lines": 1044,
+                "total_comment_lines": 15
+            },
+            "links": {
+                "authors": "/api/v1/crates/dotenvy/0.15.7/authors",
+                "dependencies": "/api/v1/crates/dotenvy/0.15.7/dependencies",
+                "version_downloads": "/api/v1/crates/dotenvy/0.15.7/downloads"
+            },
+            "num": "0.15.7",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/6740989?v=4",
+                "created_at": "2014-02-20T19:16:51Z",
+                "github_username_matches": true,
+                "id": 142283,
+                "login": "allan2",
+                "name": "Allan Zhang",
+                "url": "https://github.com/allan2"
+            },
+            "readme_path": "/api/v1/crates/dotenvy/0.15.7/readme",
+            "repository": "https://github.com/allan2/dotenvy",
+            "rust_version": "1.56.1",
+            "trustpub_data": null,
+            "updated_at": "2023-03-22T16:04:41.028594Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-10-17T19:15:30.821385Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/6740989?v=4",
+                        "created_at": "2014-02-20T19:16:51Z",
+                        "github_username_matches": true,
+                        "id": 142283,
+                        "login": "allan2",
+                        "name": "Allan Zhang",
+                        "url": "https://github.com/allan2"
+                    }
+                }
+            ],
+            "bin_names": [
+                "dotenvy"
+            ],
+            "checksum": "03d8c417d7a8cb362e0c37e5d815f5eb7c37f79ff93707329d5a194e42e54ca0",
+            "crate": "dotenvy",
+            "crate_size": 14785,
+            "created_at": "2022-10-17T19:15:30.821385Z",
+            "description": "A well-maintained fork of the dotenv crate",
+            "dl_path": "/api/v1/crates/dotenvy/0.15.6/download",
+            "documentation": null,
+            "downloads": 2956343,
+            "edition": "2018",
+            "features": {
+                "cli": [
+                    "clap"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/allan2/dotenvy",
+            "id": 644090,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 1017,
+                        "comment_lines": 15,
+                        "files": 6
+                    }
+                },
+                "total_code_lines": 1017,
+                "total_comment_lines": 15
+            },
+            "links": {
+                "authors": "/api/v1/crates/dotenvy/0.15.6/authors",
+                "dependencies": "/api/v1/crates/dotenvy/0.15.6/dependencies",
+                "version_downloads": "/api/v1/crates/dotenvy/0.15.6/downloads"
+            },
+            "num": "0.15.6",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/6740989?v=4",
+                "created_at": "2014-02-20T19:16:51Z",
+                "github_username_matches": true,
+                "id": 142283,
+                "login": "allan2",
+                "name": "Allan Zhang",
+                "url": "https://github.com/allan2"
+            },
+            "readme_path": "/api/v1/crates/dotenvy/0.15.6/readme",
+            "repository": "https://github.com/allan2/dotenvy",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-10-17T19:15:30.821385Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-09-19T22:38:44.967120Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/6740989?v=4",
+                        "created_at": "2014-02-20T19:16:51Z",
+                        "github_username_matches": true,
+                        "id": 142283,
+                        "login": "allan2",
+                        "name": "Allan Zhang",
+                        "url": "https://github.com/allan2"
+                    }
+                }
+            ],
+            "bin_names": [
+                "dotenvy"
+            ],
+            "checksum": "ed9155c8f4dc55c7470ae9da3f63c6785245093b3f6aeb0f5bf2e968efbba314",
+            "crate": "dotenvy",
+            "crate_size": 14610,
+            "created_at": "2022-09-19T22:38:44.967120Z",
+            "description": "A well-maintained fork of the dotenv crate",
+            "dl_path": "/api/v1/crates/dotenvy/0.15.5/download",
+            "documentation": null,
+            "downloads": 447081,
+            "edition": "2018",
+            "features": {
+                "cli": [
+                    "clap"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/allan2/dotenvy",
+            "id": 624613,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 1011,
+                        "comment_lines": 13,
+                        "files": 6
+                    }
+                },
+                "total_code_lines": 1011,
+                "total_comment_lines": 13
+            },
+            "links": {
+                "authors": "/api/v1/crates/dotenvy/0.15.5/authors",
+                "dependencies": "/api/v1/crates/dotenvy/0.15.5/dependencies",
+                "version_downloads": "/api/v1/crates/dotenvy/0.15.5/downloads"
+            },
+            "num": "0.15.5",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/6740989?v=4",
+                "created_at": "2014-02-20T19:16:51Z",
+                "github_username_matches": true,
+                "id": 142283,
+                "login": "allan2",
+                "name": "Allan Zhang",
+                "url": "https://github.com/allan2"
+            },
+            "readme_path": "/api/v1/crates/dotenvy/0.15.5/readme",
+            "repository": "https://github.com/allan2/dotenvy",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-09-19T22:38:44.967120Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-09-19T15:56:31.222721Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/6740989?v=4",
+                        "created_at": "2014-02-20T19:16:51Z",
+                        "github_username_matches": true,
+                        "id": 142283,
+                        "login": "allan2",
+                        "name": "Allan Zhang",
+                        "url": "https://github.com/allan2"
+                    }
+                }
+            ],
+            "bin_names": [
+                "dotenvy"
+            ],
+            "checksum": "93781464167347fd349039f09a29c67bb40c092b0a5f01b03cb8a20a8b1995e9",
+            "crate": "dotenvy",
+            "crate_size": 14553,
+            "created_at": "2022-09-19T15:56:31.222721Z",
+            "description": "A well-maintained fork of the dotenv crate",
+            "dl_path": "/api/v1/crates/dotenvy/0.15.4/download",
+            "documentation": null,
+            "downloads": 6836,
+            "edition": "2018",
+            "features": {
+                "cli": [
+                    "clap"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/allan2/dotenvy",
+            "id": 624441,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 1009,
+                        "comment_lines": 13,
+                        "files": 6
+                    }
+                },
+                "total_code_lines": 1009,
+                "total_comment_lines": 13
+            },
+            "links": {
+                "authors": "/api/v1/crates/dotenvy/0.15.4/authors",
+                "dependencies": "/api/v1/crates/dotenvy/0.15.4/dependencies",
+                "version_downloads": "/api/v1/crates/dotenvy/0.15.4/downloads"
+            },
+            "num": "0.15.4",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/6740989?v=4",
+                "created_at": "2014-02-20T19:16:51Z",
+                "github_username_matches": true,
+                "id": 142283,
+                "login": "allan2",
+                "name": "Allan Zhang",
+                "url": "https://github.com/allan2"
+            },
+            "readme_path": "/api/v1/crates/dotenvy/0.15.4/readme",
+            "repository": "https://github.com/allan2/dotenvy",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-09-19T15:56:31.222721Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-08-30T02:22:03.857604Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/6740989?v=4",
+                        "created_at": "2014-02-20T19:16:51Z",
+                        "github_username_matches": true,
+                        "id": 142283,
+                        "login": "allan2",
+                        "name": "Allan Zhang",
+                        "url": "https://github.com/allan2"
+                    }
+                }
+            ],
+            "bin_names": [
+                "dotenvy"
+            ],
+            "checksum": "da3db6fcad7c1fc4abdd99bf5276a4db30d6a819127903a709ed41e5ff016e84",
+            "crate": "dotenvy",
+            "crate_size": 13981,
+            "created_at": "2022-08-30T02:22:03.857604Z",
+            "description": "A well-maintained fork of the dotenv crate",
+            "dl_path": "/api/v1/crates/dotenvy/0.15.3/download",
+            "documentation": null,
+            "downloads": 399166,
+            "edition": "2018",
+            "features": {
+                "cli": [
+                    "clap"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/allan2/dotenvy",
+            "id": 611151,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 988,
+                        "comment_lines": 16,
+                        "files": 6
+                    }
+                },
+                "total_code_lines": 988,
+                "total_comment_lines": 16
+            },
+            "links": {
+                "authors": "/api/v1/crates/dotenvy/0.15.3/authors",
+                "dependencies": "/api/v1/crates/dotenvy/0.15.3/dependencies",
+                "version_downloads": "/api/v1/crates/dotenvy/0.15.3/downloads"
+            },
+            "num": "0.15.3",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/6740989?v=4",
+                "created_at": "2014-02-20T19:16:51Z",
+                "github_username_matches": true,
+                "id": 142283,
+                "login": "allan2",
+                "name": "Allan Zhang",
+                "url": "https://github.com/allan2"
+            },
+            "readme_path": "/api/v1/crates/dotenvy/0.15.3/readme",
+            "repository": "https://github.com/allan2/dotenvy",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-08-30T02:22:03.857604Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-08-22T16:53:51.451876Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/6740989?v=4",
+                        "created_at": "2014-02-20T19:16:51Z",
+                        "github_username_matches": true,
+                        "id": 142283,
+                        "login": "allan2",
+                        "name": "Allan Zhang",
+                        "url": "https://github.com/allan2"
+                    }
+                }
+            ],
+            "bin_names": [
+                "dotenvy"
+            ],
+            "checksum": "d14217f19387ebd26b24ff4ecf93de2dbe68bab13957e43732127f19ca21a6d3",
+            "crate": "dotenvy",
+            "crate_size": 13550,
+            "created_at": "2022-08-22T16:53:51.451876Z",
+            "description": "A well-maintained fork of the dotenv crate",
+            "dl_path": "/api/v1/crates/dotenvy/0.15.2/download",
+            "documentation": null,
+            "downloads": 132091,
+            "edition": "2018",
+            "features": {
+                "cli": [
+                    "clap"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/allan2/dotenvy",
+            "id": 607063,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 971,
+                        "comment_lines": 13,
+                        "files": 6
+                    }
+                },
+                "total_code_lines": 971,
+                "total_comment_lines": 13
+            },
+            "links": {
+                "authors": "/api/v1/crates/dotenvy/0.15.2/authors",
+                "dependencies": "/api/v1/crates/dotenvy/0.15.2/dependencies",
+                "version_downloads": "/api/v1/crates/dotenvy/0.15.2/downloads"
+            },
+            "num": "0.15.2",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/6740989?v=4",
+                "created_at": "2014-02-20T19:16:51Z",
+                "github_username_matches": true,
+                "id": 142283,
+                "login": "allan2",
+                "name": "Allan Zhang",
+                "url": "https://github.com/allan2"
+            },
+            "readme_path": "/api/v1/crates/dotenvy/0.15.2/readme",
+            "repository": "https://github.com/allan2/dotenvy",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-08-22T16:53:51.451876Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-02-28T19:06:25.238818Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/6740989?v=4",
+                        "created_at": "2014-02-20T19:16:51Z",
+                        "github_username_matches": true,
+                        "id": 142283,
+                        "login": "allan2",
+                        "name": "Allan Zhang",
+                        "url": "https://github.com/allan2"
+                    }
+                }
+            ],
+            "bin_names": [
+                "dotenvy"
+            ],
+            "checksum": "7e851a83c30366fd01d75b913588e95e74a1705c1ecc5d58b1f8e1a6d556525f",
+            "crate": "dotenvy",
+            "crate_size": 11553,
+            "created_at": "2022-02-28T19:06:25.238818Z",
+            "description": "A well-maintained fork of the `dotenv` crate",
+            "dl_path": "/api/v1/crates/dotenvy/0.15.1/download",
+            "documentation": null,
+            "downloads": 342737,
+            "edition": "2018",
+            "features": {
+                "cli": [
+                    "clap"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/allan2/dotenvy",
+            "id": 508043,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 890,
+                        "comment_lines": 13,
+                        "files": 6
+                    }
+                },
+                "total_code_lines": 890,
+                "total_comment_lines": 13
+            },
+            "links": {
+                "authors": "/api/v1/crates/dotenvy/0.15.1/authors",
+                "dependencies": "/api/v1/crates/dotenvy/0.15.1/dependencies",
+                "version_downloads": "/api/v1/crates/dotenvy/0.15.1/downloads"
+            },
+            "num": "0.15.1",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/6740989?v=4",
+                "created_at": "2014-02-20T19:16:51Z",
+                "github_username_matches": true,
+                "id": 142283,
+                "login": "allan2",
+                "name": "Allan Zhang",
+                "url": "https://github.com/allan2"
+            },
+            "readme_path": "/api/v1/crates/dotenvy/0.15.1/readme",
+            "repository": "https://github.com/allan2/dotenvy",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-02-28T19:06:25.238818Z",
+            "yank_message": null,
+            "yanked": false
+        }
+    ]
+}

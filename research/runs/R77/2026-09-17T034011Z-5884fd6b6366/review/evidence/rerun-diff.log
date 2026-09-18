@@ -1,0 +1,42 @@
+# R77 — immediate rerun of each evidence script, diffed against the committed log
+# produced 2026-09-18T23:22:21Z
+# Rule: the only lines permitted to differ are (1) each script's own timestamp
+#       header, (2) in probes.log, the mktemp scratch-directory name and cargo's
+#       own 'Finished ... in N.NNs' wall-time line inside its captured output, and
+#       (3) in figures.log, the DRIFT lines (monotonic download counters).
+#       No PASS/FAIL/SKIP line may differ; the second diff in each block checks that.
+
+=== figures.sh — rerun exit=0 ===
+--- diff committed-log vs rerun (whole file) ---
+1c1
+< # R77 figures — 2026-09-18T23:20:52Z
+---
+> # R77 figures — 2026-09-18T23:22:21Z
+--- diff over PASS/FAIL/SKIP lines only ---
+(every PASS/FAIL/SKIP line identical)
+
+=== sources.sh — rerun exit=0 ===
+--- diff committed-log vs rerun (whole file) ---
+1c1
+< # R77 sources — 2026-09-18T23:21:04Z
+---
+> # R77 sources — 2026-09-18T23:22:33Z
+--- diff over PASS/FAIL/SKIP lines only ---
+(every PASS/FAIL/SKIP line identical)
+
+=== probes.sh — rerun exit=0 ===
+--- diff committed-log vs rerun (whole file) ---
+1c1
+< # R77 probes — 2026-09-18T23:21:05Z
+---
+> # R77 probes — 2026-09-18T23:22:34Z
+66,68c66,68
+<    Compiling p4 v0.0.0 (/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r77-probes.sJZMIe/p4)
+<     Finished `test` profile [unoptimized + debuginfo] target(s) in 10.48s
+<      Running tests/settings.rs (/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r77-probes.sJZMIe/p4/target/debug/deps/settings-85b39c8b0e5e99a9)
+---
+>    Compiling p4 v0.0.0 (/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r77-probes.hiRn31/p4)
+>     Finished `test` profile [unoptimized + debuginfo] target(s) in 9.59s
+>      Running tests/settings.rs (/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r77-probes.hiRn31/p4/target/debug/deps/settings-85b39c8b0e5e99a9)
+--- diff over PASS/FAIL/SKIP lines only ---
+(every PASS/FAIL/SKIP line identical)
