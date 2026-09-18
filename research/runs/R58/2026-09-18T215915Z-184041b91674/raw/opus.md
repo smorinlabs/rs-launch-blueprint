@@ -103,9 +103,12 @@ is why the architecture question is settled before the crate question.
 | P8 | Diagnostics go to **stderr**; the result stream stays clean | CLI Design Standard R7.1 **(MUST)**: "fd 1 (stdout) carries the command's *requested result*; fd 2 (stderr) carries everything else: diagnostics, progress, prompts, warnings, and errors" (`:381`) | **standard, org-locked** | nothing |
 
 What must agree across py, ts and rs: P1–P8 as *capabilities and policies*. What
-may vary: every mechanism. This report differs from py on three mechanisms (the
-redaction insertion point, the reconfiguration model, and the format's
-mutability) and gives measured or quoted ground for each.
+may vary: every mechanism. This report differs from py on exactly three
+mechanisms — **(i)** the redaction insertion point (format time, not event time);
+**(ii)** the reconfiguration model, of which the format's init-time fixity is the
+one user-visible consequence; and **(iii)** the addition of a `--log-format`
+flag and `RSLBP_LOG_FORMAT` on the CLI, which py has only for its file sink — and
+it gives measured or quoted ground for each.
 
 **Architectural comparison, before any library is chosen.**
 
@@ -313,9 +316,17 @@ independently initialised subscribers" as the question frames it, because **one
 process runs one binary**: R69's accepted value gives the web surface its own
 `[[bin]] name = "<app>-serve"` with `required-features = ["web"]`. So there is one
 subscriber per process, built from one shared builder in the root package, with a
-`Profile` value selecting policy:
+`Profile` value selecting policy.
 
-| | `rslbp` (CLI profile) | `rslbp-serve` (service profile) |
+**On the two binary names.** `rslbp` is settled: R49's published
+`build-tool-output-shape` fixes `[[bin]] … name = rslbp`. The serve binary's name
+is **not** R58's to settle — R69's accepted value writes it as
+`[[bin]] name = "<app>-serve"`, and `rslbp-serve` below is that template filled in
+with R49's `<app>`, written out for readability rather than decided here. If R69
+or R49 spells it differently, only the string changes; nothing in this design
+depends on it.
+
+| | `rslbp` (CLI profile) | `<app>-serve`, i.e. `rslbp-serve` (service profile) |
 |---|---|---|
 | Format | `auto` → console on a TTY stderr, JSON otherwise | JSON always; no TTY sniff (structured output is the contract, per py `web/logging.py:20-26`) |
 | Level source | the seven-rung ladder above | environment only, 12-factor; **the variable names are R77's** |
@@ -1396,6 +1407,15 @@ it. (4) The design's largest bet — the redaction formatters — is **template-
 code**, which is precisely the part upstream quiet cannot break. What it does
 change is cadence: the maintenance question is re-verified at **2026-12-18**,
 three months out, not at the 2027-03-18 date the rest of this report uses.
+**This signal travels to one other item.** `tracing-opentelemetry` 0.33.0 is
+published from `tokio-rs/tracing-opentelemetry`, a sibling repository in the same
+org (407 stars, `pushed_at` 2026-07-08, 18 open issues, retrieved 2026-09-18).
+**R78 should inherit this finding and re-measure responsiveness for its own
+repository rather than assuming the org is uniformly healthy**; nothing here
+measures `tracing-opentelemetry`'s issue responsiveness, and this report does not
+claim it. The two `pushed_at` figures are internally consistent with the release
+dates: `pushed_at` is the last push to *any* branch, so 2026-05-30 sitting after
+the 0.3.23 release of 2026-03-13 is what one expects, not a contradiction.
 
 One thing this report could **not** verify and does not claim:
 
