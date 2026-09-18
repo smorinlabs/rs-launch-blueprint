@@ -1,67 +1,67 @@
 === R80 check-probe.sh ===
-date(UTC): 2026-09-18T22:51:22Z
+date(UTC): 2026-09-18T23:01:20Z
 grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
 uname: Darwin 25.4.0 arm64
 rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
 cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
-workspace: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r80-probe.JUZN8YjR (deleted on exit)
+workspace: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r80-probe.3nJynOYm (deleted on exit)
 cargo network flags: '--offline'
 --- variant a (no [workspace.package] version) ---
    Compiling proc-macro2 v1.0.107
-   Compiling unicode-ident v1.0.26
    Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.26
    Compiling libc v0.2.189
    Compiling itoa v1.0.18
    Compiling pin-project-lite v0.2.17
    Compiling futures-core v0.3.34
    Compiling serde_core v1.0.229
    Compiling bytes v1.12.1
-   Compiling once_cell v1.21.4
    Compiling serde v1.0.229
+   Compiling once_cell v1.21.4
    Compiling httparse v1.10.1
-   Compiling log v0.4.34
-   Compiling zmij v1.0.23
    Compiling tower-service v0.3.3
-   Compiling httpdate v1.0.3
-   Compiling serde_json v1.0.151
+   Compiling zmij v1.0.23
+   Compiling log v0.4.34
    Compiling futures-channel v0.3.34
+   Compiling sync_wrapper v1.0.2
+   Compiling slab v0.4.12
+   Compiling httpdate v1.0.3
+   Compiling tower-layer v0.3.3
+   Compiling atomic-waker v1.1.2
+   Compiling serde_json v1.0.151
+   Compiling futures-task v0.3.34
+   Compiling smallvec v1.16.1
    Compiling tracing-core v0.1.36
    Compiling percent-encoding v2.3.2
-   Compiling sync_wrapper v1.0.2
-   Compiling atomic-waker v1.1.2
-   Compiling futures-task v0.3.34
-   Compiling tower-layer v0.3.3
-   Compiling smallvec v1.16.1
-   Compiling slab v0.4.12
-   Compiling form_urlencoded v1.2.2
    Compiling futures-util v0.3.34
-   Compiling mime v0.3.17
-   Compiling ryu v1.0.23
    Compiling memchr v2.8.3
+   Compiling mime v0.3.17
+   Compiling form_urlencoded v1.2.2
+   Compiling ryu v1.0.23
    Compiling matchit v0.8.4
-   Compiling http v1.5.0
+   Compiling facade v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.3nJynOYm)
    Compiling tracing v0.1.44
-   Compiling facade v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR)
-   Compiling http-body v1.1.0
-   Compiling http-body-util v0.1.5
-   Compiling axum-core v0.5.6
-   Compiling syn v3.0.6
+   Compiling http v1.5.0
    Compiling errno v0.3.14
-   Compiling mio v1.2.3
    Compiling socket2 v0.6.5
+   Compiling mio v1.2.3
+   Compiling http-body v1.1.0
    Compiling signal-hook-registry v1.4.8
+   Compiling http-body-util v0.1.5
+   Compiling syn v3.0.6
+   Compiling axum-core v0.5.6
    Compiling serde_path_to_error v0.1.20
    Compiling tokio-macros v2.7.2
    Compiling serde_derive v1.0.229
    Compiling tokio v1.53.1
    Compiling serde_urlencoded v0.7.1
-   Compiling probe-core v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR/crates/core)
+   Compiling probe-core v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.3nJynOYm/crates/core)
    Compiling hyper v1.11.1
    Compiling tower v0.5.3
    Compiling hyper-util v0.1.20
    Compiling axum v0.8.9
-   Compiling probe-web v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR/crates/web)
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 16.48s
+   Compiling probe-web v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.3nJynOYm/crates/web)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 18.95s
      Running tests/version_hazard.rs (target/debug/deps/version_hazard-c1d92548506f7c7a)
 
 running 1 test
@@ -77,10 +77,10 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 
 PASS A — env!(CARGO_PKG_VERSION) inside a member reports the MEMBER's version (facade 0.4.2, web member 0.1.0); std::env::consts::{OS,ARCH} resolve as &'static str with no build.rs in the tree
 --- variant b ([workspace.package] version + version.workspace = true) ---
-   Compiling probe-core v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR/crates/core)
-   Compiling probe-web v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR/crates/web)
-   Compiling facade v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR)
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.28s
+   Compiling probe-core v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.3nJynOYm/crates/core)
+   Compiling probe-web v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.3nJynOYm/crates/web)
+   Compiling facade v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.3nJynOYm)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.19s
      Running tests/version_hazard.rs (target/debug/deps/version_hazard-c7b3c0400a71f184)
 
 running 1 test
@@ -96,8 +96,8 @@ test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; fini
 
 PASS B — [workspace.package] version = 0.4.2 with version.workspace = true makes every member report 0.4.2
 --- probe handler tests T1-T8 (variant b) ---
-   Compiling probe-web v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR/crates/web)
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.74s
+   Compiling probe-web v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.3nJynOYm/crates/web)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.77s
      Running tests/probes.rs (target/debug/deps/probes-1f675244184fffef)
 
 running 8 tests
@@ -129,15 +129,11 @@ PASS T6 — one error-level check yields 503 through the pure response function,
 PASS T7 — axum 0.8.9's MethodRouter answers POST with 405 and Allow: GET,HEAD, with no code written for it
 PASS T8 — HEAD /healthz is served by the GET handler and answers 200 with an empty body
 --- C9: cargo tree -p facade --edges normal (feature off) ---
-    Blocking waiting for file lock on package cache
-    Blocking waiting for file lock on package cache
-facade v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR)
+facade v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.3nJynOYm)
 PASS C9 — a default build's normal dependency graph contains axum on 0 lines (counted with grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
 --- C10: cargo tree -p facade --features web --edges normal ---
-    Blocking waiting for file lock on package cache
-    Blocking waiting for file lock on package cache
-facade v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR)
-└── probe-web v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR/crates/web)
+facade v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.3nJynOYm)
+└── probe-web v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.3nJynOYm/crates/web)
     ├── axum v0.8.9
     │   ├── axum-core v0.5.6
     │   │   ├── bytes v1.12.1
@@ -255,15 +251,14 @@ facade v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-prob
     │   ├── tower-layer v0.3.3
     │   ├── tower-service v0.3.3
     │   └── tracing v0.1.44 (*)
-    ├── probe-core v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR/crates/core)
+    ├── probe-core v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.3nJynOYm/crates/core)
     │   └── serde v1.0.229 (*)
     ├── serde v1.0.229 (*)
     ├── serde_json v1.0.151 (*)
     └── tokio v1.53.1 (*)
 PASS C10 — --features web brings the optional web member and axum v0.8.9 back into the normal graph (1 axum line(s))
 --- C11: cargo tree -p probe-core --edges normal ---
-    Blocking waiting for file lock on package cache
-probe-core v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.JUZN8YjR/crates/core)
+probe-core v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe.3nJynOYm/crates/core)
 └── serde v1.0.229
     ├── serde_core v1.0.229
     └── serde_derive v1.0.229 (proc-macro)

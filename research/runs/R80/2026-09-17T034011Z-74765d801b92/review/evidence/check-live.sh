@@ -208,7 +208,7 @@ fi
 # these two sentences, so they are asserted verbatim rather than paraphrased.
 K1="$(get k8s-probes.html https://kubernetes.io/docs/concepts/workloads/pods/probes/)"
 K2="$(get k8s-configure-probes.html https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/)"
-reduce_lines k8s-probes.html 'Liveness probes determine|Readiness probes determine|removes the Pod|Startup probes|cascading failures'
+reduce_lines k8s-probes.html 'Liveness probes determine|Readiness probes determine|removes the Pod|Startup probes|cascading failures|strict dependency on back-end services|readiness probe additionally checks|required back-end service'
 reduce_lines k8s-configure-probes.html 'greater than or equal to 200|livenessProbe|readinessProbe|path: /health'
 K_OK=1
 [ "$K1" = 200 ] || K_OK=0
@@ -218,9 +218,16 @@ if [ "$K_OK" -eq 1 ]; then
   $GREP -qF 'Readiness probes determine when a container is ready to accept traffic' "$SNAP/k8s-probes.html" || K_OK=0
   $GREP -qF 'removes the Pod' "$SNAP/k8s-probes.html" || K_OK=0
   $GREP -qF 'Any code greater than or equal to 200 and less than 400 indicates success' "$SNAP/k8s-configure-probes.html" || K_OK=0
+  # The back-end-dependency caution is quoted in the decision, so it is asserted
+  # here rather than left looking verified by the three sentences above. The page
+  # wraps the sentence across three source lines, so its three line-local
+  # fragments are asserted rather than one needle that no line carries.
+  $GREP -qF 'strict dependency on back-end services, you can implement' "$SNAP/k8s-probes.html" || K_OK=0
+  $GREP -qF 'readiness probe additionally checks that each' "$SNAP/k8s-probes.html" || K_OK=0
+  $GREP -qF 'required back-end service is available' "$SNAP/k8s-probes.html" || K_OK=0
 fi
 if [ "$K_OK" -eq 1 ]; then
-  pass L5 "kubernetes.io still says liveness failure restarts the container, readiness failure removes the Pod from its EndpointSlices, and that any code in [200,400) is success — the three facts that fix this design"
+  pass L5 "kubernetes.io still says liveness failure restarts the container, readiness failure removes the Pod from its EndpointSlices, that any code in [200,400) is success, and that a readiness probe MAY additionally check each required back-end service — the four quoted facts this decision rests on"
 else
   fail L5 "the Kubernetes probe pages could not be read or no longer carry the quoted sentences (probes=$K1, configure=$K2)"
 fi
@@ -265,6 +272,7 @@ if [ "$KUBERT" = 200 ]; then
   $GREP -qF '/ready' "$SNAP/kubert-admin.rs" || K_OK=0
   $GREP -qF 'AtomicBool' "$SNAP/kubert-admin.rs" || K_OK=0
   $GREP -qiF 'cannot be overridden' "$SNAP/kubert-admin.rs" || K_OK=0
+  $GREP -qF '.body("alive' "$SNAP/kubert-admin.rs" || K_OK=0
 else
   K_OK=0
 fi
@@ -278,7 +286,7 @@ else
   A_OK=0
 fi
 if [ "$K_OK" -eq 1 ] && [ "$A_OK" -eq 1 ]; then
-  pass L7 "both surveyed production systems still latch readiness in an AtomicBool — kubert hard-reserves /live and /ready ('cannot be overridden'), Apollo Router answers SERVICE_UNAVAILABLE and records in-source that k8s reads the status code, not the body"
+  pass L7 "both surveyed production systems still latch readiness in an AtomicBool — kubert hard-reserves /live and /ready ('cannot be overridden') and answers liveness with the plain-text body \"alive\\n\", Apollo Router answers SERVICE_UNAVAILABLE and records in-source that k8s reads the status code, not the body"
 else
   fail L7 "the production probe sources could not be read or changed (kubert HTTP $KUBERT ok=$K_OK, apollo HTTP $APOLLO ok=$A_OK)"
 fi

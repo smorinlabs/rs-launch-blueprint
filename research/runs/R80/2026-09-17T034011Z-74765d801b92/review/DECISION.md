@@ -3,7 +3,8 @@
 Synthesized 2026-09-18 by a fresh context that produced none of this item's raw
 reports. Inputs read in full: `inputs/prompt.md` (binding), `inputs/PARAMETERS.md`
 and the live `docs/port/PARAMETERS.md`, `inputs/owner-reference-axum-companion-stack-2026-09-16.md`
-with `docs/planning/p02/owner-decisions.md` section 11, `docs/port/README.md`,
+with `docs/planning/p02/owner-decisions.md` section 11, `docs/port/README.md` for
+its closed verdict vocabulary (`ADOPT` for F308; `DIVERGENT` for F328 and F329),
 `docs/port/COMMONALITY.md` rows F303/F308/F320/F328/F329/F337, `research/CLAUDE.md`,
 and the single registered engine report `raw/opus.md`. No template code exists in
 this repository and none was written here; every executed check runs against a
@@ -136,10 +137,12 @@ every executed check in this decision ran on **macOS 26.4 `arm64` only**;
 crates' own CI and on R66's and R69's prior records. Gate 5: default features for
 axum, the six-feature list R69 owns for tokio, `derive` only for serde; the
 async-runtime coupling is tokio, and this item adds no feature to any of them.
-Gate 6: qualitatively, axum and tokio dominate the gated surface's compile time —
-the probe workspace compiled the whole tree from a warm registry cache in the
-time recorded under `## Empirical check` — and this item adds two handler
-functions, three structs and one `AtomicBool` to it. **No latency, throughput,
+Gate 6: qualitatively, axum and tokio dominate the gated surface's compile time,
+and this item adds two handler functions, three structs and one `AtomicBool` to
+it. The probe workspace's own cold compile from a warm registry cache printed
+`Finished \`test\` profile [unoptimized + debuginfo] target(s) in 16.48s` in
+`check-probe.log`; that figure is an **observation, not an assertion** — it is one
+of the lines that differs between reruns, and no check depends on it. **No latency, throughput,
 memory or binary-size figure is claimed anywhere in this decision; none was
 measured.**
 
@@ -274,9 +277,12 @@ for whatever later items add. **Which checks can reach `CheckStatus::Error` in R
 is not decided here, and no accepted decision defines one**: R55
 (`config-error-tolerance`, accepted at revision 3, unpublished) and R57
 (`xdg-directory-set`, accepted at revision 2, unpublished) are the two items whose
-subject matter could produce one, and neither's accepted decision defines a
-diagnostics check at all. The check list is unowned; this decision names that gap
-rather than filling it.
+subject matter could produce one, and **neither names `run_diagnostics`, `doctor`,
+`readyz` or `CheckStatus` on any line — 0 hits and 0 hits, counted rather than
+read** (check `O28`). R55's typed `Vec<ConfigWarning>` is diagnostic-adjacent and
+is not the same thing: it is a config-load warning list, not a check in this
+report. The check list is unowned; this decision names that gap rather than
+filling it.
 
 **Where the shared function lives, and why the placement is forced rather than
 chosen.** `run_diagnostics` goes in **`crates/core`**, the member R02 revision 2
@@ -391,8 +397,8 @@ recommended, for three reasons. (1) A body that changes on every request destroy
 AC2, and R33 (`property-and-snapshot-testing`, published) selects snapshot
 testing, so a monotonically-increasing field forces every such test to redact a
 field before comparing. (2) Neither surveyed production system emits it: kubert's
-`/live` body is the five bytes `"alive\n"` and Apollo's is `{"status":"UP"}`
-(check `L7`). (3) Kubernetes never reads the body. The operational question uptime
+`/live` body is the plain-text literal `"alive\n"` (asserted at source by check
+`L7`) and Apollo's is `{"status":"UP"}` (carried from `raw/opus.md`). (3) Kubernetes never reads the body. The operational question uptime
 answers — "did this process restart?" — is better answered by the container
 runtime's own restart count. **Recorded as the alternative so the owner can
 overturn it cheaply**: if wanted, it is one `pub started: Instant` field on
@@ -467,8 +473,9 @@ at row C15). Row by row, for every row that touches this item:
 
 Tally over the six rows: **3 agree, 2 differ** — one difference on sourced ground,
 one on an owner-fixed parameter, both grounds section 11 requires — plus 2 rows
-recorded as belonging to other items. Two of the six are the same C15 row read for
-its two halves.
+recorded as belonging to other items. Those counts sum to seven over six rows
+because the C15 *probes* row is counted twice: it agrees on the two paths and
+differs on "checks DB".
 
 ### What this decision does not decide
 
@@ -636,19 +643,19 @@ directory for every command: the repository root,
 this repository and none was written**: the recommendation is verified, never
 implemented.
 
-**Three scripts, 49 checks.** Each asserts on content, not on an exit code; each
+**Three scripts, 50 checks.** Each asserts on content, not on an exit code; each
 carries `set -euo pipefail`; each counts PASS/FAIL/SKIP and exits non-zero on any
 FAIL. A check that could not fail is not counted as evidence.
 
 ```bash
 cd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/evidence
-bash check-offline.sh   # 27 checks O1..O27  -> check-offline.log
+bash check-offline.sh   # 28 checks O1..O28  -> check-offline.log
 bash check-probe.sh     # 13 checks A,B,T1..T8,C9..C11 -> check-probe.log
 bash check-live.sh      #  9 checks L1..L9   -> check-live.log
 shellcheck check-offline.sh check-probe.sh check-live.sh   # -> shellcheck.log, exit 0
 ```
 
-**`check-offline.sh` — 27 checks, all offline.** It re-verifies at source the
+**`check-offline.sh` — 28 checks, all offline.** It re-verifies at source the
 claims of `raw/opus.md` that need no network: the registered report's digest
 (`O1`); its bundle answer shape through
 `validate_answer_text(text, "bundle")` from `scripts/research_validation.py`,
@@ -670,9 +677,10 @@ readyz tests including the monkeypatched 503 (`O22`); py's four checks with
 exactly one error-capable status (`O27`); ts's zero matches (`O23`); the owner
 reference's C15 sentence and its edition 2021 line (`O24`); and this decision's
 own shape — exactly one `re-verify:` line, no `## Supersedes`, exactly four H2
-sections (`O25`) — and its gate-1 wording (`O26`).
+sections (`O25`) — and its gate-1 wording (`O26`); and the counted absence of any
+diagnostics term in R55's and R57's accepted decisions (`O28`).
 
-Result in place: **27 PASS, 0 FAIL, 0 SKIP**, exit 0, saved as
+Result in place: **28 PASS, 0 FAIL, 0 SKIP**, exit 0, saved as
 `review/evidence/check-offline.log`.
 
 **`check-probe.sh` — 13 checks against a throwaway axum workspace.** The workspace
@@ -712,7 +720,8 @@ property py has to reach with a monkeypatch.
 facts that decide gate 2 (`shadow-rs` and `git-version` still `rust_version: null`;
 `built` 1.87; `vergen` 1.96.0); `L3` the RustSec picture with `atty` as a 200
 control; `L4` `RUSTSEC-2025-0023`'s open-ended `>=1.44.2` patched range; `L5` the
-three Kubernetes sentences quoted above; `L6` the build-script requirement in
+four Kubernetes sentences quoted in this decision, the back-end-dependency caution
+included; `L6` the build-script requirement in
 `built`'s, `vergen`'s and `shadow-rs`'s own READMEs and `git-version`'s git-binary
 requirement; `L7` the two production probe implementations read at
 `raw.githubusercontent.com`; `L8` the crates.io census; `L9` the four
@@ -741,8 +750,8 @@ file lock` / `Finished` progress line** whose order and timing vary between runs
 
 **All three scripts were then rerun from a clean `git archive HEAD` extraction
 into a fresh `$TMPDIR` directory, after the commit that carries them**, and all
-**49 checks passed there with 0 FAIL and — the point of naming them — 0 SKIP**:
-27 + 13 + 9. The extraction has no `.git` at all, which the offline script reports
+**50 checks passed there with 0 FAIL and — the point of naming them — 0 SKIP**:
+28 + 13 + 9. The extraction has no `.git` at all, which the offline script reports
 rather than assumes (it tests with `-e`, not `-d`, because a worktree's `.git` is a
 file). The archive diffs are committed: `check-offline.archive.diff` differs on
 **exactly one line**, `git metadata: present` versus
@@ -817,7 +826,9 @@ acceptance record (`O9`). The W1-CODEX3 and licence rulings (`O10`, `O11`). The
 four in-flight couplings (`O12`–`O15`). R67's catalog (`O16`). The accepted
 revisions and clauses of R02, R05 and R03 (`O17`–`O19`). The py and ts source
 precedent at the programme pins, including both readyz tests and the error-capable
-check count (`O20`–`O22`, `O27`, `O23`). The owner reference's two rows (`O24`).
+check count (`O20`–`O22`, `O27`, `O23`). The counted absence of a diagnostics
+check in R55's and R57's accepted decisions (`O28`). The owner reference's two
+rows (`O24`).
 The whole endpoint contract in axum 0.8.9 and tokio 1.53.1 — routing, statuses,
 the latch, the `spawn_blocking` bridge, `405` with `Allow: GET,HEAD`, `HEAD`
 handling, byte stability, the feature gating and the core member's dependency
@@ -859,9 +870,9 @@ than carried.**
 3. **Wrong status.** The report calls **R55 and R57 "open"**. Both are
    **owner-accepted and unpublished** — W1-R55 at revision 3 (2026-09-17) and
    W1-R57 at revision 2 (2026-09-16) (check `O9`). The substantive point survives
-   in a stronger form: neither accepted decision defines a diagnostics check at
-   all, so the check list that could reach `CheckStatus::Error` is **unowned**, not
-   merely unpublished.
+   in a stronger form: neither accepted decision names `run_diagnostics`,
+   `doctor`, `readyz` or `CheckStatus` on any line (check `O28`), so the check list
+   that could reach `CheckStatus::Error` is **unowned**, not merely unpublished.
 4. **Overstated.** *"R77 owns the window's value"* for the pre-drain
    readiness-propagation pause. R77's in-flight report owns a drain **deadline**
    (`RSLBP_WEB_GRACEFUL_SHUTDOWN_SECONDS`, recommended 8 s) and mentions a

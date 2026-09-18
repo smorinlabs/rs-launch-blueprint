@@ -436,6 +436,25 @@ else
   skip O24 "the owner reference input is absent"
 fi
 
+# -------------------------------------------------------------- O28 ----------
+# This decision states that neither R55's nor R57's owner-accepted decision
+# defines a diagnostics check. That is an absolute claim, so it is counted rather
+# than read: neither file may name run_diagnostics, doctor, readyz or CheckStatus.
+R55="$ROOT/research/runs/R55/2026-09-17T020714Z-62a04ad8fee1/review/DECISION.md"
+R57="$ROOT/research/runs/R57/2026-09-17T020714Z-8fdb5c2010e7/review/DECISION.md"
+if [ -f "$R55" ] && [ -f "$R57" ]; then
+  R55_HITS="$($GREP -ciE 'run_diagnostics|doctor|readyz|CheckStatus' "$R55" || true)"
+  R57_HITS="$($GREP -ciE 'run_diagnostics|doctor|readyz|CheckStatus' "$R57" || true)"
+  echo "R55 diagnostics-term hits: $R55_HITS; R57: $R57_HITS"
+  if [ "$R55_HITS" -eq 0 ] && [ "$R57_HITS" -eq 0 ]; then
+    pass O28 "neither R55 revision 3 nor R57 revision 2 names run_diagnostics, doctor, readyz or CheckStatus on any line (0 and 0, counted with $($GREP --version | head -1)) — the check list that could reach CheckStatus::Error is unowned, not merely unpublished"
+  else
+    fail O28 "R55 or R57 does name a diagnostics term (R55 $R55_HITS, R57 $R57_HITS); the unowned-check-list claim must be softened"
+  fi
+else
+  skip O28 "R55's or R57's accepted decision is absent"
+fi
+
 # -------------------------------------------------------------- O25 ----------
 # The decision must carry exactly one re-verify line and must not carry a
 # Supersedes section (this is revision 1).
