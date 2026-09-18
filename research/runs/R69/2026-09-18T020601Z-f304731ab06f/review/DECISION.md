@@ -96,18 +96,18 @@ revision-9 file**.
 | 2199 | owner-reference hand-off table, row C13 | Corrected to name R02's accepted answer |
 | 2342 | Disagreement 3, the `axum-extra` hand-off | Path substitution `src/web/` → `crates/web/src/`; the hand-off itself is unchanged |
 | 218–225, 1931, 1945 | the revision-6 retained note's overlap table, an evidence script's search regex, and the revision-6 record of its own edits | **Byte-identical, deliberately.** These record what an earlier revision found, ran or did; rewriting them would falsify the record. The overlap row saying the crate boundary is "still open" was true when revision 6 wrote it |
-| 721–724, 1355 | acceptance criterion 1 and the executed feature-shape check it cites | **Byte-identical, deliberately.** They report an executed result on a probe manifest, and no evidence result moves in this revision. `cargo tree -e normal` with no features is root-package-scoped, which R02's own check `F` confirms |
+| 715–745, 1355 | the acceptance-criteria lead-in, criteria 1 and 5, and the executed feature-shape check they cite | **The script, the log and every criterion's own text are byte-identical**, because no evidence result moves in this revision. What revision 10 adds is one scoping clause on the lead-in paragraph, naming the shape that probe ran on and the R02 checks that executed the same two observables on the accepted four-package shape |
 
 **Two mechanical edits outside those sites, made for a publication-tool reason and reported
 rather than made quietly.** `scripts/research_runner.py:check_history` splits a decision at the
 **first substring** occurrence of the supersession heading's text and requires the prior published
 bytes below it. **Seven** sentences above that point mention the heading in backticks — one each
-in the retained notes of revisions **2, 3, 4, 5, 6 and 8** and one in the revision-9 note; the
-retained revision-7 note has none. Each says, correctly at the time it was written, that no
+in the retained notes of revisions **2, 3, 4, 5, 6 and 7** and one in the revision-9 note; the
+retained revision-8 note has none. Each says, correctly at the time it was written, that no
 revision had been published so the section did not yet exist. Left as written they would sit
 above the real heading and the publication would preserve the wrong bytes, so in all seven the
-backticked heading token is replaced by the words "supersession section". **That is the only byte
-changed in any of those seven notes**, and the statement each makes is now historical, because
+backticked heading token is replaced by the words "supersession section". **That is the only edit
+made in any of those seven notes**, and the statement each makes is now historical, because
 revision 9 was published on 2026-09-17 and revision 10 adds the section. This file therefore
 refers to that heading in prose as "the supersession section" everywhere above it. The second
 edit is the revision-9 note's opening **heading**, rewritten into the retention form the
@@ -177,7 +177,7 @@ rather than `-d`, because in a worktree `.git` is a **file**.
 
 **Revision note (revision 9), retained as the record of that revision. It was approved by both
 round-9 audits, owner-accepted on 2026-09-16 and published on 2026-09-17. Its body below this
-heading is retained verbatim and nothing in it is withdrawn; the one byte revision 10 changed
+heading is retained verbatim and nothing in it is withdrawn; the one edit revision 10 made
 there is the backticked supersession-heading token the revision-10 note above accounts for, and
 this heading itself is the retention form the seven headings below it already use. Its own
 heading recorded it as: three rows of the owner-supplied reference architecture that
@@ -900,7 +900,7 @@ in all three ecosystems supports one. All five engines agree on this framing.
 **Essential behaviors and observable acceptance criteria.** These are requirements on P03's
 template, not results of this run. Criteria 1, 3 and 5 were exercised here in the reduced,
 verification-only forms described under `## Empirical check`; criteria 2, 4 and 6 were not,
-and are carried in the unproven table under `## Engines`.
+and are carried in the unproven table under `## Engines`. **Revision 10 scopes criteria 1 and 5 to the shape their probe ran on.** That probe was the single-package shape this revision superseded, and its script and log are deliberately left byte-identical, because no evidence result moves in this revision; the same two observables were executed on R02's owner-accepted four-package shape by R02's own checks `B1`, `B2`, `B4` and `F` (`research/runs/R02/2026-09-17T033527Z-40929a603f91/review/evidence/r02-workspace-probe.log`), which is where a reader should look for the workspace reading. Criterion 5's "module" is now the optional member crate, and criterion 1's `cargo tree -e normal` is root-package-scoped, which R02's check `F` projects.
 
 1. **The surface is optional and costs nothing when off.** *Observable:* with no features,
    `cargo tree -e normal` lists no `axum`, `tokio`, `hyper` or `tower`, and
@@ -1601,7 +1601,7 @@ dependency of the facade — while `<app>` is still R49's `build-tool-output-sha
 |---|---|
 | `Cargo.toml` (root package `rs-launch-blueprint`) | `[features] web = ["dep:rs-launch-blueprint-web"]`; `rs-launch-blueprint-web` declared `optional = true` on the `crates/web` path; `[[bin]] name = "<app>-serve", required-features = ["web"]`. Revision 9 wrote this row as `[features] web = ["dep:axum", "dep:tokio"]` with the two crates and the `tower` dev-dependency on this one manifest |
 | `crates/web/Cargo.toml` (new member) | **non-optional** `axum` 0.8.9 (defaults on) and `tokio` 1.53.1 (`rt-multi-thread`, `net`, `signal`, `macros`, `time`, `sync`); `tower` 0.5.3 under `[dev-dependencies]`, still not gated by the feature |
-| `src/lib.rs` | one line re-exporting the optional member under the name the gated surface has always carried: `#[cfg(feature = "web")] pub use rs_launch_blueprint_web as web;`. Revision 9 wrote `#[cfg(feature = "web")] pub mod web;`. **The facade's re-export form is R02's and R04's to fix, not this item's**; what this item owns is that the gated surface is reachable, and that it is absent when the feature is off |
+| `src/lib.rs` | one line re-exporting the optional member under the name the gated surface has always carried — **illustrated, not specified**, as `#[cfg(feature = "web")] pub use rs_launch_blueprint_web as web;`. Revision 9 wrote `#[cfg(feature = "web")] pub mod web;`, which cannot resolve once the tree moves to `crates/web/src/`. **The facade's re-export form is R02's and R04's to fix, not this item's, and R02 is silent on it**: R02 fixes only that the root package is "the published facade: `[lib] src/lib.rs`, `[[bin]] rslbp`, `[[bin]] rslbp-serve`, the composition root, the production adapter", and R04's root-barrel rule now applies to both packages that carry a public surface. What this item owns is that the gated surface is reachable under the name `web`, and that it is absent when the feature is off |
 | `crates/web/src/lib.rs` (new) | `AppState` and its `FromRef` impls, `build_router(state) -> Router`, `shutdown_signal()`, `serve_until(..)` — revision 9 placed these at `src/web/mod.rs` |
 | `crates/web/src/routes/projects.rs` (new) | `pub(crate) fn router() -> Router<AppState>` and the handlers, returning the library's own contract types |
 | `crates/web/src/routes/ops.rs` (new) | `/healthz` now; `/readyz` and its payload are R80's |
