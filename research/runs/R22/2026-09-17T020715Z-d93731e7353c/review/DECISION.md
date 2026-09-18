@@ -431,7 +431,7 @@ repository was written.
 | **E1** | `bash r22-cargo-probe.sh` | `review/evidence/r22-cargo-probe.log` | exit **0**, `CHECKS RUN: 24  PASS: 24  FAIL: 0  SKIP: 0` |
 | **E2** | `bash r22-sources.sh` | `review/evidence/r22-sources.log` | exit **0**, `CHECKS RUN: 75  PASS: 75  FAIL: 0  SKIP: 0` |
 | **E3** | `bash r22-live-recheck.sh` | `review/evidence/r22-live-recheck.log` | exit **0**, `CHECKS RUN: 10  PASS: 10  FAIL: 0  SKIP: 0` |
-| **E4** | `bash r22-sources.sh` and `bash r22-cargo-probe.sh` from a `git archive HEAD` extraction | `review/evidence/r22-archive-rerun.log` | see the clean-extraction paragraph below |
+| **E4** | `bash r22-sources.sh` and `bash r22-cargo-probe.sh` from a `git archive HEAD` extraction | `review/evidence/r22-archive-rerun.log` | both exit **0** with the same counts, `75/75` and `24/24`; **one line differs**, and it is check `A0b` |
 
 109 checks in total, no failures, **no skips** — so there is no skip to name.
 **No log line carries an absolute path**: each script prints file locations
@@ -496,15 +496,31 @@ and `r22-sources.log` are byte-identical across runs except for their
 `run-started-utc:` line**, which carries the wall-clock time of the run. That is
 the only varying line in either file.
 
-**E4 — the clean-extraction rerun.** `r22-archive-rerun.log` records
-`r22-sources.sh` and `r22-cargo-probe.sh` re-executed inside a `tar` extraction of
-`git archive HEAD`, which has **no `.git` at all** — neither the directory a
-normal checkout has nor the *file* this shared worktree has. Both scripts locate
-the repository root by walking up for `docs/port/PARAMETERS.md` rather than for
-`.git`, and `r22-sources.sh` reports which of the three cases it is in (check
-A0b, which uses `-e` and not `-d`). The log states the observed result; it was
-committed after the commit it reads, because a `git archive HEAD` extraction can
-only contain files that are already committed.
+**E4 — the clean-extraction rerun, run rather than asserted.**
+`r22-archive-rerun.log` records both deterministic scripts re-executed inside a
+`tar` extraction of `git archive HEAD` at commit
+`582358ae634bf6affd7a9b4b088067759c444c33`. That extraction has **no `.git` at
+all** — neither the directory a normal checkout has nor the *file* this shared
+worktree has — which is why both scripts locate the repository root by walking up
+for `docs/port/PARAMETERS.md` rather than for `.git`, and why check `A0b` uses
+`-e` rather than `-d`. Both scripts exited **0** with the same counts as in place,
+`CHECKS RUN: 75  PASS: 75` and `CHECKS RUN: 24  PASS: 24`.
+
+Diffed against the committed logs with `run-started-utc:` filtered out, the probe
+output was **identical** and the source output differed on **exactly one line**:
+
+```
+6c6
+< PASS A0b -- reading a worktree whose .git is a FILE (tested with -e, not -d)
+---
+> PASS A0b -- reading an extraction with no .git at all (git archive); every path below is tracked content
+```
+
+`A0b` is the one check written to report *which* of the three cases it is
+reading, so that line is supposed to move and every other line is supposed to
+hold. It holds. The log was committed in the commit after the one it reads,
+because a `git archive HEAD` extraction can only contain files already
+committed.
 
 ## Engines
 
