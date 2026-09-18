@@ -21,6 +21,46 @@
       },
       "provider": "opus",
       "state": "submitting"
+    },
+    {
+      "actor": "research-opus-2026-09-17T034011Z-2e1043da0e00",
+      "at": "2026-09-18T22:27:22Z",
+      "operation": {
+        "actor": "research-opus-2026-09-17T034011Z-2e1043da0e00",
+        "actual_model": "claude-opus-5",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-18T22:21:07Z",
+        "model": "claude-opus-5",
+        "operation_id": "agent:research-opus-2026-09-17T034011Z-2e1043da0e00:c1d02b81cd092988",
+        "provider": "opus",
+        "request_id": "d4e0cfa97db5490e97b2d90331974aee",
+        "returned_at": "2026-09-18T22:27:22Z",
+        "state": "submitted"
+      },
+      "provider": "opus",
+      "state": "submitted"
+    },
+    {
+      "actor": "research-opus-2026-09-17T034011Z-2e1043da0e00",
+      "at": "2026-09-18T22:27:22Z",
+      "operation": {
+        "actor": "research-opus-2026-09-17T034011Z-2e1043da0e00",
+        "actual_model": "claude-opus-5",
+        "actual_provider": "claude-agent-tool",
+        "at": "2026-09-18T22:21:07Z",
+        "collected_at": "2026-09-18T22:27:22Z",
+        "model": "claude-opus-5",
+        "operation_id": "agent:research-opus-2026-09-17T034011Z-2e1043da0e00:c1d02b81cd092988",
+        "provider": "opus",
+        "raw": "research/runs/R79/2026-09-17T034011Z-2e1043da0e00/raw/opus-c1d02b81cd0929881f66c7810af782496a84f73a8f45472e86e773a0300145ac.md",
+        "raw_sha256": "c1d02b81cd0929881f66c7810af782496a84f73a8f45472e86e773a0300145ac",
+        "reason": "",
+        "request_id": "d4e0cfa97db5490e97b2d90331974aee",
+        "returned_at": "2026-09-18T22:27:22Z",
+        "state": "succeeded"
+      },
+      "provider": "opus",
+      "state": "succeeded"
     }
   ],
   "input_hashes": {
@@ -38,11 +78,19 @@
   "operations": {
     "opus": {
       "actor": "research-opus-2026-09-17T034011Z-2e1043da0e00",
+      "actual_model": "claude-opus-5",
+      "actual_provider": "claude-agent-tool",
       "at": "2026-09-18T22:21:07Z",
+      "collected_at": "2026-09-18T22:27:22Z",
       "model": "claude-opus-5",
+      "operation_id": "agent:research-opus-2026-09-17T034011Z-2e1043da0e00:c1d02b81cd092988",
       "provider": "opus",
+      "raw": "research/runs/R79/2026-09-17T034011Z-2e1043da0e00/raw/opus-c1d02b81cd0929881f66c7810af782496a84f73a8f45472e86e773a0300145ac.md",
+      "raw_sha256": "c1d02b81cd0929881f66c7810af782496a84f73a8f45472e86e773a0300145ac",
+      "reason": "",
       "request_id": "d4e0cfa97db5490e97b2d90331974aee",
-      "state": "submitting"
+      "returned_at": "2026-09-18T22:27:22Z",
+      "state": "succeeded"
     }
   },
   "prompt_source": "research/topics/79-prometheus-metrics/prompts/prometheus-metrics.prompt.md",
@@ -53,7 +101,7 @@
   ],
   "run_id": "2026-09-17T034011Z-2e1043da0e00",
   "schema_version": 1,
-  "state": "submitting",
+  "state": "partial",
   "tier": "focused",
-  "updated_at": "2026-09-18T22:21:07Z"
+  "updated_at": "2026-09-18T22:27:22Z"
 }
