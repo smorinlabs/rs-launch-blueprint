@@ -744,9 +744,10 @@ then reproduces byte-for-byte** — `check-offline.rerun.diff` is **0 bytes**. *
 `check-probe.log` the assertion lines reproduce byte-for-byte and the rest does
 not**: `check-probe.rerun.assertions.diff` (every `PASS`/`FAIL`/`SKIP` and the
 totals line) is **0 bytes**, while `check-probe.rerun.diff` (the whole log) carries
-**44 differing lines, every one of them a cargo `Compiling` / `Blocking waiting for
-file lock` / `Finished` progress line** whose order and timing vary between runs —
-`0` differing lines are anything else.
+differing lines that are **every one of them a cargo `Compiling` / `Blocking
+waiting for file lock` / `Finished` progress line** — **`0` differing lines are
+anything else**, which is the assertion; the number of progress lines itself
+varies with build scheduling and is 44 in the committed diff.
 
 **All three scripts were then rerun from a clean `git archive HEAD` extraction
 into a fresh `$TMPDIR` directory, after the commit that carries them**, and all
@@ -755,10 +756,14 @@ into a fresh `$TMPDIR` directory, after the commit that carries them**, and all
 rather than assumes (it tests with `-e`, not `-d`, because a worktree's `.git` is a
 file). The archive diffs are committed: `check-offline.archive.diff` differs on
 **exactly one line**, `git metadata: present` versus
-`git metadata: absent (archive extraction)`; `check-probe.archive.diff` differs on
-**47 lines, every one a cargo progress line**; and
+`git metadata: absent (archive extraction)`; `check-probe.archive.diff` again
+differs only on cargo progress lines, with **`0` differing lines that are anything
+else** (40 progress lines in the committed diff); and
 `check-live.archive.assertions.diff` differs on **exactly one line**, the
-`mode: fetch` versus `mode: snapshots` banner. The three
+`mode: fetch` versus `mode: snapshots` banner. The committed `*.archive.diff`
+files were produced from the extraction of commit `f940e56`; a later extraction
+reproduces the same assertion lines and a different set of cargo progress lines,
+which is what "0 differing lines are anything else" is written to survive. The three
 `*.archive.assertions.diff` files — every `PASS`/`FAIL`/`SKIP` line and every
 totals line of all three scripts — are **0 bytes**. The archive run's live log is
 committed as `check-live.archive-snapshots.log`. **`check-live.sh` cannot reproduce byte-for-byte

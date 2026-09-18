@@ -1,5 +1,5 @@
 === R80 check-live.sh (mode: snapshots) ===
-date(UTC): 2026-09-18T22:54:57Z
+date(UTC): 2026-09-18T23:03:17Z
 grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
 curl: curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
 jq: jq-1.8.2
@@ -34,16 +34,16 @@ PASS L3 — the atty control answers 200 while seven of the eight crates have no
     <code>&#62;=1.43.1, &#60;1.44.0</code>
     <code>&#62;=1.44.2</code>
 PASS L4 — RUSTSEC-2025-0023 lists an open-ended patched range '>=1.44.2' with no upper bound, so tokio 1.53.1 carries no open advisory
-PASS L5 — kubernetes.io still says liveness failure restarts the container, readiness failure removes the Pod from its EndpointSlices, and that any code in [200,400) is success — the three facts that fix this design
+PASS L5 — kubernetes.io still says liveness failure restarts the container, readiness failure removes the Pod from its EndpointSlices, that any code in [200,400) is success, and that a readiness probe MAY additionally check each required back-end service — the four quoted facts this decision rests on
   built README: HTTP 200, 'build.rs' on 1 line(s)
   vergen README: HTTP 200, 'build.rs' on 2 line(s)
   shadow-rs README: HTTP 200, 'build.rs' on 5 line(s)
   git-version README: HTTP 200, requires the git binary at compile time
 PASS L6 — built, vergen and shadow-rs each instruct a Cargo build script in their own README — which R49's published no-build.rs clause excludes — and git-version requires a git binary and a .git tree a crates.io tarball does not have
-PASS L7 — both surveyed production systems still latch readiness in an AtomicBool — kubert hard-reserves /live and /ready ('cannot be overridden'), Apollo Router answers SERVICE_UNAVAILABLE and records in-source that k8s reads the status code, not the body
+PASS L7 — both surveyed production systems still latch readiness in an AtomicBool — kubert hard-reserves /live and /ready ('cannot be overridden') and answers liveness with the plain-text body "alive\n", Apollo Router answers SERVICE_UNAVAILABLE and records in-source that k8s reads the status code, not the body
   q=health: meta.total=6488; top 3 by downloads: tonic, deadpool, tonic-health
   q=probe: meta.total=5273; top 3 by downloads: autocfg, pkg-config, openssl-probe
-  q=liveness: meta.total=28357; top 3 by downloads: serde_json, yoke, serde_urlencoded
+  q=liveness: meta.total=28347; top 3 by downloads: serde_json, yoke, serde_urlencoded
   rocket_healthz recent_downloads=1281 vs serde recent_downloads=314208639
 PASS L8 — the crates.io census still shows no adopted first-class HTTP liveness/readiness crate: the only name-matched candidate, rocket_healthz, sits below 100,000 recent downloads while serde is above 100,000,000 — the absence is the finding
   lukaslueg/built                        stars=198    archived=false  pushed_at=2026-06-07T22:06:58Z
