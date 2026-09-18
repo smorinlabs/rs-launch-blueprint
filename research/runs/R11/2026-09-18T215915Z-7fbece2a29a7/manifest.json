@@ -1,0 +1,37 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-18T21:59:15Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-18T21:59:15Z",
+      "state": "ready"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb",
+    "parameters_semantic": "c044235605428a574e5648d2f67a704d6e1749c2a23dfde27416529befc02989",
+    "parameters_semantic_file": "7ebcbe65241cd395932f0df1d7060744546b0c9919b527fa8e6321bff5b73239",
+    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+    "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+    "prerequisites": "cbe23dd082a1bcc88fa6e30eabae0e6da6c6230a6f853ba73aad4d77df0eeab6",
+    "prompt": "79ad434c4e18777c50ef331c287d6ad82538d69ef284e64e327dba5c38cc79a4",
+    "registry": "95fea74fa8415b94d81c62bf3a3d1de13ca37dc05d366e978c8135915f9e544a"
+  },
+  "item": "R11",
+  "model": "claude-fable-5-1",
+  "operations": {},
+  "prompt_source": "research/topics/11-ci-workflow-job-structure/prompts/ci-workflow-job-structure.prompt.md",
+  "remaining_budget": "USD 0.00 at prepare (Opus leg unpaid; Codex leg deferred under W1-CODEX3; Doxa leg pending owner authorisation W2-DOXA)",
+  "required_engines": [
+    "codex",
+    "opus",
+    "doxa"
+  ],
+  "run_id": "2026-09-18T215915Z-7fbece2a29a7",
+  "schema_version": 1,
+  "state": "ready",
+  "tier": "deep",
+  "updated_at": "2026-09-18T21:59:15Z"
+}
