@@ -1,6 +1,28 @@
-# 2026-09-18 — R54 — config-discovery-tiers (bundle, Deep) — decision (revision 2)
+# 2026-09-18 — R54 — config-discovery-tiers (bundle, Deep) — decision (revision 3)
 
 ## Decision
+
+**Revision note (revision 3).** This revision answers the single finding in the
+round-2 judgment audit (`review/audit-fable.md`, actor
+`audit-fable-2026-09-17T033527Z-8dfef31d60fc-r2`, `verdict: reject`, against
+revision 2 at sha256 `f03dbef4a1246902bce8c7f81d324829d7b6df38acddb5bc14406de049a25782`).
+That audit found JF-1..JF-4 "closed at every site I could find them" and raised
+one new, non-blocking finding. **The recommendation does not move, and no
+parameter value moves.** Every revision-1 and revision-2 artifact —
+`check.sh`, `check.log`, `check-rerun.log`, `shellcheck.log`, `walkup_probe.rs`,
+the thirteen `snapshots/` files, `check-r2.sh`, `check-r2.log`,
+`check-r2-archive.log`, `r2-rerun.diff` and `shellcheck-r2.log` — is
+**byte-identical**, re-asserted by sha256 at `check-r3.sh` group `B`.
+
+| Finding | The audit's words | Superseded wording | Repair |
+|---|---|---|---|
+| **JF-5** (non-blocking) | "the sentence repairing JF-3 introduces a new wrong count" — `raw/doxa-openai.normalized.md` carries twelve member-level `owns` lines, "and no check asserts that number" | "`project-search` is **not** among them — it is one of eight *member-level* `owns` lines, at `:401`" | Corrected to **twelve**, with the three ranges `:398-401`, `:536-539`, `:678-681` the audit names, and the count is now **checkable**: the new `review/evidence/check-r3.sh` asserts the anchored member-level count is 12, that those twelve lines fall in exactly those three ranges, that each range holds four, that the twelve names are exactly the audit's list, that the answer-level form is a different count and still 8, and that the decision's own sentence states twelve with its ranges. Checks `M01`–`M10`. |
+
+The audit's own assessment of the figure is recorded rather than argued with:
+"the disposition ('both rejected as out of contract') does not depend on the
+figure at all", and it was "the one claim in the revision whose only support is
+the sentence itself" — which is exactly why the repair adds a check rather than
+only a word.
 
 **Revision note (revision 2).** This revision answers every finding in the round-1
 judgment audit (`review/audit-fable.md`, actor
@@ -34,9 +56,13 @@ unproven list; nothing depends on it, A1's rejection standing on scope alone.
 recommended the six-rung chain with no layering crate, `etcetera` 0.11.0 through
 R57's `Paths`, two `std` resolvers and the `clap` `env` alias; rejected by
 `review/audit-fable.md` with JF-1 and JF-2 blocking. **Revision 2**, 2026-09-18:
-JF-1..JF-4 repaired as tabled above. The recommendation, the six-rung table, the
-four force labels `J1`–`J4`, the eleven acceptance criteria, the five `- assumes`
-lines and every revision-1 evidence artifact are unchanged.
+JF-1..JF-4 repaired as tabled above; approved on those four by the
+round-2 judgment audit, which raised JF-5. **Revision 3**, 2026-09-18: JF-5
+repaired — the member-level count corrected to twelve with its three ranges and
+made checkable in `check-r3.sh`. Across all three revisions the recommendation,
+the six-rung table, the four force labels `J1`–`J4`, the eleven acceptance
+criteria, the five `- assumes` lines and every evidence artifact of the preceding
+revisions are unchanged.
 
 **Status.** This decision is a **proposal validated in the implementation phase**
 (owner ruling, 2026-09-10). It records what the research found and what it
@@ -565,6 +591,25 @@ history — reports `SKIP V10 JF-1 commit ordering — no git history here`, by 
 The archive log differs from the in-place log in exactly three lines: that `SKIP`,
 the `skipped=` total, and the `repo-root` header naming the extraction directory.
 
+**The revision-3 checks make one count checkable, and touch nothing else.**
+`review/evidence/check-r3.sh` carries the JF-5 assertions plus a group `B` that
+re-asserts **all eleven** revision-1 and revision-2 artifacts by sha256. It invokes
+`/usr/bin/grep` by absolute path and prints its version beside every count, reaches
+no network, and needs no git history:
+
+```bash
+shellcheck check-r3.sh                        # → exit 0, no output; saved as shellcheck-r3.log
+./check-r3.sh > check-r3.log 2>&1             # → 32 checks, 32 PASS, 0 FAIL, 0 SKIP, exit 0
+./check-r3.sh > check-r3-rerun.log 2>&1       # the in-place reproducibility rerun
+diff check-r3.log check-r3-rerun.log          # → no differences; saved empty as r3-rerun.diff
+git archive HEAD | tar -x -C "$TMP" && (cd "$TMP/.../review/evidence" && ./check-r3.sh)
+# → 32 PASS, 0 FAIL, 0 SKIP, exit 0; saved as check-r3-archive.log
+```
+
+Because every check reads a tracked file, the clean-extraction run needs no `SKIP`
+at all and differs from the in-place log in exactly one line: the `repo-root`
+header naming the extraction directory.
+
 **Figures, with endpoint and retrieval date.** All retrieved **2026-09-17**.
 
 | Crate | 90-day (`crate.recent_downloads`) | All-time (`crate.downloads`) | Latest unyanked | `rust_version` | Endpoint |
@@ -713,8 +758,8 @@ env < CLI`); Doxa/OpenAI declares **eight** owned parameters in its answer-level
 `V14`): `config-discovery-scopes`, `system-config-path`, `system-config-order`,
 `user-config-path`, `project-config-path`, `merge-semantics`,
 `config-selector-env-alias` and `config-selector-precedence` (`V15`).
-`project-search` is **not** among them — it is one of eight *member-level* `owns`
-lines, at `:401` (`V16`, `V17`). **Both rejected as out of contract.** `R5.1`
+`project-search` is **not** among them — it is one of **twelve** *member-level* `owns` lines (`:398-401`, `:536-539`, `:678-681`), at
+`:401` (`V16`, `V17`, `M01`–`M07`). **Both rejected as out of contract.** `R5.1`
 enumerates six rungs and no `local` tier, and the prompt's `## Couplings` carries
 an empty `- owns:` line, so R54 registers no parameter; those values live in this
 decision's prose, where they bind P03 without entering the registry. Eight registry
