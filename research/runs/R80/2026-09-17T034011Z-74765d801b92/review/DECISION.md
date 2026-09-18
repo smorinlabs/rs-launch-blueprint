@@ -737,9 +737,22 @@ not**: `check-probe.rerun.assertions.diff` (every `PASS`/`FAIL`/`SKIP` and the
 totals line) is **0 bytes**, while `check-probe.rerun.diff` (the whole log) carries
 **44 differing lines, every one of them a cargo `Compiling` / `Blocking waiting for
 file lock` / `Finished` progress line** whose order and timing vary between runs —
-`0` differing lines are anything else. The same four diffs taken against a clean
-`git archive HEAD` extraction are committed as `*.archive.diff` and
-`*.archive.assertions.diff`. **`check-live.sh` cannot reproduce byte-for-byte
+`0` differing lines are anything else.
+
+**All three scripts were then rerun from a clean `git archive HEAD` extraction
+into a fresh `$TMPDIR` directory, after the commit that carries them**, and all
+**49 checks passed there with 0 FAIL and — the point of naming them — 0 SKIP**:
+27 + 13 + 9. The extraction has no `.git` at all, which the offline script reports
+rather than assumes (it tests with `-e`, not `-d`, because a worktree's `.git` is a
+file). The archive diffs are committed: `check-offline.archive.diff` differs on
+**exactly one line**, `git metadata: present` versus
+`git metadata: absent (archive extraction)`; `check-probe.archive.diff` differs on
+**47 lines, every one a cargo progress line**; and
+`check-live.archive.assertions.diff` differs on **exactly one line**, the
+`mode: fetch` versus `mode: snapshots` banner. The three
+`*.archive.assertions.diff` files — every `PASS`/`FAIL`/`SKIP` line and every
+totals line of all three scripts — are **0 bytes**. The archive run's live log is
+committed as `check-live.archive-snapshots.log`. **`check-live.sh` cannot reproduce byte-for-byte
 and this decision does not claim that it does**: crates.io download counters and
 search denominators advance continuously. Its assertions are therefore written on
 **structure and pins** — version strings, `rust_version` null-ness, HTTP status
