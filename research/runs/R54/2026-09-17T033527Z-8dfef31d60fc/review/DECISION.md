@@ -538,6 +538,33 @@ either adopter editing its `Cargo.toml` or its documentation (`U01`–`U04`). Th
 calls run through an already-authenticated `gh`; no token was printed, inspected or
 written, and no environment was emitted into any artifact.
 
+**The revision-2 checks are a separate script, and revision 1's are untouched.**
+`review/evidence/check-r2.sh` carries only the assertions this revision adds for
+JF-1..JF-4, plus a group `B` that re-asserts revision 1's five cited artifacts and
+its thirteen snapshots **by sha256** rather than in prose. It reaches no network —
+every check reads a file already in the repository — so its log is deterministic.
+Run from the same working directory:
+
+```bash
+shellcheck check-r2.sh                        # → exit 0, no output; saved as shellcheck-r2.log
+./check-r2.sh > check-r2.log 2>&1             # → 41 checks, 41 PASS, 0 FAIL, 0 SKIP, exit 0
+./check-r2.sh > check-r2-rerun.log 2>&1       # the in-place reproducibility rerun
+diff check-r2.log check-r2-rerun.log          # → no differences; saved empty as r2-rerun.diff
+```
+
+and once more from a clean extraction of the committed tree, which is what
+`review/evidence/check-r2-archive.log` records:
+
+```bash
+git archive HEAD | tar -x -C "$TMP" && cd "$TMP/.../review/evidence" && ./check-r2.sh
+# → 40 PASS, 0 FAIL, 1 SKIP, exit 0
+```
+
+The extraction carries no `.git`, so `V10` — the only check needing a commit
+history — reports `SKIP V10 JF-1 commit ordering — no git history here`, by name.
+The archive log differs from the in-place log in exactly three lines: that `SKIP`,
+the `skipped=` total, and the `repo-root` header naming the extraction directory.
+
 **Figures, with endpoint and retrieval date.** All retrieved **2026-09-17**.
 
 | Crate | 90-day (`crate.recent_downloads`) | All-time (`crate.downloads`) | Latest unyanked | `rust_version` | Endpoint |
