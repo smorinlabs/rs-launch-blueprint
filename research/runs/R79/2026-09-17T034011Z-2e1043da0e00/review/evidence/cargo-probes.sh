@@ -504,7 +504,26 @@ if ( cd "$d" && cargo test --locked --features metrics --test metrics -- --nocap
 else
   fail "E6 the acceptance test failed"
 fi
-sed -n '/running 1 test/,$p' "$scratch/e6.log" | sed 's/^/    /'
+# The scrape body is timing-dependent in three ways that no amount of pinning
+# removes: the exporter renders its two label sets in an unstable order, the
+# observed `_sum` durations differ every run, and the occupancy of the smallest
+# latency buckets moves when a request happens to take longer than 5 ms. So the
+# LOG carries a canonical form -- sorted, with bucket occupancies and the `_sum`
+# value redacted -- which is byte-stable, while the verbatim capture that
+# promtool parses is written to evidence/scrape-sample.txt below. Series
+# identities, the `_count` value and the counter value are all kept, because
+# those are what the acceptance criteria assert.
+sed -n '/running 1 test/,$p' "$scratch/e6.log" \
+  | "$GREP" -v '^SCRAPE ' \
+  | sed 's/finished in [0-9.]*s/finished in <elapsed>/' \
+  | sed 's/^/    /'
+echo "-- canonical scrape (sorted; bucket occupancy and _sum redacted; see scrape-sample.txt for the verbatim capture) --"
+"$GREP" '^SCRAPE ' "$scratch/e6.log" \
+  | sed 's/^SCRAPE //' \
+  | sed 's/^\(http_server_request_duration_seconds_bucket{.*}\) [0-9][0-9]*$/\1 <occupancy>/' \
+  | sed 's/^\(http_server_request_duration_seconds_sum{.*}\) [0-9.e-]*$/\1 <duration>/' \
+  | sort \
+  | sed 's/^/    /'
 assert_contains "$scratch/e6.log" 'test red_metrics_acceptance ... ok' "E6 the named test reported ok"
 assert_contains "$scratch/e6.log" 'PROBE distinct http_route label values = {"/v1/boom", "/v1/projects/{id}"}' \
   "E6 51 requests over 50 distinct ids produced exactly two route label values"

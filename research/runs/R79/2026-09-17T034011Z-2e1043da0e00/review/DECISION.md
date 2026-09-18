@@ -520,12 +520,27 @@ visible (for `metrics-rs/metrics`, 51 against 83).
 **Reproducibility, stated exactly rather than asserted.** Each script above was re-run against
 the committed log before this sentence was written.
 
-- `cargo-probes.log` is **byte-reproducible except for the scratch directory path and the
-  UTC timestamp printed in its header**. Every crate count, package name, binary byte figure
-  and test assertion is exact, because each probe package's resolved `Cargo.lock` is
-  snapshotted under `review/evidence/locks/` on first run and reused with `--locked`
-  afterwards. Deleting `locks/` re-resolves against the live registry and the counts may then
-  move.
+- `cargo-probes.log` is **byte-reproducible except for two header lines: the `$TMPDIR` scratch
+  path and the UTC timestamp.** That claim was earned rather than asserted — the script was
+  re-run from a clean `git archive HEAD` extraction and the two logs diffed. The first such
+  diff **failed**, and the reason is recorded here rather than papered over: the scrape body is
+  timing-dependent in three ways that no amount of version pinning removes — the exporter
+  renders its two label sets in an unstable order, the observed `_sum` durations differ every
+  run, and the occupancy of the smallest latency buckets moves when a request happens to take
+  longer than five milliseconds. The script was therefore changed to print a **canonical** form
+  of the scrape into the log — sorted, with bucket occupancies and the `_sum` value redacted to
+  `<occupancy>` and `<duration>`, and the test's wall time to `<elapsed>` — while keeping every
+  series identity, the `_count` value of 51 and the unmatched counter's value of 1, which are
+  what the acceptance criteria actually assert. Every crate count, package name and binary byte
+  figure is exact, because each probe package's resolved `Cargo.lock` is snapshotted under
+  `review/evidence/locks/` on first run and reused with `--locked` afterwards. Deleting
+  `locks/` re-resolves against the live registry, and the counts may then move.
+- `review/evidence/scrape-sample.txt` is the **verbatim** capture the promtool parse consumed,
+  and it is the one artefact here that is deliberately *not* byte-stable: it is rewritten on
+  every run, and its `_sum` values and low-bucket occupancies differ each time for the reasons
+  above. What is stable in it is the series identity set, the `_count` value and the absence of
+  any `http_route="/metrics"` series. It is committed as the exact bytes promtool accepted in
+  the run whose log sits beside it.
 - `crate-sources.log` is **byte-reproducible for every tarball sha256 and every quoted source
   line**, because a published `.crate` artifact is immutable. The crates.io counters are not:
   the comparison rule the script enforces is that `num`, `created_at`, `rust_version` and

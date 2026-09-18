@@ -3,8 +3,8 @@ rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
 cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
 grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
 uname: Darwin arm64
-date-utc: 2026-09-18T22:47:10Z
-scratch: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//rslb-r79-probe.ixugKh
+date-utc: 2026-09-18T23:00:59Z
+scratch: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//rslb-r79-probe.eoXASr
 
 derived: stable = 1.98, msrv-policy floor (stable minus 2 minors) = 1.96
 PASS  floor derived from the live toolchain equals the probed MSRV (= 1.96)
@@ -126,52 +126,53 @@ PASS  E6 the acceptance test passed
     running 1 test
     PROBE distinct http_route label values = {"/v1/boom", "/v1/projects/{id}"}
     SCRAPE-BEGIN
-    SCRAPE # HELP http_server_unmatched_requests_total HTTP requests that matched no route template.
-    SCRAPE # TYPE http_server_unmatched_requests_total counter
-    SCRAPE http_server_unmatched_requests_total 1
-    SCRAPE 
-    SCRAPE # HELP http_server_request_duration_seconds Duration of HTTP server requests.
-    SCRAPE # TYPE http_server_request_duration_seconds histogram
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.005"} 1
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.01"} 1
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.025"} 1
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.05"} 1
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.075"} 1
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.1"} 1
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.25"} 1
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.5"} 1
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.75"} 1
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="1"} 1
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="2.5"} 1
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="5"} 1
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="7.5"} 1
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="10"} 1
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="+Inf"} 1
-    SCRAPE http_server_request_duration_seconds_sum{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500"} 0.000012417
-    SCRAPE http_server_request_duration_seconds_count{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500"} 1
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.005"} 50
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.01"} 50
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.025"} 51
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.05"} 51
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.075"} 51
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.1"} 51
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.25"} 51
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.5"} 51
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.75"} 51
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="1"} 51
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="2.5"} 51
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="5"} 51
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="7.5"} 51
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="10"} 51
-    SCRAPE http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="+Inf"} 51
-    SCRAPE http_server_request_duration_seconds_sum{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200"} 0.013026041000000006
-    SCRAPE http_server_request_duration_seconds_count{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200"} 51
-    SCRAPE 
     SCRAPE-END
     test red_metrics_acceptance ... ok
     
-    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.39s
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <elapsed>
     
+-- canonical scrape (sorted; bucket occupancy and _sum redacted; see scrape-sample.txt for the verbatim capture) --
+    
+    
+    # HELP http_server_request_duration_seconds Duration of HTTP server requests.
+    # HELP http_server_unmatched_requests_total HTTP requests that matched no route template.
+    # TYPE http_server_request_duration_seconds histogram
+    # TYPE http_server_unmatched_requests_total counter
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="+Inf"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.005"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.01"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.025"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.05"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.075"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.1"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.25"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.75"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="1"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="10"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="2.5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="7.5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="+Inf"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.005"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.01"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.025"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.05"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.075"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.1"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.25"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.75"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="1"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="10"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="2.5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="7.5"} <occupancy>
+    http_server_request_duration_seconds_count{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500"} 1
+    http_server_request_duration_seconds_count{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200"} 51
+    http_server_request_duration_seconds_sum{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500"} <duration>
+    http_server_request_duration_seconds_sum{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200"} <duration>
+    http_server_unmatched_requests_total 1
 PASS  E6 the named test reported ok
 PASS  E6 51 requests over 50 distinct ids produced exactly two route label values
 PASS  E6 exactly one test passed

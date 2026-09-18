@@ -1,5 +1,5 @@
 == environment ==
-date-utc: 2026-09-18T22:58:41Z
+date-utc: 2026-09-18T23:02:43Z
 repository root resolved by walking up from the script path: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
 context: a git worktree (.git is a FILE, which is why the test is -e and not -d)
 grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
@@ -8,7 +8,7 @@ PASS  required input present: research/runs/R79/2026-09-17T034011Z-2e1043da0e00/
 PASS  required input present: research/runs/R79/2026-09-17T034011Z-2e1043da0e00/raw/opus.md
 PASS  required input present: docs/port/PARAMETERS.md
 PASS  required input present: research/CLAUDE.md
-DECISION.md sha256 2f5d098ca6065a6004d47bcb3576d0a860178e08cf6b523db10a96dd34f7f526
+DECISION.md sha256 9798e65b872bea5b953c69fb46630643ce94b09aee5695cee712346de082e1aa
 
 == the engine report this decision synthesizes ==
 raw/opus.md sha256 c1d02b81cd0929881f66c7810af782496a84f73a8f45472e86e773a0300145ac
@@ -27,7 +27,7 @@ PASS  H1 is the date-first form the revision rules require
     3:## Decision
     398:## Parameters
     450:## Empirical check
-    627:## Engines
+    642:## Engines
 PASS  H2 sections are exactly Decision, Parameters, Empirical check, Engines, in order
 PASS  no '## Supersedes' section, as required of a first revision
 PASS  exactly one '### Principles and implementation' H3
@@ -51,15 +51,16 @@ PASS  the exact gate-1 'inapplicable' string is recorded
     446: `ubuntu-latest` in this run**. `license` is recorded and not evaluated; gate 1 is `inapplicable
     447: — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or
     521: the committed log before this sentence was written.
-    532:   `license` must equal the snapshot under `review/evidence/snapshots/` byte-for-byte, and the
-    540: **Gate answers for the recommended pair.** Gate 1 is recorded once here and referred to from
-    545: | 1. Licence | `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool`. The declared fiel
-    552: **Qualified shortlist.** Five candidates cleared gate 2 and carry no RustSec advisory. Gate 1
-    633:   (the Codex account is at its usage limit; the ruling is to proceed without it). This Focused
-    653: | crates.io figures for all nine surveyed crates (downloads, newest non-yanked version, `created_at`, `rust_version`, `license`) | `GET https://crates
-    688: 3. **`cargo deny --all-features check bans licenses advisories`** in the real four-package
-    701:    named projects, and that limit is stated rather than filled.
-lines carrying a licence subject: 19
+    542:   any `http_route="/metrics"` series. It is committed as the exact bytes promtool accepted in
+    547:   `license` must equal the snapshot under `review/evidence/snapshots/` byte-for-byte, and the
+    555: **Gate answers for the recommended pair.** Gate 1 is recorded once here and referred to from
+    560: | 1. Licence | `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool`. The declared fiel
+    567: **Qualified shortlist.** Five candidates cleared gate 2 and carry no RustSec advisory. Gate 1
+    648:   (the Codex account is at its usage limit; the ruling is to proceed without it). This Focused
+    668: | crates.io figures for all nine surveyed crates (downloads, newest non-yanked version, `created_at`, `rust_version`, `license`) | `GET https://crates
+    703: 3. **`cargo deny --all-features check bans licenses advisories`** in the real four-package
+    716:    named projects, and that limit is stated rather than filled.
+lines carrying a licence subject: 20
 PASS  no line asserts a gate-1 pass verdict anywhere in the decision
 PASS  the fixed 'license' parameter line survives the ruling, as it must
 
