@@ -830,7 +830,7 @@ once per 21 seconds. Its output is `review/evidence/fetch-snapshots.log`.
   sketch, R57 revision 2's `TOOL_NAME`, R76/R79/R80's coupling sentences, nine lines of
   the org CLI Design Standard at blob `f9de0437baece3383e73ca2c5f48b7ab399b51c7`, nine py
   claims and one ts claim at their pins, nine candidate source lines at exact published
-  versions, the `unsafe` posture of nine crates, and each `- assumes` line against the
+  versions, the `unsafe` posture of eight crates, and each `- assumes` line against the
   live registry row.
 - **`probes.sh`** re-executes the six Rust probes described above.
 
