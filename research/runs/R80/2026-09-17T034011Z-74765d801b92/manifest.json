@@ -7,6 +7,20 @@
       "actor": "controller-fable-5-1",
       "at": "2026-09-17T03:40:11Z",
       "state": "ready"
+    },
+    {
+      "actor": "research-opus-2026-09-17T034011Z-74765d801b92",
+      "at": "2026-09-18T22:21:07Z",
+      "operation": {
+        "actor": "research-opus-2026-09-17T034011Z-74765d801b92",
+        "at": "2026-09-18T22:21:07Z",
+        "model": "claude-opus-5",
+        "provider": "opus",
+        "request_id": "c00fff68d6cb4a559a1603ea42299a39",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
     }
   ],
   "input_hashes": {
@@ -21,7 +35,16 @@
   },
   "item": "R80",
   "model": "claude-fable-5-1",
-  "operations": {},
+  "operations": {
+    "opus": {
+      "actor": "research-opus-2026-09-17T034011Z-74765d801b92",
+      "at": "2026-09-18T22:21:07Z",
+      "model": "claude-opus-5",
+      "provider": "opus",
+      "request_id": "c00fff68d6cb4a559a1603ea42299a39",
+      "state": "submitting"
+    }
+  },
   "prompt_source": "research/topics/80-health-probe-endpoints/prompts/health-probe-endpoints.prompt.md",
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
@@ -30,7 +53,7 @@
   ],
   "run_id": "2026-09-17T034011Z-74765d801b92",
   "schema_version": 1,
-  "state": "ready",
+  "state": "submitting",
   "tier": "focused",
-  "updated_at": "2026-09-17T03:40:11Z"
+  "updated_at": "2026-09-18T22:21:07Z"
 }

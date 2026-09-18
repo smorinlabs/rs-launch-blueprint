@@ -7,6 +7,20 @@
       "actor": "controller-fable-5-1",
       "at": "2026-09-17T03:40:10Z",
       "state": "ready"
+    },
+    {
+      "actor": "research-opus-2026-09-17T034010Z-8b2a46a3c21b",
+      "at": "2026-09-18T22:21:05Z",
+      "operation": {
+        "actor": "research-opus-2026-09-17T034010Z-8b2a46a3c21b",
+        "at": "2026-09-18T22:21:05Z",
+        "model": "claude-opus-5",
+        "provider": "opus",
+        "request_id": "811cf383c5a848cb975a5556a511151c",
+        "state": "submitting"
+      },
+      "provider": "opus",
+      "state": "submitting"
     }
   ],
   "input_hashes": {
@@ -21,7 +35,16 @@
   },
   "item": "R51",
   "model": "claude-fable-5-1",
-  "operations": {},
+  "operations": {
+    "opus": {
+      "actor": "research-opus-2026-09-17T034010Z-8b2a46a3c21b",
+      "at": "2026-09-18T22:21:05Z",
+      "model": "claude-opus-5",
+      "provider": "opus",
+      "request_id": "811cf383c5a848cb975a5556a511151c",
+      "state": "submitting"
+    }
+  },
   "prompt_source": "research/topics/51-container-image/prompts/container-image.prompt.md",
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
@@ -30,7 +53,7 @@
   ],
   "run_id": "2026-09-17T034010Z-8b2a46a3c21b",
   "schema_version": 1,
-  "state": "ready",
+  "state": "submitting",
   "tier": "focused",
-  "updated_at": "2026-09-17T03:40:10Z"
+  "updated_at": "2026-09-18T22:21:05Z"
 }
