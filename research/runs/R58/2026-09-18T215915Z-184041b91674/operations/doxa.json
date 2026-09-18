@@ -3,10 +3,14 @@
   "actual_model": "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026",
   "actual_provider": "doxa-research 3.3.0 via scripts/doxa_no_retry.py; openai job resp_06b35fb5c5473cc1006aadb541343c87d0ad53ed705d59fb42 running; perplexity job fe4ef703-448e-4e8b-97aa-163109f589ea running; gemini job v1_ChdRcld0YXNMT0g2SGhfdU1QMUozY3lRcxIXUXJXdGFzTE9INkhoX3VNUDFKM2N5UXM running",
   "at": "2026-09-18T22:03:42Z",
+  "collected_at": "2026-09-18T22:27:53Z",
   "model": "all_deep_research",
   "operation_id": "research-20260918-150344-b74724d646f64958",
   "provider": "doxa",
+  "raw": "research/runs/R58/2026-09-18T215915Z-184041b91674/raw/doxa-21d075fe5dedb59d1ae966995d41ed122da0c16b0faae4e4338bef9708b20883.md",
+  "raw_sha256": "21d075fe5dedb59d1ae966995d41ed122da0c16b0faae4e4338bef9708b20883",
+  "reason": "research-20260918-150344-b74724d646f64958, submitted 2026-09-18T22:03:42Z, providers completed openai 22:26:08Z, perplexity 22:11:11Z, gemini by the 22:16Z resume pass; combined controller-built; twins normalized by scripts/doxa_normalize.py and validated",
   "request_id": "9c5552b0dc9e4306ad91ad88290ffc3a",
   "returned_at": "2026-09-18T22:03:54Z",
-  "state": "submitted"
+  "state": "succeeded"
 }
