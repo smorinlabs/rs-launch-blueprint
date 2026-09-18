@@ -1,0 +1,9 @@
+{
+  "created_at": "2026-07-11T16:49:41.839789Z",
+  "downloads": 403360,
+  "license": "MIT",
+  "name": "axum-otel-metrics",
+  "num": "0.14.1",
+  "recent_downloads": 189163,
+  "rust_version": null
+}

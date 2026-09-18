@@ -1,0 +1,9 @@
+{
+  "created_at": "2026-04-30T13:36:08.766993Z",
+  "downloads": 47578577,
+  "license": "MIT AND Apache-2.0",
+  "name": "metrics-exporter-prometheus",
+  "num": "0.18.3",
+  "recent_downloads": 13007165,
+  "rust_version": "1.71.1"
+}
