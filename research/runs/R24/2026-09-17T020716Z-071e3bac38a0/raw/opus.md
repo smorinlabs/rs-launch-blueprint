@@ -37,13 +37,13 @@ A single blog post was not used as an authority anywhere in this report.
 | `googleapis/release-please` itself | `stargazers_count` 7517, `archived: false`, `pushed_at` 2026-09-14T18:48:58Z (`GET https://api.github.com/repos/googleapis/release-please`, 2026-09-18); latest release `v17.11.2`, 2026-08-24T21:20:30Z (`GET .../releases/latest`, 2026-09-18) | Its own `release-please-config.json` declares **no** `changelog-sections` key at all — it takes the preset default (read at `v17.11.2`, 2026-09-18). The maintainers' own repository is an adopter of the do-nothing option. |
 | release-please's `Python` strategy default (`src/strategies/python.ts:31-45`) | Shipped, maintained default for every `release-type: python` repository | A **total** 12-entry map: `feat`/`fix`/`perf`/`deps`/`revert`/`docs` visible; `style`/`chore`/`refactor`/`test`/`build`/`ci` explicitly `hidden: true`. This is the maintained reference implementation of the *pattern* this report recommends. |
 | `git-cliff` shipped default (`config/cliff.toml:63-79`, v2.14.2) | 90-day downloads 48,133; all-time 339,181; newest version 2.14.2 published 2026-09-18 (`GET https://crates.io/api/v1/crates/git-cliff`, 2026-09-18) | Shows **everything**: Features, Bug Fixes, Documentation, Performance, Refactor, Styling, Testing, Miscellaneous Tasks (`chore|ci`), Revert, plus a catch-all `.*` → "Other". Its only skips are `chore(release): prepare for` and **`^chore\(deps.*\)`**. Order is forced with numeric HTML-comment prefixes (`<!-- 0 -->` … `<!-- 10 -->`). |
-| `release-plz` | 90-day downloads 68,423; all-time 359,618; newest 0.3.168, 2026-09-17 (`GET https://crates.io/api/v1/crates/release-plz`, 2026-09-18) | Embeds git-cliff, so it inherits the everything-visible-minus-`deps` default above. |
-| `cocogitto` | 90-day downloads 8,299; all-time 220,766; newest 7.0.0, 2026-03-04 (`GET https://crates.io/api/v1/crates/cocogitto`, 2026-09-18) | Ships its own `changelog` type map; named here to complete the bin, not evaluated as a candidate (tool choice is out of scope). |
+| `release-plz` | 90-day downloads 68,423; all-time 359,618; newest 0.3.168, 2026-09-17 (`GET https://crates.io/api/v1/crates/release-plz`, 2026-09-18) | Builds its changelog on git-cliff: `release-plz` 0.3.168 declares a normal dependency on `git-cliff-core ^2.10.0` (`GET https://crates.io/api/v1/crates/release-plz/0.3.168/dependencies`, 2026-09-18). That is why it belongs in this bin. **Its own shipped default parser set was not read**, so no claim is made here about which types it shows. |
+| `cocogitto` | 90-day downloads 8,299; all-time 220,766; newest 7.0.0, 2026-03-04 (`GET https://crates.io/api/v1/crates/cocogitto`, 2026-09-18) | Named to complete the bin, not evaluated as a candidate (tool choice is out of scope). **Its default type map was not read**, so no claim is made here about its visible set. |
 | `cargo-release` | 90-day downloads 16,449; all-time 541,456; newest 1.1.6, 2026-09-16 (`GET https://crates.io/api/v1/crates/cargo-release`, 2026-09-18) | Orchestrates version/tag/publish and delegates changelog text; it takes no position on type visibility, which is itself evidence that the mapping is a separable policy. |
 
-**The field is not uniform on this question.** The two most-used Rust-native generators
-(git-cliff, release-plz) default to showing nearly every type and hiding dependency bumps;
-release-please and its preset default to showing four types and hiding the rest. So neither
+**The field is not uniform on this question.** The Rust-native generator whose default was
+read here, git-cliff, shows nearly every type and skips dependency bumps; release-please and
+its preset default to showing four types and hiding the rest. So neither
 "show almost everything" nor "show almost nothing" can be adopted as *the* ecosystem
 convention; the choice has to be argued from the template's audience, which
 `### Fit for this template` does.
@@ -110,16 +110,34 @@ so an unmapped type's breaking-change group sorts **above Features**. Executed r
 
 *Mechanism 4 — `filterCommits` does not apply to `release-type: rust`.*
 `src/util/filter-commits.ts:43-63` drops any commit whose type is in neither the visible nor
-the hidden list, *even when breaking*. It is imported only by `node.ts:78`, `python.ts:143`,
-`node-librarian.ts:79` and `java-yoshi-mono-repo.ts:257`, and only to populate the optional
-`changelog.json` artifact. `src/strategies/rust.ts` extends `BaseStrategy` and calls it
-nowhere, and — unlike `python.ts:48`, `java.ts:64`, `r.ts:39`, `php.ts:40` — it sets **no**
-`CHANGELOG_SECTIONS` fallback. Two consequences for this template, both load-bearing:
-the effective default for an unconfigured `release-type: rust` repository is the *preset's*
-four-visible-type list, not release-please's own `DEFAULT_CHANGELOG_SECTIONS`
-(`filter-commits.ts:20-32`, which additionally omits `deps`); and no `changelog.json` is
-produced, so `changelog-sections` has exactly one observable consumer — `CHANGELOG.md` and
-the identical release-notes body.
+the hidden list, *even when breaking*. It is imported by `node.ts:78`, `python.ts:143`,
+`node-librarian.ts:79` and `java-yoshi-mono-repo.ts:257`; at the two call sites read in full
+(`node.ts:76-89`, `python.ts:141-155`) its only purpose is to populate the optional
+`changelog.json` artifact, and the other two were not read. `src/strategies/rust.ts` extends
+`BaseStrategy` and calls it nowhere, and — unlike `python.ts:48`, `java.ts:64`, `r.ts:39`,
+`php.ts:40` — it sets **no** `CHANGELOG_SECTIONS` fallback. Two consequences for this
+template, both load-bearing: the effective default for an unconfigured `release-type: rust`
+repository is the *preset's* four-visible-type list, not release-please's own
+`DEFAULT_CHANGELOG_SECTIONS` (`filter-commits.ts:20-32`, which additionally omits `deps`);
+and no `changelog.json` is produced, so `CHANGELOG.md` and the identical release-notes body
+are the only *rendered* consumers of the mapping. They are not its only consumer, because of
+mechanism 5.
+
+*Mechanism 5 — the visible set is also the releasable set.*
+`src/strategies/base.ts:331-338` reads
+`if (!bumpOnlyOptions && this.changelogEmpty(releaseNotesBody)) { … return undefined; }`,
+logging `No user facing commits found since <sha> - skipping`; `changelogEmpty` is
+`changelogEntry.split('\n').length <= 1` (`base.ts:525-527`). The body passed to it is the
+already-rendered release notes — the output of mechanisms 1-3. So **a push whose commits all
+map to hidden or unmapped types opens no release pull request at all**: not a version bump
+with an empty entry, but no release. `bumpOnlyOptions` is the linked-versions bump-only path
+and is not in play for a single-package configuration. This makes `changelog-sections` a
+release-*trigger* input as well as a rendering input, and it is the single most consequential
+mechanism for the membership choice below: hiding a type does not merely omit its lines, it
+makes commits of that type unable to ship on their own. Read at `v17.11.2`
+(`https://raw.githubusercontent.com/googleapis/release-please/v17.11.2/src/strategies/base.ts`,
+2026-09-18); read, not executed — the probe in `### Validation strategy` exercises the
+rendering path that feeds this guard, not the guard itself.
 
 **Architectural alternatives compared before choosing a configuration.** Three shapes exist
 for "which types are visible", independent of tool: (A) *inherit* — declare nothing and take
@@ -153,6 +171,8 @@ unreachable `deps` entry) are facts about the *sources*, recorded under
 - A4: a `chore(deps): …` commit produced under R19's Dependabot configuration produces no
   changelog line.
 - A5: `release-please-config.json` validates against the `$schema` it declares.
+- A6: a push containing only hidden-type commits opens **no** release pull request
+  (mechanism 5), and a push containing at least one visible-type commit opens one.
 
 ### Dominant choice
 
@@ -173,7 +193,7 @@ Both source repositories in this programme depart from it, in opposite direction
 | **B · py's set**: `feat`/`fix`/`perf`/`refactor`/`revert`/`deps` visible, `chore`/`docs`/`style`/`test`/`ci`/`build` hidden — a total 12-entry map | py `release-please-config.json:23-36` at pin `b08bccfb` | `py-launch-blueprint`; closely tracks release-please's shipped `Python` strategy default (`src/strategies/python.ts:31-45`), which differs only in showing `docs` and ordering `deps` earlier | py pin `b08bccfb`; strategy default current at `v17.11.2`, 2026-08-24 |
 | **C · ts's set**: `feat`/`fix`/`perf`/`docs`/`test`/`refactor` visible, `chore` hidden — a 7-entry **partial** array | ts `release-please-config.json:12-20` at pin `cb1cbcb2`; rationale D-021(3) in `ts-launch-blueprint/docs/port/TS_PORT_DECISIONS.md` | `ts-launch-blueprint` | ts pin `cb1cbcb2` |
 | **D · Total map over the repository's commit enum** (recommended): one entry per R38 type, visible set `feat`/`fix`/`perf`/`revert`/`docs`, hidden set `refactor`/`test`/`build`/`ci`/`style`/`chore` | This report; pattern reference implementation release-please `src/strategies/python.ts:31-45` and py's 12-entry array | The *pattern* is shipped by release-please for `python`, `java` (`java.ts:37-51`) and `r` (`r.ts:23-33`); this exact *membership* is composed here and has no named prior adopter — stated as the evidence gap it is | release-please `v17.11.2`, 2026-08-24 |
-| **E · Everything visible except dependency bumps** (git-cliff's shipped default shape) | `orhun/git-cliff` `config/cliff.toml:63-79` at `v2.14.2` | `git-cliff`, and `release-plz` which embeds it | git-cliff 2.14.2 on crates.io, 2026-09-18 |
+| **E · Everything visible except dependency bumps** (git-cliff's shipped default shape) | `orhun/git-cliff` `config/cliff.toml:63-79` at `v2.14.2` | `git-cliff` itself; `release-plz` builds its changelog on `git-cliff-core`, though its own default parser set was not read here | git-cliff 2.14.2 on crates.io, 2026-09-18 |
 
 ### Excluded by gate
 
@@ -201,11 +221,12 @@ Rust-native release managers rising against release-please. Maintenance state: r
 6 months is the trigger to investigate, not the verdict, and no unpatched advisory, broken
 build on current stable, or maintainer notice was found, so `at-risk` is not claimed.
 
-They matter to this item in exactly one way, and it is not as candidates: **both ship an
-everything-visible default**, release-plz because it embeds git-cliff's `commit_parsers`
-(`config/cliff.toml:63-79`) and cocogitto because its `changelog` defaults render each type
-group. That is what keeps option E on the table as a real position in the Rust field rather
-than a strawman. Replacing release-please with either is explicitly out of scope
+They matter to this item in one way, and it is not as candidates: they are why option E —
+show nearly everything — is a live position in the Rust field rather than a strawman. The
+evidence for that is git-cliff's own shipped `config/cliff.toml:63-79` (read at `v2.14.2`),
+which release-plz builds on; **neither release-plz's nor cocogitto's own default parser set
+was read in this run**, so the strength of the option rests on git-cliff's default alone and
+is stated at that strength. Replacing release-please with either is explicitly out of scope
 (`## Out of scope`; F063/F066/F073 `COMMON → REUSE`; ts D-021(3) rejected git-cliff and
 cocogitto on redundancy), and this report does not propose it. The one forward-looking note:
 if a future item ever revisits the generator, the mapping recommended here ports as
@@ -221,10 +242,17 @@ dominates, and pay the cost for the others.
 
 **Library.** The decisive shape, and the one whose reasoning differs from both py's and ts's.
 A Rust library is consumed as a *published crate*, and rustdoc ships **inside** that crate:
-docs.rs builds the documentation from the uploaded `.crate` file, per released version. A
-`docs:` commit that corrects a wrong example in a `///` block is therefore a change to the
-artifact the consumer receives, and it reaches them only when a release happens — the same
-delivery condition as a `fix:`. That is a Rust-specific argument with no analogue in py's
+docs.rs is "an open source documentation host for crates of the Rust Programming Language"
+where "All libraries published to crates.io are documented", and it renders per published
+version (<https://docs.rs/about>, retrieved 2026-09-18, page reporting docs.rs build
+`5779ee8ca2c69daa652b2060f9f7b942ad62a4f0`). A `docs:`
+commit that corrects a wrong example in a `///` block is therefore a change to the artifact
+the consumer receives, and it reaches them only when a release happens — the same delivery
+condition as a `fix:`. **Mechanism 5 sharpens this from a preference into a capability
+question:** with `docs` hidden, a sprint of documentation work opens no release pull request
+at all, so the corrected rustdoc cannot reach docs.rs until some unrelated `feat` or `fix`
+drags it out. With `docs` visible, documentation can ship on its own. That is a Rust-specific
+argument with no analogue in py's
 reasoning (a Python package's docs are typically a separate Sphinx site) and a different
 basis from ts's (D-021(3) shows `docs` because `cog.toml` did, not because of artifact
 membership). `refactor` is the mirror image: Conventional Commits defines it as "a code
@@ -249,6 +277,13 @@ deploy time, where the git log and the workflow diff are available, not in a con
 changelog. Hidden. Note that `web-extra-surface` puts the whole web layer behind an
 off-by-default `web` feature, so for most consumers of the published crate these commits are
 not even compiled; that reinforces hiding them rather than arguing for a section.
+
+**Across all three, a consequence of mechanism 5 that is wanted rather than tolerated:**
+because hidden types cannot open a release on their own, a week in which the only commits are
+Dependabot bumps, CI adjustments and test work produces no release pull request. Under every
+candidate array except E that is the behaviour; it keeps the release cadence tied to
+consumer-visible change rather than to bot activity, and it is why the empty-entry worry that
+option E's advocates raise does not arise.
 
 **Across all three:** dependency bumps. R19's resolved decision fixes Dependabot's
 `commit-message` to `prefix: "chore"` with `include: "scope"`, so every bot bump arrives as
@@ -346,7 +381,10 @@ from the recommendation by exactly one boolean.
 **The condition under which it wins:** if the owner judges the CLI binary and the web service
 — not the published library crate — to be the template's primary consumed artifacts, the
 artifact-membership argument for `docs` loses its subject, and `Documentation` becomes a
-section two of the three readers skip. It also wins on a second, independent condition: if
+section two of the three readers skip. Note what the same choice costs under mechanism 5: it
+also removes documentation's ability to trigger a release, so a docs-only change waits for
+the next `feat` or `fix`. For a CLI-first or service-first template that wait is harmless;
+for a library it is the cost the recommendation declines to pay. It also wins on a second, independent condition: if
 the template's contributing guidance is not going to distinguish rustdoc changes from
 repository-meta changes (README, CONTRIBUTING, this repository's own docs), because then the
 `Documentation` section mixes shipped and unshipped changes and its signal degrades toward
@@ -377,9 +415,11 @@ asking about behaviour. Also gives up the `deps` entry, which costs nothing beca
 matches nothing.
 
 **Versus option C (ts's set).** Gives up `test` visibility, which costs the reader nothing —
-test changes are not in the published crate at all (`build-tool-output-shape`'s `[package]
-include` allow-list is `/src`, the two licences, `README.md` and `CHANGELOG.md`; integration
-tests are not packaged). What is *gained* rather than given up is the repair of two defects
+test changes are not compiled into the artifact a consumer builds. `tests/` is outside
+`build-tool-output-shape`'s `[package] include` allow-list (`/src`, the two licences,
+`README.md`, `CHANGELOG.md`) so integration tests are not packaged at all, and a
+`#[cfg(test)] mod tests` inside `src/` ships in the `.crate` bytes but is never compiled for
+a dependent. What is *gained* rather than given up is the repair of two defects
 run C exhibits, and these are the follow-on rationale for the py/ts project that the HIGH
 owner-clarification question asks for:
 
@@ -397,10 +437,17 @@ whole release at a glance. Accepted on the Keep a Changelog test — "for humans
 a changelog that reprints the git log has stopped selecting, and selection is the only thing
 a changelog does that `git log` does not.
 
-**What the recommendation gives up unconditionally.** A release whose commits are all hidden
-types produces a version bump with an empty changelog entry. This is a property of every
-option except E and is not introduced here; it is observable and P03 should decide whether to
-suppress such releases, which is a release-trigger question (F073) rather than a mapping one.
+**What the recommendation gives up unconditionally.** Under mechanism 5, a period whose
+commits are all hidden types opens no release pull request, so work of those types is
+invisible *and* unshippable until a visible-type commit joins it. This is a property of every
+option except E, is not introduced here, and is desirable for bot bumps and CI work — but it
+is a real constraint a maintainer must know, because the failure mode is silent: release-please
+logs `No user facing commits found since <sha> - skipping` and exits 0. It also creates a
+coupling this report records rather than resolves: **mechanism 5 means the mapping partly
+determines release cadence, which is F073's and R25's territory.** R25 settled
+`release-type: rust` with both pre-major flags `true` and an empty manifest and did not
+consider this guard; nothing in R25's recommendation is contradicted by it, but P03 should
+know that the version a hidden-only period would have produced is never proposed at all.
 
 ### Parameters
 
@@ -486,10 +533,14 @@ What that establishes, against the acceptance criteria:
   same reason).
 
 One artifact to record honestly: the `⚠ BREAKING CHANGES` bullets render empty in all four
-runs because the fixture passes `text: ''` for the breaking note, which is release-please's
-initial value (`src/commit.ts:135`) before a `BREAKING CHANGE:` footer populates it. That is a
-property of the fixture, not a finding about any array, and it is identical across all four
-runs so it does not affect the comparison.
+runs, and that is a defect of the fixture rather than of any array. The fixture passes
+`text: ''` for the breaking note; release-please would not. For a bare `!` marker in the
+summary, `src/commit.ts` sets `breaking.text = headerCommit.subject` in the `summary` case of
+its `switch (parent.type)`, and it pushes the note only `if (breaking.text !== '')` — so a
+real `style!: rename the public Error variants` commit carries its subject as the note text
+and the bullet renders non-empty. The fixture's shortcut affects only those two bullet bodies;
+the group headings, their membership and their order — the only things the acceptance criteria
+turn on — are unaffected, and are identical across all four runs.
 
 **Proposed, not executed** — for P03, on the real template, because they need a repository
 and a release cycle that do not exist yet:
@@ -503,15 +554,26 @@ and a release cycle that do not exist yet:
    set equality, so that adding a type to the linter without adding it here fails a check.
    This is A5 plus the totality property, and it is the check that keeps the two files in
    sync over the template's life.
-3. Criterion A2 as a regression test on a real `style!:` commit, since it is the only
-   criterion whose failure mode is silent and cosmetic.
+3. Criterion A2 as a regression test on a real `style!:` commit, since its failure mode is
+   silent and cosmetic.
+4. Criterion A6 — mechanism 5 — as a second dry-run over a branch carrying only
+   `test:`/`ci:`/`chore(deps):` commits, asserting that release-please emits
+   `No user facing commits found since <sha> - skipping` and proposes no release. This is the
+   check that converts mechanism 5 from read to executed, and it should be run before P03
+   relies on the `docs`-visible argument, which that mechanism strengthens.
 
 ### Confidence & re-verify trigger
 
-**High** on the mechanisms (replacement semantics, unmapped-versus-hidden divergence for
+**High** on mechanisms 1-4 (replacement semantics, unmapped-versus-hidden divergence for
 breaking commits, positional ordering, `filterCommits` not reaching the Rust strategy): each
 was read in the maintainer's source at a pinned tag and then reproduced by execution against
 the pinned rendering engine, and the two agree.
+
+**High-but-unexecuted** on mechanism 5 (an all-hidden push opens no release pull request).
+The code is unambiguous and was read at the pin (`base.ts:331-338, 525-527`), but it sits in
+`buildReleasePullRequest`, outside the rendering path the probe reproduces, so this report
+has read it and not run it. It is the one mechanism whose confirmation needs the dry-run
+check proposed below, and it is also the one that most affects the `docs` call.
 
 **High** on the structural half of the recommendation (a total map over R38's enum, explicit
 hidden entries, deliberate order): it follows from the mechanisms and from the executed
@@ -547,6 +609,7 @@ surveyed and is not close.
 | # | Source | Retrieved |
 |---|---|---|
 | 1 | `googleapis/release-please` at tag `v17.11.2` — `src/changelog-notes/default.ts`, `src/changelog-notes.ts`, `src/util/filter-commits.ts`, `src/strategies/rust.ts`, `src/strategies/python.ts`, `src/strategies/node.ts`, `src/strategies/java.ts`, `src/strategies/r.ts`, `src/commit.ts`, `docs/manifest-releaser.md`, `release-please-config.json`, `package-lock.json` (shallow clone of <https://github.com/googleapis/release-please>) | 2026-09-18 |
+| 1b | The same repository at `v17.11.2`, re-fetched file by file over `raw.githubusercontent.com` after the clone was deleted: `src/strategies/base.ts` (the `changelogEmpty` release gate at `:331-338` and `:525-527`), `src/commit.ts` (the `switch (parent.type)` breaking-note text assignment and the `if (breaking.text !== '')` push), `src/strategies/python.ts` (the `filterCommits` call site at `:141-155`) | 2026-09-18 |
 | 2 | `GET https://api.github.com/repos/googleapis/release-please/releases/latest` → `tag_name: v17.11.2`, `published_at: 2026-08-24T21:20:30Z` | 2026-09-18 |
 | 3 | `GET https://api.github.com/repos/googleapis/release-please` → `stargazers_count: 7517`, `archived: false`, `pushed_at: 2026-09-14T18:48:58Z`, `license.spdx_id: Apache-2.0` | 2026-09-18 |
 | 4 | `GET https://api.github.com/search/issues?q=repo:googleapis/release-please+is:issue+is:open` → `total_count: 300` | 2026-09-18 |
@@ -563,6 +626,7 @@ surveyed and is not close.
 | 15 | Conventional Commits 1.0.0 — <https://www.conventionalcommits.org/en/v1.0.0/> (the `refactor` definition and the `!` marker) | 2026-09-18 |
 | 16 | Keep a Changelog 1.1.0 — <https://keepachangelog.com/en/1.1.0/> ("for humans, not machines") | 2026-09-18 |
 | 17 | Cargo publishing reference — <https://doc.rust-lang.org/cargo/reference/publishing.html> (Cargo recommends but does not generate a changelog) | 2026-09-18 |
+| 17b | docs.rs about page — <https://docs.rs/about>, HTTP 200, quoted verbatim: "Docs.rs is an open source documentation host for crates of the Rust Programming Language" and "All libraries published to crates.io are documented". The source for the per-published-version premise behind `docs` visible | 2026-09-18 |
 | 18 | This repository: `docs/port/COMMONALITY.md:69,72,73,79`; `docs/port/BASELINE-REVIEW.md:54,55,60`; `docs/port/PARAMETERS.md`; `research/topics/25-semver-bump-strategy/DECISION.md` (`release-type: rust`, both pre-major flags `true`); `research/topics/19-dependabot-config-shape/DECISION.md` (`commit-message` `prefix: "chore"` + `include: "scope"`) | 2026-09-18 |
 
 **Method notes.** Endpoints queried: `api.github.com` (`/repos/googleapis/release-please`,
@@ -570,10 +634,19 @@ surveyed and is not close.
 spaced at least 20 s apart; `registry.npmjs.org` (package metadata and the
 `conventional-changelog-conventionalcommits` 6.1.0 tarball); `crates.io/api/v1/crates/<name>`
 for `git-cliff`, `release-plz`, `cocogitto`, `cargo-release` with a User-Agent header;
-`raw.githubusercontent.com` for git-cliff's default `cliff.toml` at `v2.14.2`; and a shallow
-`git clone --depth 1 --branch v17.11.2` of `googleapis/release-please` for the source reads
-above. Both source repositories were read through their programme pins with `git show`, never
-from the working tree.
+`raw.githubusercontent.com` for git-cliff's default `cliff.toml` at `v2.14.2` and, in a
+correction pass after the clone was deleted, for release-please's `src/strategies/base.ts`,
+`src/commit.ts` and `src/strategies/python.ts` at `v17.11.2`; `docs.rs/about` (HTTP 200); and
+a shallow `git clone --depth 1 --branch v17.11.2` of `googleapis/release-please` for the
+source reads above. Both source repositories were read through their programme pins with
+`git show`, never from the working tree.
+
+Two claims made in an earlier draft of this report were corrected by that second pass and are
+recorded here so a reviewer can see what moved: the claim that `changelog-sections` affects
+only rendered output (it also gates release-pull-request creation — mechanism 5), and the
+explanation of why the probe's breaking-change bullets are empty (a fixture shortcut, not
+release-please's behaviour — `src/commit.ts` assigns the subject as the note text for a bare
+`!` and pushes the note only when its text is non-empty).
 
 Not verified, and why: (a) **`crate.recent_downloads` / `crate.downloads` / RustSec for the
 decided subject** — release-please is an npm package executed by a GitHub Action, so the
@@ -583,10 +656,15 @@ landscape bins only, and are not claims about the inherited tool. (b) **Issue-re
 computed. The open-issue count is recorded (300); the responsiveness figure would be evidence
 about whether to *keep* release-please, a question F063/F066/F073 close as `COMMON → REUSE`
 and this item's `## Out of scope` excludes. Stated as an omission, not an oversight.
+(b2) **`release-plz`'s and `cocogitto`'s own default type maps** — not read; only their
+crates.io figures and, for release-plz, the fact that it builds on `git-cliff-core`. No claim
+about which types either shows is made anywhere in this report.
 (c) **The documented default's canonical page** — release-please's
 `docs/manifest-releaser.md:185` points the default at `https://git.io/JqCZL`, a retired
 GitHub shortlink service; no live documentation page states the default list, so the default
-is cited from the preset source (`writer-opts.js:176-191`) instead. (d) **The two proposed
-end-to-end checks in `### Validation strategy`** were not run: they need a real repository,
-a `.release-please-manifest.json` and a release cycle, none of which exist during P02. The
-probe that *was* run is a faithful replication of the rendering path, not the action itself.
+is cited from the preset source (`writer-opts.js:176-191`) instead. (d) **The four proposed
+checks in `### Validation strategy`** were not run: they need a real repository, a
+`.release-please-manifest.json` and a release cycle, none of which exist during P02. The
+probe that *was* run is a faithful replication of the rendering path, not the action itself;
+in particular mechanism 5's release gate (`base.ts:331-338`) lives outside that path and is
+read, not executed.
