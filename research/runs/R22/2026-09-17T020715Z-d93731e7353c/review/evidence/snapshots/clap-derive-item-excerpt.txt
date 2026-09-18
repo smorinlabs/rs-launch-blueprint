@@ -1,0 +1,45 @@
+# Numbered excerpt of clap_derive/src/item.rs at clap-rs/clap commit 8542fea5f9bd1de89fcac7eeb5724b565743c6fb
+# retrieved 2026-09-18 UTC from https://raw.githubusercontent.com/clap-rs/clap/8542fea5f9bd1de89fcac7eeb5724b565743c6fb/clap_derive/src/item.rs
+# Only the two regions this decision cites are kept, so the file's copyright
+# header - which carries the maintainers' personal email addresses - is not
+# committed here. Each kept line is prefixed with its ORIGINAL line number and
+# a tab; the text after the tab is verbatim.
+548	                    }
+549	                }
+550	
+551	                Some(MagicAttrName::Version) if attr.value.is_none() => {
+552	                    assert_attr_kind(attr, &[AttrKind::Command])?;
+553	
+554	                    if let Some(method) = Method::from_env(attr.name.clone(), "CARGO_PKG_VERSION")? {
+555	                        self.methods.push(method);
+556	                    }
+557	                }
+558	
+559	                Some(MagicAttrName::DefaultValueT) => {
+560	                    assert_attr_kind(attr, &[AttrKind::Arg])?;
+#	... lines 561-1267 omitted ...
+1268	        Self { name, args }
+1269	    }
+1270	
+1271	    fn from_env(ident: Ident, env_var: &str) -> Result<Option<Self>, syn::Error> {
+1272	        let mut lit = match env::var(env_var) {
+1273	            Ok(val) => {
+1274	                if val.is_empty() {
+1275	                    return Ok(None);
+1276	                }
+1277	                LitStr::new(&val, ident.span())
+1278	            }
+1279	            Err(_) => {
+1280	                abort!(
+1281	                    ident,
+1282	                    "cannot derive `{}` from Cargo.toml\n\n= note: {note}\n\n= help: {help}\n\n",
+1283	                    ident,
+1284	                    note = format_args!("`{env_var}` environment variable is not set"),
+1285	                    help = format_args!("use `{ident} = \"...\"` to set {ident} manually")
+1286	                );
+1287	            }
+1288	        };
+1289	
+1290	        if ident == "author" {
+1291	            let edited = process_author_str(&lit.value());
+1292	            lit = LitStr::new(&edited, lit.span());

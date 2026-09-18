@@ -1,0 +1,22 @@
+=== R22 live re-check (volatile; see the header for what varies) ===
+run-started-utc: 2026-09-18T22:11:41Z
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+curl: curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+
+PASS L1-serde -- rustsec.org/packages/serde.html -> 404 (negative control: a crate with no advisory has no page)
+PASS L1-tokio -- rustsec.org/packages/tokio.html -> 200 (positive control: a crate with advisories has a page)
+PASS L1-git2 -- rustsec.org/packages/git2.html -> 200 (positive control: carries RUSTSEC-2026-0183 and -0184)
+PASS L1-built -- rustsec.org/packages/built.html -> 404 (no advisory on record against built)
+PASS L1-vergen-gix -- rustsec.org/packages/vergen-gix.html -> 404 (no advisory on record against vergen-gix)
+PASS L1-shadow-rs -- rustsec.org/packages/shadow-rs.html -> 404 (no advisory against shadow-rs ITSELF; its default git2 dependency is the problem)
+DRIFT built: newest_non_yanked/created_at/recent_downloads/downloads = 0.8.1 2026-05-21 18238136 63168750
+PASS L2-built -- built's newest non-yanked version is still 0.8.1, as snapshotted 2026-09-18
+DRIFT shadow-rs: newest_non_yanked/created_at/recent_downloads/downloads = 2.0.0 2026-04-23 2184341 10812524
+PASS L2-shadow-rs -- shadow-rs's newest non-yanked version is still 2.0.0, as snapshotted 2026-09-18
+DRIFT vergen-gix: newest_non_yanked/created_at/recent_downloads/downloads = 10.0.3 2026-08-24 546530 2035682
+PASS L2-vergen-gix -- vergen-gix's newest non-yanked version is still 10.0.3, as snapshotted 2026-09-18
+DRIFT rust-stable: now 1.98.1, snapshotted 1.98.1
+PASS L3 -- Rust stable is still 1.98.1, so the msrv-policy floor is still 1.96
+
+CHECKS RUN: 10  PASS: 10  FAIL: 0  SKIP: 0
+RESULT: PASS
