@@ -170,6 +170,20 @@ convention or a `cargo-deny` row), and folding both front ends into the facade.
 The seven prepared Wave 2 runs that pin R69 (R51, R70, R76, R77, R79, R80, R83)
 are re-prepared after R69 republishes.
 
+### 2026-09-18 — R67's byte-empty-stdout clause read as before-result failures only (W1-R62)
+
+R62 `clipboard-integration` (accepted at revision 2, judgment-only under
+W1-CODEX) makes a failed `--copy` a post-result partial failure: stdout carries
+the result byte-identical to the same command without `--copy`, stderr carries
+the single `RSLB101` envelope, and the exit code is 1. R67's accepted text says
+a machine-mode error "leaves stdout byte-empty" (AC2) and that "stdout stays
+byte-empty on the error path". The owner ratifies R62's reading: the clause
+covers failures before a result exists, not a failure after the result has
+already been written. R67's registered text does not change now; it carries
+R62's written-out substitute wording at R67's next revision, and R62 records
+the open end as a re-verify trigger. Option declined: revising R67 immediately
+(a carried-forward run and both audits for an editorial change).
+
 ## Wave 0 owner acceptances
 
 Recorded from 2026-09-14 in `docs/port/OWNER-ACCEPTANCES.md` (moved there on
