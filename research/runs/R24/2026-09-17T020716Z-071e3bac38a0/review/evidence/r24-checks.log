@@ -1,0 +1,223 @@
+R24 changelog-section-mapping - empirical check
+Counting binary: /usr/bin/grep (grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+Snapshots: ./snap (origins in ./snap/RETRIEVED.txt)
+Host toolchain: ./toolchain.txt (kept off this log so it reproduces)
+
+========== 1 - the recommended array is a TOTAL map over R38 commit-message-convention ==========
+
+--- 1a registry type-enum has exactly the eleven types the array maps ---
+PASS 1a-enum-found (expected yes, got yes; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 1a-enum-equals-array (expected build chore ci docs feat fix perf refactor revert style test , got build chore ci docs feat fix perf refactor revert style test ; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 1b the probe rendered the array the decision recommends ---
+PASS 1b-probe-array-order (expected feat fix perf revert docs refactor test build ci style chore , got feat fix perf revert docs refactor test build ci style chore ; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 1c DECISION.md publishes the same eleven types in the same order ---
+PASS 1c-decision-array-order (expected feat fix perf revert docs refactor test build ci style chore , got feat fix perf revert docs refactor test build ci style chore ; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 1c-decision-hidden-count (expected 6, got 6; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+========== 2 - the five assumed parameter lines are byte-identical to the live registry ==========
+
+--- 2-msrv-policy ---
+PASS 2-msrv-policy-nonempty (expected yes, got yes; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 2-msrv-policy-byte-identical (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 2-rust-edition ---
+PASS 2-rust-edition-nonempty (expected yes, got yes; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 2-rust-edition-byte-identical (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 2-target-os-matrix ---
+PASS 2-target-os-matrix-nonempty (expected yes, got yes; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 2-target-os-matrix-byte-identical (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 2-license ---
+PASS 2-license-nonempty (expected yes, got yes; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 2-license-byte-identical (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 2-commit-message-convention ---
+PASS 2-commit-message-convention-nonempty (expected yes, got yes; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 2-commit-message-convention-byte-identical (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+========== 3 - release-please 17.11.2 source, read from ./snap/rp-17.11.2 ==========
+
+--- 3a mechanism 1 - changelog-sections REPLACES the preset default, and an absent array takes it ---
+PASS 3a-assigns-types (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3a-guarded-by-presence (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3a-no-merge (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3a-preset-default-list (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 3b mechanism 4 - the rust strategy sets no fallback and never filters ---
+PASS 3b-rust-no-changelog-sections (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3b-rust-no-filter-commits (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3b-rust-extends-base (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 3c release-please DEFAULT_CHANGELOG_SECTIONS is itself a total map over the same eleven types, with no deps ---
+PASS 3c-entry-count (expected 11, got 11; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3c-no-deps-entry (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3c-visible-four (expected 4, got 4; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 3d every heading the recommendation uses is release-please DEFAULT_HEADINGS verbatim ---
+PASS 3d-feat (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3d-fix (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3d-perf (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3d-revert (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3d-docs (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3d-refactor (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3d-test (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3d-build (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3d-ci (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3d-style (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3d-chore (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 3e mechanism 5 - the release gate reads the rendered notes ---
+PASS 3e-guard-call-site (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3e-guard-log (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3e-guard-returns-undefined (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3e-predicate-signature (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3e-predicate-body (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3e-body-is-rendered-notes (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 3f a bare '!' marker carries the subject as its breaking-note text ---
+PASS 3f-subject-as-note-text (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3f-push-only-when-nonempty (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 3g mechanisms 2 and 3 in the preset - hidden versus unmapped, and positional order ---
+PASS 3g-discard-rule (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3g-breaking-clears-discard (expected 2, got 2; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3g-entry-renames-group (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3g-group-order-from-array (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3g-sort-by-indexof (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 3h the published schema supports type/section/hidden and nothing else per entry ---
+PASS 3h-has-changelog-sections (expected 2, got 2; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3h-requires-type-and-section (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3h-hidden-is-boolean (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 3h-no-scope-key (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+========== 4 - rendered entries, produced by release-please own buildNotes (./snap/rendered) ==========
+
+--- 4a ts array: a breaking commit of an UNMAPPED type renders under a raw lowercase heading ABOVE Features ---
+PASS 4a-raw-lowercase-heading (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4a-sorted-above-features (expected above, got above; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4a-no-Styles-heading (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 4b ts array: a NON-breaking revert: commit is discarded entirely ---
+PASS 4b-no-reverts-section (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4b-revert-subject-absent (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 4c recommended array: the same breaking commit renders under its configured heading, at its configured rank ---
+PASS 4c-no-raw-lowercase (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4c-styles-heading (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4c-styles-below-documentation (expected below, got below; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 4d recommended array: revert: is visible; docs: is visible ---
+PASS 4d-reverts-section (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4d-revert-subject (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4d-documentation-section (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 4e recommended array: section order follows array position exactly ---
+PASS 4e-order (expected BREAKING CHANGES|Features|Bug Fixes|Performance Improvements|Reverts|Documentation|Styles|Miscellaneous Chores|, got BREAKING CHANGES|Features|Bug Fixes|Performance Improvements|Reverts|Documentation|Styles|Miscellaneous Chores|; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 4f recommended array: every hidden type produces no line for a non-breaking commit ---
+PASS 4f-absent: split the composition root (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4f-absent: add an integration test for the port (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4f-absent: pin the workspace resolver to 3 (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4f-absent: run the matrix on macos-latest (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4f-absent: reflow the imports (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4f-absent: tidy the justfile (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 4g no array renders the Dependabot bump, and py deps entry matches nothing ---
+PASS 4g-no-bump: A-preset-default.md (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4g-no-bump: B-py.md (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4g-no-bump: C-ts.md (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4g-no-bump: D-recommended.md (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4g-py-no-dependencies-section (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 4h preset default (the runner-up, and the release-type rust default) hides docs and shows revert ---
+PASS 4h-no-documentation (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4h-reverts-present (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 4i py array shows refactor and hides docs ---
+PASS 4i-refactor-heading (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4i-no-documentation (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 4j breaking bullets carry the commit subject - the raw report empty-bullet artifact is a fixture defect, not release-please behaviour ---
+PASS 4j-first-bullet (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4j-second-bullet (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 4j-no-empty-bullet (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+========== 5 - mechanism 5 executed: the visible set is the releasable set ==========
+
+--- 5a the predicate executed is release-please own BaseStrategy.changelogEmpty ---
+PASS 5a-predicate-text (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 5b a push whose commits all map to hidden types renders a one-line body and is judged empty ---
+PASS 5b-line-count (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 5b-empty-true (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 5b-body-is-header-only (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 5b-body-has-no-sections (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 5c one visible-type commit in the same push makes it non-empty ---
+PASS 5c-empty-false (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 5c-bug-fixes-section (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+========== 6 - the two source repositories at the programme pins ==========
+
+--- 6a py at b08bccfb - a total twelve-entry map whose deps entry is unreachable ---
+PASS 6a-entry-count (expected 12, got 12; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 6a-array-opens-at-22 (expected 22, got 22; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 6a-deps-entry (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 6a-refactor-visible (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 6a-docs-hidden (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 6b ts at cb1cbcb2 - a seven-entry PARTIAL array with no revert, style, build or ci ---
+PASS 6b-entry-count (expected 7, got 7; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 6b-array-opens-at-11 (expected 11, got 11; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 6b-no-revert-entry (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 6b-no-style-entry (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 6b-no-build-entry (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 6b-no-ci-entry (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 6c the snapshots are what the pins hold ---
+PASS 6c-py-matches-pin (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 6c-ts-matches-pin (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+========== 7 - reproduction leg: reinstall release-please 17.11.2 and re-render ==========
+
+--- 7a a fresh install resolves the three packages the rendering path uses ---
+PASS 7a-resolved-versions (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 7b the eight snapshotted upstream files are byte-identical to the fresh install ---
+PASS 7b-build/src/changelog-notes.js (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 7b-build/src/changelog-notes/default.js (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 7b-build/src/util/filter-commits.js (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 7b-build/src/strategies/rust.js (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 7b-build/src/strategies/base.js (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 7b-build/src/commit.js (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 7b-schemas/config.json (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 7b-preset/writer-opts.js (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 7c re-rendering reproduces all seven saved outputs byte-for-byte ---
+PASS 7c-A-preset-default.md (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 7c-B-py.md (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 7c-C-ts.md (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 7c-D-recommended.md (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 7c-E-hidden-only.md (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 7c-F-hidden-plus-visible.md (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 7c-mech5.txt (expected identical, got identical; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+========== 8 - the pin is current, and it is the version the action resolves ==========
+
+--- 8a v17.11.2 is release-please latest published release ---
+PASS 8a-tag (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 8a-not-draft (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 8a-not-prerelease (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 8a-published (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 8b release-please-action v5.0.0 - the pin F063 names - resolves release-please ^17.6.0, which 17.11.2 satisfies ---
+PASS 8b-action-version (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 8b-dependency-range (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+========== summary ==========
+PASS 125  FAIL 0  SKIP 0  TOTAL 125
+RESULT: PASS
