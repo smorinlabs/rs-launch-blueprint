@@ -88,5 +88,14 @@ PASS R2-8g: the open item handed to P03 and R04 is recorded and explicitly not d
 PASS R2-8h: the four assumes lines are still byte-identical to their live registry rows, and the set still matches exactly
 PASS R2-8i: still no owns line == 0
 
+=== R2-9 the two revision-1 checks that the tree has moved under ===
+docs/port/OWNER-ACCEPTANCES.md
+docs/port/OWNER-REVIEW.md
+PASS R2-9a: OV-03 is now named outside this item, where revision 1's check EF6a required zero == 2
+PASS R2-9b: and both files are owner records under docs/port/, not competing decisions
+PASS R2-9c: the OWNER-REVIEW hit is this item's own acceptance record, naming R02 and F021
+PASS R2-9d: no decision outside this item DECLARES an override numbered OV-03 == 0
+PASS R2-9e: control -- 1 decision(s) outside this item DO declare an override by heading (OV-02), so R2-9d's zero is not vacuous
+
 === SUMMARY ===
-CHECKS RUN: 61 FAILURES: 0 SKIPPED: 0
+CHECKS RUN: 66 FAILURES: 0 SKIPPED: 0

@@ -390,6 +390,55 @@ else
   eq R2-8i "still no owns line" "$("$GREP" -c '^- owns ' "$DECISION" || true)" "0"
 fi
 
+############################################################################
+# R2-9  Two revision-1 checks no longer pass against the post-acceptance tree.
+#       Both are expected consequences of this item being accepted, not defects,
+#       and this group pins each one so the claim is auditable rather than asserted.
+############################################################################
+note "R2-9 the two revision-1 checks that the tree has moved under"
+if [ ! -d "$REPO_ROOT/docs/port" ]; then
+  skip R2-9 "docs/port is absent from this extraction"
+else
+  {
+    "$GREP" -rlF -- 'OV-03' "$REPO_ROOT/docs/port" || true
+    for f in "$REPO_ROOT"/research/topics/*/DECISION.md "$REPO_ROOT"/research/runs/*/*/review/DECISION.md; do
+      [ -f "$f" ] || continue
+      case "$f" in *"/R02/"*) continue ;; esac
+      "$GREP" -lF -- 'OV-03' "$f" || true
+    done
+  } | sed "s|^$REPO_ROOT/||" | sort > "$HERE/snapshots/r2-ov03-references.txt"
+  cat "$HERE/snapshots/r2-ov03-references.txt"
+  eq R2-9a "OV-03 is now named outside this item, where revision 1's check EF6a required zero" \
+    "$(wc -l < "$HERE/snapshots/r2-ov03-references.txt" | tr -d ' ')" "2"
+  ok R2-9b "and both files are owner records under docs/port/, not competing decisions" \
+    "$HERE/snapshots/r2-ov03-references.txt" \
+    "docs/port/OWNER-ACCEPTANCES.md" "docs/port/OWNER-REVIEW.md"
+  ok R2-9c "the OWNER-REVIEW hit is this item's own acceptance record, naming R02 and F021" \
+    "$OWNER" "\`OVERRIDE (OV-03)\` against F021"
+  # The number is still not CLAIMED by another decision: a competing claim would be
+  # a heading, which is how this decision and R61's declare theirs.
+  n=0
+  for f in "$REPO_ROOT"/research/topics/*/DECISION.md "$REPO_ROOT"/research/runs/*/*/review/DECISION.md; do
+    [ -f "$f" ] || continue
+    case "$f" in *"/R02/"*) continue ;; esac
+    if "$GREP" -q '^### OVERRIDE (OV-03)' "$f"; then n=$((n + 1)); fi
+  done
+  eq R2-9d "no decision outside this item DECLARES an override numbered OV-03" "$n" "0"
+  m=0
+  for f in "$REPO_ROOT"/research/topics/*/DECISION.md "$REPO_ROOT"/research/runs/*/*/review/DECISION.md; do
+    [ -f "$f" ] || continue
+    case "$f" in *"/R02/"*) continue ;; esac
+    if "$GREP" -q '^### OVERRIDE (OV-02)' "$f"; then m=$((m + 1)); fi
+  done
+  CHECKS=$((CHECKS + 1))
+  if [ "$m" -ge 1 ]; then
+    printf 'PASS R2-9e: control -- %s decision(s) outside this item DO declare an override by heading (OV-02), so R2-9d'"'"'s zero is not vacuous\n' "$m"
+  else
+    printf 'FAIL R2-9e: control failed -- no OV-02 heading found anywhere, so the OV-03 zero is unreliable\n'
+    FAILURES=$((FAILURES + 1))
+  fi
+fi
+
 note "SUMMARY"
 printf 'CHECKS RUN: %s FAILURES: %s SKIPPED: %s\n' "$CHECKS" "$FAILURES" "$SKIPPED"
 [ "$FAILURES" -eq 0 ]
