@@ -1,0 +1,12 @@
+[package]
+name = "r56probe_r2"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.96"
+license = "MIT OR Apache-2.0"
+publish = false
+
+[dependencies]
+secrecy = "0.10.3"
+zeroize = "1.9.0"
+toml = "1.1.6"

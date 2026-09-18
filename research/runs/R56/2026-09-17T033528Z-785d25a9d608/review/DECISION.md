@@ -1,6 +1,52 @@
-# 2026-09-17 — R56 — config-secret-policy (bundle, Deep) — decision (revision 1)
+# 2026-09-17 — R56 — config-secret-policy (bundle, Deep) — decision (revision 2)
 
 ## Decision
+
+**Revision note (revision 2).** Revision 1 (sha256 `77cba891…`) was **rejected** by its
+round-1 judgment audit (`review/audit-fable.md`, `verdict: reject`) on two blocking
+findings, with a third recorded non-blocking. **The recommendation does not move, and no
+parameter value moves**: the three-tier chain with a dedicated credential store, the crate
+stack and its versions, the ledger dispositions, the `RSLB204` instance, the coupling
+analysis and the five `- assumes` lines all stand exactly as revision 1 wrote them. The
+auditor said so directly — "The recommendation is sound and it **does not move under any
+finding**" — and confirmed the ordering against the standard's blob himself. What failed
+was this decision's own executed-versus-proposed labelling, in two places.
+
+**JF-1 (blocking)** — "Acceptance criterion 4 marks the chain's middle rung as executed,
+and no assertion establishes it." Granted. Revision 1's criterion 4 cited `C1`, which
+passes `stored = None`, and `C3`, which passes an *empty* env value; no probe call was
+`resolve(None, Some("env-token"), Some(&cred))`, so "a set `RSLBP_TOKEN` outranks the
+stored credential" — the middle rung this item exists to decide — carried an **executed**
+label with nothing behind it. Repair: **executed, not relabelled.** A new
+`evidence/probe-r2/` and `evidence/check-probe-r2.sh` run that exact call as `E1`, with
+`E0` as the control that proves the stored credential is present and readable in the same
+fixture (so `E1` is a precedence win and not an unreadable file), `E2`/`E3` asserting the
+returned value is the env token and not the stored bytes, and `E4` exercising all three
+tiers in one call. Revision 1's probe and its five scripts and logs are **not edited**;
+they stay as the record of what revision 1 ran.
+
+**JF-2 (blocking, and sharper because the committed log refutes rather than omits)** —
+"Acceptance criterion 1 marks 'that warning names the file' as executed via `B1`–`B4`, and
+the committed log's warning names no file while `scan_config` takes a document string."
+Granted, and the auditor is right that the probe *could not* have carried the clause.
+Repair: **executed, not relabelled.** The r2 probe's scanner is `scan_config_at(path, doc)`
+— it is handed the layer's path — and `F2` asserts the emitted warning text contains that
+path, `F3` that it names the key, `F4` that it contains none of the value's bytes, `F5`
+and `F6` that naming the file changed neither the drop nor the surviving tables. The
+finding's scope is respected: the recommendation text requiring the warning to name the
+file and the key was correct as a P03 requirement and is unchanged.
+
+**JF-3 (non-blocking)** — "'its `GlobalArgs` surface carries `--token-file`' phrases a
+prescription as a description." Granted; R60 decides no flag spellings at all. The
+superseded wording was "its `GlobalArgs` surface carries `--token-file`, not `--token`",
+and it is replaced below with the form the Couplings paragraph already used —
+`--token-file` is R60's surface *to carry*. The load-bearing claim in that parenthesis, the
+0-occurrence count, is unchanged.
+
+**Revision history.** Revision 1 — 2026-09-17, sha256 `77cba891…`, first decision from the
+collected engine reports; rejected by the round-1 judgment audit on JF-1 and JF-2.
+Revision 2 — this file, 2026-09-17, closing JF-1 and JF-2 by execution and JF-3 by
+rewording. No `## Supersedes` section: this item is not published.
 
 **Status.** This is a *proposal validated in the implementation phase* (owner ruling,
 2026-09-10). It records what the research found and what it recommends; P03 builds the
@@ -95,14 +141,27 @@ in `## Empirical check`; the rest are P03's and are marked **proposed**.
 
 1. A config file carrying `token = "<secret>"` produces exactly one warning, that warning
    names the file and the key and contains none of the secret's bytes, the rest of the
-   document is still accepted, and the token is not used. **executed** (`B1`–`B4`).
+   document is still accepted, and the token is not used. **executed** — the one-warning,
+   key-dropped, tables-survive and no-secret-bytes clauses by `B1`–`B4`; the *names the
+   file* and *names the key* clauses by `F2` and `F3` in the revision-2 probe, which hands
+   the scanner the layer's path. Revision 1 labelled the whole criterion executed on
+   `B1`–`B4` alone — "**executed** (`B1`–`B4`)" — and `B1`–`B4` cannot carry the
+   file-naming clause, because revision 1's `scan_config` took a document string and its
+   emitted warning, printed in full in `check-probe.log`, names no file. That is JF-2, and
+   this is the executed repair rather than a relabel.
 2. A credential file at `0600` produces no warning; the same file at `0644` produces one;
    at `0700` it produces none, proving the test is the `0o077` mask and not equality with
    `0600`. **executed** (`A2`, `A3`, `A5`).
 3. The credential file is created at mode `0600` by `O_CREAT`, never created and then
    `chmod`-ed. **executed** (`A1`).
 4. `--token-file` outranks a set `RSLBP_TOKEN`, which outranks the stored credential; an
-   empty-string env value is treated as unset (F242 parity). **executed** (`C1`, `C3`).
+   empty-string env value is treated as unset (F242 parity). **executed** — the top rung by
+   `C1`, the F242 parity clause by `C3`, and the **middle rung** by `E1` in the revision-2
+   probe, with `E0` as its control and `E2`, `E3`, `E4` around it. Revision 1 labelled the
+   whole criterion executed on `C1` and `C3` alone — "**executed** (`C1`, `C3`)" — and
+   neither call exercised the middle rung: `C1` passes `stored = None` and `C3` passes an
+   empty env value, which is the fallback direction rather than the precedence one. That is
+   JF-1, and this is the executed repair rather than a relabel.
 5. `Debug` of the token type, and of any structure containing it, prints a placeholder,
    and no test's captured stdout or stderr contains a fixture token's bytes. **executed**
    (`D1`, `D2`, and a leak census returning `0`).
@@ -274,8 +333,9 @@ BASELINE-REVIEW: F240 — a credential must never be readable from the process t
 
 - **Disposition: adopted**, and this decision is written as though it holds. Affected
   items: **R56** (this item — the chain's top tier); **R60** (`cli-parsing-framework`,
-  owner-accepted at revision 9 and published — its `GlobalArgs` surface carries
-  `--token-file`, not `--token`; the string `--token` occurs **0** times in R60's, R67's
+  owner-accepted at revision 9 and published — `--token-file` is R60's surface to carry,
+  and R60 decides no flag spellings, so this adds a flag to a surface whose spellings were
+  left open rather than overturning one it settled; the string `--token` occurs **0** times in R60's, R67's
   and R52's published decisions, counted with `/usr/bin/grep -c`, so this raises no
   collision with a published sibling); **R61** (`interactive-prompts` — the stdin path);
   **R67** (`RSLB204` acquires the single instance named in `## Decision`). Changes to py
@@ -373,7 +433,8 @@ committed as a fixture at `review/evidence/probe/` (`Cargo.toml`, `Cargo.lock`,
 implements the *naive* resolver so the fall-through the decision forbids is visible as a
 labelled negative control, and it does not implement the recommendation.
 
-**The five checks, their commands and their results.** Each script asserts on content,
+**The checks, their commands and their results — five from revision 1, unchanged and not
+rerun into new logs, plus one added by revision 2.** Each script asserts on content,
 never on an exit status alone; each starts with `set -o pipefail`; each names
 `/usr/bin/grep` by absolute path beside every count it reports, because a typed `grep` in
 these shells is `ugrep` and honours `.gitignore`; and all five are `shellcheck` 0.11.0
@@ -388,7 +449,9 @@ complete output is the committed log beside it.
 | `review/evidence/check-siblings.sh` | every claim this decision makes about R67, R60, R53, R55, R57, R61, R52 and R17, and about this run's own engine inventory | 30, plus 10 detail lines | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-siblings.log` |
 | `review/evidence/check-registry.sh` | the crate versions, release dates, MSRV floors, licences, download figures, the `secrecy`→`zeroize` edge, the `forbid(unsafe_code)` posture and the advisory status, read from committed snapshots | 38, plus 3 detail lines | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-registry.log` |
 | `review/evidence/check-probe.sh` | the behavioural claims, the dependency-tree sizes and the tree MSRV maxima, by building and running the probe | 35 (15 from the probe, 20 from the script), plus 1 detail line | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-probe.log` |
-| `review/evidence/check-parameters.sh` | that `## Parameters` carries no `- owns` line and that its five `- assumes` values `diff` empty against lines regenerated from the current `docs/port/PARAMETERS.md`; the H2 set, the title, the single `re-verify:` line; and that no personal email, credential pattern or probe fixture reaches any log | 15 | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-parameters.log` |
+| `review/evidence/check-parameters.sh` | that `## Parameters` carries no `- owns` line and that its five `- assumes` values `diff` empty against lines regenerated from the current `docs/port/PARAMETERS.md`; the H2 set, the title, the single `re-verify:` line; and that no personal email, credential pattern or probe fixture reaches any log | 15 | **all PASS**, `CHECK_FAILURES=0`, exit `0` — **against revision 1** | `check-parameters.log` |
+| `review/evidence/check-parameters-r2.sh` | **added by revision 2**: everything the revision-1 script asserts, re-pinned to this revision — the title's revision number, the absence of `## Supersedes`, the presence of the revision note and history, the second probe's two fixtures, and a sha256 roll of all fourteen revision-1 artifacts so a later edit to any of them trips a check | 22 | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-parameters-r2.log` |
+| `review/evidence/check-probe-r2.sh` | **added by revision 2**: the chain's middle rung (JF-1) and the warning that names its file (JF-2), by building and running a second throwaway probe at `review/evidence/probe-r2/` | 23 (11 from the probe, 12 from the script) | **all PASS**, `CHECK_FAILURES=0`, exit `0` | `check-probe-r2.log` |
 
 `review/evidence/refresh-snapshots.sh` is a sixth script and is **not** a check: it is the
 only thing in this tree that touches the network, and it exists so that the checks never
@@ -553,11 +616,71 @@ committed log. Package counts come from
 and MSRV maxima from `cargo metadata --locked --format-version 1 --filter-platform <triple>`,
 excluding the root package, whose own `rust-version` is the floor being tested.
 
+**Why revision 1's `check-parameters.sh` is reissued rather than rerun, said plainly
+rather than left to be discovered.** Two of its fifteen assertions pin revision-1 facts:
+`PA6` pins the title's revision number, and `PA10` pins the exact list of files naming the
+probe fixture. Retitling this file to revision 2 therefore makes revision 1's `PA6` stop
+matching, and revision 2 adds a second probe and is quoted by the judgment audit, which
+extends `PA10`'s list. The revision rules forbid editing a cited script or log, so
+`check-parameters.sh` and `check-parameters.log` are left exactly as revision 1 committed
+them, and `check-parameters-r2.sh` carries the same fifteen assertions re-pinned to this
+revision plus seven more.
+
+A rerun of revision 1's script against this file therefore exits `1` with **eight**
+failures, and they are enumerated here rather than left as a surprise, because every one of
+them is a check correctly pinned to a superseded revision rather than a defect in this one:
+`PA6` (the title now reads revision 2); `PA8.1`–`PA8.5` and `PA11` (revision 1's script
+excludes only *itself* by name from its sensitive-pattern search, so the new sibling script,
+which necessarily names the same patterns in order to search for them, trips all five — a
+self-reference between two scripts, not a leak, and `check-parameters-r2.sh` excludes the
+whole `check-parameters` family for exactly this reason); and `PA10` (the fixture-file list
+has grown by `audit-fable.md`, where the judgment auditor ran his own census, and by the new
+sibling script). `check-parameters-r2.log` is the live record for this revision, and it
+reports `CHECK_FAILURES=0`. One of the seven is a sha256 roll of all fourteen revision-1
+evidence artifacts, printed as `PA12-detail`, so that any later edit to a revision-1 script
+or log is visible in a committed log rather than only in `git`.
+
+**5. The revision-2 probe, which closes JF-1 and JF-2.** `check-probe-r2.sh` copies
+`review/evidence/probe-r2/` into a `$TMPDIR` subdirectory, runs
+`cargo generate-lockfile --locked` (18 `[[package]]` entries: 17 dependencies plus the root
+package), builds with `cargo build --locked`, runs the binary and asserts. It does **not**
+rerun any revision-1 script, and revision 1's probe, its five scripts and their logs are
+byte-identical to what revision 1 committed. Observed output, in full:
+
+```
+PASS E0 CONTROL stored-tier-is-reachable — with no flag and no env, source=Stored and the stored value is the one on disk
+PASS E1 JF-1 env-outranks-stored — source=Env (R10.1 middle rung: RSLBP_TOKEN > stored credential)
+PASS E2 JF-1 env-value-is-the-one-used — the resolved value is the env token, not the stored credential
+PASS E3 JF-1 stored-value-not-used — the stored credential's bytes are not what resolution returned
+PASS E4 full-chain-in-one-call — all three tiers supplied, source=TokenFile
+PASS F1 JF-2 exactly-one-warning — 1 warning(s)
+PASS F2 JF-2 warning-names-the-file — the warning text contains the scanned layer's path
+PASS F3 JF-2 warning-names-the-key — the warning text names the key `token`
+PASS F4 JF-2 warning-omits-the-value — the warning text contains none of the value's bytes
+PASS F5 key-still-dropped — naming the file did not change the drop behaviour
+PASS F6 other-tables-survive — [output] still survives the drop
+PROBE_R2_FAILURES=0
+stderr: warning: <TMPDIR>/r56-r2-<pid>/rslbp_config.toml: key `token` is ignored — this tool never reads a credential from the config file. Use --token-file, the RSLBP_TOKEN environment variable, or `rslbp auth login`.
+```
+
+`E0` is the control that makes `E1` mean what it says: without it, "env wins over stored"
+could be an unreadable stored file rather than a precedence win, so `E0` first proves the
+same fixture resolves to `Stored` when no flag and no env are supplied. The echoed warning
+carries a `<TMPDIR>/r56-r2-<pid>` placeholder in place of the run-specific temporary
+directory — the probe substitutes it before printing, while `F2` asserts against the
+**real** path — so this log stays diffable across runs. Two fixture credentials are used
+(`sk_live_R56R2_STORED_DO_NOT_LOG` and `sk_live_R56R2_CONFIG_DO_NOT_LOG`) and the script's
+leak census returns `0` for each over the probe's combined stdout and stderr.
+
 **Reproducibility, stated exactly rather than claimed generally, and tested the way an
 auditor tests it.** Every script was rerun in place and the rerun diffed against the
 committed log; then the whole tree was extracted with
-`git archive HEAD | tar -x -C "$TMPDIR/<dir>"` and all five were rerun from that
-extraction, with no `.git` and from a different absolute path, and diffed again. Each is
+`git archive HEAD | tar -x -C "$TMPDIR/<dir>"` and the six live checks — revision 1's
+`check-standard.sh`, `check-siblings.sh`, `check-registry.sh` and `check-probe.sh`, plus
+revision 2's `check-probe-r2.sh` and `check-parameters-r2.sh` — were rerun from that
+extraction, with no `.git` and from a different absolute path, and diffed again. Revision
+1's `check-parameters.sh` is deliberately not in that set: it is pinned to revision 1 and
+its eight expected failures are enumerated above. Each is
 byte-reproducible **except for its own `date-utc:` stamp**, which the script prints itself
 at the top of its output; `check-parameters.log` additionally carries the decision's own
 sha256, which changes whenever the decision is edited and is therefore regenerated last.
@@ -565,7 +688,7 @@ No other line differs in place. From the extraction **exactly one further line d
 and it is named here so the diff is expected rather than surprising: `check-siblings.sh`'s
 `X23` becomes `SKIP X23 codex-refusal-recorded — raw/codex-transcript.txt is absent
 (gitignored: research/runs/*/*/raw/*-transcript.txt)`, because `.gitignore` excludes that
-transcript from the archive. All five scripts still exit `0` there. One thing was changed
+transcript from the archive. All six live checks still exit `0` there. One thing was changed
 to make the rest true rather than asserted: no script prints an absolute path into its log,
 since two of them did and their logs would otherwise have differed between a working tree
 and an extraction. The SKIP is **by name** for the same reason a silent guard would be a
