@@ -119,6 +119,33 @@ template, because the template does not exist. What has been run is the
 underlying mechanism, on throwaway packages, and the check ids above name the
 rows in `## Empirical check` that did it.
 
+**Step 1 of the survey method — the three-bin map of the Rust field for this
+category.** Every candidate compared below comes from this map.
+
+| Bin | Candidates found | Why it lands in this bin |
+|---|---|---|
+| **Built-in or first-party toolchain** | `env!("CARGO_PKG_VERSION")` and its `_MAJOR`/`_MINOR`/`_PATCH` siblings; `option_env!`; a build script emitting `cargo::rustc-env` | Cargo injects these variables itself and the Cargo Book shows `env!` as the way to read them (A6f, A6g); a build script's output is read by the same macro (A6h) |
+| **Established industry standard** | a hand-written `pub const` around `env!` (Apache Arrow, rav1e); `clap`'s `crate_version!` and `#[command(version)]`; `built`'s generated module | each is practiced by a maintained, widely used project or documented by its maintainer, and all three were read at source here (A5b, A5d, A6a–A6e) |
+| **Up-and-comer** | `shadow-rs`; `vergen-gix` | both are current, actively released specialized generators whose surface is build *provenance* rather than the base version (newest releases 2026-04-23 and 2026-08-24, A3b, A3c) |
+
+**Step 2 — the authorities used, and why each counts.** The **Cargo Book**
+(`environment-variables.html`, `build-scripts.html`) is Rust project
+documentation for the package-manager contract this decision depends on, and is
+the only source that can settle what `CARGO_PKG_VERSION` *is*. The **Rust release
+channel manifest** (`static.rust-lang.org/dist/channel-rust-stable.toml`) is the
+release process's own output and is what makes the MSRV floor a fact rather than
+a recollection. **crates.io's API** is the registry authority for published
+versions, declared `rust-version` and licence metadata. **RustSec** is the Rust
+Secure Code WG's advisory database and the authority gate 3 names. **GitHub's
+REST API** is the authority for repository state and for the text of `shadow-rs`
+issue #262. **The crates' own source at a pinned commit** outranks their rendered
+documentation, which is why clap's two version paths were read in
+`clap_builder/src/macros.rs` and `clap_derive/src/item.rs` rather than on
+docs.rs. The **org CLI Design Standard v1.4.14** is the owner's own normative
+document for the surface that prints the value. Steps 3 and 4 of the survey
+method — practice evidence and fit — are the pinned-source paragraph and the
+per-target argument later in this section.
+
 **The architectural alternatives, compared before any library.** There are four
 ways to get a version into a running Rust artifact, and only the first two are
 genuinely distinct architectures:
@@ -193,11 +220,30 @@ day (`r22-live-recheck.log`).
 
 | Candidate | 90-day / all-time downloads | Newest non-yanked | Declared `rust-version` | Gate 2 (MSRV floor 1.96) | Gate 3 (advisories) | Gate 5 (defaults) | Verdict |
 |---|---|---|---|---|---|---|---|
-| **`env!("CARGO_PKG_VERSION")`** | `inapplicable — a language macro and a Cargo-injected variable, not a crates.io package` | n/a (ships with the toolchain) | n/a | **pass** — no crate, so nothing to floor | **pass** — nothing to advise against | n/a | **selected** |
+| **`env!("CARGO_PKG_VERSION")`** | `inapplicable — a language macro and a Cargo-injected variable, not a crates.io package` | n/a (ships with the toolchain) | n/a | **pass** — no crate and therefore no dependency tree to floor | **pass** — nothing to advise against | n/a | **selected** |
 | `clap` version paths | see R60 (`clap 4.6.6`, already in the stack for the CLI binary) | 4.6.6 | 1.85 (R60) | pass | pass | `crate_version!` needs the non-default `cargo` feature | **not a separate option** — both paths *are* `CARGO_PKG_VERSION`; see below |
-| `built` | 18,238,136 / 63,168,750 | 0.8.1, 2026-05-21 | **1.87** | **pass** — 1.87 is *below* the floor, which is headroom | **pass** — no RustSec page | default features empty; metadata features add `git2`/`gix`/`chrono`/`semver` | rejected **on fit**, not on a gate |
-| `vergen-gix` | 546,530 / 2,035,682 | 10.0.3, 2026-08-24 | **1.96.0** | **pass**, with **zero headroom** — it sits exactly on the floor | **pass** — no RustSec page | defaults empty; requires a `build.rs` | rejected on scope — it is R60's provenance tool, not a base-version source |
+| `built` | 18,238,136 / 63,168,750 | 0.8.1, 2026-05-21 | **1.87** | **pass on its own declaration** — 1.87 is *below* the floor, which is headroom; its dependency tree was not resolved (see the qualification below) | **pass** — no RustSec page | default features empty; metadata features add `git2`/`gix`/`chrono`/`semver` | rejected **on fit**, not on a gate |
+| `vergen-gix` | 546,530 / 2,035,682 | 10.0.3, 2026-08-24 | **1.96.0** | **pass on its own declaration**, with **zero headroom** — it sits exactly on the floor; its dependency tree was not resolved | **pass** — no RustSec page | defaults empty; requires a `build.rs` | rejected on scope — it is R60's provenance tool, not a base-version source |
 | `shadow-rs` | 2,184,341 / 10,812,524 | 2.0.0, 2026-04-23 | **none declared** | not established — an undeclared `rust-version` is not itself a failure | **FAIL on the dependency tree** | defaults include `git2` and `build` | **excluded by gate 3** |
+
+**Maintenance state, by the prompt's rubric** (`active | stable-quiet | at-risk |
+dormant | archived`), for each crate candidate: **`built` — active** (newest
+release 0.8.1 on 2026-05-21, inside six months; no advisory); **`vergen-gix` —
+active** (10.0.3 on 2026-08-24; no advisory); **`shadow-rs` — active, with a
+concrete open risk** (2.0.0 on 2026-04-23, but issue #262 is open against its
+`git2 ^0.20.0` pin and names two advisories the pin blocks the fix for). No crate
+is `at-risk` or `dormant`: `at-risk` needs a concrete signal beyond release
+cadence and `dormant` needs an unpatched advisory against the crate itself, a
+broken build on current stable, or a maintainer's notice, and none of the three
+has one. The selected mechanism has no maintenance state of its own — it ships
+with the toolchain.
+
+**Gate 3's `unsafe` posture, and gate 4's platform list.** The selected mechanism
+contains **no `unsafe`**: `env!` is a compiler built-in macro that expands to a
+string literal, and the constant it produces is a `&'static str` in read-only
+data. For the three rejected crates, `unsafe` posture and per-OS CI evidence were
+**not read**, because each is rejected on a gate or on fit that is settled
+without them; that gap is named under `## Engines` rather than papered over.
 
 Licences, recorded as figures and excluding nothing (gate 1 inapplicable):
 `built` MIT; `vergen-gix` `MIT OR Apache-2.0`; `shadow-rs` `MIT AND Apache-2.0`
@@ -501,9 +547,12 @@ the only varying line in either file.
 `tar` extraction of `git archive HEAD` at commit
 `582358ae634bf6affd7a9b4b088067759c444c33`. That extraction has **no `.git` at
 all** — neither the directory a normal checkout has nor the *file* this shared
-worktree has — which is why both scripts locate the repository root by walking up
-for `docs/port/PARAMETERS.md` rather than for `.git`, and why check `A0b` uses
-`-e` rather than `-d`. Both scripts exited **0** with the same counts as in place,
+worktree has. `r22-sources.sh` locates the repository root by walking up for
+`docs/port/PARAMETERS.md` rather than for `.git`, and its check `A0b` uses `-e`
+rather than `-d` to report which of the three cases it is in.
+`r22-cargo-probe.sh` needs no such lookup at all: it reads nothing from the
+repository, creating everything it measures under `$TMPDIR`, which is why its
+output is identical in both places. Both scripts exited **0** with the same counts as in place,
 `CHECKS RUN: 75  PASS: 75` and `CHECKS RUN: 24  PASS: 24`.
 
 Diffed against the committed logs with `run-started-utc:` filtered out, the probe
@@ -561,8 +610,10 @@ endpoint.**
    `1.98.1 (48a229cea 2026-09-01)` with the channel dated 2026-09-03, giving
    1.98 − 2 = **1.96** (A2a–A2c). R60's published decision reads the gate the same
    way ("the highest declared `rust-version` … is **1.85**, so the current 1.96
-   floor has eleven minors of headroom"). **`built` therefore passes gates 2 and
-   3**, and it is rejected in this decision on **fit** — it needs a `build.rs`,
+   floor has eleven minors of headroom"). **`built` therefore passes gate 2 on
+   its own declaration and gate 3 outright** — gate 2 covers the crate *and* its
+   dependency tree, and only the crate's own declaration was read here, the same
+   qualification this decision applies to `vergen-gix` — and it is rejected in this decision on **fit** — it needs a `build.rs`,
    which R49's published value forbids for this package's targets, and it
    generates a module for a value Cargo already injects. The outcome is unchanged;
    the reason is not, and an exclusion recorded against the wrong gate would have
@@ -645,6 +696,14 @@ have to find them.**
 - **Star counts and download figures.** Verified as of 2026-09-18 UTC at the
   required endpoints and snapshotted, but they are moving numbers; the log's own
   `DRIFT` lines are the record of that.
+- **Dependency-tree MSRV for `built` and `shadow-rs`.** Only each crate's own
+  declared `rust-version` was read (A2d, A2g). Gate 2 covers the tree as well,
+  and no `cargo tree` or MSRV-aware resolution was run for any candidate. This is
+  the same gap the report left open for `vergen-gix`, applied consistently. It
+  matters only if a later item adopts one of them.
+- **`unsafe` posture and per-OS CI evidence for the three rejected crates.** Not
+  read. Each rejection stands on a gate or a fit argument that does not depend on
+  them, and none of the three is recommended.
 - **`shadow-rs`'s and `built`'s default-feature lists**, read by the report from
   `docs.rs/crate/<name>/<version>/source/Cargo.toml`. Not re-read here. The
   `shadow-rs` exclusion does not depend on the list alone — issue #262 states the
