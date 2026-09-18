@@ -503,4 +503,5 @@ Same rule as section 10: an acceptance binds the recommendation at one `review/D
 | W1-R62 | R62 clipboard-integration | A accept, ratify the R67 reading | 2026-09-17 | `fb0a58c9…` (revision 2) | --copy, arboard 3.6.1, ClipboardPort, Linux re-exec holder; failed copy fatal post-result; R67's byte-empty clause read as before-result only, substitute wording at R67's next revision; judgment-only under W1-CODEX |
 | W1-R55 | R55 config-error-tolerance | A accept | 2026-09-17 | `5d358c1f…` (revision 3) | no R55 crate; four-clause rule; moved once at revision 2; judgment-only under W1-CODEX |
 | W1-R68 | R68 release-binary-artifacts | A accept | 2026-09-17 | `070b7ae1…` (revision 1) | .crate + cargo-dist 0.33.0 follower mode; profile lto = "fat" + codegen-units = 1 on measured ground; judgment-only under W1-CODEX |
+| W1-R05 | R05 sync-async-execution-model | A accept | 2026-09-18 | `03d50063…` (revision 2) | sync library + CLI, async only inside the web feature via spawn_blocking, ureq 3.4.2, no async-trait; re-verify note under R69 revision 10 as an evidence-only revision; judgment-only under W1-CODEX |
 
