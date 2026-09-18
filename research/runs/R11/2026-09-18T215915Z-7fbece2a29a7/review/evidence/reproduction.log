@@ -8,3 +8,28 @@ IDENTICAL  r11-cache-budget.log   (diff is empty: the committed log IS the comma
 IDENTICAL  r11-platform-docs.log   (diff is empty: the committed log IS the command's output)
 IDENTICAL  r11-programme-inputs.log   (diff is empty: the committed log IS the command's output)
 IDENTICAL  r11-tool-figures.log   (diff is empty: the committed log IS the command's output)
+
+--- PART 2: rerun from a clean 'git archive HEAD | tar -x' extraction ---
+the extraction has no .git at all (the scripts test with -e, because in this
+worktree .git is a FILE and -d would be wrong); no assertion needs git.
+
+IDENTICAL  r11-actionlint.archive.log vs r11-actionlint.log
+IDENTICAL  r11-detector.archive.log vs r11-detector.log
+IDENTICAL  r11-cache-budget.archive.log vs r11-cache-budget.log
+IDENTICAL  r11-platform-docs.archive.log vs r11-platform-docs.log
+DIFFERS    r11-programme-inputs.archive.log vs r11-programme-inputs.log - the whole diff follows:
+--- research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/review/evidence/r11-programme-inputs.log	2026-09-18 15:59:02
++++ research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/review/evidence/r11-programme-inputs.archive.log	2026-09-18 15:59:42
+@@ -1,6 +1,6 @@
+-INFO repository root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
++INFO repository root: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r11-archive.FL49lU
+ INFO grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+-INFO .git is present (a file, so a worktree) - this is a checkout, not an extraction
++INFO .git is absent - this is a git archive extraction; no assertion below needs git
+ PASS I01 research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md: check B3 - workspace membership, not the root package feature, decides which members are built, so a --workspace command on a CLI-only pull request already compiles axum and tokio
+ PASS I02 research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md: the four-package workspace projection, from which the root-scoped -p list in the fixture is taken
+ PASS I03 research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md: R02's own re-verify line hands check B3 to this item
+IDENTICAL  r11-tool-figures.archive.log vs r11-tool-figures.log
+
+PASS/FAIL/SKIP lines that differ between the two families, across all six scripts:
+  0

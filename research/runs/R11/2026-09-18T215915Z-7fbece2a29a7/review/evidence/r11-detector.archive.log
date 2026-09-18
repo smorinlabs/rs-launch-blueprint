@@ -1,0 +1,23 @@
+PASS D0a the detector body extracted from the fixture is 22 lines
+PASS D0b the extracted body contains exactly one git diff line, the one the driver replaces
+PASS D0c the git-diff line was replaced by the driver input; every other line is the fixture's
+PASS D0d the extracted detector body is shellcheck-clean at severity=warning
+PASS D0 code/web/workflows/docs = true true true true - a non-pull_request event is never skip-gated, so a push to main and a merge_group entry run every job
+PASS D1 code/web/workflows/docs = false false false true - a docs-only pull request skips the whole compile tier
+PASS D2 code/web/workflows/docs = true false false true - README.md is a packaging input (R49's [package] include), so it is NOT skippable
+PASS D2b code/web/workflows/docs = true false false true - CHANGELOG.md is in the same include allow-list, so it is NOT skippable either - the correction this decision makes to the Opus raw, whose skip-list let it through on the .md rule
+PASS D2c code/web/workflows/docs = true false false false - LICENSE-MIT is in the same allow-list - the Opus raw skip-listed it by name
+PASS D3 code/web/workflows/docs = true false false false - a core source change runs the compile tier and nothing web-only
+PASS D4 code/web/workflows/docs = true true false false - R69 revision 10's crates/web/** keys drive the web output
+PASS D5 code/web/workflows/docs = true true false false - the serve binary's own source file also sets web, per R69's second key
+PASS D6 code/web/workflows/docs = true true true false - a workflow edit sets workflows; it also sets code and web because a workflow file is not on the skip-list, which is the conservative direction
+PASS D7 code/web/workflows/docs = true false false false - a lockfile change is a compile input
+PASS D8 code/web/workflows/docs = false false false false - the degenerate empty diff skips every gated job, all of which then report Success
+PASS D9 code/web/workflows/docs = true false false true - a mixed pull request pays for the compile tier; docs and code are independent keys, not a partition
+PASS D10 code/web/workflows/docs = false false false false - editor furniture is skippable and does not set docs
+PASS D11 code/web/workflows/docs = false false false false - an issue template is skippable and does NOT set workflows, because the workflows key matches .github/workflows/ only
+PASS D12a the raw report's skip-list and README-only packaging rule were substituted into a second driver
+PASS D12b under the raw report's skip-list a LICENSE-MIT-only pull request yields code=false, so install-smoke and the packaged-content gate never run on a change to a packaged file - the defect this decision's packaging rule fixes
+PASS D12c under the raw report's skip-list a CHANGELOG.md-only pull request yields code=false, so install-smoke and the packaged-content gate never run on a change to a packaged file - the defect this decision's packaging rule fixes
+
+PASS=21 FAIL=0 SKIP=0 TOTAL=21
