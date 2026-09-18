@@ -578,6 +578,21 @@ check_lane() { # check_lane <id-prefix> <fixture>
 }
 check_lane FR candidate-codex-code-review.yml
 check_lane FA candidate-codex.yml
+assert_contains FR22 "$EVIDENCE_DIR/candidate-codex-code-review.yml" \
+  'echo "OPENAI_API_KEY is configured, so Codex code review will run on this pull request."' \
+  'the review lane prints on the PRESENT branch too, which is the only channel reaching an adopter whose repository already carried the key'
+assert_contains FA26 "$EVIDENCE_DIR/candidate-codex.yml" \
+  'echo "OPENAI_API_KEY is configured, so the Codex assistant will answer this comment."' \
+  'and so does the assistant lane'
+assert_contains D11 "$SNAP/v1.12--docs_security.md" \
+  'the combination of read-only access to the filesystem and `sudo` can be used to expose your `OPENAI_API_KEY`' \
+  'the vendor documents the exfiltration path that rejects architecture C, the bare CLI in a run: step'
+assert_contains D12 "$SNAP/v1.12--docs_security.md" \
+  'Be sure to use either `drop-sudo` or `unprivileged-user` to ensure it stays secret!' \
+  'and names the safety strategy that closes it, which both lanes keep'
+assert_contains X16 "$SNAP/adopter-supabase-ai-review-README.md" \
+  "the comment's first line, trimmed, must be" \
+  'that adopter matches its command on the first line exactly, the practice the /codex startsWith form follows'
 assert_contains FR17 "$EVIDENCE_DIR/candidate-codex-code-review.yml" \
   'github.event.pull_request.head.repo.full_name == github.repository' \
   'the review lane carries the fork guard'

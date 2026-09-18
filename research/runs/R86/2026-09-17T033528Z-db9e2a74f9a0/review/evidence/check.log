@@ -155,6 +155,11 @@ PASS FA13 candidate-codex.yml prints the missing-key message to the run summary 
 PASS FA14 candidate-codex.yml bounds the model job, against the three open hang issues #160, #169 and #172 [/usr/bin/grep -c -F matches=1]
 PASS FA15 candidate-codex.yml checks out without leaving a usable git credential in the tree [/usr/bin/grep -c -F matches=1]
 PASS FA16 candidate-codex.yml does not use pull_request_target [/usr/bin/grep -c -F matches=0]
+PASS FR22 the review lane prints on the PRESENT branch too, which is the only channel reaching an adopter whose repository already carried the key [/usr/bin/grep -c -F matches=1]
+PASS FA26 and so does the assistant lane [/usr/bin/grep -c -F matches=1]
+PASS D11 the vendor documents the exfiltration path that rejects architecture C, the bare CLI in a run: step [/usr/bin/grep -c -F matches=1]
+PASS D12 and names the safety strategy that closes it, which both lanes keep [/usr/bin/grep -c -F matches=1]
+PASS X16 that adopter matches its command on the first line exactly, the practice the /codex startsWith form follows [/usr/bin/grep -c -F matches=1]
 PASS FR17 the review lane carries the fork guard [/usr/bin/grep -c -F matches=1]
 PASS FR18 the review lane carries the draft clause R18 added at its revision 3 [/usr/bin/grep -c -F matches=1]
 PASS FR19 the review lane also rejects a bot-authored pull request, not only a bot initiator [/usr/bin/grep -c -F matches=1]
@@ -183,4 +188,4 @@ PASS N05 the merged bundle twin and the openai and gemini twins pass the shape c
 PASS N06 the Doxa operation identifier this run consumed [/usr/bin/grep -c -F matches=1]
 PASS N07 no codex raw report exists in this run: the Codex leg is the controller's deferral under owner ruling W1-CODEX, not a failed engine
 
-passed=168 failures=0 skipped=0 total=168
+passed=173 failures=0 skipped=0 total=173
