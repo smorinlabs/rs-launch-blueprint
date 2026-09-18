@@ -1,0 +1,10 @@
+requested_url: https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
+effective_url: https://doc.rust-lang.org/cargo/reference/specifying-dependencies.html
+http_status: 200
+section: Version requirement syntax > Default requirements / Caret requirements
+default_requirement_table_row:
+0.2.3 := >=0.2.3, <0.3.0
+caret_is_default:
+Caret requirements are the default version requirement strategy.
+bare_equals_caret:
+Leaving off the caret is a simplified equivalent syntax to using caret requirements.

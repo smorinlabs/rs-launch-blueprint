@@ -1,0 +1,17 @@
+decision: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/../DECISION.md
+registry: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/PARAMETERS.md
+OK   the five expected '- assumes' lines are present and no others
+OK   msrv-policy: byte-identical to the registry (118 bytes)
+OK   rust-edition: byte-identical to the registry (4 bytes)
+OK   target-os-matrix: byte-identical to the registry (27 bytes)
+OK   license: byte-identical to the registry (17 bytes)
+OK   http-transport-injection-seam: byte-identical to the registry (763 bytes)
+OK   exactly one '- owns' line, for web-extra-surface (2638 bytes)
+OK   owns value contains no backticks
+OK   owns value contains no a markdown link
+OK   owns value contains no a double space
+OK   owns value has no leading or trailing whitespace
+OK   control: a deliberately altered value compares unequal
+OK   H2 sections are exactly ## Decision, ## Parameters, ## Empirical check, ## Engines
+parameters-check rc=0
+exit=0

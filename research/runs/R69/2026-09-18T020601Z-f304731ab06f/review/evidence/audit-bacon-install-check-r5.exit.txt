@@ -1,0 +1,1 @@
+bacon-install-check exit=0

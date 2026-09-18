@@ -1,0 +1,50 @@
+snapshot retrieved-at: 2026-09-13T07:57:55Z
+rule: prompt table: 10 most recently opened issues; first comment whose author_association is OWNER/MEMBER/COLLABORATOR, excluding bots and the issue author
+
+=== tokio-rs/axum ===
+window: 2026-06-16T08:01:59Z -> 2026-09-07T08:48:42Z
+  #3880    opened 2026-09-07T08:48:42Z by mladedav               first maintainer response: NONE
+  #3878    opened 2026-09-04T18:53:24Z by mladedav               first maintainer response: NONE
+  #3846    opened 2026-07-25T19:17:33Z by Darckfast              first maintainer response: 2026-07-26T20:15:42Z (1.04 days)
+  #3834    opened 2026-07-14T01:13:21Z by m-novotny              first maintainer response: NONE
+  #3832    opened 2026-07-11T22:10:30Z by hgiesel                first maintainer response: 2026-07-12T07:55:05Z (0.41 days)
+  #3826    opened 2026-07-09T04:43:05Z by bardiharborow          first maintainer response: 2026-07-09T06:45:24Z (0.08 days)
+  #3817    opened 2026-07-05T13:47:13Z by DarkFenX               first maintainer response: NONE
+  #3814    opened 2026-07-01T07:10:18Z by mladedav               first maintainer response: NONE
+  #3809    opened 2026-06-26T06:54:31Z by halo-space             first maintainer response: 2026-06-30T19:49:47Z (4.54 days)
+  #3799    opened 2026-06-16T08:01:59Z by breard-r               first maintainer response: 2026-06-16T11:26:16Z (0.14 days)
+  -> answered: 5   unanswered: 5   median days to first maintainer response (answered only): 0.41
+
+=== Canop/bacon ===
+window: 2026-02-17T18:30:46Z -> 2026-08-24T07:07:07Z
+  #460     opened 2026-08-24T07:07:07Z by PuercoPop              first maintainer response: 2026-08-24T09:05:20Z (0.08 days)
+  #458     opened 2026-08-22T19:24:30Z by kpbaks                 first maintainer response: 2026-08-22T19:47:11Z (0.02 days)
+  #450     opened 2026-07-24T11:42:53Z by Axlefublr              first maintainer response: 2026-07-24T12:01:36Z (0.01 days)
+  #449     opened 2026-07-24T11:08:59Z by Axlefublr              first maintainer response: NONE
+  #447     opened 2026-07-22T19:34:39Z by narpfel                first maintainer response: NONE
+  #446     opened 2026-07-22T18:42:00Z by narpfel                first maintainer response: 2026-07-22T18:45:32Z (0.00 days)
+  #443     opened 2026-05-17T22:14:16Z by c-git                  first maintainer response: NONE
+  #438     opened 2026-03-18T21:44:31Z by marcospb19             first maintainer response: 2026-03-19T07:33:50Z (0.41 days)
+  #437     opened 2026-02-27T17:09:56Z by c-git                  first maintainer response: 2026-02-27T17:27:47Z (0.01 days)
+  #435     opened 2026-02-17T18:30:46Z by narpfel                first maintainer response: 2026-02-18T18:40:17Z (1.01 days)
+  -> answered: 7   unanswered: 3   median days to first maintainer response (answered only): 0.02
+
+=== tokio-rs/tokio ===
+window: 2026-08-27T08:17:23Z -> 2026-09-09T16:05:23Z
+  #8437    opened 2026-09-09T16:05:23Z by Daksh14                first maintainer response: NONE
+  #8434    opened 2026-09-08T19:11:21Z by marcbowes              first maintainer response: 2026-09-09T08:36:28Z (0.56 days)
+  #8433    opened 2026-09-08T17:19:04Z by glaziermag             first maintainer response: 2026-09-09T08:37:58Z (0.64 days)
+  #8429    opened 2026-09-07T14:41:03Z by botirkhaltaev          first maintainer response: 2026-09-07T14:46:03Z (0.00 days)
+  #8423    opened 2026-09-07T06:23:01Z by rifuki                 first maintainer response: NONE
+  #8411    opened 2026-09-05T08:38:11Z by Darksonn               first maintainer response: NONE
+  #8409    opened 2026-09-04T18:00:10Z by dfoxfranke             first maintainer response: 2026-09-04T18:06:55Z (0.00 days)
+  #8406    opened 2026-09-04T04:13:37Z by coremail-cyt           first maintainer response: 2026-09-04T12:05:26Z (0.33 days)
+  #8399    opened 2026-08-29T00:30:11Z by carllerche             first maintainer response: 2026-08-29T13:25:05Z (0.54 days)
+  #8395    opened 2026-08-27T08:17:23Z by Rachit2323             first maintainer response: 2026-08-27T09:00:21Z (0.03 days)
+  -> answered: 7   unanswered: 3   median days to first maintainer response (answered only): 0.33
+
+controls -- these assertions must be able to fail:
+OK   an empty comment list yields no maintainer response
+OK   the issue author, a bot and a non-maintainer are all excluded
+issue-responsiveness rc=0
+exit=0

@@ -1,0 +1,14 @@
+{
+  "crate": "tokio",
+  "retrieved_at": "2026-09-13T07:57:55Z",
+  "endpoint": "https://rustsec.org/packages/tokio.html",
+  "http_status": 200,
+  "note": "RustSec serves HTTP 404 for a crate with no advisory",
+  "advisories_listed": [
+    "RUSTSEC-2021-0072",
+    "RUSTSEC-2021-0124",
+    "RUSTSEC-2023-0001",
+    "RUSTSEC-2023-0005",
+    "RUSTSEC-2025-0023"
+  ]
+}

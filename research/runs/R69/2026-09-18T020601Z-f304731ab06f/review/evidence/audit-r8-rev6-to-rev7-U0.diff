@@ -1,0 +1,120 @@
+diff --git a/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md b/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md
+index 21607fe..38156e1 100644
+--- a/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md
++++ b/research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/DECISION.md
+@@ -1 +1 @@
+-# R69 web-framework-stack — decision (revision 6, 2026-09-16)
++# R69 web-framework-stack — decision (revision 7, 2026-09-16)
+@@ -3,2 +3,82 @@
+-**Revision note (revision 6). No owned value moves, and the reason is a finding rather than
+-caution.** Revision 6 rewrites revision 5 (sha256
++**Revision note (revision 7). Prose only: one judgment finding, three locations, and neither
++the recommendation nor any owned value moves.** Revision 7 rewrites revision 6 (sha256
++`d4d6a8d2a3297a6db488580142de6d651f33b8109e9023994f6cb9f5ecfd6a17`) in place. No revision of
++this decision has been published, so there is still no `## Supersedes`. The one
++`- owns web-extra-surface` line and the five `- assumes` lines are **byte-identical to revisions
++2, 3, 4, 5 and 6**, and so are the recommendation, every version pin, every exclusion, every
++fitness-gate answer including gate 1's `inapplicable` row, the R67 exit contract and the request
++to R67, the CLI Design Standard's R4.1 required global core, the H2 set, and every evidence
++script, cited log and committed snapshot. **No evidence file is added, edited or replaced.**
++Check 6, `review/empirical/parameters-check.sh`, asserts only on lines beginning `- assumes `,
++`- owns ` and `## `, none of which this revision touches; it was nevertheless re-run against
++this file as a confirmation, exited `0`, and its output `diff`s **empty** against the cited
++`review/evidence/parameters-check-r2.log`, which is therefore left unchanged rather than
++superseded by an r7 copy of the same bytes. Checks 1 through 5, and `yanked-control-r5.sh`,
++read no part of this file.
++
++Revision 6 was **approved** by the round-6 empirical audit (`review/audit-codex.md`, actor
++`audit-codex-2026-09-12T204004Z-d02022bf6f42-r6`, model `gpt-5.6-terra`, family openai, verdict
++`approve`, `unresolved-findings: none`) and **rejected** by the round-6 judgment audit
++(`review/audit-fable.md`, actor `audit-fable-2026-09-12T204004Z-d02022bf6f42-r6`, model
++`claude-opus-5`, family anthropic) on **one** finding — that audit records JF-1, JF-2 and JF-3
++as closed and marks its three observations explicitly as *not* findings. Revision 7 answers the
++one finding and changes nothing else:
++
++- **JF-4** — *"the decision states twice, as present fact, that the CLI parser its serve
++  binary's required global core is parsed with is still R60's open choice, and keys a
++  `re-verify:` trigger on that selection — but R60's parser selection (`clap` 4.6.6, derive
++  API) was owner-accepted on 2026-09-15 as W0-R60, one day before revision 6, so the statement
++  is false and the trigger has already fired"*. Repaired at the three locations the finding
++  names, cited by **revision 6's line numbers**: the flag-surface paragraph of
++  `### Principles and implementation` (**line 908**) and the global-core row of the unproven
++  table (**line 2105**), each of which now quotes revision 6's wording, labels it superseded by
++  the acceptance, and states the accepted fact in its place; and the `re-verify:` line (**line
++  1378**), whose R60 clause is **replaced, not deleted**, because a watchable event remains.
++
++**The accepted fact, cited rather than asserted.** `docs/port/OWNER-ACCEPTANCES.md` records
++`R60 | 7 | 67d7a7d2a76c7d10c88edf9cd309c46484ada95a00074d902943a94410b8b9f2 | accept |
++2026-09-15 | W0-R60 option A; clap 4.6.6 derive, clap_complete 4.6.9, dependency-free build.rs;
++OV-01 refused per the 2026-09-14 ruling; first publication pending`. R60's parser is therefore
++**selected and owner-accepted, and unpublished as yet** — a pair of states this decision's own
++vocabulary already keeps apart, since it cites R49 as having selected alternative A1 while
++labelling that revision unpublished. Read on **2026-09-16**, together with
++`research/runs/R60/2026-09-05T183002Z-09f93cfc507c/review/DECISION.md`, whose current revision 8
++still selects `clap` 4.6.6 with the `derive` API and `clap_complete` 4.6.9. **No clap feature
++set beyond `derive` is transcribed anywhere in this decision**, deliberately: R60 revision 8 is
++still moving that set, and nothing here reads it. Only the `derive` API is named, because it is
++part of what the owner accepted. **The design consequence does not move, and the accepted answer
++strengthens it** — `clap` is a non-optional dependency of the package for the CLI binary, so the
++serve binary reuses it, the `web` feature adds no parser crate, and check 2's measured 12 → 52
++package delta stands by construction.
++
++**The `re-verify:` R60 clause is replaced, not deleted, and narrowed to what is still
++watchable.** *"when R60 selects the CLI parser the serve binary's global core is parsed with"*
++names an event that occurred on 2026-09-15. What remains worth watching is the gap between the
++accepted text and the published one — R60's file has already moved after its acceptance — so the
++clause now reads, in full and unbackticked as that line is written, "when R60's published
++decision moves off its owner-accepted clap 4.6.6 derive selection for the CLI binary the serve
++binary's global core is parsed with". Every other clause on that line is byte-identical, which
++a `diff` of the line shows rather than a count.
++
++**Mechanical enumeration, run before any edit and re-run after it.** Two `/usr/bin/grep -n`
++passes over this file: one for `R60`, and a separate case-insensitive one for `parser`, so that
++a sentence about the parser's state which never says "R60" could not escape. The union, by
++revision 6's line numbers, is **469, 894, 895, 908, 1244, 1378, 1382, 1835, 2105**. **Edited:
++908, 1378, 2105.** **Deliberately left byte-identical, each with its ground:** 469, which sits
++inside the retained revision-2 note and records what revision 2 did, which is still true; 894
++and 895, which attribute who binds a behavior ("help layout is R60's parser") rather than
++asserting a selection state; 1244, the migration table's `src/bin/<app>-serve.rs` row, and 1382,
++the `- owns web-extra-surface` line, which share the wording *"the parser crate R60 selects for
++the CLI binary"* — wording the round-6 judgment audit ruled "survives the correction verbatim",
++true of a selected parser exactly as of an unselected one, and inside an owned value that 19
++consumers read and check 6 validates; and 1835, which is an evidence script's JSON parser and
++has nothing to do with R60. Both passes were re-run against the edited file: outside this note,
++every hit is one of those nine locations at its shifted line number, and no new hit appeared
++anywhere else. The `**Sources.**` paragraph is **not** extended, on the revision brief's
++explicit instruction that no other sentence changes; the two files revision 7 read are named in
++this note instead.
++
++**Revision note (revision 6), retained as the record of that revision. It was approved by the
++round-6 empirical audit and rejected by the round-6 judgment audit on JF-4 alone, which the
++revision-7 note above repairs; its body is retained verbatim and nothing else in it is
++withdrawn.** Revision 6 rewrites revision 5 (sha256
+@@ -492 +572,3 @@ audits, 2026-09-16, folding in the owner-supplied reference architecture under o
+-11; run
++11; revision 7 by a seventh fresh Claude Opus 5 context that produced none of this item's raws,
++audits, revisions or their audits, 2026-09-16, repairing the round-6 judgment audit's single
++finding and nothing else; run
+@@ -907,4 +989,12 @@ standard's R5.1 precedence (flag > env > config > default) is satisfied vacuousl
+-exists for a knob. This adds **no crate to the `web` feature**, on a condition rather than
+-as a present fact: the parser is R60's open choice, and whichever crate R60 selects for the CLI
+-binary is a non-optional dependency of the package, so the serve binary reuses it instead of
+-introducing one. Check 2's measured 12 → 52 package delta stands unchanged **by construction,
++exists for a knob. This adds **no crate to the `web` feature**. Revision 6 put that on a
++condition — *"on a condition rather than as a present fact: the parser is R60's open choice, and
++whichever crate R60 selects for the CLI binary is a non-optional dependency of the package"* —
++and **that wording is superseded by the owner's acceptance of R60**: `docs/port/OWNER-ACCEPTANCES.md`
++records R60 revision 7, sha256
++`67d7a7d2a76c7d10c88edf9cd309c46484ada95a00074d902943a94410b8b9f2`, accepted on **2026-09-15**
++as "W0-R60 option A; `clap` 4.6.6 derive, `clap_complete` 4.6.9, dependency-free `build.rs`",
++with first publication pending. So the parser is **selected, and unpublished as yet**, not open:
++`clap` 4.6.6 with its `derive` API is a non-optional dependency of the package for the CLI
++binary, and the serve binary parses R4.1's core with it instead of introducing one. The design
++consequence is the one revision 6 stated, and the accepted answer strengthens rather than
++weakens it. Check 2's measured 12 → 52 package delta stands unchanged **by construction,
+@@ -1378 +1468 @@ the envelope shape named under *Minimal realistic endpoint*.
+-re-verify: when axum publishes 0.9, when R58 (logging-pipeline-contract) or R02 (crate-boundary-enforcement) publishes, when watchexec-cli declares a rust-version or the owner rules on whether the MSRV gate reaches non-linked developer tools, when R67 dispositions this item's request for a drain-deadline catalog row or revises the 130/143 reading of its boundary precedence, when R60 selects the CLI parser the serve binary's global core is parsed with, when the CLI Design Standard revises R4.1's required global core past v1.4.14, at the next msrv-policy floor advance past 1.96, or by 2027-03-13, whichever comes first
++re-verify: when axum publishes 0.9, when R58 (logging-pipeline-contract) or R02 (crate-boundary-enforcement) publishes, when watchexec-cli declares a rust-version or the owner rules on whether the MSRV gate reaches non-linked developer tools, when R67 dispositions this item's request for a drain-deadline catalog row or revises the 130/143 reading of its boundary precedence, when R60's published decision moves off its owner-accepted clap 4.6.6 derive selection for the CLI binary the serve binary's global core is parsed with, when the CLI Design Standard revises R4.1's required global core past v1.4.14, at the next msrv-policy floor advance past 1.96, or by 2027-03-13, whichever comes first
+@@ -2105 +2195 @@ research.
+-| The serve binary satisfies the CLI Design Standard's required global core | **Unproven.** The rule and its scope are read at the standard (R4.1, its header scope line, Appendix A's "§4 … unchanged"); no binary exists to run, and R60 has not selected the parser. | The R9.14 conformance fixture named under *Validation strategy*: `<app>-serve --help` and `<app>-serve -V` each printing to stdout and exiting `0`, `-V` printing the single `<app>-serve <semver>` line R4.6 fixes, and the four remaining core options accepted. |
++| The serve binary satisfies the CLI Design Standard's required global core | **Unproven.** The rule and its scope are read at the standard (R4.1, its header scope line, Appendix A's "§4 … unchanged"); no binary exists to run, and the R9.14 conformance fixture has not been written. *(Revision 6 gave the second ground as "**R60 has not selected the parser**"; that wording is superseded by the owner's acceptance of R60 revision 7 on 2026-09-15 — `clap` 4.6.6 with the `derive` API, recorded in `docs/port/OWNER-ACCEPTANCES.md`, publication pending — and the row stays unproven on the grounds that remain true.)* | The R9.14 conformance fixture named under *Validation strategy*: `<app>-serve --help` and `<app>-serve -V` each printing to stdout and exiting `0`, `-V` printing the single `<app>-serve <semver>` line R4.6 fixes, and the four remaining core options accepted. |

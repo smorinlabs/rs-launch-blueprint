@@ -1,0 +1,433 @@
+## Empirical check
+
+This section reports **verification only**. This is a research programme: the template does not
+exist yet and P03 builds it, so nothing here builds, wires or runs the recommended web surface.
+No handler, router, listener, service, seam or template scaffold was written. The two probe
+packages that exist contain an empty `src/lib.rs`, a `fn main() {}`, and type declarations with
+no methods; they are described with each check and retained under `review/empirical/`.
+
+**Toolchain and OS.** macOS 26.4 (build 25E246), `aarch64-apple-darwin`.
+`rustc -vV` → `rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)`, `host: aarch64-apple-darwin`,
+LLVM 22.1.8. `cargo --version` → `cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)`.
+`cargo audit --version` → `cargo-audit-audit 0.22.1`. `jq` 1.x at `/opt/homebrew/bin/jq`;
+`gh` authenticated as `smorin`. Under `msrv-policy` the floor today is **1.96**.
+
+**Working directory.** Five of the six scripts live in
+`research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/empirical/`; the sixth, check 2's
+`feature-shape-check-r4.sh`, lives in the sibling
+`research/runs/R69/2026-09-12T204004Z-d02022bf6f42/review/evidence/` and reads the two probe
+packages under `../empirical/`. All six resolve their own paths from `${BASH_SOURCE[0]}`, so
+they rerun unchanged from any directory after this decision is committed. Every script sets
+`set -o pipefail`. Every script asserts on **content**, and three of them carry a deliberate
+control assertion that must fail, so that a check which cannot fail is visible as such —
+check 2 now carries three, the MSRV-floor control, revision 3's advisory-count control, and
+revision 4's control showing the warning-absence test reports a line that *is* present.
+
+**Three further scripts, none of which is a seventh check.** Two of them are revision 6's and
+are described first; the third is revision 5's and follows.
+
+Revision 6 adds `review/evidence/fetch-owner-reference-r6.sh` and
+`review/evidence/owner-reference-check-r6.sh`, with the cited log
+`review/evidence/owner-reference-check-r6.log`. They exist because owner decision 11 folds an
+owner-supplied reference architecture into this item as an **input**, and that document's own
+caveat says its patterns were "compiled in my head, not against the toolchain" — so the facts
+revision 6 takes from it are asserted rather than narrated. **The division between them is the
+point.** `fetch-owner-reference-r6.sh` is a **fetcher, not a check**, the sibling of
+`fetch-figures.sh`: it performs the retrievals, records each one's HTTP status and effective
+URL, and writes a **reduced** snapshot of each — only the fields this decision cites — under
+`review/evidence/snapshots/r6/`, **which is committed**. Its User-Agent names the repository
+(`https://github.com/smorinlabs/rs-launch-blueprint`) and no personal email address appears in
+any request, per R42 revision 7's precedent. `owner-reference-check-r6.sh` then **asserts
+against those committed snapshots and never touches the network**, which is what makes it
+rerunnable offline and byte-identical after this decision is committed rather than only from
+the author's checkout on the day the sources were live. It asserts on content in seven
+sections — axum's published release list, Cargo's default version-requirement rule, the
+axum-0.9 state in `tokio-rs/axum`, axum-test's versions and declared axum requirements, the
+Cloud Run shutdown sentences for services and for jobs, axum issue #3003, and a control — and
+**the control must report a present string**, so the emptiness assertion it mirrors is capable
+of failing. It was run **three times in a row** and runs 2 and 3 were **byte-identical** to run
+1, which is the cited log; separately, a scratch copy produced with `cp` and `sed`, with the
+single assertion `must "axum newest non-yanked num" "0.8.9"` rewritten to `"9.9.9"`, printed
+`FAIL … expected=9.9.9 actual=0.8.9` and exited `1`. The scratch copy was deleted; the
+committed script is unmodified. Both scripts set `set -o pipefail`, resolve their paths from
+`${BASH_SOURCE[0]}`, invoke `/usr/bin/grep` by absolute path with the binary named in the log,
+never write inside this run directory except into `snapshots/r6/`, and pass the repository's
+`shellcheck` pre-commit hook carrying the same file-level
+`# shellcheck disable=SC2015,SC2016,SC2329` directive, with the same per-code justification,
+that `feature-shape-check-r4.sh` and `yanked-control-r5.sh` carry. **Neither is a check**: no
+claim in the recommendation rests on either, and their exit status decides nothing about it.
+What they establish is which of the owner-supplied document's statements this decision may
+repeat — which is why the reconciliation rows above cite this log and not the document.
+
+**One further script, which is not a seventh check either.** Revision 5 adds
+`review/evidence/yanked-control-r5.sh` and its log `yanked-control-r5.log`. It tests **no claim
+this decision makes**: it exists only to make the error-line count reported in the revision-4
+note — the figure the round-4 audit rejected — an **executed assertion** rather than a
+recalled number, and it carries its own control showing that assertion rejects 55. It lives in
+`review/evidence/`, resolves its paths from `${BASH_SOURCE[0]}`, sets `set -o pipefail`,
+asserts on content, and reruns unchanged after this decision is committed, like the six checks;
+it is listed separately from them because its exit status decides nothing about the
+recommendation.
+
+| # | Claim under test | Script | Exit | Log under `review/evidence/` |
+|---|---|---|---|---|
+| 1 | **the R01 coupling**: the erased service satisfies axum's state bound without `ProjectsService` deriving `Clone`, and the `Arc` and R01's `Send + Sync` supertraits are each load-bearing | `state-bound-check.sh` | 0 | `state-bound-check.log` |
+| 2 | the `web` feature's gating shape, its dependency cost, the resolved-tree MSRV, and that no advisory in a **pinned** RustSec database applies to the resolved lockfile | `feature-shape-check-r4.sh` (in `review/evidence/`; revision 3's `feature-shape-check-r3.sh` and revision 1's `review/empirical/feature-shape-check.sh` are retained unchanged) | 0 | `feature-shape-check-r4.log` (revision 3's `feature-shape-check-r3.log` and revision 1's `feature-shape-check.log` are retained unchanged) |
+| 3 | every population figure, gate answer and published-artifact fact this decision cites | `assert-figures.sh` | 0 | `assert-figures.log` |
+| 4 | the issue-responsiveness figure the codex raw recorded as unverified | `issue-responsiveness.sh` | 0 | `issue-responsiveness.log` |
+| 5 | the recommended dev tool's version pin installs on macOS and exposes the two capabilities F339's recipe needs | `bacon-install-check.sh` | 0 | `bacon-install-check.log` |
+| 6 | the `## Parameters` block's five `- assumes` lines are byte-identical to the registry, the one `- owns` line carries no backtick/link/whitespace defect, and the H2 section list is exactly what the role contract fixes | `parameters-check.sh` | 0 | `parameters-check-r2.log` (revision 2's rerun; revision 1's `parameters-check.log` is retained unchanged) |
+
+Two fetchers feed them and are not themselves checks: `fetch-figures.sh` queries every
+endpoint the prompt's figure table names and writes a **reduced** snapshot — only the fields
+that table names — under `review/evidence/snapshots/`, which **is committed**;
+`fetch-sources.sh` downloads the upstream files read at an immutable version, tag or commit
+into `review/evidence/sources/`, which is **not** committed, because it is third-party source
+and one of it (`bacon` 3.25.0) is AGPL-3.0 — and the owner's 2026-09-12 ruling explicitly does
+not touch the rule against committing third-party copyleft files **into** this repository.
+
+**On reproducibility, stated precisely — and corrected.** Revision 2 said in this place that
+"checks 1, 2, 5 and 6 run locally and reproduce byte-for-byte" and that all six had just been
+re-run with `diff` reporting no differences. **For check 2 that was false**, and the round-2
+empirical audit was right to reject it: the check's advisory scan consumed a mutable database,
+so its advisory count moved from 1,243 to 1,246 between the recorded log and the auditor's
+rerun. The sentence is withdrawn and replaced by the following, which says for each check
+exactly what was established, by whom, and under which conditions.
+
+- **Check 2** reads a **pinned** advisory database, runs `cargo audit` under an **isolated
+  `CARGO_HOME`** that disables the yanked-crate lookup, normalises every absolute path it would
+  print, and deletes one named class of environment-dependent line. Its log
+  `feature-shape-check-r4.log` is what revision 4 established: the script was run **three times
+  in a row** in this checkout and runs 2 and 3 were **byte-identical** to run 1, which is the
+  cited log; the same script and its committed probe inputs were then extracted into a scratch
+  directory as `git archive` produces them from the tree this revision commits and run there,
+  and that run was **byte-identical to the cited log as well**; and a fifth run, made while a
+  separate process held an exclusive `flock` on `~/.cargo/.package-cache` — the exact condition
+  that made revision 3's log irreproducible — was **byte-identical to the cited log too**.
+  **The reproduction conditions, stated exactly.** `rustc 1.98.0` and `cargo 1.98.0` on Darwin
+  arm64 (macOS 26.4) as printed in the log's first two lines, with `cargo-audit` 0.22.1, `jq`
+  and `git` on `PATH`; the environment variables `R69_ADVISORY_DB_URL`,
+  `R69_ADVISORY_DB_MIRROR` and `R69_NO_LOCAL_MIRROR` unset, so their defaults apply, and
+  `${TMPDIR:-/tmp}` writable; the files read are the two committed probe packages
+  `review/empirical/feature-shape/` and `review/empirical/feature-shape-r01base/` with their
+  committed `Cargo.toml` and `Cargo.lock`, read `--locked`, plus `RustSec/advisory-db` at
+  commit `b50980aad8b8f14f77e25a97b32dd94bf008b0af` obtained from github.com or from a local
+  `~/.cargo/advisory-db` mirror that already contains it; and **cargo-audit is executed under
+  an isolated `CARGO_HOME`** — a `mktemp -d` directory under `${TMPDIR:-/tmp}` holding exactly
+  `audit.toml` with `[yanked] enabled = false` and a `bin/cargo-audit` symlink — **so that
+  neither a readable nor an unlocked cached crates.io index is required, because the branch
+  that opens one is never entered**. Sections 1, 2, 5 and 7 do use the ambient `CARGO_HOME`,
+  and its registry cache must already contain every crate in the two `Cargo.lock` files —
+  otherwise `cargo tree --locked` prints `Updating crates.io index` and `Downloaded …` lines
+  into those sections, which are **not** classified and would make the log differ. When that
+  cache's `.package-cache` lock is contended cargo prints
+  `Blocking waiting for file lock on package cache` (or `… on build directory`), and `norm`
+  deletes exactly that line class with the anchored pattern
+  `/^[[:space:]]*Blocking waiting for file lock on /d`. **That is the only classified line in
+  this log**, it is named in the header line the log itself prints, and the lock-held rerun
+  above is the evidence that classifying it is sufficient. The one remaining documented way the
+  log can differ is the named SKIP: when the pinned commit is reachable from neither the network
+  nor a local mirror, section 8 prints
+  `SKIP: advisory-scan-skipped-pinned-db-unavailable` instead of the advisory lines and the rest
+  of the log is unchanged; it cannot hide a feature-shape failure, which is asserted by a
+  separate status variable.
+- **Check 6** was re-run for revision 4 against this revised file, with `diff` reporting no
+  differences against `review/evidence/parameters-check-r2.log`. It is the only one of the six
+  that reads `review/DECISION.md`, and revision 4 moves nothing it measures — the one `- owns`
+  line, the five `- assumes` lines and the H2 section list are byte-identical to revisions 2 and
+  3 — so revision 2's log remains the cited one and **no new log is written**. Revision 1's
+  `parameters-check.log` stays unedited as the record of revision 1. **Revision 5 re-ran it
+  again**, against revision 5's text, and `diff` again reported no differences against
+  `parameters-check-r2.log`: revision 5 edits prose and adds one control script, and moves
+  neither a parameter line nor an H2 heading, so revision 2's log remains the cited one and no
+  new log is written for it either. **Revision 6 re-ran it a third time**, against revision 6's
+  text, and `diff` reported no differences against `parameters-check-r2.log` again. That result
+  is this revision's own evidence for two of its claims: the one `- owns` line and the five
+  `- assumes` lines are byte-identical to revisions 2 through 5 — so the owner-supplied
+  document moved no owned value — and the H2 section list is still exactly the five headings
+  the role contract fixes, which is the constraint revision 6 worked under in placing each
+  reconciled row inside an existing section rather than adding a heading. Revision 2's log
+  therefore remains the cited one and no new log is written for it.
+- **Checks 1, 3, 4 and 5** were **not** re-run by revision 4, and that is not asserted here.
+  None of them reads this file and none of their inputs changed. What stands for them is the
+  round-3 empirical audit's own rerun, recorded in `review/audit-codex.md`: its finding 4
+  reports that the five unchanged checks — state bound, figures, issue responsiveness, bacon
+  install and parameters — reran with `exit code: 0` and **byte-identical logs**, check 2 being
+  the sole exception and the subject of this repair. **Revision 5 re-ran none of checks 1 to 5
+  either, and does not assert that it did.** It changes no script, no probe input and no log
+  among them. What stands for them, and for check 2 in particular, is the **round-4** empirical
+  audit's own rerun recorded in `review/audit-codex.md`: its findings 2 and 3 report that
+  `feature-shape-check-r4.sh` reproduced `feature-shape-check-r4.log` byte-for-byte in all five
+  modes tried and that the other five scripts and their cited logs were unchanged from `a735e88^`
+  through `HEAD` and matched. Revision 5's own run is the separate control script named above.
+  **Revision 6 re-ran none of checks 1 to 5 either, and does not assert that it did.** It
+  changes no script, no probe input, no snapshot and no log among them; the two scripts and one
+  snapshot directory it adds are new paths that no existing check reads. What stands for checks
+  1 to 5 is the **round-5** empirical audit's own rerun, recorded in `review/audit-codex.md`
+  (verdict `approve`, `unresolved-findings: none`): it reran all six decision checks and
+  `yanked-control-r5.sh` — the latter three times in place and once from a clean
+  `git archive HEAD` extraction — reporting exit `0` for each and every output byte-identical to
+  its cited log, and it independently counted the 54 yanked errors with its own
+  `/usr/bin/grep -cF`. Revision 6's own runs are check 6 above and the two new scripts.
+- **Checks 3 and 4** read the committed reduced snapshots rather than live endpoints, because
+  download counters, `pushed_at` and star counts move hourly and a live re-run could never be
+  byte-identical; `fetch-figures.sh` refreshes them and records its retrieval timestamp in
+  `snapshots/RETRIEVED-AT.txt` (`2026-09-13T07:57:55Z`). Check 3 additionally reads the
+  uncommitted sources and invokes `fetch-sources.sh` itself when they are absent — which
+  reproduces, because every one of those files is fetched at an immutable coordinate (a
+  published `.crate` version, a git tag, a commit SHA). Re-running `fetch-figures.sh` will move
+  the counters inside the snapshots and therefore the figures the logs print; the assertions —
+  the version numbers, MSRVs, licences, `archived` flags and source facts — are the stable
+  part, and are what the decision rests on.
+
+An auditor therefore runs the six scripts, five from `review/empirical/` and check 2 from
+`review/evidence/`, plus — since revision 5 — the one control script named above,
+`review/evidence/yanked-control-r5.sh`, which decides nothing about the recommendation and is
+run only to reproduce the count in the revision-4 note, plus — since revision 6 —
+`review/evidence/owner-reference-check-r6.sh`, which reads only the committed snapshots under
+`review/evidence/snapshots/r6/` and likewise decides nothing about the recommendation.
+`review/evidence/fetch-owner-reference-r6.sh` is **not** rerun as part of an audit: it is the
+fetcher that wrote those snapshots, it goes to the network, and rerunning it would move the
+snapshot contents under the check that reads them — the same reason `fetch-figures.sh` is not
+rerun for checks 3 and 4. Nothing else. **The five locations
+revision 3 edited in this section and
+above it, enumerated rather than left to a reader's diff:** (1) acceptance criterion 1's
+citation, now `feature-shape-check-r3.log`; (2) the gate-3 paragraph, which now names the
+pinned advisory-db commit and, in the same sentence, corrects "resolved 52-package lockfile"
+to the 55 crate dependencies the scan actually reported — 52 is the *other* probe's non-dev
+package count and did not belong there; (3) the working-directory sentence, since the six
+scripts no longer share one directory; (4) the check-2 row of the table above; (5) the check-2
+narrative below, which now names the pin. Nothing else in this section or in any other section
+changed.
+
+**The locations revision 4 edited, enumerated from a mechanical search rather than from a
+re-reading.** The search was `/usr/bin/grep -n -i 'yank|crates\.io index|cached|no-fetch|
+auditor\.rs|CachedIndex|package-cache|CARGO_HOME|Blocking'` over this file, plus
+`feature-shape-check-r3` and `revision 3`, and every hit was classified before any edit was
+made: (1) the title; (2) the new revision-4 note, which quotes the round-3 finding verbatim;
+(3) the revision-3 note's heading, which now says the note is retained as that revision's
+record and that its "second and last documented way this log can vary" claim is the one the
+round-3 audit refuted — the note's body is left **verbatim**, because it is the record of what
+revision 3 said; (4) the synthesizer line, which adds revision 4's context; (5) acceptance
+criterion 1's citation, now `feature-shape-check-r4.log`; (6) the working-directory sentence,
+which now names `feature-shape-check-r4.sh`; (7) the control-assertion sentence, since check 2
+now carries three controls rather than two; (8) the check-2 row of the table above; (9) the
+check-2 reproducibility bullet, which carries the exact reproduction conditions; (10) the
+check-6 and checks-1/3/4/5 bullets, which now name revision 4 and the round-3 audit's rerun;
+(11) the check-2 narrative below, whose command form now shows the isolated `CARGO_HOME` and
+whose sentence about the yanked-crate lookup is corrected, because under revision 4 that lookup
+does **not** run. **Deliberately left byte-identical, and why:** the gate-3 paragraph under
+`### Principles and implementation` (it records the advisory answer — the pinned commit, 1,243
+advisories, 55 crate dependencies, exit 0 — none of which revision 4 moves); every gate-2
+"newest non-yanked version" figure in the candidate tables (those come from the committed
+crates.io snapshots read by check 3, never from this scan); the `## Parameters` block in full;
+and the retained revision-2 and revision-3 note bodies.
+
+**The locations revision 5 edited, enumerated from a mechanical search rather than from a
+re-reading.** The search was three passes of `/usr/bin/grep -n -E` over this file before any
+edit was made: `'55 lines|grew 55|prints 55'`, `'unpopulated|yanked\.enabled|default .true'`,
+and `'six scripts|six checks|synthesizer|revision 4'`; every hit was classified first, and the
+same searches were re-run against the edited file. The complete edit list: (1) the title, now
+revision 5; (2) the new revision-5 note, which quotes the round-4 finding verbatim, explains
+that 55 was the dependency count, and names the new script and log; (3) the revision-4 note's
+heading, which now says the note is retained as that revision's record and that its two
+error-count sentences are corrected in place; (4) **the count itself, at the two sentences the
+finding cites** — `prints 55 lines of` → `prints 54 lines of`, with the 55-versus-54 arithmetic
+and the citation to `yanked-control-r5.sh` added, and `the log grew 55 lines` → `the log grew 54
+lines`; (5) the preamble's synthesizer line, which adds revision 5's context; (6) a new
+paragraph after the control-assertion sentence above, introducing `yanked-control-r5.sh` as a
+control and **not** as a seventh check; (7) the auditor sentence, which now names that script
+alongside the six checks; (8) this enumeration. **Deliberately left byte-identical, and why:**
+`review/evidence/feature-shape-check-r4.sh` and `feature-shape-check-r4.log` (the r4 script's
+header comment at lines 72-80 therefore still carries the superseded 55, which the revision-5
+note states explicitly; editing a comment would invalidate a log the round-4 audit reproduced
+five ways, and no assertion, exit status or output line of that script depends on the figure);
+the check-2 row of the table above, its reproducibility bullet and its narrative below, all of
+which describe the isolated-`CARGO_HOME` scan that revision 5 does not touch; the six checks
+and their five other scripts and logs; the gate-3 paragraph and every `55 crate dependencies`
+figure, which is the *correct* use of that number; the `## Parameters` block in full; the
+recommendation, the R67 exit contract and request, the R4.1 global core, gate 1's
+`inapplicable` row; and the retained revision-2 and revision-3 note bodies.
+
+**The locations revision 6 edited, enumerated from a mechanical search rather than from a
+re-reading.** Revision 6 differs from revisions 2 through 5 in that it repairs no audit
+finding: it folds in an owner-supplied input, so the search had to find every place each
+reconciled row's **topic** already lives rather than every occurrence of a rejected figure. The
+search was one pass of `/usr/bin/grep -n -E` over this file, run **before any edit was made**,
+with the alternation
+`'axum-test|oneshot|0\.9|=0\.8\.9|SIGKILL|bacon\.toml|Cloud Run|WebSocket|Websocket|http2|macros|R70|R32|R02|R49|workspace|single crate|cargo-chef|mold|synthesizer|revision 5|six checks|control script|re-verify'`;
+every hit was classified against the eight rows before any text was written, and the same
+search was re-run against the edited file. The complete edit list, in file order: (1) the
+title, now revision 6; (2) the new revision-6 note, whose first paragraph states that no owned
+value moves and why, and whose table gives all eight rows' dispositions; (3) the revision-5
+note's heading, which now records that the note is retained as that revision's record and was
+approved — its body is left **verbatim**; (4) the preamble's synthesizer line, which adds
+revision 6's context; (5) under F338, a new paragraph on the unreleased 0.9 line (row 1's
+second half); (6) under F338, two new paragraphs — the Cloud Run ten-second datum handed to R77
+and the axum #3003 WebSocket hazard (row 4); (7) under F339, a new paragraph recording
+agreement on `bacon`, this item's stronger SIGKILL finding, and the `cargo-chef`/`mold`
+hand-offs (row 3); (8) after *Minimal realistic endpoint*, a new paragraph handing the RFC 9457
+question to R70 with R67's differing envelope named (row 7); (9) under *Compatibility*, a new
+block on the requirement operator (row 1's first half); (10) after *Migration implications*, a
+new paragraph on layout, R49's A1 and R02's open boundary (row 6); (11) inside Disagreement 3,
+a new block grounding the `oneshot` idiom and recording `axum-test` as the alternative with its
+winning condition and corrected figures (row 5); (12) inside Disagreement 4, a new block
+recording `ws`/`http2`/`macros` as additive later-layer territory (row 2); (13) under
+`## Engines`, the owner-supplied input's provenance, its standing, and the overlap-map table
+carrying every remaining row as a hand-off (row 8); (14) in `## Empirical check`, the
+further-scripts paragraph, which now introduces revision 6's two scripts before revision 5's;
+(15) the auditor sentence, which now names `owner-reference-check-r6.sh` and says why the
+fetcher is not rerun; (16) the check-6 bullet and (17) the checks-1-to-5 bullet, which record
+revision 6's parameters rerun and that it reran no other check; (18) this enumeration.
+**Deliberately left byte-identical, and why:** the `## Parameters` block in full — the one
+`- owns` line and the five `- assumes` lines — because the one question that could have moved
+it, the document's `=0.8.9` advice, is answered by the fact that neither the value nor the
+migration table states an operator at all (revision-6 note, first paragraph; *Compatibility*);
+the recommendation, every version pin, every exclusion, the gate answers including gate 1's
+`inapplicable` row, the R67 exit contract and the request to R67, and the R4.1 required global
+core, none of which the document reaches; the `re-verify:` line, because the 0.9 finding
+**confirms** its existing "when axum publishes 0.9" trigger rather than adding one; the six
+checks and all seven of their scripts and logs, `yanked-control-r5.sh` and its log, and every
+committed snapshot outside the new `snapshots/r6/` directory; and the retained revision-2,
+revision-3, revision-4 and revision-5 note bodies.
+
+**Check 1 — the R01 coupling.** Three dependency-free packages under
+`review/empirical/state-bound/`. Each declares R01's published seam shape transcribed from
+`research/topics/01-ports-and-adapters-seam/DECISION.md` — `pub trait ProjectsPort: Send +
+Sync`, the blanket `impl` for `Arc<T>`, `ProjectsService<P: ProjectsPort>` **deliberately not
+deriving `Clone`**, and `ErasedProjectsService` — **with no methods, no bodies and no
+behavior**, plus axum's state bound transcribed verbatim from the published artifact
+(`axum-0.8.9/src/routing/mod.rs:138-141`) as
+`pub fn assert_axum_state_bound<S: Clone + Send + Sync + 'static>() {}`. They import nothing:
+no `axum`, no `tokio`, no handler, no router, no listener. Each builds with `--offline`, which
+is itself an assertion that nothing crept into the manifests. Observed:
+
+```text
+case: positive             expect: expect-pass     exit=0     (no diagnostics)
+    assert_axum_state_bound::<Arc<ErasedProjectsService>>();
+    assert_axum_state_bound::<AppState>();            // #[derive(Clone)] over two Arc fields
+
+case: neg-by-value         expect: expect-fail     exit=101
+error[E0277]: the trait bound `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>: Clone` is not satisfied
+   |     assert_axum_state_bound::<ErasedProjectsService>();
+   |  the trait `Clone` is not implemented for `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>`
+   |  note: required by a bound in `assert_axum_state_bound`
+
+case: neg-no-supertraits   expect: expect-fail     exit=101
+error[E0277]: `(dyn ProjectsPort + 'static)` cannot be shared between threads safely
+   |  = help: the trait `Sync` is not implemented for `(dyn ProjectsPort + 'static)`
+   |  note: required because it appears within `ProjectsService<Arc<(dyn ProjectsPort + 'static)>>`
+state-bound-check rc=0
+```
+
+**What this establishes.** R01's erased service, `Arc`-held, satisfies axum 0.8.9's declared
+application-state bound with `ProjectsService` deriving no clone trait; the positive case also
+covers the recommended `AppState` whose own `Clone` derive sits over two `Arc` fields neither
+of whose inner types is `Clone`. The first negative twin shows the outer `Arc` is what does the
+work — storing the service by value fails, which is why P03 would have to add `#[derive(Clone)]`
+and a `P: Clone` bound to take that route. The second shows R01's `Send + Sync` supertraits are
+what make the erased service shareable at all. **What it does not establish:** anything about
+handlers, dispatch, request behavior, or the real axum crate's behavior at runtime. It is a
+type-level fact about a declared bound, paired with that bound read at the published artifact.
+
+**Check 2 — the feature's shape and cost.** Two manifest probes under
+`review/empirical/feature-shape/` and `feature-shape-r01base/`. Both contain an empty
+`src/lib.rs` and a `fn main() {}` binary; their only purpose is to make the manifests resolvable
+so the feature's gating, cost and resolved MSRV are observable. Observed, with the feature off:
+`cargo tree -e normal` contains no `axum`, no `tokio`, no `hyper` and no `tower`, and after
+`cargo clean && cargo build --no-default-features --bins` the serve binary is absent. With it
+on, all four appear, at `axum v0.8.9` and `tokio v1.53.1`. `cargo metadata` reports
+`"required-features":["web"]` on the binary target and `null` on the library target.
+`cargo tree --invert tower` shows `tower v0.5.3 └── axum v0.8.9`, which settles the dev-dependency
+question: `tower` is already in the non-dev tree through `axum`, so a direct entry is needed only
+to bring `ServiceExt` into scope in tests. The resolved non-dev tree's highest declared
+`rust-version` is **`axum` 0.8.9's 1.80** (the probe's own 1.96 is the floor itself and is
+excluded); the same test applied against a 1.70 floor reports a failure, so it can fail. Nine
+transitive dependencies declare no `rust-version` at all — the strict gate-2 reading is applied
+to *candidates*, not to every transitive crate, and this figure records that limit. `cargo audit`
+0.22.1, run as `CARGO_HOME=<isolated> cargo audit --db <clone> --no-fetch --stale` against a
+scratch clone of `RustSec/advisory-db` **pinned** at commit
+`b50980aad8b8f14f77e25a97b32dd94bf008b0af` and asserted to be at that commit, loaded 1,243
+advisories, scanned 55 crate dependencies and exited 0 with no findings. The count and the
+crate total are asserted as constants; a control assertion demanding a count the database
+cannot have shows the test can fail; and the normalised output is asserted to be exactly two
+lines containing neither `couldn't open crates.io index` nor
+`couldn't check if the package is yanked`. This scan does not refresh the crates.io index and
+prints no `Updating crates.io index` line. It also does **not** read a cached index at all: the
+isolated `CARGO_HOME` supplies an `audit.toml` setting `[yanked] enabled = false`, so per
+`cargo-audit` 0.22.1's source (`src/auditor.rs:115-167`) the yanked-crate lookup is skipped
+entirely and neither `CachedIndex::fetch` nor `CachedIndex::open` is called. No advisory result
+depends on that lookup, and no claim in this decision rests on a yanked result. Revision 1 ran
+this scan against the live, self-updating `~/.cargo/advisory-db`, which is why its count was
+not reproducible and why revision 2 was rejected; revision 3 pinned the corpus but still read
+the ambient cached index, whose `.package-cache` lock inserted a warning line into every rerun,
+which is why revision 3 was rejected.
+With the base set to R01's published members, the non-dev tree is **12 packages with the feature
+off and 52 with it on**; the 52 matches the opus raw exactly, and the base differs by one package
+because that probe carried one further base dependency, so the delta reads 40 here and 39 there.
+This confirms the **shape** of the opus measurement; the wall-clock and binary-size halves of
+that measurement are not reproduced here and are carried as unproven.
+
+**Check 3 — figures, gates and artifact facts.** 75 assertions, all passing, plus one
+deliberate control that must and does report `FAIL`. **Gate 1 is asserted nowhere in this
+script**, and the script says so in its own header: under owner ruling Q7.B it is inapplicable
+to every dependency and tool, so licences are printed as published metadata and never
+compared. What is asserted: the version, MSRV, licence and `archived` state of every
+candidate; the RustSec HTTP status and listed advisory ids per crate; the upstream CI runner
+lists at each pinned tag; the reference implementation's pins, its edition, its registry-free
+router and its unwrapped drain call site; axum's state bound, its `with_state` signature, its
+`FromRef` substate documentation, its `close_tx.closed().await`, its **zero** occurrences of
+`timeout` or `deadline` in `src/serve/mod.rs`, its `unsafe_code = "forbid"` lint, its **zero**
+occurrences of `unsafe` in `src/`, its default feature list and the `axum::serve` cfg; tokio's
+`default = []` and that none of `signal`, `net`, `rt-multi-thread`, `time` or `macros` enables
+`sync`; and bacon's declared MSRV, its SIGKILL default, its `run-long` job's
+`kill_then_restart` strategy and `need_stdout`, its headless stdout/stderr passthrough, and
+its `--features` and post-`--` argument plumbing, and that `-j` selects the initial job while
+`--headless` guards only the screen setup. Figures as snapshotted at
+`2026-09-13T07:57:55Z`:
+
+| Crate | 90-day dl | All-time dl | Newest non-yanked | Stars / pushed / archived | Open issues | Licence | `rust-version` | Rev-deps |
+|---|---:|---:|---|---|---:|---|---|---:|
+| `axum` | 114,795,000 | 466,425,972 | 0.8.9 (2026-04-14) | 27,100 / 2026-09-11 / false | 34 | MIT | 1.80 | 8,598 |
+| `tokio` | 222,551,461 | 961,082,746 | 1.53.1 (2026-07-20) | 33,136 / 2026-09-13 / false | 316 | MIT | 1.71 | 72,187 |
+| `tower` | 169,723,285 | 656,241,115 | 0.5.3 (2026-01-12) | 4,293 / 2026-06-22 / false | 69 | MIT | 1.64.0 | — |
+| `bacon` | 21,763 | 328,857 | 3.25.0 (2026-08-23) | 3,410 / 2026-09-12 / false | 47 | AGPL-3.0 | 1.85 | — |
+| `watchexec-cli` | 8,702 | 659,914 | 2.7.2 (2026-09-06) | 7,180 / 2026-09-07 / false | 31 | Apache-2.0 | **none** | — |
+| `cargo-watch` | 174,663 | 1,970,345 | 8.5.3 (2024-10-02) | 2,861 / 2025-01-14 / **true** | — | CC0-1.0 | 1.75.0 | — |
+
+**Check 4 — issue responsiveness.** The codex raw declined to compute this figure, noting that
+the ten-newest listing mixes issues and pull requests and that a maintainer-attribution
+calculation needs comment sampling. The rule applied here is the prompt's: over the 10 most
+recently **opened issues**, the first comment whose `author_association` is `OWNER`, `MEMBER`
+or `COLLABORATOR`, excluding bots and the issue author. Observed — `tokio-rs/axum`: median
+**0.41 days**, **5 of 10 unanswered**, window 2026-06-16 → 2026-09-07; `Canop/bacon`: median
+**0.02 days**, **3 of 10 unanswered**, window 2026-02-17 → 2026-08-24; `tokio-rs/tokio`:
+median **0.33 days**, **3 of 10 unanswered**, window 2026-08-27 → 2026-09-09. The axum and
+bacon figures reproduce the opus raw's independently, including the identical axum window; the
+tokio median differs from opus's 0.03 days, a method difference this synthesis did not
+reconcile, and the figure reported here is this run's. A control asserts the parser reports no
+response for an empty comment list, so it cannot invent one. `axum`'s 5-of-10 unanswered is the
+one population figure that argues against it; set against a `pushed_at` of the previous day, 34
+open issues in total, and a normal patch cadence on the 0.8 line, the maintenance verdict is
+**active**.
+
+**Check 5 — the dev tool.** `cargo install bacon --version 3.25.0 --locked` exited 0 on this
+host and the installed binary reports `bacon 3.25.0`; `bacon --list-jobs` run in a directory
+with **no `bacon.toml`** lists `run-long` among the default jobs; `--headless` and `--features`
+are both present in `--help`; and a control confirms the flag assertion reports an absent flag
+as absent. This closes gate 4's macOS leg for this pin, which neither bacon's CI
+(`ubuntu-latest` only) nor its v3.25.0 GitHub release (zero binary assets) demonstrates. It
+builds a development **tool**, not the recommendation.
+
+**A boundary judgement recorded for the auditors.** The opus raw reports executing a probe that
+built a feature-off binary, served a handler over a real bound TCP listener with a real HTTP
+client, and measured a drain with an in-flight request. The research-worker contract says not
+to scaffold a crate or write a server; the worker states it wrote only its own report file, so
+the probe lived outside the run directory. In this synthesizer's judgement that exceeds the
+contract as the role now reads it, and it is recorded here rather than repeated. **Nothing in
+this decision rests on those executions except where independently re-verified above:** the
+state bound (check 1, type-level only), the 52-package feature-on tree (check 2), and axum's
+unbounded drain (check 3, read at source rather than timed). The three passing tests the opus
+raw reports, and its build-time and binary-size figures, are carried as engine-reported and
+unproven.
+
