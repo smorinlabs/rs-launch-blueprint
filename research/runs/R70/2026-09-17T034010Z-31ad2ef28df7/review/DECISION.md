@@ -426,7 +426,21 @@ And the row this decision explicitly does **not** rule on: `:53`'s
 acceptance check is the sixteen criteria in `## Empirical check`; what they prove
 and what they do not is stated there.
 
-re-verify: R67 appends a catalog row, R69 republishes web-extra-surface at revision 10, R71 selects an OpenAPI generator, R75 publishes its layer stack, problem_details goes 12 months from 2026-09-12 with no release or repository push, a RustSec advisory appears for problem_details or http-serde, http-api-problem publishes a version declaring rust-version, an axum minor release changes a rejection's default status, or the owner settles who owns C4 validation
+**The trigger set, and which member of it is the binding one.** Nine events would
+send a reader back to part of this decision, and they are recorded where they
+belong rather than piled into one line: R69 republishing `web-extra-surface` moves
+the file paths only (`## Parameters`); R71 selecting an OpenAPI generator, R75
+publishing its layer stack, R80 justifying a third extension member and the owner
+settling C4 validation each land in `### Couplings`; a RustSec advisory against
+`problem_details` or `http-serde`, `http-api-problem` publishing a version that
+declares `rust-version`, and an axum minor release changing a rejection's default
+status are each noted at the gate or criterion they would move. **Only two events
+move the recommendation itself**: R67 appending a request-validation catalog row,
+which would shift the 422 identity off `RSLB201`; and `problem_details` falling
+dormant, which would make the hand-rolled struct the member. Those two are the
+binding trigger.
+
+re-verify: R67 appends a request-validation catalog row, or problem_details goes 12 months from 2026-09-12 with no release or repository push
 
 ## Parameters
 
