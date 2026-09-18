@@ -1,0 +1,49 @@
+=== R54 revision 2 evidence checks (JF-1 .. JF-4) ===
+repo-root  /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+run-dir    research/runs/R54/2026-09-17T033527Z-8dfef31d60fc
+grep       /usr/bin/grep (grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+network    none — every check reads a file already in the repository
+
+PASS B01 revision 1 check.sh is unchanged (7e22e8ffc7c4ae15b87c587250e6dc8914c18ab2273be2c14127a7bfa13a1894)
+PASS B02 revision 1 check.log is unchanged (a1f676c92f523faeecd5c2cd6c6e088cbed968950ec4fa085909acc4a2a3a9de)
+PASS B03 revision 1 check-rerun.log is unchanged (and still equal to check.log) (a1f676c92f523faeecd5c2cd6c6e088cbed968950ec4fa085909acc4a2a3a9de)
+PASS B04 revision 1 walkup_probe.rs is unchanged (faa0e5de7bf4f42e21c09c07ea1f3084c92b51244869efd9ae6a02a0128ec094)
+PASS B05 revision 1 shellcheck.log is unchanged (empty: shellcheck reported nothing) (e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855)
+PASS B06 all 13 revision-1 snapshots are unchanged (digest of the sorted sha256 manifest: fa53d95ac8143ce41b223c2826f4ff366f82413063dbc0c0f5f2ec94c59878cf)
+PASS V01 JF-1: R55 is at revision 3, not revision 2 (/usr/bin/grep -c -F matches=1)
+PASS V02 JF-1: revision 3 carries the sha256 that revision 1 already pinned at check D00b (5d358c1fda2a5ff2782b916f3ca81cf52bbbafd75748774b114345c72a6edd9b)
+PASS V03 JF-1: revision 1's own check.log pinned that same sha256 — the synthesis hashed revision 3 and named it revision 2
+PASS V04 JF-1: revision 3 preserves revision 2 recommendation (/usr/bin/grep -c -F matches=1)
+PASS V05 JF-1: the D01 sentence survives verbatim into revision 3 (/usr/bin/grep -c -F matches=1)
+PASS V06 JF-1: the D02 sentence survives verbatim into revision 3 (/usr/bin/grep -c -F matches=1)
+PASS V07 JF-1: the D03 sentence survives verbatim into revision 3 (/usr/bin/grep -c -F matches=1)
+PASS V08 JF-1: R55 revision 3 was approved by its round-3 judgment audit (/usr/bin/grep -c -F matches=1)
+PASS V09 JF-1: that approval is against revision 3 exactly (/usr/bin/grep -c -F matches=1)
+PASS V10 JF-1: R55 revision 3 (439da7d) was committed 12m40s before this item's synthesis commit (0bf66ee)
+PASS V11 JF-2: `## Engines` carries the seventh disagreement (/usr/bin/grep -c -F matches=1)
+PASS V12 JF-2: the disputed disposition is named in the decision (/usr/bin/grep -c -F matches=1)
+PASS V13 JF-2: the dissent quoted in Disagreement 7 is `raw/opus.md`s own wording (/usr/bin/grep -c -F matches=1)
+PASS V14 JF-3: doxa-openai.normalized.md:745-759 declares exactly 8 answer-level `owns` parameters
+PASS V15 JF-3: the eight names are exactly those the decision now lists
+PASS V16 JF-3: project-search is NOT among the answer-level eight
+PASS V17 JF-3: project-search is a member-level line at doxa-openai.normalized.md:401
+PASS V18 JF-3: the decision now states eight (/usr/bin/grep -c -F matches=1)
+PASS V19 JF-3: the superseded count survives exactly once, inside the revision note's JF-3 row, and nowhere as an assertion
+PASS V20 JF-4: the quoted sentence is verbatim at docs/port/BASELINE-REVIEW.md:193
+PASS V21 JF-4: docs/port/BASELINE-REVIEW.md:113 does not contain that sentence
+PASS V22 JF-4: :113 is the F247 adjudication row, status 'blocked pending R54' — still the right citation for the pending row
+PASS V23 the carried F232 BASELINE-REVIEW: line is still byte-identical to raw/opus.md:201
+PASS V24 the carried F247 BASELINE-REVIEW: line is still byte-identical to raw/opus.md:232
+PASS V25 - assumes msrv-policy unchanged and byte-identical to docs/port/PARAMETERS.md (118 bytes)
+PASS V26 - assumes rust-edition unchanged and byte-identical to docs/port/PARAMETERS.md (4 bytes)
+PASS V27 - assumes target-os-matrix unchanged and byte-identical to docs/port/PARAMETERS.md (27 bytes)
+PASS V28 - assumes license unchanged and byte-identical to docs/port/PARAMETERS.md (17 bytes)
+PASS V29 - assumes error-taxonomy-exit-codes unchanged and byte-identical to docs/port/PARAMETERS.md (4057 bytes)
+PASS V30 the decision is retitled to revision 2, date first (/usr/bin/grep -c -F matches=1)
+PASS V31 the revision note names JF-1 (/usr/bin/grep -c -F matches=1)
+PASS V32 the revision note names JF-2 (/usr/bin/grep -c -F matches=1)
+PASS V33 the revision note names JF-3 (/usr/bin/grep -c -F matches=1)
+PASS V34 the revision note names JF-4 (/usr/bin/grep -c -F matches=1)
+PASS V35 no "## Supersedes" HEADING — this item is unpublished (the string appears only in the revision note, saying so)
+
+failures=0 skipped=0

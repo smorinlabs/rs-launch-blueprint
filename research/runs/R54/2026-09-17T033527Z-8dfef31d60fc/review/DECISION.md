@@ -1,6 +1,42 @@
-# 2026-09-17 — R54 — config-discovery-tiers (bundle, Deep) — decision (revision 1)
+# 2026-09-18 — R54 — config-discovery-tiers (bundle, Deep) — decision (revision 2)
 
 ## Decision
+
+**Revision note (revision 2).** This revision answers every finding in the round-1
+judgment audit (`review/audit-fable.md`, actor
+`audit-fable-2026-09-17T033527Z-8dfef31d60fc-r1`, `verdict: reject`, against
+revision 1 at sha256 `b0fb750daeabd9697002d5dd3eebd5b6efd67f2d7cb2eb78e4e8b3f6fe964797`).
+**The recommendation does not move, and no parameter value moves.** All four
+findings are text repairs against artifacts already in the run, which is the
+auditor's own assessment: "The recommendation does **not** move under any
+finding." Revision 1's `check.sh`, `check.log`, `check-rerun.log`,
+`shellcheck.log`, `walkup_probe.rs` and all thirteen files under
+`review/evidence/snapshots/` are **byte-identical**, re-asserted by sha256 at
+`check-r2.sh` group `B`; every new assertion added by this revision lives in
+`review/evidence/check-r2.sh` with its own log. No `## Supersedes` section is
+added, because this item is not yet published.
+
+| Finding | The audit's words | Superseded wording | Repair |
+|---|---|---|---|
+| **JF-1** (blocking) | "the decision states a false revision for the sibling its central settlement depends on" | "R55 (two-phase loader, no added crate, revision 2 under judgment)" and "R55 is at revision 2, which publishes the loader as …" | R55 is named at **revision 3**, judgment-approved and unpublished; the `re-verify:` trigger is restated as "revised past revision 3" and recorded as having **already fired** before revision 1 published, with no effect on the composition. Checks `V01`–`V10`. |
+| **JF-2** (blocking) | "a promised record of a live architectural dissent does not exist" | "that is recorded under `## Engines` as a disagreement" — where `## Engines` carried six disagreements, none of them that one | `## Engines` now carries **Disagreement 7**, the `$XDG_CONFIG_DIRS`-placement dissent, settled on the same three grounds the R57 coupling bullet gives. The bullet's cross-reference is now true and is otherwise unchanged. Checks `V11`–`V13`. |
+| **JF-3** (non-blocking) | "the Doxa/OpenAI parameter declaration is miscounted and misnamed" | "Doxa/OpenAI declares four owned parameters (`config-discovery-scopes`, `config-selector-precedence`, `project-search`, `project-config-path`)" | Restated from the twin as **eight** answer-level parameters at `raw/doxa-openai.normalized.md:745-759`, with `project-search` identified as a member-level line at `:401`. The disposition is unchanged and, as the auditor notes, understated rather than overstated. Checks `V14`–`V19`. |
+| **JF-4** (non-blocking) | "a quotation is attributed to the wrong line of `docs/port/BASELINE-REVIEW.md`" | "the open question at `docs/port/BASELINE-REVIEW.md:113` — \"whether py's absoluteness check …\"" | The quotation is attributed to **`:193`**, where it is verbatim, and `:113` is kept for what it is — the F247 adjudication row, status `blocked pending R54`. The two carried `BASELINE-REVIEW:` lines are **preservation targets and were not edited**, including the `:113` inside the F247 line; `V23`/`V24` assert they are still byte-identical to `raw/opus.md:201` and `:232`. Checks `V20`–`V24`. |
+
+One observation in that audit is explicitly **not** a finding — that A1's secondary
+ground reads `config` 0.15.20's default feature list while naming 0.15.25 as the
+candidate. It is left unrepaired here, because this revision is confined to
+JF-1..JF-4 and the version gap is already disclosed in `## Engines`' carried-and-
+unproven list; nothing depends on it, A1's rejection standing on scope alone.
+
+*History.* **Revision 1**, 2026-09-17 (sha256 `b0fb750d…`, commits `0bf66ee` and
+`486aad1`): first synthesis from `raw/opus.md` and the four Doxa reports;
+recommended the six-rung chain with no layering crate, `etcetera` 0.11.0 through
+R57's `Paths`, two `std` resolvers and the `clap` `env` alias; rejected by
+`review/audit-fable.md` with JF-1 and JF-2 blocking. **Revision 2**, 2026-09-18:
+JF-1..JF-4 repaired as tabled above. The recommendation, the six-rung table, the
+four force labels `J1`–`J4`, the eleven acceptance criteria, the five `- assumes`
+lines and every revision-1 evidence artifact are unchanged.
 
 **Status.** This decision is a **proposal validated in the implementation phase**
 (owner ruling, 2026-09-10). It records what the research found and what it
@@ -82,9 +118,14 @@ py's. The ledger edit the line asks for is the owner's to make; nothing in
 > `BASELINE-REVIEW: F247 — the absoluteness requirement is normative, not a py nuance — drop "py additionally requires absoluteness, a minor same-origin implementation nuance, not a verdict-changing difference" and record absoluteness as part of the acceptance criteria, closing the open owner question at `docs/port/BASELINE-REVIEW.md:113` in favour of "required" — evidence: the XDG Base Directory Specification states "All paths set in these environment variables must be absolute. If an implementation encounters a relative path in any of these variables it should consider the path invalid and ignore it" (`https://gitlab.freedesktop.org/xdg/xdg-specs/-/raw/master/basedir/basedir-spec.xml`, retrieved 2026-09-17), and `etcetera` 0.11.0 `src/base_strategy/xdg.rs:175-183` implements it, so adopting it costs nothing; affected items R54 (this item) and R57 (which owns the `Paths` type carrying the behaviour)`
 
 **Disposition: accepted, and offered to the owner as the answer to the open
-question at `docs/port/BASELINE-REVIEW.md:113`** — "whether py's absoluteness check
+question recorded at `docs/port/BASELINE-REVIEW.md:193`** — "Also needing a
+disposition: whether py's absoluteness check
 (`src/py_launch_blueprint/core/paths.py:73`) is part of the inherited contract or a
-py-only nuance". Both halves were re-verified here: the specification sentence
+py-only nuance" — whose pending adjudication row is F247 at `:113`, status
+`blocked pending R54` (`V20`–`V22`). Revision 1 attached that quotation to `:113`,
+which does not carry it (JF-4); the carried `BASELINE-REVIEW:` line above also says
+`:113` and is **left byte-identical to `raw/opus.md:232`**, as a preservation
+target (`V24`). Both halves were re-verified here: the specification sentence
 (`Z01`) and `etcetera`'s implementation of it (`E02`). The reason this is a cheap
 "yes" is that the template gets the behaviour **whether or not the owner rules**:
 `etcetera` filters a non-absolute `XDG_CONFIG_HOME` unconditionally, and
@@ -294,7 +335,8 @@ AC1–AC8 hermetic and parallel-safe.
   2): R54 **adds no constraint to R53**. This is a change from `raw/opus.md`, which
   would have required R53's partial type to become recursively partial; A2′ needs no
   such type. What R54 supplies R53 is the ordered list of layers its loop runs over.
-- **R55** (two-phase loader, no added crate, revision 2 under judgment): R55 states
+- **R55** (two-phase loader, no added crate, **revision 3**, judgment-approved and
+  unpublished): R55 states
   that R54 "owns merge depth and precedence order" while R55 "fixes only the
   *sequence*" (`D02`). This decision supplies exactly that: depth is **recursive at
   every level** for tables, replace for scalars and arrays; order is `R5.1`'s. R55
@@ -302,7 +344,16 @@ AC1–AC8 hermetic and parallel-safe.
   rung table is that tag, and R55's `ConfigSource`/`Discovered { path, tier }` is
   where it lives. R55's re-verify trigger "R54 publishing" fires with this document,
   and the answer to its conditional is: **three discovered tiers exist, so clause 2's
-  tolerant limb and F236 have three Rust instances.**
+  tolerant limb and F236 have three Rust instances.** R55 reached revision 3 at
+  commit `439da7d`, twelve minutes and forty seconds before this item's revision-1
+  synthesis commit `0bf66ee` (`V10`; the audit rounds this to "thirteen minutes"),
+  so this decision's `re-verify:` trigger "R55 being revised" had
+  **already fired** when revision 1 published — **with no effect on the
+  composition**. Revision 3's own note says "**The recommendation does not move**"
+  (`V04`), the three sentences this decision cites at `D01`, `D02` and `D03` are
+  present in it verbatim (`V05`–`V07`), and its round-3 judgment audit approved it
+  at that sha256 (`V08`, `V09`). Revision 1 named R55 "revision 2" while its own
+  check `D00b` hashed revision 3 (`V02`, `V03`); that is corrected here.
 - **R57** (XDG via `etcetera` 0.11.0 on a template-owned `Paths`, namespace `rslbp`,
   owner-accepted at revision 2): R54 consumes `Paths::config_dir()` and appends
   `rslbp_config.toml`. **R54 does not re-select the crate and declares no
@@ -328,7 +379,7 @@ AC1–AC8 hermetic and parallel-safe.
 - **R49** (`build-tool-output-shape`): supplies the binary name `rslbp`, which is the
   `<tool>` segment in every path above. R57 already consumes it for the same reason.
 
-re-verify: 2027-03-17, or earlier on any of — the org CLI Design Standard moving past blob `f9de0437baece3383e73ca2c5f48b7ab399b51c7` in §5, since the whole tier set and precedence order are downstream of `R5.1`/`R5.2`; `etcetera` publishing any version above 0.11.0 — checks `F01` and `F02` assert that none exists as of 2026-09-17, and `raw/opus.md` reports (carried, not re-verified here) that its HEAD already holds an unreleased "Drop cfg-if dependency" commit, so the next release is likely to move the dependency closure; **R57 being revised** in a way that changes the `Paths` accessor set or adds the `config_dirs()` accessor this decision declines to ask for; **R55 being revised** in a way that changes the sanitize-then-merge sequence, which is the entire ground for choosing A2′ over A3; **R53 being revised** away from the per-key loop over `toml::Table`; `clap` adding an emptiness filter to its env path, which would make this template's filter redundant but harmless (`C02` is the assertion that would flip); R52 replacing `toml` with a parser that exposes no addressable intermediate table; or the owner ruling on either `BASELINE-REVIEW:` line above, since F232's ledger text and F247's absoluteness question are both still open.
+re-verify: 2027-03-17, or earlier on any of — the org CLI Design Standard moving past blob `f9de0437baece3383e73ca2c5f48b7ab399b51c7` in §5, since the whole tier set and precedence order are downstream of `R5.1`/`R5.2`; `etcetera` publishing any version above 0.11.0 — checks `F01` and `F02` assert that none exists as of 2026-09-17, and `raw/opus.md` reports (carried, not re-verified here) that its HEAD already holds an unreleased "Drop cfg-if dependency" commit, so the next release is likely to move the dependency closure; **R57 being revised** in a way that changes the `Paths` accessor set or adds the `config_dirs()` accessor this decision declines to ask for; **R55 being revised past revision 3** in a way that changes the sanitize-then-merge sequence, which is the entire ground for choosing A2′ over A3 — revision 1 stated this trigger against "revision 2", and it had in fact already fired before revision 1 published, with no effect on the composition (revision note, and `V04`–`V10`); **R53 being revised** away from the per-key loop over `toml::Table`; `clap` adding an emptiness filter to its env path, which would make this template's filter redundant but harmless (`C02` is the assertion that would flip); R52 replacing `toml` with a parser that exposes no addressable intermediate table; or the owner ruling on either `BASELINE-REVIEW:` line above, since F232's ledger text and F247's absoluteness question are both still open.
 
 ## Parameters
 
@@ -552,8 +603,8 @@ type must be **recursively** partial (nested tables `Option<PartialSub>` with
 leaf fails the single final deserialize, taking the whole merged document with it"
 and because provenance is lost by merge time. **Settled against Opus, on a
 published sibling decision that report did not read.** Its own `### Sources` cites
-R55 at "(revision 1, `## Decision`, clauses 1–3)" (`D08`); R55 is at revision 2,
-which publishes the loader as "the merge over sanitized tables in R54's order
+R55 at "(revision 1, `## Decision`, clauses 1–3)" (`D08`); R55 is at **revision 3**
+(judgment-approved, unpublished), which publishes the loader as "the merge over sanitized tables in R54's order
 followed by the single final pass" (`D01`), with every invalid leaf and unknown key
 already pruned *per layer*, each pruning emitting a warning that names its file
 (`D03`). Both of Opus's objections assume an **unsanitized** merge; R55 removed that
@@ -561,6 +612,13 @@ premise. And R53 revision 2 validates **per key over R52's `toml::Table`** (`D06
 not through a generated partial type, so Opus's constraint would reopen an
 owner-accepted decision to buy provenance A2′ already has. Opus's reasoning is
 sound on its inputs; its inputs were one revision stale.
+
+**And revision 1 of this decision committed the same defect it settles here.** It
+wrote "R55 is at revision 2" while its own check `D00b` pinned revision 3's
+sha256 — JF-1 of the round-1 judgment audit. The settlement is unaffected, because
+revision 3 preserves the recommendation and all three cited sentences verbatim
+(`V01`–`V07`); the label is corrected throughout, and the bar is the same in both
+directions.
 
 **Disagreement 2 — a layering crate. All three Doxa providers add one; Opus and this
 decision add none.** Doxa/OpenAI recommends
@@ -623,12 +681,39 @@ marker *list* is delegated by the standard and is this decision's J4.
 
 **Disagreement 6 — extra tiers and owned parameters.** Doxa/Perplexity introduces a
 fifth file tier (`ConfigTier::Local`, ordering `system < local < user < project <
-env < CLI`); Doxa/OpenAI declares four owned parameters
-(`config-discovery-scopes`, `config-selector-precedence`, `project-search`,
-`project-config-path`). **Both rejected as out of contract.** `R5.1` enumerates six
-rungs and no `local` tier, and the prompt's `## Couplings` carries an empty
-`- owns:` line, so R54 registers no parameter; those four values live in this
-decision's prose, where they bind P03 without entering the registry.
+env < CLI`); Doxa/OpenAI declares **eight** owned parameters in its answer-level
+`### Parameters` section (`raw/doxa-openai.normalized.md:745-759`, counted at
+`V14`): `config-discovery-scopes`, `system-config-path`, `system-config-order`,
+`user-config-path`, `project-config-path`, `merge-semantics`,
+`config-selector-env-alias` and `config-selector-precedence` (`V15`).
+`project-search` is **not** among them — it is one of eight *member-level* `owns`
+lines, at `:401` (`V16`, `V17`). **Both rejected as out of contract.** `R5.1`
+enumerates six rungs and no `local` tier, and the prompt's `## Couplings` carries
+an empty `- owns:` line, so R54 registers no parameter; those values live in this
+decision's prose, where they bind P03 without entering the registry. Eight registry
+parameters from an item whose prompt owns none is further out of contract, not
+less.
+
+**Disagreement 7 — where the `$XDG_CONFIG_DIRS` list lives. `raw/opus.md` wants a
+fifth `Paths` accessor; this decision keeps the list in R54's own discovery
+module.** The raw report states both dispositions and prefers the first: "(a) R57
+adds a fifth accessor to `Paths`, keeping one directory authority; or (b) R54 owns
+a separate discovery type that *takes* a `Paths` and resolves the system list
+itself. This report proposes (a) on the single-authority argument, and records it
+as a coupling rather than a decision." (`V13`.) **Settled for (b), and the
+disagreement is narrow**: only *where* roughly eight lines live changes, never what
+they do, and `etcetera` stays R57's single declared dependency either way. Three
+grounds, the third decisive. `$XDG_CONFIG_DIRS` is a system-wide *search path*, not
+one of the per-user kinds R57 scopes itself to. It is a **different environment
+variable** from `XDG_CONFIG_HOME`, so (b) creates no second authority for the
+variable R57's `Paths` resolves — which is the single-authority argument's actual
+concern. And R57 is owner-accepted at revision 2 with an accessor set it fixes
+explicitly — "exposes no runtime-directory accessor and no free-function surface"
+(`D04`) — so (a) reopens a closed decision over a placement. `raw/opus.md` itself
+calls the choice R57's to make, and this decision does not make it for R57: if the
+owner prefers (a), nothing in the mechanism changes. Recorded here because revision
+1's R57 coupling bullet promised this record and revision 1 did not carry it
+(JF-2).
 
 **Every `BASELINE-REVIEW:` line raised by any engine, with its disposition.** Two
 came from `raw/opus.md` and are carried **verbatim** in `## Decision` (F232, F247),
