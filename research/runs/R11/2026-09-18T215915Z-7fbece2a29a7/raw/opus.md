@@ -261,16 +261,16 @@ not a widening.
 `.github/workflows/ci.yml` was written under a `$TMPDIR` subdirectory and linted. It
 is 164 lines, six job ids (`plan`, `hygiene`, `workflow-lint`, `check`, `msrv`,
 `install-smoke`), sha256
-`6d4dcaf67d4041a608082e92333e4cd5bf2c4bcfa865d6fd478f522c99a78379`.
+`862295bfba9c06bff6f4dc1fe81a484263b73cc9a98781fd6fb1933e80813252`.
 `actionlint` 1.7.12 **exits 0** on it. Four negative controls were then run against
 the same file, and one of them is the finding of this report:
 
 | # | Mutation | `actionlint` | What it establishes |
 |---|---|---|---|
-| NC1 | `needs.plan.outputs.code` → `codee` | **exit 1**: `property "codee" is not defined in object type {code: string; web: string; workflows: string}` | the detector relay is type-checked against the producing job's declared `outputs:`, so a renamed key cannot silently disable a gate |
+| NC1 | `needs.plan.outputs.code` → `codee` | **exit 1** on 3 sites: `property "codee" is not defined in object type {code: string; docs: string; web: string; workflows: string}` | the detector relay is type-checked against the producing job's declared `outputs:`, so a renamed key cannot silently disable a gate |
 | NC2 | `== 'true'` → `!= 'false'` | **exit 0** | **the linter cannot catch the fail-open gate.** The positive-predicate rule is a design rule the tool-chain does not enforce, so it must be written into this item's value and into R12's and R13's inherited shape, not left to lint |
 | NC3 | job-level `if:` reading `secrets.SOME_TOKEN` | **exit 1**: `context "secrets" is not allowed here. available contexts are "github", "inputs", "needs", "vars"` | re-confirms, independently of R18 and R86, why a credential gate must be a preflight job rather than a job condition — and therefore why this item's detector job and those items' preflight jobs are the *same* structural device |
-| NC4 | `needs: plan` → `needs: planx` | **exit 1**: `job "hygiene" needs job "planx" which does not exist in this workflow` | the `needs` graph itself is checked, so a job renamed out from under a gate fails the lint |
+| NC4 | the first `needs: plan` → `needs: planx` | **exit 1**: `job "workflow-lint" needs job "planx" which does not exist in this workflow` | the `needs` graph itself is checked, so a job renamed out from under a gate fails the lint |
 
 The detector's shell body was additionally **executed** against nine synthetic diffs
 (D1–D9 under `### Validation strategy`), each producing the four literal outputs.
@@ -323,6 +323,7 @@ fixes, with the contents left to the named item.
 | R35 coverage-tooling | the `coverage` slot | it instruments differently from a plain build, so it is expected to need its own `target/`, which makes it a **job**, `needs: plan`, `if: code == 'true'` |
 | R37, R39, R40 | hook manager, secret hooks, hygiene hooks | if CI re-runs the hook suite (ts does, at `ci.yml:105-106`), it is a step of `hygiene` when it compiles nothing |
 | R71, R82 | OpenAPI generation, docs-correctness gate | `openapi-snap` gated on `web`; `docs-gate` gated on `docs == 'true' \|\| code == 'true'` |
+| R17 secret-scanning-ci-workflow | which runner OS its single scan job lands on — a question R17's decision explicitly hands here ("Which runner OS the single scan job lands on (R11 owns this)") | **`ubuntu-latest`**, by the tier-1 rule: the scan compiles no Rust, so it neither shares nor claims a `target/` cache entry and gains nothing from a second runner. The same answer covers every single-job non-compiling workflow file, R18's and R86's preflight jobs included |
 | R42 dev-toolchain-provisioning | whether a CI toolchain-install **action** is named | this item installs nothing beyond what `rust-toolchain.toml` triggers; the floor job needs a second toolchain and the mechanism is R42's, which R10's re-verify (5) already flags as undecided |
 
 ### Recommendation
@@ -396,6 +397,22 @@ are closed, with a **median 1.5 days** from open to close (0, 0, 1, 1, 2, 4, 8, 
 First-maintainer-response timestamps were not fetched, so the median reported is
 days-to-close, and that limit is stated rather than papered over. Maintenance state:
 **active**.
+
+**Its fitness-gate walk, done before popularity is weighed.** **Gate 1 (licence)**:
+`MIT`, compatible with `MIT OR Apache-2.0` — recorded, not tested, since the owner
+ruled on 2026-09-12 (Q7.B) that licence compatibility is not evaluated for a tool.
+**Gate 2 (MSRV)**: **inapplicable** — it is a JavaScript action; it declares no
+`rust-version`, enters no `Cargo.toml` and no dependency tree. **Gate 3 (advisories)**:
+**passes, with a control.** `GET https://api.github.com/advisories?ecosystem=actions&affects=dorny/paths-filter`
+returns **0** advisories, while the same endpoint with
+`affects=tj-actions/changed-files` returns **2**, both `high`
+(`GHSA-mrrh-fwg8-r2c3`, `GHSA-mcph-m25j-8j63`) — so the zero is a real zero and not a
+broken query (both retrieved 2026-09-18T22:30:50Z and 22:31:11Z). `unsafe` posture:
+**inapplicable**, no Rust. **Gate 4 (both runners)**: it runs on the Node runtime every
+GitHub-hosted runner ships, so it is runner-agnostic by construction; Windows likewise.
+**Gate 5 (default features, async coupling)**: **inapplicable** — an action has neither.
+**Gate 6 (binary size, compile time)**: **inapplicable** — it contributes nothing to the
+template's artifacts or build.
 
 ##### Excluded by gate
 `tj-actions/changed-files` — **excluded by gate 3** (no open advisory). It carries
@@ -808,7 +825,7 @@ that they compose is that the file exists and passes the platform's own type-che
 1. **One artifact, linted.** All four members were written into a single candidate
    `.github/workflows/ci.yml` (164 lines, six job ids) under a `$TMPDIR` subdirectory
    and `actionlint` **1.7.12** exits **0** on it; the final file's sha256 is
-   `6d4dcaf67d4041a608082e92333e4cd5bf2c4bcfa865d6fd478f522c99a78379`. The four
+   `862295bfba9c06bff6f4dc1fe81a484263b73cc9a98781fd6fb1933e80813252`. The four
    negative controls (NC1–NC4) each mutate one
    member's contract and three of the four are rejected, which is what shows the
    members are actually wired to one another rather than merely co-located: NC1 and
@@ -841,7 +858,7 @@ that they compose is that the file exists and passes the platform's own type-che
 The owned value is one line; the five assumed lines follow it, each reproduced
 byte-for-byte from the live `docs/port/PARAMETERS.md` rows.
 
-- owns ci-job-structure = checks are partitioned into GitHub Actions jobs by whether they compile Rust, not by which check they are, inside one `.github/workflows/ci.yml` carrying exactly six job ids. Tier 0 is one always-run `plan` job on ubuntu-latest with no toolchain, no `Swatinem/rust-cache` step and no `target/` directory, which after `actions/checkout` with `fetch-depth: 0` and `persist-credentials: false` runs one `shell: bash` step under `set -euo pipefail` that computes `git diff --no-ext-diff --no-textconv --name-only "${BASE_SHA}...HEAD"` with `BASE_SHA` read from `github.event.pull_request.base.sha` through the step `env:` block, and writes exactly four job outputs - `code`, `web`, `workflows`, `docs` - as the literal strings `true` or `false` and never as any other value, publishing `true` on all four for every event whose name is not `pull_request` so that pushes to main and merge-queue runs are never skip-gated; `code` is the negation of a skip-list of paths that cannot affect a compile, with `README.md` excluded from the skip-list because it is a packaging input, `web` keys on the paths R69 names, `workflows` keys on `.github/workflows/**` and `docs` keys on the prose tree, and a fifth key is added only when some job would be skipped by it that `code` does not already skip. Tier 1 is the non-compiling checks, each its own cheap job with no cache step: `hygiene`, which has no `needs` edge at all so that a formatter failure still reports when the compile tier is skipped, and `workflow-lint`, gated on `workflows`. Tier 2 is the compiling checks: ONE `check` job per entry in `target-os-matrix` through a `strategy.matrix` over `os` alone with `fail-fast: false` - never a matrix dimension over Cargo features, because the cache action keys on the job id and not on matrix values - running clippy with the feature off, clippy with the feature on, `cargo test` with the feature off scoped by `-p` to the non-web packages so the feature-off property is proven rather than assumed, `cargo test --workspace --features web`, `cargo build --features web --bin <app>-serve` and `cargo doc`, as ordered steps sharing one `target/`, every command carrying `--locked`; plus `msrv-floor`, a separate single-runner job because a second toolchain must not share the stable job's cache key, verifying the declared `rust-version` on ubuntu-latest, which is the default that Cargo's own CI guide shows and which widens to every runner by substituting `runs-on: ${{ matrix.os }}` if the owner answers the open F033 cross-product question that way; plus `install-smoke`, R50's one ubuntu-latest job. Every gated job consumes the detector through `needs: plan` and a POSITIVE predicate `if: ${{ needs.plan.outputs.<key> == 'true' }}`, never a negated one, because a skipped or failed producer publishes an empty output map that a negated test reads as a reason to run; `actionlint` type-checks the output name and the `needs` edge but does NOT reject the negated form, so the rule is carried in prose. `ci.yml` carries no `on.<push|pull_request>.paths` or `paths-ignore` filter of any kind, because a workflow skipped by path filtering leaves its checks Pending and blocks merging while a job skipped by a conditional reports Success; its triggers are `pull_request` and `push` restricted to `main`, plus `merge_group` so a queue's speculative merge still reports; it declares `permissions: {}` at workflow level with a per-job re-grant whose scopes are R08's; and it declares workflow-level `concurrency` with `cancel-in-progress: true` on a group keyed `${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}`, so a force-push cancels the superseded pull-request run while consecutive pushes to main never cancel one another and therefore keep populating the cache. This file holds no aggregate required-status job (R12's), no release, secret-scanning or AI-review job (separate workflow files), and every further check arrives as a named slot: a check that compiles nothing is a step of `hygiene`, a check that compiles what `check` already compiles is a step of `check`, and a check needing its own toolchain, its own runner or a `target/` it must not share becomes its own job with `needs: plan` and a positive predicate, counted against a ceiling of roughly six cache-bearing job ids per runner
+- owns ci-job-structure = checks are partitioned into GitHub Actions jobs by whether they compile Rust, not by which check they are, inside one `.github/workflows/ci.yml` carrying exactly six job ids. Tier 0 is one always-run `plan` job on ubuntu-latest with no toolchain, no `Swatinem/rust-cache` step and no `target/` directory, which after `actions/checkout` with `fetch-depth: 0` and `persist-credentials: false` runs one `shell: bash` step under `set -euo pipefail` that computes `git diff --no-ext-diff --no-textconv --name-only "${BASE_SHA}...HEAD"` with `BASE_SHA` read from `github.event.pull_request.base.sha` through the step `env:` block, and writes exactly four job outputs - `code`, `web`, `workflows`, `docs` - as the literal strings `true` or `false` and never as any other value, publishing `true` on all four for every event whose name is not `pull_request` so that pushes to main and merge-queue runs are never skip-gated; `code` is the negation of a skip-list of paths that cannot affect a compile, with `README.md` excluded from the skip-list because it is a packaging input, `web` keys on the paths R69 names, `workflows` keys on `.github/workflows/**` and `docs` keys on the prose tree, and a fifth key is added only when some job would be skipped by it that `code` does not already skip. Tier 1 is the non-compiling checks, each its own cheap job with no cache step: `hygiene`, which has no `needs` edge at all so that a formatter failure still reports when the compile tier is skipped, and `workflow-lint`, gated on `workflows`. Tier 2 is the compiling checks: ONE `check` job per entry in `target-os-matrix` through a `strategy.matrix` over `os` alone with `fail-fast: false` - never a matrix dimension over Cargo features, because the cache action keys on the job id and not on matrix values - running clippy with the feature off, clippy with the feature on, `cargo test` with the feature off scoped by `-p` to the non-web packages so the feature-off property is proven rather than assumed, `cargo test --workspace --features web`, `cargo build --features web --bin <app>-serve` and `cargo doc`, as ordered steps sharing one `target/`, every command carrying `--locked`; plus `msrv-floor`, a separate single-runner job because a second toolchain must not share the stable job's cache key, verifying the declared `rust-version` on ubuntu-latest, which is the default that Cargo's own CI guide shows and which widens to every runner by substituting `runs-on: ${{ matrix.os }}` if the owner answers the open F033 cross-product question that way; plus `install-smoke`, R50's one ubuntu-latest job. Every gated job consumes the detector through `needs: plan` and a POSITIVE predicate `if: ${{ needs.plan.outputs.<key> == 'true' }}`, never a negated one, because a skipped or failed producer publishes an empty output map that a negated test reads as a reason to run; `actionlint` type-checks the output name and the `needs` edge but does NOT reject the negated form, so the rule is carried in prose. `ci.yml` carries no `on.<push|pull_request>.paths` or `paths-ignore` filter of any kind, because a workflow skipped by path filtering leaves its checks Pending and blocks merging while a job skipped by a conditional reports Success; its triggers are `pull_request` and `push` restricted to `main`, plus `merge_group` so a queue's speculative merge still reports; it declares `permissions: {}` at workflow level with a per-job re-grant whose scopes are R08's; and it declares workflow-level `concurrency` with `cancel-in-progress: true` on a group keyed `ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}`, so a force-push cancels the superseded pull-request run while consecutive pushes to main never cancel one another and therefore keep populating the cache. This file holds no aggregate required-status job (R12's), no release, secret-scanning or AI-review job (separate workflow files), and every further check arrives as a named slot: a check that compiles nothing is a step of `hygiene`, a check that compiles what `check` already compiles is a step of `check`, and a check needing its own toolchain, its own runner or a `target/` it must not share becomes its own job with `needs: plan` and a positive predicate, counted against a ceiling of roughly six cache-bearing job ids per runner
 - assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
 - assumes rust-edition = 2024
 - assumes target-os-matrix = ubuntu-latest, macos-latest
@@ -896,30 +913,220 @@ job-count arithmetic; and R50's single `install-smoke` job on `ubuntu-latest`.
 **Executed here.** Host: macOS 26.4 `arm64`; `actionlint` 1.7.12 at
 `/opt/homebrew/bin/actionlint`; `bash` as the script interpreter; scratch under a
 `$TMPDIR` subdirectory created and removed by this run. The candidate file's sha256 is
-`6d4dcaf67d4041a608082e92333e4cd5bf2c4bcfa865d6fd478f522c99a78379`, 164 lines.
+`862295bfba9c06bff6f4dc1fe81a484263b73cc9a98781fd6fb1933e80813252`, 164 lines.
+
+**The candidate file, verbatim.** It is reproduced in full here because the scratch
+directory that held it was deleted at the end of this run, and a sha256 of a file
+nobody can open is not evidence. Everything below is the exact content whose hash is
+recorded above; a reader can save it and re-run `actionlint` on it.
+
+```yaml
+# R11 candidate: plan-gated compile-tier CI. Tool choices inside each step are
+# other items' (R27/R28/R30/R32/R35/R71/R82); this file is the job graph only.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  merge_group:
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  # Tier 0 - always runs, no toolchain, no cache, no target/ directory.
+  plan:
+    name: plan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      code: ${{ steps.detect.outputs.code }}
+      web: ${{ steps.detect.outputs.web }}
+      workflows: ${{ steps.detect.outputs.workflows }}
+      docs: ${{ steps.detect.outputs.docs }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Detect changed paths
+        id: detect
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          out() { printf '%s=%s\n' "$1" "$2" >> "$GITHUB_OUTPUT"; }
+          if [ "${EVENT_NAME}" != "pull_request" ]; then
+            out code true; out web true; out workflows true; out docs true
+            echo "INFO: ${EVENT_NAME} event - every job runs"
+            exit 0
+          fi
+          changed="$(git diff --no-ext-diff --no-textconv --name-only "${BASE_SHA}...HEAD")"
+          code=false; web=false; workflows=false; docs=false
+          skip='^docs/|^\.vscode/|\.md$|^LICENSE-MIT$|^LICENSE-APACHE$|^\.github/ISSUE_TEMPLATE/'
+          if printf '%s\n' "$changed" | grep -qx 'README\.md'; then code=true; fi
+          if printf '%s\n' "$changed" | grep -vE "$skip" | grep -q .; then code=true; fi
+          if printf '%s\n' "$changed" | grep -qE '^crates/web/|^src/bin/rslbp-serve\.rs$'; then web=true; fi
+          if printf '%s\n' "$changed" | grep -qE '^\.github/workflows/'; then workflows=true; fi
+          if printf '%s\n' "$changed" | grep -qE '^docs/|\.md$'; then docs=true; fi
+          out code "$code"; out web "$web"; out workflows "$workflows"; out docs "$docs"
+          echo "INFO: code=$code web=$web workflows=$workflows docs=$docs"
+
+  # Tier 1 - always runs, toolchain but no compilation, so no rust-cache entry.
+  hygiene:
+    name: hygiene
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Formatter check
+        run: cargo fmt --all --check
+
+  # Tier 1 - path-gated, no compilation. R29 owns the tools inside it.
+  workflow-lint:
+    name: workflow-lint
+    needs: plan
+    if: ${{ needs.plan.outputs.workflows == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - run: echo "actionlint slot"
+
+  # Tier 2 - the one compiling job per OS. One target/ cache entry per OS.
+  check:
+    name: check (${{ matrix.os }})
+    needs: plan
+    if: ${{ needs.plan.outputs.code == 'true' }}
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          env-vars: "ImageOS"
+          cache-on-failure: "true"
+          prefix-key: "v1-rslbp"
+      - run: echo "ImageOS=$ImageOS"
+      - name: Lint (default features; --workspace still compiles the optional web member, R02 check B3)
+        run: cargo clippy --locked --workspace --all-targets -- -D warnings
+      - name: Lint (web feature on)
+        run: cargo clippy --locked --workspace --all-targets --features web -- -D warnings
+      - name: Test (default features, root-scoped so the feature-off property is proven)
+        run: cargo test --locked -p rs-launch-blueprint -p rs-launch-blueprint-core -p rs-launch-blueprint-cli
+      - name: Test (web feature on, workspace-scoped)
+        run: cargo test --locked --workspace --features web
+      - name: Build the serve binary
+        run: cargo build --locked --features web --bin rslbp-serve
+      - name: Doc build
+        run: cargo doc --locked --workspace --no-deps --features web
+
+  # Tier 2 - the rust-version floor, its own job because it is its own toolchain.
+  msrv:
+    name: msrv-floor
+    needs: plan
+    if: ${{ needs.plan.outputs.code == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          env-vars: "ImageOS"
+          prefix-key: "v1-rslbp"
+      - name: Verify the declared rust-version floor
+        run: cargo hack check --locked --rust-version --workspace --all-targets --ignore-private
+
+  # Tier 2 - R50's job, ubuntu only, gated on this file's code output.
+  install-smoke:
+    name: install-smoke
+    needs: plan
+    if: ${{ needs.plan.outputs.code == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          env-vars: "ImageOS"
+          prefix-key: "v1-rslbp"
+      - run: just install-check
+
+  # Slots this file leaves open, each a job id other items fill:
+  #   coverage       (R35)  needs: plan; if code == 'true'; compiling -> its own cache entry
+  #   deny / bans    (R02 F008, R13)  needs: plan; if code == 'true'
+  #   docs-gate      (R82)  needs: plan; if docs == 'true' || code == 'true'
+  #   openapi-snap   (R71, R84)  needs: plan; if web == 'true'
+  #   ci-ok          (R12)  needs: [every job above]; if always()
+```
+
+**The lint run and its four negative controls.** Each control asserts that its
+mutation actually changed the file **before** linting, because an earlier attempt in
+this run produced a false pass: a `sed` using GNU's `0,/re/` address range is a no-op
+under the BSD `sed` on this host, so the "control" linted an unmodified file and
+reported exit 0. That failure mode is recorded rather than hidden, and the harness
+now refuses to lint a mutation that did not apply.
 
 ```
-$ actionlint -no-color <tmp>/.github/workflows/ci.yml ; echo "EXIT=$?"
-EXIT=0                                                        # control, clean
-
-# NC1 - misspell the relayed output name
-EXIT=1  .../ci.yml:80:13: property "codee" is not defined in object type
-        {code: string; web: string; workflows: string} [expression]
-
-# NC2 - replace the positive predicate with the negated one
-EXIT=0                                                        # NOT rejected
-
-# NC3 - read a secret from a job-level if
-EXIT=1  .../ci.yml:80:13: context "secrets" is not allowed here. available
-        contexts are "github", "inputs", "needs", "vars" [expression]
-
-# NC4 - point a needs edge at a job that does not exist
-EXIT=1  .../ci.yml:59:3: job "hygiene" needs job "planx" which does not exist
-        in this workflow [job-needs]
+=== candidate 164 lines, sha256 862295bfba9c06bff6f4dc1fe81a484263b73cc9a98781fd6fb1933e80813252
+--- CONTROL (unmodified)
+EXIT=0
+  stdout: ''
+--- NC1 misspell the relayed output name (code -> codee)
+MUTATION APPLIED: yes
+EXIT=1
+  nc.yml:91:13: property "codee" is not defined in object type
+  {code: string; docs: string; web: string; workflows: string} [expression]
+  (3 diagnostic line(s) total)
+--- NC2 negate the predicate (== 'true' -> != 'false')
+MUTATION APPLIED: yes
+EXIT=0
+  (0 diagnostic line(s) total)
+--- NC3 job-level if reads secrets.SOME_TOKEN
+MUTATION APPLIED: yes
+EXIT=1
+  nc.yml:91:13: context "secrets" is not allowed here. available contexts are
+  "github", "inputs", "needs", "vars". see https://docs.github.com/en/actions/
+  learn-github-actions/contexts#context-availability for more details [expression]
+  (3 diagnostic line(s) total)
+--- NC4 first needs edge points at a job that does not exist
+MUTATION APPLIED: yes
+EXIT=1
+  nc.yml:74:3: job "workflow-lint" needs job "planx" which does not exist in this
+  workflow [job-needs]
+  (2 diagnostic line(s) total)
 ```
 
-The detector's shell body, extracted verbatim, run against nine synthetic changed-file
-lists:
+The detector's shell body, extracted verbatim **from the file above** with only the
+non-`pull_request` early-exit branch removed and `changed` driven from an argument,
+run against nine synthetic changed-file lists:
 
 | # | Changed files | `code` | `web` | `workflows` | `docs` |
 |---|---|---|---|---|---|
@@ -1089,10 +1296,20 @@ for `tokio` (`ci.yml`), `axum` (`CI.yml`), `ripgrep` (`ci.yml`), `clap` (`ci.yml
 `bat` (`CICD.yml`), `uv` (`ci.yml`, `plan.yml`), all 2026-09-18; these are
 branch-tip reads, not pinned commits, and that limit is stated rather than glossed.
 
+**A correction this run made to itself, recorded because it is the kind of thing that
+silently passes.** An earlier pass of the negative controls ran three of the four
+against an intermediate draft rather than the final file, and one `sed`-driven
+mutation did not apply at all (GNU's `0,/re/` address range is a no-op under the BSD
+`sed` on this host), so a "control" linted an unmodified file and reported exit 0. All
+four controls in `### Validation strategy` were re-run against the final file, whose
+sha256 is stated there and whose full text is embedded, and each now asserts that its
+mutation changed the file before linting.
+
 **Method notes.** Endpoints queried: `api.github.com` (`repos/<o>/<r>`,
 `search/issues`, `advisories/<ghsa>`, `repos/<o>/<r>/git/ref/tags/<tag>`,
 `repos/<o>/<r>/releases/latest`, `repos/github/docs/commits/main`,
-`repos/github/docs/contents/<path>?ref=<sha>`, `search/code`), spaced at least 21
+`repos/github/docs/contents/<path>?ref=<sha>`, `search/code`,
+`advisories?ecosystem=actions&affects=<action>`), spaced at least 21
 seconds apart; `crates.io/api/v1/crates/cargo-hack` and `/versions` with a `User-Agent`
 header; `rustsec.org/packages/<name>.html` with a control package; `doc.rust-lang.org`;
 `raw.githubusercontent.com` for `github/docs` reusables at the pinned commit and for
