@@ -443,9 +443,11 @@ floor. `rust-edition = 2024` is the probe manifest's declared edition throughout
 `target-os-matrix` is the reason `default-features = false` is not optional: it removes
 `aws-lc-sys`, the only C and assembly build in the graph, leaving two pure-Rust crates that
 carry no platform-gated code path — but see `## Engines`, because **nothing was built on
-`ubuntu-latest` in this run**. `license` is recorded and not evaluated; gate 1 is `inapplicable
-— owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or
-tool`.
+`ubuntu-latest` in this run**. `license` is recorded and not evaluated, because fitness gate 1
+is struck from every item's evaluation by the owner's ruling; the gate is recorded, not
+deleted, and its verdict is:
+
+`inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool`
 
 ## Empirical check
 
@@ -517,8 +519,12 @@ endpoint's `total_count`, which the prompt requires, not the repository object's
 `open_issues_count`, which it forbids; both are printed in the log so the gap between them is
 visible (for `metrics-rs/metrics`, 51 against 83).
 
-**Reproducibility, stated exactly rather than asserted.** Each script above was re-run against
-the committed log before this sentence was written.
+**Reproducibility, stated exactly rather than asserted.** Every script above was re-run twice
+before this sentence was written: once in place, and once from a clean `git archive HEAD`
+extraction into `$TMPDIR` that contains no `.git` at all, with each rerun's output diffed
+against the committed log. All four pass from the extraction — 34, 66, 5 and 70 PASS, with
+**no FAIL and no SKIP in any of them**. What varies between a rerun and the committed log is
+named below, per file, with the rule for comparing across it.
 
 - `cargo-probes.log` is **byte-reproducible except for two header lines: the `$TMPDIR` scratch
   path and the UTC timestamp.** That claim was earned rather than asserted — the script was
@@ -551,6 +557,14 @@ the committed log before this sentence was written.
   flipping to true is the maintenance signal the check exists to catch. Stars, `pushed_at` and
   the issue `total_count` all move in both directions and are printed as direction of travel
   without assertion, so an honest rerun cannot fail on them.
+- `decision-self-check.log` is **byte-reproducible except for its three header lines** — the
+  UTC timestamp, the resolved repository root, and the line reporting whether a `.git` is
+  present and of what kind. The script reaches `docs/port/PARAMETERS.md`, `research/CLAUDE.md`
+  and `docs/port/COMMONALITY.md` through a root it derives by walking up from its own path, so
+  it verifies the four parameter lines against the live registry, the F326 line number, and the
+  research index row from inside an extraction as readily as from the worktree. Its one
+  external dependency is ShellCheck; where that is absent the check is a **named** SKIP rather
+  than a silent pass, and it did not fire in either of the two runs recorded here.
 
 **Gate answers for the recommended pair.** Gate 1 is recorded once here and referred to from
 the shortlist table below by that reference rather than restated.
