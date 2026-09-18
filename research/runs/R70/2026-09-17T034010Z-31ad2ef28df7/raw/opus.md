@@ -1,7 +1,7 @@
 # R70 — HTTP problem envelope (bundle, Focused) — Opus raw report
 
 Engine: Claude Opus 5. Written 2026-09-18. Every registry figure was retrieved on
-2026-09-18 UTC from the endpoints named in `### Sources`. Twelve acceptance
+2026-09-18 UTC from the endpoints named in `### Sources`. Fourteen acceptance
 criteria were **executed** on this host against a two-crate probe workspace built
 from the recommended stack; everything else is proposed.
 
@@ -296,12 +296,35 @@ turns a compiler-checked rename into a silent wire change.
 |---|---|---|---|
 | `RSLB301` | resource not found | **404** | py `ProjectNotFoundError`/`WorkspaceNotFoundError` → 404 |
 | `RSLB401` | credentials absent | **401** | py `AuthError` → 401 |
-| `RSLB402` | credentials rejected | **403** | split from 401 because R67 distinguishes absent from rejected; py has one class |
+| `RSLB402` | credentials rejected | **401**, not 403 | RFC 9110 §15.5.2 verbatim: "If the request included authentication credentials, then the 401 response indicates that authorization has been refused for those credentials." §15.5.4 reserves 403 for credentials the server "considers … insufficient to grant access" — an *authorization* failure, which R67's catalog does not yet name. A 403 row waits for a code that means it |
 | `RSLB501` | conflict / precondition failed | **409** | R67's exit 5 is "conflict/precondition failed" |
 | `RSLB201` | usage/parse — "including the CLI parser's own errors" | **status from the framework**, see below | the request extractor is the HTTP analogue of the CLI parser |
 | `RSLB102`, `RSLB103` | transport, remote-API failure | **502** | py `APIError` → `HTTP_502_BAD_GATEWAY` |
 | `RSLB000`, `RSLB101`, `RSLB104`, `RSLB202`, `RSLB203`, `RSLB204` | unexpected, I/O, config layer unreadable, config unparsable, config value invalid, secret via prohibited channel | **500** | py `ConfigError` → 500 and the `Exception` catch-all → 500. **Config codes are 500, not 422**: in the web service they describe *this process's* configuration, which is the server's fault, not the caller's |
 | `RSLB205`, `RSLB901`, `RSLB902`, `RSLB903` | prompting unavailable, SIGINT, SIGTERM, prompt interrupted | **500**, and listed in `NOT_REQUEST_REACHABLE` | no HTTP request can raise them; they get a row so the table is total, and a named constant so the intent is recorded rather than buried in a catch-all |
+
+**A status is more than a body: two RFC 9110 header obligations the funnel must
+not drop.** RFC 9110 §15.5.6 states that "The origin server **MUST** generate an
+Allow header field in a 405 response", and §15.5.2 that "The server generating a
+401 response **MUST** send a WWW-Authenticate header field … containing at least
+one challenge" (`https://www.rfc-editor.org/rfc/rfc9110.txt` lines 7601-7607 and
+7548-7554, retrieved 2026-09-18). An envelope that replaces the response body can
+silently strip either. Both are handled and both were executed:
+
+- **`Allow` survives.** axum 0.8.9 sets it on the router's 405 *before* the
+  fallback renders, and it is still present after `method_not_allowed_fallback`
+  replaces the body — criterion AC13 asserts `Allow: GET,HEAD` on a `DELETE`
+  against a `GET`-only route and passes. No work is required, but the assertion
+  belongs in the template's test suite so a future axum change is caught.
+- **`WWW-Authenticate` needs a hook, and the envelope has one.** `WebError`
+  carries `headers: Vec<(HeaderName, HeaderValue)>` and a `with_header` builder,
+  and `IntoResponse` inserts them after the problem body is rendered. Criterion
+  AC14 asserts that a 401 carries both `WWW-Authenticate: Bearer realm="rslbp"`
+  and the envelope with `code` `RSLB402`. **The challenge string itself is not
+  this item's** — no P02 item selects an authentication scheme — so this item
+  supplies the mechanism and records the obligation for whichever item lands
+  auth: a 401 emitted without a challenge is a standards violation, not a style
+  preference.
 
 **Why this needs no `CONFLICT:` line, and where a synthesizer might disagree.**
 The obvious pressure point is that R67's catalog, written for a CLI, has no code
@@ -345,9 +368,10 @@ touches, with the line cited:
 | `:271` — `#[error(transparent)] Other(#[from] anyhow::Error)` in the web error enum | **differ** | R67's layering rule is explicit: "`anyhow` … in binary crates only; the library crate must not depend on `anyhow`". `crates/web` is a library. The unexpected path is `ErrorCode::Unexpected`/500 with the cause logged, no `anyhow` |
 | `:270` — `Db(#[from] sqlx::Error)` | **differ (not applicable)** | No database in this template; databases are in the reference's "no P02 item" set |
 | `:274-283` — status and title chosen by an inline `match &self` inside `into_response` | **differ** | Alternative B6 above: the table is a separate `const fn` over R67's catalog, directly unit-tested |
+| `:410` agent note — "Handlers return `impl IntoResponse` or `Result<_, AppError>`" | **agree** | Handlers return `Result<Json<T>, WebError>`; `WebError` is the one type with an `IntoResponse` impl, and AC4 exercises exactly that signature |
 | `:238` — layout `src/error.rs` | **differ** | `crates/web/src/problems.rs`, which R69 revision 10 already names as R70's file (`…/R69/…:1615`: "Not created by this item: `problems.rs` (R70)") |
 
-**Tally: 2 agree, 2 agree-with-additions or in-substance, 7 differ** — and every
+**Tally: 3 agree, 2 agree-with-additions or in-substance, 7 differ** — and every
 "differ" cites either an owner-accepted decision, an owner-fixed parameter, or a
 figure retrieved on 2026-09-18.
 
@@ -360,7 +384,7 @@ workspace (`r70core` holding `#[non_exhaustive] enum ErrorCode` with `ALL` and
 feature list and `tower` 0.5.3 as a dev-dependency for `ServiceExt::oneshot`.
 **Executed on this host** — macOS 26.4, `aarch64-apple-darwin`, rustc 1.98.0
 (Homebrew), 2026-09-18T22:16:41Z — with `rust-version = "1.96"` and
-`edition = "2024"` on both members. Twelve criteria, **12 passed, 0 failed**:
+`edition = "2024"` on both members. Fourteen criteria, **14 passed, 0 failed**:
 
 | # | Criterion | Result |
 |---|---|---|
@@ -376,6 +400,8 @@ feature list and `tower` 0.5.3 as a dev-dependency for `ServiceExt::oneshot`.
 | AC10 | a missing content type keeps axum's 415 | pass |
 | AC11 | a panic inside `spawn_blocking` (R05's bridge) becomes `RSLB000`/500, still enveloped, with the detail redacted | pass |
 | AC12 | a 2xx response is untouched (`text/plain`, not problem+json) | pass |
+| AC13 | RFC 9110 §15.5.6: the 405 still carries `Allow: GET,HEAD` after `method_not_allowed_fallback` replaced its body | pass |
+| AC14 | RFC 9110 §15.5.2: a 401 carries `WWW-Authenticate` *and* the envelope, with `code` `RSLB402` and `status` 401 | pass |
 
 Four response bodies captured verbatim from that run:
 
@@ -493,19 +519,24 @@ and the executed check carry the decision here.
   release is a trigger to investigate, and the investigation found no advisory,
   no archive flag, no maintainer notice and current dependencies.
 - **`http-problem` 0.3.0 — fails gate 2** (no `rust_version` on any version) and
-  is **at-risk** on a concrete signal: its newest release is 2023-05-11 and it
-  depends on a framework generation this template does not use.
+  is **at-risk** on a concrete, retrieved signal: its 0.3.0 manifest requires
+  `http ^0.2.8` and `axum ^0.6` (plus `diesel ^1.4.8` and `eyre ^0.6.8`) —
+  `https://crates.io/api/v1/crates/http-problem/0.3.0/dependencies`, retrieved
+  2026-09-18. This template resolves `http` 1.5.0 and `axum` 0.8.9, so the crate
+  cannot enter the tree without a second, incompatible `http` major, and its
+  newest release is 2023-05-11.
 - **`rfc7807` 0.0.1 — fails gate 2** (no declared version) and is not a serious
   candidate: 17 all-time downloads, no repository field, so gates 3, 4 and 6
   cannot be evaluated at all.
 
 ##### Up-and-comers
 
-`explicit-error-http` 0.3.1 builds a typed error-classification layer *on*
-`problem_details` (found in that crate's reverse dependencies, retrieved
-2026-09-18). It is a candidate for a later, richer mapping layer, not for this
-item: it would add a second opinion about how domain errors classify, which is
-R67's decision and is already made. `problem-details-mapper` 0.1.0 and
+`explicit-error-http` 0.3.1 is the only reverse dependent of `problem_details`
+that is itself a general-purpose library rather than an application (retrieved
+2026-09-18; it requires `^0.8.0`). Its own design was not read, so no claim is
+made here about what it does beyond depending on this member. It is not a
+candidate in any case: any crate that *classifies* domain errors would add a
+second opinion about a classification R67 has already made. `problem-details-mapper` 0.1.0 and
 `zekurix-server` 0.1.0 are the other two reverse dependents; neither is a
 maintained reference implementation.
 
@@ -550,10 +581,12 @@ jobs; **there is no macOS runner**
 member does not clear on upstream evidence alone, and it is cleared here by
 direct execution instead: the probe built and ran 12 integration tests on
 **macOS 26.4, `aarch64-apple-darwin`, rustc 1.98.0, 2026-09-18T22:16:41Z**, which
-is stronger evidence for this template's matrix than a badge. The crate contains
-no `build.rs`, no `cfg(target_os)` branch and no platform-conditional
-dependency. Windows: untested upstream and here; not required. **Pass, on
-executed evidence, with the CI gap recorded.**
+is stronger evidence for this template's matrix than a badge. Verified against the vendored 0.10.0 copy on 2026-09-18: there is **no
+`build.rs`**, and a recursive search of `src/` and `Cargo.toml` for
+`cfg(target_os`, `cfg(unix`, `cfg(windows` and `target_family` returns **zero
+matches**, so there is no platform-conditional code or dependency to diverge.
+Windows: untested upstream and here; not required. **Pass, on executed evidence,
+with the CI gap recorded.**
 
 **Gate 5 — default features and runtime coupling.** Default features are
 `["serde", "json"]`; `serde` pulls `serde` + `http-serde`, `json` adds
@@ -797,7 +830,7 @@ them.
 
 ##### Validation strategy
 
-**Executed** as AC4, AC5, AC8 and AC12 against the probe: the four captured
+**Executed** as AC4, AC5, AC8, AC12 and AC14 against the probe: the four captured
 bodies in `### Principles and implementation` are the contract's observable form,
 including the absence of `type` and the absence of `errors` on a domain error.
 Proposed for P03: a snapshot test over one body per distinct status in the table,
@@ -989,6 +1022,8 @@ R02's crate topology changes.
 
 ##### Sources
 
+`https://www.rfc-editor.org/rfc/rfc9110.txt` §15.5.2 (lines 7548-7562) and
+§15.5.4 (7569-7581), retrieved 2026-09-18, for the 401-versus-403 row;
 `research/topics/67-error-and-exit-code-contract/DECISION.md` lines 135, 141–154,
 653–662 (sha256 `16947ab1…`); `research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md:26,29,102`
 (sha256 `9e8f8e8c11ffb9b383819b2de1b05eab71a32e3af358b75ea8475d48f3c9707f`);
@@ -1064,7 +1099,8 @@ The first four are covered by this member and executed below. Middleware errors
 **R75's layer stack** and are a recorded hand-off, not a gap this item can close:
 the rule R75 inherits is that any layer added to the stack must render its own
 rejection through `WebError`, and the enforcement is a test that walks every
-route and asserts the content type.
+route and asserts the content type. The same walk must assert RFC 9110's header
+obligations too, because a layer can strip a header as easily as a body.
 
 ##### Dominant choice
 
@@ -1147,9 +1183,10 @@ route modules change their extractor types from `Json<T>` to `ProblemJson<T>`.
 
 ##### Validation strategy
 
-**Executed** as AC6, AC7, AC8, AC9, AC10 and AC11 against the probe — an
+**Executed** as AC6 through AC11 plus AC13 and AC14 against the probe — an
 unmatched path, a wrong method, a JSON data error, a JSON syntax error, a missing
-content type and a `spawn_blocking` panic, each asserted to return
+content type, a `spawn_blocking` panic, the `Allow` header on a 405 and the
+`WWW-Authenticate` header on a 401, each asserted to return
 `application/problem+json` with the expected status and `code`. Proposed for P03:
 a test that walks every route in `build_router`, issues a deliberately malformed
 request to each, and asserts the content type — the mechanical form of W3's "no
@@ -1175,7 +1212,10 @@ Vendored `axum-0.8.9/src/routing/mod.rs:345,360,374`,
 `research/runs/R05/2026-09-17T033527Z-bfacc9e801a5/review/DECISION.md:24,34`
 (sha256 `3ca4b81abf4df024d39698815da3820321f91532da52403f8bf7dc07060934ca`);
 `py src/py_launch_blueprint/web/problems.py` at pin `b08bccfb`
-(`install_problem_handlers`); the executed probe, 2026-09-18T22:16:41Z.
+(`install_problem_handlers`); `https://www.rfc-editor.org/rfc/rfc9110.txt`
+§15.5.2 and §15.5.6 (retrieved 2026-09-18) for the two header obligations;
+vendored `axum-0.8.9/src/routing/method_routing.rs:754,1473` for axum's own
+`Allow` assertions; the executed probe, 2026-09-18.
 
 ### Compatibility
 
@@ -1191,11 +1231,11 @@ fixes, and exercised end to end:
 | `tokio` (R69's, not re-selected) | 1.53.1, `rt-multi-thread, net, signal, macros, time, sync` | resolved; the `spawn_blocking` path executed by AC11 |
 | `tower` (R69's dev-dependency) | 0.5.3, `features = ["util"]` | `ServiceExt::oneshot` drove all nine request-level criteria |
 | `serde` / `serde_json` (F294, already settled) | 1.0.229 / 1.0.151 | resolved and compiled |
-| Envelope contract, status table, funnel | this report's patterns | 12 criteria, 12 passed |
+| Envelope contract, status table, funnel | this report's patterns | 14 criteria, 14 passed |
 
 Resolution output, verbatim: `Locking 56 packages to latest Rust 1.96 compatible
 versions`. `cargo build` and `cargo test` both succeeded; `cargo test -p r70web`
-reported `test result: ok. 12 passed; 0 failed; 0 ignored`. Platform: macOS 26.4,
+reported `test result: ok. 14 passed; 0 failed; 0 ignored`. Platform: macOS 26.4,
 `aarch64-apple-darwin`, rustc 1.98.0 (Homebrew, commit `88d9e12ae`, 2026-08-18),
 2026-09-18T22:16:41Z. Both members declared `rust-version = "1.96"` and
 `edition = "2024"`.
@@ -1288,12 +1328,12 @@ File-level changes in the template, at R69 revision 10's paths. Nothing outside
 | Path | Change |
 |---|---|
 | `crates/web/Cargo.toml` | one `[dependencies]` line: `problem_details = { version = "0.10.0", features = ["axum", "json"] }`. No `optional = true` — the whole member is already optional at the root. No other manifest anywhere changes |
-| `crates/web/src/problems.rs` | **new**, and the only file that names `problem_details`. Contains: `ProblemExt`, `pub type Problem = ProblemDetails<ProblemExt>`, `pub trait ProblemSource`, `pub struct WebError` with `new` / `framework` / `from_source` / `with_detail` / `with_errors` / `with_instance` / `log_detail` / `to_problem`, `impl IntoResponse for WebError`, `pub const fn http_status(ErrorCode) -> StatusCode`, `pub const fn detail_is_public(ErrorCode) -> bool`, `pub const NOT_REQUEST_REACHABLE`, `impl From<JsonRejection> for WebError`, `ProblemJson<T>` / `ProblemQuery<T>` / `ProblemPath<T>`, `not_found`, `method_not_allowed`, `join_error_to_web_error`. Roughly 180 lines with doc comments — R69 already lists `problems.rs` as R70's file (`…/R69/…:1615`) |
+| `crates/web/src/problems.rs` | **new**, and the only file that names `problem_details`. Contains: `ProblemExt`, `pub type Problem = ProblemDetails<ProblemExt>`, `pub trait ProblemSource`, `pub struct WebError` with `new` / `framework` / `from_source` / `with_detail` / `with_errors` / `with_instance` / `log_detail` / `to_problem`, `impl IntoResponse for WebError`, `pub const fn http_status(ErrorCode) -> StatusCode`, `pub const fn detail_is_public(ErrorCode) -> bool`, `pub const NOT_REQUEST_REACHABLE`, `impl From<JsonRejection> for WebError`, `ProblemJson<T>` / `ProblemQuery<T>` / `ProblemPath<T>`, `not_found`, `method_not_allowed`, `join_error_to_web_error`, and the `headers: Vec<(HeaderName, HeaderValue)>` field with its `with_header` builder that RFC 9110's `WWW-Authenticate` obligation requires. Roughly 200 lines with doc comments — R69 already lists `problems.rs` as R70's file (`…/R69/…:1615`) |
 | `crates/web/src/lib.rs` | `mod problems;` plus re-exports, and two lines in `build_router`: `.fallback(problems::not_found)` and `.method_not_allowed_fallback(problems::method_not_allowed)` |
 | `crates/web/src/routes/projects.rs` | handler return types become `Result<Json<T>, WebError>`; input extractors become `ProblemJson<T>` / `ProblemQuery<T>` / `ProblemPath<T>`; the `spawn_blocking` join result maps through `join_error_to_web_error` |
 | `crates/web/src/routes/ops.rs` | no change now. `/readyz`'s failure body is R80's and must use `WebError` when it lands |
 | `crates/core/src/error.rs` (or wherever R67's domain error lives) | one `impl ProblemSource for <domain error>` — about six lines. **The only change outside `crates/web`.** If a strict reading of R02's "`crates/web` depends on `core` only" is preferred, the impl moves into `crates/web` instead, since the trait is defined there |
-| `crates/web/tests/problems.rs` | **new**: the twelve criteria executed in this report, retargeted at R67's real catalog |
+| `crates/web/tests/problems.rs` | **new**: the fourteen criteria executed in this report, retargeted at R67's real catalog |
 | `docs/` | one page documenting the envelope, its members and the status table, and — if `type` is ever pointed at published error documentation — one page per code. Owned by R81, listed here so the obligation is visible |
 
 Not created by this item and explicitly left to their owners:
@@ -1310,7 +1350,7 @@ repository root once `crates/web` exists.
 | # | Command | Expected | Status |
 |---|---|---|---|
 | V1 | `cargo build --features web` | compiles clean | **executed** (probe), clean |
-| V2 | `cargo test --features web -p rs-launch-blueprint-web` | the twelve criteria pass | **executed** (probe): `test result: ok. 12 passed; 0 failed; 0 ignored` |
+| V2 | `cargo test --features web -p rs-launch-blueprint-web` | the fourteen criteria pass | **executed** (probe): `test result: ok. 14 passed; 0 failed; 0 ignored` |
 | V3 | `cargo metadata --format-version 1` piped through a check for `rust_version` | no declared `rust_version` above the current `stable minus 2` floor | **executed**: highest declared is 1.85 (`problem_details`); ten transitive crates declare none, nine of them via `axum`/`tokio` |
 | V4 | `cargo tree -p rs-launch-blueprint-web --edges normal` | `problem_details v0.10.0` present; `http-serde` its only addition beyond `axum`/`serde`/`serde_json` | **executed**, confirmed |
 | V5 | `cargo build` with `web` off, then `cargo tree -i problem_details` | the crate is absent from the default tree | *proposed for P03* — the probe has no feature gate; R05's check T06 already proves the mechanism for `tokio` at 38 default crates with none found |
@@ -1320,7 +1360,7 @@ repository root once `crates/web` exists.
 | V9 | the same suite on `ubuntu-latest` | identical results | *proposed for P03* — this run executed on macOS only; upstream CI covers Linux for `problem_details`, and `axum`/`tokio` are R69's |
 
 The distinction that matters for a reader weighing this: **the mechanism is
-executed and the rows are proposed.** The twelve criteria prove that one envelope
+executed and the rows are proposed.** The fourteen criteria prove that one envelope
 can cover domain, router, extractor and panic failures at these exact versions on
 a supported OS; they do not prove that `RSLB102` should be 502 rather than 504,
 which is a judgement the owner may revise without touching anything the probe
@@ -1329,7 +1369,7 @@ verified.
 ### Confidence & re-verify trigger
 
 **High** that the envelope-plus-table-plus-funnel design is correct and
-implementable at R69's pinned versions: twelve criteria executed, four response
+implementable at R69's pinned versions: fourteen criteria executed, four response
 bodies captured, and the one structural claim other items depend on — that a
 cross-crate `#[non_exhaustive]` enum forces a `_` arm and makes `ErrorCode::ALL`
 the compensating mechanism — verified in both directions by compiling it with and
@@ -1380,6 +1420,9 @@ Re-verify when any of these occurs:
 2026-09-18: `problem+json,application/problem+json,[RFC9457]` and
 `problem+xml,application/problem+xml,[RFC9457]`). Section references to RFC 9457
 §3.1.1–§3.1.5 and §3.2 are to the document those two endpoints identify.
+`https://www.rfc-editor.org/rfc/rfc9110.txt` (retrieved 2026-09-18) for the
+status-code definitions quoted verbatim in `### Principles and implementation`:
+§15.5.2 at lines 7548-7562, §15.5.4 at 7569-7581, §15.5.6 at 7601-7607.
 
 **Toolchain.** `https://static.rust-lang.org/dist/channel-rust-stable.toml`
 (retrieved 2026-09-18: `date = "2026-09-03"`, `[pkg.rust] version = "1.98.1
@@ -1461,7 +1504,7 @@ GitHub REST through keyring-authenticated `gh api` at no more than one call per
 20 s, `rustsec.org/packages/<name>.html` plus the advisory-db raw files, and
 `static.rust-lang.org`'s stable channel manifest. Crate versions and feature
 lists were verified against the registry and against the vendored crate sources,
-never from memory. Twelve acceptance criteria were **executed** in a scratch
+never from memory. Fourteen acceptance criteria were **executed** in a scratch
 two-crate workspace created under `$TMPDIR` and deleted afterwards; no nested git
 repository was created (`cargo` was invoked without `init`, so no `.git` exists in
 the scratch tree) and nothing was written outside the run directory's
@@ -1471,7 +1514,7 @@ the scratch tree) and nothing was written outside the run directory's
 the MSRV floor.** The toolchain on this host is rustc 1.98.0; the probe declared
 `rust-version = "1.96"` and Cargo reported `Locking 56 packages to latest Rust
 1.96 compatible versions`, but nothing was *compiled* with 1.96. (2) **No Linux
-execution.** The twelve criteria ran on macOS 26.4 `aarch64-apple-darwin` only;
+execution.** The fourteen criteria ran on macOS 26.4 `aarch64-apple-darwin` only;
 `problem_details`'s upstream CI covers `ubuntu-latest` and does not cover macOS,
 so the two halves of `target-os-matrix` are covered by different evidence.
 (3) **No shared production adopter** of `problem_details` 0.10.0 with `axum`
