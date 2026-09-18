@@ -53,6 +53,28 @@
       },
       "provider": "opus",
       "state": "submitting"
+    },
+    {
+      "actor": "research-doxa-2026-09-18T215915Z-af997c2abb5a",
+      "at": "2026-09-18T22:27:53Z",
+      "operation": {
+        "actor": "research-doxa-2026-09-18T215915Z-af997c2abb5a",
+        "actual_model": "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026",
+        "actual_provider": "doxa-research 3.3.0 via scripts/doxa_no_retry.py; openai job resp_04e07ab2567c2e59006aadb56f89dc87d0a3b9326ee6c9a936 running; perplexity job c14c22b9-55a6-4752-bdd3-3c1cf7e2417e running; gemini job v1_ChdjTFd0YW9YcUdzaVctOFlQby16UnFRSRIXY0xXdGFvWHFHc2lXLThZUG8telJxUUk running",
+        "at": "2026-09-18T22:04:29Z",
+        "collected_at": "2026-09-18T22:27:53Z",
+        "model": "all_deep_research",
+        "operation_id": "research-20260918-150431-3cb17a06c88b457a",
+        "provider": "doxa",
+        "raw": "research/runs/R72/2026-09-18T215915Z-af997c2abb5a/raw/doxa-6f73f6c3bcca672d641c5cd77e178bbad8296d3feaa808e5c18ad5e0d62da540.md",
+        "raw_sha256": "6f73f6c3bcca672d641c5cd77e178bbad8296d3feaa808e5c18ad5e0d62da540",
+        "reason": "research-20260918-150431-3cb17a06c88b457a, submitted 2026-09-18T22:04:29Z, providers completed openai 22:17:35Z, perplexity 22:11:06Z, gemini by the 22:16Z resume pass; combined controller-built; twins normalized by scripts/doxa_normalize.py and validated",
+        "request_id": "412211e308a54a77815b76406c0ae8c9",
+        "returned_at": "2026-09-18T22:04:39Z",
+        "state": "succeeded"
+      },
+      "provider": "doxa",
+      "state": "succeeded"
     }
   ],
   "input_hashes": {
@@ -73,12 +95,16 @@
       "actual_model": "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026",
       "actual_provider": "doxa-research 3.3.0 via scripts/doxa_no_retry.py; openai job resp_04e07ab2567c2e59006aadb56f89dc87d0a3b9326ee6c9a936 running; perplexity job c14c22b9-55a6-4752-bdd3-3c1cf7e2417e running; gemini job v1_ChdjTFd0YW9YcUdzaVctOFlQby16UnFRSRIXY0xXdGFvWHFHc2lXLThZUG8telJxUUk running",
       "at": "2026-09-18T22:04:29Z",
+      "collected_at": "2026-09-18T22:27:53Z",
       "model": "all_deep_research",
       "operation_id": "research-20260918-150431-3cb17a06c88b457a",
       "provider": "doxa",
+      "raw": "research/runs/R72/2026-09-18T215915Z-af997c2abb5a/raw/doxa-6f73f6c3bcca672d641c5cd77e178bbad8296d3feaa808e5c18ad5e0d62da540.md",
+      "raw_sha256": "6f73f6c3bcca672d641c5cd77e178bbad8296d3feaa808e5c18ad5e0d62da540",
+      "reason": "research-20260918-150431-3cb17a06c88b457a, submitted 2026-09-18T22:04:29Z, providers completed openai 22:17:35Z, perplexity 22:11:06Z, gemini by the 22:16Z resume pass; combined controller-built; twins normalized by scripts/doxa_normalize.py and validated",
       "request_id": "412211e308a54a77815b76406c0ae8c9",
       "returned_at": "2026-09-18T22:04:39Z",
-      "state": "submitted"
+      "state": "succeeded"
     },
     "opus": {
       "actor": "research-opus-2026-09-18T215915Z-af997c2abb5a",
@@ -98,7 +124,7 @@
   ],
   "run_id": "2026-09-18T215915Z-af997c2abb5a",
   "schema_version": 1,
-  "state": "submitting",
+  "state": "partial",
   "tier": "deep",
-  "updated_at": "2026-09-18T22:21:09Z"
+  "updated_at": "2026-09-18T22:27:53Z"
 }

@@ -1,0 +1,37 @@
+{
+ "operation_id": "research-20260918-150431-3cb17a06c88b457a",
+ "kind": "bundle",
+ "providers": {
+  "openai": {
+   "saved_file": "doxa/research-outputs/2026-09-18_150431_all_deep_research_openai_deep-research-prompt-api-pagination-r72-bundle-obj.md",
+   "model": "gpt-5.6-sol",
+   "changes": [],
+   "normalized": "doxa-openai.normalized.md",
+   "shape": "OK: validation passed",
+   "member_notes": [],
+   "content_lines_missing_from_regrouped": 0
+  },
+  "perplexity": {
+   "saved_file": "doxa/research-outputs/2026-09-18_150431_all_deep_research_perplexity_deep-research-prompt-api-pagination-r72-bundle-obj.md",
+   "model": "sonar-deep-research",
+   "changes": [],
+   "normalized": "doxa-perplexity.normalized.md",
+   "shape": "OK: validation passed",
+   "member_notes": [],
+   "content_lines_missing_from_regrouped": 0
+  },
+  "gemini": {
+   "saved_file": "doxa/research-outputs/2026-09-18_150431_all_deep_research_gemini_deep-research-prompt-api-pagination-r72-bundle-obj.md",
+   "model": "deep-research-preview-04-2026",
+   "changes": [],
+   "normalized": "doxa-gemini.normalized.md",
+   "shape": "OK: validation passed",
+   "member_notes": [],
+   "content_lines_missing_from_regrouped": 0
+  }
+ },
+ "regrouped": {
+  "file": "doxa.normalized.md",
+  "shape": "OK: validation passed"
+ }
+}
