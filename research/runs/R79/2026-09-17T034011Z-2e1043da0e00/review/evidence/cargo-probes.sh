@@ -97,10 +97,16 @@ echo
 count_tree() {
   local dir="$1"
   shift
-  ( cd "$dir" && cargo tree -e normal --prefix none "$@" ) \
+  # cargo prints "Blocking waiting for file lock on package cache" to stderr
+  # whenever another process in this shared worktree holds the registry lock.
+  # That is environmental contention, not a result, and it would otherwise make
+  # an honest rerun's log differ. It is dropped here; every other stderr line
+  # still reaches the log, so a real cargo error is not hidden.
+  ( cd "$dir" && cargo tree -e normal --prefix none "$@" 2> "$scratch/cargo-stderr.txt" ) \
     | sed 's/ (\*)$//' \
     | awk 'NF >= 2 { print $1" "$2 }' \
     | sort -u
+  "$GREP" -v 'Blocking waiting for file lock' "$scratch/cargo-stderr.txt" >&2 || true
 }
 
 # resolve <dir> <lockname> : reuse a snapshotted lock, or create one.
@@ -110,7 +116,9 @@ resolve() {
     cp "$locks/$name.lock" "$dir/Cargo.lock"
     printf 'lock: reused snapshot locks/%s.lock\n' "$name"
   else
-    ( cd "$dir" && cargo generate-lockfile ) 2>&1 | sed 's/^/    /'
+    ( cd "$dir" && cargo generate-lockfile ) 2>&1 \
+      | "$GREP" -v 'Blocking waiting for file lock' \
+      | sed 's/^/    /'
     cp "$dir/Cargo.lock" "$locks/$name.lock"
     printf 'lock: created snapshot locks/%s.lock\n' "$name"
   fi
@@ -575,7 +583,8 @@ cp "$d/src/lib.rs" "$e4/src/lib.rs"
 cp -R "$d/src/obs" "$e4/src/obs"
 cp "$d/src/bin/probe-serve.rs" "$e4/src/bin/probe-serve.rs"
 cp "$d/tests/metrics.rs" "$e4/tests/metrics.rs"
-( cd "$e4" && cargo generate-lockfile ) > "$scratch/e4.log" 2>&1 || true
+( cd "$e4" && cargo generate-lockfile ) > "$scratch/e4.raw.log" 2>&1 || true
+"$GREP" -v 'Blocking waiting for file lock' "$scratch/e4.raw.log" > "$scratch/e4.log" || true
 sed 's/^/    /' "$scratch/e4.log"
 if "$GREP" -qE "Locking [0-9]+ packages to latest Rust $MSRV compatible versions" "$scratch/e4.log"; then
   pass "E4 cargo resolved with the MSRV-aware resolver at Rust $MSRV"

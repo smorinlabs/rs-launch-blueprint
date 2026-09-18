@@ -540,7 +540,11 @@ named below, per file, with the rule for comparing across it.
   what the acceptance criteria actually assert. Every crate count, package name and binary byte
   figure is exact, because each probe package's resolved `Cargo.lock` is snapshotted under
   `review/evidence/locks/` on first run and reused with `--locked` afterwards. Deleting
-  `locks/` re-resolves against the live registry, and the counts may then move.
+  `locks/` re-resolves against the live registry, and the counts may then move. A second
+  extraction rerun surfaced one further difference and it too was fixed rather than excused:
+  cargo writes `Blocking waiting for file lock on package cache` to stderr whenever another
+  agent in this shared worktree holds the registry lock, so that line is now dropped from the
+  log while every other stderr line still reaches it, and a real cargo error is not hidden.
 - `review/evidence/scrape-sample.txt` is the **verbatim** capture the promtool parse consumed,
   and it is the one artefact here that is deliberately *not* byte-stable: it is rewritten on
   every run, and its `_sum` values and low-bucket occupancies differ each time for the reasons
