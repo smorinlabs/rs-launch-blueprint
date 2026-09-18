@@ -109,7 +109,7 @@ choice between them is prior to the choice of caching tool or base image.
 
 | Alternative | Shape | Verdict |
 |---|---|---|
-| **A. No container at all** | The `web` feature ships only as a `cargo install --features web` instruction | **Rejected.** It makes the optional surface unusable by anyone without a Rust toolchain, and F223/F336/F337 would all resolve to OMIT, which the `DIVERGENT` verdict and py's precedent do not support. It also leaves R68's own statement — "the web surface's delivery vehicle is R51's container image" (`research/runs/R68/2026-09-17T033528Z-e504b7806e0c/review/DECISION.md` line 32) — with nothing behind it |
+| **A. No container at all** | The `web` feature ships only as a `cargo install --features web` instruction | **Rejected.** It makes the optional surface unusable by anyone without a Rust toolchain, and F223/F336/F337 would all resolve to OMIT, which the `DIVERGENT` verdict and py's precedent do not support. It also leaves R68's own statement — "the web surface's delivery vehicle is R51's container image" (`research/runs/R68/2026-09-17T033528Z-e504b7806e0c/review/DECISION.md` line 32) — with nothing behind it *at all*. Alternative B leaves it with a recipe rather than a downloadable, which is a weaker but non-empty answer; that difference is stated and handed to R68 under member 5's `Parameters` |
 | **B. A checked-in, CI-verified Dockerfile; no registry publication** | One `Dockerfile` + `.dockerignore` at the repository root, one `just` recipe, one path-gated CI job that builds it | **Selected.** See member 5 |
 | **C. B plus publication to GHCR on every release** | B, plus a follower job on release-please's tag that logs in and pushes `ghcr.io/<owner>/rs-launch-blueprint:<version>` | **Rejected on fit, not on cost.** Nobody deploys a template. The published image would be a web service with one demo resource, and every fork that wants an image wants *its own*. It also adds `packages: write` to a workflow under R08's unresolved hardening decision and three or four third-party actions to pin under R20, for an artifact with no consumer |
 | **D. A `docker-compose.yml` development stack** | B plus a compose file wiring the service and a database | **Rejected as out of scope.** The template has no database (R69 selects axum and tokio only); a compose file with one service is a `docker run` line with extra syntax |
@@ -284,7 +284,7 @@ first maintainer response is therefore **undefined — there were no responses**
 spanning 2026-06-05 to 2026-09-10. Two of the six are the repository's own RustSec bot notices about its
 *dependency tree* — #366 "RUSTSEC-2026-0204: Invalid pointer dereference in `fmt::Poin…`" and #365
 "RUSTSEC-2026-0190: Unsoundness in `Error::downcast_mut()`" — open for 73 and 80 days with no reply.
-Maintenance state by the rubric: **at-risk**. The release cadence is current (0.1.78 five weeks before the
+Maintenance state by the rubric: **at-risk**, on a **sample of 6, not 10** — the rubric asks for the ten most recently opened issues, and the ten most recently created items on this repository contain only six issues, the other four being pull requests. The release cadence is current (0.1.78 five weeks before the
 research date, repository pushed the same day), so this is not `dormant`; but "no maintainer reply on any of
 the six most recent issues over three months, two of them its own advisory notices" is the concrete signal
 `at-risk` requires, not an inference from a release gap.
@@ -913,14 +913,18 @@ FROM ${PROBE_IMAGE} AS probe
 ...
 COPY --from=probe /bin/busybox /bin/busybox
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD ["/bin/busybox","wget","--spider","-q","-T","3","http://127.0.0.1:8080/healthz"]
+    CMD ["/bin/busybox","wget","--spider","-q","-T","2","http://127.0.0.1:8080/healthz"]
 ```
 
 Four details are load-bearing. The applet must be invoked as `/bin/busybox wget`, not `wget`: the copied
 binary brings no applet symlinks, and C8 confirmed that `wget` alone is not resolvable in the runtime.
-`--spider` makes it a HEAD-style liveness check that discards the body. `-T 3` bounds busybox's own network
-wait inside the instruction's `--timeout=3s`, so the check fails by exit status rather than by being
-`SIGKILL`ed — the reference states that a check exceeding the timeout "is abruptly stopped with a `SIGKILL`".
+`--spider` makes it a HEAD-style liveness check that discards the body. `-T 2` bounds busybox's own network
+wait **strictly inside** the instruction's `--timeout=3s`, so a slow endpoint fails by busybox's own exit
+status rather than by being `SIGKILL`ed — the reference states that a check exceeding the timeout "is
+abruptly stopped with a `SIGKILL`". **The executed image used `-T 3`**, which is equal to the instruction
+timeout rather than inside it and therefore races it; the observed run (C2, C3) is reported with the value
+it actually carried, and the recommendation tightens it to `-T 2`. The difference is not exercised by any
+measurement here, because the probe returned in 47.7 ms.
 `127.0.0.1` rather than `localhost` avoids a name lookup in an image with no resolver configuration, which is
 the same reasoning py used in choosing `http://127.0.0.1:8000/healthz`.
 
@@ -1104,8 +1108,22 @@ The asymmetry — a recurring maintenance obligation against a one-time convenie
 ##### Parameters
 
 Consumes `target-os-matrix` (`ubuntu-latest` builds the image; `macos-latest` **inapplicable** for a Linux
-OCI artifact) and `web-extra-surface` (the path filter and the build's `--features web`). It creates a
-**hand-off, not a conflict**, to two open items: R11 (`ci-job-structure`, registry value `—`) must place this
+OCI artifact) and `web-extra-surface` (the path filter and the build's `--features web`).
+
+**A coupling with R68 that this member must state rather than leave implied.** R68 left the `web`-gated
+binary out of its release archives on the stated premise that "the web surface's delivery vehicle is R51's
+container image" (`research/runs/R68/2026-09-17T033528Z-e504b7806e0c/review/DECISION.md` line 32). Under this
+member's selected option the image is a **recipe**, not a downloadable: no release archive contains
+`rslbp-serve` and no registry serves an image, so nobody can obtain a runnable web artifact without a Docker
+daemon and a build. That is a deliberate consequence of "a template's web service has no consumers but its
+forks", and it is the right outcome if that premise holds. If the owner wants a downloadable web artifact,
+there are exactly two places to get one and they belong to two different items: **R51 takes option C**
+(publish to GHCR on release), or **R68 adds `features = ["web"]` to dist's build** so `rslbp-serve` ships in
+the release archives beside `rslbp`. This is recorded as a **hand-off to R68**, not a `CONFLICT:` line,
+because this recommendation needs no value of R68's changed — it needs the owner to know which of the two
+doors is the one to open.
+
+It creates a further **hand-off, not a conflict**, to two open items: R11 (`ci-job-structure`, registry value `—`) must place this
 job, and R19's published decision already anticipates it — F053 records that the `docker` and `devcontainers`
 Dependabot ecosystems are "conditional on R51 and R44 shipping those files"
 (`research/topics/19-dependabot-config-shape/DECISION.md:66`). **This recommendation ships those files, so
@@ -1219,9 +1237,8 @@ pre-decision). Rows this item touches, each answered:
 ### Parameters
 
 R51 owns no registry parameter (`docs/port/PARAMETERS.md` lists twelve rows and none names R51; the prompt's
-`## Couplings` records `- owns:` empty).
+`## Couplings` records `- owns:` empty), so no `- owns` line appears below.
 
-- owns: none
 - assumes web-extra-surface = one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files
 - assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
 - assumes rust-edition = 2024
@@ -1266,7 +1283,7 @@ SHA-pinning principle, applied here to base-image digests rather than to actions
 |---|---|---|
 | `Dockerfile` | **new**, ~22 lines: three `ARG`-carried digest pins, a `probe` stage, a `builder` stage with two cache mounts and one `cargo build --release --locked --features web --bin rslbp-serve`, a `gcr.io/distroless/cc-debian13:nonroot` runtime with `COPY --from=probe`, `COPY --from=builder`, `ENV PORT=8080`, `EXPOSE 8080`, `USER nonroot:nonroot`, exec-form `HEALTHCHECK`, `ENTRYPOINT` | R51 |
 | `.dockerignore` | **new**: `.git`, `target`, `**/target`. **Not** `Cargo.lock` — `--locked` needs it in the build context | R51 |
-| `Justfile` | **one recipe**, mirroring py's `Justfile:317-318`: `docker build -t rslbp-serve:dev .` | R51, placed per R47's recipe conventions |
+| `Justfile` | **one recipe**, mirroring py's `Justfile:317-318`: `docker build -t rslbp-serve:dev .` | R51; the invocation form is **R42's** published `package-manager-invocation`, which requires a tool that is not a cargo subcommand to be invoked as a bare executable resolved on `PATH` with no provisioner prefix — `docker` is exactly that case |
 | CI workflow | **one job**, `ubuntu-latest`, path-gated on `crates/web/**`, `Dockerfile`, `.dockerignore`; runs `DOCKER_BUILDKIT=1 docker build --platform linux/amd64`, then asserts non-root PID 1, `healthy`, HTTP 200, and exit 143. **No** third-party action, **no** added workflow permission | placement is **R11's** (`ci-job-structure` is still `—`) |
 | `.github/dependabot.yml` | **one new `package-ecosystem: "docker"` entry**, `directory: "/"`, matching R19's existing shape, so the three base digests are advanced automatically | **R19's** — its published F053 row already records this as "conditional on R51 … shipping those files", and this recommendation ships them |
 | `README.md` | **one section**: how to build the image; that the healthcheck probes R80's liveness path on R77's port; that Kubernetes ignores `HEALTHCHECK` in favour of Pod-spec probes; and the three or four lines a fork adds to publish to its own registry | R51, under R81's docs model |
