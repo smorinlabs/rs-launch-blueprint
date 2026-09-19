@@ -184,6 +184,25 @@ R62's written-out substitute wording at R67's next revision, and R62 records
 the open end as a re-verify trigger. Option declined: revising R67 immediately
 (a carried-forward run and both audits for an editorial change).
 
+### 2026-09-18 — the REST API Design Standard binds the HTTP surface (W2-REST)
+
+The owner confirmed that the organisation's REST API Design Standard, version
+2.0.0 (`https://github.com/smorinlabs/rest-standards`, local clone
+`/Users/stevemorin/c/rest-standards/rest-api-standard.md`, commit
+`0850d43e45d919ef5e37f7174c4212b46013c49f`, file blob `71bd813c`), governs
+this template's optional HTTP surface the way the CLI Design Standard (ruling
+of 2026-09-14) governs its CLI. It was raised by the R72 pagination research:
+under the standard, rule R1.8 reserves the names `cursor` and `limit` and rule
+R6.4 forbids `Link` headers for pagination, so py's `page`/`size` request and
+`items`/`total` body are nonconformant and the first-party cursor contract
+stands. Every web item (R70 R72 R73 R74 R76 R77 R80 and the later R71 R83 R84)
+designs to the standard, quotes the rules it relies on at their lines, and
+records any departure as an `OVERRIDE (OV-nn)` in the shape of the standard's
+own section 1.9 deviation note. Nothing already accepted is reopened by this
+ruling. Option declined: treating the standard as a reference input only,
+which would have made R72's cursor contract an override needing its own
+argument against py's precedent.
+
 ## Wave 0 owner acceptances
 
 Recorded from 2026-09-14 in `docs/port/OWNER-ACCEPTANCES.md` (moved there on
