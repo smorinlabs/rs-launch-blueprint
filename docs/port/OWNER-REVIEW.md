@@ -203,6 +203,18 @@ ruling. Option declined: treating the standard as a reference input only,
 which would have made R72's cursor contract an override needing its own
 argument against py's precedent.
 
+### 2026-09-18 — the MSRV floor is verified on Linux only (F033, with W1-R11)
+
+The baseline review left open whether the `rust-version` floor that
+`msrv-policy` requires CI to test runs on every runner in `target-os-matrix`
+(ubuntu-latest and macos-latest, py's cross product) or in a single Linux job
+(Cargo's own CI guide). With the acceptance of R11 `ci-workflow-job-structure`
+the owner rules: **one `ubuntu-latest` job verifies the floor**; the compiling
+`check` job is matrixed over the OS matrix, the floor job is not. R11 records
+the one-line `runs-on` substitution that would widen it, should the owner ever
+reverse this. Options declined: widening the floor job to both runners (one
+extra macOS job per run), fixing the cross product as a parameter value.
+
 ## Wave 0 owner acceptances
 
 Recorded from 2026-09-14 in `docs/port/OWNER-ACCEPTANCES.md` (moved there on
