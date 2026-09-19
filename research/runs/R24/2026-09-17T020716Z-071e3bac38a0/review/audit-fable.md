@@ -143,10 +143,23 @@ criterion A6 and in `## Engines`, each time naming what remains: that the
 `return undefined` the guard wraps is what a caller experiences as "no release
 pull request", which needs a GitHub repository and is P03's A6. Criterion A5 is
 `partly executed` with the schema-validation half assigned to P03. The
-"Nothing was built" paragraph is accurate — I confirmed there is no
-`release-please-config.json`, no `CHANGELOG.md` and no scaffold anywhere in this
-repository, and the check script writes only `toolchain.txt` and a scratch tree
-under `$TMPDIR` that its `EXIT` trap removes.
+"Nothing was built" paragraph is accurate at the scope it claims — that **this
+item** built nothing. `git show --stat 9fce93c` and `ef4139e` between them touch
+only `review/DECISION.md` and files under `review/evidence/` — 27 files in the
+first commit, 3 in the second — adding no `release-please-config.json`, no
+`CHANGELOG.md`, no workflow and no scaffold. The two source configurations the
+run does carry are suffixed `.snapshot`, which `snap/RETRIEVED.txt` explains is
+what keeps third-party bytes out of this repository's lint and test globs; they
+are read-only copies of py's and ts's files at their pins, not configuration
+this repository uses. The check script writes only `toolchain.txt`
+and a scratch tree under `$TMPDIR` that its `EXIT` trap removes. Widened to the
+whole repository the sentence would be false, and the decision does not widen
+it: `git ls-files` returns four tracked files carrying those two names, all of
+them fixtures inside other runs' evidence directories — one `CHANGELOG.md`
+under `research/runs/R15/…/review/empirical/fixture/` and three
+`release-please-config.json` files under
+`research/runs/R23/…/review/empirical/`. None is a template scaffold and none
+belongs to R24.
 
 ## Completeness
 
