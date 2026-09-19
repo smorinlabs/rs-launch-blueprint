@@ -514,4 +514,5 @@ Same rule as section 10: an acceptance binds the recommendation at one `review/D
 | W1-R86m | the MEMBER-without-write red failure in the /codex assistant lane | A defer to P03 | 2026-09-18 | — | P03 proves criterion B6 and chooses among R86's three options (accept the red failure; allow-users; narrow to OWNER); the workflow-level write check remains excluded by the 2026-09-12 ruling |
 | W1-R54 | R54 config-discovery-tiers | A accept | 2026-09-18 | `1348f6b3…` (revision 3) | six-rung precedence, no layering crate, walk-up bounded by .git or a workspace-declaring Cargo.toml, std resolvers for the project and system tiers; judgment-only under W1-CODEX |
 | W1-R22 | R22 runtime-version-accessor | A accept | 2026-09-18 | `0e7ea78e…` (revision 1) | one compile-time VERSION constant, no crate, no build.rs; judgment-only under W1-CODEX3 |
+| W1-R24 | R24 changelog-section-mapping | A accept | 2026-09-18 | `bc5dcafa…` (revision 1) | total ordered changelog-sections list, five visible / six hidden types, default headings; judgment-only under W1-CODEX3 |
 
