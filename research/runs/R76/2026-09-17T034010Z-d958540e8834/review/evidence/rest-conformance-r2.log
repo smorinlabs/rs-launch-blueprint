@@ -1,5 +1,5 @@
 === R76 revision 2: REST API Design Standard conformance ===
-date(UTC): 2026-09-19T01:22:14Z
+date(UTC): 2026-09-19T01:25:13Z
 grep:  grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
 rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
 cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
@@ -151,15 +151,22 @@ ASSERT ok   it exits non-zero, so the known breakage is loud rather than silent 
 
 --- F. the OVERRIDE namespace, enumerated rather than recalled ---
         occurrences of each OV-<digits> token under research/ and docs/:
-          2757 OV-01
+          2761 OV-01
            159 OV-02
-            57 OV-03
-            60 OV-04
-             2 OV-05
-             1 OV-06
-             1 OV-08
-           102 OV-09
-        distinct tokens in use AT THIS MOMENT: OV-01 OV-02 OV-03 OV-04 OV-05 OV-06 OV-08 OV-09  (8 of them)
+            61 OV-03
+            70 OV-04
+             7 OV-05
+             7 OV-06
+             3 OV-07
+             4 OV-08
+           106 OV-09
+             7 OV-10
+             7 OV-11
+             1 OV-12
+             1 OV-13
+             1 OV-14
+             1 OV-15
+        distinct tokens in use AT THIS MOMENT: OV-01 OV-02 OV-03 OV-04 OV-05 OV-06 OV-07 OV-08 OV-09 OV-10 OV-11 OV-12 OV-13 OV-14 OV-15  (15 of them)
         NOTE: this line is a snapshot of a namespace several sibling items are
               allocating concurrently in this shared worktree. It moved between
               two runs of this very script while revision 2 was being written.

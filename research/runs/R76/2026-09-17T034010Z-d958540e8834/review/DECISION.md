@@ -654,10 +654,18 @@ document predicted, located and measured, confined to the revision marker.
 Each script sets `set -euo pipefail` at the top, so a failing command inside a pipeline
 cannot be masked by a succeeding one. Each asserts on **content**, never on an exit code
 alone, and each prints `PASS=`, `FAIL=` and `SKIP=` counts that sum to its total and exits
-non-zero on any `FAIL`. Every `SKIP` branch names its reason; no branch was taken in these
-runs, which is recorded as `SKIP=0` rather than left implicit. None of the three needs a
-`.git` directory, so all three run unchanged from a clean `git archive HEAD` extraction —
-verified by extracting one and re-running all three there. No personal address appears in
+non-zero on any `FAIL`. Every `SKIP` branch names its reason; none was taken in the runs
+cited above, which is recorded as `SKIP=0` rather than left implicit. **On `.git`
+dependence the four scripts differ, and the difference is stated rather than averaged
+over.** The three revision-1 scripts need no `.git` at all and run unchanged from a clean
+`git archive HEAD` extraction, verified by extracting one and re-running all three there.
+`rest-conformance-r2.sh` needs none for sections A through E either — it reads the
+standard from a *separate* repository's blob, not this one's — but its section F
+enumerates the `OVERRIDE` namespace through this repository's index, so in an archive
+extraction that one section **skips by name** and the script reports `PASS=54 FAIL=0
+SKIP=1` instead of `PASS=57 FAIL=0 SKIP=0`. Verified by extracting the post-commit
+archive and re-running it: the skip line appears, the other 54 assertions are identical to
+the committed log, and the exit status is still 0. No personal address appears in
 any script, `User-Agent` header or log; the `User-Agent` the registry scripts send is the
 repository URL `https://github.com/smorinlabs/rs-launch-blueprint`. All scratch work
 happens inside one `mktemp -d` directory under `$TMPDIR` that a `trap` removes on exit;
