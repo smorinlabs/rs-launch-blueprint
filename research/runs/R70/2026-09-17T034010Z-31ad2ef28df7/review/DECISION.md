@@ -1,22 +1,81 @@
-# 2026-09-18 — R70 — http-problem-envelope (bundle, Focused) — decision (revision 1)
+# 2026-09-18 — R70 — http-problem-envelope (bundle, Focused) — decision (revision 2)
 
 ## Decision
 
+**Revision note (revision 2).** Owner ruling **W2-REST** (2026-09-18,
+`docs/port/OWNER-REVIEW.md`, "2026-09-18 — the REST API Design Standard binds the
+HTTP surface (W2-REST)") makes the organisation's **REST API Design Standard
+v2.0.0** bind this template's HTTP surface the way the CLI Design Standard binds
+its CLI. Revision 1 was written before that ruling. **The recommendation moves on
+five points and the crate does not.** `problem_details` 0.10.0 still carries the
+document, every fitness gate still passes, every status row is unchanged, the
+funnel is unchanged, and the five `- assumes` lines are byte-identical. What moves
+is the *shape of the body*, because the standard fixes members RFC 9457 leaves
+optional. The standard is read at the pinned blob
+`71bd813c1cf61286586b4ee41ed83ff065e5c8d9` (commit
+`0850d43e45d919ef5e37f7174c4212b46013c49f`,
+`/Users/stevemorin/c/rest-standards/rest-api-standard.md`); every rule quoted
+below is asserted at its line by `review/evidence/rest-r2.sh`.
+
+| # | What moves | The rule that moves it | Was (revision 1) | Is (revision 2) |
+|---|---|---|---|---|
+| **M-1** | `type` becomes **mandatory** and template-bound | **R5.13** point 5 (`:1076`): "`type` MUST be present on every problem document, and `about:blank` MUST NOT be used" | `type` deliberately **omitted**, which RFC 9457 §3.1.1 defines as `about:blank` | `type` always present, `https`, under a provider-controlled base, bound to `code` by R5.13.1's fixed template `<https base>/<code, underscores to hyphens>` |
+| **M-2** | `code` becomes a **snake_case code this item owns**; R67's token moves to `catalog_code` | **R5.13** point 1 (`:1066`): "The `code` grammar is `^[a-z][a-z0-9_]*$` (snake_case, hyphens excluded)" | `code` = R67's `RSLB301` verbatim | `code` = `resource_not_found`, from a total injective `const fn http_code(ErrorCode) -> &'static str`; `catalog_code` = `RSLB301` |
+| **M-3** | `errors` becomes an **array**, not a map | **R5.15** (`:1105`): "an array whose entries each carry a JSON Pointer to the offending input location (`pointer`), a stable machine-readable `code`, and a human-readable `detail`" | `errors: BTreeMap<String, Vec<String>>` | `errors: Vec<FieldError>` with `pointer` (RFC 6901), `code`, `detail` |
+| **M-4** | a framework rejection's raw text **never reaches the body** | **R8.12** (`:1422`): "Secrets, credentials, and PII MUST NOT appear in problem `detail`, in echoed request input, or in any other response content" | `errors.body` carried `rejection.body_text()` verbatim | the rejection text is logged; the body carries a location, a class code and a fixed detail |
+| **M-5** | two new artifacts: the **published catalog** and the **`documentation` member** | **R5.16** (`:1114`): "An API MUST publish a catalog of every problem `type`/`code` pair it can return"; **R5.13** point 4 (`:1074`) | neither existed; docs were deferred whole to R81 | the catalog is *generated* from `ErrorCode::ALL`, so it cannot drift from the status table; `documentation` is an optional member, omitted when absent |
+
+**M-4 is the one that would have shipped a defect.** Revision 1 put axum's
+rejection text straight into the body, and serde renders a type mismatch as
+``invalid type: integer `12345` ``— the offending **value**. For a `password` or
+token field that is a credential in a response body, which R8.12 forbids
+outright. Criterion `R18` is the executed proof that the value no longer leaks.
+
+**No `OVERRIDE (OV-nn)` is recorded, and each place one was considered is named.**
+The one candidate was R4.10's "the default media type — served when a request
+carries no `Accept` header — is `application/json`" (`:846`) against this
+envelope's unconditional `application/problem+json`. It is **not** a deviation:
+the standard itself rules at `:2218` that "R4.10's default clause carries no BCP
+14 keyword, so this is a taxonomy hole rather than a live conflict", and under
+R1.1 (`:128`) a clause with no all-capitals keyword states no requirement. R5.12
+(`:1035`) separately contemplates exactly this design, calling `application/json`
+mirroring a measure it "neither requires nor forbids". The numbering search is
+recorded anyway so the next item need not redo it: OV-01 through OV-04 are
+claimed — **OV-04 was free when this analysis began and was taken by R80 while it
+ran** — and OV-05 is the next free number (checks in `review/evidence/rest-r2.log`,
+group C).
+
+**Revision history.** **Revision 1**, 2026-09-18 (sha256
+`ad568a68c7735cbf642d1d6438ab96dad50148d708f5d39fad23e2ac358ca253`, commits
+`c41ff27`, `28d9f76` and `f010b8e`): first synthesis from the single Opus report,
+the Codex leg deferred under W1-CODEX3; 65 registry checks, 33 probe checks, 11
+archive-rerun checks; no audit has run against it. **Revision 2**, 2026-09-18
+(this file): the five moves above under W2-REST. **Every revision-1 script and log
+is carried byte-identical and none is re-run** — `registry.sh`, `registry.log`,
+`registry-figures.log`, `probe.sh`, `probe.log`, `archive-check.sh`,
+`archive-check.log`, `registry-archive.log` and `probe-archive.log`, each pinned
+by sha256 in `rest-r2.sh` group B. The new evidence is two new files,
+`review/evidence/rest-r2.sh` and `review/evidence/probe-r2.sh`, with their logs.
+No `## Supersedes` section is added: this item is not yet published.
+
 **`rs-launch-blueprint`'s optional `web` surface renders every non-2xx response —
 domain failure, router miss, extractor rejection and blocking-bridge panic alike —
-as one RFC 9457 `application/problem+json` document, built in
-`crates/web/src/problems.rs` by `problem_details` 0.10.0
-(`features = ["axum", "json"]`) typed as `ProblemDetails<ProblemExt>`, where
-`ProblemExt` carries R67's catalog token as the RFC 9457 extension member `code`
-and an optional `errors` field report. A domain failure's status comes from a free
-`pub const fn http_status(ErrorCode) -> StatusCode` proved total by a test that
-iterates `ErrorCode::ALL`; a framework failure keeps the status axum already
-computed and carries a catalog token as its identity. The funnel is wired at
-axum's four extension points — `impl IntoResponse for WebError`,
-`Router::fallback`, `Router::method_not_allowed_fallback`, and newtype extractors
-whose `type Rejection = WebError` — adding no Cargo feature, no `macros` feature,
-and no crate beyond `problem_details` and its one transitive addition
-`http-serde`.**
+as one RFC 9457 `application/problem+json` document conforming to the org REST API
+Design Standard v2.0.0 §5, built in `crates/web/src/problems.rs` by
+`problem_details` 0.10.0 (`features = ["axum", "json"]`) typed as
+`ProblemDetails<ProblemExt>`. Every document carries `type`, `title`, `status` and
+`code`, where `code` is a snake_case identifier this item owns and publishes and
+`type` is that code under a declared `https` base by the standard's fixed
+template; R67's catalog token rides beside them as `catalog_code`, so one HTTP
+error correlates with one CLI error. A domain failure's status comes from a free
+`pub const fn http_status(ErrorCode) -> StatusCode` and its code from a free
+`pub const fn http_code(ErrorCode) -> &'static str`, both proved total over
+`ErrorCode::ALL` by tests; a framework failure keeps the status axum already
+computed. The funnel is wired at axum's four extension points —
+`impl IntoResponse for WebError`, `Router::fallback`,
+`Router::method_not_allowed_fallback`, and newtype extractors whose
+`type Rejection = WebError` — adding no Cargo feature, no `macros` feature, and no
+crate beyond `problem_details` and its one transitive addition `http-serde`.**
 
 **Ledger rows settled.** **F305** "single RFC 9457 error envelope for every
 non-2xx response" (`docs/port/COMMONALITY.md:309`, `py-only` · `DIVERGENT`) and
@@ -49,13 +108,15 @@ one real risk (below).
 
 | Member | Source | Rule |
 |---|---|---|
-| `type` | RFC 9457 §3.1.1 | **omitted** by default. §3.1.1: "When this member is not present, its value is assumed to be `about:blank`", so omission is conformant (`registry.log`, section 5). Set to `<docs base>/<code>` only where a project publishes error documentation |
-| `status` | RFC 9457 §3.1.2 | the numeric status, always present, always equal to the response's own status line |
-| `title` | RFC 9457 §3.1.3 | `StatusCode::canonical_reason()` — the analogue of py's `HTTPStatus(status_code).phrase` |
-| `detail` | RFC 9457 §3.1.4 | present only when a public message exists; replaced by a fixed generic string when the W5 rule withholds it; never `null` |
-| `instance` | RFC 9457 §3.1.5 | the request path, matching py's `instance=request.url.path` |
-| `code` | RFC 9457 §3.2 extension | **always present.** R67's `ErrorCode::as_str()` token verbatim; the only machine identity |
-| `errors` | RFC 9457 §3.2 extension | `BTreeMap<String, Vec<String>>`, omitted when absent; field name → messages. `BTreeMap` rather than `HashMap` so member order is deterministic and R71's snapshot is stable |
+| `type` | RFC 9457 §3.1.1 · **R5.13.5 MUST** | **always present**, never `about:blank`. An absolute `https` URI under the base the deployment declares, bound to `code` by R5.13.1's fixed template `<https base>/<code, underscores to hyphens>`, so `resource_not_found` gives `…/resource-not-found`. Dereferencing it is a courtesy, never a contract (R5.13.3) |
+| `status` | RFC 9457 §3.1.2 · **R5.13 MUST** | the numeric status, always present, always equal to the response's own status line |
+| `title` | RFC 9457 §3.1.3 · **R5.13 MUST** | `StatusCode::canonical_reason()` — the analogue of py's `HTTPStatus(status_code).phrase` |
+| `detail` | RFC 9457 §3.1.4 | present only when a public message exists; replaced by a fixed generic string when the W5 rule withholds it; never `null`; never echoes caller input (R8.12) |
+| `instance` | RFC 9457 §3.1.5 | the request **path only**. `Uri::path()`, not the whole URI, because R5.17 bans a query fragment from every response body |
+| `code` | RFC 9457 §3.2 extension · **R5.13 MUST** | **always present.** A snake_case identifier matching `^[a-z][a-z0-9_]*$` (R5.13.1), from `http_code(ErrorCode)`; this item owns the value space and R5.16 publishes it |
+| `catalog_code` | RFC 9457 §3.2 extension | **always present.** R67's `ErrorCode::as_str()` token verbatim (`RSLB301`), the correlation field between this surface and the CLI's stderr envelope. Not a reserved name (R1.8) and snake_case (R4.4) |
+| `documentation` | RFC 9457 §3.2 extension · **R5.13.4** | optional human documentation, omitted when absent. Human text lives here and never in `type` |
+| `errors` | RFC 9457 §3.2 extension · **R5.15 SHOULD** | an **array**, omitted when absent, whose entries carry `pointer` (an RFC 6901 JSON Pointer to the offending input location), a stable machine-readable `code`, and a human-readable `detail` |
 
 Media type `application/problem+json`, taken from
 `JsonProblemDetails::CONTENT_TYPE` so the string exists once (verified in the
@@ -68,20 +129,73 @@ none may be removed, renamed or retyped without a new contract name.
 
 Three consequences are deliberate rules rather than defaults:
 
-1. **`code` is an extension member, not `type`.** RFC 9457 §3.2 provides for
-   extension members explicitly and names an `errors` extension by example
-   (`registry.log`, section 5), and the crate flattens a typed extension struct
-   into the top-level object, so `code` is a sibling of `title` and `status` on
-   the wire. The result is **one identity string across both surfaces**: `rslbp`
-   prints `RSLB301` on stderr and the serve binary returns `"code":"RSLB301"` in
-   the body. This is the direct answer to the question R69 revision 10 handed
-   this item (`research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1396-1399`).
+1. **`type` and `code` are one pair; `catalog_code` is a second, differently
+   purposed, string.** R5.13.1 makes `type` the normative identifier and `code`
+   its short form, bound by a template, and R5.13.2 freezes both once published.
+   That pair is this item's to own. R67's `RSLB` token cannot serve as `code`
+   because it fails R5.13.1's grammar, so it rides as `catalog_code`. **Revision
+   1's claim of "one identity string across both surfaces" does not survive the
+   standard and is withdrawn**: the identity is R67's *catalog row*, rendered
+   `RSLB301` by the CLI and `resource_not_found` over HTTP, with `catalog_code`
+   carrying the CLI's spelling on the wire and R5.16's catalog publishing the
+   mapping. The mapping is total, injective and grammar-checked by criterion `R4`,
+   not asserted in prose. This is the answer to the question R69 revision 10
+   handed this item
+   (`research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1396-1399`).
 2. **`hint` is not an HTTP member.** R67 defines `hint` as a CLI remediation line
-   "rendered as its own line in human output". Its HTTP analogue is documentation
-   behind `type`, not a body member. This item adds exactly two extension members,
-   `code` and `errors`, and no more.
-3. **py's explicit `"type": "about:blank"` is not carried.** Two members cannot
-   both be the identity, and §3.1.1 makes omission mean the same thing.
+   "rendered as its own line in human output". Its HTTP analogue is the
+   `documentation` member R5.13.4 reserves for exactly that purpose, not a
+   re-spelling of `hint`.
+3. **py's `"type": "about:blank"` is not carried, and neither is revision 1's
+   omission.** R5.13.5 bans `about:blank` outright and requires `type` to be
+   present, so both the py shape and the revision-1 shape are nonconformant. The
+   template URI replaces both.
+
+### The catalog-to-`code` map, and the published catalog
+
+R5.13.1 fixes the grammar and the template; this item fixes the seventeen values.
+`pub const fn http_code(ErrorCode) -> &'static str` is an explicit match in R67's
+own discipline — never derived from a variant identifier, so a rename cannot
+silently change the wire — and `problem_type(code)` applies the template to it.
+
+| R67 `catalog_code` | HTTP `code` | `type` (under the declared base) | status |
+|---|---|---|---|
+| `RSLB000` | `internal_error` | `…/internal-error` | 500 |
+| `RSLB101` | `io_failure` | `…/io-failure` | 500 |
+| `RSLB102` | `upstream_unreachable` | `…/upstream-unreachable` | 502 |
+| `RSLB103` | `upstream_failed` | `…/upstream-failed` | 502 |
+| `RSLB104` | `service_misconfigured` | `…/service-misconfigured` | 500 |
+| `RSLB201` | `request_invalid` | `…/request-invalid` | 400, or the framework's own 422/400/415 |
+| `RSLB202` | `service_config_unparsable` | `…/service-config-unparsable` | 500 |
+| `RSLB203` | `service_config_invalid` | `…/service-config-invalid` | 500 |
+| `RSLB204` | `service_secret_channel_invalid` | `…/service-secret-channel-invalid` | 500 |
+| `RSLB205` | `input_unavailable` | `…/input-unavailable` | 500 |
+| `RSLB301` | `resource_not_found` | `…/resource-not-found` | 404 |
+| `RSLB401` | `credentials_absent` | `…/credentials-absent` | 401 |
+| `RSLB402` | `credentials_rejected` | `…/credentials-rejected` | 401 |
+| `RSLB501` | `conflict` | `…/conflict` | 409 |
+| `RSLB901` | `interrupted` | `…/interrupted` | 500 |
+| `RSLB902` | `terminated` | `…/terminated` | 500 |
+| `RSLB903` | `prompt_interrupted` | `…/prompt-interrupted` | 500 |
+
+**The names are proposals; the mechanism is verified.** Criterion `R4` proves the
+map is total over `ErrorCode::ALL`, injective, and grammar-conformant; `R6` proves
+every `type` is `https`, template-bound and never `about:blank`; `R23` proves the
+R5.16 catalog is **generated from `ErrorCode::ALL`**, so it has one row per catalog
+member by construction and cannot drift from the status table. An owner who
+prefers different names changes seventeen string literals and nothing else.
+
+**The base URI is a deployment setting, not a constant, and that is R5.13.1's
+doing.** The rule requires `type` to sit "under a domain the provider controls".
+A *template* has no provider domain, and shipping a placeholder would ship a
+nonconformant default to every copy. **Recommendation: the problem-type base is a
+required setting of the web surface with no default, and the serve binary refuses
+to start without it** — which makes every copy conformant by construction. The
+environment variable's name and its loading are **R77's** (`web-env-settings`), not
+this item's; the fallback, if the owner prefers a softer failure, is a documented
+placeholder that each copy must change, and that option is recorded rather than
+taken. R5.13.6's URN alternative is not available: this template operates no
+IANA-registered URN namespace.
 
 ### The domain-code-to-HTTP-status table
 
@@ -160,6 +274,81 @@ assumed:
   selects an authentication scheme — so this item supplies the mechanism and
   records the obligation for whichever item lands auth.
 
+### Conformance to the REST API Design Standard v2.0.0
+
+Every rule below is quoted from the pinned blob and asserted **at its line** by
+`review/evidence/rest-r2.sh` (group A, 63 checks); the conformance verdicts are
+asserted by `review/evidence/probe-r2.sh` (25 checks, of which criteria `R1`–`R24`
+are one). "N/A" carries a reason, because R1.6 (`:232`) makes a reasonless N/A a
+deviation rather than an exemption.
+
+| Rule | Line | Strength | What it requires | Verdict |
+|---|---|---|---|---|
+| R5.1 | `:916` | MUST | the status matches the outcome; a failed operation never returns 2xx | **conform** — `R15`, `R24` |
+| R5.2 | `:934` | MUST | no unregistered status codes | **conform** — the nine statuses used (400, 401, 404, 405, 409, 415, 422, 500, 502) are all IANA-registered; `R1` bounds the table to 4xx/5xx |
+| R5.3 | `:939` | SHOULD | 422 for well-formed-but-invalid, 409 for state conflicts, 400 for malformed syntax | **conform** — and it is axum's own rejection split, not a re-implementation: `R11` (422), `R12` (400), `R23`'s `RSLB501`→409 |
+| R5.4 | `:948` | SHOULD NOT | 410 only with recorded permanence | **N/A** — no catalog row maps to 410 and this item defines no tombstoning |
+| R5.5 | `:956` | MUST | 307/308 where method and body survive a redirect | **N/A** — this item emits no redirect; no 3xx appears in the table |
+| R5.6 | `:966` | MUST | creates return 201 with `Location` | **N/A to this item** — success statuses belong to the route items (R69/R71); this item governs non-2xx only |
+| R5.7 | `:975` | — | DELETE returns 204 | **N/A to this item** — same reason |
+| R5.8 | `:985` | MUST | partial bulk returns 200 with the per-item envelope | **N/A** — switch `bulk-operations` is off |
+| R5.9 | `:994` | MUST NOT | 401 and 403 never conflated | **conform** — `RSLB401` (credentials absent) and `RSLB402` (credentials rejected) are both *unauthenticated* and map to 401; the catalog names no authorization failure, so 403 is **unused rather than conflated**. `R16` |
+| R5.10 | `:1000` | — | an object-level authorization denial defaults to 404 | **N/A today, binding tomorrow** — no P02 item implements authorization. Recorded as a requirement on whichever item does: the masking 404 is `resource_not_found`/`RSLB301`, the same row `R7` exercises |
+| R5.11 | `:1008` | MUST | 405 carries `Allow`; 415 answers an unsupported request media type; 428 where `If-Match` is demanded | **conform on the first two** — `R10` asserts `Allow: GET,HEAD` survives the envelope, `R13` asserts the 415. **428 N/A** — this item defines no conditional operation; §7.3 and R3.11 are not its |
+| R5.12 | `:1019` | MUST | every application-generated error servable as `problem+json`; the infrastructure carve-out documented | **conform, and exceeded** — every non-2xx is problem+json unconditionally rather than on request (`R24`). The carve-out is documented in the conformance note below |
+| R5.13 | `:1049` | MUST | `type`, `title`, `status`, `code`; template binding; grammar; immutability; no `about:blank`; `documentation` separate | **conform — this is move M-1, M-2 and M-5.** `R4` (grammar, totality, injectivity), `R6` (template, https, no `about:blank`), `R7` (the full member set on a real response), `R22` (`documentation`). Revision 1 **violated point 5** |
+| R5.14 | `:1098` | MUST NOT | RFC 7807 never cited, except in a note explicitly labeled historical | **conform** — this decision cites RFC 9457 throughout. The two places RFC 7807 is named are labeled historical: this row, and the R73 coupling below, which records that an IETF draft still cites the obsoleted RFC |
+| R5.15 | `:1105` | SHOULD | field failures carry `errors[]` with JSON Pointers | **conform — this is move M-3.** `R11` asserts the array shape and the `pointer`/`code`/`detail` entries |
+| R5.16 | `:1114` | MUST | a published catalog of every `type`/`code` pair | **conform — this is move M-5.** The catalog is *generated* from `ErrorCode::ALL` (`R23`), so it cannot drift. Its publication surface is R81's; its content is this item's |
+| R5.17 | `:1120` | — | no stack traces, query fragments, internal hostnames or dependency detail | **conform** — `R8` (host and token withheld), `R14` (panic text withheld), `R19` (**`instance` carries the path only**, so a query fragment cannot reach the body) |
+| R8.12 | `:1422` | MUST NOT | secrets, credentials and PII never in `detail`, in echoed input, or anywhere | **conform — this is move M-4**, and it is the rule revision 1 would have broken. `R18` is the executed proof that an offending request value is not echoed |
+| R4.3 | `:762` | MUST | an object at the top level | **conform** — `R21` |
+| R4.4 | `:768` | MUST | snake_case body properties, `^[a-z_][a-z_0-9]*$` | **conform** — `R21` checks every member name on nine distinct bodies, including the `errors[]` entries' fields |
+| R4.8 | `:818` | MUST | the contract states how null and omission differ | **conform, and stronger** — no member is ever `null`; absent means omitted. `R21` |
+| R4.10 | `:846` | *no BCP 14 keyword* | default media type `application/json`; no `format` parameter; 406 for an unsatisfiable `Accept` | **conform; no deviation to record.** The standard rules at `:2218` that this clause "carries no BCP 14 keyword", and R1.1 (`:128`) binds only all-capitals keywords. R5.12 (`:1035`) contemplates this exact design. No `format` parameter exists; 406 is a SHOULD this item does not reach, since it negotiates nothing |
+| R4.11 | `:856` | MUST | `Vary` on any response whose content a request header selected | **conform through its own exception** (`:858`, "responses with no negotiation") — nothing here is selected by a request header |
+| R4.12–R4.15 | `:880`–`:899` | SHOULD/MAY | structured header fields, registered link relations, URI templates, `Prefer` | **N/A** — this item defines no new header, expresses no link relation, describes no URI family and supports no `Prefer` |
+| R4.17 | `:864` | MUST | cross-origin responses list standard-bound headers in `Access-Control-Expose-Headers` | **N/A to this item, binding on R76** — this envelope's error path emits `WWW-Authenticate` and `Allow`, and R75/R74 add `request-id` and `Retry-After`; **R76 must expose all of them** or a browser client cannot read them |
+| R1.6 | `:229` | MUST | switches declared, each "off" with a reason | **conform** — declared in the conformance note below |
+| R1.7 | `:271` | MUST | no silent deviation | **conform** — no deviation is taken; the one candidate (R4.10) is shown above not to bind |
+| R1.8 | `:312` | MUST NOT | a reserved name never repurposed | **conform** — the nine members are RFC 9457's five plus `code`, `catalog_code`, `documentation` and `errors`; the standard itself registers `code`, `documentation`, `errors` and `pointer` with these meanings, and `catalog_code` is not a reserved name |
+| R1.9 / R13.3 | `:318` / `:339` | MUST | `dry_run` (and `stream`) to an endpoint that does not implement it is rejected with 400 | **conform — this is J7.** These bind **per endpoint even with every switch off** (`:258`). `R20` executes all three forms; the guard's *placement* is R75's |
+| R12.6, R12.7 | `:1815`, `:1819` | SHOULD / MUST NOT | client obligations | **N/A** — client-side rules; recorded because R12.7's "branch on the status first" is what makes R5.12's infrastructure carve-out survivable, and this template ships no client |
+
+**Conformance note fragment**, in R1.9's template shape (`:279`). This item owns
+only the error half; the API-level note has **no P02 owner**, which is recorded
+below as an owner question.
+
+```markdown
+## Conformance note — rs-launch-blueprint web surface (error responses)
+
+Standard: rest-api-standard v2.0.0
+Tier: internal            (a template's default; each copy re-declares)
+Switches: webhooks=off, async-operations=off, bulk-operations=off, streaming=off
+  webhooks=off          — no P02 item defines a webhook surface
+  async-operations=off  — no P02 item defines an operation resource
+  bulk-operations=off   — no P02 item defines a bulk endpoint
+  streaming=off         — R69's accepted surface serves whole JSON documents;
+                          no route streams
+Context: single-tenant by default; no PII in the shipped example domain; the
+  audience is the developer copying the template. Errors emitted by
+  infrastructure in front of the application — a reverse proxy, a load balancer,
+  or the platform's own 502/503 before the process is reached — are outside
+  application control and are NOT problem documents (R5.12's first carve-out).
+
+Deviations:
+- (none)
+
+N/A declarations:
+- R5.4, R5.5 · no 410 row and no redirect in the error map
+- R5.6, R5.7 · success statuses belong to the route items, not to this one
+- R5.8 · bulk-operations=off
+- R5.11 (428 limb) · no conditional operation is defined
+- R4.12–R4.15 · no new header, link relation, URI template or Prefer support
+- R4.17 · this item emits the headers; R76 owns the CORS exposure list
+- R12.6, R12.7 · client-side obligations; this template ships no client
+```
+
 ### Judgements carrying the weight
 
 Separated so a reviewer can accept or reject them independently.
@@ -168,7 +357,8 @@ Separated so a reviewer can accept or reject them independently.
 |---|---|---|---|
 | J1 | RFC 9457 rather than a house shape | **Recommended, and checked against a counter-example** | The RFC is an IETF Proposed Standard on the IETF stream with both media types IANA-registered citing `[RFC9457]` (`registry.log`, section 5); ISRG's `divviup/janus` declares `http-api-problem = "0.60.0"` in its workspace manifest (re-fetched, `registry.log` section 7). Against: Oxide's `dropshot` ships a bespoke `HttpErrorResponseBody { request_id, error_code, message }` and no problem+json (re-fetched, same section). Its three ideas map onto this design without contradiction — its `error_code` is this design's `code`, its `message` this design's `detail`; the disagreement is about the wrapper, not about what a client needs |
 | J2 | Take `problem_details` 0.10.0 rather than hand-roll the ~50-line struct | **Recommended, and the closest call in this decision** | Measured: one added crate in the resolved tree (`http-serde` v2.1.1 — executed as a tree diff against a control member with the identical dependencies minus `problem_details`, `probe.log` section 4); declared `rust-version = "1.85"` against a 1.96 floor; `#![forbid(unsafe_code)]`; no RustSec page; a `utoipa` `ToSchema` derive already on the struct for R71. Against: **bus factor 1** — 10 stars, 1 subscriber, 1 maintainer. Answered structurally, not verbally: the crate is named only from `crates/web/src/problems.rs`, so the replacement is a struct behind an unchanged module surface |
-| J3 | `code` as an extension member, not identity in `type` | **Recommended** | One identity string across the CLI's stderr envelope and the HTTP body; a `type` URI would make a client parse a string to recover R67's token, and the token would exist in two spellings |
+| J3 | `code` is a snake_case value space this item owns, with R67's token beside it as `catalog_code` | **Forced by R5.13.1's grammar, then chosen among three conforming shapes** | `RSLB301` fails `^[a-z][a-z0-9_]*$`, so it cannot be `code`. Three shapes conform: (a) this one; (b) `code: "rslb301"`, a mechanical lowercasing — **ranked runner-up**, rejected because it makes `type` URIs and the R5.16 catalog opaque and tautological, and the standard's own worked example (`…/validation-failed`, `code: validation_failed`) is semantic; (c) an `OVERRIDE` keeping `RSLB301` verbatim — rejected because the deviation is **not needed**, and R1.7 makes an unnecessary recorded exception a cost with no benefit |
+| J7 | The two per-endpoint reserved-parameter guards are this envelope's to render | **Forced** | R1.6 (`:258`) states that "a switch never waives a guard" and that R1.9 and R13.3 bind **per endpoint**, not per API. A mutating request carrying `dry_run` — or a request carrying `stream` — to an endpoint that does not implement it MUST be rejected with `400` (R1.9, `:318`), and that rejection is an error response, so it is this envelope. Criterion `R20` executes all three forms. Where the guard *lives* (middleware or handler) is R75's |
 | J4 | The table is a free `const fn` over `ErrorCode`, not an inline `match` in `into_response` | **Recommended, on testability** | A table inside a response method cannot be called by a test iterating `ErrorCode::ALL` without building a `Response` per code. The three coverage tests here are plain `#[test]` functions with no runtime, no router and no request |
 | J5 | No content negotiation; JSON only | **Recommended, on scope** | R69's accepted surface has no templating, static assets or HTML route, and R69 revision 10 records templating as having "No P02 item; pending owner scoping". Adding negotiation would settle a scoping question this item does not own. `impl IntoResponse for WebError` is the single place a later item adds it |
 | J6 | The individual status rows | **Proposals the owner may revise without touching anything verified** | Calibrated against py's five mappings and R67's exit semantics. The fourteen executed criteria prove one envelope can cover domain, router, extractor and panic failures at these versions on a supported OS; they do not prove that `RSLB102` should be 502 rather than 504 |
@@ -241,8 +431,18 @@ with both 2019 advisories patched in `>= 0.1.20`; upstream CI ubuntu-only with a
 - **R05 `sync-async-execution-model`** (revision 3, sha256 `3ca4b81a…`) — the
   synchronous core reached through `tokio::task::spawn_blocking` is why
   `JoinError` is a funnel source and why AC11 exists.
+- **R77 `web-env-settings`** (not researched) — **new under W2-REST.** R5.13.1
+  requires `type` to sit under a provider-controlled domain, and a template has no
+  provider. The problem-type base URI is therefore a required setting of the web
+  surface with no default. R77 names the environment variable and owns its
+  loading; this item owns only the requirement and the consequence, which is that
+  the serve binary refuses to start without it.
 - **R71 `openapi-generation-pipeline`** (not researched) — must document this
-  envelope. Recorded affordance, not a decision for R71:
+  envelope, and now has a fixed shape to document: R5.13's four required members
+  plus this item's four extensions. The standard's own OpenAPI checklist (`:2892`)
+  requires "a shared problem schema under `components.schemas`" with 4xx/5xx
+  responses keyed by `application/problem+json`. Recorded affordance, not a
+  decision for R71:
   `problem_details` carries `#[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]`
   with `schema(inline)` on the extensions field (vendored 0.10.0
   `src/problem_details.rs:117,170`, both asserted here).
@@ -251,7 +451,14 @@ with both 2019 advisories patched in `>= 0.1.20`; upstream CI ubuntu-only with a
   and were not exercised. The rule R75 inherits: any layer added to the stack must
   render its own rejection through `WebError`, and the enforcement is a route-walk
   test that also asserts the RFC 9110 header obligations, because a layer can strip
-  a header as easily as a body.
+  a header as easily as a body. **Three
+  further obligations reach R75 under W2-REST**: §1.10 (`:348`) reserves
+  `request-id` as a response header "emitted on every response **including
+  errors**", so the error path must not drop it; §7.2 (`:1281`) sets the caching
+  posture, and the standard's own error examples carry `Cache-Control: no-store`;
+  and R1.9's `dry_run` guard is naturally a layer rather than a per-handler check,
+  which is why criterion `R20` proves the *behaviour* here and leaves the
+  *placement* to R75.
 - **Being researched in parallel; stated as couplings, decided here only where
   this item owns the answer.** Their raw reports all assume this envelope and none
   contradicts it: **R80** wants `/readyz`'s 503 to reuse it and names a
@@ -265,8 +472,16 @@ with both 2019 advisories patched in `>= 0.1.20`; upstream CI ubuntu-only with a
   RFC 7807, which RFC 9457 obsoletes (`…/R73/…/raw/opus.md:1226-1232`); **R74**
   renders its 429 through this envelope and has **no catalog code** — R67 has no
   rate-limit row, and that gap is R74's to raise, not this item's
-  (`…/R74/…/raw/opus.md:146,407`); **R76** records this item as unaffected by CORS
-  (`…/R76/…/raw/opus.md:706`).
+  (`…/R74/…/raw/opus.md:146,407`) — under R5.16 that gap is now sharper, because a
+  429 needs a published `type`/`code` pair and the standard's own example names
+  `rate_limit_exceeded` (`:3205`); **R76** records this item as unaffected by CORS
+  (`…/R76/…/raw/opus.md:706`), which W2-REST reverses in one direction only: R4.17
+  makes R76 responsible for exposing the headers this error path emits.
+
+  On R73's note that the IETF idempotency draft still cites RFC 7807 — recorded
+  here as a **historical note, explicitly labeled as such** under R5.14's own
+  exception (`:1099`) — the standard agrees: RFC 9457 obsoletes RFC 7807 and this
+  envelope is the current shape.
 - **C4 validation ownership is unresolved and is deliberately left to the owner.**
   R69 revision 10 records C4 validation as "No P02 item; pending owner scoping"
   (`…/R69/…:2400`); R53 revision 2 says the opposite — "if the web surface wants
@@ -296,7 +511,7 @@ A5) rather than the precedent decides the Rust shape.
 | # | Principle | Agreement level | Must agree | May vary |
 |---|---|---|---|---|
 | W1 | Every non-2xx response carries one media type and one member set | **standard** (RFC 9457) | `application/problem+json`; the RFC's member names for the members present | whether absent members are omitted or spelled out |
-| W2 | Every non-2xx response carries the failure's stable machine identity | **standard, shared with R67** | the identity is R67's `RSLB` catalog token, the same string the CLI prints | which member carries it |
+| W2 | Every non-2xx response carries the failure's stable machine identity | **standard, shared with R67; now also R5.13** | that one catalog row is identifiable from the body. Under R5.13 the HTTP identity is the `type`/`code` pair this item owns, and R67's token rides beside it as `catalog_code`, so the CLI's `RSLB301` and the API's `resource_not_found` name the same row | which member carries which spelling; whether a deployment points `type` at published documentation |
 | W3 | Every layer's failure — domain, framework, extractor, panic — goes through one funnel | **architectural pattern** | that no code path can emit a non-2xx body that bypassed the funnel | how many extension points the ecosystem needs to reach that |
 | W4 | A domain failure's HTTP status is a reviewable table, not scattered literals | **architectural pattern** | one place, total over the published catalog, tested | `match`, trait method, or derive |
 | W5 | A failure message never discloses server internals to a client | **policy** | which classes are withheld, and that the full text is still logged | the wording of the substitute |
@@ -307,22 +522,28 @@ W4 is also **stronger than py**: py's `ERROR_STATUS: dict[type[PyError], int]` h
 no completeness test, so a new `PyError` subclass silently falls to
 `ERROR_STATUS.get(type(exc), 500)`.
 
-**Observable acceptance criteria.** Fourteen were reported as executed by
-`raw/opus.md`; all fourteen were **re-run here** by an independently written probe,
-with two additions, and all sixteen pass. AC1 every member of `ErrorCode::ALL`
-maps to a 4xx or 5xx; AC2 every `NOT_REQUEST_REACHABLE` code maps to 500 and the
-list is its declared length; AC3 no 5xx code is detail-public; AC4 a domain error
-renders 404 problem+json with `code`, `title`, `detail`, `instance` and **no**
-`errors`; AC5 an upstream failure returns 502 with the detail replaced and neither
-the upstream host nor the token anywhere in the body; AC6 `Router::fallback`
-renders the envelope with `instance`; AC7 `method_not_allowed_fallback` renders it
-at 405; AC8 an extractor data error renders 422 with the field detail under
-`errors.body`; AC9 a JSON syntax error keeps axum's 400; AC10 a missing content
-type keeps axum's 415; AC11 a panic inside `spawn_blocking` becomes `RSLB000`/500,
-still enveloped, detail withheld; AC12 a 2xx response is untouched; AC13 the 405
-still carries `Allow`; AC14 the 401 carries `WWW-Authenticate` *and* the envelope.
-The two additions: AC15 a `Path` rejection funnels through the same hook, proving
-the mechanism is per-extractor-family and not `Json`-specific; AC16 a walk over
+**Observable acceptance criteria.** Revision 1 re-ran the raw report's fourteen
+criteria and added two, `AC1`–`AC16`, all passing; `probe.log` is carried
+byte-identical and is **not** re-run, because those criteria bind revision 1's
+envelope. Revision 2 states its own twenty-four, `R1`–`R24`, in
+`review/evidence/probe-r2.sh`, and all twenty-four pass at the 1.96 MSRV floor and
+on the host toolchain. Twelve carry revision 1's behaviour forward unchanged
+(`R1`–`R3` the table's totality, redaction and the unreachable rows; `R7`–`R10`
+and `R12`–`R17` the four funnel sources, the `Allow` and `WWW-Authenticate`
+obligations, the 2xx pass-through and the blocking-bridge panic). **Twelve are new
+and exist because of the standard**: `R4` the `code` map is total, injective and
+matches `^[a-z][a-z0-9_]*$`; `R5` `catalog_code` is R67's token verbatim; `R6`
+every `type` is `https`, template-bound and never `about:blank`; `R11` `errors` is
+an array of `{pointer, code, detail}`; `R18` no offending request **value** is
+echoed into the body; `R19` `instance` carries no query fragment; `R20` the
+`dry_run` and `stream` guards answer 400 through this envelope; `R21` every member
+name on every body is snake_case, every body is an object at the top level and no
+member is ever `null`; `R22` `documentation` is omitted when absent and present
+when set; `R23` the R5.16 catalog is generated from `ErrorCode::ALL` and covers
+every row; and `R24` every failing request answers `application/problem+json`
+carrying a `type` and no `about:blank`. The superseded revision-1 sentence is kept
+here for the record: it read that AC8 renders 422 "with the field detail under
+`errors.body`", which M-3 and M-4 have both replaced. Revision 1's AC16 walked
 twelve requests asserting every failing one answers `application/problem+json` and
 every 2xx does not.
 
@@ -330,9 +551,9 @@ every 2xx does not.
 
 | Alt | Shape | Verdict |
 |---|---|---|
-| **B1** | **One RFC 9457 envelope for every non-2xx, `code` as an extension member, status from a table keyed on R67's `ErrorCode`** | **Chosen.** The only shape that preserves W1–W5 and keeps one identity string across the CLI's stderr envelope and the HTTP body |
+| **B1** | **One RFC 9457 envelope for every non-2xx, conforming to REST standard §5: template-bound `type`, owned snake_case `code`, R67's token as `catalog_code`, status from a table keyed on `ErrorCode`** | **Chosen.** The only shape that preserves W1–W5 *and* satisfies R5.13 without a recorded deviation |
 | B2 | Mirror R67's CLI envelope verbatim over HTTP: `{"error":{"code","message","hint"?}}` | Rejected. Not RFC 9457, so W1 fails and R71 publishes a house schema; and it reuses a *stderr process* contract as a *wire* contract, which R69 revision 10 warns is a different thing (`…/R69/…:1393-1394`: "R67's envelope is the CLI process's stderr contract, not an HTTP response body") |
-| B3 | RFC 9457 with the identity in `type` only | Rejected as the *sole* mechanism (J3); kept as an optional addition where a project publishes error documentation |
+| B3 | RFC 9457 with the identity in `type` only, no `code` member | **Rejected, and now forbidden.** R5.13 makes `code` a MUST beside `type`, so this is no longer an available shape; revision 1 kept it as an optional addition and revision 2 withdraws that |
 | B4 | Per-handler ad-hoc bodies, no single funnel | Rejected. It is what a framework gives for free and is exactly the defect py's module exists to prevent; W3 fails by construction |
 | B5 | Content-negotiated envelope: problem+json for `Accept: application/json`, HTML otherwise (the owner reference's C4) | Rejected for this template (J5) |
 | B6 | Map the status inside `into_response` with an inline `match` (the owner reference's wiring block) | Rejected (J4) |
@@ -423,8 +644,8 @@ And the row this decision explicitly does **not** rule on: `:53`'s
 
 **Minimal realistic example.** `crates/web/src/problems.rs` plus two lines in
 `build_router` and one `impl ProblemSource` in the core crate. Its executable
-acceptance check is the sixteen criteria in `## Empirical check`; what they prove
-and what they do not is stated there.
+acceptance check is the twenty-four criteria `R1`–`R24` in `## Empirical check`;
+what they prove and what they do not is stated there.
 
 **The trigger set, and which member of it is the binding one.** Nine events would
 send a reader back to part of this decision, and they are recorded where they
@@ -434,13 +655,15 @@ publishing its layer stack, R80 justifying a third extension member and the owne
 settling C4 validation each land in `### Couplings`; a RustSec advisory against
 `problem_details` or `http-serde`, `http-api-problem` publishing a version that
 declares `rust-version`, and an axum minor release changing a rejection's default
-status are each noted at the gate or criterion they would move. **Only two events
+status are each noted at the gate or criterion they would move. **Three events
 move the recommendation itself**: R67 appending a request-validation catalog row,
-which would shift the 422 identity off `RSLB201`; and `problem_details` falling
-dormant, which would make the hand-rolled struct the member. Those two are the
-binding trigger.
+which would shift the 422 identity off `RSLB201` and add a row to the `code` map;
+`problem_details` falling dormant, which would make the hand-rolled struct the
+member; and the REST API Design Standard revising §5 or §4.2, which is what moved
+this recommendation once already and is now the most likely thing to move it
+again. Those three are the binding trigger.
 
-re-verify: R67 appends a request-validation catalog row, or problem_details goes 12 months from 2026-09-12 with no release or repository push
+re-verify: the REST API Design Standard is revised past v2.0.0 in section 4.2 or section 5, R67 appends a request-validation catalog row, or problem_details goes 12 months from 2026-09-12 with no release or repository push
 
 ## Parameters
 
@@ -497,12 +720,13 @@ fixes the synchronous core reached through `tokio::task::spawn_blocking`.
 | Path | Change |
 |---|---|
 | `crates/web/Cargo.toml` | one `[dependencies]` line: `problem_details = { version = "0.10.0", features = ["axum", "json"] }`. No `optional = true` — the whole member is already optional at the root |
-| `crates/web/src/problems.rs` | **new**, and the only file that names `problem_details`. `ProblemExt`, `pub type Problem`, `pub trait ProblemSource`, `pub struct WebError` with its builders and `log_detail`, `impl IntoResponse for WebError`, `pub const fn http_status`, `pub const fn detail_is_public`, `pub const NOT_REQUEST_REACHABLE`, `From<JsonRejection>`/`From<PathRejection>`/`From<QueryRejection>`, `ProblemJson<T>`/`ProblemPath<T>`/`ProblemQuery<T>`, `not_found`, `method_not_allowed`, `join_error_to_web_error`, and the `headers` field with its `with_header` builder that RFC 9110's `WWW-Authenticate` obligation requires |
+| `crates/web/src/problems.rs` | **new**, and the only file that names `problem_details`. `ProblemExt` (`code`, `catalog_code`, `documentation`, `errors`), `FieldError` (`pointer`, `code`, `detail`), `pub type Problem`, `pub trait ProblemSource`, `pub struct WebError` with its builders and `log_detail`, `impl IntoResponse for WebError`, `pub const fn http_status`, **`pub const fn http_code`**, **`problem_type`**, `pub const fn detail_is_public`, `pub const NOT_REQUEST_REACHABLE`, `From<JsonRejection>`/`From<PathRejection>`/`From<QueryRejection>`, `ProblemJson<T>`/`ProblemPath<T>`/`ProblemQuery<T>`, `not_found`, `method_not_allowed`, **`reserved_parameter_guard`**, **`catalog()`**, `join_error_to_web_error`, and the `headers` field with its `with_header` builder that RFC 9110's `WWW-Authenticate` obligation requires. The bolded items are new in revision 2 |
 | `crates/web/src/lib.rs` | `mod problems;` plus re-exports, and two lines in `build_router`: `.fallback(problems::not_found)` and `.method_not_allowed_fallback(problems::method_not_allowed)` |
 | `crates/web/src/routes/*.rs` | handler return types become `Result<Json<T>, WebError>`; input extractors become the `Problem*` newtypes; the `spawn_blocking` join result maps through `join_error_to_web_error` |
 | `crates/core/src/error.rs` | one `impl ProblemSource for <domain error>` — about six lines, **the only change outside `crates/web`**. If a strict reading of R02's "depends on `core` only" is preferred, the impl moves into `crates/web`, since the trait is defined there |
-| `crates/web/tests/problems.rs` | **new**: the sixteen criteria below, retargeted at R67's real catalog |
-| `docs/` | one page documenting the envelope, its members and the status table — owned by R81, listed so the obligation is visible |
+| `crates/web/tests/problems.rs` | **new**: the twenty-four criteria `R1`–`R24`, retargeted at R67's real catalog and at the deployment's declared problem-type base |
+| `docs/` | the **R5.16 catalog** — one row per `ErrorCode::ALL` member with its `type`, `code`, `catalog_code` and status — generated from the same list the coverage test walks, so it cannot drift. Publishing it is a **MUST**, not a nicety; the delivery surface is R81's and the content is this item's |
+| the web surface's settings | one **required** value with no default: the problem-type base URI (R5.13.1). Named and loaded by R77; the serve binary refuses to start without it |
 
 Not created by this item: `openapi.rs` (R71), the middleware stack and its
 rejection rendering (R75), `/readyz`'s failure payload (R80), and a validator with
@@ -528,10 +752,46 @@ Working directory for every command:
 | `registry.sh` | `./registry.sh > registry.log 2>&1` | **PASS 65, FAIL 0, SKIP 0, exit 0** | `review/evidence/registry.log`, moving counters in `review/evidence/registry-figures.log` |
 | `probe.sh` | `./probe.sh > probe.log 2>&1` | **PASS 33, FAIL 0, SKIP 0, exit 0** | `review/evidence/probe.log` |
 | `archive-check.sh` | `./archive-check.sh > archive-check.log 2>&1` | **PASS 11, FAIL 0, SKIP 0, exit 0** | `review/evidence/archive-check.log`, with the reruns at `registry-archive.log` and `probe-archive.log` |
+| **`rest-r2.sh`** (new) | `./rest-r2.sh > rest-r2.log 2>&1` | **PASS 79, FAIL 0, SKIP 0, exit 0** | `review/evidence/rest-r2.log` |
+| **`probe-r2.sh`** (new) | `./probe-r2.sh > probe-r2.log 2>&1` | **PASS 25, FAIL 0, SKIP 0, exit 0** | `review/evidence/probe-r2.log` |
 
-All three are `set -euo pipefail` with `set -o pipefail` restated, assert on
+**Revision 2 adds two scripts and re-runs none of revision 1's.** The five
+revision-1 scripts and their four logs are carried **byte-identical**, asserted by
+sha256 in `rest-r2.sh` group B (9 checks) rather than by inspection. Two of them
+could not be meaningfully re-run in any case: `probe.sh` builds revision 1's
+envelope, whose shape R5.13 has since forbidden, and `archive-check.sh` pins
+`probe.log`'s summary line. `probe-r2.sh` is the revision-2 successor and carries
+revision 1's twelve surviving behaviours forward as `R1`–`R3`, `R7`–`R10` and
+`R12`–`R17`, so nothing revision 1 proved is dropped rather than re-proved.
+
+**`rest-r2.sh` — 79 checks in three groups.** Group A (63) extracts the standard
+at the pinned blob, asserts the extraction hashes **back** to that blob and that
+the pinned commit carries it as `rest-api-standard.md`, then asserts each quoted
+rule twice: its identifier at its exact line, and its sentence by a
+whitespace-collapsing match, because the standard is hard-wrapped and a rule's
+sentence spans line breaks. It also pins the standard's own worked error body from
+appendix E, which is the shape this revision adopts rather than interprets.
+Group B (9) is the revision-1 byte-identity. Group C (7) is the `OVERRIDE`
+numbering search, with OV-01 through OV-04 asserted **claimed** as the
+non-vacuous control for OV-05 and OV-06 being free, and an assertion that this
+decision declares no `OVERRIDE` heading.
+
+**`probe-r2.sh` — 25 checks over a rebuilt three-member workspace.** Same topology
+as revision 1's probe and the same control member, so the dependency comparison
+is unchanged; the web member is rewritten to the moved envelope. It builds and
+runs the twenty-four criteria under **rustc 1.96.0** and again on the host
+toolchain, asserting `24 passed; 0 failed` and no `warning:` from either; prints
+six response bodies and asserts four of them literally plus three
+whole-file negatives (no `about:blank`, no `null`, no upstream token); generates
+the R5.16 catalog and asserts eight properties of it, including that all
+seventeen `code` values are unique and grammar-conformant and every `type` is
+template-bound; and re-runs the tree diff, which still shows the moved envelope
+adding exactly `http-serde v2.1.1` and `problem_details v0.10.0` and
+`problem_details` named from `problems.rs` alone.
+
+All five are `set -euo pipefail` with `set -o pipefail` restated, assert on
 content rather than on exit status, count PASS/FAIL/SKIP, sum them and exit
-non-zero on any FAIL. All three are `shellcheck` 0.11.0 clean. No script contains a
+non-zero on any FAIL. All five are `shellcheck` 0.11.0 clean. No script contains a
 personal email address or a token; the `User-Agent` sent to crates.io is the
 repository URL `https://github.com/smorinlabs/rs-launch-blueprint`. GitHub REST is
 reached through keyring-authenticated `gh api` at no more than one call per 20 s.
@@ -583,15 +843,33 @@ dependencies **minus** `problem_details`), then:
 
 The four bodies, captured verbatim by this run:
 
+Revision 1's bodies, kept as the record of what the standard changed:
+
 ```
 GET /projects/demo -> 404 Not Found application/problem+json
 {"status":404,"title":"Not Found","detail":"project 'demo' not found","instance":"/projects/demo","code":"RSLB301"}
-GET /upstream -> 502 Bad Gateway application/problem+json
-{"status":502,"title":"Bad Gateway","detail":"An unexpected error occurred.","instance":"/upstream","code":"RSLB103"}
 POST /projects -> 422 Unprocessable Entity application/problem+json
 {"status":422,"title":"Unprocessable Entity","detail":"Request validation failed.","code":"RSLB201","errors":{"body":["Failed to deserialize the JSON body into the target type: name: invalid type: integer `42`, expected a string at line 1 column 11"]}}
+```
+
+Revision 2's bodies, captured verbatim by `probe-r2.sh`. The 422 is the one to
+read against the 422 above: no `type`, a map-shaped `errors`, and the offending
+value `42` echoed — three rules broken — become a template-bound `type`, an
+`errors` array, and a body that names the location without the value.
+
+```
+GET /projects/demo -> 404 Not Found application/problem+json
+{"type":"https://problems.example.com/resource-not-found","status":404,"title":"Not Found","detail":"project 'demo' not found","instance":"/projects/demo","code":"resource_not_found","catalog_code":"RSLB301"}
+GET /upstream -> 502 Bad Gateway application/problem+json
+{"type":"https://problems.example.com/upstream-failed","status":502,"title":"Bad Gateway","detail":"An unexpected error occurred.","instance":"/upstream","code":"upstream_failed","catalog_code":"RSLB103"}
+POST /projects -> 422 Unprocessable Entity application/problem+json
+{"type":"https://problems.example.com/request-invalid","status":422,"title":"Unprocessable Entity","detail":"The request could not be processed as submitted.","code":"request_invalid","catalog_code":"RSLB201","errors":[{"pointer":"","code":"invalid_body_type","detail":"The request body did not match the expected shape."}]}
 DELETE /ok -> 405 Method Not Allowed application/problem+json
-{"status":405,"title":"Method Not Allowed","detail":"This method is not allowed for this path.","code":"RSLB201"}
+{"type":"https://problems.example.com/request-invalid","status":405,"title":"Method Not Allowed","detail":"This method is not allowed for this path.","code":"request_invalid","catalog_code":"RSLB201"}
+GET /documented -> 409 Conflict application/problem+json
+{"type":"https://problems.example.com/conflict","status":409,"title":"Conflict","detail":"The project already exists.","code":"conflict","catalog_code":"RSLB501","documentation":"https://developers.example.com/errors#conflict"}
+POST /projects?dry_run=true -> 400 Bad Request application/problem+json
+{"type":"https://problems.example.com/request-invalid","status":400,"title":"Bad Request","detail":"This endpoint does not implement the requested capability.","instance":"/projects","code":"request_invalid","catalog_code":"RSLB201","errors":[{"pointer":"","code":"unsupported_reserved_parameter","detail":"A reserved request parameter was sent to an endpoint that does not implement it."}]}
 ```
 
 The `/upstream` handler's domain message is
@@ -633,12 +911,31 @@ one RFC 9110 phrase; the log was regenerated and the comparison re-run.
 - **No `cargo-deny` run.** Advisories were verified by RustSec page and
   `advisory-db` raw file, not by R13's tool, which is not yet wired.
 - **No middleware-originated error.** Those are R75's.
+- **No `request-id` header.** §1.10 reserves it on every response including
+  errors, but nothing in this item emits it and no middleware exists to set it, so
+  "the error path does not drop it" is a P03 check, not one run here.
+- **The `type` base URI is a probe constant, not a setting.** `PROBLEM_BASE` is a
+  `const` in the probe. That the base can be *required* at startup, and that the
+  binary refuses to start without it, is R77's to build and P03's to prove.
+- **No API-level conformance note.** The fragment above covers this item's rules
+  only. Whether one document carries the whole API's note, and who owns it, is an
+  **open owner question** this decision raises and does not answer.
 
 ## Engines
 
 `opus raw/opus.md` — Claude Opus 5, sha256
 `82538638b5f54017c22853eb9e52e6d4e6c71b78e35fad8ed6ea68be3fefe39e`, written
 2026-09-18, shape-checked against the bundle template with four `####` members.
+
+**What revision 2 changed, and on whose authority.** The five moves under
+`### Conformance to the REST API Design Standard v2.0.0` come from the standard
+at its pinned blob, not from a second engine. No new research leg ran. Every move
+is traceable to a rule asserted at its line, and each is executed: M-1 by `R6`,
+M-2 by `R4` and `R5`, M-3 by `R11`, M-4 by `R18`, M-5 by `R22` and `R23`. **The
+single most consequential finding is M-4**: revision 1's design placed axum's
+rejection text — which renders the offending request *value* — into the response
+body, and R8.12 forbids exactly that. It was found by reading the rule, not by
+the probe, and only then made executable.
 
 **The Codex leg is absent by the controller's deferral under owner ruling
 W1-CODEX3 (2026-09-18)** — the Codex account is at its usage limit and the ruling
@@ -666,6 +963,13 @@ diff against a control member; and all fourteen acceptance criteria, re-run from
 an independently written probe, plus two additions — and **better than the report
 on one axis**, because the suite also compiled and ran at the 1.96 MSRV floor,
 which the report explicitly could not do.
+
+**Carried from revision 1 unchanged**, and therefore still resting on revision
+1's evidence: the crate selection and all six fitness gates, every status row,
+the funnel's four extension points, the landscape and the excluded candidates,
+and the whole owner-reference tally. W2-REST reaches the body's *shape*, not the
+crate, and `probe-r2.sh` confirms the crate carries the moved shape with no new
+dependency.
 
 **Carried from the report without independent re-verification**, each with what
 would prove it:
