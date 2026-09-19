@@ -1,4 +1,4 @@
-# 2026-09-18 — R76 — cors-middleware (crate, Focused) — decision (revision 1)
+# 2026-09-18 — R76 — cors-middleware (crate, Focused) — decision (revision 2)
 
 ## Decision
 
@@ -7,6 +7,35 @@ This decision is a **proposal validated in the implementation phase** (owner rul
 template and its CI proves the recommendation. The list of claims P03 must validate is
 under `## Engines`. A decision that does not survive implementation is revised against
 this recorded research, not researched again from scratch.
+
+**Revision note (revision 2, pre-audit).** Revision 1 (committed `3b933872`, sha256
+`6fd6e1f9…`) was written before owner ruling **W2-REST** of 2026-09-18
+(`docs/port/OWNER-REVIEW.md`, heading *"2026-09-18 — the REST API Design Standard binds
+the HTTP surface (W2-REST)"*), which makes the organisation's **REST API Design Standard
+v2.0.0** bind this template's HTTP surface the way the CLI Design Standard binds its CLI.
+The standard is pinned at commit `0850d43e45d919ef5e37f7174c4212b46013c49f`, file blob
+`71bd813c1cf61286586b4ee41ed83ff065e5c8d9` (190,161 bytes, 3,427 lines, read here with
+`git -C /Users/stevemorin/c/rest-standards cat-file blob 71bd813c…`). This revision reads
+that blob for every rule touching CORS, cross-origin access, browser clients, allowed
+origins and the security and deployment profile, quotes each at its line, and states rule
+by rule whether the recommendation conforms.
+
+**The recommendation moved, and this says so plainly rather than burying it.** One rule,
+**R4.17**, is not satisfied by revision 1's configuration, and the gap was *measured*, not
+argued: with an allowlist configured, revision 1's `CorsLayer` emits **no**
+`Access-Control-Expose-Headers` header at all, so a cross-origin browser client cannot
+read `request-id` — a header R11.7 makes mandatory on every response. The fix is
+mechanical and is taken here, which a pre-acceptance revision is allowed to do: the
+recommendation now configures `expose_headers`, and `apply_cors` grows a third parameter
+carrying the list. **No `OVERRIDE (OV-nn)` is recorded**, because after that move every
+quoted rule conforms or is not engaged, so there is nothing to argue against. This item
+therefore claims no override number — see `## Engines` for the state of that namespace,
+which sibling revisions are allocating concurrently.
+**Unchanged from revision 1:** the crate and its version, the conditional-install policy
+that is this item's whole subject, every gate result, every figure, and all six
+`- assumes` lines. Revision 1's evidence — `registry-figures.sh`, `probe-checks.sh`,
+`decision-self-check.sh` and their three logs — is retained **byte-identical**; this
+revision's checks live in the new `rest-conformance-r2.sh` and its log.
 
 **Adopt `tower-http` **0.7.1** with the `cors` feature, and install
 `tower_http::cors::CorsLayer` from a plain conditional branch in the composition root
@@ -25,7 +54,7 @@ tower-http = { version = "0.7.1", default-features = false, features = ["cors"] 
 ```rust
 // crates/web/src/cors.rs
 use axum::Router;
-use axum::http::HeaderValue;
+use axum::http::{HeaderName, HeaderValue};
 use std::time::Duration;
 use tower_http::cors::{Any, CorsLayer};
 
@@ -33,7 +62,16 @@ use tower_http::cors::{Any, CorsLayer};
 /// An empty allowlist (the default) leaves the router byte-identical to a build
 /// with no CORS code: no layer, no `Vary`, and `OPTIONS` on a GET-only route
 /// still answers 405.
-pub fn apply_cors(router: Router, allowed_origins: &[HeaderValue]) -> Router {
+///
+/// `exposed_headers` lists every standard-bound response header this service
+/// emits, which REST API Design Standard R4.17 makes mandatory wherever the
+/// API serves cross-origin browser clients. It is never empty: R11.7 puts
+/// `request-id` on every response unconditionally.
+pub fn apply_cors(
+    router: Router,
+    allowed_origins: &[HeaderValue],
+    exposed_headers: &[HeaderName],
+) -> Router {
     if allowed_origins.is_empty() {
         return router;
     }
@@ -42,6 +80,7 @@ pub fn apply_cors(router: Router, allowed_origins: &[HeaderValue]) -> Router {
             .allow_origin(allowed_origins.to_vec())
             .allow_methods(Any)
             .allow_headers(Any)
+            .expose_headers(exposed_headers.to_vec())
             .max_age(Duration::from_secs(600)),
     )
 }
@@ -54,6 +93,7 @@ pub fn apply_cors(router: Router, allowed_origins: &[HeaderValue]) -> Router {
 | installation mechanism | a re-binding `if` over the `Router` in the composition root | `axum::Router::layer` returns `Router<S>` — the same type it was called on — so `app = app.layer(cors)` inside an `if` type-checks. Executed: `review/evidence/probe-checks.log`, section B |
 | trigger | the configured allowlist is non-empty | `F322`'s recorded principle is *absence*, not *permissive-but-empty*. The difference is measured, not asserted: see the two rows below |
 | `allow_methods` / `allow_headers` | `Any` (the literal `*`) | matches what py's `allow_methods=["*"], allow_headers=["*"]` permits. The emitted header text differs cosmetically; the permission is the same |
+| `expose_headers` | an **explicit list** of every standard-bound response header the service emits, never the `Any` wildcard, and never empty | **added in revision 2** to satisfy **R4.17**. The wildcard is not an option: it emits a bare `access-control-expose-headers: *`, which lists no header name and so does not do what R4.17 says to do, and the Fetch Standard ignores `*` outright once credentials are in play. The list's floor is `request-id`, because **R11.7** makes that header unconditional; R75 assembles the rest from the layers it installs. Measured in `review/evidence/rest-conformance-r2.log`, checks `X1`, `X2` and `X3` |
 | `max_age` | `Duration::from_secs(600)` | Starlette emits `Access-Control-Max-Age: 600` unconditionally; `tower-http` emits nothing unless asked. Without this call a browser re-preflights every request. **Compiled and measured in this run** (`probe-checks.log`, check `E`: `access-control-max-age=600`), closing the one gap the research report left open |
 | `allow_credentials` | not set, so off | agrees with Starlette's `allow_credentials: bool = False`. Setting it alongside a wildcard *panics* through `ensure_usable_cors_rules` (`tower-http-0.7.1/src/cors/mod.rs:820`); the recommended configuration never does, and a future item that exposes the knob must convert that panic to a boot-time error |
 | call site | `Router::layer`, never `Router::route_layer` | `route_layer` does not run for a request no route matched, so a preflight to an unmatched path returns a bare `404` with no CORS headers (`probe-checks.log`, checks `P2` and `P3`) |
@@ -165,6 +205,48 @@ touches nothing else this item depends on.
    byte delta is the meaningful figure; its percentage form must not be carried forward,
    because the probes contain almost no other code.
 
+**Conformance to the REST API Design Standard v2.0.0 (owner ruling W2-REST), rule by
+rule.** Every rule below was located by searching the pinned blob for CORS, cross-origin
+access, browser clients, allowed origins, and the security and deployment profile, then
+quoted at its line; `review/evidence/rest-conformance-r2.sh` asserts the quoted bytes at
+the blob so a quotation cannot drift from its source, and then measures each conformance
+claim.
+
+| Rule | Line | Quoted | Disposition |
+|---|---|---|---|
+| **R4.17** | 864, 868 | "Where an API serves cross-origin browser clients, every response MUST list the standard-bound response headers it emits … in `Access-Control-Expose-Headers`." | **MOVED — recommendation changed.** Revision 1 set no expose list, so with an allowlist configured its response carried no `access-control-expose-headers` at all (check `X2`). Revision 2 configures an explicit list and the header is emitted naming each one (check `X1`). The wildcard form was rejected on measurement: it emits `*`, which lists nothing (check `X3`) |
+| **R11.7** | 1752 | "Every response, including errors, MUST carry the `request-id` correlation header (§1.10)." | **CONFORMS, with an ordering constraint now required rather than advised.** A CORS preflight short-circuits before the inner service, so a request-id layer placed *inside* `CorsLayer` leaves the preflight `200` with no `request-id` (check `X6`) — a MUST violated. Placed *outside*, the same preflight carries it (check `X7`). R76 owns neither the header nor the order; it hands R75 a rule-backed constraint in place of revision 1's precedent-backed one |
+| **R5.11** | 1008 | "`405 Method Not Allowed` MUST carry an `Allow` header." | **CONFORMS, and the conditional install is what makes it true.** With the allowlist empty the layer is absent and `OPTIONS` on a `GET`-only route answers `405` carrying `allow: GET,HEAD` (check `X5`). The rejected alternative B destroys that response entirely, turning it into a `200` — an independent, standard-level reason for the branch this item recommends |
+| **R4.11** | 856 | "Every response whose content was selected by a request header MUST send `Vary` listing each header that influenced selection. **Exception:** responses with no negotiation." | **CONFORMS in both branches.** Allowlist empty: no layer, no negotiation, no `Vary` — the rule's own stated exception (check `X8`). Allowlist configured: `Origin` selects whether `access-control-allow-origin` is emitted, and `vary: origin` names it (check `X9`). Emitting `Vary` more broadly than the rule compels is not a deviation; the rule fixes a floor, not a ceiling |
+| **R4.10** | 846 | "The default media type … is `application/json` … Media-type selection MUST use HTTP content negotiation, never a `format` query parameter." | **NOT ENGAGED, measured rather than assumed.** A preflight response serves no representation: check `X4` shows `content-length: 0` and no `content-type`, so no media type was selected and no negotiation arises. The rule binds the endpoints R70 and R71 own, not this layer |
+| **R1.6** | 229, 237, 241 | "The switch vocabulary: `webhooks` · `async-operations` · `bulk-operations` · `streaming`." · "…client audience — belong in the conformance note's free text, not here." | **CONFORMS, and it closes a tempting escape route.** There is **no applicability switch for CORS, cross-origin access or browser clients** — asserted by counting those words in the vocabulary lines, which finds **zero**. A CLI-first template therefore *cannot* declare these rules N/A by switch. R4.17 is scoped by its own conditional clause instead, and this item satisfies that clause's demand in the branch where it fires |
+| **R1.7** | 271 | "An API deviates from this standard only in writing… silent deviation from any rule strength is nonconformance regardless of the deviation's merits." | **CONFORMS by construction.** Every rule this run quoted is dispositioned above; `rest-conformance-r2.sh` section D asserts that the decision names each one, so a rule cannot fall silently out of the table. The conformance-note lines this item owes are handed over below |
+| **R8.10** | 1387 | "Each axis below carries a ratified default and named threat-model flip triggers. An API MUST adopt each axis default unless a named trigger applies, and MUST record any flip in its conformance note." | **NOT ENGAGED; hand-off recorded.** None of the five axes — sender-constrained tokens, token format, rate-limit aggressiveness, replay window, object-level authorization — is a CORS axis, asserted by counting CORS terms in the axis table, which finds **zero**. This item flips nothing. It does, however, *establish the fact* that a browser client exists whenever the allowlist is non-empty, and that fact is an input to the sender-constrained-tokens axis ("hostile-environment public clients → DPoP"). Recorded for whoever owns the auth axes, not decided here |
+| **R8.1** | 1317 | "APIs MUST be served only over TLS 1.2 or higher…" | **NOT ENGAGED.** The CORS layer neither terminates nor negotiates TLS. Stated rather than skipped, because a security-section rule passed over in silence is indistinguishable from one overlooked |
+| **R8.2** | 1323 | "Access tokens MUST NOT be accepted or emitted in URI query parameters." | **NOT ENGAGED.** The layer reads the `Origin` request header and writes `Access-Control-*` response headers; it touches no query string and no credential. The recommendation sets no `allow_credentials`, so it emits nothing a token could ride on |
+| **R8.11** | 1414 | "Caller-supplied URLs (webhook targets, callbacks) MUST be validated and restricted against internal address ranges." | **NOT ENGAGED, and worth saying why, because it looks as though it should be.** R8.11 governs URLs *the server fetches*. The origin allowlist is the opposite direction: an operator-supplied set of inbound origins matched against a request header, never dereferenced. No SSRF surface is created by this item |
+
+Two supporting registry rows were quoted with the rules that rest on them: §1.10's
+`request-id` row at line 348 ("emitted on every response including errors") and its
+`Allow` row at line 351 ("Mandatory on every `405 Method Not Allowed`"). Appendix A's
+checklist row for R4.17 stands at line 2696, and Appendix E's worked example states the
+same obligation in prose at lines 2913–2915 — a conformant API "serves cross-origin
+browser clients, so every response also carries `Access-Control-Expose-Headers` listing
+the standard-bound headers it emits (R4.17)".
+
+**The conformance-note lines this item owes** (R1.7's template, §1.9). R76 does not own
+the template's conformance note, so these are supplied for whoever assembles it rather
+than written into it here:
+
+- *Context (free text):* "The HTTP surface serves cross-origin browser clients only when
+  the operator configures a non-empty origin allowlist; with the default empty allowlist
+  no CORS middleware is installed and the service emits no `Access-Control-*` header."
+- *N/A declarations:* none owed by this item. R4.17 is not declared N/A — it is satisfied
+  in the branch where its condition holds, and its condition simply does not hold in the
+  other branch. The distinction matters under R1.6: an unmet conditional clause is not an
+  off switch, and there is no switch here to turn off.
+- *Deviations:* none. No `OVERRIDE (OV-nn)` is recorded by this item.
+
 **Couplings, stated and not decided.**
 
 - **R69 (`web-framework-stack`, F303)** fixed `axum` 0.8.9 on `tokio` 1.53.1 and fixed
@@ -183,9 +265,16 @@ touches nothing else this item depends on.
   contributes exactly `"cors"` and hands R75 one measured constraint: **a preflight
   short-circuits before the inner service runs** — handler invocations `0` — so any layer
   that must stamp preflight responses (request id, security headers) has to sit
-  **outside** `CorsLayer`, which is py's own recorded ordering contract. R75 must also
-  read the 0.7.0 breaking entries itself for whichever other features it adds; this
-  item's confidence covers `cors` and nothing else.
+  **outside** `CorsLayer`. Revision 1 grounded that on py's recorded ordering contract;
+  under owner ruling W2-REST it is now grounded on a rule. **R11.7** puts `request-id` on
+  every response, a preflight response included, and checks `X6` and `X7` measure both
+  sides: with the stamping layer inside `CorsLayer` the preflight `200` carries no
+  `request-id` and the MUST is violated; outside, it carries one. R75 also owns the
+  `expose_headers` list R4.17 obliges, since R75 decides which standard-bound headers the
+  stack emits — this item fixes only that the list exists, is explicit rather than a
+  wildcard, and contains `request-id` as a floor. R75 must also read the 0.7.0 breaking
+  entries itself for whichever other features it adds; this item's confidence covers
+  `cors` and nothing else.
 - **R77 (`web-env-settings`, F324)** owns the variable name and the parse. Its research
   names `RSLBP_WEB_CORS_ORIGINS`, comma-separated, with an unset or empty variable meaning
   the empty list, and raises the question of whether R76 needs an encoding that survives
@@ -242,6 +331,7 @@ them.
 | 4 | With that allowlist, a `GET` from a different origin receives no `access-control-allow-origin` | check `D` |
 | 5 | With that allowlist, a preflight on a `GET`-only route returns `200` carrying `access-control-max-age: 600`, and the handler is not invoked | checks `E` and `R1` |
 | 6 | A syntactically invalid origin string fails at construction, before the listener binds | check `H` |
+| 7 | With that allowlist, a `GET` from the allowed origin carries `access-control-expose-headers` naming every standard-bound response header the service emits, `request-id` among them | check `X1` (added in revision 2 for R4.17) |
 
 **Architectural alternatives compared before any library was chosen.** The prompt's second
 HIGH question asks for exactly this comparison, so the wrapper and the hand-rolled forms
@@ -467,18 +557,18 @@ paths (see `## Parameters` for the standing of that value against the live regis
 |---|---|
 | `crates/web/Cargo.toml` | add one `[dependencies]` line: `tower-http = { version = "0.7.1", default-features = false, features = ["cors"] }`. Non-optional, because the member itself is what the root's `web` feature gates. R75 may extend the `features` array; it must not remove `"cors"` |
 | `Cargo.lock` | two new entries, `tower-http 0.7.1` and `bitflags 2.13.2`. Nothing else moves |
-| `crates/web/src/cors.rs` | **new**, about 25 lines: the `apply_cors` function shown above, with the doc comment that states the empty-allowlist contract |
+| `crates/web/src/cors.rs` | **new**, about 30 lines: the `apply_cors` function shown above, with the doc comment that states the empty-allowlist contract and the R4.17 obligation on `exposed_headers` |
 | `crates/web/src/lib.rs` | one `mod cors;` declaration |
-| `crates/web/src/` composition root (R69's `build_router`) | one call site. Whether it reads `apply_cors(router, &settings.cors_origins)` or an inlined `if` is P03's taste; the branch is the decision |
+| `crates/web/src/` composition root (R69's `build_router`) | one call site. Whether it reads `apply_cors(router, &settings.cors_origins, &exposed_headers)` or an inlined `if` is P03's taste; the branch is the decision. The `exposed_headers` argument is assembled by R75 from the layers it installs |
 | R77's settings type | one field carrying the allowlist. Named and typed by R77; this item states only that it must reach the composition root as a possibly-empty ordered collection of `HeaderValue` and must fail at boot on an unparseable entry |
-| `crates/web/tests/` | one new integration test file carrying criteria 1–6, written against the `ServiceExt::oneshot` idiom, needing no new dev-dependency |
+| `crates/web/tests/` | one new integration test file carrying criteria 1–7, written against the `ServiceExt::oneshot` idiom, needing no new dev-dependency |
 | Documentation | one row in the template's environment-variable table, stating that an empty allowlist means the middleware is not installed |
 | CI | **none.** Path-based skip-gating already keys on `crates/web/**` per R69 revision 10; no new job, no new tool, no new runner |
 
 **Not changed:** the root package's `Cargo.toml`, `crates/core`, `crates/cli`, R01's port,
 R02's `tests/workspace_edges.rs` allow-list, and the CLI binary's dependency graph.
 
-re-verify: on the earlier of 2027-03-18 or any of these events — (1) **R69 republishes** `web-extra-surface`, because every file path above comes from revision 10, which is owner-accepted but unpublished, and a published value that differs moves all of them; (2) **R75 publishes**, since it fixes this layer's ordering and the aggregate `tower-http` feature list, and must read the 0.7.0 breaking entries itself for whatever features it adds; (3) **R77 publishes**, fixing the variable name and the parsed type this item consumes as a possibly-empty `Vec<HeaderValue>`; (4) **R02 publishes** a topology other than the four-package workspace this design is written against; (5) `GET https://crates.io/api/v1/crates/tower-http/versions` reports a newest non-yanked `num` outside `0.7.x`, since a `0.8` needs its changelog read for `cors` changes; (6) `https://rustsec.org/packages/tower-http.html` acquires a third entry or `RUSTSEC-2022-0043`'s `patched` range changes — re-run `review/evidence/registry-figures.sh`, whose `atty` control distinguishes a site change from a cleared advisory; (7) `GET https://api.github.com/repos/tower-rs/tower-http` reports `archived: true`, or `pushed_at` falls more than twelve months behind; (8) **axum publishes `0.9`**, which re-opens whether `Router::layer` is still type-preserving — the single fact the conditional branch rests on; (9) the owner or R75 rules that an unconditional `Vary: Origin` and a `200` answer to every `OPTIONS` are desirable, which is the stated condition under which the ranked runner-up wins; (10) `msrv-policy`'s floor advances past **1.96**, the number gate 2 was evaluated against here.
+re-verify: on the earlier of 2027-03-18 or any of these events — (1) **R69 republishes** `web-extra-surface`, because every file path above comes from revision 10, which is owner-accepted but unpublished, and a published value that differs moves all of them; (2) **R75 publishes**, since it fixes this layer's ordering and the aggregate `tower-http` feature list, and must read the 0.7.0 breaking entries itself for whatever features it adds; (3) **R77 publishes**, fixing the variable name and the parsed type this item consumes as a possibly-empty `Vec<HeaderValue>`; (4) **R02 publishes** a topology other than the four-package workspace this design is written against; (5) `GET https://crates.io/api/v1/crates/tower-http/versions` reports a newest non-yanked `num` outside `0.7.x`, since a `0.8` needs its changelog read for `cors` changes; (6) `https://rustsec.org/packages/tower-http.html` acquires a third entry or `RUSTSEC-2022-0043`'s `patched` range changes — re-run `review/evidence/registry-figures.sh`, whose `atty` control distinguishes a site change from a cleared advisory; (7) `GET https://api.github.com/repos/tower-rs/tower-http` reports `archived: true`, or `pushed_at` falls more than twelve months behind; (8) **axum publishes `0.9`**, which re-opens whether `Router::layer` is still type-preserving — the single fact the conditional branch rests on; (9) the owner or R75 rules that an unconditional `Vary: Origin` and a `200` answer to every `OPTIONS` are desirable, which is the stated condition under which the ranked runner-up wins; (10) `msrv-policy`'s floor advances past **1.96**, the number gate 2 was evaluated against here; (11) the **REST API Design Standard** moves off blob `71bd813c1cf61286586b4ee41ed83ff065e5c8d9` — re-run `review/evidence/rest-conformance-r2.sh`, whose blob-size and line-count assertions fail closed when the pinned object is not the one quoted, and re-read R4.17, R4.11, R5.11 and R11.7 at their new lines; (12) **R75 publishes** its layer order or its `expose_headers` list, since R11.7's ordering constraint and R4.17's list are both satisfied by R75's choices and only stated by this item.
 
 ## Parameters
 
@@ -542,10 +632,24 @@ by absolute path, and its version is printed beside every count in both logs.
 **Commands executed, and their status.**
 
 ```
+# revision 2 — the new check
+./rest-conformance-r2.sh > rest-conformance-r2.log 2>&1   # exit 0, RESULT: PASS, 57 assertions, 0 SKIP
+
+# revision 1 — retained byte-identical, logs as committed at 3b933872
 ./registry-figures.sh    > registry-figures.log    2>&1   # exit 0, RESULT: PASS, 54 assertions, 0 SKIP
 ./probe-checks.sh        > probe-checks.log        2>&1   # exit 0, RESULT: PASS, 29 assertions, 0 SKIP
 ./decision-self-check.sh > decision-self-check.log 2>&1   # exit 0, RESULT: PASS, 43 assertions, 0 SKIP
 ```
+
+**One revision-1 script now fails when re-run, by construction, and this revision refuses
+to hide it.** `decision-self-check.sh` asserts the H1 line byte-for-byte, and that line
+names revision 1. Retitling the document makes exactly that assertion false. The script
+and its log are kept byte-identical as the revision brief requires, so rather than leave a
+committed script that fails for an unexplained reason, `rest-conformance-r2.sh` **runs it
+and bounds the damage**: section E asserts that it fails on the H1 assertion and on
+**nothing else**, that its other 42 assertions still pass, and that its `FAIL` count is
+exactly 1. An auditor rerunning revision 1's evidence therefore sees a failure this
+document predicted, located and measured, confined to the revision marker.
 
 Each script sets `set -euo pipefail` at the top, so a failing command inside a pipeline
 cannot be masked by a succeeding one. Each asserts on **content**, never on an exit code
@@ -565,6 +669,40 @@ implement the recommendation: there is no working seam, no service, no compositi
 no settings type, no acceptance scaffold and no template fixture. The probe is a throwaway
 crate whose only purpose is to make three installation policies observable side by side,
 and it is deleted when the script exits.
+
+**`rest-conformance-r2.sh` — 57 assertions over six sections, the revision-2 check.**
+(A) The pinned artifact is identified before anything is quoted from it: blob type, size
+**190,161** bytes, **3,427** lines, the sha256 of the extracted bytes, the `# REST API
+Design Standard` first line, the `**Version 2.0.0.**` marker, and the blob's reachability
+from commit `0850d43e…` — so a reader who cannot reproduce those numbers knows immediately
+that they are reading a different document, rather than discovering it through a quotation
+that silently moved. (B) Seventeen line-addressed quotations, each asserted byte-for-byte
+at its line: R1.6 with its switch vocabulary and its "client audience" clause, R1.7, the
+§1.10 `request-id` and `Allow` register rows, R4.10, R4.11, R4.17 with its continuation
+line, R5.11, R8.1, R8.2, R8.10, R8.11, R11.7, and Appendix A's R4.17 checklist row. Two
+counting assertions do the work the prose rests on: **zero** occurrences of CORS terms in
+the applicability-switch vocabulary, and **zero** in the five-axis deployment-profile
+table. (C) Nine probe observations measuring each conformance claim, listed below. (D) A
+loop asserting that the decision names every one of the eleven rules, so R1.7's
+no-silent-deviation discipline is enforced mechanically rather than by re-reading, plus
+assertions that the document names the ruling and pins the blob. (E) The bounded
+revision-1 breakage described above. (F) The `OVERRIDE` namespace enumerated from the
+repository index, printed as an explicitly labelled snapshot and asserted only where the
+assertion survives another agent's commit — that `OV-01` is taken, that the namespace is
+populated, and that this decision allocates no number from it. It skips by name, rather
+than passing silently, in an archive extraction with no `.git`.
+
+| Observation | Result | Rule it settles |
+|---|---|---|
+| `X1` | `access-control-expose-headers=request-id,retry-after,ratelimit` | R4.17 conforms under revision 2 |
+| `X2` | **no** `access-control-expose-headers` at all | R4.17 was violated by revision 1 — the measurement that moved the recommendation |
+| `X3` | `access-control-expose-headers=*` | the wildcard lists no header name, so it does not satisfy R4.17 |
+| `X4` | preflight `200`, `content-length: 0`, no `content-type`, no expose header | R4.17 not engaged on a preflight; R4.10 not engaged either, since no representation is selected |
+| `X5` | `405 Method Not Allowed`, `allow: GET,HEAD` | R5.11 conforms, and the conditional install is what preserves the response |
+| `X6` | preflight `200` with **no** `request-id` | R11.7 violated when the stamping layer sits inside `CorsLayer` |
+| `X7` | preflight `200` **with** `request-id=req_probe` | R11.7 conforms when it sits outside — the constraint handed to R75 |
+| `X8` | `200`, no `vary` | R4.11's stated exception, with the allowlist empty |
+| `X9` | `200`, `vary: origin`, no `access-control-allow-origin` | R4.11 conforms with the allowlist configured |
 
 **`registry-figures.sh` — 54 assertions over nine sections.** (A) `tower-http`'s newest
 non-yanked version is `0.7.1`, published `2026-08-31T14:49:25.697237Z`, declaring
@@ -661,6 +799,13 @@ before this decision was committed and the rerun `diff`ed against the log cited 
 then extracted from a clean `git archive HEAD` and re-run there. What the diffs actually
 showed, rather than what would be convenient to say:
 
+- **`rest-conformance-r2.log` reproduces byte-for-byte apart from its header `date(UTC)`
+  line and section F's namespace snapshot.** Everything it *asserts* is read either from
+  an immutable git blob or from a probe pinned to exact crate versions, so sections A
+  through E have no counter and no wall-clock measurement in them to drift. Section F is
+  the exception and says so in the log itself: it prints the live `OVERRIDE` namespace,
+  which sibling agents are changing, and its assertions are written to survive that.
+
 - **`registry-figures.log` reproduced byte-for-byte apart from its header `date(UTC)`
   line** on a rerun twelve minutes later — every `FIGURE`, every enumerated crate name and
   every `ASSERT` line matched exactly. That is a same-day result and must not be read as a
@@ -722,6 +867,13 @@ patched since 0.2.1.
   `c2792a6957df5b84fcb6438f2f14312fcae8bbd801055e07f1235e63333a5cf4`; 15 H3 fields, shape
   validated by `validate_answer_text(text, "crate")`, which reports no error). The only
   research report registered for this item.
+- **The REST API Design Standard v2.0.0** — not an engine, but a binding input added
+  after revision 1 by owner ruling W2-REST, read at blob
+  `71bd813c1cf61286586b4ee41ed83ff065e5c8d9` of commit
+  `0850d43e45d919ef5e37f7174c4212b46013c49f` (190,161 bytes, 3,427 lines).
+  `review/evidence/rest-conformance-r2.sh` asserts the blob's size, line count, version
+  marker and reachability from that commit before quoting a single rule, so a quotation
+  that drifted from its source would fail the check rather than pass unnoticed.
 - **Codex — absent, by the controller's deferral under owner ruling W1-CODEX3**
   (2026-09-18, `docs/planning/p02/owner-decisions.md` section 12: the Codex account is at
   its usage limit, tested that day, so "the programme proceeds without Codex"). This item
@@ -734,6 +886,84 @@ patched since 0.2.1.
   date, the `cors` module's 0.6→0.7 change was read from both published `.crate`
   artifacts and then measured behaviourally, the `rust-lang/crates.io` pin was read through
   `gh api`, and every behavioural probe check was re-executed on `axum` 0.8.9 + `tokio` 1.53.1.
+
+**Revision history.**
+
+- **Revision 1** — 2026-09-18, commit `3b933872`, sha256
+  `6fd6e1f90348047fe72996a0f4ade667d91c062c305c70571b57ac8c6b83740b`. The research
+  synthesis: the crate selection, the conditional-install policy, all six fitness gates,
+  the category enumeration, and the three evidence scripts whose 126 assertions this
+  revision leaves untouched. Its full text is one commit away in this repository's
+  history; it is not reproduced here, because this revision adds to that document rather
+  than replacing its reasoning, and the four-H2 contract leaves no place to carry a
+  verbatim copy.
+- **Revision 2** — 2026-09-18, this document. A **pre-audit** revision occasioned by owner
+  ruling **W2-REST**, which made the REST API Design Standard v2.0.0 binding on the HTTP
+  surface after revision 1 was written. Eleven rules were located in the pinned blob,
+  quoted at their lines and dispositioned; one of them, **R4.17**, moved the
+  recommendation. Nothing was re-researched: the crate, the version, the policy, every
+  gate result, every figure and all six `- assumes` lines are byte-identical to revision 1.
+
+**What the standard changed, and what it left alone.** The ruling reached this item after
+its research was complete, so the honest account is not "the design anticipated the
+standard" but "the design met it in ten places and missed it in one".
+
+1. **R4.17 — missed, and the miss was measured.** Revision 1 configured
+   `allow_origin`, `allow_methods`, `allow_headers` and `max_age`, and no `expose_headers`.
+   Check `X2` shows the consequence: with an allowlist configured, the response carries no
+   `access-control-expose-headers`, so a cross-origin browser client cannot read
+   `request-id`, `Retry-After`, `RateLimit` or any other standard-bound header — they are
+   not CORS-safelisted, which is the mechanism R4.17's own text explains. The
+   recommendation moved. This is allowed before acceptance and is stated in the revision
+   note rather than folded quietly into the code block.
+2. **R11.7 — met, but for a weaker reason than now available.** Revision 1 already handed
+   R75 the constraint that request-id and security-header layers must sit outside
+   `CorsLayer`, grounded on py's ordering contract. Checks `X6` and `X7` now ground it on
+   a MUST: inside, the preflight `200` carries no `request-id`; outside, it does. The
+   hand-off did not change; its authority did.
+3. **R5.11 — met, and the standard supplies a second reason for the central decision.**
+   Revision 1 rejected unconditional installation because it turns a `405` into a `200`.
+   Under R5.11 that `405` is obliged to carry `Allow`, and the unconditional form deletes
+   the response that carries it. The argument for the conditional branch is now
+   protocol-grounded as well as precedent-grounded.
+4. **R1.6 — a tempting escape route, closed by reading rather than assuming.** A
+   CLI-first template might hope to declare CORS out of scope by an applicability switch.
+   There is no such switch: the vocabulary is `webhooks`, `async-operations`,
+   `bulk-operations` and `streaming`, asserted by counting CORS terms in those lines and
+   finding zero, and R1.6 places "client audience" in the conformance note's free text
+   explicitly. R4.17 binds through its own conditional clause instead, which this design
+   satisfies where it fires.
+5. **R4.10, R4.11, R8.1, R8.2, R8.10, R8.11 — met or not engaged, each stated.** Under
+   R1.7 a rule passed over in silence is nonconformance regardless of merit, so each is
+   dispositioned in the table under `## Decision` and `rest-conformance-r2.sh` section D
+   asserts that the document names it.
+
+**No `OVERRIDE (OV-nn)` is recorded, and this item deliberately reserves no number.**
+After the R4.17 move, every quoted rule conforms or is not engaged, so there is nothing to
+argue against. **A correction is owed here, because an earlier draft of this revision got
+it wrong, and the way it was wrong is worth more than the number.** That draft stated that
+`OV-01` was free, on the strength of a search a timeout had killed, whose empty output was
+read as an empty result — the truncated-search failure this programme has hit before. Run
+properly, `git grep -o -E "OV-[0-9]{2,}" -- research docs` shows **`OV-01` is in use**: it
+is R60's deviation from the CLI Design Standard, refused by the owner on 2026-09-14.
+
+**No "next free" number is stated, and that is a deliberate refusal rather than an
+omission.** The namespace is being allocated *right now* by sibling items revising against
+this same W2-REST ruling in this shared worktree, and it moved between two runs of
+`rest-conformance-r2.sh` while this revision was being written: four numbers that were
+absent on the first run were present on the second. Any figure of the form "the next free
+number is OV-nn" would therefore be false before an auditor read it. The evidence log
+carries the enumeration as a timestamped snapshot, explicitly labelled as one, and the
+script asserts only what survives another agent's commit: that `OV-01` is taken, that the
+namespace is populated rather than empty, and that this decision allocates nothing from
+it. An item that needs a number must enumerate at its own commit.
+
+**What P03 must additionally validate under this revision.** That the assembled
+`exposed_headers` list actually names every standard-bound header the finished stack
+emits — this run measured the mechanism with a three-name stand-in, not the real list,
+which only exists once R70, R72, R74, R75 and R80 have landed. And that R75's published
+order puts every preflight-stamping layer outside `CorsLayer`, which check `X7` shows is
+the only arrangement satisfying R11.7 on a preflight.
 
 **What reproduced, what did not, and what this run corrected.** With one engine there are
 no inter-engine disagreements to settle; what follows is this synthesis against its single
