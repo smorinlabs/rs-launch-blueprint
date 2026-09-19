@@ -1,4 +1,22 @@
-# 2026-09-18 — R77 — web-env-settings (crate, Focused) — decision (revision 2)
+# 2026-09-18 — R77 — web-env-settings (crate, Focused) — decision (revision 3)
+
+**Revision 3 corrects how this item's override number is justified, and reports a defect
+in revision 2's own evidence. Nothing in the conformance pass moves.** The recommendation,
+both moves, `OVERRIDE (OV-04)`'s argument and options, the rule-by-rule table, the
+acceptance criteria and every parameter line are revision 2's, unchanged.
+
+Two things happened after revision 2 landed at commit `d36492b`, and neither is something
+revision 2 could have known:
+
+| What | Consequence for this decision |
+|---|---|
+| **R80 revision 2 allocated `OV-04` at the same time**, by the same kind of "next free number" search, in the same shared worktree. The controller recorded the clash and resolved it (`docs/planning/p02/execution-ledger.md`): "OVERRIDE NUMBER COLLISION, 2026-09-18 … Resolution: OV numbers are allocated by the controller from now on", with an allocation table giving "OV-04 R77 revision 2 (R8.1 plaintext listener; committed first, keeps the number)" and "OV-05 R80 (renumbered from OV-04 in a revision 3)". R80 has since published its revision 3 carrying `OVERRIDE (OV-05)` and no longer names `OV-04` at all. | **The number does not change — R77 keeps `OV-04`.** What changes is its ground: revision 2 justified it by a search of the tree, and the correct justification is now that it is **allocated by the controller**. Revision 2's sentence claiming the number was "unused elsewhere" is superseded, because two files outside this item legitimately name it: R80's record of its own renumber, and the ledger's allocation table. |
+| **Re-running revision 2's own script after it was committed exposed a vacuous check.** Its OV check excluded `runs/R77/` from a path it had never resolved — `"$run/../../../.."` — so every candidate path began `…/runs/R77/<run-id>/review/evidence/../../…` and the exclusion discarded **all** of its input. The check reported PASS against an empty set: it **could not fail, and revision 3 says so** rather than quietly repairing it. | `review/evidence/ov-allocation-r3.sh` **reproduces the defect** — it runs revision 2's exact expression, shows three files matching and zero surviving the exclusion — and then runs the corrected search on a fully resolved root, which sees the two outside holders. Revision 2's script is **not edited**: it remains the record of what revision 2 checked, it still exits 0 at 91/0/0, and one of those 91 is the check this one supersedes. |
+
+Neither correction touches a figure, a probe, a quotation of the standard, or a rule
+disposition. The honest summary is that revision 2 reached the right number for a reason
+that was not sound and proved it with a check that was not a check; revision 3 keeps the
+number, replaces the reason, and makes the proof real.
 
 **Revision 2 answers one new binding input: owner ruling W2-REST.** On 2026-09-18 the
 owner ruled (`docs/port/OWNER-REVIEW.md`, "2026-09-18 — the REST API Design Standard
@@ -31,7 +49,11 @@ plainly rather than recording the two moves as deviations: R77 has no owner acce
 bound to it, so revision 2 states the new, standard-conformant naming rule as the
 recommendation rather than shipping revision 1's rule with two exceptions attached.
 
-Revision history: **revision 1** (2026-09-18, sha256
+Revision history: **Revision 3** (2026-09-18, this file) — the override number is
+re-grounded on the controller's allocation and revision 2's vacuous OV check is reported
+and superseded by `review/evidence/ov-allocation-r3.sh`; revision 2's four evidence files
+and revision 1's ten are carried **byte-identical**, and group C of the new script pins
+fourteen of them by sha256 and re-runs the fifteenth. **Revision 1** (2026-09-18, sha256
 `b2b2e678a9866fd8f743d2431edcda2dc03a9e4ed03c9670457081360121b546`) — first synthesis
 from the single registered Opus report, the Codex leg deferred under `W1-CODEX3`; 239
 checks across `figures.sh`, `sources.sh` and `probes.sh`, 0 FAIL, 0 SKIP. **Revision 2**
@@ -39,7 +61,8 @@ checks across `figures.sh`, `sources.sh` and `probes.sh`, 0 FAIL, 0 SKIP. **Revi
 scripts and six logs are carried **byte-identical and are not re-run**;
 `review/evidence/rest-conformance-r2.sh` is the only new check and
 `review/evidence/rest-conformance-r2.log` its log, and its group D pins that byte-identity
-by sha256.
+by sha256. **Revision 2** landed at sha256
+`46b2a05f40f6a3ea27b5fdef415c50adccd27ade5ed6fa94f83ed933503d7f68`, commit `d36492b`.
 
 ## Decision
 
@@ -824,6 +847,19 @@ of the deviation's merits".
   without an edge. **Rejected:** it would make R51's container image unusable, and R51
   owns the Dockerfile.
 
+**The number is allocated by the controller, not claimed by a search.** `OV-04` belongs to
+this item under the allocation table in `docs/planning/p02/execution-ledger.md`
+("OV-04 R77 revision 2 (R8.1 plaintext listener; committed first, keeps the number)"),
+recorded after R80 revision 2 had allocated the same number concurrently; R80 renumbered
+to `OV-05` in its own revision 3, and the ledger's resolution ends the practice this item
+used in revision 2: "Resolution: OV numbers are allocated by the controller from now on …
+Later items ask the controller for a number instead of searching." At the time revision 3 was written the live census of the literal
+`OVERRIDE (OV-04)` is **two files** — this decision and the ledger's allocation table —
+R80 having completed its renumber to `OV-05`. `review/evidence/ov-allocation-r3.sh`
+asserts that census rather than the emptiness revision 2 claimed, and it asserts it in the
+form the shared worktree allows: this item and the ledger **must** name the number, R80
+**may** name it in a renumber note without failing the check, and **no third item may**.
+
 **Withdrawal condition, recorded so the override does not outlive its reason:** if R69
 later adopts an in-process TLS terminator, OV-04 is withdrawn and this item names the
 certificate and key settings under the same prefix rule — with `R8.12`'s redaction
@@ -895,7 +931,7 @@ changes, in R69 revision 10's tree.
 | `Dockerfile` (R51) | sets `RSLBP_WEB_HOST=0.0.0.0` explicitly, because the default is loopback — the same note py carries at `settings.py`. |
 | `docs/port/COMMONALITY.md` | **untouched by this decision.** F324's row is the owner's to update when R77 publishes. |
 
-re-verify: when the org REST API Design Standard moves off blob `71bd813c1cf61286586b4ee41ed83ff065e5c8d9` or amends any of R1.5, R1.6, R1.7, R7.1, R7.2, R7.3, R8.1, R8.2, R8.5, R8.10, R8.12, R9.1, R10.1, R10.6 or R11.2, when R74 publishes and fixes the membership and defaults of the `RSLBP_WEB_RATE_LIMIT_*` family, when R69 adopts an in-process TLS terminator (which withdraws `OVERRIDE (OV-04)` and brings certificate and key settings under this naming rule), when any later item turns an applicability switch on and so brings its published values under this naming rule, when R69 republishes and `web-extra-surface`'s registry bytes move from `src/web/` to `crates/web` (the `assumes` line below must then be re-copied and this decision's paths re-checked against the published value), when R58 publishes `logging-pipeline-contract` and fixes the value sets for `RSLBP_WEB_LOG_LEVEL` and `RSLBP_WEB_LOG_FORMAT`, when R80 publishes and fixes a readiness-propagation pause that must be spent from the 8-second budget, when R76 publishes an origins encoding that a comma cannot survive or any later item adds a web knob whose value may contain a comma, when R67 revises `RSLB203` or the error envelope, when R54 and R56 publish so the namespace-disjointness claim can be checked against a published curated set rather than an accepted-but-unpublished one, when the owner revisits the gate-2 strict reading (which would readmit `envy` and `figment`), when `envy` or `figment` declares a `rust-version` in a new release, at the next `msrv-policy` floor advance past 1.96 (which neither `config`'s 1.85.0 nor `confique`'s 1.68.2 is near), or by 2027-03-18, whichever comes first
+re-verify: if the controller reallocates `OV-04` away from this item or the owner rules on it (the allocation table in `docs/planning/p02/execution-ledger.md` is the register, and a later override for this item is asked of the controller rather than searched for), when the org REST API Design Standard moves off blob `71bd813c1cf61286586b4ee41ed83ff065e5c8d9` or amends any of R1.5, R1.6, R1.7, R7.1, R7.2, R7.3, R8.1, R8.2, R8.5, R8.10, R8.12, R9.1, R10.1, R10.6 or R11.2, when R74 publishes and fixes the membership and defaults of the `RSLBP_WEB_RATE_LIMIT_*` family, when R69 adopts an in-process TLS terminator (which withdraws `OVERRIDE (OV-04)` and brings certificate and key settings under this naming rule), when any later item turns an applicability switch on and so brings its published values under this naming rule, when R69 republishes and `web-extra-surface`'s registry bytes move from `src/web/` to `crates/web` (the `assumes` line below must then be re-copied and this decision's paths re-checked against the published value), when R58 publishes `logging-pipeline-contract` and fixes the value sets for `RSLBP_WEB_LOG_LEVEL` and `RSLBP_WEB_LOG_FORMAT`, when R80 publishes and fixes a readiness-propagation pause that must be spent from the 8-second budget, when R76 publishes an origins encoding that a comma cannot survive or any later item adds a web knob whose value may contain a comma, when R67 revises `RSLB203` or the error envelope, when R54 and R56 publish so the namespace-disjointness claim can be checked against a published curated set rather than an accepted-but-unpublished one, when the owner revisits the gate-2 strict reading (which would readmit `envy` and `figment`), when `envy` or `figment` declares a `rust-version` in a new release, at the next `msrv-policy` floor advance past 1.96 (which neither `config`'s 1.85.0 nor `confique`'s 1.68.2 is near), or by 2027-03-18, whichever comes first
 
 ## Parameters
 
@@ -979,9 +1015,28 @@ from its own location, so it runs from anywhere.
 | `review/evidence/figures.sh` | 1, carried unchanged | `review/evidence/figures.log` | exit **0** |
 | `review/evidence/sources.sh` | 1, carried unchanged | `review/evidence/sources.log` | exit **0** |
 | `review/evidence/probes.sh` | 1, carried unchanged | `review/evidence/probes.log` | exit **0** |
-| `review/evidence/rest-conformance-r2.sh` | **2, new** | `review/evidence/rest-conformance-r2.log` | exit **0** |
+| `review/evidence/rest-conformance-r2.sh` | 2, carried unchanged | `review/evidence/rest-conformance-r2.log` | exit **0** |
+| `review/evidence/ov-allocation-r3.sh` | **3, new** | `review/evidence/ov-allocation-r3.log` | exit **0** |
 
 Each is run as `bash research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/evidence/<name>`.
+
+**One revision-2 check is superseded, and it is named.** Group E of
+`rest-conformance-r2.sh` contains the line
+`| /usr/bin/grep -v 'runs/R77/'`, applied to paths built from an unresolved
+`"$run/../../../.."`. Every such path carries `runs/R77/` in its own prefix, so the
+exclusion discarded all of its input and the check passed against an empty set — a check
+that **could not fail, and revision 3 says so**. The script is deliberately left unedited, because 90 of its 91 checks are sound and
+rewriting a landed revision's evidence would destroy the record of what that revision
+actually verified. **It no longer exits 0, and that is reported rather than hidden:**
+re-run against this file it reports **PASS=90 FAIL=1 SKIP=0**, and the single failure is
+its own `H1 is the date-first revision-2 title` check, which binds revision 2's title by
+design and must fail once the title says revision 3 — the same disposition R02 revision 2
+recorded for its `S1a`. `ov-allocation-r3.sh` asserts both the 90/1/0 counts and that the
+one failing line is exactly that title check, so a second, real regression in that script
+could not hide behind this expected one. `ov-allocation-r3.sh` group B reproduces the defect from
+revision 2's own expression and supplies the corrected search beside it; its `root` is
+resolved with `cd … && pwd`, and one of its own checks asserts that no `..` segment
+survives in it.
 
 **Revision 1's evidence is carried, not re-run.** The three revision-1 scripts, the
 one-shot fetcher and all six revision-1 logs are byte-identical to the files accepted at
@@ -1037,16 +1092,22 @@ which run produced each one.
 
 **Counts, in place.** Revision 1, carried: `figures.sh` **PASS=121 FAIL=0 SKIP=0**;
 `sources.sh` **PASS=84 FAIL=0 SKIP=0**; `probes.sh` **PASS=34 FAIL=0 SKIP=0** — 239.
-Revision 2, new: `rest-conformance-r2.sh` **PASS=91 FAIL=0 SKIP=0**. Total across both
-revisions **330 PASS, 0 FAIL, 0 SKIP**.
+Revision 2, carried: `rest-conformance-r2.sh` **PASS=90 FAIL=1 SKIP=0**, the one failure
+being its own revision-2 title check, named and accounted for above. Revision 3, new:
+`ov-allocation-r3.sh` **PASS=43 FAIL=0 SKIP=0**. Total **373 checks, 372 PASS, 1 expected
+FAIL, 0 SKIP**.
 
 **Reproducibility, established rather than asserted.** The three revision-1 scripts were
 re-run immediately after the run whose log is committed, and the second run's output was
 diffed against that log; the diffs are recorded verbatim in
-`review/evidence/rerun-diff.log`. `rest-conformance-r2.sh` was likewise re-run and diffed,
-and `review/evidence/rerun-diff-r2.log` records that diff; its only differing line is the
-script's own timestamp header, because every input it reads is a committed file or a git
-blob, with no counter and no network call anywhere in it.
+`review/evidence/rerun-diff.log`. `rest-conformance-r2.sh` was likewise re-run and diffed
+at revision 2, and `review/evidence/rerun-diff-r2.log` records that diff; its only
+differing line was the script's own timestamp header, because every input it reads is a
+committed file or a git blob, with no counter and no network call anywhere in it. That log
+is carried from revision 2 and is **not** regenerated here: re-running it now would show
+the expected title failure and overwrite the record of the clean revision-2 run.
+`ov-allocation-r3.sh` was re-run and diffed the same way, in
+`review/evidence/rerun-diff-r3.log`, and differs only in its own timestamp header.
 **Every `PASS` / `FAIL` / `SKIP` line is identical across the two runs**, which is
 asserted in that log by a second diff taken over those lines alone. Exactly three kinds
 of line vary, and this is the rule for comparing across a re-run:
@@ -1071,7 +1132,11 @@ counts as in place at that commit: `figures.sh` **PASS=121 FAIL=0 SKIP=0**, `sou
 **PASS=80 FAIL=0 SKIP=0** — 84 after four later additions — and `probes.sh` **PASS=34
 FAIL=0 SKIP=0**. The full output, with the extracted commit named in its header, is
 `review/evidence/archive-rerun.log`, and it is carried byte-identical from revision 1.
-Revision 2 repeats the exercise for its own script:
+Revision 3 repeats the exercise for `ov-allocation-r3.sh` in
+`review/evidence/archive-rerun-r3.log`, extracting the revision-3 tree and re-running from
+it at the same **PASS=43 FAIL=0 SKIP=0**. That script has no SKIP branch to exercise:
+every input it reads — the execution ledger, R80's decision, this file and the evidence
+directory — is inside the repository and therefore inside the archive. Revision 2 had repeated it for its own script:
 `review/evidence/archive-rerun-r2.log` records `git archive <tree> | tar -x` of the
 revision-2 tree as staged — which is this commit's tree except for that log file itself,
 since a log cannot carry the hash of the tree containing it — and
