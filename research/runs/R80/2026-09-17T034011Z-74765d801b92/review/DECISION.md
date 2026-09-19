@@ -1,4 +1,35 @@
-# 2026-09-18 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 1)
+# 2026-09-18 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 2)
+
+**Revision note (revision 2).** Owner ruling **W2-REST** of 2026-09-18
+(`docs/port/OWNER-REVIEW.md`, heading *"2026-09-18 — the REST API Design Standard
+binds the HTTP surface (W2-REST)"*) makes the organisation's **REST API Design
+Standard v2.0.0** bind this template's HTTP surface the way the CLI Design
+Standard binds its CLI. Revision 1 (sha256 `fde7de28…`) was written before that
+ruling and never audited, so this is a **pre-audit revision**: revision 1's three
+evidence scripts, their logs, their rerun and archive diffs, and all five probe
+sources are **byte-identical** and were not re-run (asserted, file by file, by
+check `C1`). Everything revision 2 adds is in new `*-r2` files.
+
+The standard is read at the pin the ruling names: repository
+`/Users/stevemorin/c/rest-standards`, commit
+`0850d43e45d919ef5e37f7174c4212b46013c49f`, file blob
+`71bd813c1cf61286586b4ee41ed83ff065e5c8d9`, read with
+`git -C /Users/stevemorin/c/rest-standards show 71bd813c1cf61286586b4ee41ed83ff065e5c8d9`.
+Twenty-six rules are quoted at their line numbers and one absence is counted;
+each is asserted at the blob by checks `S1`–`S27`, so a rule whose text moves
+fails this decision rather than being silently re-read.
+
+**The recommendation moves, which is allowed because nothing here is accepted
+yet.** Rule **R7.1** is a MUST that revision 1 did not meet, so
+`Cache-Control: no-cache` is now part of the contract for both probe responses,
+executed by checks `P1` and `P2`. Rule **R5.17** adds a redaction obligation to
+the diagnostic report's `detail` field. Rules **R5.13** and **R5.16** sharpen the
+requirement this item places on R70 from "the report must be reachable" to a
+named member set plus a catalogued code. **One `OVERRIDE (OV-04)`** is recorded,
+covering the four rules the unversioned probe paths cannot satisfy, and **two
+SHOULD deviations** are recorded in the conformance note. Nothing else moves: not
+the stack, not a version pin, not the shared-function placement, not the latch,
+not a parameter line, and not one byte of revision 1's evidence.
 
 Synthesized 2026-09-18 by a fresh context that produced none of this item's raw
 reports. Inputs read in full: `inputs/prompt.md` (binding), `inputs/PARAMETERS.md`
@@ -30,13 +61,17 @@ Concretely:
   can reach no dependency, no lock and no pool by construction — answering `200`
   with `{"status":"ok","version":…,"os":…,"arch":…}`, built from a version
   accessor defined once in `crates/core` (the mechanism is R22's) and
-  `std::env::consts::{OS, ARCH}`.
+  `std::env::consts::{OS, ARCH}`, under `Cache-Control: no-cache` (R7.1, check
+  `P1`).
 - `GET /readyz` reads the readiness latch, then calls
   `rs_launch_blueprint_core::diagnostics::run_diagnostics` — the same function
   the CLI's `doctor` command calls — through `tokio::task::spawn_blocking`. It
   answers `200` with the serialized report when the process is accepting and no
   check is `error`, and `503` otherwise, carrying the report in the body through
-  R70's problem envelope (see the standing constraint on R70 below).
+  R70's problem envelope (see the standing constraint on R70 below). Both branches
+  carry `Cache-Control: no-cache` (R7.1, check `P2`), and every `detail` string in
+  the report is redacted of filesystem paths, internal hostnames and dependency
+  detail before it reaches the wire (R5.17).
 - Both paths are **unversioned**, per F308 applied rather than re-derived; both
   accept `GET` and `HEAD`; both live inside the optional `crates/web` member and
   therefore vanish from a default build.
@@ -73,7 +108,7 @@ owner-accepted decisions and are re-verified here rather than re-selected.
 | 1 | `rs_launch_blueprint_core::diagnostics` (the shared contract — no crate) | — | **decided here** | `CheckStatus`, `Check`, `Diagnostics`, `Diagnostics::has_error`, `run_diagnostics`; the one place the check list exists |
 | 2 | `std` build identity (`std::env::consts::{OS, ARCH}` + Cargo's compile-time version — no crate) | — | **decided here** | the liveness payload's fields, with no build script and no git dependency |
 | 3 | `serde` | 1.0.229, `features = ["derive"]` | consumed from R66 | the derived wire shape for both payloads |
-| 4 | `axum` | 0.8.9, default features | consumed from R69 revision 10 | `Router`, `routing::get`, `State`, `StatusCode`, `Json`, and — free — `405` with `Allow: GET,HEAD` and `HEAD` served by the `GET` handler |
+| 4 | `axum` | 0.8.9, default features | consumed from R69 revision 10 | `Router`, `routing::get`, `State`, `StatusCode`, `Json`, `http::header::CACHE_CONTROL`, and — free — `405` with `Allow: GET,HEAD` (which R5.11 makes a MUST) and `HEAD` served by the `GET` handler |
 | 5 | `tokio` | 1.53.1, features `rt-multi-thread, net, signal, macros, time, sync` | consumed from R69 revision 10 | `spawn_blocking`, R05's bridge from the async handler to the synchronous core |
 
 The **marginal cost of this recommendation is zero crates**: every mechanism is
@@ -477,6 +512,149 @@ recorded as belonging to other items. Those counts sum to seven over six rows
 because the C15 *probes* row is counted twice: it agrees on the two paths and
 differs on "checks DB".
 
+### Conformance with the REST API Design Standard v2.0.0
+
+Owner ruling W2-REST binds this standard to the template's HTTP surface. **The
+standard names no health, readiness, liveness or ops-endpoint rule anywhere** —
+0 rule lines match `health|readiness|liveness|probe endpoint`, counted at the
+pinned blob by check `S27`. There is no ops carve-out, so the probe surface is
+judged by the general rules, one at a time, below. Every rule is quoted at its
+line number by checks `S1`–`S26`; the six that can only be settled by running
+axum 0.8.9 are measured by `P1`–`P6`.
+
+| Rule | Line | Strength | What it requires | `probe-contract/v1` |
+|---|---|---|---|---|
+| R1.6 | 229 | — | rules scoped by applicability switch; an off-switch declaration MUST carry a reason | **CONFORMS** — the conformance note below declares all four switches off, each with its reason |
+| R1.7 | 271 | MUST | no silent deviation; every SHOULD deviation recorded, every MUST deviation an approved exception | **CONFORMS** — `OVERRIDE (OV-04)` and the two SHOULD deviations are in writing below |
+| R1.8 | 312 | MUST | a reserved name MUST NOT carry another meaning | **CONFORMS** — neither `healthz` nor `readyz` is reserved; the probes take no query parameter, define no media type and reuse no reserved header for a new meaning |
+| R2.1 | 443 | MUST | a resource-oriented surface; no RPC carve-out for any service class | **OVERRIDE (OV-04)** — the probes are operational signals, not resources |
+| R2.2 | 456 | MUST | collections plural; the singleton exception requires a documented singleton | **OVERRIDE (OV-04)** — neither path is a plural collection nor a documented singleton noun |
+| R2.3 | 467 | MUST | resource names unabbreviated, one noun per concept | **OVERRIDE (OV-04)** — `healthz` and `readyz` are orchestrator coinages, not the domain's nouns |
+| R2.4 | 477 | MUST | path segments kebab-case, `^[a-z][a-z\-0-9]*$` | **CONFORMS** — both segments match the pattern |
+| R2.5 | 487 | MUST | at most three resources in a path | **CONFORMS** — one segment each |
+| R2.6 | 499 | MUST + SHOULD | canonical URIs carry no trailing slash; a trailing-slash request SHOULD get `308` | **CONFORMS** on the canonical form; **SHOULD deviation** on the redirect — check `P3` measures axum 0.8.9 answering `GET /healthz/` with `404` and no `Location` |
+| R2.9 | 525 | MUST | operation modifiers travel as query parameters, never path segments | **CONFORMS** — the probes take no parameter at all |
+| R2.11 | 542 | MUST | a non-CRUD *operation* uses `POST /{collection}/{id}/{action}` | **CONFORMS, vacuously** — the probes are safe `GET`s, not mutations; the action form is the alternative modeling OV-04 weighs and rejects |
+| R3.10 | 693 | MUST + exception | a conditionally-updatable resource MUST emit a strong `ETag`; **exception:** resources never updated by clients | **CONFORMS by the named exception** — no client updates a probe, so no `ETag` is owed under R7.3 tier 1 |
+| R4.10 | 846 | MUST + SHOULD | default media type `application/json` UTF-8, selected by negotiation not a `format` parameter; an unsatisfiable `Accept` SHOULD get `406` | **CONFORMS** on the default and on the absence of a `format` parameter (`P1`); **SHOULD deviation** on `406` — check `P4` measures axum's `Json` responder serving JSON for `Accept: application/xml` |
+| R4.11 | 856 | MUST + exception | `Vary` on any response whose content was header-selected; **exception:** responses with no negotiation | **CONFORMS by the named exception** — the probes negotiate nothing, which is the same fact `P4` measures |
+| R5.1 | 916 | MUST | the status matches the outcome known when it is generated; a failed operation MUST NOT return 2xx | **CONFORMS** — not-ready answers `503`, never a 2xx (`T4`, `T6`, `P2`) |
+| R5.2 | 934 | MUST | no unregistered status codes | **CONFORMS** — `200`, `405` and `503` are all registered |
+| R5.11 | 1008 | MUST | `405` MUST carry `Allow` | **CONFORMS** — axum 0.8.9 supplies `Allow: GET,HEAD` with no code written for it (`T7`, `P6`). The rule turns revision 1's observation into a standard-bound obligation |
+| R5.12 | 1019 | MUST | every application-generated error response MUST be available as `application/problem+json`; the carve-out is infrastructure errors only | **CONFORMS by design** — `/readyz`'s 503 is application-generated and reuses R70's envelope. The carve-out does not reach it |
+| R5.13 | 1049 | MUST | every response-carried problem document MUST carry `type`, `title`, `status` and a stable `code` extension member | **Requirement on R70, sharpened** — the 503 needs those four members *plus* a carrier for the report. This is stronger than revision 1's "the report must be reachable" |
+| R5.16 | 1114 | MUST | the API MUST publish a catalog of every `type`/`code` pair it can return | **Obligation recorded** — the readiness failure needs a catalogued pair. R70 owns the envelope, R67's append-only catalog owns the token; this item assigns neither |
+| R5.17 | 1120 | MUST | no response body may expose stack traces, query fragments, internal hostnames or dependency detail | **Moves the recommendation** — `Check::detail` interpolates paths today (the probe printed `no config file at /nonexistent-r80-probe/config.toml`). Every `detail` reaching the wire is redacted; §8.5's secret and PII rules apply to it identically |
+| R7.1 | 1259 | MUST | every response MUST carry an explicit `Cache-Control` header | **Moved, and now CONFORMS** — revision 1 emitted none. Both probes emit `Cache-Control: no-cache` (`P1`, `P2`) |
+| R7.2 | 1271 | MUST + exception | user-specific or authenticated responses MUST be `private` or `no-store`; **exception:** genuinely public responses | **CONFORMS by the named exception** — a probe body is unauthenticated and identical for every caller, so no `private` marker is owed |
+| R7.3 | 1281 | — | three-tier posture; blanket `no-store` is a named anti-pattern reserved for genuinely sensitive payloads | **CONFORMS** — tier 1 (`no-cache`) is the mutable-resource default; `no-store` is the ranked runner-up and is declined on the rule's own anti-pattern ground, a probe body not being sensitive |
+| R9.1 | 1435 | MUST | one uniform version-marker placement, the major version in the path (`/v1`) | **OVERRIDE (OV-04)** — F308 fixes `/healthz` and `/readyz` unversioned, and the prompt instructs applying F308 rather than re-deriving it |
+| R11.7 | 1752 | MUST | every response, including errors, MUST carry the `request-id` correlation header | **Obligation recorded, not yet met** — check `P5` measures the handlers emitting none, because the header is middleware's. **R75's correlation layer MUST cover `/healthz` and `/readyz`**, and F320's access-log exclusion must not be read as excluding them from the header |
+
+**Three moves, two deviations, one override — and what did not move.** The
+recommendation moves on R7.1 (the `Cache-Control` header, executed), on R5.17
+(redaction of `detail`, a contract change with no executable check here because
+the real `Config` does not exist) and on R5.13/R5.16 (a sharper requirement
+handed to R70). It does **not** move on the stack, the versions, the
+shared-function placement, the latch, the `spawn_blocking` bridge, the liveness
+field list or any parameter line.
+
+#### Conformance note — `rs-launch-blueprint` optional web surface
+
+Recorded in the standard's own section 1.9 template. It is **provisional**: this
+item owns only the two probe paths, and the note's tier, switches and deviation
+list belong to the template as a whole. R69 owns the surface; R70, R71 and
+R72–R76 each add rows. The rows below are the ones R80's two endpoints create.
+
+```markdown
+## Conformance note — rs-launch-blueprint optional web surface (R80 rows only)
+
+Standard: rest-api-standard v2.0.0
+Tier: internal
+Switches: webhooks=off, async-operations=off,
+  bulk-operations=off, streaming=off
+  (webhooks=off — the template delivers no outbound callbacks;
+   async-operations=off — no endpoint returns 202, so no operation resource exists;
+   bulk-operations=off — no endpoint accepts a batch;
+   streaming=off — no endpoint serves a stream media type)
+Context: a project template, not a deployed service. The probe surface is
+  consumed by a container orchestrator, not by API clients; it is
+  unauthenticated, carries no PII, and is single-tenant by construction.
+
+Deviations:
+- OV-04 · MUST (R2.1, R2.2, R2.3, R9.1) · the two probe endpoints are
+  unversioned, non-plural, abbreviated non-resource paths · the orchestrator
+  contract fixes the names and F308 fixes the absence of a version segment ·
+  approver: PENDING OWNER · date: PENDING
+- R2.6 · SHOULD · a trailing-slash request to a probe path answers 404, not the
+  preferred 308 redirect · axum 0.8.9 supplies no such redirect (measured, P3),
+  and no orchestrator probe is configured with a trailing slash; the conforming
+  alternative is one extra route per probe returning 308 · approver: PENDING
+  OWNER · date: PENDING
+- R4.10 · SHOULD · an Accept header excluding application/json receives 200 with
+  JSON, not the preferred 406 · axum's Json responder ignores Accept (measured,
+  P4); a kubelet httpGet probe sends no Accept header, and the conforming
+  alternative is an Accept check in each handler · approver: PENDING OWNER ·
+  date: PENDING
+
+N/A declarations:
+- R3.10 · the probes are never updated by clients, which is the rule's own
+  stated exception
+- R4.11 · the probes negotiate nothing, which is the rule's own stated exception
+- §6 (collections, pagination, filtering, sorting) · neither probe is a
+  collection
+- §10.1–§10.4, §13 · the four switches above are off, each with its reason
+```
+
+#### `OVERRIDE (OV-04)` — the probe paths are unversioned, non-resource names
+
+`OV-04` is the next free override number: a scoped search of `docs/` and
+`research/` for `OV-[0-9]+` returns `OV-01` (R60, refused 2026-09-14), `OV-02`
+(R61), `OV-03` (R02) and one range notation in an R61 audit; `OV-04` through
+`OV-08` are unused. The deviation is from four **MUST** rules at once, argued
+once rather than four times because a single fact creates all four: the probe
+paths are not resources and not part of the versioned API.
+
+**Argument:** R2.1 requires a resource-oriented surface, R2.2 plural collections
+or a documented singleton, R2.3 unabbreviated domain nouns, and R9.1 the major
+version in the path. `/healthz` and `/readyz` satisfy none of them, and the
+reason is the same in each case: they are not API resources. They are signals
+addressed to a container orchestrator, whose meaning — restart the container,
+remove the Pod from its EndpointSlices — is fixed by the Kubernetes probe
+contract quoted under `### Principles and implementation`, not by this
+template's domain. Three facts make the deviation necessary rather than
+convenient. **(1)** The names are a consumer-side convention: the kubelet reads
+whatever path its `httpGet` names, so a conforming `/v1/health-checks` would
+work technically, but every operator, every container `HEALTHCHECK` and every
+piece of copied deployment YAML in the ecosystem expects `/healthz` and
+`/readyz`, and both surveyed production systems — `olix0r/kubert` and
+`apollographql/router` — serve short unversioned ops paths (`/live`, `/ready`,
+`/health`). **(2)** F308 is an `ADOPT` ledger row, and this item's binding
+prompt instructs that it be *applied, not re-derived*: "a trivial URL-prefix
+convention, do not re-derive it, just apply it to the two endpoints this item
+designs". Re-deriving it against R9.1 is outside what this item was asked to
+decide. **(3)** Versioning an ops probe is actively harmful: R9.1 exists so a
+breaking change can ship behind `/v2`, but a probe path must stay stable across
+every major version precisely because the deployment manifest that names it is
+not redeployed in lockstep with the API. The cost of the deviation is real and
+is stated: a reader of the OpenAPI document sees two paths that do not follow
+the API's own naming rules, and R71 must either document them as such or exclude
+them from the spec — a choice this item hands to R71 rather than making.
+
+**Options:**
+
+| | Option | Effect | Conformance |
+|---|---|---|---|
+| a | **Recommended.** Keep `/healthz` and `/readyz` unversioned, record this override, and let R71 decide whether the spec documents or excludes them | F308 applied as instructed; the orchestrator contract holds; ecosystem-standard names | Deviates from R2.1, R2.2, R2.3, R9.1 — four MUSTs, approval required per R1.7 |
+| b | Version the probes as `/v1/health` and `/v1/readiness` | Conforms to R9.1 and to R2.3's unabbreviated-name rule | Still deviates from R2.1 and R2.2 — they are not resources and not plural — so it trades four deviations for two while breaking every copied deployment manifest and contradicting F308 |
+| c | Model readiness as an action, `POST /v1/service-instances/{id}/check-readiness` per R2.11 | Fully conforms to §2 and §9 | Unusable: a kubelet `httpGet` probe issues `GET`, cannot supply an id, and R5.1 would then make a readiness failure a failed `POST` rather than a probe signal. Rejected on the consumer contract, not on taste |
+| d | Serve the probes on a second admin listener, off the API's URI space entirely | The standard governs the API's URI space (§1.3); a separate admin port arguably falls outside it | This is alternative **D** under `### Principles and implementation`, already rejected there for this template on cost grounds, and the §1.3 reading is an interpretation this item is not entitled to make on the owner's behalf. Recorded as the scale-out path that would also retire this override |
+
+**What settles it.** The owner records `OV-04` as approved, or selects (b), (c)
+or (d). Until then the deviation is **requested, not granted**, exactly as
+`OV-01` was recorded before its refusal, and the conformance note above carries
+`approver: PENDING OWNER`.
+
 ### What this decision does not decide
 
 Each of these is a coupling stated at the strength the evidence supports. None is
@@ -499,6 +677,23 @@ a second extension member named `diagnostics`; the report folded into the existi
 report left to the logs. R70 owns the choice. **Until R70 publishes, the executed
 probe's 503 body is a plain JSON stand-in, and this decision claims nothing about
 the envelope's member names.**
+
+**Revision 2 sharpens that requirement, because the standard now fixes part of
+it.** R5.13 (line 1049) makes `type`, `title`, `status` and a stable `code`
+extension member mandatory on every response-carried problem document, so the
+503 body is not free-form: R70's envelope must carry those four **and** a carrier
+for the diagnostic report, which is five members where R70's raw report plans for
+four. R5.16 (line 1114) then requires the readiness failure's `type`/`code` pair
+to appear in a published catalog — R70 owns the envelope and R67's append-only
+catalog owns the token, and this item assigns neither. R5.17 (line 1120)
+constrains what the carrier may hold: no stack traces, no query fragments, no
+internal hostnames, no dependency detail. That is a change to this item's own
+contract and is recorded as such — `Check::detail` interpolates filesystem paths
+today, which the executed probe printed verbatim
+(`no config file at /nonexistent-r80-probe/config.toml`), and the shipped
+`detail` must be redacted before it reaches the wire. **No executable check
+proves the redaction here**: the real `Config` does not exist, so this is a
+contract obligation P03 validates, listed under `## Engines`.
 
 **R51 (`container-image`) — what `/healthz` returns, for it to probe.** Two facts
 are established here rather than guessed. First, `/healthz` answers `200` with a
@@ -530,6 +725,14 @@ order the layers so the probes' path is reached before anything that can reject,
 and keep a catch-panic layer outside them. Recorded as an input to R75, not a
 decision for it.
 
+**Revision 2 adds a second, harder input to R75.** R11.7 (line 1752) makes the
+`request-id` correlation header a MUST on *every* response, errors included.
+Check `P5` measures the probe handlers emitting none — correctly, because the
+header is middleware's to add — so **R75's correlation layer must cover
+`/healthz` and `/readyz`**, and F320's access-log exclusion must not be read as
+excluding them from the header. The two are different mechanisms with the same
+paths, and conflating them would make the probe responses nonconformant.
+
 **The CLI `doctor` subcommand — presupposed by F329 and owned by no item, and it is
 not R60's to carry.** R60 (`cli-parsing-framework`, published) put three options
 for the extended `--version` data to the owner, of which **(c)** was "extended data
@@ -546,7 +749,7 @@ whoever specifies `doctor` must reuse one of those or add a row through R67's
 append-only process, and that today — with no check able to reach `error` —
 `doctor` would exit `0` on every machine.
 
-re-verify: when R69 republishes web-extra-surface at revision 10, which fixes every file path in this decision's migration table and is the single most likely trigger; when R70 publishes the problem envelope, which decides how the 503 body carries the diagnostic report; when R71 publishes and requires a schema derive, which must meet the no-OpenAPI-derive-in-crates/core constraint; when R22 publishes the version accessor, which must be core-defined and workspace-safe as check A demonstrates; when R55, R57 or any later item publishes a diagnostics check that can reach CheckStatus::Error; when R77 publishes a readiness-propagation pause or moves the drain deadline; when R51 publishes the container probe client; when R75 publishes the middleware order; when R79 publishes /metrics as a third unversioned ops route; when R05 is reopened to an async core, which deletes the spawn_blocking hop; when GET https://crates.io/api/v1/crates/axum/versions stops giving 0.8.9 as the newest non-yanked version in a release that changes MethodRouter's 405/Allow behaviour or Json's IntoResponse; when https://rustsec.org/packages/axum.html, .../serde.html or .../tokio.html changes status while the atty control holds at 200; when GET https://crates.io/api/v1/crates/shadow-rs/versions or .../git-version/versions begins returning a non-null rust_version, which reverses a gate-2 exclusion; when the Kubernetes probe documentation changes the quoted sentences; or by 2027-03-18, whichever comes first
+re-verify: when the REST API Design Standard moves off blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9, in particular any change to R2.1, R2.2, R2.3, R2.6, R4.10, R5.11, R5.13, R5.16, R5.17, R7.1, R7.3, R9.1 or R11.7, or the addition of any rule naming health, readiness or liveness, which would retire or reshape OVERRIDE (OV-04); when the owner rules on OV-04, which is requested and not granted; when R69 republishes web-extra-surface at revision 10, which fixes every file path in this decision's migration table and is the single most likely trigger; when R70 publishes the problem envelope, which decides how the 503 body carries the diagnostic report; when R71 publishes and requires a schema derive, which must meet the no-OpenAPI-derive-in-crates/core constraint; when R22 publishes the version accessor, which must be core-defined and workspace-safe as check A demonstrates; when R55, R57 or any later item publishes a diagnostics check that can reach CheckStatus::Error; when R77 publishes a readiness-propagation pause or moves the drain deadline; when R51 publishes the container probe client; when R75 publishes the middleware order; when R79 publishes /metrics as a third unversioned ops route; when R05 is reopened to an async core, which deletes the spawn_blocking hop; when GET https://crates.io/api/v1/crates/axum/versions stops giving 0.8.9 as the newest non-yanked version in a release that changes MethodRouter's 405/Allow behaviour or Json's IntoResponse; when https://rustsec.org/packages/axum.html, .../serde.html or .../tokio.html changes status while the atty control holds at 200; when GET https://crates.io/api/v1/crates/shadow-rs/versions or .../git-version/versions begins returning a non-null rust_version, which reverses a gate-2 exclusion; when the Kubernetes probe documentation changes the quoted sentences; or by 2027-03-18, whichever comes first
 
 ## Parameters
 
@@ -615,10 +818,10 @@ four-package workspace and R69 revision 10's accepted paths.
 
 | File | Change |
 |---|---|
-| `crates/core/src/diagnostics.rs` (new) | `CheckStatus`, `Check`, `Diagnostics`, `Diagnostics::has_error`, `run_diagnostics(&Config) -> Diagnostics`. `#[derive(Serialize)]` only — no framework or OpenAPI derive ever enters this member |
+| `crates/core/src/diagnostics.rs` (new) | `CheckStatus`, `Check`, `Diagnostics`, `Diagnostics::has_error`, `run_diagnostics(&Config) -> Diagnostics`. `#[derive(Serialize)]` only — no framework or OpenAPI derive ever enters this member. **`detail` is built redacted at its source** (R5.17): no absolute filesystem path, no internal hostname, no dependency detail — a check reports *that* a config file is absent, never where the loader looked |
 | `crates/core/src/lib.rs` | one `pub mod diagnostics;`. Whether it is re-exported from the facade's barrel is R04's rule to apply, not this item's to decide |
 | `crates/core/Cargo.toml` | **no change** — `serde` with `derive` is already present for R66's result contract |
-| `crates/web/src/routes/ops.rs` | filled in: `LiveStatus`, `LivenessReport`, `async fn healthz()` (no `State`), `pub fn readiness_response(draining: bool, report: Diagnostics) -> Response`, `async fn readyz(State(..))`, and a `router()` registering `/healthz` and `/readyz`. R69's file map already reserves this file with the note "`/healthz` now; `/readyz` and its payload are R80's" |
+| `crates/web/src/routes/ops.rs` | filled in: `LiveStatus`, `LivenessReport`, `async fn healthz()` (no `State`), `pub fn readiness_response(draining: bool, report: Diagnostics) -> Response`, `async fn readyz(State(..))`, a `router()` registering `/healthz` and `/readyz`, and **one `const PROBE_CACHE_CONTROL: &str = "no-cache"` applied to every response leaving this module** (R7.1). R69's file map already reserves this file with the note "`/healthz` now; `/readyz` and its payload are R80's" |
 | `crates/web/src/lib.rs` | a `Readiness(Arc<AtomicBool>)` newtype with `accepting()`, `is_accepting()`, `begin_draining()`; one `readiness: Readiness` field on `AppState`; one `readiness.begin_draining()` call inside `shutdown_signal()`, **before** that future resolves. `build_router`'s `.merge(ops::router())` line is already in R69's recorded snippet |
 | `crates/web/tests/web_api.rs` | the eight probe tests `T1`–`T8`, adapted to the template's types |
 | `crates/web/Cargo.toml` | **gains `serde = { version = "1.0.229", features = ["derive"] }`**, and `serde_json` only if R70's envelope is constructed in this member directly. R69 revision 10's manifest row for that member lists only `axum`, `tokio` and the `tower` dev-dependency, because R66 places `serde` in the *library* crate, which under R02's topology is `crates/core`. The executed probe workspace had to add exactly these rows to compile the `#[derive(Serialize)]` on `LivenessReport`; a manifest written from "no change" would not build |
@@ -643,7 +846,7 @@ directory for every command: the repository root,
 this repository and none was written**: the recommendation is verified, never
 implemented.
 
-**Three scripts, 50 checks.** Each asserts on content, not on an exit code; each
+**Four scripts, 92 checks** — revision 1's three (50, unchanged and not re-run for this revision) and revision 2's one (42). Each asserts on content, not on an exit code; each
 carries `set -euo pipefail`; each counts PASS/FAIL/SKIP and exits non-zero on any
 FAIL. A check that could not fail is not counted as evidence.
 
@@ -652,7 +855,8 @@ cd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17
 bash check-offline.sh   # 28 checks O1..O28  -> check-offline.log
 bash check-probe.sh     # 13 checks A,B,T1..T8,C9..C11 -> check-probe.log
 bash check-live.sh      #  9 checks L1..L9   -> check-live.log
-shellcheck check-offline.sh check-probe.sh check-live.sh   # -> shellcheck.log, exit 0
+bash check-standard-r2.sh  # 42 checks S1..S27, P1..P6, C1..C9 -> check-standard-r2.log
+shellcheck check-offline.sh check-probe.sh check-live.sh check-standard-r2.sh   # exit 0
 ```
 
 **`check-offline.sh` — 28 checks, all offline.** It re-verifies at source the
@@ -735,6 +939,48 @@ User-Agent is
 Result in place: **9 PASS, 0 FAIL, 0 SKIP**, exit 0, saved as
 `review/evidence/check-live.log`.
 
+**`check-standard-r2.sh` — 42 checks, added by revision 2 and touching nothing of
+revision 1's.** `S1`–`S26` read the pinned blob with
+`git -C /Users/stevemorin/c/rest-standards show 71bd813c1cf61286586b4ee41ed83ff065e5c8d9`
+and assert each quoted rule **at its recorded line number**, printing the line it
+found, so a rule whose text moves FAILs rather than being silently re-read;
+`S27` counts rule lines naming health, readiness or liveness and asserts **0**,
+which is what makes the argument-from-general-rules necessary rather than lazy.
+`P1`–`P6` build an r2 probe workspace under `$TMPDIR` from
+`review/evidence/probe-r2/` — reusing revision 1's facade, core and manifests
+unchanged, with only the r2 handler source and the r2 test file — and measure
+axum 0.8.9: `P1` and `P2` assert the moved `Cache-Control: no-cache` on liveness
+and on **both** readiness branches; `P3` measures `GET /healthz/` answering `404`
+with no `Location` where R2.6 prefers `308`; `P4` measures
+`Accept: application/xml` answering `200` with JSON where R4.10 prefers `406`;
+`P5` measures the handlers emitting no `request-id`, which is the evidence behind
+the obligation handed to R75; `P6` re-asserts `405` with `Allow: GET,HEAD` now
+that R5.11 makes it a MUST. `C1`–`C9` assert this decision's own revision-2
+claims. `C1` is the one that matters for a pre-audit revision: it compares the
+sha256 of **all twelve** revision-1 scripts, logs and probe sources against the
+digests recorded literally in the script, so a rewritten revision-1 artifact
+FAILs. Revision 1's `probes.rs` is deliberately **not** re-run here — its own
+committed log stays the artifact it was produced from.
+
+**`C9` records the one revision-1 assertion that revision 2 breaks, rather than
+hiding it.** Check `O25` was written for a *first* revision and asserts "no
+`## Supersedes`, exactly four H2 sections". Revision 2 is entitled to both, so
+`O25` must now fail. The revision-1 script is not edited — `C1` forbids it — and
+its committed log is not overwritten; instead `C9` re-runs the unedited script
+into a separate file, `check-offline.r2-rerun.log`, and asserts that the re-run
+produces **27 of its 28 checks passing and exactly one failure, which is `O25`**.
+That is what keeps a second, real regression from hiding behind an expected one:
+every other revision-1 assertion, the seven byte-identical `- assumes` lines
+included, still holds today. Check `C7` is the shape assertion that replaces
+`O25` for revision 2, and it counts headings outside code fences the way the
+publication validator counts them — the conformance note embeds the standard's
+own section 1.9 template, whose first line is an H2 inside a fence.
+
+Result in place: **42 PASS, 0 FAIL, 0 SKIP**, exit 0, saved as
+`review/evidence/check-standard-r2.log`. Revision 1's three scripts were **not
+re-run into their own logs** for revision 2 and those logs are unchanged; `C1`
+proves it by digest and `C9` re-runs one of them into a separate file.
+
 **Reproduction, stated exactly rather than asserted.** Every log cited above was
 rerun and diffed before this sentence was written; the diffs are committed, and
 what varies is named rather than smoothed over. Two lines cannot repeat and are
@@ -749,7 +995,15 @@ waiting for file lock` / `Finished` progress line** — **`0` differing lines ar
 anything else**, which is the assertion; the number of progress lines itself
 varies with build scheduling and is 44 in the committed diff.
 
-**All three scripts were then rerun from a clean `git archive HEAD` extraction
+**`check-standard-r2.log` reproduces on the same rule as the probe log.** Rerun
+in place, its assertion-line diff — `check-standard-r2.rerun.assertions.diff` —
+is **0 bytes**, and its full diff `check-standard-r2.rerun.diff` differs only on
+cargo progress lines, with **`0` differing lines that are anything else** (30
+progress lines in the committed diff). Its own `shellcheck` run is recorded in
+`shellcheck-r2.log`, kept separate because revision 1's `shellcheck.log` is one
+of the twelve artifacts `C1` compares by digest.
+
+**All three revision-1 scripts were rerun from a clean `git archive HEAD` extraction
 into a fresh `$TMPDIR` directory, after the commit that carries them**, and all
 **50 checks passed there with 0 FAIL and — the point of naming them — 0 SKIP**:
 28 + 13 + 9. The extraction has no `.git` at all, which the offline script reports
@@ -904,6 +1158,26 @@ than carried.**
    `.expect(..)` on the `JoinHandle` is marked in the committed source as not the
    production shape.
 
+**Revision 2's own re-verification, and what it could not prove.** Twenty-six
+rules of the REST API Design Standard are quoted at the pinned blob and asserted
+at their line numbers (`S1`–`S26`); the absence of any health or readiness rule
+is counted, not assumed (`S27`); six conformance questions that only axum can
+answer are measured (`P1`–`P6`); and the twelve revision-1 artifacts are
+digest-compared so the pre-audit contract is enforced rather than promised
+(`C1`). **Three conformance claims carry no executable check and say so.**
+(1) **R5.17's redaction** of `Check::detail` — the real `Config` does not exist,
+so the obligation is stated and P03 validates it; the executed probe deliberately
+prints an unredacted path, which is what makes the obligation visible.
+(2) **R5.12/R5.13's problem document** — the 503 body is R70's, still in flight,
+so the probe's stand-in proves the status code and the presence of the report and
+nothing about member names. (3) **R11.7's `request-id`** — `P5` proves the
+handlers do not emit it, which is the *absence* the obligation rests on; that
+R75's middleware will supply it is unproven here and unprovable until R75
+publishes. **One further limit:** the standard binds the whole HTTP surface, and
+this item owns two paths. The conformance note is therefore explicitly partial —
+its tier, its switch declarations and its deviation list are the template's, and
+R69, R70, R71 and R72–R76 each own rows this decision does not write.
+
 **Unproven, and left for P03 to prove in the real template.** AC9 (one function,
 two callers, one check list — needs the template's crates to exist). AC11 (the
 drain window: `/readyz` answering 503 for the whole interval between the signal and
@@ -927,3 +1201,47 @@ change — and for the initial check set, which later items will extend. **Low
 confidence is claimed nowhere**, and two figures are explicitly absent rather than
 estimated: `git-version`'s open-issue count (HTTP 422, reproduced) and issue
 responsiveness for seven of the eight crates.
+
+## Supersedes
+
+**Revision 1, 2026-09-18, sha256
+`fde7de281d018980176edb2b95b68eaa635c27d5fec0d280a1abef68779f79a0`, commits
+`d930c24`, `00b0293`, `f940e56` and `a8080b3`; superseded 2026-09-18 by owner
+ruling W2-REST.** Revision 1 was never published and never audited, so this
+section records the history rather than preserving a published entry verbatim.
+
+**What revision 1 said.** The same recommendation, `probe-contract/v1`: one
+shared synchronous `run_diagnostics` in `crates/core`, two hand-written axum
+0.8.9 handlers in `crates/web/src/routes/ops.rs`, an `AtomicBool` readiness latch
+flipped by R69's `shutdown_signal()`, no new crate at any version, settling F328
+and F329 and applying F308 unchanged. Fifty checks over three scripts, all
+passing in place and from a clean `git archive HEAD` extraction.
+
+**Why it moved.** Owner ruling W2-REST of 2026-09-18 made the organisation's REST
+API Design Standard v2.0.0 binding on this template's HTTP surface. Revision 1
+was written against the Kubernetes probe contract, F308 and the coupled P02
+decisions, and had no reason to consult the standard. Two of its clauses turned
+out to be nonconformant once the standard bound: it emitted no `Cache-Control`
+header (R7.1, a MUST) and it placed no redaction obligation on the diagnostic
+report's `detail` field (R5.17, a MUST).
+
+**What revision 2 changed, exhaustively.** (1) The H1 and this history. (2) A
+`### Conformance with the REST API Design Standard v2.0.0` H3 inside
+`## Decision`, carrying the rule-by-rule table, the provisional conformance note
+in the standard's section 1.9 template, and `OVERRIDE (OV-04)`. (3)
+`Cache-Control: no-cache` on both probe responses, in the recommendation bullets,
+the members table and the migration table. (4) The R5.17 redaction obligation on
+`Check::detail`, in the recommendation bullets and the migration table. (5) The
+R70 coupling sharpened by R5.13 and R5.16. (6) A second obligation on R75 from
+R11.7. (7) The `re-verify:` line extended with the standard's own triggers and
+the pending OV-04 ruling. (8) A new evidence script `check-standard-r2.sh`, new
+probe sources under `review/evidence/probe-r2/`, and their log.
+
+**What revision 2 did not change.** The recommendation's stack, every version
+pin, the shared-function placement and signature, the readiness latch, the
+`spawn_blocking` bridge, the liveness field list, the declined uptime field, the
+architectural alternatives and their dispositions, the fitness-gate answers, the
+figures, every `- assumes` line, the absence of any `- owns` line, the absence of
+any `CONFLICT:` line — and every byte of revision 1's three evidence scripts,
+their six logs, their rerun and archive diffs, the 92 snapshots and the five
+probe sources, which check `C1` compares by sha256 rather than by assertion.
