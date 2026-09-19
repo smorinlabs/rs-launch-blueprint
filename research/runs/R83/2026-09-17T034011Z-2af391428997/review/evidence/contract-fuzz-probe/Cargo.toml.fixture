@@ -1,0 +1,31 @@
+# R83 synthesis probe — NOT template code, NOT a recommendation implementation.
+# A throwaway service whose only purpose is to give the contract-fuzz harness in
+# tests/contract_fuzz.rs something to fuzz, so that the harness's behaviour can be
+# observed. Renamed to Cargo.toml by review/evidence/contract-fuzz-probe.sh inside a
+# scratch directory under $TMPDIR; it is committed as `Cargo.toml.fixture` so that no
+# Cargo package is ever rooted inside this research repository.
+[package]
+name = "r83-contract-fuzz-probe"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.96"
+publish = false
+license = "MIT OR Apache-2.0"
+
+[lib]
+name = "r83_probe"
+path = "src/lib.rs"
+
+[dependencies]
+axum = "0.8.9"
+serde_json = "1"
+tokio = { version = "1.53.1", features = ["rt", "macros"] }
+
+[dev-dependencies]
+oas3 = "0.22.0"
+proptest = "1.11.0"
+tower = { version = "0.5.3", features = ["util"] }
+
+[[test]]
+name = "contract_fuzz"
+path = "tests/contract_fuzz.rs"

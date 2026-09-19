@@ -1,0 +1,58 @@
+== environment ==
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+retrieved: 2026-09-19T01:26:09Z
+
+== stable assertions ==
+GET https://crates.io/api/v1/crates?q=schemathesis&per_page=12 -> meta.total=0
+PASS  B1 crates.io full-text search for "schemathesis" returns nothing
+GET https://crates.io/api/v1/crates?q=openapi%20fuzz&per_page=12 -> meta.total=107
+PASS  B2 the same search endpoint does return hits for "openapi fuzz" (control for B1)
+openapi-fuzzer newest non-yanked: num=0.2.0 created_at=2023-08-30 rust_version=None
+PASS  B3 openapi-fuzzer newest non-yanked version is 0.2.0
+PASS  B4 openapi-fuzzer 0.2.0 was released 2023-08-30
+PASS  B5 openapi-fuzzer declares no rust-version (fitness gate 2 FAIL)
+oas3 newest non-yanked: num=0.22.0 created_at=2026-05-06 rust_version=1.87
+PASS  B6 oas3 newest non-yanked version is 0.22.0
+PASS  B7 oas3 0.22.0 declares rust-version 1.87 (gate 2 PASS against the 1.96 floor)
+proptest newest non-yanked: num=1.11.0 created_at=2026-03-24 rust_version=1.85
+PASS  B8 proptest newest non-yanked version is 1.11.0 (the version R33 published)
+PASS  B9 proptest 1.11.0 declares rust-version 1.85
+GET https://rustsec.org/packages/oas3.html -> 404
+PASS  B10.oas3 no RustSec advisory page exists for oas3 (fitness gate 3)
+GET https://rustsec.org/packages/proptest.html -> 404
+PASS  B10.proptest no RustSec advisory page exists for proptest (fitness gate 3)
+GET https://rustsec.org/packages/openapi-fuzzer.html -> 404
+PASS  B10.openapi-fuzzer no RustSec advisory page exists for openapi-fuzzer (fitness gate 3)
+rest-standards HEAD: 0850d43e45d919ef5e37f7174c4212b46013c49f
+PASS  B11 the clone is at the commit the owner ruling W2-REST pins
+PASS  B12 rest-api-standard.md at that commit is the blob the ruling names
+rules of the form **R<n>.<n>** in the blob: 145
+PASS  B13 the conformance surface is 145 rules
+rest-api-standard.md:742: **R4.1** Every API MUST publish an OpenAPI document as the contract source
+PASS  B14 R4.1 is quoted at its line (the contract document is OpenAPI 3.1)
+rest-api-standard.md:934: **R5.2** Unregistered status codes MUST NOT be defined or used.
+PASS  B15 R5.2 is quoted at its line (unregistered status codes)
+rest-api-standard.md:762: **R4.3** Every JSON response body MUST have an object at the top level —
+PASS  B16 R4.3 is quoted at its line (object at the JSON top level)
+rest-api-standard.md:210: **R1.5** Every API declares one **conformance tier** in its conformance
+PASS  B17 R1.5 is quoted at its line (conformance tiers)
+rest-api-standard.md:271: **R1.7 — No silent deviation.** An API deviates from this standard only in
+PASS  B18 R1.7 is quoted at its line (no silent deviation)
+rest-api-standard.md:916: **R5.1** The status code MUST match the registered semantics of the
+PASS  B19 R5.1 is quoted at its line (status matches the outcome)
+rest-api-standard.md:1019: **R5.12** Every API MUST be capable of returning every error response the
+PASS  B20 R5.12 is quoted at its line (problem+json capability)
+rules mechanically checked by conformance/spectral.yaml: R10.1 R10.9 R13.1 R13.2 R2.4 R4.11 R4.16 R4.3 R4.4 R5.13 R5.6 R6.1 R6.8 
+PASS  B21 R4.3 is also statically linted, so the runtime oracle is a second line, not the only one
+PASS  B22 R5.2 is not in the Spectral ruleset: an unregistered status is only observable at runtime
+
+== volatile figures (counters move; re-read rather than diff) ==
+matusf/openapi-fuzzer stars=577 archived=false pushed_at=2024-01-29T11:19:08Z
+PASS  B23 openapi-fuzzer has had no push since 2024 (maintenance: at-risk)
+x52dev/oas3-rs stars=79 archived=false pushed_at=2026-09-09T10:10:27Z
+PASS  B24 oas3 was pushed in 2026 or later (maintenance: active)
+oas3: recent_downloads=796004 downloads=2011518
+openapi-fuzzer: recent_downloads=40 downloads=11730
+
+== totals ==
+PASS=26 FAIL=0 SKIP=0 TOTAL=26
