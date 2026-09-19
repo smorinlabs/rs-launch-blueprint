@@ -356,8 +356,6 @@ if find "$root/research" "$root/docs" -type f -name '*.md' -print0 2>/dev/null \
     | xargs -0 "$GREP" -noE "\bOV-[0-9]+\b" 2>/dev/null \
     | "$GREP" -v "^$DECISION:" \
     | "$GREP" -v "/docs/planning/p02/execution-ledger.md:" > "$scratch/ov.txt"; then
-  printf '      | OV numbers in use outside this decision:\n'
-  sed 's/^/      | /' "$scratch/ov.txt"
   # The census LISTING is deliberately not printed. It enumerates other items'
   # decision files, several of which are uncommitted work by other agents in
   # this shared worktree, so it differs between the worktree and a `git archive`
