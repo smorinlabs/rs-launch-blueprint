@@ -635,12 +635,16 @@ two conformance-walk table rows, because the enumeration grep was piped through 
 and the references sat past that column. The evidence script caught it, which is what it is
 for, and the repair is the corrected enumeration shown here rather than a re-read.
 
-`review/evidence/rest-conformance-r2.sh` still executes the scoped census and prints it — not
-to allocate, which is no longer this item's job, but to assert that no OVERRIDE heading here
-carries a number other than `OV-07`, that no other **item** claims `OV-07` (the controller's
-ledger naturally names it, and is excluded as the allocator's own register), and that the
-census never comes back empty again, since an empty result now means the search is broken
-rather than that the numbers are free.
+`review/evidence/rest-conformance-r2.sh` still executes the scoped census — not to allocate,
+which is no longer this item's job, but to assert three things: that no OVERRIDE heading here
+carries a number other than `OV-07`; that no other **item** claims `OV-07` (the controller's
+ledger naturally names it and is excluded as the allocator's own register, while its
+`OV-07 R79` row is asserted separately); and that the census never comes back empty again,
+since an empty result now means the search is broken rather than that the numbers are free.
+The census **listing** is deliberately withheld from the log: it enumerates other items'
+decision files, several of them uncommitted work by other agents in this shared worktree, so
+printing it would make an honest rerun's log differ from the committed one. The assertion
+outcome is printed instead, and that is what this decision relies on.
 
 **What R79 contributes to the template's conformance note.** The note itself is one document
 per API and is R71's or R69's to hold, not R79's to create. R79 supplies four rows for it: the

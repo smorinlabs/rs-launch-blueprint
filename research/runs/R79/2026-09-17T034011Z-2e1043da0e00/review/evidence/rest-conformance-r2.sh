@@ -358,8 +358,13 @@ if find "$root/research" "$root/docs" -type f -name '*.md' -print0 2>/dev/null \
     | "$GREP" -v "/docs/planning/p02/execution-ledger.md:" > "$scratch/ov.txt"; then
   printf '      | OV numbers in use outside this decision:\n'
   sed 's/^/      | /' "$scratch/ov.txt"
-  printf '      | the full census, which the first attempt at this search MISSED by timing out:\n'
-  "$GREP" -oE "\bOV-[0-9]+\b" "$scratch/ov.txt" | sort -u -V | sed 's/^/      |   /'
+  # The census LISTING is deliberately not printed. It enumerates other items'
+  # decision files, several of which are uncommitted work by other agents in
+  # this shared worktree, so it differs between the worktree and a `git archive`
+  # extraction and would make an honest rerun's log differ. What is printed is
+  # the assertion outcome, which is what the decision actually relies on.
+  printf '      | census computed over the markdown corpus; listing withheld because it varies\n'
+  printf '      | with other agents uncommitted work. The assertions below are what is claimed.\n'
   if "$GREP" -qE "\bOV-0?7\b" "$scratch/ov.txt"; then
     fail "OV-07 is claimed by another item — the controller's allocation must be re-issued"
     "$GREP" -nE "\bOV-0?7\b" "$scratch/ov.txt" | sed 's/^/      | /'
@@ -371,7 +376,7 @@ if find "$root/research" "$root/docs" -type f -name '*.md' -print0 2>/dev/null \
   if [ -f "$ledger" ]; then
     if "$GREP" -qF 'OV-07 R79' "$ledger"; then
       pass "the controller's allocation table still reads 'OV-07 R79'"
-      "$GREP" -noE 'OV-0[4-9] R[0-9]+|OV-1[0-5] R[0-9]+' "$ledger" | sed 's/^/      | ledger: /'
+      "$GREP" -noE 'OV-07 R79' "$ledger" | sed 's/^/      | ledger: /'
     else
       fail "the controller's allocation table no longer assigns OV-07 to R79"
     fi

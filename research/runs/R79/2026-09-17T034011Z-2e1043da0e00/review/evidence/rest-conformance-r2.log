@@ -1,5 +1,5 @@
 == environment ==
-date-utc: 2026-09-19T01:29:04Z
+date-utc: 2026-09-19T01:31:12Z
 repository root resolved by walking up from the script path: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
 context: a git worktree (.git is a FILE, which is why the test is -e and not -d)
 grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
@@ -123,7 +123,7 @@ PASS  the only rule-bearing use of 'metrics' is R3.3's safety exception at :599
 PASS  the applicability-switch vocabulary is still the closed four-name set (no operational switch)
 
 == the decision's own conformance claims ==
-DECISION.md sha256 f27ec10071d106efdd9b9266999c8cdb3ffab0d1c7b31ac55e14fb8c1a28cf6a
+DECISION.md sha256 1551c96d483f7be26ca0d50d1df2caa32d4542ccf66e0423ad40e5827ae2e215
 PASS  R2.4 — the path segment 'metrics' satisfies the standard's kebab-case pattern
 PASS  R2.5 — /metrics references 1 resource segment(s), within the ceiling of three
 PASS  R1.8 — 'metrics' collides with none of the eight reserved action verbs
@@ -167,56 +167,67 @@ PASS  a §1.9-shaped deviation row is recorded for R8.6
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/DECISION.md:781:OV-04
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/DECISION.md:782:OV-05
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/DECISION.md:782:OV-06
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:26:OV-04
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:733:OV-04
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:737:OV-04
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:783:OV-04
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:828:OV-04
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:898:OV-04
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:1033:OV-04
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:1035:OV-04
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:1035:OV-01
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:1035:OV-02
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:1035:OV-03
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:1116:OV-04
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:1223:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:5:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:13:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:13:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:13:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:13:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:13:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:13:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:44:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:756:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:760:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:806:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:850:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:852:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:854:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:857:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:862:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:932:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:932:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:1086:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:1088:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:1088:OV-01
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:1088:OV-02
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:1088:OV-03
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:1169:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md:1276:OV-04
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:5:OV-04
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:6:OV-04
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:7:OV-05
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:11:OV-04
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:15:OV-04
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:19:OV-04
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:20:OV-05
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:56:OV-05
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:556:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:58:OV-05
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:558:OV-05
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:559:OV-05
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:560:OV-05
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:565:OV-05
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:579:OV-05
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:613:OV-05
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:637:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:561:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:562:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:567:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:581:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:615:OV-05
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:639:OV-05
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:640:OV-04
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:641:OV-01
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:641:OV-02
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:641:OV-03
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:641:OV-05
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:642:OV-04
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:642:OV-08
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:643:OV-01
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:643:OV-02
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:643:OV-03
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:644:OV-04
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:645:OV-04
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:645:OV-05
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:686:OV-05
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:688:OV-01
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:785:OV-05
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:785:OV-05
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:1245:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:644:OV-08
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:646:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:647:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:647:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:688:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:690:OV-01
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:787:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:787:OV-05
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:1247:OV-04
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:1248:OV-05
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:1252:OV-04
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:1252:OV-05
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:1278:OV-05
-      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:1284:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:1249:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:1250:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:1254:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:1254:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:1280:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md:1286:OV-05
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/raw/opus.md:626:OV-03
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/raw/opus-dd3bdeae9566ae10ea300c1c2e6727264075523cb2ccce1e95eea9eccc06a0fb.md:626:OV-03
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R02/2026-09-17T033527Z-40929a603f91/review/audit-fable.md:12:OV-03
@@ -252,6 +263,21 @@ PASS  a §1.9-shaped deviation row is recorded for R8.6
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md:262:OV-02
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md:266:OV-03
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md:291:OV-03
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/review/DECISION.md:577:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/review/DECISION.md:581:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/review/DECISION.md:598:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/review/DECISION.md:600:OV-01
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/review/DECISION.md:602:OV-02
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/review/DECISION.md:602:OV-03
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/review/DECISION.md:602:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/review/DECISION.md:603:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/review/DECISION.md:604:OV-01
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/review/DECISION.md:604:OV-04
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/review/DECISION.md:643:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/review/DECISION.md:648:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/review/DECISION.md:650:OV-01
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/review/DECISION.md:673:OV-05
+      | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/review/DECISION.md:733:OV-05
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:300:OV-01
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1230:OV-01
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1243:OV-01
@@ -684,38 +710,12 @@ PASS  a §1.9-shaped deviation row is recorded for R8.6
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/OWNER-REVIEW.md:79:OV-01
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/OWNER-REVIEW.md:89:OV-01
       | /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/OWNER-REVIEW.md:157:OV-03
-      | the full census, which the first attempt at this search MISSED by timing out:
-      |   OV-01
-      |   OV-02
-      |   OV-03
-      |   OV-04
-      |   OV-05
-      |   OV-06
-      |   OV-08
-      |   OV-09
+      | census computed over the markdown corpus; listing withheld because it varies
+      | with other agents uncommitted work. The assertions below are what is claimed.
 PASS  the controller-allocated OV-07 is claimed by no other item
 PASS  the controller's allocation table still reads 'OV-07 R79'
-      | ledger: 1073:OV-04 R77
-      | ledger: 1073:OV-05 R80
-      | ledger: 1073:OV-06 R70
       | ledger: 1073:OV-07 R79
-      | ledger: 1073:OV-08 R76
-      | ledger: 1073:OV-09 R58
-      | ledger: 1073:OV-10 R73
-      | ledger: 1073:OV-11 R74
-      | ledger: 1073:OV-12 R84
-      | ledger: 1073:OV-13 R72
-      | ledger: 1073:OV-14 R51
-      | ledger: 1073:OV-15 R83
-      | ledger: 1074:OV-05 R80
-      | ledger: 1074:OV-06 R70
       | ledger: 1074:OV-07 R79
-      | ledger: 1074:OV-08 R76
-      | ledger: 1074:OV-09 R58
-      | ledger: 1074:OV-12 R84
-      | ledger: 1074:OV-13 R72
-      | ledger: 1074:OV-14 R51
-      | ledger: 1074:OV-15 R83
 -- the owner ruling is where this decision cites it --
 PASS  W2-REST is at docs/port/OWNER-REVIEW.md:187, the line this decision cites
 PASS  the owner ruling itself names the blob this script reads
