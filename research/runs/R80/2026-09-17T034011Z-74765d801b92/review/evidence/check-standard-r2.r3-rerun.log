@@ -1,0 +1,172 @@
+=== R80 check-standard-r2.sh ===
+date(UTC): 2026-09-19T01:33:14Z
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+standard: /Users/stevemorin/c/rest-standards blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9 (commit 0850d43e45d919ef5e37f7174c4212b46013c49f)
+blob lines: 3427
+blob sha256: 4d3ea4e898f79a358e16e8ddadcb9b4a5b3726032d1f36c00fb73311c4e79958
+--- S: the rules, quoted at the pinned blob ---
+  S1 @ line 229: **R1.6** Rules that only make sense for APIs with a given capability are
+PASS S1 — R1.6 scopes rules by applicability switch and makes an off-switch declaration carry a reason — the discipline this decision's conformance note follows
+  S2 @ line 271: **R1.7 — No silent deviation.** An API deviates from this standard only in
+PASS S2 — R1.7 makes an unrecorded deviation nonconformance regardless of merit — the rule that forces OV-04 to exist in writing
+  S3 @ line 312: **R1.8 — Reservation discipline.** A conforming API MUST NOT use a reserved
+PASS S3 — R1.8 governs reserved names; neither healthz nor readyz is a reserved name, and the probes assign no reserved name a new meaning
+  S4 @ line 443: **R2.1** An API MUST present a resource-oriented surface: noun resources,
+PASS S4 — R2.1 requires a resource-oriented surface with no RPC carve-out — the rule the two probe paths do not satisfy
+  S5 @ line 456: **R2.2** Collection resources MUST use plural nouns (`/customers`,
+PASS S5 — R2.2's singleton exception is the only shape under which a single-valued ops path could conform, and it requires a documented singleton noun
+  S6 @ line 467: **R2.3** Resource names MUST be unabbreviated, and each concept MUST have
+PASS S6 — R2.3 forbids abbreviated resource names — healthz and readyz are coinages, not the business domain's nouns
+  S7 @ line 477: **R2.4** Path segments MUST use kebab-case (`/sales-order-items`), pattern
+PASS S7 — R2.4 fixes the path-segment grammar; both probe segments satisfy it
+  S8 @ line 487: **R2.5** Nest a sub-resource only where the child cannot exist outside its
+PASS S8 — R2.5 caps path depth at three resources; each probe path has one segment
+  S9 @ line 499: **R2.6** Canonical URIs have no trailing slash. A trailing slash MUST NOT
+PASS S9 — R2.6 prefers a 308 redirect from the trailing-slash form — the SHOULD this decision deviates from, measured by P3
+  S10 @ line 525: **R2.9** Path segments identify resources; query parameters modify the
+PASS S10 — R2.9 keeps operation modifiers out of path segments; the probes take no parameter at all
+  S11 @ line 542: **R2.11** A non-CRUD operation MUST use the sub-path verb form
+PASS S11 — R2.11 fixes the action form for operations that resist CRUD, which is the alternative modeling OV-04 rejects
+  S12 @ line 693: **R3.10** A resource that supports conditional update MUST emit a strong
+PASS S12 — R3.10's exception — resources never updated by clients — is why the probes owe no ETag under R7.3 tier 1
+  S13 @ line 846: **R4.10** The default media type — served when a request carries no
+PASS S13 — R4.10 fixes application/json as the default and prefers 406 over a silent substitution — measured by P4
+  S14 @ line 856: **R4.11** Every response whose content was selected by a request header
+PASS S14 — R4.11's exception — responses with no negotiation — is why the probes owe no Vary
+  S15 @ line 916: **R5.1** The status code MUST match the registered semantics of the
+PASS S15 — R5.1 requires the status to match the outcome, which is what 503-on-not-ready does
+  S16 @ line 934: **R5.2** Unregistered status codes MUST NOT be defined or used.
+PASS S16 — R5.2 bans unregistered codes; 200, 405 and 503 are all registered
+  S17 @ line 1008: **R5.11** `405 Method Not Allowed` MUST carry an `Allow` header.
+PASS S17 — R5.11 turns T7's observation into a standard-bound MUST — measured by P6
+  S18 @ line 1019: **R5.12** Every API MUST be capable of returning every error response the
+PASS S18 — R5.12 requires application/problem+json for every application-generated error, which /readyz's 503 is
+  S19 @ line 1049: **R5.13** Every problem document **carried in an HTTP response** MUST carry
+PASS S19 — R5.13 fixes the problem document's required members — the rule that sharpens this item's requirement on R70
+  S20 @ line 1114: **R5.16** An API MUST publish a catalog of every problem `type`/`code`
+PASS S20 — R5.16 requires a published catalog, so /readyz's 503 needs a catalogued code
+  S21 @ line 1120: **R5.17** No response body may expose stack traces, query fragments,
+PASS S21 — R5.17 forbids internal detail in any response body — the constraint on what a diagnostics report may carry
+  S22 @ line 1259: **R7.1** Every response MUST carry an explicit `Cache-Control` header —
+PASS S22 — R7.1 is the MUST that moved this recommendation: revision 1 emitted no Cache-Control
+  S23 @ line 1271: **R7.2** Responses carrying user-specific or authenticated data MUST be
+PASS S23 — R7.2's genuinely-public exception is why the probes need no private marker
+  S24 @ line 1281: **R7.3** Within the mechanism above, the default posture is three-tier:
+PASS S24 — R7.3 fixes the posture tiers and names blanket no-store an anti-pattern — the ground for choosing no-cache
+  S25 @ line 1435: **R9.1** An API MUST use one uniform version-marker placement: the major
+PASS S25 — R9.1 requires the major version in the path — the MUST that F308's unversioned ops paths do not satisfy
+  S26 @ line 1752: **R11.7** Every response, including errors, MUST carry the `request-id`
+PASS S26 — R11.7 binds the probe responses too, so R75's correlation middleware may not skip them — measured by P5
+  rule lines naming health/readiness/liveness: 0
+PASS S27 — no rule in the standard names health, readiness or liveness (0 matching rule lines, counted with grep (BSD grep, GNU compatible) 2.6.0-FreeBSD) — there is no ops carve-out, so the probe surface is judged by the general rules above
+--- P: axum 0.8.9 measured in an r2 probe workspace ---
+workspace: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r80-probe-r2.w6ZDasa9 (deleted on exit)
+   Compiling proc-macro2 v1.0.107
+   Compiling quote v1.0.47
+   Compiling unicode-ident v1.0.26
+   Compiling libc v0.2.189
+   Compiling itoa v1.0.18
+   Compiling pin-project-lite v0.2.17
+   Compiling futures-core v0.3.34
+   Compiling serde_core v1.0.229
+   Compiling bytes v1.12.1
+   Compiling once_cell v1.21.4
+   Compiling serde v1.0.229
+   Compiling httparse v1.10.1
+   Compiling zmij v1.0.23
+   Compiling tower-service v0.3.3
+   Compiling log v0.4.34
+   Compiling futures-channel v0.3.34
+   Compiling smallvec v1.16.1
+   Compiling serde_json v1.0.151
+   Compiling percent-encoding v2.3.2
+   Compiling slab v0.4.12
+   Compiling futures-task v0.3.34
+   Compiling httpdate v1.0.3
+   Compiling tracing-core v0.1.36
+   Compiling atomic-waker v1.1.2
+   Compiling tower-layer v0.3.3
+   Compiling sync_wrapper v1.0.2
+   Compiling futures-util v0.3.34
+   Compiling form_urlencoded v1.2.2
+   Compiling memchr v2.8.3
+   Compiling mime v0.3.17
+   Compiling ryu v1.0.23
+   Compiling matchit v0.8.4
+   Compiling tracing v0.1.44
+   Compiling http v1.5.0
+   Compiling errno v0.3.14
+   Compiling socket2 v0.6.5
+   Compiling mio v1.2.3
+   Compiling signal-hook-registry v1.4.8
+   Compiling syn v3.0.6
+   Compiling http-body v1.1.0
+   Compiling http-body-util v0.1.5
+   Compiling axum-core v0.5.6
+   Compiling serde_path_to_error v0.1.20
+   Compiling tokio-macros v2.7.2
+   Compiling serde_derive v1.0.229
+   Compiling tokio v1.53.1
+   Compiling serde_urlencoded v0.7.1
+   Compiling probe-core v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe-r2.w6ZDasa9/crates/core)
+   Compiling hyper v1.11.1
+   Compiling tower v0.5.3
+   Compiling hyper-util v0.1.20
+   Compiling axum v0.8.9
+   Compiling probe-web v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe-r2.w6ZDasa9/crates/web)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 23.95s
+     Running tests/conformance.rs (target/debug/deps/conformance-52e5310abcfde3f1)
+
+running 6 tests
+test p1_liveness_carries_cache_control ... P1 GET /healthz status=200 OK cache-control=Some("no-cache") content-type=Some("application/json")
+ok
+test p2_readiness_carries_cache_control_on_both_branches ... P2 GET /readyz 200-branch cache-control=Some("no-cache"); 503-branch status=503 Service Unavailable cache-control=Some("no-cache")
+ok
+test p3_trailing_slash_is_not_redirected_by_axum ... P3 GET /healthz/ status=404 Not Found location=None (R2.6 wants 308)
+ok
+test p4_unsatisfiable_accept_is_not_406 ... P4 GET /healthz Accept: application/xml -> status=200 OK content-type=Some("application/json") (R4.10 wants 406)
+ok
+test p5_no_request_id_header_is_emitted_by_the_handlers ... P5 GET /healthz response headers=["content-type", "cache-control", "content-length"] request-id=None (R11.7 requires it)
+ok
+test p6_method_not_allowed_still_carries_allow ... P6 POST /healthz status=405 Method Not Allowed allow=Some("GET,HEAD") (R5.11 requires Allow on 405)
+ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+PASS P1 — R7.1 and R4.10 CONFORM after the move: GET /healthz answers 200 with Cache-Control: no-cache and Content-Type: application/json
+PASS P2 — R7.1 CONFORMS on both readiness branches, including the 503 a cache must never serve stale
+PASS P3 — R2.6 DEVIATION measured, not assumed: axum 0.8.9 answers GET /healthz/ with 404 and no Location, where the rule's SHOULD prefers 308
+PASS P4 — R4.10 DEVIATION measured: axum 0.8.9's Json responder ignores an unsatisfiable Accept and serves JSON rather than the 406 the rule's SHOULD prefers
+PASS P5 — R11.7's obligation is measured as unmet by the handlers alone — the correlation header is R75's middleware to add, and this decision records that it may not skip the two probe paths
+PASS P6 — R5.11 CONFORMS: axum 0.8.9 supplies the Allow header the rule makes a MUST, with no code written for it
+--- C: this decision's own revision-2 claims ---
+  unchanged  check-offline.sh
+  unchanged  check-offline.log
+  unchanged  check-probe.sh
+  unchanged  check-probe.log
+  unchanged  check-live.sh
+  unchanged  check-live.log
+  unchanged  shellcheck.log
+  unchanged  probe/core-src/lib.rs
+  unchanged  probe/web-src/lib.rs
+  unchanged  probe/web-tests/probes.rs
+  unchanged  probe/facade-src/lib.rs
+  unchanged  probe/facade-tests/version_hazard.rs
+PASS C1 — all twelve revision-1 scripts, logs and probe sources are byte-identical to the bytes revision 1 was accepted-pending on — this revision adds files, it does not rewrite evidence
+FAIL C2 — the H1 is not the prescribed revision-2 title
+PASS C3 — the revision note names owner ruling W2-REST and pins the standard by blob
+  OVERRIDE (OV-04) mentions: 0; Argument blocks: 1; Options blocks: 1
+FAIL C4 — the override block is missing or malformed (OV-04 0, Argument 1, Options 1)
+PASS C5 — the decision carries a conformance note in the standard's own section 1.9 template, declaring all four applicability switches
+PASS C6 — the decision states plainly that the recommendation moved, and names the header R7.1 forced onto it
+h2_unfenced=5
+supersedes=1
+reverify=1
+current_h2=Decision|Parameters|Empirical check|Engines
+PASS C7 — revision 2's shape is right, counted outside code fences as the publication validator counts: five H2 sections, one '## Supersedes', one 're-verify:' line, and the current entry's four H2s in the required order
+PASS C8 — the parameter block is unchanged in shape: seven '- assumes' lines and no '- owns' line (their byte-identity against the live registry is check O3's, re-run unchanged)
+  revision-1 offline script re-run under revision 2: 27 PASS, 1 FAIL
+    FAIL O25 — DECISION.md shape is wrong: re-verify lines 1, Supersedes 1, H2 sections 6
+PASS C9 — re-running revision 1's unedited offline script against revision 2 yields 27 of its 28 checks PASS and exactly one FAIL — O25, whose first-revision shape rule (no Supersedes, four H2s) revision 2 is entitled to break and check C7 replaces. Every other revision-1 assertion, the seven byte-identical assumes lines included, still holds
+
+=== 40 PASS, 2 FAIL, 0 SKIP ===

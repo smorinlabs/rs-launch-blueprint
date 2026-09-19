@@ -1,0 +1,44 @@
+=== R80 check-standard-r3.sh ===
+date(UTC): 2026-09-19T01:32:09Z
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+python3: Python 3.14.7
+git metadata: present
+PASS R1 — the H1 is the date-first revision-3 title
+  'OVERRIDE (OV-04)' occurrences: 0; 'OVERRIDE (OV-05)': 11
+PASS R2 — this item's override is named OVERRIDE (OV-05) — 11 times, including its own H4 heading — and OVERRIDE (OV-04) appears 0 times (counted with grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+  ov04_lines=11
+  ov04_occurrences=11
+  regions note<33 alloc=639..679 history>=1267
+  stray=none
+PASS R3 — all eleven surviving OV-04 occurrences sit in the revision-3 note, the allocation paragraph or the history — the three places that name R77's override, revision 2's superseded choice or the collision. None is in the rule table, the conformance note or the override's argument
+  h2_unfenced=5
+  supersedes=1
+  reverify=1
+  current_h2=Decision|Parameters|Empirical check|Engines
+PASS R4 — the decision's shape is unmoved, counted outside code fences as the publication validator counts: five H2s, one Supersedes, one re-verify line, and the current entry's four H2s in order
+  assumes=7 owns=0 Argument=1 Options=1 gate1=1
+PASS R5 — the substance is unmoved: seven '- assumes' lines, no '- owns' line, one **Argument:** and one **Options:** block, and the gate-1 wording intact
+  unchanged  check-offline.sh
+  unchanged  check-offline.log
+  unchanged  check-probe.sh
+  unchanged  check-probe.log
+  unchanged  check-live.sh
+  unchanged  check-live.log
+  unchanged  shellcheck.log
+  unchanged  probe/core-src/lib.rs
+  unchanged  probe/web-src/lib.rs
+  unchanged  probe/web-tests/probes.rs
+  unchanged  probe/facade-src/lib.rs
+  unchanged  probe/facade-tests/version_hazard.rs
+  unchanged  check-standard-r2.sh
+  unchanged  check-standard-r2.log
+  unchanged  probe-r2/web-src/lib.rs
+  unchanged  probe-r2/web-tests/conformance.rs
+  unchanged  shellcheck-r2.log
+PASS R6 — all seventeen artifacts of revisions 1 and 2 — three scripts plus the revision-2 script, their logs, the shellcheck records and all seven probe sources — are byte-identical; revision 3 adds files and rewrites none
+  revision-2 script re-run under revision 3: 40 PASS, 2 FAIL
+    FAIL C2 — the H1 is not the prescribed revision-2 title
+    FAIL C4 — the override block is missing or malformed (OV-04 0, Argument 1, Options 1)
+PASS R7 — re-running revision 2's unedited script against revision 3 yields 40 of its 42 checks PASS and exactly two FAILs, both expected and both named: C2, which pins the revision-2 H1 this revision retitles, and C4, which counts the old override heading the controller's renumber replaced. Checks R1 and R2 above are their replacements, and the Argument and Options blocks C4 also counts are still 1 and 1 — so the renumber broke the identifier and nothing else
+
+=== 7 PASS, 0 FAIL, 0 SKIP ===

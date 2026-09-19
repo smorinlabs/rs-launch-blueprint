@@ -1,4 +1,34 @@
-# 2026-09-18 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 2)
+# 2026-09-18 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 3)
+
+**Revision note (revision 3) — a mechanical renumber, and nothing else.**
+Revision 2 and R77's revision 2 each ran a scoped "next free override number"
+search minutes apart and each allocated **`OV-04`**. The controller now allocates
+override numbers rather than leaving items to search: **R77 keeps `OV-04`, and
+this item's override is `OV-05`** (ledger entry *"OVERRIDE NUMBER COLLISION,
+2026-09-18"*). Revision 3 renames it and does nothing else.
+
+**What changed, exhaustively:** the H1; this note; the fifteen occurrences of
+`OV-04` that named *this item's* override, at revision 2's lines 28, 528, 530,
+531, 532, 537, 551, 585, 609, 611, 613, 653, 752, 1231 and 1237, enumerated by
+search before any edit and re-checked by search afterwards; the allocation
+paragraph, which now records the controller's assignment instead of this item's
+own search; and the history below. `OV-04` still appears eleven times, all of
+them deliberate and none of them naming this item's override: four in this note,
+four in the allocation paragraph and three in the history, where the string names
+**R77's** override, revision 2's superseded choice, or the collision itself. The
+checkable claim is the narrow one — **the heading form `OVERRIDE (…)` never
+carries the old number, and `OVERRIDE (OV-05)` is this decision's only override
+heading** — and check `R2` asserts it by counting both forms. (This sentence
+deliberately does not spell the old heading out: an earlier draft did, which made
+the claim count itself and fail, and `R2` caught it.)
+
+**What did not change:** the recommendation, the override's argument and its
+four options, every rule verdict, the conformance note's content, every version
+pin, the seven `- assumes` lines, the absence of any `- owns` or `CONFLICT:`
+line, and **every evidence artifact of revisions 1 and 2** — `check-offline.sh`,
+`check-probe.sh`, `check-live.sh`, `check-standard-r2.sh`, all of their logs,
+diffs, snapshots and probe sources are byte-identical, asserted by digest in
+`check-standard-r3.sh`.
 
 **Revision note (revision 2).** Owner ruling **W2-REST** of 2026-09-18
 (`docs/port/OWNER-REVIEW.md`, heading *"2026-09-18 — the REST API Design Standard
@@ -25,7 +55,7 @@ yet.** Rule **R7.1** is a MUST that revision 1 did not meet, so
 executed by checks `P1` and `P2`. Rule **R5.17** adds a redaction obligation to
 the diagnostic report's `detail` field. Rules **R5.13** and **R5.16** sharpen the
 requirement this item places on R70 from "the report must be reachable" to a
-named member set plus a catalogued code. **One `OVERRIDE (OV-04)`** is recorded,
+named member set plus a catalogued code. **One `OVERRIDE (OV-05)`** is recorded,
 covering the four rules the unversioned probe paths cannot satisfy, and **two
 SHOULD deviations** are recorded in the conformance note. Nothing else moves: not
 the stack, not a version pin, not the shared-function placement, not the latch,
@@ -525,16 +555,16 @@ axum 0.8.9 are measured by `P1`–`P6`.
 | Rule | Line | Strength | What it requires | `probe-contract/v1` |
 |---|---|---|---|---|
 | R1.6 | 229 | — | rules scoped by applicability switch; an off-switch declaration MUST carry a reason | **CONFORMS** — the conformance note below declares all four switches off, each with its reason |
-| R1.7 | 271 | MUST | no silent deviation; every SHOULD deviation recorded, every MUST deviation an approved exception | **CONFORMS** — `OVERRIDE (OV-04)` and the two SHOULD deviations are in writing below |
+| R1.7 | 271 | MUST | no silent deviation; every SHOULD deviation recorded, every MUST deviation an approved exception | **CONFORMS** — `OVERRIDE (OV-05)` and the two SHOULD deviations are in writing below |
 | R1.8 | 312 | MUST | a reserved name MUST NOT carry another meaning | **CONFORMS** — neither `healthz` nor `readyz` is reserved; the probes take no query parameter, define no media type and reuse no reserved header for a new meaning |
-| R2.1 | 443 | MUST | a resource-oriented surface; no RPC carve-out for any service class | **OVERRIDE (OV-04)** — the probes are operational signals, not resources |
-| R2.2 | 456 | MUST | collections plural; the singleton exception requires a documented singleton | **OVERRIDE (OV-04)** — neither path is a plural collection nor a documented singleton noun |
-| R2.3 | 467 | MUST | resource names unabbreviated, one noun per concept | **OVERRIDE (OV-04)** — `healthz` and `readyz` are orchestrator coinages, not the domain's nouns |
+| R2.1 | 443 | MUST | a resource-oriented surface; no RPC carve-out for any service class | **OVERRIDE (OV-05)** — the probes are operational signals, not resources |
+| R2.2 | 456 | MUST | collections plural; the singleton exception requires a documented singleton | **OVERRIDE (OV-05)** — neither path is a plural collection nor a documented singleton noun |
+| R2.3 | 467 | MUST | resource names unabbreviated, one noun per concept | **OVERRIDE (OV-05)** — `healthz` and `readyz` are orchestrator coinages, not the domain's nouns |
 | R2.4 | 477 | MUST | path segments kebab-case, `^[a-z][a-z\-0-9]*$` | **CONFORMS** — both segments match the pattern |
 | R2.5 | 487 | MUST | at most three resources in a path | **CONFORMS** — one segment each |
 | R2.6 | 499 | MUST + SHOULD | canonical URIs carry no trailing slash; a trailing-slash request SHOULD get `308` | **CONFORMS** on the canonical form; **SHOULD deviation** on the redirect — check `P3` measures axum 0.8.9 answering `GET /healthz/` with `404` and no `Location` |
 | R2.9 | 525 | MUST | operation modifiers travel as query parameters, never path segments | **CONFORMS** — the probes take no parameter at all |
-| R2.11 | 542 | MUST | a non-CRUD *operation* uses `POST /{collection}/{id}/{action}` | **CONFORMS, vacuously** — the probes are safe `GET`s, not mutations; the action form is the alternative modeling OV-04 weighs and rejects |
+| R2.11 | 542 | MUST | a non-CRUD *operation* uses `POST /{collection}/{id}/{action}` | **CONFORMS, vacuously** — the probes are safe `GET`s, not mutations; the action form is the alternative modeling OV-05 weighs and rejects |
 | R3.10 | 693 | MUST + exception | a conditionally-updatable resource MUST emit a strong `ETag`; **exception:** resources never updated by clients | **CONFORMS by the named exception** — no client updates a probe, so no `ETag` is owed under R7.3 tier 1 |
 | R4.10 | 846 | MUST + SHOULD | default media type `application/json` UTF-8, selected by negotiation not a `format` parameter; an unsatisfiable `Accept` SHOULD get `406` | **CONFORMS** on the default and on the absence of a `format` parameter (`P1`); **SHOULD deviation** on `406` — check `P4` measures axum's `Json` responder serving JSON for `Accept: application/xml` |
 | R4.11 | 856 | MUST + exception | `Vary` on any response whose content was header-selected; **exception:** responses with no negotiation | **CONFORMS by the named exception** — the probes negotiate nothing, which is the same fact `P4` measures |
@@ -548,7 +578,7 @@ axum 0.8.9 are measured by `P1`–`P6`.
 | R7.1 | 1259 | MUST | every response MUST carry an explicit `Cache-Control` header | **Moved, and now CONFORMS** — revision 1 emitted none. Both probes emit `Cache-Control: no-cache` (`P1`, `P2`) |
 | R7.2 | 1271 | MUST + exception | user-specific or authenticated responses MUST be `private` or `no-store`; **exception:** genuinely public responses | **CONFORMS by the named exception** — a probe body is unauthenticated and identical for every caller, so no `private` marker is owed |
 | R7.3 | 1281 | — | three-tier posture; blanket `no-store` is a named anti-pattern reserved for genuinely sensitive payloads | **CONFORMS** — tier 1 (`no-cache`) is the mutable-resource default; `no-store` is the ranked runner-up and is declined on the rule's own anti-pattern ground, a probe body not being sensitive |
-| R9.1 | 1435 | MUST | one uniform version-marker placement, the major version in the path (`/v1`) | **OVERRIDE (OV-04)** — F308 fixes `/healthz` and `/readyz` unversioned, and the prompt instructs applying F308 rather than re-deriving it |
+| R9.1 | 1435 | MUST | one uniform version-marker placement, the major version in the path (`/v1`) | **OVERRIDE (OV-05)** — F308 fixes `/healthz` and `/readyz` unversioned, and the prompt instructs applying F308 rather than re-deriving it |
 | R11.7 | 1752 | MUST | every response, including errors, MUST carry the `request-id` correlation header | **Obligation recorded, not yet met** — check `P5` measures the handlers emitting none, because the header is middleware's. **R75's correlation layer MUST cover `/healthz` and `/readyz`**, and F320's access-log exclusion must not be read as excluding them from the header |
 
 **Three moves, two deviations, one override — and what did not move.** The
@@ -582,7 +612,7 @@ Context: a project template, not a deployed service. The probe surface is
   unauthenticated, carries no PII, and is single-tenant by construction.
 
 Deviations:
-- OV-04 · MUST (R2.1, R2.2, R2.3, R9.1) · the two probe endpoints are
+- OV-05 · MUST (R2.1, R2.2, R2.3, R9.1) · the two probe endpoints are
   unversioned, non-plural, abbreviated non-resource paths · the orchestrator
   contract fixes the names and F308 fixes the absence of a version segment ·
   approver: PENDING OWNER · date: PENDING
@@ -606,12 +636,17 @@ N/A declarations:
 - §10.1–§10.4, §13 · the four switches above are off, each with its reason
 ```
 
-#### `OVERRIDE (OV-04)` — the probe paths are unversioned, non-resource names
+#### `OVERRIDE (OV-05)` — the probe paths are unversioned, non-resource names
 
-`OV-04` is the next free override number: a scoped search of `docs/` and
-`research/` for `OV-[0-9]+` returns `OV-01` (R60, refused 2026-09-14), `OV-02`
-(R61), `OV-03` (R02) and one range notation in an R61 audit; `OV-04` through
-`OV-08` are unused. The deviation is from four **MUST** rules at once, argued
+`OV-05` is **assigned by the controller**, not chosen here. Revision 2 picked
+`OV-04` from its own scoped search of `docs/` and `research/` for `OV-[0-9]+`,
+which returned `OV-01` (R60, refused 2026-09-14), `OV-02` (R61), `OV-03` (R02)
+and one range notation in an R61 audit, leaving `OV-04` through `OV-08` unused.
+R77's revision 2 ran the same search minutes earlier and reached the same answer,
+so two items allocated `OV-04` concurrently. The controller now allocates
+override numbers: **R77 keeps `OV-04` and this item's override is `OV-05`**
+(ledger entry *"OVERRIDE NUMBER COLLISION, 2026-09-18"*). The deviation is from
+four **MUST** rules at once, argued
 once rather than four times because a single fact creates all four: the probe
 paths are not resources and not part of the versioned API.
 
@@ -650,7 +685,7 @@ them from the spec — a choice this item hands to R71 rather than making.
 | c | Model readiness as an action, `POST /v1/service-instances/{id}/check-readiness` per R2.11 | Fully conforms to §2 and §9 | Unusable: a kubelet `httpGet` probe issues `GET`, cannot supply an id, and R5.1 would then make a readiness failure a failed `POST` rather than a probe signal. Rejected on the consumer contract, not on taste |
 | d | Serve the probes on a second admin listener, off the API's URI space entirely | The standard governs the API's URI space (§1.3); a separate admin port arguably falls outside it | This is alternative **D** under `### Principles and implementation`, already rejected there for this template on cost grounds, and the §1.3 reading is an interpretation this item is not entitled to make on the owner's behalf. Recorded as the scale-out path that would also retire this override |
 
-**What settles it.** The owner records `OV-04` as approved, or selects (b), (c)
+**What settles it.** The owner records `OV-05` as approved, or selects (b), (c)
 or (d). Until then the deviation is **requested, not granted**, exactly as
 `OV-01` was recorded before its refusal, and the conformance note above carries
 `approver: PENDING OWNER`.
@@ -749,7 +784,7 @@ whoever specifies `doctor` must reuse one of those or add a row through R67's
 append-only process, and that today — with no check able to reach `error` —
 `doctor` would exit `0` on every machine.
 
-re-verify: when the REST API Design Standard moves off blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9, in particular any change to R2.1, R2.2, R2.3, R2.6, R4.10, R5.11, R5.13, R5.16, R5.17, R7.1, R7.3, R9.1 or R11.7, or the addition of any rule naming health, readiness or liveness, which would retire or reshape OVERRIDE (OV-04); when the owner rules on OV-04, which is requested and not granted; when R69 republishes web-extra-surface at revision 10, which fixes every file path in this decision's migration table and is the single most likely trigger; when R70 publishes the problem envelope, which decides how the 503 body carries the diagnostic report; when R71 publishes and requires a schema derive, which must meet the no-OpenAPI-derive-in-crates/core constraint; when R22 publishes the version accessor, which must be core-defined and workspace-safe as check A demonstrates; when R55, R57 or any later item publishes a diagnostics check that can reach CheckStatus::Error; when R77 publishes a readiness-propagation pause or moves the drain deadline; when R51 publishes the container probe client; when R75 publishes the middleware order; when R79 publishes /metrics as a third unversioned ops route; when R05 is reopened to an async core, which deletes the spawn_blocking hop; when GET https://crates.io/api/v1/crates/axum/versions stops giving 0.8.9 as the newest non-yanked version in a release that changes MethodRouter's 405/Allow behaviour or Json's IntoResponse; when https://rustsec.org/packages/axum.html, .../serde.html or .../tokio.html changes status while the atty control holds at 200; when GET https://crates.io/api/v1/crates/shadow-rs/versions or .../git-version/versions begins returning a non-null rust_version, which reverses a gate-2 exclusion; when the Kubernetes probe documentation changes the quoted sentences; or by 2027-03-18, whichever comes first
+re-verify: when the REST API Design Standard moves off blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9, in particular any change to R2.1, R2.2, R2.3, R2.6, R4.10, R5.11, R5.13, R5.16, R5.17, R7.1, R7.3, R9.1 or R11.7, or the addition of any rule naming health, readiness or liveness, which would retire or reshape OVERRIDE (OV-05); when the owner rules on OV-05, which is requested and not granted; when R69 republishes web-extra-surface at revision 10, which fixes every file path in this decision's migration table and is the single most likely trigger; when R70 publishes the problem envelope, which decides how the 503 body carries the diagnostic report; when R71 publishes and requires a schema derive, which must meet the no-OpenAPI-derive-in-crates/core constraint; when R22 publishes the version accessor, which must be core-defined and workspace-safe as check A demonstrates; when R55, R57 or any later item publishes a diagnostics check that can reach CheckStatus::Error; when R77 publishes a readiness-propagation pause or moves the drain deadline; when R51 publishes the container probe client; when R75 publishes the middleware order; when R79 publishes /metrics as a third unversioned ops route; when R05 is reopened to an async core, which deletes the spawn_blocking hop; when GET https://crates.io/api/v1/crates/axum/versions stops giving 0.8.9 as the newest non-yanked version in a release that changes MethodRouter's 405/Allow behaviour or Json's IntoResponse; when https://rustsec.org/packages/axum.html, .../serde.html or .../tokio.html changes status while the atty control holds at 200; when GET https://crates.io/api/v1/crates/shadow-rs/versions or .../git-version/versions begins returning a non-null rust_version, which reverses a gate-2 exclusion; when the Kubernetes probe documentation changes the quoted sentences; or by 2027-03-18, whichever comes first
 
 ## Parameters
 
@@ -846,7 +881,7 @@ directory for every command: the repository root,
 this repository and none was written**: the recommendation is verified, never
 implemented.
 
-**Four scripts, 92 checks** — revision 1's three (50, unchanged and not re-run for this revision) and revision 2's one (42). Each asserts on content, not on an exit code; each
+**Five scripts, 99 checks** — revision 1's three (50), revision 2's one (42) and revision 3's one (7). Revisions 1 and 2's five scripts are unchanged and were not re-run into their own logs for revision 3; check `R6` proves it by digest. Each asserts on content, not on an exit code; each
 carries `set -euo pipefail`; each counts PASS/FAIL/SKIP and exits non-zero on any
 FAIL. A check that could not fail is not counted as evidence.
 
@@ -856,7 +891,8 @@ bash check-offline.sh   # 28 checks O1..O28  -> check-offline.log
 bash check-probe.sh     # 13 checks A,B,T1..T8,C9..C11 -> check-probe.log
 bash check-live.sh      #  9 checks L1..L9   -> check-live.log
 bash check-standard-r2.sh  # 42 checks S1..S27, P1..P6, C1..C9 -> check-standard-r2.log
-shellcheck check-offline.sh check-probe.sh check-live.sh check-standard-r2.sh   # exit 0
+bash check-standard-r3.sh  #  7 checks R1..R7                   -> check-standard-r3.log
+shellcheck check-offline.sh check-probe.sh check-live.sh check-standard-r2.sh check-standard-r3.sh   # exit 0
 ```
 
 **`check-offline.sh` — 28 checks, all offline.** It re-verifies at source the
@@ -980,6 +1016,32 @@ Result in place: **42 PASS, 0 FAIL, 0 SKIP**, exit 0, saved as
 `review/evidence/check-standard-r2.log`. Revision 1's three scripts were **not
 re-run into their own logs** for revision 2 and those logs are unchanged; `C1`
 proves it by digest and `C9` re-runs one of them into a separate file.
+
+**`check-standard-r3.sh` — 7 checks, the renumber and nothing else.** `R1` pins
+the revision-3 H1. `R2` is the narrow claim the renumber has to make: the old
+override heading appears **0** times and `OVERRIDE (OV-05)` appears 10, its own
+H4 included. `R3` accounts for every surviving bare mention of the old number by
+region — 11 occurrences, all in the revision-3 note, the allocation paragraph or
+the history,
+**0** stray — so a missed one in the rule table or the conformance note cannot
+hide inside a legitimate total. `R4` re-measures the decision's shape outside
+code fences, and `R5` re-counts the seven `- assumes` lines, the absent `- owns`
+line, the single `**Argument:**`/`**Options:**` pair and the gate-1 wording, so a
+renumber that quietly moved something else would fail. `R6` compares **all
+seventeen** artifacts of revisions 1 and 2 by sha256. `R7` re-runs revision 2's
+**unedited** script into a separate file, `check-standard-r2.r3-rerun.log`, and
+asserts that exactly **two** of its 42 checks now fail, both by name: `C2`, which
+pins the revision-2 H1 this revision retitles, and `C4`, which counts the old
+override heading. `R1` and `R2` are their replacements. **That is the whole
+blast radius of the renumber, measured rather than asserted** — and `R2` earned
+its keep: an earlier draft of the revision-3 note spelled the old heading out in
+the very sentence claiming it was gone, which made the claim count itself, and
+`R2` failed until the sentence was rewritten.
+
+Result in place: **7 PASS, 0 FAIL, 0 SKIP**, exit 0, saved as
+`review/evidence/check-standard-r3.log`; its `shellcheck` record is
+`shellcheck-r3.log`, kept separate because revisions 1 and 2's shellcheck logs
+are two of the seventeen artifacts `R6` compares by digest.
 
 **Reproduction, stated exactly rather than asserted.** Every log cited above was
 rerun and diffed before this sentence was written; the diffs are committed, and
@@ -1204,6 +1266,20 @@ responsiveness for seven of the eight crates.
 
 ## Supersedes
 
+**Revision 2, 2026-09-18, sha256
+`9d3e0a0791182aa62d04ab7b9d7960b8011b2a0ce4fa75243e77384e70deac88`, commit
+`ce291fe`; superseded 2026-09-18 by the controller's override-number
+allocation.** Revision 2 was never published and never audited. It is superseded
+for one reason, recorded in the execution ledger as *"OVERRIDE NUMBER COLLISION,
+2026-09-18"*: revision 2 and R77's revision 2 each allocated `OV-04` by
+concurrent scoped searches, neither able to see the other's uncommitted work.
+The controller resolved it by taking allocation in-house — R77 keeps `OV-04`,
+this item takes `OV-05`. **Revision 3 is a renumber and contains no other
+change**: not one rule verdict, not one option, not one word of the override's
+argument, not one parameter line, and not one byte of any evidence artifact from
+revision 1 or revision 2. The complete revision-2 content stands as written,
+with `OV-04` read as `OV-05` throughout.
+
 **Revision 1, 2026-09-18, sha256
 `fde7de281d018980176edb2b95b68eaa635c27d5fec0d280a1abef68779f79a0`, commits
 `d930c24`, `00b0293`, `f940e56` and `a8080b3`; superseded 2026-09-18 by owner
@@ -1228,13 +1304,13 @@ report's `detail` field (R5.17, a MUST).
 **What revision 2 changed, exhaustively.** (1) The H1 and this history. (2) A
 `### Conformance with the REST API Design Standard v2.0.0` H3 inside
 `## Decision`, carrying the rule-by-rule table, the provisional conformance note
-in the standard's section 1.9 template, and `OVERRIDE (OV-04)`. (3)
+in the standard's section 1.9 template, and `OVERRIDE (OV-05)`. (3)
 `Cache-Control: no-cache` on both probe responses, in the recommendation bullets,
 the members table and the migration table. (4) The R5.17 redaction obligation on
 `Check::detail`, in the recommendation bullets and the migration table. (5) The
 R70 coupling sharpened by R5.13 and R5.16. (6) A second obligation on R75 from
 R11.7. (7) The `re-verify:` line extended with the standard's own triggers and
-the pending OV-04 ruling. (8) A new evidence script `check-standard-r2.sh`, new
+the pending OV-05 ruling. (8) A new evidence script `check-standard-r2.sh`, new
 probe sources under `review/evidence/probe-r2/`, and their log.
 
 **What revision 2 did not change.** The recommendation's stack, every version
