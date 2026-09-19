@@ -23,6 +23,7 @@ The policy file has this exact top-level shape:
   "schema_version": 1,
   "approved_on": "YYYY-MM-DD",
   "pilot": "R38",
+  "engine_overrides": {"R72": ["muse", "opus", "doxa"]},
   "items": {
     "R01": {
       "tier": "light | focused | deep",
@@ -41,6 +42,16 @@ empty evidence-check array; a Deep item has `["codex", "opus", "doxa"]` and
 an empty evidence-check array. The pilot is R38 in the production tree and
 uses all three engines despite its Focused tier. `acceptance_after` lists only
 other current IDs and can be empty.
+
+The optional top-level `engine_overrides` map records approved per-item engine
+substitutions: each key is a current index ID and each value is that item's
+exact expected `engines` array, which the item's policy row must match. An
+item keeps its tier's default engines unless it is the pilot or has an
+override entry. The production tree overrides R72 and R84 to
+`["muse", "opus", "doxa"]`, substituting Muse (Meta) for Codex; extending the
+substitution to further items is mechanical: add the item's ID and expected
+engines here, set the same engines in its policy row, and mirror them in its
+prompt. Override engines must be known (`codex`, `opus`, `doxa`, `muse`).
 
 Every prompt mirrors its item policy under `## Couplings`, once each and in
 this literal form:
@@ -127,8 +138,9 @@ unresolved-findings: none
 
 The audit also contains non-metadata analysis and evidence. Repeating a field
 is invalid. Codex and Terra records use family `openai`; Opus, synthesis, and
-the judgment audit use `anthropic`. Doxa records the actual provider family
-composition rather than the label `doxa`. The empirical execution identity is
+the judgment audit use `anthropic`; Muse records use family `meta`. Doxa
+records the actual provider family composition rather than the label `doxa`.
+The empirical execution identity is
 the empirical auditor identity, because that audit is the recorded rerun.
 
 ## Answer and decision history

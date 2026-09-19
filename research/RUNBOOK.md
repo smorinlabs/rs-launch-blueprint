@@ -66,9 +66,11 @@ its tier, engines, evidence checks, and acceptance prerequisites under
 | Focused | 53 | Codex/Terra and Claude Opus research |
 | Deep | 25 | Codex/Terra, Claude Opus, and Doxa research |
 
-R38 is Focused but its first binding pilot requires all three engines. Light
-items are R22, R23, R24, R41, R46 and R47. The exact remaining allocation is in
-the policy. Every tier retains the complete answer fields, fitness gates,
+R38 is Focused but its first binding pilot requires all three engines. R72
+and R84 are Deep with Muse (Meta) substituted for Codex under the policy's
+`engine_overrides` pilot. Light items are R22, R23, R24, R41, R46 and R47.
+The exact remaining allocation is in the policy. Every tier retains the
+complete answer fields, fitness gates,
 source dates, empirical checks, and dual audits. Light reduces initial engine
 count, not the burden of evidence. No parameter owner is Light.
 

@@ -1,0 +1,16 @@
+{
+  "actor": "research-muse-2026-09-18T215915Z-af997c2abb5a",
+  "actual_model": "muse-spark",
+  "actual_provider": "muse-subagent",
+  "at": "2026-09-19T07:44:44Z",
+  "collected_at": "2026-09-19T15:18:18Z",
+  "model": "muse-spark",
+  "operation_id": "agent:research-muse-2026-09-18T215915Z-af997c2abb5a:107925801a22",
+  "provider": "muse",
+  "raw": "research/runs/R72/2026-09-18T215915Z-af997c2abb5a/raw/muse-107925801a224c71ad22e4d6ca4425223700e99163c709fd96d3fde558aca079.md",
+  "raw_sha256": "107925801a224c71ad22e4d6ca4425223700e99163c709fd96d3fde558aca079",
+  "reason": "muse pilot leg collected; sha 10792580, shape bundle OK",
+  "request_id": "67d35913388d4ff3a5e601b51f92735e",
+  "returned_at": "2026-09-19T15:18:01Z",
+  "state": "succeeded"
+}

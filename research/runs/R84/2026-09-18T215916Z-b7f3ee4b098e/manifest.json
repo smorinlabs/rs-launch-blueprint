@@ -115,16 +115,97 @@
       },
       "provider": "doxa",
       "state": "succeeded"
+    },
+    {
+      "actor": "controller-muse-spark",
+      "at": "2026-09-19T07:44:30Z",
+      "migration": {
+        "from": "codex",
+        "previous_input_hashes": {
+          "parameters": "8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb",
+          "parameters_semantic": "c044235605428a574e5648d2f67a704d6e1749c2a23dfde27416529befc02989",
+          "parameters_semantic_file": "7ebcbe65241cd395932f0df1d7060744546b0c9919b527fa8e6321bff5b73239",
+          "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+          "policy_item": "6bfabc0fda65e09b79b5baec73ef130a63724157fe4e1874cd7342f9190f16fa",
+          "prerequisites": "cbe23dd082a1bcc88fa6e30eabae0e6da6c6230a6f853ba73aad4d77df0eeab6",
+          "prompt": "428d4a380ff16a6bda4f9fa60ab9a0522357a1a0a96376c5c658d6e4a222743f",
+          "registry": "95fea74fa8415b94d81c62bf3a3d1de13ca37dc05d366e978c8135915f9e544a"
+        },
+        "previous_required_engines": [
+          "codex",
+          "opus",
+          "doxa"
+        ],
+        "previous_tier": "deep",
+        "reason": "muse pilot substitution (owner direction 2026-09-18; ledger)",
+        "to": "muse"
+      },
+      "model": "muse-spark",
+      "state": "partial"
+    },
+    {
+      "actor": "research-muse-2026-09-18T215916Z-b7f3ee4b098e",
+      "at": "2026-09-19T07:44:44Z",
+      "operation": {
+        "actor": "research-muse-2026-09-18T215916Z-b7f3ee4b098e",
+        "at": "2026-09-19T07:44:44Z",
+        "model": "muse-spark",
+        "provider": "muse",
+        "request_id": "950d6ad2df984c9a8c3b82112818e361",
+        "state": "submitting"
+      },
+      "provider": "muse",
+      "state": "submitting"
+    },
+    {
+      "actor": "unknown",
+      "at": "2026-09-19T15:18:18Z",
+      "operation": {
+        "actor": "research-muse-2026-09-18T215916Z-b7f3ee4b098e",
+        "actual_model": "muse-spark",
+        "actual_provider": "muse-subagent",
+        "at": "2026-09-19T07:44:44Z",
+        "model": "muse-spark",
+        "operation_id": "agent:research-muse-2026-09-18T215916Z-b7f3ee4b098e:caecee029378",
+        "provider": "muse",
+        "request_id": "950d6ad2df984c9a8c3b82112818e361",
+        "returned_at": "2026-09-19T15:18:18Z",
+        "state": "submitted"
+      },
+      "provider": "muse",
+      "state": "submitted"
+    },
+    {
+      "actor": "unknown",
+      "at": "2026-09-19T15:18:18Z",
+      "operation": {
+        "actor": "research-muse-2026-09-18T215916Z-b7f3ee4b098e",
+        "actual_model": "muse-spark",
+        "actual_provider": "muse-subagent",
+        "at": "2026-09-19T07:44:44Z",
+        "collected_at": "2026-09-19T15:18:18Z",
+        "model": "muse-spark",
+        "operation_id": "agent:research-muse-2026-09-18T215916Z-b7f3ee4b098e:caecee029378",
+        "provider": "muse",
+        "raw": "research/runs/R84/2026-09-18T215916Z-b7f3ee4b098e/raw/muse-caecee029378d7df9f8096e3552847ea9f5bcb1933dbbde2fb1623ed31aae48e.md",
+        "raw_sha256": "caecee029378d7df9f8096e3552847ea9f5bcb1933dbbde2fb1623ed31aae48e",
+        "reason": "muse pilot leg collected; sha caecee02, shape crate OK",
+        "request_id": "950d6ad2df984c9a8c3b82112818e361",
+        "returned_at": "2026-09-19T15:18:18Z",
+        "state": "succeeded"
+      },
+      "provider": "muse",
+      "state": "succeeded"
     }
   ],
   "input_hashes": {
     "parameters": "8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb",
     "parameters_semantic": "c044235605428a574e5648d2f67a704d6e1749c2a23dfde27416529befc02989",
     "parameters_semantic_file": "7ebcbe65241cd395932f0df1d7060744546b0c9919b527fa8e6321bff5b73239",
-    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
-    "policy_item": "6bfabc0fda65e09b79b5baec73ef130a63724157fe4e1874cd7342f9190f16fa",
+    "policy": "ac4561fe28cc219a5a8ded5a53607bddb3ab84a7c42b87edcf38bf0043d27f2b",
+    "policy_item": "2fff9bb174d955fe16bd5ad011bbe174e5790dbfe04ed9e6ff8b8daa2781f9b6",
     "prerequisites": "cbe23dd082a1bcc88fa6e30eabae0e6da6c6230a6f853ba73aad4d77df0eeab6",
-    "prompt": "428d4a380ff16a6bda4f9fa60ab9a0522357a1a0a96376c5c658d6e4a222743f",
+    "prompt": "ec45ed54bce2853446f81e565e05d2e37d40021f3511188a4d4c0cdea944bc2e",
     "registry": "95fea74fa8415b94d81c62bf3a3d1de13ca37dc05d366e978c8135915f9e544a"
   },
   "item": "R84",
@@ -144,6 +225,22 @@
       "reason": "research-20260918-152036-285cea386b6f444c, submitted 2026-09-18T22:20:36Z, providers completed openai 22:38:57Z, perplexity 22:25:37Z, gemini by the 22:28Z resume pass; combined controller-built; twins normalized by scripts/doxa_normalize.py and validated",
       "request_id": "e372f1e2780e476d8692a58a0203d2f5",
       "returned_at": "2026-09-18T22:20:50Z",
+      "state": "succeeded"
+    },
+    "muse": {
+      "actor": "research-muse-2026-09-18T215916Z-b7f3ee4b098e",
+      "actual_model": "muse-spark",
+      "actual_provider": "muse-subagent",
+      "at": "2026-09-19T07:44:44Z",
+      "collected_at": "2026-09-19T15:18:18Z",
+      "model": "muse-spark",
+      "operation_id": "agent:research-muse-2026-09-18T215916Z-b7f3ee4b098e:caecee029378",
+      "provider": "muse",
+      "raw": "research/runs/R84/2026-09-18T215916Z-b7f3ee4b098e/raw/muse-caecee029378d7df9f8096e3552847ea9f5bcb1933dbbde2fb1623ed31aae48e.md",
+      "raw_sha256": "caecee029378d7df9f8096e3552847ea9f5bcb1933dbbde2fb1623ed31aae48e",
+      "reason": "muse pilot leg collected; sha caecee02, shape crate OK",
+      "request_id": "950d6ad2df984c9a8c3b82112818e361",
+      "returned_at": "2026-09-19T15:18:18Z",
       "state": "succeeded"
     },
     "opus": {
@@ -166,13 +263,13 @@
   "prompt_source": "research/topics/84-openapi-typed-client-generation/prompts/openapi-typed-client-generation.prompt.md",
   "remaining_budget": "USD 0.00 at prepare (Opus leg unpaid; Codex leg deferred under W1-CODEX3; Doxa leg pending owner authorisation W2-DOXA)",
   "required_engines": [
-    "codex",
+    "muse",
     "opus",
     "doxa"
   ],
   "run_id": "2026-09-18T215916Z-b7f3ee4b098e",
   "schema_version": 1,
-  "state": "partial",
+  "state": "collected",
   "tier": "deep",
-  "updated_at": "2026-09-18T22:40:54Z"
+  "updated_at": "2026-09-19T15:18:18Z"
 }

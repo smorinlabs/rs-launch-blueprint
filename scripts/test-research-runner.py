@@ -76,6 +76,18 @@ def topic(root, key):
     return next((root / "research/topics").glob(key[1:] + "-*"))
 
 
+def substitute_muse(root, key):
+    """Apply the muse pilot substitution to one fixture item's policy and prompt."""
+    path = root / "research/EXECUTION.json"
+    data = json.loads(path.read_text())
+    data.setdefault("engine_overrides", {})[key] = ["muse", "opus"]
+    data["items"][key]["engines"] = ["muse", "opus"]
+    jswrite(path, data)
+    prompt = next(topic(root, key).glob("prompts/*.prompt.md"))
+    write(prompt, prompt.read_text().replace("- engines: codex, opus", "- engines: muse, opus"))
+    assert validator.validate_execution_policy(root) == []
+
+
 def accept_fixture(root, key, kind="pattern", consumed=None, fixed=None, prereqs=None, revision=False):
     """Build a complete, real-validator GREEN bundle in a temporary tree."""
     directory = topic(root, key)
@@ -125,6 +137,14 @@ class RunnerTests(unittest.TestCase):
 
     def op(self, action, *extra, key="R01", name="run", **kw):
         return run(self.root, action, key, "--run-id", name, "--provider", "codex", *extra, **kw)
+
+    def migrate(self, *extra, key="R03", name="run", **kw):
+        return run(self.root, "run", "migrate-engines", key, "--run-id", name, "--from", "codex", "--to", "muse",
+                   "--actor", "fixture", "--model", "fixture-model", "--reason", "muse pilot substitution", *extra, **kw)
+
+    def muse_op(self, action, *extra, key="R03", name="run", **kw):
+        return run(self.root, "run", action, key, "--run-id", name, "--provider", "muse",
+                   "--actor", "fixture", "--model", "fixture-model", *extra, **kw)
 
     def publication(self):
         self.prepare(); staged = self.root / "staged"
@@ -291,6 +311,42 @@ class RunnerTests(unittest.TestCase):
         self.assertEqual(["codex"], queue["paused_providers"])
         state = run(self.root, "status", "R01", "--run-id", "run")
         self.assertEqual("succeeded", state["events"][-2]["operation"]["state"])
+
+    def test_migrate_engines_rebaselines_and_collects_muse(self):
+        self.prepare("R03")
+        substitute_muse(self.root, "R03")
+        self.muse_op("intent", ok=False, contains="stale input snapshot")
+        result = self.migrate()
+        self.assertEqual(["muse", "opus"], result["required_engines"])
+        state = run(self.root, "status", "R03", "--run-id", "run")
+        self.assertEqual(["muse", "opus"], state["required_engines"])
+        event = state["events"][-1]
+        self.assertEqual("codex", event["migration"]["from"])
+        self.assertEqual("muse", event["migration"]["to"])
+        self.assertEqual(["codex", "opus"], event["migration"]["previous_required_engines"])
+        self.assertIn("policy_item", event["migration"]["previous_input_hashes"])
+        self.muse_op("intent")
+        self.muse_op("submitted", "--operation-id", "muse-op-1")
+        write(self.root / "research/runs/R03/run/inputs/muse-returned.md", "muse bytes")
+        collected = self.muse_op("collect", "--state", "succeeded", "--raw-file", "inputs/muse-returned.md")
+        self.assertEqual("muse-op-1", collected["operation_id"])
+        self.assertEqual("muse bytes", (self.root / collected["raw"]).read_text())
+        self.assertEqual("partial", run(self.root, "status", "R03", "--run-id", "run")["state"])
+
+    def test_migrate_engines_refusals(self):
+        self.prepare("R03")
+        self.migrate(ok=False, contains="does not match current execution policy")
+        self.op("intent", key="R03")
+        self.prepare("R03", name="run-to")
+        self.muse_op("intent", name="run-to")
+        substitute_muse(self.root, "R03")
+        self.migrate(ok=False, contains="already has a recorded operation")
+        self.migrate(name="run-to", ok=False, contains="engine muse already has a recorded operation")
+        run(self.root, "run", "migrate-engines", "R03", "--run-id", "run", "--from", "muse", "--to", "muse",
+            "--actor", "fixture", "--model", "fixture-model", "--reason", "x", ok=False, contains="must differ")
+        manifest, staged = self.publication()
+        self.publish(manifest, staged)
+        self.migrate(key="R01", ok=False, contains="published run is immutable")
 
     def test_full_production_tree_r38_first_acceptance(self):
         production = self.root / "production"

@@ -45,6 +45,10 @@ def write(path, text):
 
 
 def answer(kind):
+    if kind == "bundle":
+        text = "\n\n".join("### %s\nSynthetic fixture content." % field for field in validator.BUNDLE_FIELDS) + "\n"
+        member = "#### member\nmember description\n\n" + "\n\n".join("##### %s\nSynthetic fixture content." % x for x in validator.CRATE_FIELDS)
+        return text.replace("### Members\nSynthetic fixture content.", "### Members\n" + member)
     fields = validator.CRATE_FIELDS if kind == "crate" else validator.PATTERN_FIELDS
     return "\n\n".join("### %s\nSynthetic fixture content." % field for field in fields) + "\n"
 
@@ -151,8 +155,8 @@ class PackageTests(unittest.TestCase):
         write(self.run_dir / "review/DECISION.md", self.decision_text(owns or {}, assumes))
         self.restore_audits()
         write(self.run_dir / "review/evidence/audit-commitlint.log", "Synthetic fixture output.\n")
-        models = {"codex": "gpt-5.6-terra", "opus": "claude-opus-5", "doxa": "o3-deep-research; sonar-deep-research"}
-        families = {"codex": "openai", "opus": "anthropic", "doxa": "openai+perplexity+google"}
+        models = {"codex": "gpt-5.6-terra", "opus": "claude-opus-5", "doxa": "o3-deep-research; sonar-deep-research", "muse": "muse-spark"}
+        families = {"codex": "openai", "opus": "anthropic", "doxa": "openai+perplexity+google", "muse": "meta"}
         reports = {}
         for engine in engines:
             write(self.run_dir / ("raw/%s.md" % engine), answer(kind))
@@ -271,6 +275,18 @@ class PackageTests(unittest.TestCase):
         self.assertEqual(manifest, sha(used / "manifest.json"))
         self.assertIn("verdict: approve",
                       (used / "research/topics/38-commit-message-linter/audit-fable.md").read_text())
+
+    def test_muse_pilot_item_packages_with_meta_family(self):
+        self.run_id = "muse-fixture"
+        self.prepare("R72")
+        self.write_run("R72", "bundle", ["muse", "opus", "doxa"])
+        result = self.build("R72")
+        self.assertTrue(result["ok"])
+        acceptance = json.loads((self.staged / "research/topics/72-api-pagination/acceptance.json").read_text())
+        self.assertEqual([r["engine"] for r in acceptance["engine_reports"]], ["muse", "opus", "doxa"])
+        self.assertEqual(acceptance["engine_reports"][0]["identity"]["family"], "meta")
+        self.assertTrue((self.staged / ("research/topics/72-api-pagination/raw/muse-%s.md" % self.run_id)).is_file())
+        self.assertEqual(validator.validate_topic(self.overlay(), "R72"), [])
 
     def test_light_item_records_evidence_check(self):
         acceptance = self.build_light("R22")

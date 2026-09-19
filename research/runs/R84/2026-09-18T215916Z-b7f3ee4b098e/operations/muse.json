@@ -1,0 +1,16 @@
+{
+  "actor": "research-muse-2026-09-18T215916Z-b7f3ee4b098e",
+  "actual_model": "muse-spark",
+  "actual_provider": "muse-subagent",
+  "at": "2026-09-19T07:44:44Z",
+  "collected_at": "2026-09-19T15:18:18Z",
+  "model": "muse-spark",
+  "operation_id": "agent:research-muse-2026-09-18T215916Z-b7f3ee4b098e:caecee029378",
+  "provider": "muse",
+  "raw": "research/runs/R84/2026-09-18T215916Z-b7f3ee4b098e/raw/muse-caecee029378d7df9f8096e3552847ea9f5bcb1933dbbde2fb1623ed31aae48e.md",
+  "raw_sha256": "caecee029378d7df9f8096e3552847ea9f5bcb1933dbbde2fb1623ed31aae48e",
+  "reason": "muse pilot leg collected; sha caecee02, shape crate OK",
+  "request_id": "950d6ad2df984c9a8c3b82112818e361",
+  "returned_at": "2026-09-19T15:18:18Z",
+  "state": "succeeded"
+}

@@ -195,6 +195,29 @@ def semantic_parameters(root: Path, key: str) -> list[dict[str, str]]:
     return selected
 
 
+def refresh_input_snapshots(root: Path, key: str, entry: dict[str, Any], directory: Path) -> dict[str, str]:
+    """Copy current policy inputs into a run and return their hashes.
+
+    Prepare and engine migration share this so a migrated run carries exactly
+    the snapshots a fresh run would. Evidence under raw/, review/ and
+    operations/ is never touched here."""
+    prompt = prompt_path(root, key).read_bytes()
+    atomic(directory / "inputs" / "prompt.md", prompt)
+    snapshots = {"policy": root / "research" / "EXECUTION.json", "registry": root / "research" / "CLAUDE.md", "parameters": root / "docs" / "port" / "PARAMETERS.md"}
+    parameters = semantic_parameters(root, key)
+    snap = {"prompt": digest_bytes(prompt), "policy_item": digest_bytes(json.dumps(entry, sort_keys=True).encode()), "parameters_semantic": digest_bytes(json.dumps(parameters, sort_keys=True).encode())}
+    for label, source in snapshots.items():
+        data = source.read_bytes(); atomic(directory / "inputs" / source.name, data); snap[label] = digest_bytes(data)
+    write_json(directory / "inputs" / "parameters.json", parameters)
+    snap["parameters_semantic_file"] = sha(directory / "inputs" / "parameters.json")
+    prerequisite_hashes = {}
+    for prerequisite in sorted(research_prereqs(root, key)):
+        prerequisite_hashes[prerequisite] = {"decision": sha(topic_dir(root, prerequisite) / "DECISION.md"), "acceptance": sha(topic_dir(root, prerequisite) / "acceptance.json")}
+    write_json(directory / "inputs" / "prerequisites.json", prerequisite_hashes)
+    snap["prerequisites"] = digest_bytes((directory / "inputs" / "prerequisites.json").read_bytes())
+    return snap
+
+
 def prepare(args: argparse.Namespace, root: Path) -> dict[str, Any]:
     key = item(args.item); p = policy(root); entry = p["items"].get(key)
     if not isinstance(entry, dict): raise RunnerError(f"{key} absent from execution policy")
@@ -204,27 +227,62 @@ def prepare(args: argparse.Namespace, root: Path) -> dict[str, Any]:
     directory = run_dir(root, key, run_id)
     with DirLock(under(root, f"research/runs/.locks/{key}")):
         if directory.exists(): raise RunnerError(f"run directory collision: {directory}")
-        pp = prompt_path(root, key); prompt = pp.read_bytes()
+        pp = prompt_path(root, key)
         directory.mkdir(parents=True); (directory / "inputs").mkdir(); (directory / "operations").mkdir(); (directory / "raw").mkdir(); (directory / "review").mkdir()
-        atomic(directory / "inputs" / "prompt.md", prompt)
-        snapshots = {"policy": root / "research" / "EXECUTION.json", "registry": root / "research" / "CLAUDE.md", "parameters": root / "docs" / "port" / "PARAMETERS.md"}
-        parameters = semantic_parameters(root, key)
-        snap = {"prompt": digest_bytes(prompt), "policy_item": digest_bytes(json.dumps(entry, sort_keys=True).encode()), "parameters_semantic": digest_bytes(json.dumps(parameters, sort_keys=True).encode())}
-        for label, source in snapshots.items():
-            data = source.read_bytes(); atomic(directory / "inputs" / source.name, data); snap[label] = digest_bytes(data)
-        write_json(directory / "inputs" / "parameters.json", parameters)
-        snap["parameters_semantic_file"] = sha(directory / "inputs" / "parameters.json")
-        prerequisite_hashes = {}
-        for prerequisite in sorted(research_prereqs(root, key)):
-            prerequisite_hashes[prerequisite] = {"decision": sha(topic_dir(root, prerequisite) / "DECISION.md"), "acceptance": sha(topic_dir(root, prerequisite) / "acceptance.json")}
-        write_json(directory / "inputs" / "prerequisites.json", prerequisite_hashes)
-        snap["prerequisites"] = digest_bytes((directory / "inputs" / "prerequisites.json").read_bytes())
+        snap = refresh_input_snapshots(root, key, entry, directory)
         manifest = {"schema_version": 1, "item": key, "run_id": run_id, "created_at": now(), "updated_at": now(),
                     "state": "ready", "actor": args.actor, "model": args.model, "authorization_ref": args.authorization_ref,
                     "remaining_budget": args.budget, "tier": entry.get("tier"), "required_engines": entry.get("engines", []),
                     "input_hashes": snap, "prompt_source": str(pp.relative_to(root)), "operations": {}, "events": [{"at": now(), "state": "ready", "actor": args.actor}]}
         save_manifest(directory, manifest)
     return {"item": key, "run_id": run_id, "state": "ready", "manifest": str((directory / "manifest.json").relative_to(root))}
+
+
+def migrate_engines(args: argparse.Namespace, root: Path) -> dict[str, Any]:
+    """Re-point a run at a substituted engine and re-baseline its snapshots.
+
+    The controller updates research/EXECUTION.json (and the prompt mirror)
+    first; this command then aligns one prepared run with that current policy.
+    It refuses published runs, any recorded operation under either engine name,
+    and any migration whose result differs from the current policy record."""
+    key = item(args.item)
+    for engine in (args.from_engine, args.to_engine):
+        if not re.fullmatch(r"[a-z0-9][a-z0-9_-]{0,30}", engine): raise UsageError("invalid engine: %s" % engine)
+    if args.from_engine == args.to_engine: raise UsageError("migration source and target engines must differ")
+    if not args.reason.strip(): raise UsageError("--reason must be non-empty text")
+    entry = policy(root)["items"].get(key)
+    if not isinstance(entry, dict): raise RunnerError(f"{key} absent from execution policy")
+    errors = validation_errors(root)
+    if errors: raise RunnerError("execution policy invalid: " + "; ".join(errors))
+    directory, manifest = load_manifest(root, key, args.run_id)
+    with DirLock(directory / ".lock"):
+        directory, manifest = load_manifest(root, key, args.run_id)
+        if manifest.get("state") == "published": raise RunnerError("published run is immutable; prepare a new run for further work")
+        required = manifest.get("required_engines", [])
+        if args.from_engine not in required: raise RunnerError(f"run does not require engine {args.from_engine}")
+        if args.to_engine in required: raise RunnerError(f"run already requires engine {args.to_engine}")
+        migrated = [args.to_engine if engine == args.from_engine else engine for engine in required]
+        if migrated != entry.get("engines", []): raise RunnerError("migration result does not match current execution policy for %s" % key)
+        for engine in (args.from_engine, args.to_engine):
+            if engine in manifest.get("operations", {}): raise RunnerError(f"engine {engine} already has a recorded operation; migration would orphan evidence")
+        previous_hashes = dict(manifest.get("input_hashes", {}))
+        previous_tier = manifest.get("tier")
+        manifest["tier"] = entry.get("tier")
+        manifest["required_engines"] = migrated
+        manifest["input_hashes"] = refresh_input_snapshots(root, key, entry, directory)
+        states = {r["state"] for r in manifest["operations"].values()}
+        completed = {name for name, operation in manifest["operations"].items() if operation["state"] == "succeeded"}
+        # Unreachable: the refusal above guarantees the to-engine has no recorded operation, so it is never in `completed`.
+        if set(migrated) <= completed: manifest["state"] = "collected"
+        elif "succeeded" in states or "partial" in states: manifest["state"] = "partial"
+        else: manifest["state"] = next((state for state in ("unknown", "submitting", "submitted", "running", "failed") if state in states), "ready")
+        manifest["events"].append({"at": now(), "state": manifest["state"], "actor": args.actor, "model": args.model,
+                                  "migration": {"from": args.from_engine, "to": args.to_engine, "reason": args.reason,
+                                              "previous_required_engines": required, "previous_input_hashes": previous_hashes,
+                                              "previous_tier": previous_tier}})
+        save_manifest(directory, manifest)
+    return {"item": key, "run_id": args.run_id, "required_engines": migrated, "state": manifest["state"],
+            "next_action": "submit the substituted engine: %s" % args.to_engine}
 
 
 def update_operation(args: argparse.Namespace, root: Path, action: str) -> dict[str, Any]:
@@ -550,6 +608,7 @@ def parser() -> argparse.ArgumentParser:
         if provider: x.add_argument("--provider", required=True)
         return x
     x = run_sub.add_parser("prepare", allow_abbrev=False); x.add_argument("item"); x.add_argument("--run-id"); x.add_argument("--actor", required=True); x.add_argument("--model", required=True); x.add_argument("--authorization-ref", required=True); x.add_argument("--budget", required=True)
+    x = run_sub.add_parser("migrate-engines", allow_abbrev=False); x.add_argument("item"); x.add_argument("--run-id", required=True); x.add_argument("--from", dest="from_engine", required=True); x.add_argument("--to", dest="to_engine", required=True); x.add_argument("--actor", required=True); x.add_argument("--model", required=True); x.add_argument("--reason", required=True)
     x = run_common("intent", True); x.add_argument("--request-id")
     x = run_common("submitted", True); x.add_argument("--operation-id", required=True); x.add_argument("--actual-provider"); x.add_argument("--actual-model")
     x = run_common("unknown", True); x.add_argument("--reason", required=True)
@@ -572,11 +631,12 @@ def main(argv: list[str] | None = None) -> int:
             if getattr(args, "queue_action", None) == "list": args.command = "queue"
         elif args.command == "publication": args.command = "publish" if args.publication_action == "apply" else "recover"
         root = root_from(args.root)
-        if args.command in {"prepare", "intent", "queue"}:
+        if args.command in {"prepare", "intent", "queue", "migrate-engines"}:
             with DirLock(publication_lock(root)):
                 require_recovered(root)
                 if args.command == "prepare": result = prepare(args, root)
                 elif args.command == "intent": result = update_operation(args, root, args.command)
+                elif args.command == "migrate-engines": result = migrate_engines(args, root)
                 else: result = queue(args, root)
         elif args.command in {"intent", "submitted", "unknown", "collect"}: result = update_operation(args, root, args.command)
         elif args.command == "status":

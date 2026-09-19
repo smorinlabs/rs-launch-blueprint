@@ -38,6 +38,16 @@ records pause that provider's queue admission. A run is `collected` only after
 every required research engine has succeeded; that state does not mean its
 evidence has been accepted.
 
+When the execution policy substitutes one engine for another (the
+`engine_overrides` pilot), the controller updates `research/EXECUTION.json`
+and the prompt mirror first, then aligns each prepared run with
+`run migrate-engines R72 --run-id <run> --from codex --to muse --actor <actor>
+--model <model> --reason <why>`. The command rewrites the run's required
+engines, re-baselines its input snapshots exactly as `prepare` would, and
+appends a migration event recording the previous engines and hashes. It
+refuses published runs, any recorded operation under either engine name, and
+any result that differs from the current policy record.
+
 Successful publication changes its original run to `published` and stores a
 receipt with the transaction ID and accepted decision/evidence hashes. Recovery
 finishes that receipt before deleting the journal. Published runs retain their

@@ -2,6 +2,18 @@
   "schema_version": 1,
   "approved_on": "2026-09-04",
   "pilot": "R38",
+  "engine_overrides": {
+    "R72": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R84": [
+      "muse",
+      "opus",
+      "doxa"
+    ]
+  },
   "items": {
     "R01": {
       "tier": "deep",
@@ -662,7 +674,7 @@
     "R72": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -777,7 +789,7 @@
     "R84": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],

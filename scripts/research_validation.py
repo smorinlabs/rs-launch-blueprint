@@ -30,6 +30,8 @@ ENGINE_SETS = {
     "focused": ["codex", "opus"],
     "deep": ["codex", "opus", "doxa"],
 }
+KNOWN_ENGINES = {"codex", "opus", "doxa", "muse"}
+ENGINE_FAMILIES = {"codex": "openai", "opus": "anthropic", "muse": "meta"}
 CRATE_FIELDS = [
     "Landscape", "Principles and implementation", "Dominant choice",
     "Qualified shortlist", "Excluded by gate", "Up-and-comers",
@@ -359,6 +361,18 @@ def validate_execution_policy(root):
     if not isinstance(items, dict):
         errors.append("research/EXECUTION.json: items must be an object")
         return errors
+    overrides = data.get("engine_overrides", {})
+    if not isinstance(overrides, dict):
+        errors.append("research/EXECUTION.json: engine_overrides must be an object")
+        overrides = {}
+    for item, engines in sorted(overrides.items()):
+        label = "research/EXECUTION.json engine_overrides.%s" % item
+        if item not in rows:
+            errors.append("%s names an item outside the index" % label)
+            continue
+        for engine in _list_of_strings(engines, label, errors, False):
+            if engine not in KNOWN_ENGINES:
+                errors.append("%s names unknown engine %r" % (label, engine))
     missing = sorted(set(rows) - set(items))
     unknown = sorted(set(items) - set(rows))
     if missing:
@@ -381,9 +395,15 @@ def validate_execution_policy(root):
             errors.append("%s tier must be light|focused|deep" % label)
             continue
         engines = _list_of_strings(record["engines"], label + ".engines", errors, False)
-        expected_engines = ENGINE_SETS[tier]
-        if item == pilot:
+        for engine in engines:
+            if engine not in KNOWN_ENGINES:
+                errors.append("%s.engines names unknown engine %r" % (label, engine))
+        if item in overrides and isinstance(overrides[item], list):
+            expected_engines = overrides[item]
+        elif item == pilot:
             expected_engines = ["codex", "opus", "doxa"]
+        else:
+            expected_engines = ENGINE_SETS[tier]
         if engines != expected_engines:
             errors.append("%s engines must be %s" % (label, ", ".join(expected_engines)))
         checks = _list_of_strings(record["evidence_checks"], label + ".evidence_checks", errors)
@@ -633,7 +653,7 @@ def _validate_topic(root, item, checked, visiting):
         raw_identities.append(identity)
         producer_identities.append(identity)
         if identity:
-            expected_family = {"codex": "openai", "opus": "anthropic"}.get(report["engine"])
+            expected_family = ENGINE_FAMILIES.get(report["engine"])
             if expected_family and identity["family"] != expected_family:
                 errors.append("%s engine_reports[%d] %s family must be %s" % (item, number, report["engine"], expected_family))
             if report["engine"] == "doxa" and identity["family"] == "doxa":

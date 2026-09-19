@@ -204,5 +204,90 @@ class ExecutionPolicyTests(unittest.TestCase):
         self.assertTrue(any("verdict: approve" in error for error in errors), errors)
 
 
+class EngineOverrideTests(unittest.TestCase):
+    def make_root(self, engines=("muse", "opus", "doxa"), overrides=("muse", "opus", "doxa")):
+        temp = tempfile.TemporaryDirectory()
+        root = Path(temp.name)
+        (root / "research/topics/01-one/prompts").mkdir(parents=True)
+        (root / "docs/port").mkdir(parents=True)
+        (root / "docs/port/PARAMETERS.md").write_text("| param | kind | owner | value | description |\n|---|---|---|---|---|\n")
+        (root / "research/CLAUDE.md").write_text("""# Research index
+| id | slug | kind | origin | verdict | owns | prompt | status |
+|---|---|---|---|---|---|---|---|
+| R01 | one | pattern | different | DIVERGENT | — | [prompt](topics/01-one/prompts/one.prompt.md) | open |
+""")
+        (root / "research/topics/01-one/prompts/one.prompt.md").write_text(prompt("R01", "deep", ", ".join(engines)))
+        policy = {"schema_version": 1, "approved_on": "2026-09-04", "pilot": "R01", "items": {"R01": {"tier": "deep", "engines": list(engines), "evidence_checks": [], "acceptance_after": []}}}
+        if overrides is not None:
+            policy["engine_overrides"] = {"R01": list(overrides)}
+        (root / "research/EXECUTION.json").write_text(json.dumps(policy))
+        return temp, root
+
+    def test_muse_override_beats_pilot_default(self):
+        temp, root = self.make_root()
+        self.addCleanup(temp.cleanup)
+        self.assertEqual([], validation.validate_execution_policy(root))
+
+    def test_muse_without_override_is_rejected(self):
+        temp, root = self.make_root(overrides=None)
+        self.addCleanup(temp.cleanup)
+        errors = validation.validate_execution_policy(root)
+        self.assertTrue(any("engines must be codex, opus, doxa" in error for error in errors), errors)
+
+    def test_override_must_match_policy_row(self):
+        temp, root = self.make_root(engines=("codex", "opus", "doxa"))
+        self.addCleanup(temp.cleanup)
+        errors = validation.validate_execution_policy(root)
+        self.assertTrue(any("engines must be muse, opus, doxa" in error for error in errors), errors)
+
+    def test_override_rejects_unknown_item_and_engine(self):
+        temp, root = self.make_root()
+        self.addCleanup(temp.cleanup)
+        policy_path = root / "research/EXECUTION.json"
+        policy = json.loads(policy_path.read_text())
+        policy["engine_overrides"]["R99"] = ["muse"]
+        policy_path.write_text(json.dumps(policy))
+        errors = validation.validate_execution_policy(root)
+        self.assertTrue(any("outside the index" in error for error in errors), errors)
+        policy["engine_overrides"] = {"R01": ["bogus"]}
+        policy["items"]["R01"]["engines"] = ["bogus"]
+        policy_path.write_text(json.dumps(policy))
+        (root / "research/topics/01-one/prompts/one.prompt.md").write_text(prompt("R01", "deep", "bogus"))
+        errors = validation.validate_execution_policy(root)
+        self.assertTrue(any("unknown engine 'bogus'" in error for error in errors), errors)
+
+    def accept_muse_topic(self, root, family):
+        index = root / "research/CLAUDE.md"
+        index.write_text(index.read_text().replace("| open |", "| resolved |"))
+        topic = root / "research/topics/01-one"
+        (topic / "raw").mkdir(exist_ok=True); (topic / "evidence").mkdir(exist_ok=True)
+        decision = topic / "DECISION.md"; decision.write_text("## Decision\npick\n\n### Principles and implementation\nprinciple\n\nre-verify: event\n\n## Parameters\nnone\n\n## Empirical check\nran\n\n## Engines\nthree reports\n")
+        prompt_path = topic / "prompts/one.prompt.md"
+        answer_text = answer(validation.PATTERN_FIELDS)
+        raw = topic / "raw/muse.md"; raw.write_text(answer_text)
+        opus = topic / "raw/opus.md"; opus.write_text(answer_text)
+        doxa = topic / "raw/doxa.md"; doxa.write_text(answer_text)
+        audit_c = topic / "audit-codex.md"
+        audit_f = topic / "audit-fable.md"
+        output = topic / "evidence/output.log"; output.write_text("ok\n")
+        def digest(path): return hashlib.sha256(path.read_bytes()).hexdigest()
+        def identity(actor, fam): return {"actor": actor, "model": actor + "-model", "family": fam}
+        def artifact(path, actor, fam): return {"path": str(path.relative_to(root)), "sha256": digest(path), "identity": identity(actor, fam)}
+        audit_c.write_text("decision-sha256: %s\nactor: audit-one\nmodel: audit-one-model\nfamily: openai\nverdict: approve\nunresolved-findings: none\nanalysis: empirical rerun evidence\n" % digest(decision))
+        audit_f.write_text("decision-sha256: %s\nactor: audit-two\nmodel: audit-two-model\nfamily: anthropic\nverdict: approve\nunresolved-findings: none\nanalysis: judgment evidence\n" % digest(decision))
+        policy = json.loads((root / "research/EXECUTION.json").read_text())["items"]["R01"]
+        acceptance = {"item": "R01", "schema_version": 1, "decision_sha256": digest(decision), "prompt_sha256": digest(prompt_path), "policy_snapshot": policy, "engine_reports": [dict(engine="muse", **artifact(raw, "producer", family)), dict(engine="opus", **artifact(opus, "producer-two", "anthropic")), dict(engine="doxa", **artifact(doxa, "producer-three", "mixed"))], "evidence_checks": [], "synthesis": identity("synthesis", "anthropic"), "audits": [dict(kind="empirical", **artifact(audit_c, "audit-one", "openai"), decision_sha256=digest(decision), verdict="approve", unresolved_findings=[]), dict(kind="judgment", **artifact(audit_f, "audit-two", "anthropic"), decision_sha256=digest(decision), verdict="approve", unresolved_findings=[])], "empirical": {"argv": ["cargo", "test"], "cwd": "fixture", "toolchain": "rustc fixture", "output_log": str(output.relative_to(root)), "output_sha256": digest(output), "exit_code": 0, "executed_by": identity("audit-one", "openai")}, "parameters": {"consumed": {}, "fixed": {}}, "prerequisites": {"research": {}, "acceptance_after": {}}, "reverify": "event", "engines": "record", "principles": "record"}
+        (topic / "acceptance.json").write_text(json.dumps(acceptance))
+
+    def test_muse_report_requires_meta_family(self):
+        temp, root = self.make_root()
+        self.addCleanup(temp.cleanup)
+        self.accept_muse_topic(root, "meta")
+        self.assertEqual([], validation.validate_topic(root, "R01"))
+        self.accept_muse_topic(root, "openai")
+        errors = validation.validate_topic(root, "R01")
+        self.assertTrue(any("muse family must be meta" in error for error in errors), errors)
+
+
 if __name__ == "__main__":
     unittest.main()

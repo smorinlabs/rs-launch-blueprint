@@ -115,16 +115,97 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "actor": "controller-muse-spark",
+      "at": "2026-09-19T07:44:30Z",
+      "migration": {
+        "from": "codex",
+        "previous_input_hashes": {
+          "parameters": "8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb",
+          "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+          "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+          "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+          "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+          "prerequisites": "cbe23dd082a1bcc88fa6e30eabae0e6da6c6230a6f853ba73aad4d77df0eeab6",
+          "prompt": "529f61abcdefed495e5c9f5ed85fa06070ef5f2cf13cab638e4cdaff9b35ae1a",
+          "registry": "95fea74fa8415b94d81c62bf3a3d1de13ca37dc05d366e978c8135915f9e544a"
+        },
+        "previous_required_engines": [
+          "codex",
+          "opus",
+          "doxa"
+        ],
+        "previous_tier": "deep",
+        "reason": "muse pilot substitution (owner direction 2026-09-18; ledger)",
+        "to": "muse"
+      },
+      "model": "muse-spark",
+      "state": "partial"
+    },
+    {
+      "actor": "research-muse-2026-09-18T215915Z-af997c2abb5a",
+      "at": "2026-09-19T07:44:44Z",
+      "operation": {
+        "actor": "research-muse-2026-09-18T215915Z-af997c2abb5a",
+        "at": "2026-09-19T07:44:44Z",
+        "model": "muse-spark",
+        "provider": "muse",
+        "request_id": "67d35913388d4ff3a5e601b51f92735e",
+        "state": "submitting"
+      },
+      "provider": "muse",
+      "state": "submitting"
+    },
+    {
+      "actor": "unknown",
+      "at": "2026-09-19T15:18:01Z",
+      "operation": {
+        "actor": "research-muse-2026-09-18T215915Z-af997c2abb5a",
+        "actual_model": "muse-spark",
+        "actual_provider": "muse-subagent",
+        "at": "2026-09-19T07:44:44Z",
+        "model": "muse-spark",
+        "operation_id": "agent:research-muse-2026-09-18T215915Z-af997c2abb5a:107925801a22",
+        "provider": "muse",
+        "request_id": "67d35913388d4ff3a5e601b51f92735e",
+        "returned_at": "2026-09-19T15:18:01Z",
+        "state": "submitted"
+      },
+      "provider": "muse",
+      "state": "submitted"
+    },
+    {
+      "actor": "unknown",
+      "at": "2026-09-19T15:18:18Z",
+      "operation": {
+        "actor": "research-muse-2026-09-18T215915Z-af997c2abb5a",
+        "actual_model": "muse-spark",
+        "actual_provider": "muse-subagent",
+        "at": "2026-09-19T07:44:44Z",
+        "collected_at": "2026-09-19T15:18:18Z",
+        "model": "muse-spark",
+        "operation_id": "agent:research-muse-2026-09-18T215915Z-af997c2abb5a:107925801a22",
+        "provider": "muse",
+        "raw": "research/runs/R72/2026-09-18T215915Z-af997c2abb5a/raw/muse-107925801a224c71ad22e4d6ca4425223700e99163c709fd96d3fde558aca079.md",
+        "raw_sha256": "107925801a224c71ad22e4d6ca4425223700e99163c709fd96d3fde558aca079",
+        "reason": "muse pilot leg collected; sha 10792580, shape bundle OK",
+        "request_id": "67d35913388d4ff3a5e601b51f92735e",
+        "returned_at": "2026-09-19T15:18:01Z",
+        "state": "succeeded"
+      },
+      "provider": "muse",
+      "state": "succeeded"
     }
   ],
   "input_hashes": {
     "parameters": "8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb",
     "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
     "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
-    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
-    "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+    "policy": "ac4561fe28cc219a5a8ded5a53607bddb3ab84a7c42b87edcf38bf0043d27f2b",
+    "policy_item": "2e5cc5b0da04a866a7d4888d0070674dbe08eb74d464c36f9c929e2b842b9a92",
     "prerequisites": "cbe23dd082a1bcc88fa6e30eabae0e6da6c6230a6f853ba73aad4d77df0eeab6",
-    "prompt": "529f61abcdefed495e5c9f5ed85fa06070ef5f2cf13cab638e4cdaff9b35ae1a",
+    "prompt": "14ad50c653b78e61c7ef58b99ff18b23d5e1a3fb0ead3d9115d47d46c03ab668",
     "registry": "95fea74fa8415b94d81c62bf3a3d1de13ca37dc05d366e978c8135915f9e544a"
   },
   "item": "R72",
@@ -144,6 +225,22 @@
       "reason": "research-20260918-150431-3cb17a06c88b457a, submitted 2026-09-18T22:04:29Z, providers completed openai 22:17:35Z, perplexity 22:11:06Z, gemini by the 22:16Z resume pass; combined controller-built; twins normalized by scripts/doxa_normalize.py and validated",
       "request_id": "412211e308a54a77815b76406c0ae8c9",
       "returned_at": "2026-09-18T22:04:39Z",
+      "state": "succeeded"
+    },
+    "muse": {
+      "actor": "research-muse-2026-09-18T215915Z-af997c2abb5a",
+      "actual_model": "muse-spark",
+      "actual_provider": "muse-subagent",
+      "at": "2026-09-19T07:44:44Z",
+      "collected_at": "2026-09-19T15:18:18Z",
+      "model": "muse-spark",
+      "operation_id": "agent:research-muse-2026-09-18T215915Z-af997c2abb5a:107925801a22",
+      "provider": "muse",
+      "raw": "research/runs/R72/2026-09-18T215915Z-af997c2abb5a/raw/muse-107925801a224c71ad22e4d6ca4425223700e99163c709fd96d3fde558aca079.md",
+      "raw_sha256": "107925801a224c71ad22e4d6ca4425223700e99163c709fd96d3fde558aca079",
+      "reason": "muse pilot leg collected; sha 10792580, shape bundle OK",
+      "request_id": "67d35913388d4ff3a5e601b51f92735e",
+      "returned_at": "2026-09-19T15:18:01Z",
       "state": "succeeded"
     },
     "opus": {
@@ -166,13 +263,13 @@
   "prompt_source": "research/topics/72-api-pagination/prompts/api-pagination.prompt.md",
   "remaining_budget": "USD 0.00 at prepare (Opus leg unpaid; Codex leg deferred under W1-CODEX3; Doxa leg pending owner authorisation W2-DOXA)",
   "required_engines": [
-    "codex",
+    "muse",
     "opus",
     "doxa"
   ],
   "run_id": "2026-09-18T215915Z-af997c2abb5a",
   "schema_version": 1,
-  "state": "partial",
+  "state": "collected",
   "tier": "deep",
-  "updated_at": "2026-09-18T22:37:16Z"
+  "updated_at": "2026-09-19T15:18:18Z"
 }
