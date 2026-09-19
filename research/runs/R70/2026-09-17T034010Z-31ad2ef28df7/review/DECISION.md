@@ -39,11 +39,17 @@ the standard itself rules at `:2218` that "R4.10's default clause carries no BCP
 14 keyword, so this is a taxonomy hole rather than a live conflict", and under
 R1.1 (`:128`) a clause with no all-capitals keyword states no requirement. R5.12
 (`:1035`) separately contemplates exactly this design, calling `application/json`
-mirroring a measure it "neither requires nor forbids". The numbering search is
-recorded anyway so the next item need not redo it: OV-01 through OV-04 are
-claimed — **OV-04 was free when this analysis began and was taken by R80 while it
-ran** — and OV-05 is the next free number (checks in `review/evidence/rest-r2.log`,
-group C).
+mirroring a measure it "neither requires nor forbids".
+
+**On the number itself.** Override numbers are now allocated by the controller
+rather than found by searching, because two syntheses collided on **OV-04** by
+searching concurrently — this analysis found it free and R80 took it while the
+analysis ran. **OV-06 is allocated to this item and is deliberately left unused**,
+since this revision records no override; gaps in the sequence are expected under
+controller allocation. `review/evidence/rest-r2.sh` group C asserts that this
+decision declares no `OVERRIDE` heading and that OV-06 is claimed by no decision,
+with OV-01 through OV-04 asserted **claimed** as the control that keeps those
+zeros from being vacuous.
 
 **Revision history.** **Revision 1**, 2026-09-18 (sha256
 `ad568a68c7735cbf642d1d6438ab96dad50148d708f5d39fad23e2ac358ca253`, commits

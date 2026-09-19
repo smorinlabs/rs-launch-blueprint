@@ -247,17 +247,22 @@ count_ov() {
   ( cd "$root" && $GREP -rl "OVERRIDE ($1)" --include="DECISION.md" docs/ research/ 2>/dev/null |
       $GREP -v "^$mine/" | sort -u | wc -l | tr -d ' ' )
 }
-# This revision declares NO override, so it claims no number.  The search is
-# recorded anyway, so a later reader knows which number is free and does not
-# have to redo it.  OV-04 was free when this analysis began and was taken by
-# R80 while it ran, which is exactly why the number is recorded, not assumed.
+# This revision declares NO override, so it uses no number.  Override numbers
+# are allocated by the CONTROLLER, not by searching — two syntheses collided on
+# OV-04 by searching concurrently, and R80 took it.  OV-06 was allocated to this
+# item and is deliberately left unused; the assertions below record that rather
+# than re-deriving a "next free" number, which is no longer how they are issued.
 for n in OV-01 OV-02 OV-03 OV-04; do
   c="$(count_ov $n)"
   if [ "$c" -ge 1 ]; then ok "$n is claimed by $c decision(s) outside this item"
   else bad "$n expected to be claimed and is not — the numbering search is broken"; fi
 done
-assert "OV-05 is the next free number: claimed by no decision outside this item" "0" "$(count_ov OV-05)"
-assert "OV-06 is likewise free" "0" "$(count_ov OV-06)"
+assert "OV-06, allocated to this item, is claimed by no decision outside it" "0" "$(count_ov OV-06)"
+if [ -f "$here/../DECISION.md" ] && $GREP -q "OVERRIDE (OV-06)" "$here/../DECISION.md"; then
+  bad "OV-06 is allocated but unused, yet this decision names it as an override"
+else
+  ok "OV-06 is allocated to this item and left unused, as this revision records no override"
+fi
 # This revision declares no override; assert that too, so the claim is checkable.
 if [ -f "$here/../DECISION.md" ]; then
   n="$($GREP -c "OVERRIDE (OV-" "$here/../DECISION.md" || true)"

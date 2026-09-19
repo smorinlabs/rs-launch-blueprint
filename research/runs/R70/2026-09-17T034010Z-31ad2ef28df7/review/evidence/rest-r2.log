@@ -1,5 +1,5 @@
 === R70 revision 2 — REST standard conformance evidence ===
-date (UTC): 2026-09-19T01:23:57Z
+date (UTC): 2026-09-19T01:25:52Z
 grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
 standard repo: /Users/stevemorin/c/rest-standards
 blob: 71bd813c1cf61286586b4ee41ed83ff065e5c8d9
@@ -95,12 +95,12 @@ PASS  revision-1 registry-archive.log is byte-identical
 PASS  revision-1 probe-archive.log is byte-identical
 
 --- C. OVERRIDE numbering
-PASS  OV-01 is claimed by 4 decision(s) outside this item
-PASS  OV-02 is claimed by 2 decision(s) outside this item
+PASS  OV-01 is claimed by 3 decision(s) outside this item
+PASS  OV-02 is claimed by 1 decision(s) outside this item
 PASS  OV-03 is claimed by 1 decision(s) outside this item
-PASS  OV-04 is claimed by 2 decision(s) outside this item
-PASS  OV-05 is the next free number: claimed by no decision outside this item
-PASS  OV-06 is likewise free
+PASS  OV-04 is claimed by 1 decision(s) outside this item
+PASS  OV-06, allocated to this item, is claimed by no decision outside it
+PASS  OV-06 is allocated to this item and left unused, as this revision records no override
 NOTE  DECISION.md mentions "OVERRIDE (OV-" 1 time(s) (headings are counted separately below)
 PASS  this decision declares no OVERRIDE heading
 
