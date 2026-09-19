@@ -1,4 +1,51 @@
-# 2026-09-18 — R79 — prometheus-metrics (crate, Focused) — decision (revision 1)
+# 2026-09-18 — R79 — prometheus-metrics (crate, Focused) — decision (revision 2)
+
+Item R79 (`prometheus-metrics`, kind `crate`, Focused tier, owns nothing). Run
+`research/runs/R79/2026-09-17T034011Z-2e1043da0e00`.
+
+**Revision note (revision 2).** Revision 2 is a **pre-audit revision** occasioned by owner
+ruling **W2-REST** of 2026-09-18 (`docs/port/OWNER-REVIEW.md:187`, heading "2026-09-18 — the
+REST API Design Standard binds the HTTP surface (W2-REST)"), which was made after revision 1
+(sha256 `2e804161b9fbe65c7d33be04de5e024612ce628e1ea914c4e636443e0f0885c3`) was written. The
+ruling holds that the organisation's REST API Design Standard v2.0.0 —
+`/Users/stevemorin/c/rest-standards/rest-api-standard.md`, commit
+`0850d43e45d919ef5e37f7174c4212b46013c49f`, file blob `71bd813c1cf61286586b4ee41ed83ff065e5c8d9`
+— governs this template's optional HTTP surface the way the CLI Design Standard governs its
+CLI, and that every departure is recorded as an `OVERRIDE (OV-nn)` in the shape of the
+standard's own §1.9 deviation note.
+
+**The crate pair, the version pins, the feature graph, the metric names, the label set, the
+architecture comparison, the gate answers, every ledger and reference-row disposition and all
+four `- assumes` lines do not move.** What moves is the `/metrics` endpoint's HTTP behaviour:
+revision 2 adds three requirements the standard imposes and records two departures it cannot
+meet. Moving the recommendation is allowed here and is stated plainly rather than deferred —
+this decision has not been accepted, so a conformance repair lands in the recommendation
+itself rather than as a follow-on.
+
+**Note on the ruling's own enumeration.** W2-REST names "Every web item (R70 R72 R73 R74 R76
+R77 R80 and the later R71 R83 R84)" at `docs/port/OWNER-REVIEW.md:198`. **R79 is not in that
+list**, yet R79 registers an HTTP route on exactly the surface the ruling binds. This revision
+treats the omission as an enumeration gap rather than an exemption, on the ground the ruling
+itself states — the standard "governs this template's optional HTTP surface" — and because
+§1.8 of the standard refuses to let a missing declaration act as an exemption. The controller
+may wish to correct the enumeration; nothing in this decision depends on that correction.
+
+**Every revision-1 artifact is byte-identical**: `review/evidence/cargo-probes.sh`,
+`cargo-probes.log`, `crate-sources.sh`, `crate-sources.log`, `github-api.sh`, `github-api.log`,
+`decision-self-check.sh`, `decision-self-check.log`, `scrape-sample.txt`, the four files under
+`locks/` and the fourteen under `snapshots/`. Their sha256 values are pinned and printed by
+the new script so an auditor does not take that on trust. The new artifacts are new files:
+`review/evidence/rest-conformance-r2.sh`, `review/evidence/rest-conformance-r2.log` and
+`review/evidence/snapshots/rest-standard-rules.txt`.
+
+**`review/evidence/decision-self-check.sh` is superseded, and it is superseded loudly.** It
+asserts revision 1's H1 line and revision 1's sha256 by construction, so re-running it against
+revision 2 fails on exactly those two checks — by design, not by rot. Its committed log stands
+as the record of the revision-1 run. `rest-conformance-r2.sh` re-executes its whole check set
+against revision 2 and adds the standard's rules on top, so nothing the r1 script proved is
+lost and an auditor reruns the r2 script.
+
+There is no `## Supersedes` because no revision of this decision has been published.
 
 ## Decision
 
@@ -393,7 +440,217 @@ re-checked line by line rather than carried.
   composition root; nothing on the recording path needs a runtime. The one piece that does need
   the runtime is the upkeep ticker, and it lives beside the server.
 
-re-verify: on any of these, whichever comes first — (1) **R69 republishes** at revision 10 or later, confirming that the `metrics = ["web", …]` clause and the `crates/web` paths this design is written against survive verbatim; (2) **R02 publishes** a topology other than the four-package workspace with `crates/web`; (3) **R80 publishes** its probe paths, which must join `/metrics` on the unmeasured side of `route_layer`; (4) **R71 publishes** a generator that enumerates a live `axum::Router` rather than annotated registrations, which would make the automatic OpenAPI exclusion need an explicit mechanism; (5) **R77 publishes** a settings surface that still defines `RSLBP_WEB_METRICS_ENABLED`, which would contradict the no-env-gate disposition recorded here; (6) **R78 publishes** a decision that emits metrics, not only traces, through the OTel SDK, at which point the two items need one recorder rather than two pipelines; (7) **`prometheus-client` declares a `rust-version`**, clearing gate 2 and deserving a fresh head-to-head it currently wins on design grounds; (8) **`metrics-exporter-prometheus` releases 0.19 or `metrics` releases 0.25**, both semver-breaking under caret-on-`0.x`; (9) **`axum` publishes 0.9**, re-opening `MatchedPath` and `route_layer` semantics; (10) **Prometheus native histograms become the default advice**, retiring the bucket constant; (11) at the next **`msrv-policy` floor advance past 1.96**, re-running `review/evidence/cargo-probes.sh` at the new toolchain; or (12) by **2027-03-18**.
+**Conformance with the REST API Design Standard v2.0.0 (owner ruling W2-REST, 2026-09-18).**
+
+Every rule below was read from the pinned blob `71bd813c1cf61286586b4ee41ed83ff065e5c8d9`
+(`git -C /Users/stevemorin/c/rest-standards show 71bd813c…`), quoted at its line, and asserted
+by `review/evidence/rest-conformance-r2.sh` against a committed snapshot of those lines.
+
+**The finding that frames every row: the standard has no vocabulary for an operational
+endpoint.** Searched case-insensitively over all 3,427 lines of the blob, the words
+`Prometheus`, `telemetry`, `scrape`, `exposition`, `healthz`, `readyz`, `liveness`,
+`readiness`, `monitoring` and `instrumentation` are **absent**, and `metrics` appears exactly
+once in a rule — R3.3 at `:599`, "**Exception:** logging and metrics side effects do not
+violate safety". There is therefore no carve-out to invoke. Three facts close that door
+deliberately rather than by oversight: the applicability-switch vocabulary at `:237`–`:238` is
+closed to `webhooks · async-operations · bulk-operations · streaming`, and `:238`–`:239` says
+it "grows only when a new rule needs a switch"; §1.2 shows what an explicit exclusion looks
+like when the standard means one — WebSockets at `:99`–`:105`, "neither conformant nor
+nonconformant on it" — and no such sentence exists for operational paths; and R2.1 at `:447`
+ends "There is no RPC carve-out for any service class." R1.5 at `:219` adds that "Every rule in
+this standard applies at every tier unless the rule itself states a tier scope", and none of
+the rules below carries a tier annotation. So `/metrics` is inside the standard's reach, and
+where it cannot conform the departure is written down — which is what R1.7 at `:271` requires:
+"silent deviation from any rule strength is nonconformance regardless of the deviation's
+merits."
+
+| Rule | Line | Rule text, quoted | Disposition |
+|---|---|---|---|
+| **R1.8** | `:312` | "A conforming API MUST NOT use a reserved name for any purpose other than the meaning registered here" | **CONFORMS.** `metrics` appears in none of §1.10's six registers. The only reserved path segments are the seven action verbs at `:383`–`:387` (`cancel`, `archive`/`restore`, `approve`/`reject`, `publish`/`unpublish`, `duplicate`); `metrics` is not among them |
+| **R1.9** | `:318` | "a **mutating** request carrying the `dry_run` parameter … MUST be rejected with `400`" | **N/A with reason** (the §1.8 `:232`–`:235` discipline): the guard is scoped to mutating requests and `GET /metrics` is safe. Recorded, not omitted |
+| **R2.1** | `:443` | "An API MUST present a resource-oriented surface: noun resources … There is no RPC carve-out for any service class" | **CONFORMS.** `/metrics` is a noun resource read with `GET`, not an RPC method overlay |
+| **R2.2** | `:456` | "Collection resources MUST use plural nouns" | **CONFORMS.** `metrics` is plural |
+| **R2.4** | `:477` | "Path segments MUST use kebab-case … pattern `^[a-z][a-z\-0-9]*$`" | **CONFORMS.** Asserted by running the pattern against the literal segment in the check script |
+| **R2.5** | `:487` | "a path MUST NOT reference more than three resources" | **CONFORMS.** One segment |
+| **R2.6** | `:499` | "Canonical URIs have no trailing slash … a request with a trailing slash SHOULD receive `308 Permanent Redirect`" | **MOVED.** The template registers `/metrics` and never `/metrics/`; the 308 belongs to R75's stack and is handed to it as a requirement |
+| **R2.9** | `:525` | "an operation modifier MUST NOT be encoded as a path segment" | **CONFORMS.** No modifier in the path |
+| **R2.10** | `:533` | "Personally identifiable information MUST NOT appear in any URI" | **CONFORMS.** No PII in the path, and none in the label set either — see R8.12 |
+| **R2.11**–**R2.13** | `:542`, `:562`, `:569` | the `POST /{collection}/{id}/{action}` action form | **N/A with reason.** `/metrics` is a `GET` of a representation, not a non-CRUD action |
+| **R4.1** | `:742` | "Every API MUST publish an OpenAPI document as the contract source of truth" | **CONFORMS.** The obligation binds the API to publish a document — R71's — not every path to appear in it. A case-insensitive search of the blob for a per-endpoint coverage rule ("every operation", "undocumented") finds none. The residual is recorded as a re-verify trigger rather than argued away |
+| **R4.3** | `:762` | "Every JSON response body MUST have an object at the top level … **Exception:** non-JSON media types" | **CONFORMS by the rule's own exception.** The Prometheus exposition body is not JSON |
+| **R4.4**–**R4.9**, **R4.16** | `:768`–`:834`, `:779` | JSON body-content rules | **N/A with reason.** No JSON body and no query parameters on this endpoint |
+| **R4.10** | `:846` | "The default media type — served when a request carries no `Accept` header — is `application/json`, encoded UTF-8. Media-type selection MUST use HTTP content negotiation, never a `format` query parameter. A request whose `Accept` header excludes every representation the endpoint supports SHOULD receive `406 Not Acceptable`" | **OVERRIDE (OV-07)(a)**, below. The middle clause conforms — the endpoint selects nothing by `format` — and the first and third are the departure |
+| **R4.11** | `:856` | "Every response whose content was selected by a request header MUST send `Vary` … **Exception:** responses with no negotiation" | **CONFORMS by the rule's own exception**, and the exception is earned rather than assumed: the handler returns one representation unconditionally, so no request header influences selection and no `Vary` is owed |
+| **R4.17** | `:864` | `Access-Control-Expose-Headers` for cross-origin browser clients | **N/A with reason.** A Prometheus server is not a browser client; CORS is R76's, and this endpoint asks nothing of it |
+| **R7.1** | `:1259` | "Every response MUST carry an explicit `Cache-Control` header — stating freshness, `no-cache`, or `no-store` per the R7.3 posture — because silence is not a decision" | **MOVED.** Revision 1 set no caching header, which violates an unconditional MUST that carries no exception, no tier scope and no switch scope. The handler now sets one |
+| **R7.3** | `:1281` | tier 1: "Authenticated or mutable resources default to `Cache-Control: private, no-cache`, revalidating via the strong `ETag` machinery of R3.10"; tier 2: "`no-store` is reserved for genuinely sensitive payloads. Blanket `no-store` is a named anti-pattern" | **MOVED to tier 1.** A scrape is mutable, so tier 1 applies and the header is **`Cache-Control: private, no-cache`**. `no-store` is rejected on the rule's own words: the payload is not sensitive. The `ETag` half of tier 1 does not bind, because R3.10 at `:693` scopes it to "A resource that supports conditional update" and carries "**Exception:** resources never updated by clients" — a scrape is never updated by a client |
+| **R8.1** | `:1317` | "APIs MUST be served only over TLS 1.2 or higher" | **Handed on, and it binds this path like every other.** The listener is R69's and the deployment R51's; R79 adds no plaintext-only requirement |
+| **R8.2** | `:1323` | "Access tokens MUST NOT be accepted or emitted in URI query parameters" | **CONFORMS.** The endpoint accepts no query parameter at all |
+| **R8.6** | `:1356` | "Every request MUST be authorized against the specific object, not only the endpoint … deny-by-default, never gateway-enforced" | **OVERRIDE (OV-07)(b)**, below |
+| **R8.12** | `:1422` | "Secrets, credentials, and PII MUST NOT appear in … any other response content" | **CONFORMS**, and it is the REST standard's twin of R56 revision 2's rule. The label set is `http_request_method`, `http_route` (a route template) and `http_response_status_code`; none can carry a caller value. The refusal to fall back to `req.uri().path()` is what keeps it true |
+| **R11.7** | `:1752` | "Every response, including errors, MUST carry the `request-id` correlation header" | **MOVED**, and this is the correction with the most structural reach. Revision 1 said `/metrics` sits outside the middleware; that is true only of the **RED measurement layer**, which is applied with `route_layer` to the business router. R75's request-id layer must be applied with `.layer()` to the **merged** router so that it covers `/metrics` and R80's probes too. Stated as a requirement handed to R75, and as a constraint on where `instrument()` sits in `build_router` |
+| **R11.8** | `:1759` | "W3C Trace Context `traceparent` MUST be propagated" | **MOVED.** Same placement argument as R11.7; the propagation mechanism is R75's and R78's, and this decision records only that `/metrics` is inside it |
+| **R13.3** | `:1935` | "An endpoint that does not implement streaming and receives `stream` — as a query parameter or a request-body member, with any value — MUST reject the request with `400`" | **MOVED.** §1.8 at `:258`–`:264` singles this rule out as binding **per endpoint** whatever the API's `streaming` switch says, so `GET /metrics?stream=1` must answer `400`. A Prometheus scrape never sends it, which is precisely why it would have been forgotten |
+| **R9.1** | `:1435` | "An API MUST use one uniform version-marker placement: the major version in the path (`/v1`), never `/v1.0`" | **CONFORMS, with the argument shown rather than assumed.** The rule constrains the *placement and form* of the version marker, not its presence on every path; a search of the blob for a universality clause ("every path") finds none, and R2.5's counting rule at `:491` treats the version segment as separate from the resource segments. The API's resources live under `/v1` and the marker never appears as `/v1.0`. This is the weakest row here and is recorded as a re-verify trigger |
+
+**What the recommendation adds, concretely.** Three lines in `instrument()` and one requirement
+on `build_router`:
+
+```rust
+// R13.3 guard, R7.1/R7.3 posture, on the /metrics handler.
+async fn scrape(RawQuery(query): RawQuery, handle: &'static PrometheusHandle) -> Response {
+    // R13.3 (:1935): a reserved request modifier an endpoint does not implement is a 400,
+    // never a silently non-streamed answer.
+    if query.as_deref().is_some_and(|q| q.split('&').any(|p| p == "stream" || p.starts_with("stream="))) {
+        return (StatusCode::BAD_REQUEST, [(header::CACHE_CONTROL, "private, no-cache")]).into_response();
+    }
+    // R7.1 (:1259) + R7.3 tier 1 (:1281): mutable resource, explicit header, never silence.
+    ([(header::CACHE_CONTROL, "private, no-cache"),
+      (header::CONTENT_TYPE, "text/plain; version=0.0.4; charset=utf-8")],
+     handle.render()).into_response()
+}
+```
+
+and, in `build_router`, the RED layer stays a `route_layer` on the business router while R75's
+cross-cutting stack is applied to the merged router, so `/metrics` is **outside the metrics
+measurement layer and inside the request-id and trace layer** — two different layers that
+revision 1 collapsed into one sentence.
+
+**OVERRIDE (OV-07) — R79's single allocated override, covering two independent departures.**
+
+The controller allocated `OV-07` to R79 and allocates override numbers centrally from now on
+(controller notice, 2026-09-18, issued after two syntheses collided on `OV-04` by searching
+concurrently). R79 records **two** departures, and they do not share a fact: one is about the
+response media type, the other about authentication. They are kept as separate arguments under
+the one allocated number rather than merged into a single argument, because merging two
+unrelated deviations into one would hide one of them — which is the outcome R1.7 exists to
+prevent. **A decision the controller owns:** either `OV-07` carries both rows, as written here,
+or R79 needs a second number. The §1.9 conformance note records deviations per rule ID in any
+case, so the two rows below land in it either way; only this repository's tracking handle is at
+stake. The precedent for one number carrying several rule rows is R80's `OV-04`, which covers
+four MUST rules — though there a single fact created all four.
+
+**OV-07(a) — the response media type is the Prometheus text exposition format, not
+`application/json`.**
+
+**Argument:** R4.10 at `:846` fixes `application/json` as the media type served to a request
+carrying no `Accept` header, and asks for `406 Not Acceptable` when a client's `Accept`
+excludes every supported representation. A Prometheus server scrapes with
+`Accept: text/plain;version=0.0.4;q=0.5,*/*;q=0.1` and parses the text exposition format; a
+`curl` with no `Accept` must receive the same bytes or the endpoint is useless to the tool it
+exists for. The format is fixed by the Prometheus project, not by this template, and
+`metrics-exporter-prometheus` 0.18.3 renders only that format — `PrometheusHandle::render`
+returns a `String` of it, with no JSON path to select. Conformance was attempted first, as
+Appendix B `:2799` requires: serving JSON by default and the exposition format only on an
+explicit `Accept` would mean every scrape works and every human `curl` silently gets a
+different document, which trades a tool-facing break for a human-facing one and satisfies no
+reader. The standard already records the identical structural hole for the analogous case, at
+`:2218`: a no-`Accept` request to an always-streaming resource "cannot produce" JSON, and
+"R4.10's default clause carries no BCP 14 keyword, so this is a taxonomy hole rather than a
+live conflict." That release is granted explicitly to streaming resources by R13.2 and not to
+this one, so it is cited as the standard's own acknowledgement of the shape of the problem,
+not as an exemption this endpoint may borrow. **Strengths, stated exactly:** the default-media-type
+clause carries no BCP 14 keyword and so is not a MUST; the `406` clause is a **SHOULD**. This
+override therefore records one SHOULD-strength deviation plus a position on a keyword-less
+clause, not a MUST violation.
+
+**Options:**
+- **(a) Serve the exposition format unconditionally — recommended, and taken.** `/metrics`
+  answers `200` with `Content-Type: text/plain; version=0.0.4; charset=utf-8` whatever the
+  `Accept` header says, and never `406`. Cost: the two R4.10 clauses above. Benefit: the
+  endpoint works with every Prometheus server and every `curl`, and matches py byte for byte.
+- **(b) Negotiate: JSON by default, exposition format on an explicit `Accept`.** Conforms to
+  R4.10 literally. Cost: a `curl /metrics` returns a JSON document no Prometheus tool reads,
+  the template must invent and maintain a JSON rendering of a histogram the exporter does not
+  produce, and R4.11's `Vary: Accept` becomes owed. Rejected: it manufactures a second
+  representation to satisfy a default nobody requests.
+- **(c) Move the endpoint off the API surface onto a second port,** which R80 evaluated and
+  rejected as its alternative D. Cost: a second bound listener, a second address in R77's
+  settings, a second row in R51's container contract, and it does not actually make the
+  standard stop applying — it relocates the same bytes. Rejected.
+
+*Recorded in §1.9 template form for the template's conformance note:*
+`- R4.10 · SHOULD (the 406 clause; the default-media-type clause carries no BCP 14 keyword) · /metrics serves text/plain; version=0.0.4 for every Accept and never 406 · the Prometheus exposition format is fixed by the Prometheus project and is the endpoint's whole purpose · approver: owner (pending) · date: 2026-09-18 · review: at the next major version of the template's HTTP surface`
+
+**OV-07(b) — `/metrics` is unauthenticated.**
+
+**Argument:** R8.6 at `:1356` requires that "Every request MUST be authorized against the
+specific object, not only the endpoint", centralized and deny-by-default. An unauthenticated
+scrape endpoint has no principal for that decision to run against. The standard grants no
+exception: a case-insensitive search of the blob for `anonymous` and `public endpoint` returns
+nothing, and the four occurrences of `unauthenticated` are a rate-limit axis row at `:1397`
+that prices unauthenticated traffic without permitting or forbidding it. Against that, F326 is
+an owner-recorded baseline — RED metrics at `/metrics`, on by default, with no configuration
+step — and py's instrumentator is unauthenticated at the pin. Requiring a credential would
+make the endpoint unusable without one, which is a configuration step, which is what F326
+forbids. Conformance was attempted first: an API-key gate under R8.3 was considered and
+rejected because the template ships no deployment target and therefore no key issuer, so the
+gate would have to ship disabled — a rule satisfied in text and not in fact, which R1.7 treats
+as worse than a recorded deviation. **Strength: MUST.** Under R1.7 at `:273` this makes the
+surface nonconformant unless recorded, and Appendix B `:2803`–`:2806` routes a
+requirement-strength deviation to the standard's owner. It is recorded here and flagged for
+that approval; R79 does not grant itself the exception.
+
+**Options:**
+- **(a) Unauthenticated `/metrics`, on by default — recommended, and taken.** Cost: R8.6, at
+  MUST strength, pending the owner's approval. Benefit: F326 is met exactly; the scrape works
+  with a stock Prometheus server; py and rs behave identically. Mitigation the template can
+  carry without a configuration step: the exposition carries no secrets by construction
+  (R8.12, R56), and the served bind address is loopback by default under R77's proposed
+  `RSLBP_WEB_HOST` default of `127.0.0.1`, so a container must opt into `0.0.0.0` before the
+  endpoint is reachable off-host.
+- **(b) Require an API key on `/metrics`.** Conforms to R8.6. Cost: the endpoint is off until
+  configured, contradicting F326's "no configuration step"; the template ships no key issuer,
+  so the shipped default would be a disabled gate. Rejected.
+- **(c) Bind `/metrics` to a separate loopback-only listener.** Reduces exposure without a
+  credential, but still has no principal, so R8.6 is equally unmet — and it costs the second
+  port R80 already rejected. Rejected as not addressing the rule it appears to address.
+
+*Recorded in §1.9 template form:*
+`- R8.6 · MUST · /metrics is served without authentication or authorization · F326 requires RED metrics on by default with no configuration step, and the template ships no credential issuer; the payload carries no secrets (R8.12) and the default bind address is loopback · approver: standard owner (required by Appendix B step 3, pending) · date: 2026-09-18 · review: at the next major version of the template's HTTP surface`
+
+**The override number is the controller's allocation, and this synthesis's own search was
+wrong — both facts recorded rather than the second quietly dropped.**
+
+Override numbers are allocated centrally as of 2026-09-18. `docs/planning/p02/execution-ledger.md:1073`
+records why and what: "R77 revision 2 (`d36492b`) and R80 revision 2 (`ce291fe`) both allocated
+OV-04 by concurrent 'next free number' searches. Resolution: OV numbers are allocated by the
+controller from now on." The same line carries the allocation table, and R79's entry in it is
+**`OV-07`**, reserved "whether or not used (gaps are acceptable)". This decision takes that
+number and runs no allocation search of its own; `OV-08` through `OV-15` are reserved to R76,
+R58, R73, R74, R84, R72, R51 and R83, so a search would have collided with any of them.
+
+**The search this synthesis did run before that notice was a truncated search reported as a
+census, and it was false.** It ran
+`/usr/bin/grep -rnoE "\bOV-[0-9]+\b" research docs` over the whole working tree; that walks
+132,859 files, exceeded its timeout, and returned **no output** — read as "no `OV-nn` is in
+use". `OV-01` through `OV-06` were in fact already held. A scoped rerun over the 7,344 markdown
+files where an override can actually be recorded —
+`find research docs -type f -name '*.md' -print0 | xargs -0 /usr/bin/grep -noE "\bOV-[0-9]+\b"` —
+completes in seconds and returns the true set. An intermediate draft of this revision then
+allocated `OV-10` and `OV-11` from that corrected census; the controller's notice supersedes
+that choice, and both were renumbered to `OV-07` before committing. A second miss followed and
+is recorded for the same reason: the renumbering at first left `OV-10` and `OV-11` standing in
+two conformance-walk table rows, because the enumeration grep was piped through `cut -c1-135`
+and the references sat past that column. The evidence script caught it, which is what it is
+for, and the repair is the corrected enumeration shown here rather than a re-read.
+
+`review/evidence/rest-conformance-r2.sh` still executes the scoped census and prints it — not
+to allocate, which is no longer this item's job, but to assert that no OVERRIDE heading here
+carries a number other than `OV-07`, that no other **item** claims `OV-07` (the controller's
+ledger naturally names it, and is excluded as the allocator's own register), and that the
+census never comes back empty again, since an empty result now means the search is broken
+rather than that the numbers are free.
+
+**What R79 contributes to the template's conformance note.** The note itself is one document
+per API and is R71's or R69's to hold, not R79's to create. R79 supplies four rows for it: the
+two deviation rows quoted above, and two N/A rows — `- R1.9 · the dry_run guard binds mutating
+requests; /metrics is safe` and `- R2.11–R2.13 · /metrics is a GET of a representation, not a
+non-CRUD action`. R1.5 at `:210` requires the note to declare one conformance tier; that
+declaration is the API's, and none of the rules above changes with it, because none carries a
+tier annotation.
+
+re-verify: on any of these, whichever comes first — (1) **R69 republishes** at revision 10 or later, confirming that the `metrics = ["web", …]` clause and the `crates/web` paths this design is written against survive verbatim; (2) **R02 publishes** a topology other than the four-package workspace with `crates/web`; (3) **R80 publishes** its probe paths, which must join `/metrics` on the unmeasured side of `route_layer`; (4) **R71 publishes** a generator that enumerates a live `axum::Router` rather than annotated registrations, which would make the automatic OpenAPI exclusion need an explicit mechanism; (5) **R77 publishes** a settings surface that still defines `RSLBP_WEB_METRICS_ENABLED`, which would contradict the no-env-gate disposition recorded here; (6) **R78 publishes** a decision that emits metrics, not only traces, through the OTel SDK, at which point the two items need one recorder rather than two pipelines; (7) **`prometheus-client` declares a `rust-version`**, clearing gate 2 and deserving a fresh head-to-head it currently wins on design grounds; (8) **`metrics-exporter-prometheus` releases 0.19 or `metrics` releases 0.25**, both semver-breaking under caret-on-`0.x`; (9) **`axum` publishes 0.9**, re-opening `MatchedPath` and `route_layer` semantics; (10) **Prometheus native histograms become the default advice**, retiring the bucket constant; (11) at the next **`msrv-policy` floor advance past 1.96**, re-running `review/evidence/cargo-probes.sh` at the new toolchain; (12) **the REST API Design Standard publishes a blob other than `71bd813c1cf61286586b4ee41ed83ff065e5c8d9`**, which re-opens every rule line number and rule text quoted in the conformance walk, and in particular any change to R4.10, R8.6, R7.1, R7.3, R11.7, R11.8 or R13.3; (13) **the standard's owner rules on OV-07(b)**, whose MUST-strength deviation is recorded pending that approval under Appendix B step 3, or on OV-07(a); (14) **the controller rules on whether the single allocated number `OV-07` may carry both of R79's departures or whether a second number is issued**, the open question recorded under the override; (15) **R71 publishes a reading of R4.1 that requires every path to appear in the OpenAPI document**, or **R75 publishes a middleware stack that does not place `/metrics` inside its `request-id` and `traceparent` layers**, either of which turns a row recorded above as CONFORMS or MOVED into an override; or (16) by **2027-03-18**.
 
 ## Parameters
 
@@ -466,8 +723,30 @@ anywhere in the repository.
 | Cargo probes | `./cargo-probes.sh` | 34 | 0 | 0 | `review/evidence/cargo-probes.log` |
 | Crate sources and registry figures | `./crate-sources.sh` | 66 | 0 | 0 | `review/evidence/crate-sources.log` |
 | GitHub repository figures | `./github-api.sh` | 5 | 0 | 0 | `review/evidence/github-api.log` |
-| Decision self-check | `./decision-self-check.sh` | 70 | 0 | 0 | `review/evidence/decision-self-check.log` |
-| **Total** | | **175** | **0** | **0** | |
+| Decision self-check (revision 1; **superseded**) | `./decision-self-check.sh` | 70 | 0 | 0 | `review/evidence/decision-self-check.log` |
+| REST-standard conformance (revision 2) | `./rest-conformance-r2.sh` | 122 | 0 | 0 | `review/evidence/rest-conformance-r2.log` |
+| **Total, revision 2** | | **297** | **0** | **0** | |
+
+**Revision 2's check counts, and which script an auditor reruns.** The four revision-1 scripts
+and their logs are byte-identical to revision 1 and their counts are carried unchanged: 34, 66,
+5 and 70. `decision-self-check.sh` is the one that no longer reruns green, and it is superseded
+rather than broken — it asserts revision 1's H1 line and revision 1's sha256 by construction, so
+a pass against revision 2 would mean it had been edited, which the revision rules forbid. Its
+whole check set is re-executed inside `rest-conformance-r2.sh` against revision 2, which is why
+that script's count is 122 rather than the 52 the REST work alone would need. **The script an
+auditor reruns for revision 2 is `rest-conformance-r2.sh`**; `decision-self-check.log` stands as
+the record of the revision-1 run, and its digest is printed by the r2 script.
+
+**What the revision-2 script executed.** It reads the REST API Design Standard at the blob the
+owner ruling pins, re-derives the blob id from the bytes with `git hash-object` so the identity
+is content-addressed rather than filename-addressed, asserts each of the **45 quoted rule
+lines** at its exact line number, and diffs the whole extraction against the committed snapshot
+`review/evidence/snapshots/rest-standard-rules.txt`. It then re-executes the ten-term
+absent-vocabulary sweep that grounds the no-carve-out finding, runs the standard's own
+kebab-case pattern against the literal path segment `metrics`, checks the segment against the
+eight reserved action verbs, asserts every disposition the conformance walk claims is actually
+written in the decision, re-executes the OV allocation census and asserts the controller's ledgered `OV-07 R79` row, and re-runs the revision-1
+decision-shape, parameter-byte, gate-1 and hygiene checks against revision 2.
 
 Each script exits non-zero on any FAIL, asserts on content rather than on an exit code alone,
 carries `set -euo pipefail`, invokes `grep` as `/usr/bin/grep` with its version printed beside
@@ -736,6 +1015,13 @@ decision's shape follows the role contract.
 8. **Whether a `MEMBER`/`OWNER` issue reply is substantive rather than triage** was not judged by
    either the report or this synthesis; the responsiveness figure is time to first maintainer
    comment.
+
+**Revision history.**
+
+| Revision | sha256 | What it changed |
+|---|---|---|
+| 1 | `2e804161b9fbe65c7d33be04de5e024612ce628e1ea914c4e636443e0f0885c3` | The decision as first written from `raw/opus.md`, with the Codex leg absent under W1-CODEX3 and every load-bearing claim re-verified at source. Checks 34 / 66 / 5 / 70 = 175 PASS. Committed at `fca40a5` after three repairs to its own reproducibility claims |
+| 2 | this file | **Pre-audit revision** under owner ruling W2-REST (2026-09-18). Adds the conformance walk against the REST API Design Standard v2.0.0 at blob `71bd813c…`: 45 rule lines quoted at their line numbers, 21 dispositions, three **MOVED** rows that change the recommendation's HTTP behaviour, two departures recorded under the controller-allocated `OV-07`. Extends the re-verify line with five W2-REST triggers. Records, rather than drops, a false OV census caused by a truncated search, and takes the controller's central allocation over it. **No crate, version, feature name, metric name, label, parameter line, ledger disposition or gate answer moves.** Adds `rest-conformance-r2.sh` (122 PASS) and supersedes `decision-self-check.sh` |
 
 **Disagreements between engines: none to settle.** With one registered engine there is no
 inter-engine disagreement. The disagreements recorded above are between the single report and
