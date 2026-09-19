@@ -1,5 +1,5 @@
 === R76 revision 2: REST API Design Standard conformance ===
-date(UTC): 2026-09-19T01:25:13Z
+date(UTC): 2026-09-19T01:27:20Z
 grep:  grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
 rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
 cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
@@ -149,34 +149,37 @@ ASSERT ok   and the one that fails is the revision-pinned H1 assertion, not a st
 ASSERT ok   its other 42 assertions still pass against revision 2: the four H2 sections, the six byte-identical parameter lines, the gate-1 record and enumeration, the raw-report hash and shape, and every figure cross-check
 ASSERT ok   it exits non-zero, so the known breakage is loud rather than silent — which is the behaviour a failing assertion is supposed to have
 
---- F. the OVERRIDE namespace, enumerated rather than recalled ---
+--- F. the OVERRIDE namespace: what this decision allocates from it (nothing) ---
         occurrences of each OV-<digits> token under research/ and docs/:
           2761 OV-01
-           159 OV-02
+           158 OV-02
             61 OV-03
             70 OV-04
-             7 OV-05
-             7 OV-06
-             3 OV-07
-             4 OV-08
-           106 OV-09
-             7 OV-10
-             7 OV-11
+            23 OV-05
+            14 OV-06
+            13 OV-07
+            13 OV-08
+           105 OV-09
+             3 OV-10
+             3 OV-11
              1 OV-12
              1 OV-13
              1 OV-14
              1 OV-15
         distinct tokens in use AT THIS MOMENT: OV-01 OV-02 OV-03 OV-04 OV-05 OV-06 OV-07 OV-08 OV-09 OV-10 OV-11 OV-12 OV-13 OV-14 OV-15  (15 of them)
-        NOTE: this line is a snapshot of a namespace several sibling items are
-              allocating concurrently in this shared worktree. It moved between
-              two runs of this very script while revision 2 was being written.
-              Nothing below asserts which particular numbers are free, because
-              such an assertion would be false by the time it was audited.
+        NOTE: a snapshot of live state, not a register. It moved between two
+              runs of this very script while revision 2 was being written, and
+              allocation has since moved to the controller. Nothing below
+              asserts which numbers are free: that question is the
+              controller's, and such an assertion would be stale by audit.
 ASSERT ok   OV-01 is IN USE (R60, against the CLI Design Standard, refused by the owner on 2026-09-14) — the one fact an earlier draft of this revision got backwards, from a search a timeout had killed; this check is what would have caught it
-ASSERT ok   at least six distinct override numbers are already allocated, so the namespace is populated and no item may assume it starts empty
+ASSERT ok   at least six distinct override numbers are already in the tree, so the namespace is populated and no item may assume it starts empty
+        lines naming this item's controller-allocated number OV-08 = 3
+ASSERT ok   the decision names its controller-allocated number OV-08 in both places it belongs — the revision note and the Engines record — so the allocation is not silently dropped
+ASSERT ok   and it states the disposition in words: OV-08 stays unused, because this decision records no override to attach it to
         occurrences of a NUMBERED 'OVERRIDE (OV-<digits>)' in this decision = 0
 ASSERT ok   this decision records no numbered OVERRIDE of its own, so it consumes nothing from a namespace it does not control (the three 'OV-nn' placeholders in its prose are not allocations)
 
 === RESULT ===
-PASS=57 FAIL=0 SKIP=0 TOTAL=57
+PASS=59 FAIL=0 SKIP=0 TOTAL=59
 RESULT: PASS

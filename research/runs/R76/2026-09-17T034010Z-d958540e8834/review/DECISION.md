@@ -28,9 +28,9 @@ read `request-id` — a header R11.7 makes mandatory on every response. The fix 
 mechanical and is taken here, which a pre-acceptance revision is allowed to do: the
 recommendation now configures `expose_headers`, and `apply_cors` grows a third parameter
 carrying the list. **No `OVERRIDE (OV-nn)` is recorded**, because after that move every
-quoted rule conforms or is not engaged, so there is nothing to argue against. This item
-therefore claims no override number — see `## Engines` for the state of that namespace,
-which sibling revisions are allocating concurrently.
+quoted rule conforms or is not engaged, so there is nothing to argue against. The
+controller allocated **OV-08** to this item; because no override is recorded, **OV-08
+stays unused**. See `## Engines` for how that allocation replaced a search.
 **Unchanged from revision 1:** the crate and its version, the conditional-install policy
 that is this item's whole subject, every gate result, every figure, and all six
 `- assumes` lines. Revision 1's evidence — `registry-figures.sh`, `probe-checks.sh`,
@@ -633,7 +633,7 @@ by absolute path, and its version is printed beside every count in both logs.
 
 ```
 # revision 2 — the new check
-./rest-conformance-r2.sh > rest-conformance-r2.log 2>&1   # exit 0, RESULT: PASS, 57 assertions, 0 SKIP
+./rest-conformance-r2.sh > rest-conformance-r2.log 2>&1   # exit 0, RESULT: PASS, 59 assertions, 0 SKIP
 
 # revision 1 — retained byte-identical, logs as committed at 3b933872
 ./registry-figures.sh    > registry-figures.log    2>&1   # exit 0, RESULT: PASS, 54 assertions, 0 SKIP
@@ -663,7 +663,7 @@ over.** The three revision-1 scripts need no `.git` at all and run unchanged fro
 standard from a *separate* repository's blob, not this one's — but its section F
 enumerates the `OVERRIDE` namespace through this repository's index, so in an archive
 extraction that one section **skips by name** and the script reports `PASS=54 FAIL=0
-SKIP=1` instead of `PASS=57 FAIL=0 SKIP=0`. Verified by extracting the post-commit
+SKIP=1` instead of `PASS=59 FAIL=0 SKIP=0`. Verified by extracting the post-commit
 archive and re-running it: the skip line appears, the other 54 assertions are identical to
 the committed log, and the exit status is still 0. No personal address appears in
 any script, `User-Agent` header or log; the `User-Agent` the registry scripts send is the
@@ -678,7 +678,7 @@ no settings type, no acceptance scaffold and no template fixture. The probe is a
 crate whose only purpose is to make three installation policies observable side by side,
 and it is deleted when the script exits.
 
-**`rest-conformance-r2.sh` — 57 assertions over six sections, the revision-2 check.**
+**`rest-conformance-r2.sh` — 59 assertions over six sections, the revision-2 check.**
 (A) The pinned artifact is identified before anything is quoted from it: blob type, size
 **190,161** bytes, **3,427** lines, the sha256 of the extracted bytes, the `# REST API
 Design Standard` first line, the `**Version 2.0.0.**` marker, and the blob's reachability
@@ -697,8 +697,10 @@ assertions that the document names the ruling and pins the blob. (E) The bounded
 revision-1 breakage described above. (F) The `OVERRIDE` namespace enumerated from the
 repository index, printed as an explicitly labelled snapshot and asserted only where the
 assertion survives another agent's commit — that `OV-01` is taken, that the namespace is
-populated, and that this decision allocates no number from it. It skips by name, rather
-than passing silently, in an archive extraction with no `.git`.
+populated, that this decision records no numbered override, and that the number the
+controller allocated to this item, **OV-08**, is named in both places it belongs with its
+disposition stated in words. It skips by name, rather than passing silently, in an archive
+extraction with no `.git`.
 
 | Observation | Result | Rule it settles |
 |---|---|---|
@@ -812,7 +814,10 @@ showed, rather than what would be convenient to say:
   an immutable git blob or from a probe pinned to exact crate versions, so sections A
   through E have no counter and no wall-clock measurement in them to drift. Section F is
   the exception and says so in the log itself: it prints the live `OVERRIDE` namespace,
-  which sibling agents are changing, and its assertions are written to survive that.
+  which the controller is now allocating from, and its assertions are written to survive
+  that. Between the first and last runs of this script the namespace grew from six
+  distinct numbers to fifteen, which is the concrete reason no number is quoted as free
+  anywhere in this document.
 
 - **`registry-figures.log` reproduced byte-for-byte apart from its header `date(UTC)`
   line** on a rerun twelve minutes later — every `FIGURE`, every enumerated crate name and
@@ -946,7 +951,7 @@ standard" but "the design met it in ten places and missed it in one".
    dispositioned in the table under `## Decision` and `rest-conformance-r2.sh` section D
    asserts that the document names it.
 
-**No `OVERRIDE (OV-nn)` is recorded, and this item deliberately reserves no number.**
+**No `OVERRIDE (OV-nn)` is recorded; the number allocated to this item stays unused.**
 After the R4.17 move, every quoted rule conforms or is not engaged, so there is nothing to
 argue against. **A correction is owed here, because an earlier draft of this revision got
 it wrong, and the way it was wrong is worth more than the number.** That draft stated that
@@ -955,16 +960,23 @@ read as an empty result — the truncated-search failure this programme has hit 
 properly, `git grep -o -E "OV-[0-9]{2,}" -- research docs` shows **`OV-01` is in use**: it
 is R60's deviation from the CLI Design Standard, refused by the owner on 2026-09-14.
 
-**No "next free" number is stated, and that is a deliberate refusal rather than an
-omission.** The namespace is being allocated *right now* by sibling items revising against
-this same W2-REST ruling in this shared worktree, and it moved between two runs of
-`rest-conformance-r2.sh` while this revision was being written: four numbers that were
-absent on the first run were present on the second. Any figure of the form "the next free
-number is OV-nn" would therefore be false before an auditor read it. The evidence log
-carries the enumeration as a timestamped snapshot, explicitly labelled as one, and the
-script asserts only what survives another agent's commit: that `OV-01` is taken, that the
-namespace is populated rather than empty, and that this decision allocates nothing from
-it. An item that needs a number must enumerate at its own commit.
+**Searching for a free number is no longer how one is obtained, and this item's own
+evidence shows why.** The namespace was being allocated concurrently by sibling items
+revising against this same W2-REST ruling in this shared worktree, and it moved between
+two runs of `rest-conformance-r2.sh` while this revision was being written: four numbers
+absent on the first run were present on the second. Two syntheses then collided on
+`OV-04` by searching at the same moment. **The controller has since taken allocation
+over** (notice of 2026-09-18, ledgered with its allocation table at commit `69a635e`):
+numbers are assigned, not discovered, gaps are acceptable, and no item searches. **OV-08
+is this item's allocation.** Because revision 2 records no override, OV-08 stays unused
+and is not consumed.
+
+The enumeration in `rest-conformance-r2.sh` section F is therefore **no longer a way to
+find a number** — that question is closed — and is retained for the two things it still
+proves: that `OV-01` is genuinely taken, which is the specific fact the earlier draft got
+backwards, and that this decision allocates nothing from the namespace. Its output is
+labelled in the log as a snapshot of live state, and its assertions are written to survive
+another agent's commit rather than to pin a moving list.
 
 **What P03 must additionally validate under this revision.** That the assembled
 `exposed_headers` list actually names every standard-bound header the finished stack

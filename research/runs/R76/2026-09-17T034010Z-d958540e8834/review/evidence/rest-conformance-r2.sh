@@ -372,10 +372,14 @@ fi
 echo
 
 # ---------------------------------------------------------------------------
-echo "--- F. the OVERRIDE namespace, enumerated rather than recalled ---"
-# This section exists because an earlier draft of this revision claimed OV-01
-# was free, having read the empty output of a search that a timeout had killed.
-# Enumerating is cheap; a false census is not.
+echo "--- F. the OVERRIDE namespace: what this decision allocates from it (nothing) ---"
+# This section does NOT look for a free number. Since the controller's notice of
+# 2026-09-18, override numbers are allocated by the controller, not discovered by
+# searching — two syntheses had collided on OV-04 doing exactly that. OV-08 is
+# this item's allocation and stays unused, because no override is recorded.
+# What the enumeration still earns its place for: an earlier draft of this
+# revision claimed OV-01 was free, having read the empty output of a search a
+# timeout had killed. Enumerating is cheap; a false census is not.
 # evidence -> review -> <run> -> R76 -> runs -> research -> repository root.
 REPO_ROOT="$(cd "$(dirname "$0")/../../../../../.." && pwd)"
 if [ ! -e "$REPO_ROOT/.git" ]; then
@@ -388,16 +392,25 @@ else
   INUSE=$("$GREP" -o -E 'OV-[0-9]{2,}' "$WORK/ov.txt" | sort -u | tr '\n' ' ')
   DISTINCT=$("$GREP" -o -E 'OV-[0-9]{2,}' "$WORK/ov.txt" | sort -u | wc -l | tr -d ' ')
   echo "        distinct tokens in use AT THIS MOMENT: ${INUSE:-(none)} (${DISTINCT} of them)"
-  echo "        NOTE: this line is a snapshot of a namespace several sibling items are"
-  echo "              allocating concurrently in this shared worktree. It moved between"
-  echo "              two runs of this very script while revision 2 was being written."
-  echo "              Nothing below asserts which particular numbers are free, because"
-  echo "              such an assertion would be false by the time it was audited."
+  echo "        NOTE: a snapshot of live state, not a register. It moved between two"
+  echo "              runs of this very script while revision 2 was being written, and"
+  echo "              allocation has since moved to the controller. Nothing below"
+  echo "              asserts which numbers are free: that question is the"
+  echo "              controller's, and such an assertion would be stale by audit."
   # Two assertions that are invariant under other agents' commits.
   assert "$(if "$GREP" -q 'OV-01' "$WORK/ov.txt"; then echo 1; else echo 0; fi)" \
     "OV-01 is IN USE (R60, against the CLI Design Standard, refused by the owner on 2026-09-14) — the one fact an earlier draft of this revision got backwards, from a search a timeout had killed; this check is what would have caught it"
   assert "$(if [ "$DISTINCT" -ge 6 ]; then echo 1; else echo 0; fi)" \
-    "at least six distinct override numbers are already allocated, so the namespace is populated and no item may assume it starts empty"
+    "at least six distinct override numbers are already in the tree, so the namespace is populated and no item may assume it starts empty"
+  # Count lines, not sentences: the Engines paragraph wraps OV-08 across two
+  # lines, so an exact count would be brittle to re-wrapping. What matters is
+  # that the allocation is named in both places and its disposition is stated.
+  OV08=$("$GREP" -c 'OV-08' "$DEC" 2>/dev/null || true)
+  echo "        lines naming this item's controller-allocated number OV-08 = ${OV08}"
+  assert "$(if [ "$OV08" -ge 2 ]; then echo 1; else echo 0; fi)" \
+    "the decision names its controller-allocated number OV-08 in both places it belongs — the revision note and the Engines record — so the allocation is not silently dropped"
+  assert "$(if "$GREP" -q 'OV-08 stays unused' "$DEC"; then echo 1; else echo 0; fi)" \
+    "and it states the disposition in words: OV-08 stays unused, because this decision records no override to attach it to"
   OWN=$("$GREP" -c -E 'OVERRIDE \(OV-[0-9]' "$DEC" 2>/dev/null || true)
   echo "        occurrences of a NUMBERED 'OVERRIDE (OV-<digits>)' in this decision = ${OWN}"
   assert "$(eq "$OWN" "0")" \
