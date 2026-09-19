@@ -1,0 +1,105 @@
+# R77 revision 2 — REST standard conformance — 2026-09-19T01:18:44Z
+# /usr/bin/grep version: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+PASS repository root resolves from this script's own location
+
+## A — the owner ruling that makes the standard binding
+PASS OWNER-REVIEW carries the W2-REST heading
+PASS W2-REST names this template's HTTP surface the way the CLI standard binds its CLI
+PASS W2-REST names R77 among the items that design to the standard
+PASS W2-REST requires departures as OVERRIDE (OV-nn) in the shape of section 1.9
+PASS W2-REST names the commit and blob this script pins
+
+## B — the standard at the pinned blob: each quoted rule at its line
+PASS the blob is the 3427-line rest-api-standard.md the ruling names (3427)
+PASS commit 0850d43e45d919ef5e37f7174c4212b46013c49f carries exactly this blob as rest-api-standard.md (71bd813c1cf61286586b4ee41ed83ff065e5c8d9)
+PASS the blob declares Version 2.0.0 at line 3
+PASS version 2.0.0 lists R8.10 among its nine amended rules
+PASS R1.5 (§1.7 conformance tiers) quoted at line 210
+PASS R1.6 (§1.8 applicability switches) quoted at line 229
+PASS R1.6 switch vocabulary quoted at line 237
+PASS R1.7 (§1.9 no silent deviation) quoted at line 271
+PASS R1.7 deviation-note line shape quoted at line 291
+PASS R7.1 (§7.1 caching mechanism) quoted at line 1259
+PASS R7.2 (§7.1 shared-cache leak) quoted at line 1271
+PASS R7.3 (§7.2 caching posture) quoted at line 1281
+PASS R8.1 (§8.1 TLS) quoted at line 1317
+PASS R8.2 (§8.1 tokens in URIs) quoted at line 1323
+PASS R8.5 (§8.1 credential lifetime) quoted at line 1348
+PASS R8.10 (§8.3 deployment profile) quoted at line 1387
+PASS R8.10 rate-limit axis row quoted at line 1397
+PASS R8.10 replay-window axis row quoted at line 1398
+PASS R8.12 (§8.5 redaction) quoted at line 1422
+PASS R9.1 (§9.1 version marker) quoted at line 1435
+PASS R10.1 (§10.1 async operations) quoted at line 1546
+PASS R10.6 (§10.3 webhook delivery) quoted at line 1606
+PASS R11.2 (§11.2 rate limiting) quoted at line 1686
+PASS the standard never makes a rule turn on an environment variable (0 occurrences of 'environment variable')
+
+## C — the conformance claims, the two moves, and OVERRIDE (OV-04)
+PASS DECISION.md dispositions R1.5
+PASS DECISION.md dispositions R1.6
+PASS DECISION.md dispositions R1.7
+PASS DECISION.md dispositions R7.1
+PASS DECISION.md dispositions R7.2
+PASS DECISION.md dispositions R7.3
+PASS DECISION.md dispositions R8.1
+PASS DECISION.md dispositions R8.2
+PASS DECISION.md dispositions R8.5
+PASS DECISION.md dispositions R8.10
+PASS DECISION.md dispositions R8.12
+PASS DECISION.md dispositions R9.1
+PASS DECISION.md dispositions R10.1
+PASS DECISION.md dispositions R10.6
+PASS DECISION.md dispositions R11.2
+PASS DECISION.md records the override in the section 1.9 shape
+PASS OV-04 carries an Argument
+PASS OV-04 carries Options
+PASS OV-04 is against R8.1
+PASS Move 1 is stated as a move, allowed before acceptance
+PASS Move 2 is stated as a move, allowed before acceptance
+PASS the revision says plainly that moving is allowed before acceptance
+PASS Move 1 forbids any version marker on the settings surface
+PASS Move 1 constrains ROOT_PATH to a mount prefix
+PASS Move 2 reserves the rate-limit family
+PASS Move 2 records that no member default may disable limiting
+PASS RSLBP_WEB_API_VERSION appears once, on the line that puts it outside the surface
+PASS RSLBP_WEB_BASE_PATH appears once, on the line that puts it outside the surface
+PASS the four applicability switches are declared off with a reason
+PASS the decision states that no setting may select a switch
+PASS the caching guard forbids a knob flipping a resource to public
+PASS the redaction reading is stated: the boot error precedes the listener
+PASS the decision states the crate recommendation itself does not move
+
+## D — revision 1 evidence carried byte-identical (not re-run)
+PASS revision-1 figures.sh is unchanged (d70b89cdd15898078182f696540bd992be7d17c9ba7262441bc4395d29dd25a6)
+PASS revision-1 sources.sh is unchanged (a63bb281280bc3d530f7aacf24e3825994f94c2f980db4df7c0041cb9fe05f34)
+PASS revision-1 probes.sh is unchanged (4af088a3945a2ba47ab7f60ef71f0714fd4075b9f01cfe81606edd45d1b62747)
+PASS revision-1 fetch-snapshots.sh is unchanged (9c26e9ea96b101e88398b60baf3b709bc3b3e0aae28bfd8d9b77c4442e51c642)
+PASS revision-1 figures.log is unchanged (493ba961663fbf19d28432610d38ff168558239e074026d02ced7bf28a58f086)
+PASS revision-1 sources.log is unchanged (455841ce2b0d76cf94d46a5563d3a50a9144e454bf4f5218235ee32c1b3f3923)
+PASS revision-1 probes.log is unchanged (fe848ea72828e4220f7030caca562c48517f16207565d9b05c6edf2a58672ae7)
+PASS revision-1 fetch-snapshots.log is unchanged (8eae6a9c2af53ec40384968efed1ed40b16e5d7c7523240336fd7e25c84f5226)
+PASS revision-1 rerun-diff.log is unchanged (d6b4d0fee8b741eb8850d00c38810ddf832d0c161f6f0d0cc4530e36dd96028a)
+PASS revision-1 archive-rerun.log is unchanged (b341895ab9f790914d3475f70a34b4aa7aae0c07eaea39100a3f3b7e7ad15d1a)
+PASS the revision note records revision 1's own sha256
+
+## E — revision-2 document discipline
+PASS H1 is the date-first revision-2 title (# 2026-09-18 — R77 — web-env-settings (crate, Focused) — decision (revision 2))
+PASS no Supersedes section (0)
+PASS exactly one re-verify line (1)
+PASS no owned parameter (0)
+PASS exactly six assumes lines (6)
+PASS the revision history names revision 1 and revision 2
+PASS fitness gate 1 keeps the owner's exact ruling string
+PASS assumes msrv-policy still byte-identical to docs/port/PARAMETERS.md (142 bytes)
+PASS assumes rust-edition still byte-identical to docs/port/PARAMETERS.md (29 bytes)
+PASS assumes target-os-matrix still byte-identical to docs/port/PARAMETERS.md (56 bytes)
+PASS assumes license still byte-identical to docs/port/PARAMETERS.md (37 bytes)
+PASS assumes web-extra-surface still byte-identical to docs/port/PARAMETERS.md (2668 bytes)
+PASS assumes error-taxonomy-exit-codes still byte-identical to docs/port/PARAMETERS.md (4095 bytes)
+PASS OV-04 is unused elsewhere in docs/ and research/ — it is the next free number
+PASS OV-01 is already taken (13 files) — the control that makes the OV-04 search meaningful
+PASS OV-02 is already taken (3 files) — the control that makes the OV-04 search meaningful
+PASS OV-03 is already taken (7 files) — the control that makes the OV-04 search meaningful
+
+PASS=91 FAIL=0 SKIP=0 TOTAL=91

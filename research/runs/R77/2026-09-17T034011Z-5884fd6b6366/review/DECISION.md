@@ -1,4 +1,45 @@
-# 2026-09-18 — R77 — web-env-settings (crate, Focused) — decision (revision 1)
+# 2026-09-18 — R77 — web-env-settings (crate, Focused) — decision (revision 2)
+
+**Revision 2 answers one new binding input: owner ruling W2-REST.** On 2026-09-18 the
+owner ruled (`docs/port/OWNER-REVIEW.md`, "2026-09-18 — the REST API Design Standard
+binds the HTTP surface (W2-REST)") that the organisation's REST API Design Standard
+v2.0.0 — local clone `/Users/stevemorin/c/rest-standards/rest-api-standard.md`, commit
+`0850d43e45d919ef5e37f7174c4212b46013c49f`, file blob
+`71bd813c1cf61286586b4ee41ed83ff065e5c8d9` — "governs this template's optional HTTP
+surface the way the CLI Design Standard (ruling of 2026-09-14) governs its CLI", and
+that "Every web item (R70 R72 R73 R74 R76 R77 R80 and the later R71 R83 R84) designs to
+the standard, quotes the rules it relies on at their lines, and records any departure as
+an `OVERRIDE (OV-nn)` in the shape of the standard's own section 1.9 deviation note."
+Revision 1 was written before that ruling. This revision reads the standard at that blob
+against this item's `RSLBP_WEB_*` surface, rule by rule.
+
+**The crate recommendation does not move.** No crate is adopted; the settings are still
+decoded by the template's own module over `std::env::vars_os` and `str::FromStr`, under a
+`const fn`-derived `RSLBP_WEB_` prefix, threaded through the framework's own state
+mechanism. Nothing in `## Parameters` moves. What moves is the **naming rule and the
+reserved variable set**, in two places, and one departure is recorded:
+
+| What | Disposition |
+|---|---|
+| **Move 1 — R9.1, the version marker** | The naming rule now forbids any environment variable that carries or overrides the API version, and constrains `RSLBP_WEB_ROOT_PATH` to a mount prefix that never replaces the `/v1` segment. |
+| **Move 2 — R8.10's rate-limit axis and R11.2** | The single reserved scalar `RSLBP_WEB_RATE_LIMIT` is withdrawn and replaced by the reserved family `RSLBP_WEB_RATE_LIMIT_*`, whose membership and defaults R74 fixes, with the constraint that no member's default may disable rate limiting. |
+| **`OVERRIDE (OV-04)` — R8.1, TLS** | The template's listener is plaintext and this surface ships no TLS setting. Recorded in the shape of the standard's §1.9 deviation note, with its argument and the options weighed. |
+| Twelve further rules | Conform as written, three of them as N/A-with-reason under the standard's own §1.8 discipline. The full table is in `#### Conformance to the org REST API Design Standard v2.0.0 (W2-REST)`. |
+
+**Moving a recommendation before acceptance is allowed**, and this revision says so
+plainly rather than recording the two moves as deviations: R77 has no owner acceptance
+bound to it, so revision 2 states the new, standard-conformant naming rule as the
+recommendation rather than shipping revision 1's rule with two exceptions attached.
+
+Revision history: **revision 1** (2026-09-18, sha256
+`b2b2e678a9866fd8f743d2431edcda2dc03a9e4ed03c9670457081360121b546`) — first synthesis
+from the single registered Opus report, the Codex leg deferred under `W1-CODEX3`; 239
+checks across `figures.sh`, `sources.sh` and `probes.sh`, 0 FAIL, 0 SKIP. **Revision 2**
+(2026-09-18, this file) — the W2-REST conformance pass above. Revision 1's four evidence
+scripts and six logs are carried **byte-identical and are not re-run**;
+`review/evidence/rest-conformance-r2.sh` is the only new check and
+`review/evidence/rest-conformance-r2.log` its log, and its group D pins that byte-identity
+by sha256.
 
 ## Decision
 
@@ -152,8 +193,10 @@ pub struct WebSettings {
     pub port: u16,
     pub graceful_shutdown: Duration,
     // log_level / log_format: named here, valued by R58
-    // cors_origins, rate_limit, idempotency_*, metrics_enabled, otel_enabled, root_path:
-    // named here, semantics owned by R69 and R72-R80
+    // cors_origins, rate_limit (the RSLBP_WEB_RATE_LIMIT_* family), idempotency_*,
+    // metrics_enabled, otel_enabled, root_path: named here, semantics owned by
+    // R69 and R72-R80. No field carries an API version: see Move 1 under
+    // "Conformance to the org REST API Design Standard".
 }
 
 impl WebSettings {
@@ -595,11 +638,17 @@ The **naming rule** and the **mechanism** are this item's for every knob:
 `<WEB_ENV_PREFIX><FIELD_IN_SCREAMING_SNAKE_CASE>` — `RSLBP_WEB_HOST`, `RSLBP_WEB_PORT`,
 `RSLBP_WEB_ROOT_PATH`, `RSLBP_WEB_LOG_LEVEL`, `RSLBP_WEB_LOG_FORMAT`,
 `RSLBP_WEB_CORS_ORIGINS`, `RSLBP_WEB_METRICS_ENABLED`, `RSLBP_WEB_OTEL_ENABLED`,
-`RSLBP_WEB_RATE_LIMIT`, `RSLBP_WEB_IDEMPOTENCY_TTL_SECONDS`,
-`RSLBP_WEB_IDEMPOTENCY_MAX_ENTRIES`, `RSLBP_WEB_GRACEFUL_SHUTDOWN_SECONDS`. That is the
-twelve-field set py declares at `web/settings.py` in pin `b08bccfb`, renamed by the rule;
-the field count is asserted in `review/evidence/sources.sh`. The **values and semantics**
-are not all this item's:
+`RSLBP_WEB_IDEMPOTENCY_TTL_SECONDS`, `RSLBP_WEB_IDEMPOTENCY_MAX_ENTRIES`,
+`RSLBP_WEB_GRACEFUL_SHUTDOWN_SECONDS`, plus the reserved family
+`RSLBP_WEB_RATE_LIMIT_*`. Those eleven names plus that family cover the twelve-field set
+py declares at `web/settings.py` in pin `b08bccfb`, renamed by the rule; py's field count
+is asserted in `review/evidence/sources.sh`. **The `WebSettings` field count is still
+twelve** — py's single `rate_limit` field becomes one typed field whose members R74 fixes,
+not several — so the hand-maintenance cost argued in `### Tradeoffs` stands as written.
+Two constraints the org REST API Design Standard puts on this rule, argued in full under
+`#### Conformance to the org REST API Design Standard v2.0.0 (W2-REST)`:
+the version marker is never an environment variable (Move 1), and
+no member's default may disable rate limiting (Move 2). The **values and semantics** are not all this item's:
 
 | Knob | Value decided here | Owner of the semantics |
 |---|---|---|
@@ -607,11 +656,11 @@ are not all this item's:
 | `GRACEFUL_SHUTDOWN_SECONDS` | **8**, not py's 10 — argued below | this item (the mechanism is R69's) |
 | `LOG_LEVEL`, `LOG_FORMAT` | **not decided** — named only | R58 (`logging-pipeline-contract`, registry value `—`, unpublished) |
 | `CORS_ORIGINS` | **not decided** — named only; its *encoding* is fixed below | R76 |
-| `RATE_LIMIT` | not decided | R74 |
+| `RATE_LIMIT_*` (the reserved family) | **not decided** — named only; R8.10's rate-limit axis needs at least a per-principal sustained rate, a burst, an unauthenticated per-IP rate and a stricter auth-endpoint rate, so the family has at least four members | R74 |
 | `IDEMPOTENCY_TTL_SECONDS`, `IDEMPOTENCY_MAX_ENTRIES` | not decided | R73 |
 | `METRICS_ENABLED` | not decided | R79 |
 | `OTEL_ENABLED` | not decided | R78 |
-| `ROOT_PATH` | not decided | R69 / R75 |
+| `ROOT_PATH` | **not decided as a value**; constrained here to a deployment mount prefix that is prepended to, and never replaces, the version segment (Move 1) | R69 / R75 |
 
 **The drain-deadline default is the one *value* this item owns, and it departs from py's
 on a platform datum R69 handed over.** R69 revision 10 records, verified at Google's own
@@ -662,10 +711,129 @@ would have to be revisited if a later item adds a free-text list. The principle 
 documented encoding, validated at boot — is preserved; only the encoding differs, and it
 differs on ecosystem-idiom ground.
 
+#### Conformance to the org REST API Design Standard v2.0.0 (W2-REST)
+
+**The frame, and it decides most of the rows below.** The standard contains the string
+"environment variable" **zero** times — asserted in `review/evidence/rest-conformance-r2.sh`
+against the pinned blob, beside nineteen positive quotations that show the search works.
+No rule in it names a setting, requires one, or turns on one. Every rule therefore reaches
+this item's surface in exactly one of three ways: a setting *selects* behaviour the rule
+governs (then the setting's shape and default must be able to express a conformant
+posture); a setting *could* select behaviour the rule fixes (then the naming rule must
+forbid it); or the rule governs something no setting touches (then this item conforms by
+having nothing to say, and owes a forward rule so a later item does not break it).
+
+Rules quoted at blob `71bd813c1cf61286586b4ee41ed83ff065e5c8d9`; the line number after
+each is asserted in `review/evidence/rest-conformance-r2.sh`.
+
+| Rule | Line | What it requires | This surface |
+|---|---|---|---|
+| `R1.5` | 210 | "Every API declares one **conformance tier** in its conformance note (§1.9)." | **CONFORMS.** The tier is a property of the artifact, declared in a note, not of a deployment. No `RSLBP_WEB_*` name selects it and none may; the declaration belongs to whichever item writes the conformance note (R69 or R71), not here. |
+| `R1.6` | 229, 237 | Capability rules are scoped by named switches — "The switch vocabulary: `webhooks` · `async-operations` · `bulk-operations` · `streaming`" — and "A declaration that a switch is off … MUST carry a stated reason". | **CONFORMS, with a forward rule.** All four switches are off for this template and the reason is the same one for each: this item names no webhook, async-operation, bulk-operation or streaming knob, and py's twelve-field object has none either, so the capabilities do not exist to be configured. They are **declared off with a stated reason** rather than left silent. Forward rule: **no environment variable may turn an applicability switch on**, because a switch whose state varies per deployment cannot be declared in a static conformance note. A later item adding one of those capabilities adds it as code, and only its *tunable values* come under this naming rule. |
+| `R1.7` | 271, 291 | "An API deviates from this standard only in writing… silent deviation from any rule strength is nonconformance regardless of the deviation's merits", with the note's deviation line shaped `- <rule ID> · <rule strength> · what differs · why · approver · date`. | **CONFORMS.** The one departure this item owns is written down below as `OVERRIDE (OV-04)` in that shape. Nothing else departs. |
+| `R7.1` | 1259 | "Every response MUST carry an explicit `Cache-Control` header — stating freshness, `no-cache`, or `no-store` per the R7.3 posture". | **CONFORMS.** No caching setting exists and the standard requires none; the header is emitted by the response layer R70 and R75 own. |
+| `R7.2` | 1271 | "Responses carrying user-specific or authenticated data MUST be marked `private` or `no-store` — a shared cache may otherwise serve one user's data to another." | **CONFORMS, with a forward rule.** A future `RSLBP_WEB_CACHE_*` knob **may never flip a resource from `private` or `no-store` to `public`**; it may only tune a `max-age` on a resource already documented as immutable or stale-tolerant. The rule names the hazard exactly — a deployment-tunable cache posture is how one operator's misconfiguration becomes a cross-user leak. |
+| `R7.3` | 1281 | "Within the mechanism above, the default posture is three-tier" — `private, no-cache` for authenticated or mutable resources, `no-store` reserved for genuinely sensitive payloads, `public` with `max-age` only where documented immutable. | **CONFORMS.** The posture is a per-resource property fixed in code, not a deployment knob; this item adds nothing and constrains any future knob as the row above says. |
+| `R8.1` | 1317 | "APIs MUST be served only over TLS 1.2 or higher, preferring 1.3; SSL 2/3 and TLS 1.0/1.1 MUST be rejected." | **`OVERRIDE (OV-04)`** — recorded below. The template's listener is plaintext and this surface ships no TLS setting. |
+| `R8.2` | 1323 | "Access tokens MUST NOT be accepted or emitted in URI query parameters." | **CONFORMS, by construction.** `WebSettings` declares no credential of any kind (R56 revision 2 owns the token chain), so no setting can place a token anywhere, least of all in a URI. The rule binds the request layer, and this surface cannot weaken it. |
+| `R8.5` | 1348 | "Credentials SHOULD be scoped and expiring; long-lived unscoped tokens SHOULD be avoided." | **CONFORMS as N/A-with-reason for this surface**, and the reason is the design rule rather than an absence: no credential is a field of `WebSettings`, so there is no credential lifetime for a web setting to govern. R56's `RSLBP_TOKEN` tier is where the rule binds. |
+| `R8.10` | 1387, 1397, 1398 | "An API MUST adopt each axis default unless a named trigger applies, and MUST record any flip in its conformance note", over five axes. The rate-limit axis default is "Multi-dimensional tiered posture, published: per-principal sustained + token-bucket burst … unauthenticated per-IP an order of magnitude lower; auth endpoints strictly stricter … failed-auth budget; concurrency separate". The replay-window axis default is "300 s past / 60 s future, asymmetric + mandatory dedup cache held at least the past window". | **MOVED for the rate-limit axis (Move 2); N/A-with-reason for the replay window; not a settings matter for the other three.** The rate-limit axis is the one axis whose numbers genuinely vary per deployment, and revision 1 reserved a single scalar `RSLBP_WEB_RATE_LIMIT` — py's name, py's `None` default — which cannot express a four-dimensional posture and whose inherited default is "off". Move 2 replaces it. The replay window governs *signature* replay (its triggers name NTP skew and RFC 9530 body binding); this template signs nothing and accepts nothing signed, which is the `webhooks`-off reason already given, so the axis has nothing to apply to. Sender-constrained tokens, token format and object-level authorization are code and note properties; **no deployment-profile selector belongs on this surface**, because R8.10 requires each flip to be *recorded in the conformance note*, and a profile chosen by an environment variable could not be. |
+| `R8.12` | 1422 | "Secrets, credentials, and PII MUST NOT appear in problem `detail`, in echoed request input, or in any other response content." | **CONFORMS, on two independent grounds.** First, no secret is a field of `WebSettings`, so the loader's deliberate echo of the offending value — `RSLBP_WEB_PORT: invalid value "eighty"` — can never carry one. Second, the settings failure **precedes the listener**: `from_env()` runs at the composition root before the router exists, so its message is a boot-time stderr envelope and never response content. AC11 makes the first ground checkable rather than merely intended. |
+| `R9.1` | 1435 | "An API MUST use one uniform version-marker placement: the major version in the path (`/v1`), never `/v1.0`; minor and patch versions never appear in URIs." | **MOVED (Move 1).** Revision 1 named `RSLBP_WEB_ROOT_PATH` and handed its semantics on with no constraint. A mount prefix that an operator may set freely can carry or overwrite the version segment, which would make the API's version a deployment property — the precise opposite of "one uniform version-marker placement", and it would move a segment R9.4 freezes. |
+| `R10.1` | 1546 | "Every `202 Accepted` MUST return an addressable operation resource with defined terminal states, an expiry, and a failure representation." | **N/A-with-reason.** Scoped by the `async-operations` switch (the standard says so at line 1541), which is off: no endpoint returns `202` and no knob exists to make one. |
+| `R10.6` | 1606 | "The provider MUST publish the acknowledgement timeout and the retry schedule." | **N/A-with-reason, with a forward rule.** Scoped by the `webhooks` switch, which is off. Forward rule: if webhooks are ever turned on, the acknowledgement timeout and any tunable part of the retry schedule are `RSLBP_WEB_*` names under this item's rule, and their defaults must satisfy the rule's "at least 72 hours" and "at least 30 days" floors. |
+| `R11.2` | 1686 | "An API MUST apply rate limits and communicate exhaustion via the published HTTP mechanism: `429 Too Many Requests` with `Retry-After`. This MUST is a deliberate tightening of RFC 6585 §4's MAY". | **MOVED (Move 2), and this rule is why the move is not optional.** py's `rate_limit: str | None = None` disables rate limiting by default. Porting that default would ship a template whose out-of-the-box posture violates a MUST, silently — exactly what `R1.7` calls nonconformance regardless of merit. |
+
+**Move 1 (R9.1) — the version marker is never a setting.** The naming rule gains two
+clauses, both of which this item owns outright because it owns the names and the parse:
+
+1. This item reserves **no** environment variable that carries, selects or overrides the
+   API version or its base path:
+   `RSLBP_WEB_API_VERSION`, `RSLBP_WEB_BASE_PATH` and every synonym are outside the surface.
+   The `/v1` segment is a compile-time constant in the route tree, where R9.4's frozen
+   surface can hold it. Put the other way round, and this is the whole of Move 1:
+   the version marker is never an environment variable.
+2. `RSLBP_WEB_ROOT_PATH` stays, with its py meaning — a mount prefix for a path-stripping
+   proxy — and is constrained so that it is prepended to, and
+   **never replaces the version segment**. A value whose own segments look like a version
+   marker (`/v1`, `/v2`, `/v1.0`) is a boot failure under `RSLB203`, for the same reason
+   the standard bans `/v1.0` outright: two version markers on one path is not one uniform
+   placement. AC12 makes this checkable.
+
+**Move 2 (R8.10 rate-limit axis, R11.2) — one scalar becomes a reserved family.**
+`RSLBP_WEB_RATE_LIMIT` is withdrawn as a reserved name. In its place this item reserves
+the prefix `RSLBP_WEB_RATE_LIMIT_*` and states three constraints, leaving every value and
+the exact membership to R74, which owns rate-limiting semantics and is being researched in
+parallel:
+
+1. The family has **at least four members**, because R8.10's axis default names at least
+   four dimensions — per-principal sustained, token-bucket burst, unauthenticated per-IP,
+   and a stricter auth-endpoint rate — and a single scalar cannot carry them.
+2. **No member's default may disable rate limiting.** R11.2 makes limits a MUST; py's
+   `None`-means-off default is not portable into a conformant template.
+3. The family is a naming reservation, not a schema: R74 fixes which members exist, their
+   units and their values, and R8.10's `[POLICY]` starting points ("≈100 rps/account,
+   25 rps/endpoint", "≤5/min per IP+account") are the figures it must argue from or flip
+   against a named trigger.
+
+This is a coupling statement to R74, not a decision for it. If R74 publishes a posture
+that needs a different member set, the family prefix still holds and only the membership
+moves.
+
+#### OVERRIDE (OV-04) — R8.1 (MUST), TLS termination is not a setting on this surface
+
+In the shape of the standard's §1.9 deviation note
+(`- <rule ID> · <rule strength> · what differs · why · approver · date`):
+
+> `R8.1` · MUST · The template's HTTP listener is plaintext, and this item's settings
+> surface ships no TLS configuration — no certificate path, no key path, no protocol
+> floor. TLS for a deployed instance is terminated upstream. · Because in-process TLS
+> would put private-key material on the one settings object this template keeps
+> credential-free, and the server stack that would terminate it is R69's, not this
+> item's. · approver: pending owner review · date: 2026-09-18
+
+**Argument:** R8.1 binds how an API is *served*, and the template as it ships does not
+serve it. R69 revision 10's accepted stack is `axum` 0.8.9 with its default features
+(`form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing`) on
+`tokio` 1.53.1 — no `rustls`, no `native-tls`, no `axum-server`. The owner-supplied
+reference architecture deploys behind Cloud Run, whose edge terminates TLS, and
+`target-os-matrix` is `ubuntu-latest, macos-latest`, CI runners that hold no certificate
+material. The conformant posture actually available to a *settings* item is not to add
+TLS but to make the plaintext listener unreachable unless an operator deliberately
+exposes it: `RSLBP_WEB_HOST` defaults to `127.0.0.1`, so the process answers nobody off
+the host until someone sets `0.0.0.0` — and that moment, which R51's Dockerfile makes
+explicit, is exactly when the operator takes on R8.1's duty at the edge. Recording this
+rather than passing over it is what `R1.7` requires: a deviation from a MUST makes the
+API nonconformant *unless* it is recorded, and silence would be nonconformance "regardless
+of the deviation's merits".
+
+**Options:**
+
+- **(a) Record the exception; keep the loopback default; document the duty beside
+  `RSLBP_WEB_HOST` — selected.** Costs nothing in dependencies, keeps the credential-free
+  settings object intact, and puts the obligation where the operator meets it. It leaves
+  the template unable to satisfy R8.1 by itself, which is the honest state of affairs and
+  is why this is an override rather than a conformance claim.
+- **(b) Terminate TLS in process**, adding `rustls` plus `RSLBP_WEB_TLS_CERT_FILE` and
+  `RSLBP_WEB_TLS_KEY_FILE` to this surface. **Rejected on three grounds:** it puts
+  private-key paths next to web knobs, which is the coupling R56 revision 2 and `R8.12`
+  exist to prevent; it adds a TLS stack to a dependency tree this item's whole
+  recommendation is about not growing; and the server stack is R69's owned value, so this
+  item cannot make that choice unilaterally.
+- **(c) Refuse the `0.0.0.0` bind altogether**, so the process can never be exposed
+  without an edge. **Rejected:** it would make R51's container image unusable, and R51
+  owns the Dockerfile.
+
+**Withdrawal condition, recorded so the override does not outlive its reason:** if R69
+later adopts an in-process TLS terminator, OV-04 is withdrawn and this item names the
+certificate and key settings under the same prefix rule — with `R8.12`'s redaction
+obligation applied to them from the first line. That is a re-verify trigger below.
+
 #### Observable acceptance criteria
 
-AC1 to AC5 were executed in this run; AC6 to AC10 are proposed for P03 and nothing here
-claims they have been run.
+AC1 to AC5 were executed in this run; AC6 to AC14 are proposed for P03 and nothing here
+claims they have been run. AC11 to AC14 are new in revision 2 and come from the
+conformance pass above.
 
 | # | Criterion | Status |
 |---|---|---|
@@ -680,6 +848,10 @@ claims they have been run.
 | AC8 | `RSLBP_WEB_GRACEFUL_SHUTDOWN_SECONDS` is honoured: a SIGTERM during an in-flight request drains, then the process exits `143` within the window | proposed (the drain mechanism is R69's; only the variable, its default and the budget reading are this item's) |
 | AC9 | The documented `RSLBP_WEB_*` table and the struct's field list cannot drift | proposed |
 | AC10 | With the `web` feature off, neither the settings type nor the environment read exists in the binary | proposed |
+| AC11 | No `RSLBP_WEB_*` value reaches any HTTP response, and `WebSettings` declares no field whose name matches a secret-shaped pattern (`*_TOKEN`, `*_SECRET`, `*_KEY`, `*_PASSWORD`) — the checkable form of `R8.12` | proposed (new in revision 2) |
+| AC12 | `RSLBP_WEB_ROOT_PATH=/v1` (and `/v2`, `/v1.0`) is a boot failure with `RSLB203`, while `RSLBP_WEB_ROOT_PATH=/api` is accepted and the served path is `/api/v1/...` — the checkable form of `R9.1` and Move 1 | proposed (new in revision 2) |
+| AC13 | No environment variable named by this template selects an applicability switch: `grep -riE 'RSLBP_WEB_(WEBHOOK|ASYNC|BULK|STREAM)' crates/ docs/ README.md` matches nothing — the checkable form of `R1.6`'s forward rule | proposed (new in revision 2) |
+| AC14 | With no `RSLBP_WEB_RATE_LIMIT_*` variable set, the service still applies R74's default limits and answers an exhausted caller with `429` and `Retry-After` — the checkable form of `R11.2` and Move 2's second constraint | proposed (new in revision 2; the limiter is R74's, the variable family and the no-disabling-default rule are this item's) |
 
 #### Reconciliation with the owner-supplied reference architecture
 
@@ -723,7 +895,7 @@ changes, in R69 revision 10's tree.
 | `Dockerfile` (R51) | sets `RSLBP_WEB_HOST=0.0.0.0` explicitly, because the default is loopback — the same note py carries at `settings.py`. |
 | `docs/port/COMMONALITY.md` | **untouched by this decision.** F324's row is the owner's to update when R77 publishes. |
 
-re-verify: when R69 republishes and `web-extra-surface`'s registry bytes move from `src/web/` to `crates/web` (the `assumes` line below must then be re-copied and this decision's paths re-checked against the published value), when R58 publishes `logging-pipeline-contract` and fixes the value sets for `RSLBP_WEB_LOG_LEVEL` and `RSLBP_WEB_LOG_FORMAT`, when R80 publishes and fixes a readiness-propagation pause that must be spent from the 8-second budget, when R76 publishes an origins encoding that a comma cannot survive or any later item adds a web knob whose value may contain a comma, when R67 revises `RSLB203` or the error envelope, when R54 and R56 publish so the namespace-disjointness claim can be checked against a published curated set rather than an accepted-but-unpublished one, when the owner revisits the gate-2 strict reading (which would readmit `envy` and `figment`), when `envy` or `figment` declares a `rust-version` in a new release, at the next `msrv-policy` floor advance past 1.96 (which neither `config`'s 1.85.0 nor `confique`'s 1.68.2 is near), or by 2027-03-18, whichever comes first
+re-verify: when the org REST API Design Standard moves off blob `71bd813c1cf61286586b4ee41ed83ff065e5c8d9` or amends any of R1.5, R1.6, R1.7, R7.1, R7.2, R7.3, R8.1, R8.2, R8.5, R8.10, R8.12, R9.1, R10.1, R10.6 or R11.2, when R74 publishes and fixes the membership and defaults of the `RSLBP_WEB_RATE_LIMIT_*` family, when R69 adopts an in-process TLS terminator (which withdraws `OVERRIDE (OV-04)` and brings certificate and key settings under this naming rule), when any later item turns an applicability switch on and so brings its published values under this naming rule, when R69 republishes and `web-extra-surface`'s registry bytes move from `src/web/` to `crates/web` (the `assumes` line below must then be re-copied and this decision's paths re-checked against the published value), when R58 publishes `logging-pipeline-contract` and fixes the value sets for `RSLBP_WEB_LOG_LEVEL` and `RSLBP_WEB_LOG_FORMAT`, when R80 publishes and fixes a readiness-propagation pause that must be spent from the 8-second budget, when R76 publishes an origins encoding that a comma cannot survive or any later item adds a web knob whose value may contain a comma, when R67 revises `RSLB203` or the error envelope, when R54 and R56 publish so the namespace-disjointness claim can be checked against a published curated set rather than an accepted-but-unpublished one, when the owner revisits the gate-2 strict reading (which would readmit `envy` and `figment`), when `envy` or `figment` declares a `rust-version` in a new release, at the next `msrv-policy` floor advance past 1.96 (which neither `config`'s 1.85.0 nor `confique`'s 1.68.2 is near), or by 2027-03-18, whichever comes first
 
 ## Parameters
 
@@ -802,11 +974,22 @@ repository or `target/` tree was created.
 `/Users/stevemorin/c/rs-launch-blueprint-p02-plan`. Each script also resolves its paths
 from its own location, so it runs from anywhere.
 
-| Script | Command | Log | Result |
+| Script | Revision | Log | Result |
 |---|---|---|---|
-| `review/evidence/figures.sh` | `bash research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/evidence/figures.sh` | `review/evidence/figures.log` | exit **0** |
-| `review/evidence/sources.sh` | `bash research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/evidence/sources.sh` | `review/evidence/sources.log` | exit **0** |
-| `review/evidence/probes.sh` | `bash research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/evidence/probes.sh` | `review/evidence/probes.log` | exit **0** |
+| `review/evidence/figures.sh` | 1, carried unchanged | `review/evidence/figures.log` | exit **0** |
+| `review/evidence/sources.sh` | 1, carried unchanged | `review/evidence/sources.log` | exit **0** |
+| `review/evidence/probes.sh` | 1, carried unchanged | `review/evidence/probes.log` | exit **0** |
+| `review/evidence/rest-conformance-r2.sh` | **2, new** | `review/evidence/rest-conformance-r2.log` | exit **0** |
+
+Each is run as `bash research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/evidence/<name>`.
+
+**Revision 1's evidence is carried, not re-run.** The three revision-1 scripts, the
+one-shot fetcher and all six revision-1 logs are byte-identical to the files accepted at
+revision 1's sha256 `b2b2e678a9866fd8f743d2431edcda2dc03a9e4ed03c9670457081360121b546`;
+group D of `rest-conformance-r2.sh` asserts each of those ten files by sha256, so a
+reader does not have to take the word "unchanged" on trust. Nothing in revision 2 changes
+a figure, a probe or a quotation that those scripts cover: the W2-REST pass adds a
+standard, not new measurements.
 
 `review/evidence/fetch-snapshots.sh` is **not** an evidence check and makes no
 assertions: it is the one-shot retriever that wrote `review/evidence/snapshots/` on
@@ -841,14 +1024,29 @@ which run produced each one.
   `unsafe` posture of eight crates, and each `- assumes` line against the live registry
   row.
 - **`probes.sh`** re-executes the six Rust probes described above.
+- **`rest-conformance-r2.sh`** (new in revision 2) asserts the owner ruling W2-REST in
+  `docs/port/OWNER-REVIEW.md`; the pinned blob's identity (3427 lines, `Version 2.0.0` at
+  line 3, and that commit `0850d43e45d919ef5e37f7174c4212b46013c49f` carries exactly this
+  blob as `rest-api-standard.md`); each of the nineteen rule quotations above **at its
+  exact line**; the finding that the standard contains "environment variable" zero times,
+  which is only readable as a finding because those nineteen positive quotations show the
+  search working; every conformance disposition, both moves and `OVERRIDE (OV-04)` in this
+  file; the ten revision-1 files by sha256; and the revision-2 document discipline,
+  including that `OV-04` is unused elsewhere while `OV-01`, `OV-02` and `OV-03` are taken —
+  the control that makes the next-free-number search mean something.
 
-**Counts, in place.** `figures.sh` **PASS=121 FAIL=0 SKIP=0**; `sources.sh` **PASS=84
-FAIL=0 SKIP=0**; `probes.sh` **PASS=34 FAIL=0 SKIP=0**. Total **239 PASS, 0 FAIL,
-0 SKIP**.
+**Counts, in place.** Revision 1, carried: `figures.sh` **PASS=121 FAIL=0 SKIP=0**;
+`sources.sh` **PASS=84 FAIL=0 SKIP=0**; `probes.sh` **PASS=34 FAIL=0 SKIP=0** — 239.
+Revision 2, new: `rest-conformance-r2.sh` **PASS=91 FAIL=0 SKIP=0**. Total across both
+revisions **330 PASS, 0 FAIL, 0 SKIP**.
 
-**Reproducibility, established rather than asserted.** Each script was re-run
-immediately after the run whose log is committed, and the second run's output was diffed
-against that log; the diffs are recorded verbatim in `review/evidence/rerun-diff.log`.
+**Reproducibility, established rather than asserted.** The three revision-1 scripts were
+re-run immediately after the run whose log is committed, and the second run's output was
+diffed against that log; the diffs are recorded verbatim in
+`review/evidence/rerun-diff.log`. `rest-conformance-r2.sh` was likewise re-run and diffed,
+and `review/evidence/rerun-diff-r2.log` records that diff; its only differing line is the
+script's own timestamp header, because every input it reads is a committed file or a git
+blob, with no counter and no network call anywhere in it.
 **Every `PASS` / `FAIL` / `SKIP` line is identical across the two runs**, which is
 asserted in that log by a second diff taken over those lines alone. Exactly three kinds
 of line vary, and this is the rule for comparing across a re-run:
@@ -865,15 +1063,24 @@ of line vary, and this is the rule for comparing across a re-run:
 Nothing else differs.
 
 **Rerun from a clean extraction.** `git archive 484fd2e | tar -x -C <tmpdir>` extracted
-commit `484fd2e`, the revision this paragraph was written against. The commit that
-records this paragraph differs from `484fd2e` only by this text, four further `file_has`
-lines added to `sources.sh`, and the regenerated logs. The extracted tree has no `.git`
-at all — tested with `-e`, not `-d`, because a worktree's `.git` is a *file* rather than
-a directory. All three scripts were re-run from that extraction and gave the same counts
-as in place at that commit: `figures.sh` **PASS=121 FAIL=0 SKIP=0**, `sources.sh`
-**PASS=80 FAIL=0 SKIP=0** — 84 after the four additions — and `probes.sh` **PASS=34
+commit `484fd2e`, the revision *that* paragraph was written against — a revision-1 commit,
+so `rest-conformance-r2.sh` did not yet exist in it. The extracted tree has no `.git` at
+all — tested with `-e`, not `-d`, because a worktree's `.git` is a *file* rather than a
+directory. All three revision-1 scripts were re-run from that extraction and gave the same
+counts as in place at that commit: `figures.sh` **PASS=121 FAIL=0 SKIP=0**, `sources.sh`
+**PASS=80 FAIL=0 SKIP=0** — 84 after four later additions — and `probes.sh` **PASS=34
 FAIL=0 SKIP=0**. The full output, with the extracted commit named in its header, is
-`review/evidence/archive-rerun.log`.
+`review/evidence/archive-rerun.log`, and it is carried byte-identical from revision 1.
+Revision 2 repeats the exercise for its own script:
+`review/evidence/archive-rerun-r2.log` records `git archive <tree> | tar -x` of the
+revision-2 tree as staged — which is this commit's tree except for that log file itself,
+since a log cannot carry the hash of the tree containing it — and
+`rest-conformance-r2.sh` re-run from the extraction, giving the same **PASS=91 FAIL=0
+SKIP=0**. The same log then exercises the one SKIP branch by re-running with `HOME`
+pointed at an empty directory: the standard's clone is outside this repository and an
+archive can never contain it, so group B must SKIP **by name**, and it does —
+**PASS=67 FAIL=0 SKIP=1**, the single SKIP standing for the group's 24 checks, 67 plus 24
+being the 91 above.
 
 **The SKIP branches, exercised rather than assumed.** That extraction SKIPped nothing,
 because every out-of-repository input — the org CLI Design Standard clone, the py and ts
@@ -902,6 +1109,15 @@ R68 decision. `bash scripts/check-research-tree.sh .` passes.
   over `std::env::vars_os` and `str::FromStr`, prefix `RSLBP_WEB_` derived by `const fn`
   from R57's `TOOL_NAME`, value threaded through the framework's own state mechanism;
   runner-up `config` 0.15.25 with default features off; `confique` third.
+- **The org REST API Design Standard v2.0.0 is a binding input that neither engine had.**
+  The single registered report was produced on 2026-09-18 before owner ruling W2-REST
+  landed, so `raw/opus.md` neither cites the standard nor reasons about it. Every claim in
+  `#### Conformance to the org REST API Design Standard v2.0.0 (W2-REST)`, both moves and
+  `OVERRIDE (OV-04)` are therefore the synthesizer's reading of the standard at its pinned
+  blob, not a synthesis of engine output. That is stated rather than blurred: a second
+  engine has reviewed none of it, and the nineteen rule quotations are asserted at their
+  lines precisely so a reader can check the reading against the text rather than against
+  an engine's summary.
 - codex — **absent.** The focused-tier Codex research leg is deferred by the controller
   under owner ruling **W1-CODEX3** of 2026-09-18 (the Codex account is at its usage
   limit), and the run manifest records `state: partial` with `required_engines:
@@ -997,3 +1213,14 @@ documented variable table and the struct's field list cannot drift); AC10 (with 
 feature off, neither the settings type nor the environment read exists in the binary);
 and, once R80 publishes, that the readiness-propagation pause and the drain together fit
 inside the 8-second budget rather than extending it.
+
+**Added by revision 2, from the W2-REST pass.** AC11 (no `RSLBP_WEB_*` value reaches a
+response and no field is secret-shaped — `R8.12`); AC12 (`RSLBP_WEB_ROOT_PATH` carrying a
+version-shaped segment is a boot failure while an ordinary prefix is accepted — `R9.1` and
+Move 1); AC13 (no template-named variable selects an applicability switch — `R1.6`); AC14
+(with no rate-limit variable set the service still limits and answers `429` with
+`Retry-After` — `R11.2` and Move 2). Two further things P03 inherits rather than checks:
+`OVERRIDE (OV-04)` needs an approver and a date before the conformance note can be
+written — the note itself is R69's or R71's artifact, not this item's — and the
+`RSLBP_WEB_RATE_LIMIT_*` family has no members until R74 publishes, so AC14 cannot run
+before it does.
