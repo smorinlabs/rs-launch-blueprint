@@ -276,7 +276,11 @@ standing.
 Two fix rounds are standard. Past revision 3 there are no granted rounds: the
 only exit is approve-with-repair (§7.5). An owner call past r3 approves repair
 wording, never a new round. Prior per-item grants (Q19, Q21) are grandfathered
-and completed; no new grants issue.
+and completed; no new grants issue. Standing exception (HR-B Q3, 2026-09-28):
+the required-next-rev label. When a packed-or-current revision carries
+BLOCKING findings that need worker reruns no memo can supply, S1 may route it
+to ONE labeled worker round without a per-item owner question (BLOCKING-only,
+ledger-recorded; further BLOCKING returns to the owner).
 
 ### 7.3 Audit shape
 
@@ -328,10 +332,11 @@ it.
 ### 7.7 Seat freeze and the no-repin rule
 
 The Q23 seat batch (2026-09-28) moved every unaccepted item to its pack seat
-(Codex empirical default), except R09, which packs with its filed claude
-empirical audit and freezes on acceptance. The accepted items with filed
-claude empirical audits (R11, R48, R55, R57, R62, R72) plus R13 (filed claude
-top-up) keep their seats frozen with their acceptances, because prerequisite
+(Codex empirical default), except items that pack with filed claude empirical
+audits, which keep claude and freeze on acceptance: R09 (staged), R10, R22,
+R54, R56 (dual-approved, batch 2). The accepted items with filed claude
+empirical audits (R11, R48, R55, R57, R62, R72) plus R13 (filed claude top-up)
+keep their seats frozen with their acceptances, because prerequisite
 revalidation re-checks recorded audit paths against current policy. No
 further seat changes without an owner call. Live-policy and input citations are point-in-time:
 drift never triggers a re-round or re-pin; disclose and pack (the
