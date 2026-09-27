@@ -3,16 +3,186 @@
   "approved_on": "2026-09-04",
   "pilot": "R38",
   "engine_overrides": {
+    "R02": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R03": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R05": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R24": [
+      "muse"
+    ],
+    "R51": [
+      "muse",
+      "opus"
+    ],
+    "R54": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R56": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R58": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R70": [
+      "muse",
+      "opus"
+    ],
     "R72": [
       "muse",
       "opus",
       "doxa"
     ],
+    "R73": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R74": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R76": [
+      "muse",
+      "opus"
+    ],
+    "R77": [
+      "muse",
+      "opus"
+    ],
+    "R79": [
+      "muse",
+      "opus"
+    ],
+    "R80": [
+      "muse",
+      "opus"
+    ],
+    "R83": [
+      "muse",
+      "opus"
+    ],
     "R84": [
       "muse",
       "opus",
       "doxa"
+    ],
+    "R86": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R08": [
+      "muse",
+      "opus"
+    ],
+    "R09": [
+      "muse",
+      "opus"
+    ],
+    "R12": [
+      "muse",
+      "opus"
+    ],
+    "R13": [
+      "muse",
+      "opus"
+    ],
+    "R14": [
+      "muse",
+      "opus"
+    ],
+    "R27": [
+      "muse",
+      "opus"
+    ],
+    "R28": [
+      "muse",
+      "opus"
+    ],
+    "R29": [
+      "muse",
+      "opus"
+    ],
+    "R30": [
+      "muse",
+      "opus"
+    ],
+    "R31": [
+      "muse",
+      "opus"
+    ],
+    "R32": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R35": [
+      "muse",
+      "opus"
+    ],
+    "R37": [
+      "muse",
+      "opus"
+    ],
+    "R39": [
+      "muse",
+      "opus"
+    ],
+    "R40": [
+      "muse",
+      "opus"
+    ],
+    "R59": [
+      "muse",
+      "opus"
+    ],
+    "R71": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R75": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R78": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R82": [
+      "muse",
+      "opus"
     ]
+  },
+  "empirical_auditor_overrides": {
+    "R11": "claude",
+    "R13": "claude",
+    "R48": "claude",
+    "R55": "claude",
+    "R57": "claude",
+    "R62": "claude",
+    "R72": "claude",
+    "R09": "claude"
   },
   "items": {
     "R01": {
@@ -28,7 +198,7 @@
     "R02": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -38,7 +208,7 @@
     "R03": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -57,7 +227,7 @@
     "R05": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -85,7 +255,7 @@
     "R08": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -94,7 +264,7 @@
     "R09": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -122,7 +292,7 @@
     "R12": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -131,7 +301,7 @@
     "R13": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -140,7 +310,7 @@
     "R14": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -233,7 +403,7 @@
     "R24": {
       "tier": "light",
       "engines": [
-        "codex"
+        "muse"
       ],
       "evidence_checks": [
         "terra"
@@ -262,7 +432,7 @@
     "R27": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -271,7 +441,7 @@
     "R28": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -280,7 +450,7 @@
     "R29": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -289,7 +459,7 @@
     "R30": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -298,7 +468,7 @@
     "R31": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -307,7 +477,7 @@
     "R32": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -335,7 +505,7 @@
     "R35": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -344,7 +514,7 @@
     "R37": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -363,7 +533,7 @@
     "R39": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -372,7 +542,7 @@
     "R40": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -476,7 +646,7 @@
     "R51": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -503,7 +673,7 @@
     "R54": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -522,7 +692,7 @@
     "R56": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -541,7 +711,7 @@
     "R58": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -551,7 +721,7 @@
     "R59": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -655,7 +825,7 @@
     "R70": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -664,7 +834,7 @@
     "R71": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -684,7 +854,7 @@
     "R73": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -694,7 +864,7 @@
     "R74": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -704,7 +874,7 @@
     "R75": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -714,7 +884,7 @@
     "R76": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -723,7 +893,7 @@
     "R77": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -732,7 +902,7 @@
     "R78": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -742,7 +912,7 @@
     "R79": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -751,7 +921,7 @@
     "R80": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -769,7 +939,7 @@
     "R82": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -778,7 +948,7 @@
     "R83": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -810,7 +980,7 @@
     "R86": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],

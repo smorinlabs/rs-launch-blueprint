@@ -32,6 +32,7 @@ ENGINE_SETS = {
 }
 KNOWN_ENGINES = {"codex", "opus", "doxa", "muse"}
 ENGINE_FAMILIES = {"codex": "openai", "opus": "anthropic", "muse": "meta"}
+EMPIRICAL_AUDITORS = {"codex": "openai", "claude": "anthropic"}
 CRATE_FIELDS = [
     "Landscape", "Principles and implementation", "Dominant choice",
     "Qualified shortlist", "Excluded by gate", "Up-and-comers",
@@ -373,6 +374,17 @@ def validate_execution_policy(root):
         for engine in _list_of_strings(engines, label, errors, False):
             if engine not in KNOWN_ENGINES:
                 errors.append("%s names unknown engine %r" % (label, engine))
+    auditor_overrides = data.get("empirical_auditor_overrides", {})
+    if not isinstance(auditor_overrides, dict):
+        errors.append("research/EXECUTION.json: empirical_auditor_overrides must be an object")
+        auditor_overrides = {}
+    for item, seat in sorted(auditor_overrides.items()):
+        label = "research/EXECUTION.json empirical_auditor_overrides.%s" % item
+        if item not in rows:
+            errors.append("%s names an item outside the index" % label)
+            continue
+        if seat not in EMPIRICAL_AUDITORS:
+            errors.append("%s names unknown empirical auditor %r" % (label, seat))
     missing = sorted(set(rows) - set(items))
     unknown = sorted(set(items) - set(rows))
     if missing:
@@ -687,6 +699,12 @@ def _validate_topic(root, item, checked, visiting):
         errors.append("%s synthesis family must be anthropic" % item)
     if synthesis and any(identity and synthesis["actor"] == identity.get("actor") for identity in producer_identities):
         errors.append("%s synthesis actor produced raw evidence" % item)
+    seat_overrides = policy_data.get("empirical_auditor_overrides") if isinstance(policy_data, dict) else None
+    if not isinstance(seat_overrides, dict):
+        seat_overrides = {}
+    empirical_seat = seat_overrides.get(item, "codex")
+    if empirical_seat not in EMPIRICAL_AUDITORS:
+        empirical_seat = "codex"
     audits = acceptance["audits"]
     if not isinstance(audits, list) or len(audits) != 2:
         errors.append("%s audits must contain exactly two revision-bound approve records" % item)
@@ -701,7 +719,7 @@ def _validate_topic(root, item, checked, visiting):
             errors.append("%s audits[%d] must be an approve empirical/judgment audit with no unresolved findings" % (item, number))
         if audit["decision_sha256"] != acceptance["decision_sha256"]:
             errors.append("%s audits[%d] is not bound to current DECISION.md" % (item, number))
-        expected_path = "%s/audit-%s.md" % (topic.relative_to(root), "codex" if audit["kind"] == "empirical" else "fable")
+        expected_path = "%s/audit-%s.md" % (topic.relative_to(root), empirical_seat if audit["kind"] == "empirical" else "fable")
         if audit["path"] != expected_path:
             errors.append("%s audits[%d] must hash %s" % (item, number, expected_path))
         _audit_text_accepts(root, audit["path"], audit, item, "%s audits[%d]" % (item, number), errors)
@@ -714,10 +732,14 @@ def _validate_topic(root, item, checked, visiting):
                 errors.append("%s audits[%d] actor is the synthesizer" % (item, number))
             if any(producer and identity["actor"] == producer.get("actor") for producer in producer_identities):
                 errors.append("%s audits[%d] actor produced evidence" % (item, number))
-            required_family = "openai" if audit["kind"] == "empirical" else "anthropic"
+            required_family = EMPIRICAL_AUDITORS[empirical_seat] if audit["kind"] == "empirical" else "anthropic"
             if identity["family"] != required_family:
-                errors.append("%s audits[%d] %s family must be %s" % (item, number, audit["kind"], required_family))
-    if len(auditor_families) == 2 and auditor_families[0] == auditor_families[1]:
+                memo = audit["kind"] == "judgment" and identity["actor"] == "s1-controller" and identity["family"] == "meta"
+                if not memo:
+                    errors.append("%s audits[%d] %s family must be %s" % (item, number, audit["kind"], required_family))
+            if identity["actor"] == "s1-controller" and (audit["kind"] != "judgment" or identity["family"] != "meta"):
+                errors.append("%s audits[%d] s1-controller may only file a meta-family judgment triage memo" % (item, number))
+    if len(auditor_families) == 2 and auditor_families[0] == auditor_families[1] and empirical_seat == "codex":
         errors.append("%s auditors must use different model families" % item)
     if len(auditor_actors) == 2 and auditor_actors[0] == auditor_actors[1]:
         errors.append("%s audits must use different actors" % item)
@@ -737,7 +759,7 @@ def _validate_topic(root, item, checked, visiting):
         if empirical["exit_code"] != 0 or not _is_int(empirical["exit_code"]):
             errors.append("%s empirical.exit_code must be integer 0" % item)
         identity = _identity(empirical["executed_by"], item + " empirical.executed_by", errors)
-        if identity and synthesis and identity["family"] == synthesis["family"]:
+        if identity and synthesis and identity["family"] == synthesis["family"] and empirical_seat == "codex":
             errors.append("%s empirical executor family must differ from synthesis family" % item)
         _artifact(root, {"path": empirical["output_log"], "sha256": empirical["output_sha256"], "identity": empirical["executed_by"]}, item + " empirical.output", errors)
         empirical_audit = next((audit for audit in audits if isinstance(audit, dict) and audit.get("kind") == "empirical"), None)

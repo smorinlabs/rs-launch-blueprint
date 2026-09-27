@@ -66,9 +66,17 @@ its tier, engines, evidence checks, and acceptance prerequisites under
 | Focused | 53 | Codex/Terra and Claude Opus research |
 | Deep | 25 | Codex/Terra, Claude Opus, and Doxa research |
 
-R38 is Focused but its first binding pilot requires all three engines. R72
-and R84 are Deep with Muse (Meta) substituted for Codex under the policy's
-`engine_overrides` pilot. Light items are R22, R23, R24, R41, R46 and R47.
+R38 is Focused but its first binding pilot requires all three engines. The
+policy's `engine_overrides` pilot substitutes Muse (Meta) for Codex on R72,
+R84, and the bulk set R02, R03, R05, R24, R51, R54, R56, R58, R70, R73, R74,
+R76, R77, R79, R80, R83 and R86. Owner decision Q9.B retired Codex from P02
+(legs Muse, synthesis/judgment/empirical Claude), partially reversed 2026-09-28
+(empirical seats back to Codex/Sol, 2+2 waves; synthesis/judgment stay Claude),
+and Q17.A (2026-09-27)
+extends the substitution to the research wave R08, R09, R12, R13, R14, R27,
+R28, R29, R30, R31, R32, R35, R37, R39, R40, R59, R71, R75, R78 and R82
+(muse+opus; plus doxa for Deep R32, R71, R75, R78). Light items are R22, R23,
+R24, R41, R46 and R47.
 The exact remaining allocation is in the policy. Every tier retains the
 complete answer fields, fitness gates,
 source dates, empirical checks, and dual audits. Light reduces initial engine
@@ -88,6 +96,14 @@ Record actor IDs, actual resolved models, and model families. Astra, Terra and
 Luna share the OpenAI family; a fresh context is independent work, not a new
 model family. Doxa's provider models must be recorded rather than described as
 one independent model. Embedded model labels do not establish CLI model IDs.
+
+An item listed in `empirical_auditor_overrides` runs its empirical audit on
+the named seat instead (currently only `claude`): the audit files as
+`audit-claude.md` with an anthropic identity, and the different-family rules
+are waived for that item only. This costs the cross-family check on the
+rerun — the same model family synthesizes and verifies — so it is a fallback
+for a paused provider, never a standing staffing, and every use is recorded
+in the ledger with its cause.
 
 At most four Claude calls may be active across research, synthesis and audit
 roles. This host also has four active agent seats including the controller.
@@ -236,3 +252,102 @@ relevant changes occur. Rerun the affected item through the same gates. Any
 changed decision hash invalidates consumers' recorded prerequisite evidence;
 revalidate or rerun them according to the changed assumption, even if the
 registered parameter value happens to remain the same.
+
+## 7. Round economy (owner decision Q23, 2026-09-28)
+
+Q23 adopts five round-economy measures and consolidates the round rules that
+previously lived in satellite briefs and the execution ledger. Nothing already
+filed is re-done: every measure migrates forward-only.
+
+### 7.1 Severity and the outcome bar
+
+Past revision 1, only BLOCKING findings cost a round, and BLOCKING means
+outcome-changing: the finding must tie to a conclusion that moves the
+recommendation, a load-bearing claim, or the evidence sufficiency for either.
+Re-pins, title baselines, live-policy citation drift, wording polish, and
+observations are recorded, never rounded. Audits judge true intent (does the
+recommendation hold?) over technicalities. Findings carry severity tags going
+forward so the §7.9 rates are countable, not sampled. This codifies the Q13.A
+directed scope, the r2+ BLOCKING-only rule, and the owner's program-purpose
+standing.
+
+### 7.2 Round cap with repair-only exit
+
+Two fix rounds are standard. Past revision 3 there are no granted rounds: the
+only exit is approve-with-repair (§7.5). An owner call past r3 approves repair
+wording, never a new round. Prior per-item grants (Q19, Q21) are grandfathered
+and completed; no new grants issue.
+
+### 7.3 Audit shape
+
+Revision 1 keeps the blind pair (empirical re-execution + judgment review).
+Past revision 1, the shape is one empirical re-run worker plus controller
+triage: the worker re-executes evidence and reports deltas honestly; the
+controller dispositions every finding against the §7.1 bar. The judgment seat
+is on-call (controller or owner escalation only), not standing. Directed
+verifier pairs are retired: prose-only repairs verify by coordinator line-check
+plus controller spot-read; evidence-touching repairs take exactly one
+independent verifier, seat matched to the repair. No finding is fixed silently;
+untouched observations ride the rev note or the pack record.
+
+### 7.4 Controller triage memo (judgment slot)
+
+Where no blind judgment audit files for the packed revision, the controller
+writes the judgment-side pack audit as a triage memo filed under the judgment
+seat name (`audit-fable.rN.md`). The memo carries actor `s1-controller`,
+model `muse-spark`, family `meta`, the packed `decision-sha256`,
+`verdict: approve`, `unresolved-findings: none`, and the per-finding
+dispositions as its analysis. Its header states it is a controller triage
+under Q23, not a blind run. It satisfies the §5 two-verdict acceptance rule
+and the validation's actor, family, and binding checks (the §2 role table's
+judgment row now reads "Fresh Claude Fable context, or controller triage memo
+under §7.4").
+
+### 7.5 Approve-with-repair and verdict transfer
+
+A packable revision may carry controller-authorized micro-repairs: exact
+find/replace clauses, applied by the controller (never the packer), with the
+pre-repair bytes snapshotted (`*-prerepair.md`) and the diff verified to
+contain only the enumerated clauses. Approvals transfer across such a diff:
+the controller re-binds each packed audit's `decision-sha256` to the repaired
+bytes and appends an adjudication appendix quoting the exact repair. The
+appendix, pre-repair snapshot, and ledger entry make the transfer checkable;
+the pack record stays self-documenting.
+
+### 7.6 Adjudication amendment (controller-only)
+
+Disputes, triaged findings, and verdict dispositions are resolved by
+controller amendment of the affected audit file: the dispute or finding is
+preserved verbatim inside a fenced block in an adjudication appendix (fenced
+content is invisible to field validation), the `verdict:` /
+`unresolved-findings:` lines are set to their disposed values, and the
+rationale is recorded. The ledger quotes every amendment. Satellites never
+touch verdicts. No finding is resolved by re-running a worker to rubber-stamp
+it.
+
+### 7.7 Seat freeze and the no-repin rule
+
+The Q23 seat batch (2026-09-28) moved every unaccepted item to its pack seat
+(Codex empirical default), except R09, which packs with its filed claude
+empirical audit and freezes on acceptance. The accepted items with filed
+claude empirical audits (R11, R48, R55, R57, R62, R72) plus R13 (filed claude
+top-up) keep their seats frozen with their acceptances, because prerequisite
+revalidation re-checks recorded audit paths against current policy. No
+further seat changes without an owner call. Live-policy and input citations are point-in-time:
+drift never triggers a re-round or re-pin; disclose and pack (the
+title-re-baseline practice, generalized).
+
+### 7.8 Pack fallback and ordering
+
+The stager packs in queue-file order; queue files may carry `land_before` /
+`land_after` constraints the stager must honor (cross-item check coupling).
+When the stager is down or the queue exceeds four, the controller packs
+directly; the split was workload distribution, not independence. Pack-time
+drift stages-and-reports for controller disposition; it never bounces an item
+for a re-round.
+
+### 7.9 Instrument panel
+
+Each wave records: audit precision (upheld BLOCKING / total findings),
+verifier yield (upheld disputes / verifiers run), recommendation-move rate per
+round, and pack-catch rate (true STAGED-FAILs / packs).
