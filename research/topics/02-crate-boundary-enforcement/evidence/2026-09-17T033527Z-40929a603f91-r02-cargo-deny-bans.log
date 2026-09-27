@@ -1,0 +1,137 @@
+
+=== C0 environment ===
+Darwin arm64
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+probe root: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r02-deny.YV944k (deleted on exit)
+
+=== 0 cargo-deny 0.20.2 aarch64-apple-darwin, verified against the release's own .sha256 asset ===
+published sha256: fe67d82a10d8597a3549364cb733a3f9cc1bfff9031b7ae46384a9f2a72090c3
+observed  sha256: fe67d82a10d8597a3549364cb733a3f9cc1bfff9031b7ae46384a9f2a72090c3
+PASS CD0a: the downloaded tarball matches the checksum EmbarkStudios published beside it == fe67d82a10d8597a3549364cb733a3f9cc1bfff9031b7ae46384a9f2a72090c3
+PASS CD0b: and that checksum is the one this decision pins == fe67d82a10d8597a3549364cb733a3f9cc1bfff9031b7ae46384a9f2a72090c3
+cargo-deny 0.20.2
+PASS CD0c: the binary runs and reports the pinned version
+
+=== 1 clean tree: cargo deny --all-features check bans ===
+bans ok
+exit status: 0
+PASS CD1a: a conforming workspace exits 0 == 0
+PASS CD1b: and says so
+
+=== 2 axum added to crates/core [dependencies] ===
+warning[unmatched-wrapper]: direct parent 'rs-launch-blueprint-core = 0.1.0' of banned crate 'axum = 0.8.9' was not marked as a wrapper
+  ┌─ /private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-deny.YV944k/ws/deny.toml:4:14
+  │
+4 │   { crate = "axum", wrappers = ["rs-launch-blueprint-web"], reason = "core and the CLI are framework-agnostic (F008)" },
+  │              ━━━━                                                     ────────────────────────────────────────────── reason
+  │              │                                                         
+  │              banned here
+  │
+  ├ axum v0.8.9
+    ├── rs-launch-blueprint-core v0.1.0
+    │   └── rs-launch-blueprint v0.1.0
+    └── rs-launch-blueprint-web v0.1.0
+        └── rs-launch-blueprint v0.1.0 (*)
+
+error[banned]: crate 'axum = 0.8.9' is explicitly banned
+  ┌─ /private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-deny.YV944k/ws/deny.toml:4:14
+  │
+4 │   { crate = "axum", wrappers = ["rs-launch-blueprint-web"], reason = "core and the CLI are framework-agnostic (F008)" },
+  │              ━━━━                                                     ────────────────────────────────────────────── reason
+  │              │                                                         
+  │              banned here
+  │
+  ├ axum v0.8.9 (*)
+
+bans FAILED
+exit status: 2
+PASS CD2a: the check fails == 2
+PASS CD2b: naming the offending member as an unmatched wrapper, and the ban that fired
+PASS CD2c: and the reason string reaches the diagnostic
+
+=== 3 axum added to crates/core [dev-dependencies] instead ===
+warning[unmatched-wrapper]: direct parent 'rs-launch-blueprint-core = 0.1.0' of banned crate 'axum = 0.8.9' was not marked as a wrapper
+  ┌─ /private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-deny.YV944k/ws/deny.toml:4:14
+  │
+4 │   { crate = "axum", wrappers = ["rs-launch-blueprint-web"], reason = "core and the CLI are framework-agnostic (F008)" },
+  │              ━━━━                                                     ────────────────────────────────────────────── reason
+  │              │                                                         
+  │              banned here
+  │
+  ├ axum v0.8.9
+    ├── (dev) rs-launch-blueprint-core v0.1.0
+    │   └── rs-launch-blueprint v0.1.0
+    └── rs-launch-blueprint-web v0.1.0
+        └── rs-launch-blueprint v0.1.0 (*)
+
+error[banned]: crate 'axum = 0.8.9' is explicitly banned
+  ┌─ /private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-deny.YV944k/ws/deny.toml:4:14
+  │
+4 │   { crate = "axum", wrappers = ["rs-launch-blueprint-web"], reason = "core and the CLI are framework-agnostic (F008)" },
+  │              ━━━━                                                     ────────────────────────────────────────────── reason
+  │              │                                                         
+  │              banned here
+  │
+  ├ axum v0.8.9 (*)
+
+bans FAILED
+exit status: 2
+PASS CD3a: ANSWERED: the default graph DOES include dev edges, so a dev-dependency back door also fails == 2
+PASS CD3b: with the ban firing
+
+=== 4 tokio banned with wrappers, on a CLEAN tree ===
+warning[unmatched-wrapper]: direct parent 'axum = 0.8.9' of banned crate 'tokio = 1.53.1' was not marked as a wrapper
+  ┌─ /private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-deny.YV944k/ws/deny.toml:4:14
+  │
+4 │   { crate = "tokio", wrappers = ["rs-launch-blueprint-web"], reason = "probe of the wrappers semantics" },
+  │              ━━━━━                                                     ─────────────────────────────── reason
+  │              │                                                          
+  │              banned here
+  │
+  ├ tokio v1.53.1
+    ├── axum v0.8.9
+    │   └── rs-launch-blueprint-web v0.1.0
+    │       └── rs-launch-blueprint v0.1.0
+    └── rs-launch-blueprint-web v0.1.0 (*)
+
+error[banned]: crate 'tokio = 1.53.1' is explicitly banned
+  ┌─ /private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r02-deny.YV944k/ws/deny.toml:4:14
+  │
+4 │   { crate = "tokio", wrappers = ["rs-launch-blueprint-web"], reason = "probe of the wrappers semantics" },
+  │              ━━━━━                                                     ─────────────────────────────── reason
+  │              │                                                          
+  │              banned here
+  │
+  ├ tokio v1.53.1 (*)
+
+bans FAILED
+exit status: 2
+PASS CD4a: CONFIRMED: a wrappers row for a crate that other crates also depend on directly fails a CLEAN tree == 2
+PASS CD4b: and the diagnostic shows axum as the second direct parent that makes it impossible
+
+=== 5 --all-features is a GLOBAL flag, and it decides whether the optional member is in the graph ===
+error: unexpected argument '--all-features' found
+
+  tip: to pass '--all-features' as a value, use '-- --all-features'
+
+Usage: cargo-deny check <WHICH>...
+
+For more information, try '--help'.
+exit status: 2
+PASS CD5a: 'cargo deny check bans --all-features' -- the form both the Opus and perplexity legs imply -- is rejected by the argument parser
+Unlicensed (3): rs-launch-blueprint@0.1.0, rs-launch-blueprint-cli@0.1.0, rs-launch-blueprint-core@0.1.0
+PASS CD5b: without --all-features the graph holds only the three non-optional packages
+PASS CD5c: the optional web member is NOT in the default graph, so a framework reachable only through it is invisible to a default-feature run (absent: rs-launch-blueprint-web@0.1.0)
+Unlicensed (6): axum@0.8.9, rs-launch-blueprint@0.1.0, rs-launch-blueprint-cli@0.1.0, rs-launch-blueprint-core@0.1.0, rs-launch-blueprint-web@0.1.0, tokio@1.53.1
+PASS CD5d: with the global flag the optional member and both frameworks enter the graph
+
+=== 6 wall clock of one bans pass ===
+elapsed wall clock for one "cargo deny --all-features check bans": 0.437 s
+SCOPE LIMIT: this is a 6-package, path-only, zero-registry workspace on macOS arm64.
+It is a FLOOR, not a figure for the real template, whose resolved graph will hold
+hundreds of crates. It establishes that the tool is not seconds-slow on a small
+graph; it does not establish the real cost, which P03 must measure on both runners.
+PASS CD6: one bans pass on this probe completed in 0.437 s, under the 10 s bound this check asserts
+
+=== SUMMARY ===
+CHECKS RUN: 17 FAILURES: 0 SKIPPED: 0

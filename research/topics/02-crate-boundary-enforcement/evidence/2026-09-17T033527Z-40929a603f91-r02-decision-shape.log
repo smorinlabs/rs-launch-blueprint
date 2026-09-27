@@ -1,0 +1,72 @@
+
+=== 0 inputs present ===
+present: research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md
+present: docs/port/PARAMETERS.md
+present: research/runs/R02/2026-09-17T033527Z-40929a603f91/inputs/prompt.md
+
+=== 1 required shape ===
+PASS S1a: title line == # 2026-09-17 — R02 — crate-boundary-enforcement (bundle, Deep) — decision (revision 1)
+## Decision
+## Parameters
+## Empirical check
+## Engines
+PASS S1b: the H2 set, in order, and nothing else == ## Decision|## Parameters|## Empirical check|## Engines|
+PASS S1c: the required H3 inside ## Decision == 1
+PASS S1d: no ## Supersedes (this is the first revision) == 0
+PASS S1e: exactly one re-verify: line == 1
+PASS S1f: gate 1 recorded as inapplicable with the owner ruling as its reason == 1
+
+=== 2 the OVERRIDE number ===
+PASS S2a: OV-03 is declared once as a heading == 1
+PASS S2b: no second override is declared == 0
+
+=== 3 the CONFLICT line ===
+PASS S3a: exactly one CONFLICT: line == 1
+PASS S3b: and it is R69's owned parameter == 1
+PASS S3c: the CONFLICT line sits inside ## Parameters, after the assumes list == 1
+
+=== 4 the ## Parameters grammar the packaging validator enforces ===
+expected (from the live registry):
+- assumes license = MIT OR Apache-2.0
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+actual (from DECISION.md):
+- assumes license = MIT OR Apache-2.0
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+PASS S4a: every assumes line is byte-identical to its registry row, and the set matches exactly
+PASS S4b: no owns line, because the prompt's - owns: line carries no parameter == 0
+PASS S4c: no assumes line carries a backtick, a citation or trailing commentary == 0
+
+=== 5 the prompt's couplings, which decide the parameter sets above ===
+PASS S5a: the prompt's - owns: line carries no parameter == 1
+PASS S5b: the prompt's - consumes: line carries no parameter == 1
+PASS S5c: control -- the prompt really does have a Couplings section, so the two zeros are not vacuous == 1
+
+=== 6 nothing was built, and no private address was written ===
+PASS S6a: no Rust or Cargo artifact anywhere in the run directory (P03 builds; this run scaffolds nothing) == 0
+PASS S6b: and no src/ or target/ directory either == 0
+PASS S6c: no personal address under review/ (by /usr/bin/grep -rqF over the whole directory, searching for an at-sign followed by the owner private domain assembled at run time)
+PASS S6d: no GitHub token-shaped string under review/
+
+=== 7 every evidence artifact this decision cites is present ===
+PASS S7-r02-workspace-probe.sh: present
+PASS S7-r02-workspace-probe.log: present
+PASS S7-r02-ecosystem-figures.sh: present
+PASS S7-r02-ecosystem-figures.log: present
+PASS S7-r02-cargo-deny-bans.sh: present
+PASS S7-r02-cargo-deny-bans.log: present
+PASS S7-r02-decision-shape.sh: present
+PASS S7-r02-workspace-probe.log: its own summary records zero failures -- CHECKS RUN: 26 FAILURES: 0
+PASS S7-r02-ecosystem-figures.log: its own summary records zero failures -- CHECKS RUN: 35 FAILURES: 0 SKIPPED: 0
+PASS S7-r02-cargo-deny-bans.log: its own summary records zero failures -- CHECKS RUN: 17 FAILURES: 0 SKIPPED: 0
+
+=== 8 every check label the decision cites resolves to a real PASS line ===
+labels cited by the decision: A B1 B2 B3 B4 C1 C2 C3 C4 C5 CD1a CD1b CD2a CD2c CD3a CD3b CD4a CD4b CD5a CD5b CD5c CD5d CD6 D1 D2 D3 E EF1a EF1h EF1l EF2a EF2d EF3-cargo-deny EF3-control EF4-cargo_metadata EF4-cargo-depgraph-check EF5b EF5c EF5d EF6a EF6c F G H S5a S5c S6a S6b S6c S6d S8a S8b 
+PASS S8a: cited labels that do not resolve to a PASS line (or, for this script's own, to a definition) == 0
+PASS S8b: the decision cites 52 distinct check labels, so the zero above is not a vacuous scan
+
+=== SUMMARY ===
+CHECKS RUN: 33 FAILURES: 0 SKIPPED: 0

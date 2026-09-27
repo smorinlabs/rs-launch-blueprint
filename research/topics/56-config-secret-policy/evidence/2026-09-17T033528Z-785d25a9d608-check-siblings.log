@@ -1,0 +1,43 @@
+date-utc: 2026-09-17T15:44:14Z
+working directory: the repository root (resolved from this script, not printed)
+X0-detail research/topics/67-error-and-exit-code-contract/DECISION.md sha256=16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497
+X0-detail research/topics/60-cli-parsing-framework/DECISION.md sha256=16d2db72028bc368e0f857e2a168d488d40dffdbea78b99b01519d02dd120651
+X0-detail research/topics/52-toml-crate/DECISION.md sha256=4287ea4daa3b13c4efc6d6229052123bf3ea16e0ebfd4a3f964aa29015ab86d8
+X0-detail research/topics/17-secret-scanning-ci-workflow/DECISION.md sha256=32b4a3904630f63a964baf5dc5904a0b156a578f180ae37b083a9291f7a69a83
+X0-detail research/runs/R53/2026-09-17T020714Z-d0b567b4b9f1/review/DECISION.md sha256=be59d65bfa7ee087766a315af09c0ba4c93a8fa211927091314c86222cbb9af9
+X0-detail research/runs/R55/2026-09-17T020714Z-62a04ad8fee1/review/DECISION.md sha256=5d358c1fda2a5ff2782b916f3ca81cf52bbbafd75748774b114345c72a6edd9b
+X0-detail research/runs/R57/2026-09-17T020714Z-8fdb5c2010e7/review/DECISION.md sha256=44e945045f0e2c964520918801f5c8f3921a3cfefc4ef5c72b0bc497038139ba
+X0-detail research/runs/R61/2026-09-17T020714Z-98ef5e1e7d37/review/DECISION.md sha256=3131e895187c096c8866f0f7b4a520549804cd67b32f848b6239cd652b636281
+PASS X1-RSLB401 — present in R67 (1 lines, binary /usr/bin/grep)
+PASS X1-RSLB402 — present in R67 (1 lines, binary /usr/bin/grep)
+PASS X1-RSLB101 — present in R67 (1 lines, binary /usr/bin/grep)
+PASS X1-RSLB204 — present in R67 (8 lines, binary /usr/bin/grep)
+PASS X1-RSLB205 — present in R67 (9 lines, binary /usr/bin/grep)
+PASS X2 RSLB204-text — R67 defines RSLB204 as "secret supplied through a prohibited channel → 2"
+PASS X3 RSLB401-text — R67 defines RSLB401 as "credentials absent → 4"
+PASS X4 R60-has-no---token — 0
+PASS X5 R67-has-no---token — 0
+PASS X6 R52-has-no---token — 0
+X7-detail R60 names clap 4.6.6
+PASS X8 R53-defers-token-field — R53 lists "Whether the schema carries a token field at all" as R56 (F239/F240), out of its own scope
+PASS X8b R53-declares-no-token-field — 0
+PASS X9 R55-unknown-key-warns — R55 (live revision printed below) carries "Unknown keys warn and never fail, in every layer"
+X10-detail R55 head: # 2026-09-17 — R55 — config-error-tolerance (bundle, Focused) — decision (revision 3)
+PASS X10 R55-is-a-revision-of-R55 — 1
+PASS X11 R57-state_dir-accessor — R57 exposes pub fn state_dir(&self) -> &Path on its template-owned Paths
+PASS X12 R57-etcetera — R57 resolves the roots over etcetera 0.11.0
+PASS X13 R61-inquire — R61 selects inquire 0.9.4 behind a template-owned Prompter trait
+PASS X14 R61-selects-no-password-prompt — 0
+PASS X15 R61-interactivity-gate — R61 gates interactivity on std::io::IsTerminal (3 lines, binary /usr/bin/grep)
+PASS X16 R17-only-verified — R17 ships TruffleHog with --only-verified, which passes anything it cannot live-verify
+PASS X17 R56-owns-nothing-in-index — 1
+PASS X18 registry-has-no-R56-row — 0
+PASS X19 prompt-owns-line-empty — 1
+PASS X20 prompt-consumes-R67 — 1
+PASS X21 no-codex-report — 0
+PASS X22 codex-exit — 1
+PASS X23 codex-refusal-recorded — raw/codex-transcript.txt records a usage-limit refusal, not an empty run
+PASS X26 W1-CODEX-direction — docs/planning/p02/owner-decisions.md:485 records the owner direction "Let's skip codex for now" (2026-09-16)
+PASS X24 opus-report-sha — c02aebdd90cb21ca36ce7626b27fba7ca03f0250d6b8501c1546cc3a85d93bef
+PASS X25 doxa-report-sha — a2d31b37e504b3a7146d421cf3abb649fc3ed00da5cd18ea48dafe674c9c24d6
+CHECK_FAILURES=0

@@ -1,0 +1,69 @@
+retrieved_at_utc 2026-09-27T01:57:16Z
+tools curl=8.7.1 jq=jq-1.8.2 gh=2.101.0
+FIGURE E01 crates.io/api/v1/crates/lefthook errors[0].detail = crate `lefthook` does not exist
+PASS E01 no lefthook crate on crates.io
+FIGURE E02 ubi max_stable_version=0.12.0 created_at=2026-08-31T03:45:16.743966Z bin_names=[] rust_version=1.88 recent_downloads=100400 downloads=327810
+PASS E02 crate ubi ships no executable
+PASS E02 ubi newest stable is 0.12.0 (R42's pin)
+FIGURE E02 ubi-cli max_stable_version=0.12.0 created_at=2026-08-31T03:45:18.849644Z bin_names=["ubi"] rust_version=none recent_downloads=117 downloads=14104
+PASS E03 crate ubi-cli ships the ubi executable
+PASS E02 ubi-cli newest stable is 0.12.0 (R42's pin)
+FIGURE E04 cargo-binstall max_stable_version=1.24.0 created_at=2026-09-26T12:38:43.071287Z rust_version=1.79.0 license=GPL-3.0-only recent_downloads=130014
+FIGURE E04 just max_stable_version=1.58.0 created_at=2026-08-03T20:29:15.411846Z rust_version=1.89.0 license=CC0-1.0 recent_downloads=543304
+FIGURE E05 evilmartians/lefthook stargazers_count=8856 archived=false pushed_at=2026-09-24T07:39:26Z license=MIT
+PASS E05 lefthook not archived
+FIGURE E06 v2.1.14 published_at=2026-09-14T10:25:06Z immutable=true assets=31
+PASS E06 v2.1.14 asset lefthook_2.1.14_MacOS_arm64 size=13728738
+PASS E06 v2.1.14 asset lefthook_2.1.14_MacOS_x86_64 size=14798224
+PASS E06 v2.1.14 asset lefthook_2.1.14_Linux_x86_64 size=14524578
+PASS E06 v2.1.14 asset lefthook_2.1.14_Linux_arm64 size=13435042
+PASS E06 v2.1.14 asset lefthook_checksums.txt size=2896
+PASS E06 v2.1.14 release immutable
+FIGURE E06 releases/latest tag_name=v2.1.14
+FIGURE E07 v2.1.8 published_at=2026-05-19T11:12:02Z macOS_assets=["lefthook_2.1.8_MacOS_arm64","lefthook_2.1.8_MacOS_arm64.gz","lefthook_2.1.8_MacOS_x86_64","lefthook_2.1.8_MacOS_x86_64.gz"]
+PASS E07 v2.1.8 ships macOS binaries
+FIGURE E08 lefthook open issues total_count=71
+SAMPLE state=all (10 most recently created issues, pull requests excluded)
+  #1548 created=2026-09-17T10:46:52Z state=open comments=0 closed_at=- state_reason=-
+  #1539 created=2026-09-13T15:35:33Z state=closed comments=0 closed_at=2026-09-14T09:38:34Z state_reason=completed
+  #1529 created=2026-09-04T19:07:38Z state=open comments=0 closed_at=- state_reason=-
+  #1528 created=2026-09-04T13:39:09Z state=closed comments=0 closed_at=2026-09-14T08:53:26Z state_reason=completed
+  #1518 created=2026-08-31T11:48:55Z state=open comments=0 closed_at=- state_reason=-
+  #1511 created=2026-08-29T15:52:28Z state=open comments=0 closed_at=- state_reason=-
+  #1507 created=2026-08-25T14:35:05Z state=closed comments=0 closed_at=2026-08-25T14:37:25Z state_reason=completed
+  #1497 created=2026-08-18T15:32:58Z state=closed comments=0 closed_at=2026-08-21T08:06:24Z state_reason=completed
+  #1496 created=2026-08-17T17:30:33Z state=closed comments=0 closed_at=2026-08-28T10:12:22Z state_reason=completed
+  #1493 created=2026-08-16T04:35:13Z state=open comments=0 closed_at=- state_reason=-
+SAMPLE state=open (10 most recently created issues, pull requests excluded)
+  #1548 created=2026-09-17T10:46:52Z state=open comments=0 closed_at=- state_reason=-
+  #1529 created=2026-09-04T19:07:38Z state=open comments=0 closed_at=- state_reason=-
+  #1518 created=2026-08-31T11:48:55Z state=open comments=0 closed_at=- state_reason=-
+  #1511 created=2026-08-29T15:52:28Z state=open comments=0 closed_at=- state_reason=-
+  #1493 created=2026-08-16T04:35:13Z state=open comments=0 closed_at=- state_reason=-
+  #1489 created=2026-08-12T21:25:57Z state=open comments=0 closed_at=- state_reason=-
+  #1482 created=2026-08-03T19:20:17Z state=open comments=1 closed_at=- state_reason=-
+  #1480 created=2026-08-01T03:49:44Z state=open comments=2 closed_at=- state_reason=-
+  #1473 created=2026-07-27T21:10:58Z state=open comments=1 closed_at=- state_reason=-
+  #1469 created=2026-07-25T11:18:38Z state=open comments=0 closed_at=- state_reason=-
+SAMPLE state=open, pull requests included (10 most recent entries of the issues endpoint)
+  #1554 created=2026-09-25T06:04:52Z is_pr=true comments=0
+  #1552 created=2026-09-23T12:31:18Z is_pr=true comments=1
+  #1549 created=2026-09-17T11:17:10Z is_pr=true comments=3
+  #1548 created=2026-09-17T10:46:52Z is_pr=false comments=0
+  #1546 created=2026-09-15T13:45:24Z is_pr=true comments=1
+  #1544 created=2026-09-14T07:39:07Z is_pr=true comments=1
+  #1541 created=2026-09-14T06:03:13Z is_pr=true comments=0
+  #1530 created=2026-09-06T02:43:06Z is_pr=true comments=1
+  #1529 created=2026-09-04T19:07:38Z is_pr=false comments=0
+  #1526 created=2026-09-01T06:06:25Z is_pr=true comments=2
+FIGURE E10 rustsec.org/packages/lefthook.html HTTP 404
+PASS E10 no RustSec page for lefthook
+FIGURE E10 rustsec.org/packages/ubi.html HTTP 404
+PASS E10 no RustSec page for ubi
+FIGURE E10 rustsec.org/packages/ubi-cli.html HTTP 404
+PASS E10 no RustSec page for ubi-cli
+FIGURE E10 rustsec.org/packages/cargo-binstall.html HTTP 404
+PASS E10 no RustSec page for cargo-binstall
+FIGURE E11 houseabsolute/ubi stargazers_count=595 archived=false pushed_at=2026-09-19T13:52:40Z
+FIGURE E11 rust-lang/rust releases/latest tag_name=1.98.1
+TOTAL pass=17 fail=0

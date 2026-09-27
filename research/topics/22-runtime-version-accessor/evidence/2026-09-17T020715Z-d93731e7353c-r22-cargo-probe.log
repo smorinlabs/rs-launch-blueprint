@@ -1,0 +1,36 @@
+=== R22 cargo/rustc probe ===
+run-started-utc: 2026-09-26T19:04:03Z
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+uname: Darwin arm64
+rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+cargo: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+
+scratch: (a fresh mktemp -d under $TMPDIR, removed on exit)
+
+PASS C1 -- env!("CARGO_PKG_VERSION") returns the [package] version field: got [0.1.0]
+PASS C1b -- the manifest version parsed out of Cargo.toml is non-empty [0.1.0]
+PASS C2a -- the manifest edit landed: got [9.8.7-rc.1]
+PASS C2b -- after recompiling, the accessor tracks the edited manifest version: got [9.8.7-rc.1]
+PASS C3a -- the pre-edit binary still reports its compiled-in version: got [0.1.0]
+PASS C3b -- the pre-edit binary and the post-edit binary disagree: [0.1.0] differs from [9.8.7-rc.1] as required
+PASS C4a -- the isolated directory holds no manifest and no rlib: got [0]
+PASS C4b -- the binary reports its version with no manifest or package metadata on disk: got [0.1.0]
+PASS C5a -- without --features web the accessor reads the manifest: got [1.2.3]
+PASS C5b -- building with and without --features web yields a byte-identical version: got [1.2.3]
+PASS C6a -- the accessor-equality test passes while the accessor is env!("CARGO_PKG_VERSION")
+PASS C6b -- cargo test exits non-zero once the accessor is a stale literal (status 101): [101] differs from [0] as required
+PASS C6c -- the failing test is named in cargo's output
+PASS C6d -- the failure report carries the drifted literal
+PASS C7a -- each crate's env! expands to its OWN package version, not the workspace's: got [lib=0.1.0 bin=0.2.0]
+PASS C7b -- a binary re-exporting another member's constant reports a different version: [0.2.0] differs from [0.1.0] as required
+PASS C8a -- option_env! of a variable unset at compile time expands to None: got [none]
+PASS C8b -- setting the variable at RUN time does not change the expansion; option_env! is compile-time: got [none]
+PASS C8c -- env! of a variable unset at compile time is a compile error (status 101): [101] differs from [0] as required
+PASS C8d -- the compiler names the missing environment variable
+PASS C9a -- Cargo rejects version = "v0.1.0" (status 101): [101] differs from [0] as required
+PASS C9b -- the rejection names the offending version string
+PASS C9c -- with version = "0.1.0" and nothing else changed the same build succeeds
+PASS C10 -- the probe created no nested git repository: got [0]
+
+CHECKS RUN: 24  PASS: 24  FAIL: 0  SKIP: 0
+RESULT: PASS

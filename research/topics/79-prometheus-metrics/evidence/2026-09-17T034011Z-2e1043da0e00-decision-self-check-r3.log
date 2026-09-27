@@ -1,0 +1,425 @@
+== environment (header: every line here differs between hosts and runs) ==
+volatile: date-utc 2026-09-27T07:12:24Z
+volatile: repository root resolved by walking up from the script path: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+volatile: context: a git worktree (.git is a FILE, which is why the test is -e and not -d)
+volatile: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+
+PASS  required input present: research/runs/R79/2026-09-17T034011Z-2e1043da0e00/review/DECISION.md
+PASS  required input present: research/runs/R79/2026-09-17T034011Z-2e1043da0e00/raw/opus.md
+PASS  required input present: research/runs/R79/2026-09-17T034011Z-2e1043da0e00/raw/muse.md
+PASS  required input present: docs/port/PARAMETERS.md
+PASS  required input present: research/CLAUDE.md
+
+== every revision-1 and revision-2 artifact, asserted against a literal sha256 ==
+PASS  review/evidence/cargo-probes.sh equals its pinned sha256 7b3f8c7a9bcf162f...
+PASS  review/evidence/cargo-probes.log equals its pinned sha256 3c774ff4709a0947...
+PASS  review/evidence/crate-sources.sh equals its pinned sha256 b37596e6b2b081a5...
+PASS  review/evidence/crate-sources.log equals its pinned sha256 b56b02d940d228b6...
+PASS  review/evidence/github-api.sh equals its pinned sha256 07996833b0966e2b...
+PASS  review/evidence/github-api.log equals its pinned sha256 63280348c28287f3...
+PASS  review/evidence/decision-self-check.sh equals its pinned sha256 78d65e0318d3ed52...
+PASS  review/evidence/decision-self-check.log equals its pinned sha256 660fc83c71092129...
+PASS  review/evidence/scrape-sample.txt equals its pinned sha256 46a110a43794c8c7...
+PASS  review/evidence/rest-conformance-r2.sh equals its pinned sha256 e5ce8bf322647a78...
+PASS  review/evidence/rest-conformance-r2.log equals its pinned sha256 3e837de6cc32700d...
+PASS  review/evidence/snapshots/rest-standard-rules.txt equals its pinned sha256 c25c0ac19c222cdd...
+PASS  review/evidence/snapshots/autometrics.registry.json equals its pinned sha256 ddd9e988bbf7b021...
+PASS  review/evidence/snapshots/axum-otel-metrics.registry.json equals its pinned sha256 d974c0e7e4c6acf7...
+PASS  review/evidence/snapshots/axum-prometheus.registry.json equals its pinned sha256 501143a79ec3f094...
+PASS  review/evidence/snapshots/measured.registry.json equals its pinned sha256 46ade5290641bacc...
+PASS  review/evidence/snapshots/metrics-exporter-prometheus.registry.json equals its pinned sha256 bccd6c8080202bd1...
+PASS  review/evidence/snapshots/metrics-rs__metrics.github.json equals its pinned sha256 27fa632b9a2d84db...
+PASS  review/evidence/snapshots/metrics.registry.json equals its pinned sha256 750927d9cfa76363...
+PASS  review/evidence/snapshots/open-telemetry__opentelemetry-rust.github.json equals its pinned sha256 52873505d32b07b7...
+PASS  review/evidence/snapshots/opentelemetry-prometheus.registry.json equals its pinned sha256 18d8c0392b37becd...
+PASS  review/evidence/snapshots/prometheus__client_rust.github.json equals its pinned sha256 e3b8788522d75a53...
+PASS  review/evidence/snapshots/prometheus-client.registry.json equals its pinned sha256 dfbbea245957ca01...
+PASS  review/evidence/snapshots/prometheus.registry.json equals its pinned sha256 25d16ea185e62ca0...
+PASS  review/evidence/snapshots/Ptrskay3__axum-prometheus.github.json equals its pinned sha256 9c1dfe74c86d31c9...
+PASS  review/evidence/snapshots/tikv__rust-prometheus.github.json equals its pinned sha256 6c4dec558d191fae...
+PASS  review/evidence/locks/baseA-default.lock equals its pinned sha256 3c96ae66083c0d32...
+PASS  review/evidence/locks/baseA-nodefault.lock equals its pinned sha256 94d63402f7cad6b7...
+PASS  review/evidence/locks/baseB.lock equals its pinned sha256 8db61dbf9da9e9a7...
+PASS  review/evidence/locks/baseC.lock equals its pinned sha256 bb5697e1bbf65fd9...
+PASS  review/R79-r2-snapshot.md equals its pinned sha256 1551c96d483f7be2...
+PASS  locks/ holds exactly the four revision-1 lockfiles and snapshots/ the fourteen JSON snapshots
+PASS  the decision's revision note names the revision-2 sha256 the snapshot is pinned at
+PASS  decision-self-check.sh still asserts revision 1's H1 and rest-conformance-r2.sh revision 2's: both unedited
+
+== the engine reports this decision synthesizes ==
+PASS  raw/opus.md matches its collected sha256 c1d02b81cd092988...
+PASS  raw/opus.md is byte-identical to its content-addressed twin
+PASS  raw/muse.md is the exact file this decision adjudicates (15529e48b13cf587...)
+PASS  ## Engines names both report hashes
+PASS  exactly two non-content-addressed engine reports are present: muse.md and opus.md
+PASS  validate_answer_text(raw/opus.md, "crate") returns no diagnostics
+PASS  validate_answer_text(raw/muse.md, "crate") returns no diagnostics
+
+== engine-substitution authority and input freshness (read-only) ==
+PASS  inputs/prompt.md, the live prompt and manifest input_hashes.prompt are one sha256 (206b3fad2f7d73ad...)
+PASS  the decision names that prompt sha256
+PASS  the run's prompt reads '- engines: muse, opus'
+PASS  manifest.json required_engines is [muse, opus]
+PASS  manifest.json records the codex-to-muse migration under owner decision Q5.A
+volatile: manifest.json operations.muse.state = submitting
+PASS  the Muse leg is not yet collected (submitting), and the decision records that registration gap
+PASS  research/EXECUTION.json engine_overrides.R79 is [muse, opus]
+PASS  RUNBOOK.md section 2 names R79 in the bulk substitution set and records Q17.A
+PASS  Q17.A's own list does not include R79, as the decision states
+
+== decision shape (revision 1's block, retargeted to revision 3) ==
+PASS  H1 is the date-first revision-3 form
+    135:## Decision
+    849:## Parameters
+    918:## Empirical check
+    1171:## Engines
+PASS  H2 sections are exactly Decision, Parameters, Empirical check, Engines, in order
+PASS  no '## Supersedes' section, as no revision has been published
+PASS  exactly one '### Principles and implementation' H3
+PASS  '### Principles and implementation' sits inside '## Decision' (line 215 < 849)
+PASS  exactly one line begins 're-verify:'
+PASS  the re-verify line is the final content line of '## Decision' (line 847)
+PASS  the re-verify line triggers on the standard's blob, the Muse leg's hash and the BASELINE-REVIEW ruling
+PASS  '## Decision' records that this is a proposal validated in the implementation phase
+PASS  a 'BASELINE-REVIEW: F326' line is raised (audit-fable F3)
+PASS  _validate_decision_text(DECISION.md, "R79") returns no diagnostics
+
+== fitness gate 1, under owner ruling 2026-09-12 (Q7.B) ==
+PASS  the exact gate-1 'inapplicable' string is recorded
+lines carrying a licence subject: 43
+PASS  no line asserts a gate-1 pass verdict anywhere in the decision
+PASS  the fixed 'license' parameter line survives the ruling, as it must
+
+== parameter lines, byte-compared with docs/port/PARAMETERS.md ==
+PASS  no '- owns' line, matching the prompt's empty '- owns:' coupling
+PASS  the assumed parameter set is exactly the four fixed parameters (the prompt's '- consumes:' line is empty)
+PASS  'msrv-policy' is byte-identical to its registry row (118 bytes)
+PASS  'msrv-policy' carries no backtick or inline citation
+PASS  'rust-edition' is byte-identical to its registry row (4 bytes)
+PASS  'rust-edition' carries no backtick or inline citation
+PASS  'target-os-matrix' is byte-identical to its registry row (27 bytes)
+PASS  'target-os-matrix' carries no backtick or inline citation
+PASS  'license' is byte-identical to its registry row (17 bytes)
+PASS  'license' carries no backtick or inline citation
+PASS  the decision uses the registry's own revision-9 web-extra-surface bytes: "otel = ["web", ...] for R78 and metrics = ["..."
+PASS  the decision uses the registry's own revision-9 web-extra-surface bytes: "tower 0.5.3 is a dev-dependency only..."
+PASS  the decision uses the registry's own revision-9 web-extra-surface bytes: "web = ["dep:axum", "dep:tokio"]..."
+PASS  the decision uses the registry's own revision-9 web-extra-surface bytes: "src/web/..."
+PASS  web-extra-surface is consumed in prose, not declared as an '- assumes' line
+PASS  the run's prerequisite pins R69 d4507f5b..., which is the published R69 decision at revision 9 (audit-fable F5)
+
+== the REST API Design Standard v2.0.0, at the pinned blob ==
+named by owner ruling W2-REST: commit 0850d43e45d919ef5e37f7174c4212b46013c49f, blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9
+blob read: 3427 lines, sha256 4d3ea4e898f79a358e16e8ddadcb9b4a5b3726032d1f36c00fb73311c4e79958
+PASS  the pinned blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9 exists in /Users/stevemorin/c/rest-standards and was read
+PASS  re-hashing the bytes reproduces the pinned blob id (content identity, not a filename)
+PASS  the pinned commit 0850d43e45d919ef5e37f7174c4212b46013c49f exists in /Users/stevemorin/c/rest-standards
+
+== every rule this decision quotes, asserted at its line in the blob ==
+PASS  R1.5 at :219 — "Every rule in this standard applies at every tier unless t"
+PASS  R1.6 at :233 — "MUST carry a stated reason in the conformance"
+PASS  R1.6 at :237 — "The switch vocabulary: `webhooks` · `async-operations` ·"
+PASS  R1.6 at :258 — "A switch never waives a guard."
+PASS  R1.7 at :271 — "No silent deviation."
+PASS  R1.7 at :275 — "silent deviation from any rule strength is nonconformance"
+PASS  R1.7 at :291 — "<rule ID> · <rule strength> · what differs · why · app"
+PASS  R1.8 at :312 — "A conforming API MUST NOT use a reserved"
+PASS  R1.9 at :319 — "a mutating request carrying the `dry_run` parameter"
+PASS  R2.1 at :443 — "An API MUST present a resource-oriented surface"
+PASS  R2.1 at :447 — "There is no RPC carve-out for any service class."
+PASS  R2.2 at :456 — "Collection resources MUST use plural nouns"
+PASS  R2.4 at :477 — "Path segments MUST use kebab-case"
+PASS  R2.5 at :488 — "MUST NOT reference more"
+PASS  R2.6 at :499 — "Canonical URIs have no trailing slash"
+PASS  R2.9 at :525 — "Path segments identify resources; query parameters modify "
+PASS  R2.10 at :533 — "Personally identifiable information MUST NOT appear in any"
+PASS  R2.11 at :542 — "A non-CRUD operation MUST use the sub-path verb form"
+PASS  R3.3 at :599 — "logging and metrics side effects do not violate safety."
+PASS  R3.10 at :693 — "A resource that supports conditional update MUST emit a st"
+PASS  R3.10 at :695 — "Exception:** resources never updated by clients."
+PASS  R4.1 at :742 — "Every API MUST publish an OpenAPI document as the contract"
+PASS  R4.3 at :762 — "Every JSON response body MUST have an object at the top le"
+PASS  R4.3 at :763 — "Exception:** non-JSON media types."
+PASS  R4.10 at :846 — "The default media type — served when a request carries n"
+PASS  R4.10 at :850 — "406 Not Acceptable"
+PASS  R4.11 at :856 — "Every response whose content was selected by a request hea"
+PASS  R4.11 at :858 — "Exception:** responses with no negotiation."
+PASS  R4.17 at :864 — "Where an API serves cross-origin browser clients"
+PASS  R7.1 at :1259 — "Every response MUST carry an explicit `Cache-Control` head"
+PASS  R7.3 at :1283 — "Authenticated or mutable resources default to"
+PASS  R7.3 at :1286 — "no-store` is reserved for genuinely sensitive payloads"
+PASS  R8.1 at :1317 — "APIs MUST be served only over TLS 1.2 or higher"
+PASS  R8.2 at :1323 — "Access tokens MUST NOT be accepted or emitted in URI query"
+PASS  R8.6 at :1356 — "Every request MUST be authorized against the specific obje"
+PASS  R8.12 at :1422 — "Secrets, credentials, and PII MUST NOT appear in problem"
+PASS  R9.1 at :1435 — "An API MUST use one uniform version-marker placement"
+PASS  R11.7 at :1752 — "Every response, including errors, MUST carry the `request-"
+PASS  R11.8 at :1759 — "W3C Trace Context `traceparent` MUST be propagated"
+PASS  R13.3 at :1935 — "`stream` is a reserved request-modifier name"
+PASS  R13.3 at :1938 — "MUST reject the request with `400`"
+PASS  R4.10 at :2218 — "R4.10's default clause carries no BCP 14 keyword"
+PASS  AppB at :2799 — "Attempt conformance first."
+PASS  AppB at :2805 — "requirement-strength rules go to the standard's owner"
+PASS  the committed snapshot of the quoted rule lines is byte-identical to the blob
+
+== the rule text, as this decision quotes it, printed from the snapshot ==
+      | R1.5   :219   Every rule in this standard applies at every tier unless the rule itself
+      | R1.6   :233   rules as not applicable — MUST carry a stated reason in the conformance
+      | R1.6   :237   The switch vocabulary: `webhooks` · `async-operations` · `bulk-operations` ·
+      | R1.6   :258   **A switch never waives a guard.** A rule whose whole purpose is to define
+      | R1.7   :271   **R1.7 — No silent deviation.** An API deviates from this standard only in
+      | R1.7   :275   conformance note; silent deviation from any rule strength is nonconformance
+      | R1.7   :291   - <rule ID> · <rule strength> · what differs · why · approver · date
+      | R1.8   :312   **R1.8 — Reservation discipline.** A conforming API MUST NOT use a reserved
+      | R1.9   :319   a mutating request carrying the `dry_run` parameter — with any value — to
+      | R2.1   :443   **R2.1** An API MUST present a resource-oriented surface: noun resources,
+      | R2.1   :447   method overlay. There is no RPC carve-out for any service class.
+      | R2.2   :456   **R2.2** Collection resources MUST use plural nouns (`/customers`,
+      | R2.4   :477   **R2.4** Path segments MUST use kebab-case (`/sales-order-items`), pattern
+      | R2.5   :488   parent. One sub-resource level is the norm; a path MUST NOT reference more
+      | R2.6   :499   **R2.6** Canonical URIs have no trailing slash. A trailing slash MUST NOT
+      | R2.9   :525   **R2.9** Path segments identify resources; query parameters modify the
+      | R2.10  :533   **R2.10** Personally identifiable information MUST NOT appear in any URI —
+      | R2.11  :542   **R2.11** A non-CRUD operation MUST use the sub-path verb form
+      | R3.3   :599   logging and metrics side effects do not violate safety.
+      | R3.10  :693   **R3.10** A resource that supports conditional update MUST emit a strong
+      | R3.10  :695   `If-Match`). **Exception:** resources never updated by clients.
+      | R4.1   :742   **R4.1** Every API MUST publish an OpenAPI document as the contract source
+      | R4.3   :762   **R4.3** Every JSON response body MUST have an object at the top level —
+      | R4.3   :763   never a bare array. **Exception:** non-JSON media types.
+      | R4.10  :846   **R4.10** The default media type — served when a request carries no
+      | R4.10  :850   the endpoint supports SHOULD receive `406 Not Acceptable` rather than a
+      | R4.11  :856   **R4.11** Every response whose content was selected by a request header
+      | R4.11  :858   **Exception:** responses with no negotiation.
+      | R4.17  :864   **R4.17** Where an API serves cross-origin browser clients, every
+      | R7.1   :1259  **R7.1** Every response MUST carry an explicit `Cache-Control` header —
+      | R7.3   :1283  1. Authenticated or mutable resources default to
+      | R7.3   :1286  2. `no-store` is reserved for genuinely sensitive payloads. Blanket
+      | R8.1   :1317  **R8.1** APIs MUST be served only over TLS 1.2 or higher, preferring 1.3;
+      | R8.2   :1323  **R8.2** Access tokens MUST NOT be accepted or emitted in URI query
+      | R8.6   :1356  **R8.6** Every request MUST be authorized against the specific object,
+      | R8.12  :1422  **R8.12** Secrets, credentials, and PII MUST NOT appear in problem
+      | R9.1   :1435  **R9.1** An API MUST use one uniform version-marker placement: the major
+      | R11.7  :1752  **R11.7** Every response, including errors, MUST carry the `request-id`
+      | R11.8  :1759  **R11.8** W3C Trace Context `traceparent` MUST be propagated;
+      | R13.3  :1935  **R13.3** `stream` is a reserved request-modifier name (§1.10) meaning
+      | R13.3  :1938  member, with any value — MUST reject the request with `400`, and MUST NOT
+      | R4.10  :2218  
+      | AppB   :2799  1. **Attempt conformance first.** The process exists for genuine
+      | AppB   :2805     requirement-strength rules go to the standard's owner, because they
+
+== the scope finding: the standard has no vocabulary for an operational endpoint ==
+PASS  the word 'Prometheus' is absent from all 3427 lines of the standard
+PASS  the word 'telemetry' is absent from all 3427 lines of the standard
+PASS  the word 'scrape' is absent from all 3427 lines of the standard
+PASS  the word 'exposition' is absent from all 3427 lines of the standard
+PASS  the word 'healthz' is absent from all 3427 lines of the standard
+PASS  the word 'readyz' is absent from all 3427 lines of the standard
+PASS  the word 'liveness' is absent from all 3427 lines of the standard
+PASS  the word 'readiness' is absent from all 3427 lines of the standard
+PASS  the word 'monitoring' is absent from all 3427 lines of the standard
+PASS  the word 'instrumentation' is absent from all 3427 lines of the standard
+      | occurrences of the stem "metric": 3 (lines below)
+      | 599:logging and metrics side effects do not violate safety.
+      | 1398:| Replay window | 300 s past / 60 s future, asymmetric + mandatory dedup cache held at least the past window; NTP required; the window alone is never sufficient. Does not reopen the ratified webhook tolerance convention (R12.8) | Interactive high-value signing → 30–60 s; server-provided nonces remove skew; unmanaged clocks or store-and-forward → up to 15 min, never without dedup; signature omits body → add RFC 9530 binding |
+      | 1637:5. Any asymmetric-signature requirement routes to the RFC 9421 branch:
+PASS  the only rule-bearing use of 'metrics' is R3.3's safety exception at :599
+PASS  the applicability-switch vocabulary is still the closed four-name set (no operational switch)
+
+== the decision's own conformance claims ==
+volatile: DECISION.md sha256 942ea9d2ce7dfefd1657eb261340c287d4b18437428ebc9ae78d76c35363bee1
+PASS  R2.4 — the path segment 'metrics' satisfies the standard's kebab-case pattern
+PASS  R2.5 — /metrics references 1 resource segment(s), within the ceiling of three
+PASS  R1.8 — 'metrics' collides with none of the eight reserved action verbs
+PASS  R7.1/R7.3 — the decision names the explicit Cache-Control value the handler sets
+PASS  R13.3 — the decision quotes the stream rejection guard it now implements
+PASS  R13.3 — the decision names the reserved modifier the handler rejects
+PASS  R11.7 — the decision names the correlation header /metrics must carry
+PASS  R11.8 — the decision names the trace header that must be propagated
+PASS  OV-07(a) — the decision names the exposition media type it serves instead of JSON
+PASS  the controller-allocated OV-07 is recorded as an override
+PASS  OV-07's first departure is labelled
+PASS  OV-07's second departure is labelled
+PASS  each override carries an **Argument:**
+PASS  each override carries an **Options:**
+PASS  the decision names the owner ruling that occasioned this revision
+PASS  the decision pins the standard's blob id
+PASS  the decision pins the standard's commit
+PASS  exactly one OVERRIDE heading, and it carries the controller-allocated OV-07
+PASS  the conformance table points at both departures of OV-07 from their own rule rows
+PASS  no OVERRIDE heading carries a number other than the allocated OV-07
+PASS  a §1.9-shaped deviation row is recorded for R4.10
+PASS  a §1.9-shaped deviation row is recorded for R8.6
+-- the OV allocation search, re-executed --
+      | census computed over the markdown corpus; listing withheld because it varies
+      | with other agents uncommitted work. The assertions below are what is claimed.
+PASS  the controller-allocated OV-07 is claimed by no other item
+PASS  the controller's allocation table still reads 'OV-07 R79'
+      | ledger: 1073:OV-07 R79
+      | ledger: 1074:OV-07 R79
+-- the owner ruling is where this decision cites it --
+PASS  W2-REST is at docs/port/OWNER-REVIEW.md:187, the line this decision cites
+PASS  the owner ruling itself names the blob this script reads
+
+== every measured figure the decision quotes, cross-checked with its own log ==
+-- revision-1 figures the decision quotes as history, against revision 1's logs --
+PASS  revision 1 stripped binary, --features off (decision '1,307,968' = cargo-probes.log '1307968')
+PASS  revision 1 stripped binary, --features metrics (decision '1,686,016' = cargo-probes.log '1686016')
+PASS  revision 1 binary delta (decision '378,048' = cargo-probes.log '378048')
+PASS  revision 1 advisory-database size (decision '1,251' = cargo-probes.log '1251')
+PASS  metrics reverse dependencies as retrieved 2026-09-18 (decision '1,199' = crate-sources.log '1199')
+PASS  exporter reverse dependencies as retrieved 2026-09-18 (decision '460' = crate-sources.log '460')
+PASS  metrics 90-day downloads as retrieved 2026-09-18 (decision '20,185,758' = crate-sources.log '20185758')
+PASS  metrics all-time downloads as retrieved 2026-09-18 (decision '108,173,967' = crate-sources.log '108173967')
+PASS  exporter 90-day downloads as retrieved 2026-09-18 (decision '13,007,165' = crate-sources.log '13007165')
+PASS  exporter all-time downloads as retrieved 2026-09-18 (decision '47,578,577' = crate-sources.log '47578577')
+PASS  github-api.log: metrics-rs/metrics search total 51, repository object 83] -- as the decision states
+PASS  github-api-r3.log: metrics-rs/metrics search total 51, repository object 84] -- as the decision states
+-- revision-3 figures, against the revision-3 logs --
+PASS  revision 3 stripped binary, --features web (decision '1,307,936' = cargo-probes-r3.log '1307936')
+PASS  revision 3 stripped binary, --features metrics (decision '1,702,752' = cargo-probes-r3.log '1702752')
+PASS  revision 3 binary delta (decision '394,816' = cargo-probes-r3.log '394816')
+PASS  revision 3 advisory-database size (volatile) (decision '1,271' = cargo-probes-r3.log '1271')
+PASS  metrics reverse dependencies on the revision-3 rerun (decision '1,220' = crate-sources-r3.log '1220')
+PASS  exporter reverse dependencies on the revision-3 rerun (decision '465' = crate-sources-r3.log '465')
+PASS  cargo-probes-r3.log PASS 'E2 crate count with default-features = false (= 37)' is what the decision states
+PASS  cargo-probes-r3.log PASS 'E2 crate count with the exporter defaults on (= 81)' is what the decision states
+PASS  cargo-probes-r3.log PASS 'E3 crate count with --features web (= 51)' is what the decision states
+PASS  cargo-probes-r3.log PASS 'E3 crate count with --features metrics (= 79)' is what the decision states
+PASS  cargo-probes-r3.log PASS 'runner-up crate count (= 82)' is what the decision states
+PASS  cargo-probes-r3.log PASS 'E4 every crate of the E4 graph was found in cargo metadata at its exact version' is what the decision states
+PASS  cargo-probes-r3.log PASS 'E4 highest declared rust-version in the graph (1.85.0)' is what the decision states
+PASS  cargo-probes-r3.log PASS 'E6 _count of the templated route is 51' is what the decision states
+PASS  cargo-probes-r3.log PASS 'E6 the unmatched counter reads 1' is what the decision states
+PASS  cargo-probes-r3.log PASS 'E8 captured a full scrape from the acceptance test (41 lines)' is what the decision states
+PASS  cargo-probes-r3.log PASS 'E3 the metrics delta is within +/-10% of revision 1's +378048 B' is what the decision states
+PASS  cargo-probes-r3.log carries: packages in locks-r3/baseB-msrv.lock : 119
+PASS  cargo-probes-r3.log carries: UNDECLARED 12 packages in the graph declare no rust-version
+PASS  cargo-probes-r3.log carries: Locking 118 packages to latest Rust 1.96 compatible versions
+PASS  cargo-probes-r3.log carries: added by metrics           : 28
+PASS  cargo-probes-r3.log carries: Scanning Cargo.lock for vulnerabilities (119 crate dependencies)
+PASS  cargo-probes-r3.log carries: resolved: metrics-util v0.20.4
+PASS  the decision states: the lock holds 119 packages
+PASS  the decision states: **12** crates in that graph declare none
+PASS  the decision states: `Locking 118 packages to latest Rust 1.96 compatible versions`
+PASS  the decision states: (**+28**
+PASS  the corrected unsafe figure is recorded in the decision: 27 in `src/cow.rs`
+PASS  the corrected unsafe figure is recorded in the decision: 5 in `src/recorder/cell.rs`
+PASS  the corrected unsafe figure is recorded in the decision: 3 in `src/recorder/mod.rs`
+PASS  the corrected unsafe figures are backed by crate-sources.log
+PASS  the corrected unsafe figures are backed by crate-sources-r3.log
+
+== every script count the decision's table states, against the log's own summary ==
+PASS  cargo-probes-r3.log summary is 54/0/0
+PASS  the decision cites cargo-probes-r3.log with that count
+PASS  cargo-probes-r3.run2.log summary is 54/0/0
+PASS  the decision cites cargo-probes-r3.run2.log with that count
+PASS  crate-sources-r3.log summary is 66/0/0
+PASS  the decision cites crate-sources-r3.log with that count
+PASS  github-api-r3.log summary is 5/0/0
+PASS  the decision cites github-api-r3.log with that count
+PASS  rustsec-method-r3.log summary is 9/0/0
+PASS  the decision cites rustsec-method-r3.log with that count
+PASS  cargo-probes.log summary is 34/0/0
+PASS  the decision cites cargo-probes.log with that count
+PASS  crate-sources.log summary is 66/0/0
+PASS  the decision cites crate-sources.log with that count
+PASS  github-api.log summary is 5/0/0
+PASS  the decision cites github-api.log with that count
+PASS  decision-self-check.log summary is 70/0/0
+PASS  the decision cites decision-self-check.log with that count
+PASS  rest-conformance-r2.log summary is 122/0/0
+PASS  the decision cites rest-conformance-r2.log with that count
+PASS  the table row is present: `./cargo-probes-r3.sh` | 54 | 0 | 0 | `review/evidence/cargo...
+PASS  the table row is present: `env -u CARGO_TARGET_DIR ./cargo-probes-r3.sh` | 54 | 0 | 0 ...
+PASS  the table row is present: `./crate-sources.sh` | 66 | 0 | 0 | `review/evidence/crate-s...
+PASS  the table row is present: `./github-api.sh` | 5 | 0 | 0 | `review/evidence/github-api-...
+PASS  the table row is present: `./rustsec-method-r3.sh` | 9 | 0 | 0 | `review/evidence/rust...
+PASS  outside volatile: lines the two probe runs differ only in the created/reused lock line
+PASS  one probe run had CARGO_TARGET_DIR set and the other had it unset (audit-claude EA-1)
+
+== the module the decision quotes, and the behaviour the probes executed ==
+PASS  the first rust block in the decision is byte-identical to r3-obs-metrics.rs
+PASS  cargo-probes-r3.log compiled and tested exactly this module (62730cbf64f50664...)
+PASS  the composition-root snippet the decision shows is the probe's own build_router branch
+PASS  cargo-probes-r3.log records: R7.1/R7.3 Cache-Control: private, no-cache and the exposition Content-Type on a 200 with no Accept
+PASS  cargo-probes-r3.log records: OV-07(a) Accept: application/json still gets 200 and the exposition format, never 406
+PASS  cargo-probes-r3.log records: R13.3 GET /metrics?stream=1 answers 400, still carrying Cache-Control
+PASS  cargo-probes-r3.log records: R13.3 GET /metrics?stream answers 400, still carrying Cache-Control
+PASS  cargo-probes-r3.log records: R13.3 GET /metrics?a=1&stream= answers 400, still carrying Cache-Control
+PASS  cargo-probes-r3.log records: R13.3 GET /metrics?stream=false answers 400, still carrying Cache-Control
+PASS  cargo-probes-r3.log records: R13.3 the guard matches the parameter name exactly (streaming=1 is 200)
+PASS  cargo-probes-r3.log records: F1 with the setting false, /metrics is not registered
+PASS  cargo-probes-r3.log records: F1 with the setting false, the business routes still serve
+PASS  cargo-probes-r3.log records: F1 with the setting false, no global recorder was installed
+PASS  cargo-probes-r3.log records: F3 under R69's registered value, --features web without metrics answers 404 at /metrics
+PASS  cargo-probes-r3.log records: E1 cargo check --features web (metrics off) compiled
+PASS  cargo-probes-r3.log records: E1 cargo check with no feature compiled (the library without the web tree)
+PASS  cargo-probes-r3.log records: E8 promtool check metrics accepted the exposition text
+PASS  cargo-probes-r3.log records: E8 the Prometheus 3.14.0 tarball matches the release's own sha256sums.txt
+PASS  the exposition text promtool parsed is committed at scrape-sample-r3.txt (41 lines)
+PASS  revision 1's promtool parse and its capture scrape-sample.txt are still on disk
+PASS  E4's own lock snapshot locks-r3/baseB-msrv.lock is committed beside the probes
+PASS  rustsec-method-r3.log settles Engines item vii: RustSec package pages are live
+
+== every cross-item and source line citation the decision makes ==
+PASS  F326 is at COMMONALITY.md:330 (docs/port/COMMONALITY.md:330)
+PASS  F303 is at COMMONALITY.md:307 (docs/port/COMMONALITY.md:307)
+PASS  W2-REST heading is at OWNER-REVIEW.md:187 (docs/port/OWNER-REVIEW.md:187)
+PASS  the W2-REST enumeration that omits R79 is at OWNER-REVIEW.md:198 (docs/port/OWNER-REVIEW.md:198)
+PASS  OWNER-REVIEW.md:198 still does not name R79
+PASS  the OV collision and central-allocation entry is at execution-ledger.md:1073 (docs/planning/p02/execution-ledger.md:1073)
+PASS  the allocation table at execution-ledger.md:1073 reserves OV-07 for R79 (docs/planning/p02/execution-ledger.md:1073)
+PASS  the corrected allocation at execution-ledger.md:1074 leaves OV-07 with R79 (docs/planning/p02/execution-ledger.md:1074)
+PASS  the correction at execution-ledger.md:1074 moves R73 and R74, as the decision states (docs/planning/p02/execution-ledger.md:1074)
+PASS  the owner reference's C10 section is at line 110 (research/runs/R79/2026-09-17T034011Z-2e1043da0e00/inputs/owner-reference-axum-companion-stack-2026-09-16.md:110)
+PASS  the owner reference's C10 metrics clause is in the paragraph at line 111 (research/runs/R79/2026-09-17T034011Z-2e1043da0e00/inputs/owner-reference-axum-companion-stack-2026-09-16.md:111)
+PASS  the owner reference's C10 logs/traces row is at line 68 (research/runs/R79/2026-09-17T034011Z-2e1043da0e00/inputs/owner-reference-axum-companion-stack-2026-09-16.md:68)
+PASS  the owner reference's C10 error-reporting row is at line 69 (research/runs/R79/2026-09-17T034011Z-2e1043da0e00/inputs/owner-reference-axum-companion-stack-2026-09-16.md:69)
+PASS  R69 revision 10's owns line is at :1791 (research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:1791)
+PASS  R69 revision 10's substitution table starts at :54 (research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:54)
+PASS  R69 revision 10's substitution table ends at :61 (research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md:61)
+PASS  R80's raw report: the second listener at :166, 'No position' at :357, the merge at :1030-:1034, ops.rs at :1084-:1089
+PASS  R77 revision 3 at 1e3cdb5b carries RSLBP_WEB_METRICS_ENABLED at :663 and the deferral row at :684
+PASS  R77's working-tree decision still names RSLBP_WEB_METRICS_ENABLED and defers its semantics to R79
+volatile: R77 working tree: (revision 4); the variable at :758, the deferral row at :789
+PASS  scripts/research_validation.py carries the name the decision cites: `_validate_decision_text`
+PASS  scripts/research_validation.py carries the name the decision cites: `validate_answer_text(text, "crate")`
+PASS  scripts/research_validation.py carries the name the decision cites: `expected_assumptions = expected_fixed | expected_consumed`
+PASS  scripts/research_validation.py carries the name the decision cites: "DECISION.md current assumed parameter set does not match fixed and co
+PASS  the decision cites scripts/research_validation.py by name only (audit-fable F7)
+PASS  py at b08bccfb: settings.py:38 carries 'ENV_PREFIX: str = f"{APP_NAME.upper()}_WEB_"'
+PASS  py at b08bccfb: settings.py:44 carries 'env_prefix=ENV_PREFIX'
+PASS  py at b08bccfb: settings.py:63 carries '#: Expose Prometheus RED metrics at /metrics (WEB-11).'
+PASS  py at b08bccfb: settings.py:64 carries 'metrics_enabled: bool = True'
+PASS  py at b08bccfb: app.py:148 carries 'if settings.metrics_enabled:'
+PASS  py at b08bccfb: app.py:149 carries 'instrument_metrics(app)'
+PASS  py at b08bccfb: paths.py:58 carries 'APP_NAME = "plbp"'
+PASS  py at b08bccfb: telemetry.py:47 carries 'excluded_handlers=["/metrics", "/healthz", "/readyz"],'
+PASS  py at b08bccfb: telemetry.py:48 carries 'include_in_schema=False'
+PASS  py at b08bccfb: pyproject.toml:56 carries 'web = ['
+PASS  py at b08bccfb: pyproject.toml:62 carries 'prometheus-fastapi-instrumentator>=7.0.0'
+PASS  py at b08bccfb: pyproject.toml:64 carries 'otel = ['
+
+== hygiene ==
+PASS  no email address in the decision or any evidence script
+PASS  no token-shaped bytes in the decision, the scripts or the logs
+PASS  crate-sources.sh identifies itself with the repository URL, not a person
+PASS  cargo-probes-r3.sh identifies itself with the repository URL, not a person
+PASS  rustsec-method-r3.sh identifies itself with the repository URL, not a person
+PASS  no target/ tree and no nested repository under review/evidence/
+-- every evidence script ends in a counted summary and a non-zero exit on FAIL --
+PASS  cargo-probes-r3.sh sets 'set -euo pipefail' and prints a counted summary
+PASS  cargo-probes.sh sets 'set -euo pipefail' and prints a counted summary
+PASS  crate-sources.sh sets 'set -euo pipefail' and prints a counted summary
+PASS  decision-self-check-r3.sh sets 'set -euo pipefail' and prints a counted summary
+PASS  decision-self-check.sh sets 'set -euo pipefail' and prints a counted summary
+PASS  github-api.sh sets 'set -euo pipefail' and prints a counted summary
+PASS  rest-conformance-r2.sh sets 'set -euo pipefail' and prints a counted summary
+PASS  rustsec-method-r3.sh sets 'set -euo pipefail' and prints a counted summary
+volatile: shellcheck version: 0.11.0
+PASS  every evidence script, revisions 1 to 3, is shellcheck-clean
+PASS  research/CLAUDE.md row R79 is 'prometheus-metrics', kind 'crate'
+
+== summary ==
+PASS=316 FAIL=0 SKIP=0 TOTAL=316

@@ -1,0 +1,13 @@
+# R77 revision 3 — immediate rerun of ov-allocation-r3.sh, diffed against the committed log
+# produced 2026-09-19T01:40:31Z
+# Every input is a committed file or a git blob: no counter, no network call.
+# The only line permitted to differ is the script's own timestamp header.
+
+=== rerun exit=0 ===
+--- diff committed-log vs rerun (whole file) ---
+1c1
+< # R77 revision 3 — OVERRIDE-number allocation — 2026-09-19T01:39:40Z
+---
+> # R77 revision 3 — OVERRIDE-number allocation — 2026-09-19T01:40:31Z
+--- diff over PASS/FAIL/SKIP lines only ---
+(every PASS/FAIL/SKIP line identical)

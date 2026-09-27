@@ -1,0 +1,270 @@
+== environment ==
+grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+uname: Darwin arm64
+date-utc: 2026-09-18T22:48:05Z
+network reachable: 1
+scratch: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//rslb-r79-sources.aUIsiz
+
+== crates.io registry figures (endpoint: GET https://crates.io/api/v1/crates/<name>) ==
+   rule: num / created_at / rust_version / license must equal the snapshot byte-for-byte;
+         the all-time downloads counter must be >= the snapshot; recent_downloads is a
+         rolling 90-day window that legitimately falls, so it is printed, never asserted.
+
+      | metrics                      recent=20185758    all=108173967    newest=0.24.6    created=2026-05-13T17:50:59.032914Z rust_version=1.71.1 license=MIT
+      | metrics                      90-day window moved by +0 since the snapshot (printed, not asserted)
+SNAPCMP metrics: identity fields byte-equal to snapshot; all-time downloads not below snapshot
+PASS  crates.io figures for metrics agree with the recorded snapshot
+      | metrics-exporter-prometheus  recent=13007165    all=47578577     newest=0.18.3    created=2026-04-30T13:36:08.766993Z rust_version=1.71.1 license=MIT AND Apache-2.0
+      | metrics-exporter-prometheus  90-day window moved by +0 since the snapshot (printed, not asserted)
+SNAPCMP metrics-exporter-prometheus: identity fields byte-equal to snapshot; all-time downloads not below snapshot
+PASS  crates.io figures for metrics-exporter-prometheus agree with the recorded snapshot
+      | axum-prometheus              recent=1388212     all=5658682      newest=0.10.1    created=2026-07-31T07:08:44.037441Z rust_version=1.75 license=MIT
+      | axum-prometheus              90-day window moved by +0 since the snapshot (printed, not asserted)
+SNAPCMP axum-prometheus: identity fields byte-equal to snapshot; all-time downloads not below snapshot
+PASS  crates.io figures for axum-prometheus agree with the recorded snapshot
+      | prometheus                   recent=24842546    all=145764833    newest=0.14.0    created=2025-03-27T08:38:33.984372Z rust_version=1.81 license=Apache-2.0
+      | prometheus                   90-day window moved by +0 since the snapshot (printed, not asserted)
+SNAPCMP prometheus: identity fields byte-equal to snapshot; all-time downloads not below snapshot
+PASS  crates.io figures for prometheus agree with the recorded snapshot
+      | prometheus-client            recent=9695759     all=43412696     newest=0.25.1    created=2026-09-01T16:58:53.769209Z rust_version=None license=Apache-2.0 OR MIT
+      | prometheus-client            90-day window moved by +0 since the snapshot (printed, not asserted)
+SNAPCMP prometheus-client: identity fields byte-equal to snapshot; all-time downloads not below snapshot
+PASS  crates.io figures for prometheus-client agree with the recorded snapshot
+      | opentelemetry-prometheus     recent=2518260     all=14203757     newest=0.33.0    created=2026-09-18T17:05:48.260801Z rust_version=1.81.0 license=Apache-2.0
+      | opentelemetry-prometheus     90-day window moved by +0 since the snapshot (printed, not asserted)
+SNAPCMP opentelemetry-prometheus: identity fields byte-equal to snapshot; all-time downloads not below snapshot
+PASS  crates.io figures for opentelemetry-prometheus agree with the recorded snapshot
+      | autometrics                  recent=544649      all=4320846      newest=3.0.0     created=2025-09-18T14:51:24.902681Z rust_version=None license=MIT OR Apache-2.0
+      | autometrics                  90-day window moved by +0 since the snapshot (printed, not asserted)
+SNAPCMP autometrics: identity fields byte-equal to snapshot; all-time downloads not below snapshot
+PASS  crates.io figures for autometrics agree with the recorded snapshot
+      | measured                     recent=488311      all=2082387      newest=0.0.25    created=2026-04-14T09:31:53.937100Z rust_version=1.88 license=MIT OR Apache-2.0
+      | measured                     90-day window moved by +0 since the snapshot (printed, not asserted)
+SNAPCMP measured: identity fields byte-equal to snapshot; all-time downloads not below snapshot
+PASS  crates.io figures for measured agree with the recorded snapshot
+      | axum-otel-metrics            recent=189163      all=403360       newest=0.14.1    created=2026-07-11T16:49:41.839789Z rust_version=None license=MIT
+      | axum-otel-metrics            90-day window moved by +0 since the snapshot (printed, not asserted)
+SNAPCMP axum-otel-metrics: identity fields byte-equal to snapshot; all-time downloads not below snapshot
+PASS  crates.io figures for axum-otel-metrics agree with the recorded snapshot
+
+== crates.io reverse-dependency totals (GET .../reverse_dependencies?per_page=30, meta.total) ==
+      | metrics                        reverse dependencies: 1199
+PASS  metrics has a four-figure-order reverse-dependency set (1199)
+      | metrics-exporter-prometheus    reverse dependencies: 460
+PASS  metrics-exporter-prometheus has a four-figure-order reverse-dependency set (460)
+
+== metrics 0.24.6 (published tarball) ==
+tarball metrics-0.24.6.crate                     sha256 89550ee9f79e88fef3119de263694973a8adb26c21d75322164fb8c493039fe2
+PASS  metrics declares a rust-version (gate 2 evidence)
+      | 5:rust-version = { workspace = true }
+PASS  metrics declares no [features] table (gate 5: no default features, no runtime coupling)
+PASS  metrics declares no tokio dependency
+      -- occurrences of the token 'unsafe' per file, metrics 0.24.6 src/ --
+      | 27  metrics-0.24.6/src/cow.rs
+      | 5  metrics-0.24.6/src/recorder/cell.rs
+      | 3  metrics-0.24.6/src/recorder/mod.rs
+      | total across src/: 35 ; in src/cow.rs alone: 27
+PASS  metrics: unsafe is NOT confined to src/cow.rs -- the report's confinement claim is refuted at source
+PASS  metrics carries unsafe outside src/cow.rs, in src/recorder/cell.rs
+      | 42:                unsafe {
+      | 62:            unsafe { self.recorder.get().read() }
+      | 67:// SAFETY: We can only mutate through `set`, which is protected by the `state` and unsafe
+      | 69:unsafe impl Send for RecorderOnceCell {}
+      | 70:unsafe impl Sync for RecorderOnceCell {}
+PASS  metrics carries unsafe outside src/cow.rs, in src/recorder/mod.rs
+      | 146:        let recorder_ptr = unsafe {
+      | 154:        let recorder_ptr = unsafe { NonNull::new_unchecked(recorder_ptr) };
+      | 234:            unsafe { f(recorder.as_ref()) }
+
+== metrics-exporter-prometheus 0.18.3 (published tarball) ==
+tarball metrics-exporter-prometheus-0.18.3.crate sha256 1db0d8f1fc9e62caebd0319e11eaec5822b0186c171568f0480b46a0137f9108
+PASS  exporter default features are http-listener and push-gateway (the line the recommendation turns off)
+      | 19:default = ["http-listener", "push-gateway"]
+PASS  exporter documents the caller-owned upkeep contract in src/lib.rs
+      | 110://! [`run_upkeep`][PrometheusHandle::run_upkeep] method at a regular interval.
+PASS  exporter names install_recorder/build_recorder in the same upkeep paragraph
+      | 66://! let handle = builder.install_recorder().expect("failed to install recorder");
+      | 80://! let recorder = builder.build_recorder();
+      | 108://! [`PrometheusBuilder::build_recorder`] or [`PrometheusBuilder::install_recorder`], this upkeep task is _not_ spawned
+      | line 456: pub fn install(self) -> Result<(), BuildError> { -- compilation #[cfg(...)] present: True
+      |   443:     #[cfg(any(
+      |   444:         feature = "http-listener",
+      |   445:         feature = "push-gateway",
+      |   446:         feature = "push-gateway-no-tls-provider"
+      |   447:     ))]
+      |   451:             feature = "http-listener",
+      |   452:             feature = "push-gateway",
+      |   453:             feature = "push-gateway-no-tls-provider"
+      | line 545: pub fn build(mut self) -> Result<(PrometheusRecorder, ExporterFuture), BuildError> { -- compilation #[cfg(...)] present: True
+      |   531:     #[cfg(any(
+      |   532:         feature = "http-listener",
+      |   533:         feature = "push-gateway",
+      |   534:         feature = "push-gateway-no-tls-provider"
+      |   535:     ))]
+      |   539:             feature = "http-listener",
+      |   540:             feature = "push-gateway",
+      |   541:             feature = "push-gateway-no-tls-provider"
+PASS  exporter gates install() and build() behind a real multi-line #[cfg(any(feature = "http-listener", ...))]
+PASS  install_recorder is declared
+      | 506:    pub fn install_recorder(self) -> Result<PrometheusHandle, BuildError> {
+PASS  build_recorder is declared
+      | 605:    pub fn build_recorder(self) -> PrometheusRecorder {
+      | line 506: pub fn install_recorder(self) -> Result<PrometheusHandle, BuildError> {  preceding #[cfg(...) attributes: none
+      | line 605: pub fn build_recorder(self) -> PrometheusRecorder {  preceding #[cfg(...) attributes: none
+PASS  install_recorder and build_recorder carry no preceding #[cfg(feature = ...)] attribute
+PASS  the exporter's own upkeep_timeout default is declared in the builder
+      | 65:    upkeep_timeout: Duration,
+      | 88:        let upkeep_timeout = Duration::from_secs(5);
+      | 101:            upkeep_timeout,
+      | 414:    pub fn upkeep_timeout(mut self, timeout: Duration) -> Self {
+      | 415:        self.upkeep_timeout = timeout;
+      | 549:        let upkeep_timeout = self.upkeep_timeout;
+      | 557:                tokio::time::sleep(upkeep_timeout).await;
+PASS  exporter: exactly one unsafe occurrence in src/recorder.rs (= 1)
+PASS  exporter feature/dependency tables located
+      | 18:[features]
+      | 21:http-listener = ["async-runtime", "ipnet", "tracing", "_hyper-server"]
+      | 23:push-gateway = ["_push-gateway-common", "hyper-rustls/aws-lc-rs"]
+      | 24:push-gateway-no-tls-provider = ["_push-gateway-common"]
+      | 42:[dependencies]
+
+== axum-prometheus 0.10.1 (the ranked runner-up; gates 3-6 read at source) ==
+tarball axum-prometheus-0.10.1.crate             sha256 27e29a21d8a876465c009f1a69883fdfdf428a3ea42719a0c96021076c34cdf0
+PASS  axum-prometheus declares a rust-version (gate 2)
+      | 8:rust-version = "1.75"
+PASS  axum-prometheus declares a license field
+      | 6:license = "MIT"
+PASS  axum-prometheus depends on tower-http (gate 5 / graph cost)
+      | 22:tower-http = "0.7"
+PASS  axum-prometheus's tokio dependency and whether it is optional
+      | 21:tokio = { version = "1.53", features = ["rt-multi-thread", "macros"] }
+PASS  axum-prometheus default features
+      | 32:default = ["prometheus"]
+PASS  axum-prometheus itself pins the exporter with default-features = false
+      | 18:metrics-exporter-prometheus = { version = "0.18.3", optional = true, default-features = false }
+      | 33:prometheus = ["metrics-exporter-prometheus"]
+      | 34:push-gateway = ["metrics-exporter-prometheus/push-gateway"]
+      | 35:http-listener = ["metrics-exporter-prometheus/http-listener"]
+PASS  axum-prometheus's own documented scrape measures /metrics (it is NOT excluded out of the box)
+      | 73://! axum_http_requests_total{method="GET",endpoint="/metrics",status="200"} 5
+      | 74://! axum_http_requests_pending{method="GET",endpoint="/metrics"} 1
+      | 75://! axum_http_requests_duration_seconds_bucket{method="GET",status="200",endpoint="/metrics",le="0.005"} 4
+      | 76://! axum_http_requests_duration_seconds_bucket{method="GET",status="200",endpoint="/metrics",le="0.01"} 4
+      | 77://! axum_http_requests_duration_seconds_bucket{method="GET",status="200",endpoint="/metrics",le="0.025"} 4
+      | 78://! axum_http_requests_duration_seconds_bucket{method="GET",status="200",endpoint="/metrics",le="0.05"} 4
+      | 79://! axum_http_requests_duration_seconds_bucket{method="GET",status="200",endpoint="/metrics",le="0.1"} 4
+      | 80://! axum_http_requests_duration_seconds_bucket{method="GET",status="200",endpoint="/metrics",le="0.25"} 4
+      | 81://! axum_http_requests_duration_seconds_bucket{method="GET",status="200",endpoint="/metrics",le="0.5"} 4
+      | 82://! axum_http_requests_duration_seconds_bucket{method="GET",status="200",endpoint="/metrics",le="1"} 4
+      | 83://! axum_http_requests_duration_seconds_bucket{method="GET",status="200",endpoint="/metrics",le="2.5"} 4
+      | 84://! axum_http_requests_duration_seconds_bucket{method="GET",status="200",endpoint="/metrics",le="5"} 4
+      | 85://! axum_http_requests_duration_seconds_bucket{method="GET",status="200",endpoint="/metrics",le="10"} 4
+      | 86://! axum_http_requests_duration_seconds_bucket{method="GET",status="200",endpoint="/metrics",le="+Inf"} 4
+      | 87://! axum_http_requests_duration_seconds_sum{method="GET",status="200",endpoint="/metrics"} 0.001997171
+      | 88://! axum_http_requests_duration_seconds_count{method="GET",status="200",endpoint="/metrics"} 4
+PASS  axum-prometheus installs the global recorder, and how it handles a second install
+      | 892:        metrics::set_global_recorder(recorder).expect("Failed to set global recorder");
+PASS  axum-prometheus spawns the upkeep loop the recommendation must write by hand
+      | 889:                recorder_handle.run_upkeep();
+PASS  axum-prometheus exposes an explicit ignore-pattern call (the hand-wired exclusion)
+      | 50:///     .with_ignore_patterns(&["/metrics", "/sensitive"])
+      | 77:    ///     .with_ignore_pattern("/metrics")
+      | 85:    /// _Note: `with_ignore_pattern` and `with_allow_pattern` are mutually exclusive. If you call both, the last one called takes precedence and resets the previous patterns._
+      | 89:    pub fn with_ignore_pattern(mut self, ignore_pattern: &'a str) -> Self {
+      | 90:        self.traffic.with_ignore_pattern(ignore_pattern);
+      | 96:    /// Equivalent with calling [`with_ignore_pattern`] repeatedly.
+      | 102:    ///     .with_ignore_patterns(&["/foo", "/bar/:baz"])
+      | 108:    /// _Note: `with_ignore_patterns` and `with_allow_patterns` are mutually exclusive. If you call both, the last one called takes precedence and resets the previous patterns._
+      | 113:    /// [`with_ignore_pattern`]: crate::MetricLayerBuilder::with_ignore_pattern
+      | 114:    pub fn with_ignore_patterns(mut self, ignore_patterns: &'a [&'a str]) -> Self {
+      | 115:        self.traffic.with_ignore_patterns(ignore_patterns);
+      | 133:    /// _Note: `with_allow_pattern` and `with_ignore_pattern` are mutually exclusive. If you call both, the last one called takes precedence and resets the previous patterns._
+      | 153:    /// _Note: `with_allow_patterns` and `with_ignore_patterns` are mutually exclusive. If you call both, the last one called takes precedence and resets the previous patterns._
+PASS  axum-prometheus's EndpointLabel default and its unmatched-request fallback
+      | 28:    /// The reported endpoint label is determined by first trying to extract and return [`axum::extract::MatchedPath`],
+      | 32:    /// [nested routes]: https://docs.rs/axum/latest/axum/extract/struct.MatchedPath.html#matched-path-in-nested-routers
+      | 34:    MatchedPath,
+      | 35:    /// Same as [`EndpointLabel::MatchedPath`], but instead of falling back to the exact uri called, it's given to a user-defined
+      | 37:    MatchedPathWithFallbackFn(for<'f> fn(&'f str) -> String),
+PASS  axum-prometheus: zero unsafe in src/lib.rs (= 0)
+
+== prometheus-client 0.25.1 (excluded by gate 2 -- the exclusion re-read at source) ==
+tarball prometheus-client-0.25.1.crate           sha256 1784dc11a05f5a8f57c4a62915686be140f24f70301290b997e317241fa9ffc2
+PASS  prometheus-client declares NO rust-version (the gate-2 exclusion, confirmed at source)
+PASS  prometheus-client license field (recorded, not evaluated -- see gate 1)
+      | 7:license = "Apache-2.0 OR MIT"
+
+== prometheus 0.14.0 (shortlist gates 5-6 read at source) ==
+tarball prometheus-0.14.0.crate                  sha256 3ca5326d8d0b950a9acd87e6a3f94745394f62e4dae1b1ee22b2bc0c394af43a
+PASS  prometheus declares a rust-version (gate 2)
+      | 12:rust-version = "1.81"
+PASS  prometheus default features pull protobuf (gate 5 / gate 6 qualitative cost)
+      | 19:default = ["protobuf"]
+PASS  prometheus's platform-gated dependency block (procfs is Linux-only)
+      | 36:[target.'cfg(target_os = "linux")'.dependencies]
+
+== opentelemetry-prometheus 0.33.0 (architecture D, gates 5-6 read at source) ==
+tarball opentelemetry-prometheus-0.33.0.crate    sha256 274c2e3a2ad55524484500d5a78dffbfee23e4a1e4c3d3fcbd881b61b033e6df
+PASS  opentelemetry-prometheus declares a rust-version (gate 2)
+      | 16:rust-version = "1.81.0"
+PASS  opentelemetry-prometheus default features
+      | 40:default = ["internal-logs"]
+PASS  opentelemetry-prometheus depends on the prometheus client, so D adopts C transitively
+      | 29:prometheus = { version = "0.14", default-features = false }
+      | 41:prometheus-encoding = []
+PASS  the OTel maintainers' own steer away from this crate for new projects
+      | 43:[opentelemetry-otlp](https://crates.io/crates/opentelemetry-otlp) crate
+
+== the axum maintainers' own worked example, at tag axum-v0.8.9 ==
+main.rs      sha256 1891bbd613df34187f5fdc296483b9f8a5eba7b1639894ebee6d1b94b84fb6ce
+Cargo.toml   sha256 af30e9bfd1c1273d02316c651bca39ea3a48f962232cfdd52b500509f6204e47
+PASS  axum's own example states tower-http has no metrics middleware
+      | 1://! Someday tower-http will hopefully have a metrics middleware, until then you can track
+PASS  axum's example builds the recorder with metrics-exporter-prometheus
+      | 17:use metrics_exporter_prometheus::{Matcher, PrometheusBuilder, PrometheusHandle};
+      | 84:    PrometheusBuilder::new()
+      | 90:        .install_recorder()
+PASS  axum's example applies the middleware with route_layer
+      | 38:        .route_layer(middleware::from_fn(track_metrics))
+PASS  how axum's example derives its route label (the unbounded-label fallback the recommendation refuses)
+      | 11:    extract::{MatchedPath, Request},
+      | 96:    let path = if let Some(matched_path) = req.extensions().get::<MatchedPath>() {
+      | 99:        req.uri().path().to_owned()
+PASS  axum's own example never calls run_upkeep -- the defect the recommendation repairs
+PASS  the example's own pins, including default-features = false
+      | 2:name = "example-prometheus-metrics"
+      | 9:metrics = { version = "0.23", default-features = false }
+      | 10:metrics-exporter-prometheus = { version = "0.15", default-features = false }
+
+== autometrics: the maintainers' own retirement notice ==
+PASS  autometrics carries a maintainer's own dormancy notice
+      | 3:## NOTE: Autometrics is no longer actively maintained.
+
+== RustSec package pages (gate 3): HTTP 404 means no advisory page exists ==
+      | metrics                        https://rustsec.org/packages/metrics.html -> HTTP 404
+PASS  metrics has no RustSec advisory page (gate 3 clear)
+      | metrics-exporter-prometheus    https://rustsec.org/packages/metrics-exporter-prometheus.html -> HTTP 404
+PASS  metrics-exporter-prometheus has no RustSec advisory page (gate 3 clear)
+      | metrics-util                   https://rustsec.org/packages/metrics-util.html -> HTTP 200
+PASS  metrics-util HAS an advisory page (the one the report flags as patched)
+PASS  metrics-util advisory id present on that page
+      | 79:    <a href="/advisories/RUSTSEC-2021-0113.html">
+      | 80:      RUSTSEC-2021-0113: Vulnerability in metrics-util
+      | axum-prometheus                https://rustsec.org/packages/axum-prometheus.html -> HTTP 404
+PASS  axum-prometheus has no RustSec advisory page (gate 3 clear)
+      | prometheus                     https://rustsec.org/packages/prometheus.html -> HTTP 404
+PASS  prometheus has no RustSec advisory page (gate 3 clear)
+      | prometheus-client              https://rustsec.org/packages/prometheus-client.html -> HTTP 404
+PASS  prometheus-client has no RustSec advisory page (gate 3 clear)
+      | opentelemetry-prometheus       https://rustsec.org/packages/opentelemetry-prometheus.html -> HTTP 404
+PASS  opentelemetry-prometheus has no RustSec advisory page (gate 3 clear)
+      | autometrics                    https://rustsec.org/packages/autometrics.html -> HTTP 404
+PASS  autometrics has no RustSec advisory page (gate 3 clear)
+      | measured                       https://rustsec.org/packages/measured.html -> HTTP 404
+PASS  measured has no RustSec advisory page (gate 3 clear)
+      | quanta                         https://rustsec.org/packages/quanta.html -> HTTP 404
+PASS  quanta has no RustSec advisory page (gate 3 clear)
+
+== summary ==
+PASS=66 FAIL=0 SKIP=0 TOTAL=66

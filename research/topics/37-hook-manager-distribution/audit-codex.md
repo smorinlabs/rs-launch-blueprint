@@ -1,0 +1,19 @@
+actor: codex
+model: gpt-6
+family: openai
+decision-sha256: b172133d641c90157f3fb562281981e118cfd7397a382d23f209a56aec520c73
+verdict: approve
+unresolved-findings: none
+
+# R37 revision 4 — directed empirical verification
+
+The first `shasum -a 256` matched the required decision hash, and this report path was absent. A pre-write hash check matched again. The revision-3 snapshot hashes to `26e619d7e4d8ee82c5de7658964b842c9e6a75a9d2a30b2bd855ed5eebeede85`, the hash named in the revision-4 note. I compared that snapshot with the new decision; the diff contains the revision bump and the four reported prose repairs.
+
+- **M1, R42 locator:** `DECISION.md:287` now cites R42 `DECISION.md:1288-1289` for “codex's shape carried a checksum and this one does not” and retains the same point at `:368`. I read both R42 locations. The other `:368` citations remain in the rejected-alternative row and disagreement text at new decision lines 138, 438 and 440, corresponding to snapshot lines 122, 400 and 402.
+- **Empirical finding 2, endpoint dating:** `DECISION.md:260-261` dates 8,856 stars to `2026-09-27T01:57:16Z`. The committed `r37-endpoints.log:1` is exactly `retrieved_at_utc 2026-09-27T01:57:16Z`; line 13 contains `stargazers_count=8856`. The drift note at decision lines 351-357 quotes the revision-3 audit's rerun time `2026-09-27T17:45:30Z`, `stargazers_count=8857`, changed crates.io download counts and issue #1526 comment count, `cmp` result 1, and 17 passing assertions. The committed log has 17 `PASS` lines and `TOTAL pass=17 fail=0` at line 69. The fresh values and outcome are audit-reported; I did not rerun the network check.
+- **Empirical finding 1, wiring drift:** `DECISION.md:391-397` names scratch paths, elapsed times and glyph rendering, and judges the assertion lines while retaining the full-log mismatch. The committed `r37-wiring.log:10` banner is `│ 🥊 lefthook  v2.1.14   hook:  pre-commit │`; the boxing-glove UTF-8 bytes are `f0 9f a5 8a`. The revision-3 audit quotes the rerun banner without that glyph and reports path, timing and status-glyph drift, `cmp` result 1, and identical assertion lines. The committed log has 26 `PASS` lines and `TOTAL pass=26 fail=0` at line 86. The fresh result is audit-reported, not a new rerun.
+- **Empirical finding 3, engine roster:** `DECISION.md:409-415` now separates captured Codex/Opus inputs from current Muse/Opus policy and assigns reconciliation before publication to the controller. I read `inputs/EXECUTION.json`: `items.R37.engines=["codex","opus"]` and no `engine_overrides.R37`; `manifest.json` records the same required engines. Current `research/EXECUTION.json` has both `engine_overrides.R37` and `items.R37.engines` set to `["muse","opus"]`, consistent with R37's inclusion in `research/RUNBOOK.md:75-78` under Q17.A. `shasum -a 256` of `raw/muse.md` and `raw/opus.md` returned `91f2cf4d880de0aae932fea0b97b081b5f07c0834cc787b6cefa6e1c84117104` and `05e9c6a9f86a47f0d1aeeaf9d20757dc121162ed93850148c08d93ee04bae665`, exactly as `## Engines` states.
+
+**Evidence-file check.** The snapshot-to-decision diff changes no evidence path. All seven files under `review/evidence/` have modification times on 2026-09-26 between 18:57 and 19:05 PDT, before the revision-3 snapshot (2026-09-27 11:35 PDT) and revision-4 decision (11:38 PDT). On the requested diff-and-timestamp check, no evidence file was touched by this repair, so no check was rerun.
+
+**Observations, not findings.** The revision-3 empirical audit calls the committed banner line `r37-wiring.log:9`; line 9 is the border and the banner is line 10, which revision 4 cites correctly. The current R42 line 368 also contains the exact checksum phrase, although the revision-3 judgment audit said it appeared only at line 1289. The evidence directory is untracked in this checkout, so Git cannot supply a byte-level history of those files; the evidence-file conclusion above rests on the requested diff and modification times.

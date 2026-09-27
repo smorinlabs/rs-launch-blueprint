@@ -1,0 +1,23 @@
+== copy rerun (revision 2) ==
+review/evidence/ copied with cp -R to a mktemp directory under $TMPDIR outside the worktree,
+with no .git present; each script run from the copy; the copy is deleted afterwards.
+git archive HEAD cannot carry these uncommitted revision-2 edits, so this replaces the
+clean-extraction rerun until the controller commits them.
+
+---- muse-adjudication.sh sha256 d6ff9b1a75051bf7d00435e6c77960b32c69bc8b08a00d914d2ff223eefeeae2 (tail) ----
+
+== totals ==
+PASS=8 FAIL=0 SKIP=0 TOTAL=8
+exit=0
+
+---- registry-skip-paths.sh sha256 7cc317046f3b4374cd65a1b40e02b7b1d339d5a14dbd4b2a9a1d7d50658559b5 (tail) ----
+
+== totals ==
+PASS=12 FAIL=0 SKIP=0 TOTAL=12
+exit=0
+
+---- registry-and-standard.sh sha256 2939478f29c0532bdc47512ba978059f4b0a5df6f2a2ea01afb57d7e9bf7f5e7 (tail) ----
+
+== totals ==
+PASS=29 FAIL=0 SKIP=0 TOTAL=29
+exit=0

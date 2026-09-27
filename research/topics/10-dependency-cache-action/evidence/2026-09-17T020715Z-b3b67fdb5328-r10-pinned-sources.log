@@ -1,0 +1,150 @@
+
+===== A0. environment (all six lines below are host-dependent; nothing else in this log is) =====
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+OS: macOS 26.4 (arm64)
+gh version 2.98.0 (2026-08-20)
+counting binary: /usr/bin/grep -> grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+retrieval date for every remote read below: 2026-09-17 (UTC)
+repository root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+
+===== A1. Swatinem/rust-cache v2.9.2 tag dereferences to the recommended commit =====
+PASS  got=tag want=tag  A1.1 v2.9.2 is an annotated tag object (git/ref/tags/v2.9.2 .object.type)
+PASS  got=63fed3e2fecf6f7b51dc6f043341b79ef82a9ae7 want=63fed3e2fecf6f7b51dc6f043341b79ef82a9ae7  A1.2 tag object sha (git/ref/tags/v2.9.2 .object.sha)
+PASS  got=commit want=commit  A1.3 tag object points at a commit (git/tags/<obj> .object.type)
+PASS  got=6323deb102c322ba6fcbdcafc7e3dddab59af2b6 want=6323deb102c322ba6fcbdcafc7e3dddab59af2b6  A1.4 v2.9.2 = commit 6323deb102c322ba6fcbdcafc7e3dddab59af2b6 — the SHA the decision pins
+
+===== A2. Swatinem/rust-cache action.yml at 6323deb102c322ba6fcbdcafc7e3dddab59af2b6 — input defaults and post condition =====
+bytes: 3246
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A2.1 runs.using is node24 (a Node action; no Rust is compiled into the template)
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A2.2 post-if honours CACHE_ON_FAILURE — cache-on-failure is implemented, not documentation
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A2.3 prefix-key default is v0-rust (the decision overrides it to v1-rslbp)
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A2.4 env-vars input exists
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A2.5 cache-on-failure input exists
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A2.6 cache-on-failure documents its default as false — the decision must set it explicitly
+PASS  got=true want=true  A2.7 default for input add-job-id-key
+PASS  got=true want=true  A2.7 default for input add-rust-environment-hash-key
+PASS  got=true want=true  A2.7 default for input cache-targets
+PASS  got=false want=false  A2.7 default for input cache-all-crates
+PASS  got=false want=false  A2.7 default for input cache-workspace-crates
+PASS  got=true want=true  A2.7 default for input save-if
+PASS  got=true want=true  A2.7 default for input cache-bin
+PASS  got=github want=github  A2.7 default for input cache-provider
+
+===== A3. Swatinem/rust-cache src/config.ts at 6323deb102c322ba6fcbdcafc7e3dddab59af2b6 — the key derivation =====
+bytes: 15139
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A3.1 built-in env-var prefix list is CARGO CC CFLAGS CXX CMAKE RUST
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A3.2 the env-vars input is APPENDED to that list, not a replacement — 'ImageOS' adds exactly one variable
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A3.3 matching is a case-sensitive startsWith AND the value must be non-empty — an empty ImageOS contributes nothing
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A3.4 the key carries os.type() ...
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A3.5 ... and os.arch() — but no runner IMAGE identifier, which is the #341 defect
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A3.6 add-job-id-key reads GITHUB_JOB — the YAML job id, which does NOT include matrix values
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A3.7 the restore key is snapshotted BEFORE the lockfile digest is appended (the two-key split)
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A3.8 the Cargo.lock digest keeps only packages with source/checksum — workspace-own crates are excluded
+
+===== A4. Swatinem/rust-cache CHANGELOG.md at 6323deb102c322ba6fcbdcafc7e3dddab59af2b6 — why the range floor is 2.9.1 =====
+# Changelog
+
+## 2.9.2
+
+- Fix `credentials.toml` cleanup
+- Improvements to cleanup, preserving more valid targets
+- Improvements to `cargo install` handling
+- Correctly sort/dedupe Rust versions
+
+## 2.9.1
+
+- Fix regression in hash calculation
+
+## 2.9.0
+
+- Update to `node24`
+- Support running from within a `nix` shell
+- Consider all installed toolchains for cache key
+- Use case-insensitive comparison to determine exact cache hit
+
+## 2.8.2
+
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A4.1 2.9.2 is the newest section — the pinned release
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A4.2 2.9.1's sole entry is the hash-calculation regression fix — the reason the floor is 2.9.1, not 2.9.0
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A4.3 2.9.0 added all-installed-toolchains keying, which the MSRV floor job needs
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A4.4 2.9.0 moved to the node24 runtime
+PASS  got=0 want=0  A4.5 [/usr/bin/grep -c -i -E] NO entry at any version records an image-keying or #341 fix — that defect is unfixed at the pin
+-- what the CHANGELOG DOES say about macOS, case-insensitively, printed so the negative above is bounded --
+52:- Only run macOsWorkaround() on macOS
+168:- Work around macOS cache corruption.
+PASS  got=2 want=2  A4.6 [/usr/bin/grep -c -i -E] exactly two macOS entries exist (2.7.5 and 1.0.1), both the macOsWorkaround for cargo#8603 / actions/cache#403 — a different defect from #341
+
+===== A5. Swatinem/rust-cache LICENSE at 6323deb102c322ba6fcbdcafc7e3dddab59af2b6 — recorded as a FIGURE only =====
+                   GNU LESSER GENERAL PUBLIC LICENSE
+                       Version 3, 29 June 2007
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A5.1 the bundled LICENSE is the LGPL — figure recorded, gate 1 inapplicable by owner ruling, excludes nothing
+
+===== A6. actions-rust-lang/setup-rust-toolchain action.yml at ecabd13d1c56bd1345c230e542e9144811ad706f — it IS the same engine =====
+263:      uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A6.1 the setup-integrated action delegates to rust-cache at the IDENTICAL commit this decision pins
+PASS  got=true want=true  A6.2 its cache input defaults to true
+PASS  [/usr/bin/grep -c -E] got=0 want=0  A6.3 it exposes NO env-vars passthrough — the ImageOS remedy cannot be expressed through the runner-up
+
+===== A7. actions/cache examples.md at 55cc8345863c7cc4c66a329aec7e433d2d1c52a9 — GitHub's own published Rust recipe =====
+Rust recipe starts at examples.md line 610; block reproduced verbatim:
+  | ## Rust - Cargo
+  | 
+  | ```yaml
+  | - uses: actions/cache@v6
+  |   with:
+  |     path: |
+  |       ~/.cargo/bin/
+  |       ~/.cargo/registry/index/
+  |       ~/.cargo/registry/cache/
+  |       ~/.cargo/git/db/
+  |       target/
+  |     key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+  | ```
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A7.1 the published key is runner.os + hashFiles(Cargo.lock) and nothing else
+PASS  [/usr/bin/grep -c -E] got=0 want=0  A7.2 the published recipe has NO restore-keys — one lockfile edit is a total miss (fails P1)
+PASS  [/usr/bin/grep -c -E] got=0 want=0  A7.3 it carries no compiler identity, no runner arch and no image identity
+
+===== A8. actions/runner-images — how ImageOS reaches a job, and how the two OSes differ =====
+11:# Set ImageVersion and ImageOS env variables
+13:set_etc_environment_variable "ImageOS" "${IMAGE_OS}"
+44:echo "export ImageOS=$IMAGE_OS" >> $HOME/.bashrc
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A8.1 Ubuntu: ImageOS is written to /etc/environment, so every process on the runner inherits it
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A8.2 macOS: ImageOS is appended to $HOME/.bashrc ONLY — a shell-scoped export, not a process-wide one
+
+===== A9. this repository — prerequisite integrity and the standing rules the decision cites =====
+PASS  got=a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c want=a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c  A9.1 the published R42 DECISION.md is byte-identical to the prerequisite this run was bound to
+PASS  [/usr/bin/grep -c -E] got=0 want=0  A9.2 R42 names NO CI toolchain-install action — the hand-off Opus raised, confirmed here
+PASS  [/usr/bin/grep -c -E] got=4 want=4  A9.3 R42 does fix how dev tools are installed (4 occurrences of the recipe body), which is what makes cache-bin load-bearing
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A9.4 R20 requires a full-SHA pin for a non-actions/non-github owner such as Swatinem
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A9.5 the 2026-09-12 (Q7.B) ruling strikes fitness gate 1 from every item
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A9.6 ledger row F035 is present and is the parent pattern row
+PASS  [/usr/bin/grep -c -E] got=1 want=1  A9.7 ledger row F036 is assigned to R10 with verdict COMMON to SUBSTITUTE
+
+===== A10. the four fixed parameters — run inputs against the live registry =====
+PASS  row identical in run inputs and live registry  A10 msrv-policy
+      | msrv-policy | fixed | owner | stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI | minimum supported Rust version rule; every crate item is gated on it (§7.6) |
+PASS  row identical in run inputs and live registry  A10 rust-edition
+      | rust-edition | fixed | owner | 2024 | Cargo edition for every workspace member |
+PASS  row identical in run inputs and live registry  A10 target-os-matrix
+      | target-os-matrix | fixed | owner | ubuntu-latest, macos-latest | CI runners; every tool must run on all of them |
+PASS  row identical in run inputs and live registry  A10 license
+      | license | fixed | owner | MIT OR Apache-2.0 | repository license; candidate crates must be compatible (§7.6) |
+
+===== A11. raw report integrity — content hash equals the filename hash =====
+PASS  got=74afacbc4e5c12376873cfd37eee46255bc5519486756c2278453a5c1f5e007e want=74afacbc4e5c12376873cfd37eee46255bc5519486756c2278453a5c1f5e007e  A11 codex-74afacbc4e5c12376873cfd37eee46255bc5519486756c2278453a5c1f5e007e.md content sha256 equals its filename
+PASS  got=49b673aef41e0729b6dace3fae827240d64a4bbd2ee88b3a0b1e8cbde283d50d want=49b673aef41e0729b6dace3fae827240d64a4bbd2ee88b3a0b1e8cbde283d50d  A11 opus-49b673aef41e0729b6dace3fae827240d64a4bbd2ee88b3a0b1e8cbde283d50d.md content sha256 equals its filename
+
+===== A12. source precedent (requires a local clone with .git — SKIPs without one) =====
+PASS  [/usr/bin/grep -c -E] got=6 want=6  A12.py setup-uv supplies py's cache with no cache input at the programme pin
+PASS  [/usr/bin/grep -c -E] got=2 want=2  A12.ts setup-node supplies ts's cache through cache: 'pnpm' at the programme pin
+
+===== A13. negative controls — the assertions above can fail, demonstrated =====
+PASS  control fired: got=6323deb102c322ba6fcbdcafc7e3dddab59af2b6 != perturbed-want=6323deb102c322ba6fcbdcafc7e3dddab59af2b6x  A13.1 A1.4 discriminates: one extra character in the expected commit breaks the match
+PASS  control fired: got=0 != perturbed-want=1  A13.2 A7.2 discriminates: the Rust recipe really contains zero restore-keys lines, not one
+PASS  control fired: got=1 != perturbed-want=0  A13.3 A6.3 discriminates: the same pattern finds env-vars in rust-cache (1) and not in setup-rust-toolchain (0)
+PASS  control fired: got=3 != perturbed-want=0  A13.4 A9.2 discriminates: the same action-name pattern is non-zero in R20 (3), so zero in R42 is a real absence
+
+===== RESULT =====
+checks: 60 passed, 0 failed, 0 skipped
+VERDICT: PASS

@@ -1,0 +1,82 @@
+
+===== B0. environment =====
+counting binary: /usr/bin/grep -> grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+gh version 2.98.0 (2026-08-20)
+retrieval date: 2026-09-17 (UTC)
+snapshot directory: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R10/2026-09-17T020715Z-b3b67fdb5328/review/evidence/figures
+
+===== B1. repository figures — GET https://api.github.com/repos/<o>/<r> =====
+repository                                        stars  archived pushed_at              license       
+Swatinem/rust-cache                                1917     false 2026-09-07T21:44:07Z   LGPL-3.0      
+actions/cache                                      5550     false 2026-07-15T18:13:46Z   MIT           
+actions-rust-lang/setup-rust-toolchain              403     false 2026-09-07T22:03:58Z   MIT           
+mozilla-actions/sccache-action                      206     false 2026-09-10T22:20:34Z   Apache-2.0    
+moonrepo/setup-rust                                 133     false 2026-03-19T17:30:54Z   null          
+
+Note: the license column is a FIGURE only. Fitness gate 1 is
+inapplicable by owner ruling 2026-09-12 (Q7.B); it excludes nothing.
+
+===== B2. open issues — GET https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+is:open =====
+total_count is read from the search endpoint, never from open_issues_count
+Swatinem/rust-cache                            open issues: 69
+actions/cache                                  open issues: 163
+actions-rust-lang/setup-rust-toolchain         open issues: 3
+mozilla-actions/sccache-action                 open issues: 16
+
+===== B3. latest release — GET https://api.github.com/repos/<o>/<r>/releases/latest =====
+Swatinem/rust-cache                            v2.9.2     2026-08-06T06:26:27Z
+actions/cache                                  v6.1.0     2026-06-26T19:17:06Z
+actions-rust-lang/setup-rust-toolchain         v2.0.0     2026-09-07T21:53:31Z
+mozilla-actions/sccache-action                 v0.0.11    2026-07-29T11:19:11Z
+
+===== B4. Swatinem/rust-cache issue responsiveness — 10 most recently OPENED issues =====
+ten most recent issues: 381 375 374 370 369 352 348 344 341 337
+issue    state    comments   created_at             first maintainer reply
+#381     open     0          2026-08-18T21:27:46Z   none
+#375     closed   1          2026-08-12T15:02:10Z   0.025 d
+#374     open     0          2026-08-11T12:59:42Z   none
+#370     closed   1          2026-08-05T02:26:45Z   1.171 d
+#369     closed   0          2026-08-01T20:53:58Z   none
+#352     closed   0          2026-06-22T01:22:33Z   none
+#348     open     0          2026-06-13T05:50:57Z   none
+#344     open     0          2026-05-27T14:06:57Z   none
+#341     closed   5          2026-05-13T21:29:13Z   none
+#337     closed   3          2026-05-11T11:07:28Z   0.115 d
+maintainer replied on 3 of 10; unanswered by the maintainer: 7
+median days to first maintainer reply AMONG THE ANSWERED = 0.115
+A median over all ten is undefined when more than half are unanswered;
+it is reported as undefined rather than imputed.
+
+===== B5. issue #341 — the live macOS-image defect the decision configures around =====
+#341  state=closed  comments=5  created=2026-05-13T21:29:13Z  closed=2026-05-29T18:54:53Z
+title: `cache-bin: true` breaks cargo subcommands on new github macos runner
+The issue is CLOSED; the CHANGELOG at the pinned commit records no fix for
+it (assertion A4.5 in r10-pinned-sources.log), so the behaviour is live at
+the recommended pin and the template configures around it.
+
+===== B6. crates.io — the one crate candidate (sccache); the actions have no crate figures =====
+sccache  crate.recent_downloads (90-day) = 129817
+sccache  crate.downloads (all-time)      = 1335826
+sccache  newest unyanked num             = 0.18.0
+sccache  newest unyanked created_at      = 2026-09-16T14:34:17.177895Z
+sccache  newest unyanked license         = Apache-2.0
+sccache  newest unyanked rust_version    = 1.91.0
+
+Swatinem/rust-cache, actions/cache, actions-rust-lang/setup-rust-toolchain
+and mozilla-actions/sccache-action are GitHub Actions, not crates.io
+packages: crate.recent_downloads and crate.downloads do not exist for
+them, so both figures are recorded as inapplicable with this reason.
+
+===== B7. RustSec — advisory pages, with a positive control =====
+https://rustsec.org/packages/rust-cache  .html -> HTTP 404
+https://rustsec.org/packages/sccache     .html -> HTTP 404
+https://rustsec.org/packages/atty        .html -> HTTP 200
+https://rustsec.org/packages/serde       .html -> HTTP 404
+atty carries a known advisory and returns 200, which is the positive
+control proving a 404 is an absence of advisory rather than a broken
+lookup. rust-cache 404s because it is an Action and has no crates.io
+package at all, so gate 3 is inapplicable to it, not passed by it.
+
+===== RESULT =====
+This section reports figures, not assertions. Nothing here passes or
+fails; the snapshots under /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R10/2026-09-17T020715Z-b3b67fdb5328/review/evidence/figures are the citable artifacts.

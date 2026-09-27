@@ -1,0 +1,230 @@
+# retrieved_at_utc=2026-09-27T03:43:23Z
+# host=Darwin arm64
+
+## A. crates.io figures (GET https://crates.io/api/v1/crates/<n> and /versions)
+A utoipa recent_downloads=15462313 downloads=48906319 repository=https://github.com/juhaku/utoipa
+A utoipa newest_nonyanked=6.0.0 created_at=2026-09-22T22:30:17.822880Z rust_version=1.88 license=MIT OR Apache-2.0
+A utoipa newest_stable=6.0.0 created_at=2026-09-22T22:30:17.822880Z rust_version=1.88 license=MIT OR Apache-2.0
+A utoipa-gen recent_downloads=15468242 downloads=48938245 repository=https://github.com/juhaku/utoipa
+A utoipa-gen newest_nonyanked=6.0.1 created_at=2026-09-23T15:51:17.349835Z rust_version=1.88 license=MIT OR Apache-2.0
+A utoipa-gen newest_stable=6.0.1 created_at=2026-09-23T15:51:17.349835Z rust_version=1.88 license=MIT OR Apache-2.0
+A utoipa-axum recent_downloads=3181337 downloads=7552921 repository=https://github.com/juhaku/utoipa
+A utoipa-axum newest_nonyanked=0.3.0 created_at=2026-09-22T22:32:48.569734Z rust_version=1.88 license=MIT OR Apache-2.0
+A utoipa-axum newest_stable=0.3.0 created_at=2026-09-22T22:32:48.569734Z rust_version=1.88 license=MIT OR Apache-2.0
+A aide recent_downloads=811371 downloads=2940445 repository=https://github.com/tamasfe/aide
+A aide newest_nonyanked=0.16.0-alpha.4 created_at=2026-04-14T20:40:29.072762Z rust_version=null license=MIT OR Apache-2.0
+A aide newest_stable=0.15.1 created_at=2025-08-19T22:49:34.847478Z rust_version=null license=MIT OR Apache-2.0
+A oasgen recent_downloads=202059 downloads=407162 repository=https://github.com/kurtbuilds/oasgen
+A oasgen newest_nonyanked=0.25.0 created_at=2025-02-25T15:55:50.094241Z rust_version=null license=MIT
+A oasgen newest_stable=0.25.0 created_at=2025-02-25T15:55:50.094241Z rust_version=null license=MIT
+A expectorate recent_downloads=278769 downloads=1683740 repository=https://github.com/oxidecomputer/expectorate
+A expectorate newest_nonyanked=1.3.0 created_at=2026-08-20T22:58:19.048512Z rust_version=1.85 license=Apache-2.0
+A expectorate newest_stable=1.3.0 created_at=2026-08-20T22:58:19.048512Z rust_version=1.85 license=Apache-2.0
+A insta recent_downloads=28197329 downloads=103823189 repository=https://github.com/mitsuhiko/insta
+A insta newest_nonyanked=1.48.0 created_at=2026-06-11T14:13:41.200726Z rust_version=1.66.0 license=Apache-2.0
+A insta newest_stable=1.48.0 created_at=2026-06-11T14:13:41.200726Z rust_version=1.66.0 license=Apache-2.0
+A snapbox recent_downloads=3595743 downloads=13059566 repository=https://github.com/assert-rs/snapbox/
+A snapbox newest_nonyanked=1.2.2 created_at=2026-05-26T16:30:09.105602Z rust_version=1.85 license=MIT OR Apache-2.0
+A snapbox newest_stable=1.2.2 created_at=2026-05-26T16:30:09.105602Z rust_version=1.85 license=MIT OR Apache-2.0
+A jsoncompat recent_downloads=17585 downloads=40439 repository=https://github.com/ostrowr/jsoncompat
+A jsoncompat newest_nonyanked=0.4.2 created_at=2026-08-05T00:00:03.777457Z rust_version=null license=MIT
+A jsoncompat newest_stable=0.4.2 created_at=2026-08-05T00:00:03.777457Z rust_version=null license=MIT
+A brake recent_downloads=119 downloads=119 repository=https://github.com/grahambrooks/brake
+A brake newest_nonyanked=2026.9.3 created_at=2026-09-19T19:33:05.555022Z rust_version=1.98.1 license=MIT
+A brake newest_stable=2026.9.3 created_at=2026-09-19T19:33:05.555022Z rust_version=1.98.1 license=MIT
+A schemadoc-diff recent_downloads=6 downloads=1505 repository=null
+A schemadoc-diff newest_nonyanked=0.1.20 created_at=2023-07-13T08:15:40.140688Z rust_version=null license=Apache-2.0
+A schemadoc-diff newest_stable=0.1.20 created_at=2023-07-13T08:15:40.140688Z rust_version=null license=Apache-2.0
+A rusty-schema-diff recent_downloads=6 downloads=1709 repository=null
+A rusty-schema-diff newest_nonyanked=0.1.1 created_at=2024-12-11T08:41:34.777893Z rust_version=null license=non-standard
+A rusty-schema-diff newest_stable=0.1.1 created_at=2024-12-11T08:41:34.777893Z rust_version=null license=non-standard
+A poem-openapi recent_downloads=387636 downloads=3495742 repository=https://github.com/poem-web/poem
+A poem-openapi newest_nonyanked=5.1.16 created_at=2025-07-28T04:41:35.020009Z rust_version=1.85 license=MIT OR Apache-2.0
+A poem-openapi newest_stable=5.1.16 created_at=2025-07-28T04:41:35.020009Z rust_version=1.85 license=MIT OR Apache-2.0
+A dropshot recent_downloads=132508 downloads=872037 repository=https://github.com/oxidecomputer/dropshot/
+A dropshot newest_nonyanked=0.17.1 created_at=2026-06-02T17:01:56.874507Z rust_version=1.85 license=Apache-2.0
+A dropshot newest_stable=0.17.1 created_at=2026-06-02T17:01:56.874507Z rust_version=1.85 license=Apache-2.0
+A okapi recent_downloads=128711 downloads=2061880 repository=https://github.com/GREsau/okapi
+A okapi newest_nonyanked=0.7.0 created_at=2024-01-14T22:32:53.366007Z rust_version=null license=MIT
+A okapi newest_stable=0.7.0 created_at=2024-01-14T22:32:53.366007Z rust_version=null license=MIT
+A paperclip recent_downloads=92624 downloads=943427 repository=https://github.com/paperclip-rs/paperclip
+A paperclip newest_nonyanked=0.9.7 created_at=2026-04-20T21:31:23.499455Z rust_version=null license=MIT OR Apache-2.0
+A paperclip newest_stable=0.9.7 created_at=2026-04-20T21:31:23.499455Z rust_version=null license=MIT OR Apache-2.0
+A apistos recent_downloads=18453 downloads=196072 repository=https://github.com/netwo-io/apistos
+A apistos newest_nonyanked=0.9.0 created_at=2026-09-18T09:10:19.952346Z rust_version=1.88.0 license=MIT OR Apache-2.0
+A apistos newest_stable=0.9.0 created_at=2026-09-18T09:10:19.952346Z rust_version=1.88.0 license=MIT OR Apache-2.0
+
+## B. declared rust_version of every published aide version (gate 2)
+B aide 0.16.0-alpha.4 rust_version=null
+B aide 0.16.0-alpha.3 rust_version=null
+B aide 0.16.0-alpha.2 rust_version=null
+B aide 0.16.0-alpha.1 rust_version=null
+B aide 0.15.1 rust_version=null
+B aide 0.15.0 rust_version=null
+B aide 0.14.2 rust_version=null
+B aide 0.14.1 rust_version=null
+B aide 0.14.0 rust_version=null
+B aide 0.13.5 rust_version=null
+B aide 0.13.4 rust_version=null
+B aide 0.13.3 rust_version=null
+B aide 0.13.2 rust_version=null
+B aide 0.13.1 rust_version=null
+B aide 0.13.0 rust_version=null
+B aide 0.12.0 rust_version=null
+B aide 0.11.0 rust_version=null
+B aide 0.10.0 rust_version=null
+B aide 0.9.0 rust_version=null
+B aide 0.8.1 rust_version=null
+B aide 0.8.0 rust_version=null
+B aide 0.8.0-rc.1 rust_version=null
+B aide 0.7.1 rust_version=null
+B aide 0.7.0 rust_version=null
+B aide 0.6.4 rust_version=null
+B aide 0.6.3 rust_version=null
+B aide 0.6.2 rust_version=null
+B aide 0.6.1 rust_version=null
+B aide 0.6.0 rust_version=null
+B aide 0.5.6 rust_version=null
+B aide 0.5.5 rust_version=null
+B aide 0.5.4 rust_version=null
+B aide 0.5.3 rust_version=null
+B aide 0.5.2 rust_version=null
+B aide 0.5.1 rust_version=null
+B aide 0.5.0 rust_version=null
+B aide 0.4.3 rust_version=null
+B aide 0.4.2 rust_version=null
+B aide 0.4.1 rust_version=null
+B aide 0.4.0 rust_version=null
+B aide 0.3.6 rust_version=null
+B aide 0.3.5 rust_version=null
+B aide 0.3.4 rust_version=null
+B aide 0.3.2 rust_version=null
+B aide 0.3.1 rust_version=null
+B aide 0.3.0 rust_version=null
+B aide 0.2.0 rust_version=null
+B aide 0.1.5 rust_version=null
+B aide 0.1.4 rust_version=null
+B aide 0.1.3 rust_version=null
+B aide 0.1.2 rust_version=null
+B aide 0.1.1 rust_version=null
+B aide 0.1.0 rust_version=null
+
+## C. utoipa 6.0.0 [features] default and utoipa-axum 0.3.0 requirements
+C utoipa 6.0.0 features.default=["macros"]
+C utoipa-axum 0.3.0 dep axum req=^0.8.4 optional=false features=[]
+C utoipa-axum 0.3.0 dep pastey req=^0.2 optional=false features=[]
+C utoipa-axum 0.3.0 dep tower-layer req=^0.3.3 optional=false features=[]
+C utoipa-axum 0.3.0 dep tower-service req=^0.3 optional=false features=[]
+C utoipa-axum 0.3.0 dep utoipa req=^6.0.0 optional=false features=["macros"]
+C utoipa-gen 5.5.0 created_at=2026-05-04T21:19:46.887609Z rust_version=1.75
+C utoipa-gen 6.0.0 created_at=2026-09-22T22:30:00.421473Z rust_version=1.88
+C utoipa-gen 6.0.1 created_at=2026-09-23T15:51:17.349835Z rust_version=1.88
+
+## D. reverse dependencies (GET /api/v1/crates/<n>/reverse_dependencies, meta.total)
+D utoipa reverse_dependencies=1813
+D utoipa-axum reverse_dependencies=72
+D aide reverse_dependencies=50
+D expectorate reverse_dependencies=33
+
+## E. GitHub repository figures (GET https://api.github.com/repos/<o>/<r>; open issues from search/issues total_count)
+E juhaku/utoipa stars=4106 archived=false pushed_at=2026-09-25T07:24:58Z license=Apache-2.0
+E juhaku/utoipa open_issues_search_total=164
+E tamasfe/aide stars=677 archived=false pushed_at=2026-09-21T08:02:20Z license=Apache-2.0
+E tamasfe/aide open_issues_search_total=35
+E oxidecomputer/expectorate stars=32 archived=false pushed_at=2026-08-20T22:57:58Z license=Apache-2.0
+E oxidecomputer/expectorate open_issues_search_total=0
+E oasdiff/oasdiff stars=1387 archived=false pushed_at=2026-09-21T08:39:33Z license=Apache-2.0
+E oasdiff/oasdiff open_issues_search_total=48
+E oasdiff/oasdiff-action stars=65 archived=false pushed_at=2026-09-15T18:49:23Z license=Apache-2.0
+E oasdiff/oasdiff-action open_issues_search_total=0
+E grahambrooks/brake stars=0 archived=false pushed_at=2026-09-25T02:55:26Z license=MIT
+E grahambrooks/brake open_issues_search_total=2
+E ostrowr/jsoncompat stars=17 archived=false pushed_at=2026-09-11T00:24:04Z license=MIT
+E ostrowr/jsoncompat open_issues_search_total=1
+E kurtbuilds/oasgen stars=201 archived=false pushed_at=2025-08-22T20:17:57Z license=none
+E kurtbuilds/oasgen open_issues_search_total=9
+
+## F. issue responsiveness: 10 most recently opened issues, first reply by OWNER/MEMBER/COLLABORATOR
+F juhaku/utoipa #1626 created=2026-09-26T15:58:08Z first_maintainer_reply=none
+F juhaku/utoipa #1622 created=2026-09-23T09:26:57Z first_maintainer_reply=2026-09-23T15:27:56Z days=0.25
+F juhaku/utoipa #1621 created=2026-09-23T06:43:12Z first_maintainer_reply=2026-09-23T07:14:00Z days=0.02
+F juhaku/utoipa #1617 created=2026-09-16T16:54:42Z first_maintainer_reply=2026-09-23T15:23:33Z days=6.94
+F juhaku/utoipa #1600 created=2026-09-04T16:30:40Z first_maintainer_reply=none
+F juhaku/utoipa #1599 created=2026-08-31T22:30:00Z first_maintainer_reply=none
+F juhaku/utoipa #1598 created=2026-08-31T13:33:40Z first_maintainer_reply=none
+F juhaku/utoipa #1594 created=2026-08-17T16:08:41Z first_maintainer_reply=2026-08-17T21:03:46Z days=0.2
+F juhaku/utoipa #1589 created=2026-08-08T10:04:23Z first_maintainer_reply=none
+F juhaku/utoipa #1587 created=2026-08-07T15:46:08Z first_maintainer_reply=2026-08-10T19:54:25Z days=3.17
+F juhaku/utoipa summary answered=5 unanswered=5 median_days=0.25
+F tamasfe/aide #295 created=2026-03-27T19:28:30Z first_maintainer_reply=none
+F tamasfe/aide #284 created=2026-02-07T13:58:45Z first_maintainer_reply=2026-03-17T21:48:15Z days=38.33
+F tamasfe/aide #283 created=2026-02-07T13:58:44Z first_maintainer_reply=2026-03-17T22:04:00Z days=38.34
+F tamasfe/aide #282 created=2026-02-07T13:58:44Z first_maintainer_reply=2026-03-17T22:01:39Z days=38.34
+F tamasfe/aide #280 created=2026-01-26T01:27:49Z first_maintainer_reply=2026-02-18T17:42:17Z days=23.68
+F tamasfe/aide #278 created=2026-01-17T00:06:59Z first_maintainer_reply=2026-02-06T19:42:34Z days=20.82
+F tamasfe/aide #274 created=2026-01-14T10:55:49Z first_maintainer_reply=none
+F tamasfe/aide #272 created=2025-12-28T20:08:50Z first_maintainer_reply=none
+F tamasfe/aide #270 created=2025-12-18T16:21:19Z first_maintainer_reply=2025-12-18T18:20:36Z days=0.08
+F tamasfe/aide #269 created=2025-12-14T15:54:59Z first_maintainer_reply=2025-12-27T21:42:34Z days=13.24
+F tamasfe/aide summary answered=7 unanswered=3 median_days=23.68
+F oxidecomputer/expectorate #35 created=2026-08-20T01:03:59Z first_maintainer_reply=2026-08-24T16:32:24Z days=4.64
+F oxidecomputer/expectorate #22 created=2024-03-13T00:49:52Z first_maintainer_reply=2024-05-13T04:49:08Z days=61.17
+F oxidecomputer/expectorate #9 created=2022-03-10T23:17:46Z first_maintainer_reply=none
+F oxidecomputer/expectorate #2 created=2020-08-18T23:50:20Z first_maintainer_reply=none
+F oxidecomputer/expectorate summary answered=2 unanswered=2 median_days=32.905
+F oasdiff/oasdiff #1262 created=2026-09-17T15:36:36Z first_maintainer_reply=none
+F oasdiff/oasdiff #1261 created=2026-09-17T15:36:29Z first_maintainer_reply=none
+F oasdiff/oasdiff #1257 created=2026-09-16T20:22:21Z first_maintainer_reply=none
+F oasdiff/oasdiff #1256 created=2026-09-15T19:16:21Z first_maintainer_reply=none
+F oasdiff/oasdiff #1252 created=2026-09-14T17:13:09Z first_maintainer_reply=2026-09-14T20:17:59Z days=0.13
+F oasdiff/oasdiff #1247 created=2026-09-13T14:44:46Z first_maintainer_reply=none
+F oasdiff/oasdiff #1242 created=2026-09-13T07:08:09Z first_maintainer_reply=none
+F oasdiff/oasdiff #1239 created=2026-09-11T13:46:30Z first_maintainer_reply=2026-09-13T06:55:47Z days=1.71
+F oasdiff/oasdiff #1235 created=2026-09-09T14:17:18Z first_maintainer_reply=2026-09-10T14:26:39Z days=1.01
+F oasdiff/oasdiff #1230 created=2026-09-08T10:56:29Z first_maintainer_reply=2026-09-09T15:21:27Z days=1.18
+F oasdiff/oasdiff summary answered=4 unanswered=6 median_days=1.095
+
+## G. RustSec package pages (HTTP status; 404 = no page = no advisory; control time.html must be 200)
+G rustsec time http=200
+G rustsec utoipa http=404
+G rustsec utoipa-gen http=404
+G rustsec utoipa-axum http=404
+G rustsec aide http=404
+G rustsec expectorate http=404
+
+## H. oasdiff releases, action tags, and upstream CI runners
+H oasdiff release v1.33.0-rc.1 prerelease=true published_at=2026-09-15T19:10:45Z
+H oasdiff release v1.32.1 prerelease=false published_at=2026-09-15T18:42:31Z
+H oasdiff release v1.32.0 prerelease=false published_at=2026-09-13T14:49:31Z
+H oasdiff release v1.31.0 prerelease=false published_at=2026-09-05T07:19:58Z
+H oasdiff release v1.30.0 prerelease=false published_at=2026-08-30T22:12:53Z
+H oasdiff-action release v0.1.17 published_at=2026-09-15T18:49:24Z
+H oasdiff-action release v0.1.16 published_at=2026-09-13T15:00:15Z
+H oasdiff-action release v0.1.15 published_at=2026-09-05T07:44:47Z
+H oasdiff v1.32.1 asset checksums.txt sha256:c3a3b2862ab43034dd3f3f2117477b43a79b66656093b768989eb37bfee9c542 size=1085
+H oasdiff v1.32.1 asset oasdiff_1.32.1_darwin_all.tar.gz sha256:e4d74b7e2dfb9d4819e7fc720c905ec86547e4637ac270a2b0187c0f1fb7187e size=13336632
+H oasdiff v1.32.1 asset oasdiff_1.32.1_linux_amd64.tar.gz sha256:7c8939fc49b75ee11fec66a5b83b37a2fca6aee109fed85013b1ba2ac2a1ee7f size=6815540
+H oasdiff-action v0.1.17 ref_object=commit 5e81b5c380accc6b523f9d32a637ca630e33620b
+H utoipa build.yaml:21:      matrix:
+H utoipa build.yaml:34:    runs-on: ubuntu-latest
+H utoipa build.yaml:62:            elif [[ "$change" == "utoipa-gen" && "${{ matrix.crate }}" == "utoipa-gen" && $changes == false ]]; then
+H utoipa build.yaml:64:            elif [[ "$change" == "utoipa-swagger-ui-vendored" && "${{ matrix.crate }}" == "utoipa-swagger-ui-vendored" && $changes == false ]]; then
+H utoipa build.yaml:66:            elif [[ "$change" == "utoipa-swagger-ui" && "${{ matrix.crate }}" == "utoipa-swagger-ui" && $changes == false ]]; then
+H utoipa build.yaml:68:            elif [[ "$change" == "utoipa" && "${{ matrix.crate }}" == "utoipa" && $changes == false ]]; then
+H utoipa build.yaml:70:            elif [[ "$change" == "utoipa-redoc" && "${{ matrix.crate }}" == "utoipa-redoc" && $changes == false ]]; then
+H utoipa build.yaml:72:            elif [[ "$change" == "utoipa-rapidoc" && "${{ matrix.crate }}" == "utoipa-rapidoc" && $changes == false ]]; then
+H utoipa build.yaml:74:            elif [[ "$change" == "utoipa-scalar" && "${{ matrix.crate }}" == "utoipa-scalar" && $changes == false ]]; then
+H utoipa build.yaml:76:            elif [[ "$change" == "utoipa-axum" && "${{ matrix.crate }}" == "utoipa-axum" && $changes == false ]]; then
+H utoipa build.yaml:78:            elif [[ "$change" == "utoipa-config" && "${{ matrix.crate }}" == "utoipa-config" && $changes == false ]]; then
+H utoipa build.yaml:80:            elif [[ "$change" == "utoipa-actix-web" && "${{ matrix.crate }}" == "utoipa-actix-web" && $changes == false ]]; then
+H utoipa build.yaml:84:          echo "${{ matrix.crate }} changes: $changes"
+H utoipa build.yaml:90:            cargo fmt --check --package ${{ matrix.crate }}
+H utoipa build.yaml:96:            cargo clippy --quiet --package ${{ matrix.crate }}
+H utoipa build.yaml:106:            just test ${{ matrix.crate }}
+H utoipa build.yaml:109:  check-typos:
+H utoipa build.yaml:111:    runs-on: ubuntu-latest
+H utoipa build.yaml:121:    runs-on: ubuntu-latest
+H expectorate rust.yml:14:    runs-on: ubuntu-22.04
+H expectorate rust.yml:21:    runs-on: ${{ matrix.os }}
+H expectorate rust.yml:24:        os: [ubuntu-22.04, windows-2022, macos-latest]
+# done

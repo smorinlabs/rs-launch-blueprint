@@ -1,0 +1,7 @@
+INFO: date-utc 2026-09-27T15:50:30Z
+INFO: X1 r09-actionlint.* entries before=0 after=0
+PASS: X1 r09-actionlint.sh leaves no new scratch entry under $TMPDIR
+INFO: X2 r09-sources.* entries before=6 after=6
+PASS: X2 r09-sources.sh leaves no new scratch entry under $TMPDIR
+PASS: X3 r09-inputs.sh creates no scratch directory (no mktemp/mkdir)
+SUMMARY: PASS=3 FAIL=0 SKIP=0

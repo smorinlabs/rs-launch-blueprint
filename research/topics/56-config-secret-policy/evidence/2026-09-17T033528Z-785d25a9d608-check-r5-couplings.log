@@ -1,0 +1,7 @@
+date-utc: 2026-09-27T07:33:54Z
+PASS K56 r54-owner-acceptance-row — docs/port/OWNER-ACCEPTANCES.md carries it (line 78): | R54 | 3 | `1348f6b314dbb938552f6aae844cb9d68b5b3b753151cc18f287cc291c96ef49` | accept | 2026-09-18 |
+PASS K57 r54-acceptance-adopts-project-tier — docs/port/OWNER-ACCEPTANCES.md carries it (line 78): project tier: the nearest .rslbp/rslbp_config.toml walking up from the working directory, stopping inclusively at the first ancestor carrying .git or a Cargo.toml that declares [workspace]
+PASS K58 r54-index-open — research/CLAUDE.md carries it (line 59): | R54 | config-discovery-tiers | bundle | py-only | DIVERGENT | — | [prompt](topics/54-config-discovery-tiers/prompts/config-discovery-tiers.prompt.md) | open |
+PASS K59 r54-working-decision-project-tier — research/runs/R54/2026-09-17T033527Z-8dfef31d60fc/review/DECISION.md carries it (line 162): | 3 | Project | nearest `.rslbp/rslbp_config.toml`, walking up from the working directory, stopping *inclusively* at the first ancestor carrying a boundary marker |
+K59-detail R54 working decision: # 2026-09-27 — R54 — config-discovery-tiers (bundle, Deep) — decision (revision 5); sha256 7b5074c18b8d42d99458c73e4dfd5ed060993a1f18f56fa9f32e733b7ecaa9fe
+CHECK_FAILURES=0

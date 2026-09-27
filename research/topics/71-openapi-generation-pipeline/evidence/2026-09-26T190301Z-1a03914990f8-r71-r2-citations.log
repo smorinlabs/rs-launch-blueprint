@@ -1,0 +1,161 @@
+# decision sha256=702cec90549c412c900155d47c17e18f378e9fac87d3745d47a93ec824667bb4
+OK   local docs/port/areas/web-service.md:100: - ts: `docs/port/TS_PORT_DECISIONS.md` — no feature: no decision entry addresses web-service scope; the module
+OK   local raw/muse.md:9: Three-bin map of the Rust field. Built-in / first-party toolchain: none — neither the Rust project nor axum sh
+OK   local raw/opus.md:44: | Built-in / first-party toolchain | **None.** Neither the Rust project nor `tokio-rs/axum` ships an OpenAPI g
+OK   local raw/doxa-openai.normalized.md:11: | **Built-in or first-party toolchain** | Rust and Cargo have no built-in OpenAPI generator. Framework-native 
+OK   local raw/doxa-gemini.normalized.md:7: The first category encompasses built-in or first-party toolchain capabilities. The Rust compiler (`rustc`) and
+OK   extern Cargo.toml:82 <- V rust-lang/crates.io@main:Cargo.toml:82:axum = { version = "=0.8.9", features = ["macros", "matched-path"] }
+OK   extern Cargo.toml:173 <- V rust-lang/crates.io@main:Cargo.toml:173:utoipa = { version = "=6.0.0", features = ["chrono"] }
+OK   extern Cargo.toml:174 <- V rust-lang/crates.io@main:Cargo.toml:174:utoipa-axum = "=0.3.0"
+OK   extern src/router.rs:16 <- W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/router.rs:16:    let (router, openapi) = BaseOpenApi:
+OK   extern src/router.rs:113 <- W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/router.rs:113:        .split_for_parts();
+OK   extern src/openapi.rs:118 <- W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/openapi.rs:118:        apply_visibility(&mut doc, par
+OK   extern src/openapi.rs:128 <- W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/openapi.rs:128:fn apply_visibility(openapi: &mut Open
+OK   extern src/openapi.rs:55 <- W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/openapi.rs:55:    modifiers(&SecurityAddon),
+OK   extern src/openapi.rs:74 <- W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/openapi.rs:74:impl Modify for SecurityAddon {
+OK   extern src/openapi.rs:76 <- W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/openapi.rs:76:        let components = openapi.compon
+OK   extern src/openapi.rs:53 <- W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/openapi.rs:53:        version = "0.0.0",
+OK   extern src/tests/openapi.rs:2 <- W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/tests/openapi.rs:2:use insta::{assert_json_snapshot, 
+OK   extern src/tests/openapi.rs:10 <- W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/tests/openapi.rs:10:    assert_json_snapshot!(respons
+OK   extern crates/meilisearch/Cargo.toml:94 <- V meilisearch/meilisearch@main:crates/meilisearch/Cargo.toml:94:utoipa = { version = "5.5.0", features = [
+OK   extern Cargo.toml:30 <- V loco-rs/loco-openapi-Initializer@main:Cargo.toml:30:axum = { version = "0.8.1" }
+OK   extern Cargo.toml:33 <- V loco-rs/loco-openapi-Initializer@main:Cargo.toml:33:utoipa = { version = "5.0.0", features = ["yaml"] }
+OK   extern Cargo.toml:34 <- V loco-rs/loco-openapi-Initializer@main:Cargo.toml:34:utoipa-axum = { version = "0.2.0" }
+OK   extern dropshot/Cargo.toml:105 <- V oxidecomputer/dropshot@main:dropshot/Cargo.toml:105:expectorate = "1.2.0"
+OK   local raw/opus.md:75: | `oxidecomputer/omicron` | Committed OpenAPI documents under `openapi/` (dirs `dns-server`, `gateway`, `cockr
+OK   local raw/muse.md:21: Architectural alternatives compared before choosing libraries. Code-first (annotate handlers, generate spec) v
+OK   local raw/opus.md:168: | Design-first (spec → server stubs, e.g. `openapi-generator` rust-axum, `progenitor`-style server) | Hand-wri
+OK   local raw/doxa-openai.normalized.md:62: | Handwritten/schema-first OpenAPI | Strong artifact control but duplicates Rust route/type declarations and r
+OK   local raw/doxa-gemini.normalized.md:35: Evaluating architectural alternatives reveals a stark contrast between design-first and code-first methodologi
+OK   local raw/opus.md:170: | Runtime-served only (`/openapi.json` endpoint, no committed file) | Clients fetch from a running server. | R
+OK   local raw/doxa-openai.normalized.md:66: | Export from a running server with `curl` | Reject: depends on process startup, environment, ports, and middl
+OK   local raw/opus.md:171: | No contract at all | — | Rejected: R83 and R84 are registered consumers. |
+OK   local raw/doxa-openai.normalized.md:196: **Adopt the complete bundle. Do not adopt only schema generation.**
+OK   local raw/muse.md:117: Build-script generation (`build.rs` writing the spec at compile time): excluded — violates the principle (gene
+OK   local raw/doxa-openai.normalized.md:67: | Write the snapshot from `build.rs` | Reject: build scripts should not modify tracked source files and would 
+OK   local raw/doxa-openai.normalized.md:403: - **`build.rs`:** rejected because generation would have repository side effects during ordinary builds.
+OK   extern web/problems.py:97 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:97:   
+OK   extern web/problems.py:104 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:104:  
+OK   extern web/problems.py:116 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:116:  
+OK   extern web/problems.py:119 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:119:  
+OK   extern web/problems.py:125 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/problems.py:125:  
+OK   extern web/app.py:77 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/app.py:77:def _ope
+OK   extern web/app.py:80 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/app.py:80:    retu
+OK   extern web/app.py:119 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:src/py_launch_blueprint/web/app.py:119:       
+OK   extern docs/api/openapi.json:16 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:docs/api/openapi.json:16:        "operationId"
+OK   extern docs/api/openapi.json:38 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:docs/api/openapi.json:38:        "operationId"
+OK   extern docs/api/openapi.json:70 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:docs/api/openapi.json:70:        "operationId"
+OK   extern docs/api/openapi.json:147 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:docs/api/openapi.json:147:        "operationId
+OK   extern tests/web/test_openapi_snapshot.py:25 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:tests/web/test_openapi_snapshot.py:25:    asse
+OK   extern tests/web/test_openapi_snapshot.py:30 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:tests/web/test_openapi_snapshot.py:30:    gene
+OK   extern tests/web/test_openapi_snapshot.py:32 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:tests/web/test_openapi_snapshot.py:32:    asse
+OK   extern tests/web/test_openapi_snapshot.py:33 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:tests/web/test_openapi_snapshot.py:33:        
+OK   extern scripts/export_openapi.py:23 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:scripts/export_openapi.py:23:SNAPSHOT_VERSION 
+OK   extern Justfile:318 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:Justfile:318:@export-openapi:
+OK   extern .github/workflows/api-contract.yml:44 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:44:        
+OK   extern .github/workflows/api-contract.yml:48 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:48:        
+OK   extern .github/workflows/api-contract.yml:10 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:10:    path
+OK   extern .github/workflows/api-contract.yml:11 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:11:      - 
+OK   extern src/openapi.rs:129 <- W rust-lang/crates.io@067b45e1a15fc1b97f7321792b86bdf8d6371d7c:src/openapi.rs:129:    openapi.paths.paths.retain(|_, ite
+OK   extern versions/3.1.1.md:352 <- O OAI/OpenAPI-Specification@main:versions/3.1.1.md:352:| <a name="info-version"></a>version | `string` | **REQUIRED**. T
+OK   local raw/doxa-openai.normalized.md:173: **BASELINE-REVIEW: F332 — the committed artifact should equal the served/exported artifact byte-for-byte — rep
+OK   extern api-contract.yml:10 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:10:    path
+OK   extern api-contract.yml:11 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:11:      - 
+OK   extern checker/rules.go:616 <- R oasdiff/oasdiff@v1.32.1:checker/rules.go:616:		newBackwardCompatibilityRule(APIOperationIdRemovedId, INFO, APIOperatio
+OK   extern docs/BREAKING-CHANGES.md:154 <- R oasdiff/oasdiff@v1.32.1:docs/BREAKING-CHANGES.md:154:## Customizing Severity Levels
+OK   extern docs/BREAKING-CHANGES.md:159 <- R oasdiff/oasdiff@v1.32.1:docs/BREAKING-CHANGES.md:159:oasdiff changelog data/checker/api_security_added_revision.yaml d
+OK   extern rules.go:184 <- R oasdiff/oasdiff@v1.32.1:checker/rules.go:184:		newBackwardCompatibilityRule(APIPathRemovedWithoutDeprecationId, ERR, A
+OK   extern internal/cmd_flags.go:26 <- X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:26:	cmd.PersistentFlags().Bool("allow-external-refs", true, "allow exter
+OK   extern internal/breaking_changes.go:20 <- X oasdiff/oasdiff@v1.32.1:internal/breaking_changes.go:20:	addCommonDiffFlags(&cmd)
+OK   extern internal/cmd_flags.go:28 <- X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:28:	cmd.PersistentFlags().Bool("fetch", false, "fetch missing git revisi
+OK   extern .goreleaser.yml:13 <- X oasdiff/oasdiff@v1.32.1:.goreleaser.yml:13:     - CGO_ENABLED=0
+OK   extern build.yaml:34 <- H utoipa build.yaml:34:    runs-on: ubuntu-latest
+OK   extern rust.yml:24 <- H expectorate rust.yml:24:        os: [ubuntu-22.04, windows-2022, macos-latest]
+OK   extern .goreleaser.yml:5 <- X oasdiff/oasdiff@v1.32.1:.goreleaser.yml:5:   goos:
+OK   extern .goreleaser.yml:11 <- X oasdiff/oasdiff@v1.32.1:.goreleaser.yml:11:     - arm64
+OK   extern internal/cmd_flags.go:13 <- X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:13:	cmd.PersistentFlags().StringP("match-path", "p", "", "include only p
+OK   extern internal/cmd_flags.go:14 <- X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:14:	cmd.PersistentFlags().StringP("unmatch-path", "q", "", "exclude path
+OK   extern internal/cmd_flags.go:20 <- X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:20:	cmd.PersistentFlags().Bool("include-path-params", false, "include pa
+OK   extern internal/cmd_flags.go:99 <- X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:99:	cmd.PersistentFlags().Uint("deprecation-days-beta", checker.DefaultB
+OK   extern internal/cmd_flags.go:100 <- X oasdiff/oasdiff@v1.32.1:internal/cmd_flags.go:100:	cmd.PersistentFlags().Uint("deprecation-days-stable", checker.Defau
+OK   extern internal/viper.go:106 <- X oasdiff/oasdiff@v1.32.1:internal/viper.go:106://  3. Default cwd lookup, in order:
+OK   extern internal/viper.go:107 <- X oasdiff/oasdiff@v1.32.1:internal/viper.go:107://     a. .oasdiff.{json,yaml,yml,toml,hcl} (preferred — dotfile convent
+OK   extern internal/viper.go:124 <- X oasdiff/oasdiff@v1.32.1:internal/viper.go:124:		v.SetConfigName(name)
+OK   extern internal/viper.go:125 <- X oasdiff/oasdiff@v1.32.1:internal/viper.go:125:		v.AddConfigPath(".")
+OK   extern internal/run.go:44 <- X oasdiff/oasdiff@v1.32.1:internal/run.go:44:	rootCmd.PersistentFlags().String("config", "", "path to config file (overr
+OK   extern internal/viper.go:48 <- X oasdiff/oasdiff@v1.32.1:internal/viper.go:48:	if err := readConfFile(cmd, v); err != nil {
+OK   extern internal/viper.go:56 <- X oasdiff/oasdiff@v1.32.1:internal/viper.go:56:	if err := bindFlags(cmd, v); err != nil {
+OK   extern internal/viper.go:161 <- X oasdiff/oasdiff@v1.32.1:internal/viper.go:161:		if err := v.BindPFlag(name, persitentFlags.Lookup(name)); err != nil {
+OK   extern internal/viper.go:62 <- X oasdiff/oasdiff@v1.32.1:internal/viper.go:62:	// values where the user explicitly set the corresponding CLI flag —
+OK   local raw/opus.md:189: **compile time**: clean `cargo build --locked --features web --timings`, debug profile, macOS
+OK   local raw/opus.md:192: 2.80 s (from `target/cargo-timings/cargo-timing-*.html` `UNIT_DATA`). `cargo tree -d -e normal`
+OK   extern versions/3.1.1.md:978 <- O OAI/OpenAPI-Specification@main:versions/3.1.1.md:978:| <a name="operation-id"></a>operationId | `string` | Unique stri
+OK   local research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/review/evidence/ci.candidate.r2.yml:95: rest=0; grep -qvE "${skip}|^\$" <<<"$changed" || rest=$?
+OK   local research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/review/evidence/ci.candidate.r2.yml:108: wf=0; grep -qE '^\.github/workflows/|^\.github/actions/|^\.github/actionlint\.ya?ml$' <<<"$changed" || wf=$?
+OK   extern rules.go:616 <- R oasdiff/oasdiff@v1.32.1:checker/rules.go:616:		newBackwardCompatibilityRule(APIOperationIdRemovedId, INFO, APIOperatio
+OK   local raw/muse.md:3: Engine: muse (Meta). Retrieval date for all figures: 2026-09-26. Item kind: `bundle`.
+OK   local raw/opus.md:3: Engine: Claude Opus 5.5 (`claude-opus-5-5`), fresh context, CLI seat, 2026-09-26. Item kind
+OK   local raw/opus.md:5: independent reading of `inputs/prompt.md` (byte-identical to
+OK   local raw/opus.md:7: checked with `diff`), the run's `inputs/`, the pinned source repositories, and the named
+OK   local raw/opus.md:926: - CONFLICT: R69 web-extra-surface — web = ["dep:axum", "dep:tokio", "dep:utoipa", "dep:utoipa-axum"] — the gen
+OK   local raw/muse.md:83: Template `Cargo.toml`: add `utoipa = { version = "6", optional = true }` and `utoipa-axum = { version = "0.3",
+OK   local raw/muse.md:227: This item owns no parameters. Assumes `web-extra-surface` = R69's accepted value (one additive off-by-default 
+OK   local raw/doxa-openai.normalized.md:684: - `assumes R69:web-extra-surface = enabled with an OpenAPI-capable framework`
+OK   local raw/doxa-gemini.normalized.md:308: *   `assumes web-framework-stack = [ANY]` (Compatible with any framework R69 selects).
+OK   local raw/muse.md:23: Recommended design preserving each principle: `utoipa 6` + `utoipa-axum 0.3` generate the spec from axum route
+OK   local raw/doxa-openai.normalized.md:75: 4. A project-owned `ContractPolicy` applies typed mutations through Utoipa’s mutable `OpenApi` model/`Modify` 
+OK   local raw/doxa-openai.normalized.md:171: **BASELINE-REVIEW: F307 — runtime/schema agreement is the principle, not Python’s JSON wrapper mechanism — use
+OK   local raw/doxa-gemini.normalized.md:46: 2.  **`utoipa::Modify` Trait Implementation** acts as the schema post-processing step. A dedicated struct muta
+OK   local raw/opus.md:136: 2. **The pass must run on the merged document.** utoipa's `Modify` trait on `#[derive(OpenApi)]`
+OK   local raw/opus.md:141: the exact analogue of py's "call AFTER all routers are included" docstring.
+OK   local raw/doxa-openai.normalized.md:122: paths(get_widget),
+OK   local raw/doxa-openai.normalized.md:128: let mut document = ApiDoc::openapi();
+OK   local raw/doxa-openai.normalized.md:77: - replaces or adds framework validation responses;
+OK   local raw/opus.md:149: 4. **The snapshot's path moves out of `docs/`.** R11's detector skips the compiling `check` job
+OK   local raw/opus.md:156: from py's `docs/api/` placement.
+OK   local raw/doxa-openai.normalized.md:163: The exporter should be a dedicated, feature-gated binary:
+OK   local raw/doxa-openai.normalized.md:169: This is preferable to a public user-facing CLI command because it does not enlarge the template application’s 
+OK   local raw/doxa-gemini.normalized.md:47: 3.  **Dedicated Staleness Test + CLI Exporter** serves as the snapshot mechanism. A `just export-openapi` reci
+OK   local raw/muse.md:105: Principle (F332): the generated spec is a committed, reviewable contract that cannot silently drift from the c
+OK   local raw/opus.md:142: 3. **The regenerator is the test, not a binary.** R49 fixes exactly one `[[bin]]` with
+OK   local raw/opus.md:148: recipe `export-openapi` (R42: bare invocation, no runner prefix).
+OK   local raw/muse.md:109: Committed `docs/api/openapi.json` + `tests/web/test_openapi_snapshot.rs` (gated `#![cfg(feature = "web")]` per
+OK   local raw/doxa-openai.normalized.md:149: ```rust
+OK   local raw/doxa-openai.normalized.md:160: }
+OK   local raw/opus.md:663: #### expectorate
+OK   local raw/opus.md:737: ```
+OK   local raw/opus.md:675: `assert_binary_snapshot!`, which I probed: it writes the payload as a plain sidecar
+OK   local raw/opus.md:681: for a file two other items consume. `expectorate::assert_contents(path, &text)` compares against a plain file,
+OK   local raw/opus.md:745: A dev-dependency with tiny community (32 stars) versus ~15 lines of template code; chosen for the
+OK   local raw/opus.md:748: drift locally — CI never sets it, so CI still fails closed. Ordering is canonical only while no crate in the `
+OK   local raw/opus.md:683: test and regenerator in one (answers the MEDIUM question given R49/R69's no-extra-binary
+OK   local raw/opus.md:685: while the test first asserts the runtime document carries `CARGO_PKG_VERSION` (criterion A7).
+OK   local raw/muse.md:171: `oasdiff/oasdiff-action/breaking@v0.1.17` (py pins v0.1.6; v0.1.17 is the newest tag at retrieval, released al
+OK   local raw/doxa-gemini.normalized.md:48: 4.  **`oasdiff` GitHub Action (`oasdiff/oasdiff-action/breaking@v0`)** functions as the breaking-change detect
+OK   local raw/doxa-openai.normalized.md:207: - **Compatibility gate:** `oasdiff 1.23.0`, `breaking --fail-on WARN`, comparing the base branch’s committed f
+OK   local raw/opus.md:851: Pin `oasdiff` v1.32.1 by version **and** sha256 from `checksums.txt` (R20's action-pinning policy
+OK   local raw/doxa-openai.normalized.md:3: **Evidence limitation:** direct JSON access to the mandated crates.io and GitHub API endpoints was blocked by 
+OK   extern breaking/Dockerfile:1 <- Q oasdiff/oasdiff-action@v0.1.17:breaking/Dockerfile:1:FROM tufin/oasdiff:v1.32.1
+OK   extern breaking/Dockerfile:2 <- Q oasdiff/oasdiff-action@v0.1.17:breaking/Dockerfile:2:RUN apk add --no-cache curl jq
+OK   extern action.yml:59 <- Q oasdiff/oasdiff-action@v0.1.17:breaking/action.yml:59:  review:
+OK   extern action.yml:62 <- Q oasdiff/oasdiff-action@v0.1.17:breaking/action.yml:62:    default: 'true'
+OK   extern entrypoint.sh:49 <- Q oasdiff/oasdiff-action@v0.1.17:breaking/entrypoint.sh:49:    printf '{"event":"review_delivery","props":{"mode":"%s","
+OK   extern api-contract.yml:28 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:28:        
+OK   extern api-contract.yml:29 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:29:        
+OK   extern api-contract.yml:48 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:48:        
+OK   local raw/doxa-openai.normalized.md:184: 8. An operation-ID mutation is tested empirically. If Oasdiff does not classify it at `WARN` or stronger, add 
+OK   local raw/doxa-gemini.normalized.md:130: Simultaneously, this post-processing pass inspects the `operation_id` of every route. If a developer fails to 
+OK   local raw/opus.md:323: None of the shortlist fails a numbered gate. Excluded **on fit** (R69 fixed axum), not by gate:
+OK   local raw/doxa-openai.normalized.md:37: | `aide 0.15.1` | **Fails MSRV-policy gate:** no `rust-version` is declared, and the maintainer promises only 
+OK   local raw/muse.md:179: `brake` 2026.9.3 (MIT, 119 downloads, 0 stars, repo `grahambrooks/brake` pushed 2026-09-25): excluded by gate 
+OK   extern api-contract.yml:44 <- P smorinlabs/py-launch-blueprint@b55b8c26364cb0f42e56116e6780921976334751:.github/workflows/api-contract.yml:44:        
+OK   local raw/opus.md:101: | F333 | A PR that breaks existing clients is flagged automatically against the base branch. | **Capability** 
+OK   local raw/muse.md:47: `utoipa` 6.0.0 + `utoipa-axum` 0.3.0. Figures (crates.io API + GitHub API, 2026-09-26): utoipa 48,861,111 all-
+OK   local raw/muse.md:55: `okapi` 0.7.0 (2,061,750 / 130,797 downloads; MIT; stars 740; pushed 2025-06-19; 27 open issues; last release 
+OK   local raw/doxa-gemini.normalized.md:106: | Stars, archived | `GET https://api.github.com/repos/juhaku/utoipa` | ~2,500+, `false` |
+OK   local raw/doxa-gemini.normalized.md:108: | Issue responsiveness | 10 most recently opened issues | ~3 days median response; minimal unanswered |
+OK   local raw/doxa-gemini.normalized.md:291: 1. License: MIT (Pass)
+OK   local raw/doxa-openai.normalized.md:311: - `owns generator-choice = utoipa 6.0.0`
+OK   local raw/doxa-gemini.normalized.md:87: *   `owns openapi-generator = utoipa`
+OK   local raw/doxa-gemini.normalized.md:304: *   `owns openapi-generator = utoipa`
+# citations resolved=159 unresolved=0

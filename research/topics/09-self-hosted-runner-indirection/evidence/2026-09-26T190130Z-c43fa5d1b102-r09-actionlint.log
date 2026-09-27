@@ -1,0 +1,40 @@
+INFO: host Darwin 25.4.0 arm64 bash 5.3.20
+INFO: actionlint 1.7.12 at /opt/homebrew/bin/actionlint
+INFO: date-utc 2026-09-27T15:50:27Z
+PASS: A0 actionlint is 1.7.12
+PASS: A1 hardcoded labels, no config -> exit 0 silent
+PASS: A2 expression-only runs-on, no config -> exit 0 silent
+PASS: A3 literal custom label, no block -> exit 1 [runner-label]
+PASS: A4 literal custom label + labels block -> exit 0
+PASS: A5 labels block inert under expression-only runs-on (0 without, 0 with)
+PASS: A6a RUNNER-only list rejects R18 vars reads (global allow-list)
+PASS: A6c four-name list rejects exactly the vars.ANTHROPIC_SERVICE_ACCOUNT_ID with: read
+PASS: A6b five-name list (RUNNER_* + R18's three vars) -> exit 0 silent
+INFO: A6d R18 acceptance.json empirical cwd=research/runs/R18/2026-09-06T043454Z-6f31d86e5b7d/review/evidence files=candidate-claude-code-review.r5.yml candidate-claude.r5.yml
+INFO: A6d R18 topic DECISION matches acceptance.json decision_sha256; fixtures byte-identical in /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R18/2026-09-16T224802Z-41e1cb8604e0
+PASS: A6d R18's accepted r5 fixtures: exit 0 with no config and exit 0 under the five-name list
+INFO: A6e distinct vars.* names read outside comments in R18's fixtures: vars.ANTHROPIC_FEDERATION_RULE_ID vars.ANTHROPIC_ORGANIZATION_ID vars.ANTHROPIC_SERVICE_ACCOUNT_ID 
+PASS: A6e R18's fixtures read exactly three vars.* names, all in the five-name list
+PASS: A7 empty config-variables list rejects all five R18 vars reads (env + with:)
+INFO: A8 raw output:
+INFO: A8 | .github/workflows/release-please.yml:10:15: missing input "app-id" which is required by action "actions/create-github-app-token@v3". all required inputs are "app-id", "private-key" [action]
+INFO: A8 |    |
+INFO: A8 | 10 |         uses: actions/create-github-app-token@v3
+INFO: A8 |    |               ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+INFO: A8 | .github/workflows/release-please.yml:12:11: input "client-id" is not defined in action "actions/create-github-app-token@v3". available inputs are "app-id", "github-api-url", "owner", "permission-actions", "permission-administration", "permission-checks", "permission-codespaces", "permission-contents", "permission-custom-properties-for-organizations", "permission-dependabot-secrets", "permission-deployments", "permission-email-addresses", "permission-enterprise-custom-properties-for-organizations", "permission-environments", "permission-followers", "permission-git-ssh-keys", "permission-gpg-keys", "permission-interaction-limits", "permission-issues", "permission-members", "permission-metadata", "permission-organization-administration", "permission-organization-announcement-banners", "permission-organization-copilot-seat-management", "permission-organization-custom-org-roles", "permission-organization-custom-properties", "permission-organization-custom-roles", "permission-organization-events", "permission-organization-hooks", "permission-organization-packages", "permission-organization-personal-access-token-requests", "permission-organization-personal-access-tokens", "permission-organization-plan", "permission-organization-projects", "permission-organization-secrets", "permission-organization-self-hosted-runners", "permission-organization-user-blocking", "permission-packages", "permission-pages", "permission-profile", "permission-pull-requests", "permission-repository-custom-properties", "permission-repository-hooks", "permission-repository-projects", "permission-secret-scanning-alerts", "permission-secrets", "permission-security-events", "permission-single-file", "permission-starring", "permission-statuses", "permission-team-discussions", "permission-vulnerability-alerts", "permission-workflows", "private-key", "repositories", "skip-token-revoke" [action]
+INFO: A8 |    |
+INFO: A8 | 12 |           client-id: ${{ secrets.APP_CLIENT_ID }}
+INFO: A8 |    |           ^~~~~~~~~~
+PASS: A8 mint without suppression -> exactly the stale pair, on release-please.yml only
+PASS: A9a narrow suppression (candidate file) -> exit 0
+PASS: A9b +publish.yml entry -> exit 0 identical (entry is dead config)
+PASS: A10a repo-relative path arg honours paths: -> exit 0
+PASS: A10b ./-prefixed path arg bypasses paths: -> pair resurfaces
+PASS: A11 literal typo caught once; expression fallback typo invisible
+PASS: A11b variable-name typo passes with no config; config-variables list rejects it
+PASS: A12a recommended tree + candidate config -> exit 0 silent
+PASS: A12b candidate config carries neither F056 nor F057 key
+PASS: A12c runner guard silent on recommended tree (comment on own line)
+PASS: A12d F058 census equal: keys == files invoking the action
+PASS: A12e escape-hatch comment present in recommended tree
+SUMMARY: PASS=24 FAIL=0 SKIP=0

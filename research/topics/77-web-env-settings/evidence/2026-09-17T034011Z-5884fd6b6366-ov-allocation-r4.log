@@ -1,0 +1,26 @@
+# R77 revision 4 — OVERRIDE-number census (declarations only) — 2026-09-27T07:06:52Z
+# repository root, fully resolved: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+PASS the resolved root contains no .. segment
+
+## A — the controller allocates OV numbers; R77 holds OV-04, R80 OV-05
+PASS the ledger records the collision
+PASS allocation moved to the controller
+PASS OV-04 is allocated to R77
+PASS OV-05 is allocated to R80
+
+## B — who DECLARES OVERRIDE (OV-04)
+DECISION.md files searched: 147
+PASS the census searched more than one decision (147)
+declarers of OVERRIDE (OV-04):
+research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md
+PASS exactly one decision declares OV-04, and it is this one
+PASS no audit file is in the census (only DECISION.md files are searched)
+this decision is tracked in git
+
+## C — controls
+declarers of OVERRIDE (OV-05):
+research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md
+PASS positive control: the same search finds R80's OV-05 heading
+PASS negative control: a planted heading is found; a prose quotation and an audit file are not
+
+PASS=10 FAIL=0 SKIP=0 TOTAL=10

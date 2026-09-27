@@ -1,0 +1,118 @@
+
+## P0 toolchain and environment
+P0 date_utc=2026-09-27T03:39:01Z host=Darwin arm64
+P0 rustc=rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+P0 cargo=cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+P0 floor=cargo 1.96.1 (356927216 2026-06-26)
+P0 CARGO_HOME=/tmp/cargo-s13-R71
+
+## P1 resolve (MSRV-aware resolver, rust-version = 1.96)
+P1      Locking 91 packages to latest Rust 1.96 compatible versions
+P1       Adding matchit v0.8.4 (available: v0.8.6)
+P1 tree: axum v0.8.9
+P1 tree: serde_json v1.0.151
+P1 tree: syn v3.0.6
+P1 tree: tokio v1.53.1
+P1 tree: utoipa v6.0.0
+P1 tree: utoipa-axum v0.3.0
+P1 tree: utoipa-gen v6.0.1 (proc-macro)
+P1 Cargo.lock sha256=bc2b62eac916733065f7fbac8e762cdf464ae4eb3d68b9923c561ab317c6b76a packages=92
+P1 duplicate-crate lines on normal edges (cargo tree -d -e normal): 0
+
+## P2 first regeneration writes the snapshot, then a plain run passes
+P2 overwrite-without-dir exit=101
+P2   unable to write to openapi/openapi.json: No such file or directory (os error 2) at path "/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r71-probe.i3R25z/openapi/.atomicwriteHbNFKR"
+P2   test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.00s
+P2 overwrite exit=0
+P2   test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.03s
+P2 snapshot bytes=2972 sha256=d51ddf0b5d1ee52144d736457b50667439c2ecbf6e6c8b922cf13695bad714fb
+P2 plain exit=0
+P2   test default_operation_id_is_the_function_name ... default operationId=Some("uncurated_handler")
+P2   test doc_level_modifier_runs_before_routes_are_merged ... routed: modifier saw 0 paths; merged document has 2
+P2   test doc_level_modifier_sees_paths_listed_in_the_derive ... listed: modifier saw 2 paths
+P2   test document_version_is_the_document_constant_not_the_crate_version ... info.version=0.0.0 CARGO_PKG_VERSION=0.1.0
+P2   test every_input_taking_operation_documents_problem_400 ... get /v1/projects/{id} 400 -> "#/components/schemas/Problem"
+P2   test openapi_snapshot_is_current ... ok
+P2   test openapi_snapshot_is_current_handrolled ... ok
+P2   test operation_ids_are_present_unique_and_tag_prefixed ... operationIds={"projects-get_project", "projects-list_projects"}
+P2   test raw_document_declares_no_framework_error_response ... raw get /v1/projects responses=["200"]
+P2   raw get /v1/projects/{id} responses=["200", "404"]
+P2   test runtime_rejection_is_not_yet_problem_json ... runtime status=400 Bad Request content-type=Some("text/plain; charset=utf-8")
+P2   test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+## P3 idempotence: a second regeneration is byte-identical
+P3 overwrite-again exit=0
+P3 sha256 first=d51ddf0b5d1ee52144d736457b50667439c2ecbf6e6c8b922cf13695bad714fb second=d51ddf0b5d1ee52144d736457b50667439c2ecbf6e6c8b922cf13695bad714fb identical=yes
+
+## P4 the committed document
+P4 openapi=3.1.0 info.version=0.0.0
+P4 get /v1/projects operationId=projects-list_projects responses=["200"]
+P4 get /v1/projects/{id} operationId=projects-get_project responses=["200","400","404"]
+P4 components.schemas=["Problem","Project"]
+
+## P5 mutation: rename the path parameter {id} -> {project_id} (route and document move together)
+P5 expectorate exit=101
+P5   -    "/v1/projects/{id}": {
+P5   +    "/v1/projects/{project_id}": {
+P5   -            "name": "id",
+P5   +            "name": "project_id",
+P5                   set EXPECTORATE=overwrite if these changes are intentional
+P5   test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.00s
+P5 handrolled exit=101
+P5   thread 'openapi_snapshot_is_current_handrolled' (1020767510) panicked at tests/openapi.rs:105:5:
+P5   assertion `left == right` failed: openapi/openapi.json is stale; run `just export-openapi`
+P5     left: "{\n  \"openapi\": \"3.1.0\",\n  \"info\": {\n    \"title\": \"r71-probe\",\n    \"description\": \"\",\n    \"license\": {\n      \"name\": \"\"\n    },\n    \"version\": \"0.0.0\"\n  },\n  \"paths\": {\n    \"/v1/projects\": {\n  
+P5    right: "{\n  \"openapi\": \"3.1.0\",\n  \"info\": {\n    \"title\": \"r71-probe\",\n    \"description\": \"\",\n    \"license\": {\n      \"name\": \"\"\n    },\n    \"version\": \"0.0.0\"\n  },\n  \"paths\": {\n    \"/v1/projects\": {\n  
+P5 handrolled panic message bytes=6918
+
+## P6 mutation: delete get_project's operation_id attribute
+P6 conformance exit=101
+P6   get /v1/projects/{id}: operationId "get_project" lacks the `projects-` prefix
+P6   test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.00s
+
+## P7 mutation: rename the handler function (public operationId unchanged) — criterion A4
+P7 snapshot exit=0
+P7   test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.00s
+
+## P8 mutation: bump the crate version 0.1.0 -> 0.2.0 (a release must not stale the contract)
+P8 snapshot exit=0
+P8   test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.01s
+
+## P9 feature off: no generator in the graph, no web tests
+P9 utoipa crates on normal edges without --features web: 0
+P9 test exit=0
+P9   test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+P9   test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+P9   test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+## P10 example-target regenerator (the Muse form): not a [[bin]], output equals the committed file
+P10 example output identical to committed snapshot: yes
+P10 without-feature exit=101
+P10   error: target `export-openapi` in package `r71-probe` requires the features: `web`
+
+## P11 clippy -D warnings, all targets, feature on
+P11 clippy exit=0
+
+## P12 msrv-policy floor: the whole web test file on 1.96
+P12 floor exit=0
+P12      Compiling serde_path_to_error v0.1.20
+P12   test raw_document_declares_no_framework_error_response ... ok
+P12   test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+## P13 clean debug build cost with --features web (qualitative gate 6)
+P13 clean debug build --features web wall_seconds=16 (macOS arm64, 1 run, private CARGO_HOME with warm registry)
+
+## P14 oasdiff fixture pairs derived from this document (for r71-oasdiff.sh)
+P14 d51ddf0b5d1ee52144d736457b50667439c2ecbf6e6c8b922cf13695bad714fb  ./base.json
+P14 fcecf66b58f83ca85f36ac69487e751ef4804d7fe35ada2817ab799ba6b26afd  ./head-additive-optional-property.json
+P14 ab35e82b1c4da3b12e2187acfac85afceec282fbd5bd86df32c4824c5707401b  ./head-operation-id-renamed.json
+P14 0485296adcd82f0cdac9448a92a2fbfaf5cb1d16edfb5224e6f033b857847869  ./head-removed-operation.json
+P14 e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855  ./breaking-accepted.txt
+P14 cbf8f42a2060f80f225b4a712d8fd1760658dae88d1df1327a72f7b1f02c664e  ./oasdiff-levels.txt
+
+## P15 unsafe posture (gate 3): the unsafe keyword in the downloaded registry sources
+P15 utoipa-6.0.0 unsafe_lines=0 fn_lines_control=592 forbid_unsafe_code=0
+P15 utoipa-gen-6.0.1 unsafe_lines=0 fn_lines_control=719 forbid_unsafe_code=0
+P15 utoipa-axum-0.3.0 unsafe_lines=0 fn_lines_control=60 forbid_unsafe_code=0
+P15 expectorate-1.3.0 unsafe_lines=0 fn_lines_control=21 forbid_unsafe_code=0
+# done

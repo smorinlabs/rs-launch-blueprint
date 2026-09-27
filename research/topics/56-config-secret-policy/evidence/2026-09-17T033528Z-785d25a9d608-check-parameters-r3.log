@@ -1,0 +1,48 @@
+date-utc: 2026-09-27T00:51:01Z
+decision: research/runs/R56/2026-09-17T033528Z-785d25a9d608/review/DECISION.md
+decision sha256: 289422e82973520f0e1c2d6e0da83159f0ad5e0ebcbd303f6db6d1d3ccbd9dd1
+PASS PA1 assumes-line-count — 5
+PASS PA2 assumes-byte-identical-to-registry — diff against lines regenerated from docs/port/PARAMETERS.md is empty
+PASS PA3 no-owns-line — 0
+PASS PA4 h2-set — Decision, Parameters, Empirical check, Engines — in order, with no Supersedes
+PASS PA5 principles-h3 — 1
+PASS PA6 title — 1
+PASS PA6b no-supersedes — 0
+PASS PA6c revision-note — 1
+PASS PA6d revision-history — 1
+PASS PA7 one-re-verify-line — 1
+PASS PA8.1 sensitive-pattern-absent — no file under review/ contains it, excluding the check-parameters scripts, which name the patterns they search for (binary /usr/bin/grep)
+PASS PA8.2 sensitive-pattern-absent — no file under review/ contains it, excluding the check-parameters scripts, which name the patterns they search for (binary /usr/bin/grep)
+PASS PA8.3 sensitive-pattern-absent — no file under review/ contains it, excluding the check-parameters scripts, which name the patterns they search for (binary /usr/bin/grep)
+PASS PA8.4 sensitive-pattern-absent — no file under review/ contains it, excluding the check-parameters scripts, which name the patterns they search for (binary /usr/bin/grep)
+PASS PA8.5 sensitive-pattern-absent — no file under review/ contains it, excluding the check-parameters scripts, which name the patterns they search for (binary /usr/bin/grep)
+PASS PA9 fixture-absent-from-every-log — 0
+PASS PA10 fixture-only-in-the-three-expected-files — DECISION.md evidence/check-probe.sh evidence/probe/src/main.rs 
+PASS PA10b.1 r2-fixture-absent-from-every-log — 0
+PASS PA10c.1 r2-fixture-only-in-the-four-expected-files — DECISION.md evidence/check-probe-r2.sh evidence/check-probe-r3.sh evidence/probe-r2/src/main.rs 
+PASS PA10b.2 r2-fixture-absent-from-every-log — 0
+PASS PA10c.2 r2-fixture-only-in-the-four-expected-files — DECISION.md evidence/check-probe-r2.sh evidence/check-probe-r3.sh evidence/probe-r2/src/main.rs 
+PASS PA11 no-leaks — 0
+PASS PA12.1 sha256 check-standard.sh — 04bf4f067001db2e090098b3512925a7f3a682d85739597c47b5b7dbcb4b847a
+PASS PA12.2 sha256 check-standard.log — 568253018c581bb98d189c55787276a48dd4ceb1af62dbd048dbc03c58a8fb69
+PASS PA12.3 sha256 check-siblings.sh — 672483deee1f095d4225847f08a63b79d748c417a3a42b6ecd04d83d56c57a02
+PASS PA12.4 sha256 check-siblings.log — 5a9634b5ff4e7843c45c04848309f69e6bbb78445f1dadec0a2d7ab76afc7d79
+PASS PA12.5 sha256 check-registry.sh — 17156fcb53f0dcc005613a44fa056dd4bbdbe8eab292d49934f6b19c3229acf1
+PASS PA12.6 sha256 check-registry.log — d5765ea8ed197f368f82e265a0dd428046667dc8a57865249bff78b99c611a70
+PASS PA12.7 sha256 check-probe.sh — 7ab23442ec1a170d11ac92771fed2318931f47dd8a15361424b910608eb7653c
+PASS PA12.8 sha256 check-probe.log — ec5bf07be3f421e8d4db63f57b586b290db8500e08b61b2e85adb90e9f1f1a26
+PASS PA12.9 sha256 check-parameters.sh — 1b09b4d2cb9ff844ffeaa23a796941d28256f8302a3cc9e6c5525544bacafe77
+PASS PA12.10 sha256 check-parameters.log — 50ddf40ef017334ccbb08c2d1266ae90a44a3a603fe39583bb3700586b223b2b
+PASS PA12.11 sha256 refresh-snapshots.sh — bf5c34cbd1d8f3edfa7788afd40416afaabe832e725f1b2130b8d6eb40bd58b2
+PASS PA12.12 sha256 probe/Cargo.toml — 5c1c4c8f2694d16c0a2e570a98a7aa12991055b76ae0d9935d7b1aa2a1ded4cd
+PASS PA12.13 sha256 probe/Cargo.lock — 0748393d7ab4708fe84ab7fe785b3c71881f2a7fe55a8f8ed354b99e8ccbde72
+PASS PA12.14 sha256 probe/src/main.rs — f252c136dd484c44cfb54e28afad1e11581de1fa17ed94abfff668483d557ef3
+PASS PA13.1 sha256 check-parameters-r2.sh — 0e2e08cc83fc29ce36c3d2c09ebf6ddf7d869f84088cb722d66c054d9414652b
+PASS PA13.2 sha256 check-parameters-r2.log — f7491d208253335af35fd8a78dd0faccb8ab5095ea2b33bac66af6b4f717c743
+PASS PA13.3 sha256 check-probe-r2.sh — 18e5bf4d7a621c9d2d7168d3433b82191a95854a0492d309e97730b40facb2d1
+PASS PA13.4 sha256 check-probe-r2.log — 0d1b5f1adef500995652f766a8b4f27e425da74b4513c3cd1c7f713b059119e0
+PASS PA13.5 sha256 probe-r2/Cargo.toml — 25d5d4a5ba212e0955a668615cfe5837b781fa2f5333d07bc26445b506d137d5
+PASS PA13.6 sha256 probe-r2/Cargo.lock — ac16a56f1f8d001a2e79170f227491ffdffdcbc130352fd71de88e81fc9922ba
+PASS PA13.7 sha256 probe-r2/src/main.rs — a7ce2f4d2fa2c6a73acd9e8214d0454bf014207c5eb76d5a9d401ca6886e9bc9
+PASS PA14 r2-snapshot-sha256 — c2b4da75656ec364cc6c1fc019de7eee1eb76dbe081617c9d0510c19aa91c058
+CHECK_FAILURES=0

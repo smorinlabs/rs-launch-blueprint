@@ -1,0 +1,209 @@
+== toolchain and environment (header: these lines differ between hosts and runs) ==
+volatile: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+volatile: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+volatile: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+volatile: uname Darwin arm64
+volatile: date-utc 2026-09-27T06:56:14Z
+volatile: scratch /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//rslb-r79-probe-r3.5J4khM
+volatile: CARGO_TARGET_DIR in the environment = <unset> (ignored: every build passes --target-dir)
+
+PASS  floor derived from the live toolchain (stable minus 2) equals the probed MSRV (= 1.96)
+
+lock: reused snapshot locks/baseA-nodefault.lock
+lock: reused snapshot locks/baseA-default.lock
+== E2 : exporter default features, minimal base (revision-1 locks, read-only) ==
+crates with default-features = false : 37
+crates with the exporter defaults on : 81
+PASS  E2 crate count with default-features = false (= 37)
+PASS  E2 crate count with the exporter defaults on (= 81)
+PASS  E2 aws-lc-sys is pulled in by the exporter defaults
+PASS  E2 aws-lc-sys is absent with default-features = false
+PASS  E2 rustls is absent with default-features = false
+PASS  E2 no tokio edge with default-features = false
+
+module under test: r3-obs-metrics.rs, sha256 62730cbf64f5066492693111bdf2dcd2e1eddb604f9ab14a6fa62fd053deb717
+== E1 : R69 revision 9's feature spelling compiles ==
+lock: reused snapshot locks/baseB.lock
+PASS  E1 cargo check --features metrics compiled: metrics = ["web", "dep:metrics", ...] is legal beside an optional dependency named metrics
+PASS  E1 cargo check --features web (metrics off) compiled
+PASS  E1 cargo check with no feature compiled (the library without the web tree)
+PASS  E1 the optional dependency metrics 0.24.6 resolved
+PASS  E1 the exporter 0.18.3 resolved
+
+== E3/E7 : dependency graph and stripped binary, --features web versus --features metrics ==
+crates, --features web     : 51
+crates, --features metrics : 79
+added by metrics           : 28
+-- crates the metrics feature adds --
+    base64 v0.22.1
+    cfg-if v1.0.5
+    crossbeam-epoch v0.9.21
+    crossbeam-utils v0.8.23
+    equivalent v1.0.2
+    evmap v11.0.0
+    foldhash v0.2.0
+    getrandom v0.3.4
+    hashbag v0.1.13
+    hashbrown v0.16.1
+    hashbrown v0.17.1
+    indexmap v2.14.2
+    left-right v0.11.8
+    metrics v0.24.6
+    metrics-exporter-prometheus v0.18.3
+    metrics-util v0.20.4
+    ppv-lite86 v0.2.21
+    quanta v0.12.6
+    rand v0.9.5
+    rand_chacha v0.9.0
+    rand_core v0.9.5
+    rand_xoshiro v0.7.0
+    rapidhash v4.5.1
+    rustversion v1.0.23
+    sketches-ddsketch v0.3.1
+    thiserror v2.0.20
+    thiserror-impl v2.0.20
+    zerocopy v0.8.57
+PASS  E3 crate count with --features web (= 51)
+PASS  E3 crate count with --features metrics (= 79)
+PASS  E3 tower-http does NOT join the runtime graph with metrics on
+PASS  E3 tower is already a runtime crate of the axum base (not added by metrics)
+PASS  E7 the exporter is absent with --features web alone
+PASS  E7 release build with --features web succeeded and the binary is at the pinned --target-dir
+PASS  E3 release build with --features metrics succeeded and the binary is at the pinned --target-dir
+volatile: stripped release binary, --features web     : 1307936 B (rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew))
+volatile: stripped release binary, --features metrics : 1702752 B (rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew))
+volatile: delta : 394816 B, 30.2% (revision 1 on rustc 1.98.0: +378048 B)
+PASS  E3 the metrics delta is within +/-10% of revision 1's +378048 B (tolerance 340243..415853 B)
+
+== E6 : the in-process acceptance and HTTP-behaviour tests (--features metrics) ==
+PASS  E6 cargo test --test metrics passed
+    PROBE distinct http_route label values = {"/v1/boom", "/v1/projects/{id}"}
+    PROBE GET /metrics accept=<none> -> 200 cache-control=[private, no-cache] content-type=[text/plain; version=0.0.4; charset=utf-8]
+    PROBE GET /metrics accept=application/json -> 200 cache-control=[private, no-cache] content-type=[text/plain; version=0.0.4; charset=utf-8]
+    PROBE GET /metrics accept=text/plain;version=0.0.4;q=0.5,*/*;q=0.1 -> 200 cache-control=[private, no-cache] content-type=[text/plain; version=0.0.4; charset=utf-8]
+    PROBE GET /metrics?stream=1 -> 400 cache-control=[private, no-cache]
+    PROBE GET /metrics?stream -> 400 cache-control=[private, no-cache]
+    PROBE GET /metrics?a=1&stream= -> 400 cache-control=[private, no-cache]
+    PROBE GET /metrics?stream=false -> 400 cache-control=[private, no-cache]
+    PROBE GET /metrics?streaming=1 -> 200
+    PROBE GET /metrics?a=1 -> 200
+    test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <elapsed>
+-- canonical scrape (sorted; bucket occupancy and _sum redacted; scrape-sample-r3.txt is the verbatim capture) --
+    
+    
+    # HELP http_server_request_duration_seconds Duration of HTTP server requests.
+    # HELP http_server_unmatched_requests_total HTTP requests that matched no route template.
+    # TYPE http_server_request_duration_seconds histogram
+    # TYPE http_server_unmatched_requests_total counter
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="+Inf"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.005"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.01"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.025"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.05"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.075"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.1"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.25"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="0.75"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="1"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="10"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="2.5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500",le="7.5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="+Inf"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.005"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.01"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.025"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.05"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.075"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.1"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.25"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="0.75"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="1"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="10"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="2.5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="5"} <occupancy>
+    http_server_request_duration_seconds_bucket{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200",le="7.5"} <occupancy>
+    http_server_request_duration_seconds_count{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500"} 1
+    http_server_request_duration_seconds_count{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200"} 51
+    http_server_request_duration_seconds_sum{http_request_method="GET",http_route="/v1/boom",http_response_status_code="500"} <duration>
+    http_server_request_duration_seconds_sum{http_request_method="GET",http_route="/v1/projects/{id}",http_response_status_code="200"} <duration>
+    http_server_unmatched_requests_total 1
+PASS  E6 red_metrics_acceptance ran
+PASS  E6 scrape_http_behaviour ran
+PASS  E6 both tests passed and none failed
+PASS  E6 51 requests over 50 distinct ids produced exactly two route label values
+PASS  E6 _count of the templated route is 51
+PASS  E6 the unmatched counter reads 1
+-- F4 : the /metrics HTTP behaviour revision 2 claimed and did not execute --
+PASS  R7.1/R7.3 Cache-Control: private, no-cache and the exposition Content-Type on a 200 with no Accept
+PASS  OV-07(a) Accept: application/json still gets 200 and the exposition format, never 406
+PASS  R13.3 GET /metrics?stream=1 answers 400, still carrying Cache-Control
+PASS  R13.3 GET /metrics?stream answers 400, still carrying Cache-Control
+PASS  R13.3 GET /metrics?a=1&stream= answers 400, still carrying Cache-Control
+PASS  R13.3 GET /metrics?stream=false answers 400, still carrying Cache-Control
+PASS  R13.3 the guard matches the parameter name exactly (streaming=1 is 200)
+
+== F1 : metrics_enabled = false (R77's RSLBP_WEB_METRICS_ENABLED, default true) ==
+PASS  F1 cargo test --test metrics_disabled passed
+    PROBE metrics_enabled=false: GET /metrics -> 404
+    PROBE metrics_enabled=false: GET /v1/projects/7 -> 200
+    PROBE metrics_enabled=false: GET /nope -> 404
+    PROBE metrics_enabled=false: a fresh install_recorder() afterwards -> Ok (no global recorder had been installed)
+PASS  F1 with the setting false, /metrics is not registered
+PASS  F1 with the setting false, the business routes still serve
+PASS  F1 with the setting false, no global recorder was installed
+
+== F3 : --features web alone serves no /metrics (the fact behind BASELINE-REVIEW: F326) ==
+PASS  F3 cargo test --features web --test web_only passed
+    PROBE --features web alone, metrics_enabled=true: GET /metrics -> 404
+PASS  F3 under R69's registered value, --features web without metrics answers 404 at /metrics
+
+== E8 : promtool conformance parse of the exposition text ==
+scrape captured to evidence/scrape-sample-r3.txt : 41 lines
+PASS  E8 captured a full scrape from the acceptance test (41 lines)
+promtool: none on PATH or in $PROMTOOL; fetching the pinned release prometheus-3.14.0.darwin-arm64.tar.gz
+promtool tarball sha256 a9623f7f4fe65b1b171b423c1a72bbf23dfdf41a171dcb33e7dd302af80dc01c
+PASS  E8 the Prometheus 3.14.0 tarball matches the release's own sha256sums.txt
+PASS  E8 the darwin-arm64 tarball matches the literal pin (= a9623f7f4fe65b1b171b423c1a72bbf23dfdf41a171dcb33e7dd302af80dc01c)
+    promtool, version 3.14.0 (branch: HEAD, revision: d7598b7141418fa35be2b5ec5d0fefb634199610)
+PASS  E8 promtool check metrics accepted the exposition text
+PASS  E8 promtool printed no error, invalid or parse complaint
+
+== E4 : MSRV-aware resolution at rust-version = 1.96, on its own snapshotted lock ==
+lock: reused snapshot locks-r3/baseB-msrv.lock
+volatile: live resolution today: Locking 118 packages to latest Rust 1.96 compatible versions
+PASS  E4 cargo's MSRV-aware resolver ran at Rust 1.96
+packages in locks-r3/baseB-msrv.lock : 119
+crates in the E4 runtime graph (cargo tree -e normal --features metrics, its own lock) : 79
+PASS  E4 every crate of the E4 graph was found in cargo metadata at its exact version (no silent drop)
+        1.85.0     hashbrown 0.17.1
+        1.85       indexmap 2.14.2
+        1.85       hyper-util 0.1.21
+        1.80       axum 0.8.9
+        1.78       axum-core 0.5.6
+        1.77       thiserror-impl 2.0.21
+    HIGHEST 1.85.0 hashbrown 0.17.1
+    JOINED 78 of 78 graph crates found in cargo metadata at the same version
+    UNDECLARED 12 packages in the graph declare no rust-version: evmap 11.0.0, hashbag 0.1.13, httparse 1.10.1, left-right 0.11.8, matchit 0.8.4, mime 0.3.17, serde_urlencoded 0.7.1, sketches-ddsketch 0.3.1, smallvec 1.16.2, sync_wrapper 1.0.2, tower-layer 0.3.3, tower-service 0.3.3
+PASS  E4 highest declared rust-version in the graph (1.85.0) is inside the 1.96 floor
+
+== E5 : cargo audit over locks-r3/baseB-msrv.lock ==
+volatile: cargo-audit-audit 0.22.1
+PASS  E5 cargo audit exited 0
+volatile: audit |       Loaded 1271 security advisories (from <advisory-db>)
+volatile: audit |     Scanning Cargo.lock for vulnerabilities (119 crate dependencies)
+PASS  E5 audit scanned the lockfile
+PASS  E5 the audit log reports no vulnerabilities
+PASS  E5 RUSTSEC-2021-0113 (metrics-util) does not apply to the resolved tree
+    resolved: metrics-util v0.20.4
+
+== runner-up footprint : axum-prometheus 0.10.1 on the same axum base (revision-1 lock) ==
+lock: reused snapshot locks/baseC.lock
+crates, axum base + axum-prometheus : 82
+PASS  runner-up crate count (= 82)
+PASS  runner-up adds tower-http to the runtime graph
+
+== summary ==
+PASS=54 FAIL=0 SKIP=0 TOTAL=54

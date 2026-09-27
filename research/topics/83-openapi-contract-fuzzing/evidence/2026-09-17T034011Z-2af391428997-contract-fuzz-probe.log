@@ -1,0 +1,175 @@
+== environment ==
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+os: Darwin arm64
+
+== build ==
+PASS  A0 probe builds
+
+== leg 1: no seeded defect ==
+running 3 tests
+test boundary_bias_is_required ... seeds reaching the declared boundary 0 in 16 draws:
+  with explicit boundary bias: 20/20
+  uniform draw only:           2/20
+ok
+test contract_fuzz ... document version: 3.1.0
+operations discovered: 2
+projects-create: 16 cases, no finding
+projects-read: 16 cases, no finding
+ok
+test supported_openapi_version_range ... 3.1.0 validate_version: Ok("3.1.0")
+3.0.3 validate_version: Err(UnsupportedSpecFileVersion(Version { major: 3, minor: 0, patch: 3 }))
+3.0.3 operations still enumerated: 2
+ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <duration>
+
+PASS  A1 the served 3.1 document parses and validates
+PASS  A2 every documented operation is enumerated from the document
+PASS  A3 the create operation is fuzzed with no operation name in the harness
+PASS  A4 the read operation is fuzzed
+PASS  A5 a conformant service passes all three oracles
+
+== leg 2: seeded 5xx on a documented-valid input ==
+running 3 tests
+test boundary_bias_is_required ... seeds reaching the declared boundary 0 in 16 draws:
+  with explicit boundary bias: 20/20
+  uniform draw only:           2/20
+ok
+test contract_fuzz ... document version: 3.1.0
+operations discovered: 2
+projects-create: 500 Internal Server Error for POST /projects body={"name":"a","limit":0} at tests/contract_fuzz.rs:127; minimal failing input: ("/projects", Some(Object {"name": String("a"), "limit": Number(0)}))
+projects-read: 16 cases, no finding
+
+thread 'contract_fuzz' (<thread-id>) panicked at tests/contract_fuzz.rs:160:5:
+contract findings:
+projects-create: 500 Internal Server Error for POST /projects body={"name":"a","limit":0} at tests/contract_fuzz.rs:127; minimal failing input: ("/projects", Some(Object {"name": String("a"), "limit": Number(0)}))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+FAILED
+test supported_openapi_version_range ... 3.1.0 validate_version: Ok("3.1.0")
+3.0.3 validate_version: Err(UnsupportedSpecFileVersion(Version { major: 3, minor: 0, patch: 3 }))
+3.0.3 operations still enumerated: 2
+ok
+
+failures:
+
+failures:
+    contract_fuzz
+
+test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in <duration>
+
+error: test failed, to rerun pass `--test contract_fuzz`
+PASS  A6 the 5xx oracle fires (principle P3, py parity)
+PASS  A7 the failure names a minimized request
+PASS  A8 the suite fails
+
+== leg 3: seeded R4.3 violation (bare array top level, 201, not a 5xx) ==
+running 3 tests
+test boundary_bias_is_required ... seeds reaching the declared boundary 0 in 16 draws:
+  with explicit boundary bias: 20/20
+  uniform draw only:           2/20
+ok
+test contract_fuzz ... document version: 3.1.0
+operations discovered: 2
+projects-create: non-object JSON top level ([{"name":"a"}]) for POST /projects at tests/contract_fuzz.rs:141; minimal failing input: ("/projects", Some(Object {"name": String("a"), "limit": Number(0)}))
+projects-read: 16 cases, no finding
+
+thread 'contract_fuzz' (<thread-id>) panicked at tests/contract_fuzz.rs:160:5:
+contract findings:
+projects-create: non-object JSON top level ([{"name":"a"}]) for POST /projects at tests/contract_fuzz.rs:141; minimal failing input: ("/projects", Some(Object {"name": String("a"), "limit": Number(0)}))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+FAILED
+test supported_openapi_version_range ... 3.1.0 validate_version: Ok("3.1.0")
+3.0.3 validate_version: Err(UnsupportedSpecFileVersion(Version { major: 3, minor: 0, patch: 3 }))
+3.0.3 operations still enumerated: 2
+ok
+
+failures:
+
+failures:
+    contract_fuzz
+
+test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in <duration>
+
+error: test failed, to rerun pass `--test contract_fuzz`
+PASS  A9 the R4.3 oracle fires on a non-5xx standard violation
+PASS  A10 the 5xx oracle did not fire on that leg
+
+== leg 4: seeded R5.2 violation (unregistered status 299) ==
+running 3 tests
+test boundary_bias_is_required ... seeds reaching the declared boundary 0 in 16 draws:
+  with explicit boundary bias: 20/20
+  uniform draw only:           2/20
+ok
+test contract_fuzz ... document version: 3.1.0
+operations discovered: 2
+projects-create: unregistered status 299 <unknown status code> for POST /projects at tests/contract_fuzz.rs:133; minimal failing input: ("/projects", Some(Object {"name": String("a"), "limit": Number(0)}))
+projects-read: 16 cases, no finding
+
+thread 'contract_fuzz' (<thread-id>) panicked at tests/contract_fuzz.rs:160:5:
+contract findings:
+projects-create: unregistered status 299 <unknown status code> for POST /projects at tests/contract_fuzz.rs:133; minimal failing input: ("/projects", Some(Object {"name": String("a"), "limit": Number(0)}))
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+FAILED
+test supported_openapi_version_range ... 3.1.0 validate_version: Ok("3.1.0")
+3.0.3 validate_version: Err(UnsupportedSpecFileVersion(Version { major: 3, minor: 0, patch: 3 }))
+3.0.3 operations still enumerated: 2
+ok
+
+failures:
+
+failures:
+    contract_fuzz
+
+test result: FAILED. 2 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in <duration>
+
+error: test failed, to rerun pass `--test contract_fuzz`
+PASS  A11 the R5.2 oracle fires on an unregistered status
+PASS  A12 the 5xx oracle did not fire on that leg
+
+== leg 5: the same seeded 5xx, boundary bias removed from the mapper ==
+running 3 tests
+test boundary_bias_is_required ... seeds reaching the declared boundary 0 in 16 draws:
+  with explicit boundary bias: 20/20
+  uniform draw only:           2/20
+ok
+test contract_fuzz ... document version: 3.1.0
+operations discovered: 2
+projects-create: 16 cases, no finding
+projects-read: 16 cases, no finding
+ok
+test supported_openapi_version_range ... 3.1.0 validate_version: Ok("3.1.0")
+3.0.3 validate_version: Err(UnsupportedSpecFileVersion(Version { major: 3, minor: 0, patch: 3 }))
+3.0.3 operations still enumerated: 2
+ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <duration>
+
+PASS  A13 a uniform-only mapper misses the seeded defect and the suite passes
+PASS  A14 boundary bias reaches the declared boundary under every seed, uniform draws do not
+PASS  A15 the uniform arm reaches it under 2 of 20 seeds
+
+== leg 6: the OpenAPI version range oas3 0.22.0 will validate ==
+PASS  A16 a 3.1.0 document validates
+PASS  A17 the same document relabelled 3.0.3 does not
+PASS  A18 a 3.0.3 document still parses and still enumerates
+
+== dependency cost ==
+packages in the normal graph: 60
+packages with dev-dependencies: 141
+PASS  A19 the harness crates enter only through dev-dependencies (141 > 60)
+PASS  A20.oas3 oas3 appears only with dev-dependencies
+PASS  A20.proptest proptest appears only with dev-dependencies
+PASS  A21 tower is already in the normal graph through axum, not added by this design
+PASS  A22 the path to tower in the normal graph runs through axum
+
+== resolved versions of the three crates this decision names ==
+axum v0.8.9
+oas3 v0.22.0
+proptest v1.11.0
+tower v0.5.3
+tower v0.5.3 (*)
+
+== totals ==
+PASS=24 FAIL=0 SKIP=0 TOTAL=24

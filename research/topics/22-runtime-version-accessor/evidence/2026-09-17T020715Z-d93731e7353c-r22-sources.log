@@ -1,0 +1,97 @@
+=== R22 source assertions (deterministic) ===
+run-started-utc: 2026-09-27T02:29:35Z
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+uname: Darwin arm64
+
+PASS A0a -- repository root located at a path holding docs/port/PARAMETERS.md
+PASS A0b -- reading a worktree whose .git is a FILE (tested with -e, not -d)
+PASS A1a -- all 25 snapshots match snapshots/SHA256SUMS.txt
+PASS A1b -- MANIFEST.txt records each snapshot's retrieval date and endpoint (matches=1)
+PASS A2a -- current Rust stable, from the release channel manifest: got [1.98.1]
+PASS A2b -- the stable channel's own date: got [2026-09-03]
+PASS A2c -- the msrv-policy floor derived as stable minus 2 minor versions -> 1.96: got [96]
+PASS A2d -- built's newest published version declares rust-version: got [1.87]
+PASS A2e -- built's declared 1.87 is at or below the 1.96 floor, so gate 2 PASSES for it
+PASS A2f -- vergen-gix's newest published version declares rust-version: got [1.96.0]
+PASS A2g -- shadow-rs's newest published version declares NO rust-version: got [None]
+FIGURE built: recent_downloads=18238136 downloads=63168750 newest_non_yanked=0.8.1 created_at=2026-05-21 license=MIT
+FIGURE shadow-rs: recent_downloads=2184341 downloads=10812524 newest_non_yanked=2.0.0 created_at=2026-04-23 license=MIT AND Apache-2.0
+FIGURE vergen-gix: recent_downloads=546530 downloads=2035682 newest_non_yanked=10.0.3 created_at=2026-08-24 license=MIT OR Apache-2.0
+PASS A3a -- built's newest non-yanked version is 0.8.1, created 2026-05-21, licensed MIT (matches=1)
+PASS A3b -- shadow-rs 2.0.0 is licensed MIT AND Apache-2.0, not MIT as the raw report recorded (matches=1)
+PASS A3c -- vergen-gix's newest non-yanked version is 10.0.3, created 2026-08-24 (matches=1)
+PASS A4a -- rustsec.org/packages/git2.html lists RUSTSEC-2026-0183 (matches=2)
+PASS A4b -- rustsec.org/packages/git2.html lists RUSTSEC-2026-0184 (matches=2)
+PASS A4c -- shadow-rs issue #262 is open: got [open]
+PASS A4d -- issue #262's title names the git2 upgrade that clears both advisories (matches=1)
+PASS A4e -- issue #262 records that shadow-rs 2.0.0 pins git2 ^0.20.0, which is the advisoried range (matches=1)
+PIN apache/arrow-rs main = d506e145f42169e9c188b627f341da499bf09859
+PIN xiph/rav1e master    = 31435de9d76fddd38f6dcc31d4014574cebb2092
+PIN clap-rs/clap main    = 8542fea5f9bd1de89fcac7eeb5724b565743c6fb
+PASS A5a -- the arrow-rs pin is a full 40-hex commit id (matches=1)
+PASS A5b -- Apache Arrow exports its public version constant straight from env! (research/runs/R22/2026-09-17T020715Z-d93731e7353c/review/evidence/snapshots/arrow-lib.rs.txt:412)
+PASS A5c -- arrow/src/lib.rs mentions CARGO_PKG_VERSION exactly once, at that constant (matches=1)
+PASS A5d -- rav1e's version::short() is the base version, straight from env! (research/runs/R22/2026-09-17T020715Z-d93731e7353c/review/evidence/snapshots/rav1e-lib.rs.txt:216)
+PASS A5e -- rav1e also reads Cargo's split version components (matches=1)
+PASS A5f -- rav1e's git/build provenance comes from a SEPARATE generated module (research/runs/R22/2026-09-17T020715Z-d93731e7353c/review/evidence/snapshots/rav1e-lib.rs.txt:54)
+PASS A5g -- and that provenance is behind its own Cargo feature, layered beside the base version (matches=1)
+PASS A5h -- arrow: the raw report cited L1822-1824; the single occurrence is at :412 (see A5b) (matches=1)
+PASS A5i -- arrow/src/lib.rs has only 440 lines, so the cited L1822-1824 does not exist
+PASS A5j -- rav1e L937-943, one of the two ranges the raw report cited, holds no CARGO_PKG_VERSION: got [0]
+PASS A5k -- rav1e L1223-1233, the other cited range, holds none either: got [0]
+PASS A5l -- opentelemetry-sdk/src/lib.rs exports no version constant (matches=0)
+PASS A5m -- the OpenTelemetry occurrence is inside a doc-comment example, not a shipped constant (research/runs/R22/2026-09-17T020715Z-d93731e7353c/review/evidence/snapshots/otel-zipkin-lib.rs.txt:203)
+PASS A6a -- clap::crate_version! is declared here (research/runs/R22/2026-09-17T020715Z-d93731e7353c/review/evidence/snapshots/clap-builder-macros.rs.txt:16)
+PASS A6b -- and its entire body is env!("CARGO_PKG_VERSION") (research/runs/R22/2026-09-17T020715Z-d93731e7353c/review/evidence/snapshots/clap-builder-macros.rs.txt:18)
+PASS A6c -- crate_version! is gated on clap's cargo feature, which R60's selected feature set does not enable (research/runs/R22/2026-09-17T020715Z-d93731e7353c/review/evidence/snapshots/clap-builder-macros.rs.txt:14)
+PASS A6d -- #[command(version)] in clap_derive resolves CARGO_PKG_VERSION at macro-expansion time (research/runs/R22/2026-09-17T020715Z-d93731e7353c/review/evidence/snapshots/clap-derive-item-excerpt.txt -> original line 554)
+PASS A6e -- from_env reads that variable in the proc-macro process and bakes in a literal (research/runs/R22/2026-09-17T020715Z-d93731e7353c/review/evidence/snapshots/clap-derive-item-excerpt.txt -> original line 1272)
+PASS A6e2 -- the clap_derive excerpt carries no email address; the file's copyright header is deliberately not committed: got [0]
+PASS A6f -- environment-variables.html: Cargo injects these variables AT COMPILE TIME (matches=1)
+PASS A6g -- and shows env!("CARGO_PKG_VERSION") as the documented way to read the package version (matches=1)
+PASS A6h -- build-scripts.html: a build script's cargo::rustc-env output is ALSO read with env!, so a generated module is compile-time too, not a runtime lookup (matches=1)
+PASS A6i -- build-scripts.html rustc-env Note: running an executable under cargo run/cargo test is discouraged because it ties execution to Cargo (matches=1)
+PASS A6j -- the quoted excerpts carry both 'discouraged' occurrences -- the rustc-env Note and the dynamic-library-search-path passage: got [2]
+PASS A6k -- the excerpt file carries 6 quoted lines, so A6j is searching real text
+PASS A7a -- R4.1 (MUST) puts --version/-V in the required global core (matches=1)
+PASS A7b -- R4.6 requires the version value to be SemVer with no leading v (matches=1)
+PASS A8a -- F064 is the DIVERGENT row R22 owns (matches=1)
+PASS A8b -- F063 (the manifest field itself) is COMMON -> REUSE and belongs to no item (matches=1)
+PASS A8c -- F133 is the version-consistency-test row (matches=1)
+PASS A8d -- F133's note already records that the accessor assertion is retained and that its mechanism follows R22 (matches=1)
+PASS A8e -- the 2026-09-04 baseline review already rejected the 'cannot fail' challenge to F133 (matches=1)
+PASS A8f -- F267, the extended CLI version surface, is R60's and is out of this item's scope (matches=1)
+PASS A9a -- five parameter lines were rendered from the registry rows: got [5]
+PASS A9b -- rust-edition's line is bare, with no backticks and no commentary (matches=1)
+PASS A9c -- license's line is bare (matches=1)
+PASS A9d -- target-os-matrix's line is bare (matches=1)
+PASS A9e -- msrv-policy's line is bare (matches=1)
+PASS A9f -- build-tool-output-shape's line carries R49's published value verbatim from its first byte (matches=1)
+RENDERED build-tool-output-shape line length: 1855 bytes
+--- the five lines this decision must carry verbatim ---
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+- assumes license = MIT OR Apache-2.0
+- assumes build-tool-output-shape = no build backend or bundler crate; Cargo's own manifest is the entire declaration surface. Artifacts land in Cargo's default workspace-root target/ directory - target/debug/ for the dev and test profiles, target/release/ for release and bench, target/<name>/ for a user-defined profile, gaining a target/<triple>/<profile>/ level whenever --target is passed - relocatable by CARGO_TARGET_DIR, build.target-dir or --target-dir. Library target: exactly one, declared explicitly as [lib] with path src/lib.rs and Cargo's default crate name rs_launch_blueprint (the package name with dashes replaced by underscores); doctest is not set here and is R82's. Binary target: exactly one, declared explicitly as [[bin]] with path src/main.rs and name rslbp, a different string from the package name rs-launch-blueprint, so cargo install rs-launch-blueprint installs the command rslbp and integration tests resolve it through CARGO_BIN_EXE_rslbp; autobins = false so no src/bin/*.rs file becomes a second published command without a manifest edit; default-run unset while there is one binary; no build.rs and no build-orchestration crate. Packaged-file scope: an explicit [package] include allow-list - /src, /README.md, /LICENSE-MIT, /LICENSE-APACHE, /CHANGELOG.md - never exclude, the two being mutually exclusive; Cargo.toml and any license-file are included whatever include or exclude says, and a minimized Cargo.lock is likewise outside include/exclude selection - cargo package adds it, generating one when none is on disk - but not unconditionally: cargo package --exclude-lockfile omits it, an override cargo publish has no flag for and this template never passes. The optional web surface adds no target here: it is a Cargo feature per F017, and whether it also gets a second [[bin]] carrying required-features is R69's
+--- end ---
+PASS A9g -- the prompt's Couplings block names no owned parameter (matches=1)
+PASS A9h -- and names exactly one consumed parameter, R49's build-tool-output-shape (matches=1)
+PASS A9i -- the prompt records the light effort tier (matches=1)
+PASS A9j -- and codex as the only research engine (matches=1)
+PASS A9k -- the prompt does not consume web-extra-surface, so the raw report's assumes line for it is dropped: got [0]
+PASS A10a -- R49's published decision owns build-tool-output-shape (matches=1)
+PASS A10b -- R49's value already forbids a build script for the package's own targets (matches=1)
+PASS A10d -- R60 states that the version VALUE is R22's decision and that either outcome satisfies R4.6 (matches=1)
+PASS A10e -- R60's JSON version object already sources its version field from CARGO_PKG_VERSION (matches=1)
+PASS A10f -- R60 carries a re-verify trigger that fires only if R22 CHANGES that source (matches=1)
+PASS A11a -- raw/codex.md hashes to the sha256 the run manifest registered: got [6ebf723a4e5b801e2c787bc388779e68a2c714c9377c4f9407a7e211bae32915]
+PASS A11b -- the registered copy raw/codex-<sha256>.md is present
+PASS A11c -- the manifest records gpt-5.6-luna as the model that produced it (matches=3)
+PASS A11d -- exactly two codex engine-report .md files in raw/ -- codex.md and its registered sha-named copy; no second engine ran: got [2]
+PASS A11e -- the raw report's gate-2 exclusion of built rests on the inverted comparison (matches=1)
+PASS A11f -- the raw report emitted an assumes line for a parameter this item does not consume (matches=1)
+PASS A11g -- the raw report recorded built's licence; licence is not evaluated under the 2026-09-12 ruling (matches=1)
+
+CHECKS RUN: 75  PASS: 75  FAIL: 0  SKIP: 0
+RESULT: PASS

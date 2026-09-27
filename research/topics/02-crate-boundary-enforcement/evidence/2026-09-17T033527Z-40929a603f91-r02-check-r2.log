@@ -1,0 +1,107 @@
+
+=== R2-0 inputs ===
+present: research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md
+present: docs/port/PARAMETERS.md
+present: research/runs/R02/2026-09-17T033527Z-40929a603f91/inputs/prompt.md
+present: research/runs/R02/2026-09-17T033527Z-40929a603f91/raw/opus.md
+present: research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md
+present: docs/port/OWNER-REVIEW.md
+
+=== R2-1 JF-1 -- the cargo-deny wall-clock figure ===
+PASS R2-1a: the committed log records the measured value twice -- the elapsed line and PASS CD6 (2 lines matching 0.437 s, by /usr/bin/grep)
+PASS R2-1b: and both carry the check label the decision cites
+PASS R2-1c: the orphan figure is gone as a LIVE bullet (0 lines matching - The 0.509 s figure is a floor, by /usr/bin/grep)
+PASS R2-1c2: and every surviving mention of it is marked as superseded wording or as the revision note's JF-1 row (2 of 2 lines carrying it are marked as superseded wording or as the revision note, by /usr/bin/grep)
+PASS R2-1d: and the repaired unproven bullet cites the figure BY LABEL, as the checks discipline requires
+PASS R2-1e: with the superseded wording quoted rather than deleted
+PASS R2-1f: control -- 0.437 IS found in the decision, so R2-1c's zero for 0.509 is a real absence and not a broken search
+
+=== R2-2 JF-2 -- R01 / R49 / R69 in the three Doxa twins and in the prompt ===
+PASS R2-2a: openai twin names R01 -- the finding's 14 (14 lines matching R01, by /usr/bin/grep)
+PASS R2-2b: perplexity twin names R01 -- the finding's 7 (7 lines matching R01, by /usr/bin/grep)
+PASS R2-2c: gemini twin names R01 -- the finding's 1 (1 lines matching R01, by /usr/bin/grep)
+PASS R2-2d-openai: openai twin never names R49 -- the half of the ground that survives (0 lines matching R49, by /usr/bin/grep)
+PASS R2-2e-openai: openai twin never names R69 (0 lines matching R69, by /usr/bin/grep)
+PASS R2-2d-perplexity: perplexity twin never names R49 -- the half of the ground that survives (0 lines matching R49, by /usr/bin/grep)
+PASS R2-2e-perplexity: perplexity twin never names R69 (0 lines matching R69, by /usr/bin/grep)
+PASS R2-2d-gemini: gemini twin never names R49 -- the half of the ground that survives (0 lines matching R49, by /usr/bin/grep)
+PASS R2-2e-gemini: gemini twin never names R69 (0 lines matching R69, by /usr/bin/grep)
+PASS R2-2f: the prompt names R01 eight times -- occurrences, not lines: this is where all three legs got it == 8
+PASS R2-2f2: on three lines of it (3 lines matching R01, by /usr/bin/grep)
+PASS R2-2g: and the prompt never names R49 (0 lines matching R49, by /usr/bin/grep)
+PASS R2-2h: nor R69 (0 lines matching R69, by /usr/bin/grep)
+PASS R2-2i: the narrowed ground names only R49 and R69, and says how the legs came by R01
+PASS R2-2j: the refuted three-item wording survives only as quoted superseded wording, never as a live claim (1 of 1 lines carrying it are marked as superseded wording or as the revision note, by /usr/bin/grep)
+
+=== R2-3 JF-3 -- the four gated things ===
+PASS R2-3a: the repaired wording is the one the finding asks for
+PASS R2-3b: the self-contradicting sentence survives only as quoted superseded wording (1 of 1 lines carrying it are marked as superseded wording or as the revision note, by /usr/bin/grep)
+PASS R2-3c: and the decision marks superseded wording as such rather than deleting it
+
+=== R2-4 JF-4 -- R49's re-verify trigger fires with a different outcome ===
+PASS R2-4a: the decision records that R49's own trigger fires and names its outcome
+
+=== R2-5 the CONFLICT resolution ===
+PASS R2-5a: R69 revision 10 is the file this decision names == d34ab6e8339b6f416a510d070ee54daca38a9086a901a6bfbb9df0517f7fce0a
+PASS R2-5b: and it is revision 10 == # 2026-09-17 — R69 — web-framework-stack — decision (revision 10)
+PASS R2-5c0: the file does carry a superseded copy, so restricting to the current decision is not a no-op == 2
+PASS R2-5c: it carries exactly one owned web-extra-surface line == 1
+PASS R2-5d: substitution 1 -- the feature names the optional member, on the root package
+PASS R2-5e: substitution 2 -- axum and tokio declared non-optionally inside the member
+PASS R2-5f: substitution 3 -- the gated tree reads crates/web/src/
+PASS R2-5g: substitution 4 -- the tests move and need no file-level cfg
+PASS R2-5h: substitution 5 -- tower 0.5.3 is the member's dev-dependency
+PASS R2-5i: substitution 6 -- the skip-gating paths read crates/web/**
+PASS R2-5j: control -- the revision-9 feature body is absent from revision 10, so the six PASSes above are a real substitution
+PASS R2-5k: the live registry row still carries revision 9, exactly as the resolution paragraph states -- the CONFLICT is discharged at R69 revision 10 PUBLICATION, not before
+PASS R2-5l: the resolution paragraph names the owner ruling and the re-bind
+PASS R2-5m: and the owner record it names exists at its heading
+PASS R2-5n: the decision records that the CONFLICT re-verify trigger has fired
+
+=== R2-6 the CONFLICT line is unchanged ===
+PASS R2-6a: the decision carries exactly one CONFLICT: line == 1
+PASS R2-6b: it is byte-identical to the one raw/opus.md raised
+
+=== R2-7 every carried script and log is the pinned revision-1 or revision-3 artifact ===
+PASS R2-7a: r02-workspace-probe.sh is byte-identical to its revision-3 sha256 c9e9e6aad39851b326a3579df9eea9f4be4fb3c182a7f3205ff06d3c2250e239
+PASS R2-7b: r02-ecosystem-figures.sh is byte-identical to its revision-3 sha256 cafb5b92cc8cd5fe979a9f0a3cf5aad12f1a89d17f918890de111808ce2e0399
+PASS R2-7c: r02-cargo-deny-bans.sh is byte-identical to its revision-1 sha256 3cd76a5cd7218f69d76bc513a269de7bda426a8317c37513c6237eae75eaff66
+PASS R2-7d: r02-decision-shape.sh is byte-identical to its revision-1 sha256 bca478e952639861b8eb201b5d362689983e9c08984dbb1854ee37f90f142917
+PASS R2-7e: r02-workspace-probe.log is byte-identical to its revision-3 sha256 21a99b149784f849d9b24272884f2897ab8dcd91e0ffd5cfa1a1dd713208d042
+PASS R2-7f: r02-ecosystem-figures.log is byte-identical to its revision-3 sha256 6115171152b59436afadcb3199a373f747493f31a1bd17067a9713bd0526a31a
+PASS R2-7g: r02-cargo-deny-bans.log is byte-identical to its revision-1 sha256 2b89762979cc3711b128f763596e573e256685c8bf2d075990a1491c2f7d0b86
+PASS R2-7h: r02-decision-shape.log is byte-identical to its revision-1 sha256 a0ea7fde4c8ad33cfba87f250168cf01fb041ffe20011987d89f3f61e595961d
+PASS R2-7i: and r02-decision-shape.sh's title assertion binds the REVISION-1 title, which is why revision 2 does not rerun it
+
+=== R2-8 revision-2 shape ===
+PASS R2-8a: title line, date first, revision 3 == # 2026-09-27 — R02 — crate-boundary-enforcement (bundle, Deep) — decision (revision 3)
+PASS R2-8b: the H2 set is unchanged, in order, and nothing else == ## Decision|## Parameters|## Empirical check|## Engines|
+PASS R2-8c: no ## Supersedes (this item is unpublished) == 0
+PASS R2-8d: exactly one re-verify: line == 1
+PASS R2-8e: OVERRIDE (OV-03) is still declared once and did not move == 1
+PASS R2-8f: the revision note names all four findings and the resolution
+PASS R2-8g: the open item handed to P03 and R04 is recorded and explicitly not decided here
+- assumes license = MIT OR Apache-2.0
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+PASS R2-8h: the four assumes lines are still byte-identical to their live registry rows, and the set still matches exactly
+PASS R2-8i: still no owns line == 0
+
+=== R2-9 the two revision-1 checks that the tree has moved under ===
+docs/port/OWNER-ACCEPTANCES.md
+docs/port/OWNER-REVIEW.md
+research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md
+research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md
+  docs/port/OWNER-ACCEPTANCES.md -- owner record under docs/port/
+  docs/port/OWNER-REVIEW.md -- owner record under docs/port/
+  research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md -- acknowledgement: every OV-03 line names R02 or says it is taken, no heading declares it
+  research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md -- acknowledgement: every OV-03 line names R02 or says it is taken, no heading declares it
+PASS R2-9a: every file outside this item naming OV-03 (4) is an owner record or a decision acknowledging that R02 holds it
+PASS R2-9b: and the owner records among them are the ones under docs/port/, not competing decisions
+PASS R2-9c: the OWNER-REVIEW hit is this item's own acceptance record, naming R02 and F021
+PASS R2-9d: no decision outside this item DECLARES an override numbered OV-03 == 0
+PASS R2-9e: control -- 1 decision(s) outside this item DO declare an override by heading (OV-02), so R2-9d's zero is not vacuous
+
+=== SUMMARY ===
+CHECKS RUN: 66 FAILURES: 0 SKIPPED: 0

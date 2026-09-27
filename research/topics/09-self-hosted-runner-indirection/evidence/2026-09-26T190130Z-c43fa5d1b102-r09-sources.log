@@ -1,0 +1,14 @@
+INFO: date-utc 2026-09-27T15:50:29Z
+PASS: S0 py pin b08bccfb55d05f15e46a83b52c5660b1881d19f5 and ts pin cb1cbcb2e88b898e8c081b0abbfabc1630079c00 both resolve to commits
+INFO: S1 py workflow files using vars.RUNNER_*: 16; runs-on lines with literal blacksmith: 0
+PASS: S1 py@pin: vars.RUNNER_* fleet (16 files), zero literal blacksmith runs-on lines
+PASS: S2 py@pin actionlint.yaml carries self-hosted-runner + config-variables (RUNNER_*)
+PASS: S3 py@pin census: action invoked only in release-please.yml
+INFO: S4 ts runs-on lines: 11 total, 0 non-literal
+PASS: S4 ts@pin: all 11 runs-on lines are literal ubuntu-latest
+PASS: S5 ts@pin: publish.yml suppression listed but never invoking (dead entry)
+PASS: S6 ts@pin D-022(1): Blacksmith explicitly not reused for a public template
+PASS: S7 R18 DECISION: federation vars ANTHROPIC_FEDERATION_RULE_ID + ANTHROPIC_ORGANIZATION_ID (+ optional ANTHROPIC_SERVICE_ACCOUNT_ID) via vars.*
+PASS: S8 R21 DECISION: contributors action mints its own installation token
+PASS: S9 py@pin press-verify.yml: generated repositories have no blacksmith runners
+SUMMARY: PASS=10 FAIL=0 SKIP=0

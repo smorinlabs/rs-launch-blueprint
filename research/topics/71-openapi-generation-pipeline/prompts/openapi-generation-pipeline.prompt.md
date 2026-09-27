@@ -23,7 +23,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - owns:
 - consumes: R11: ci-job-structure; R69: web-extra-surface
 - effort: deep
-- engines: codex, opus, doxa
+- engines: muse, opus, doxa
 - evidence-checks:
 - acceptance-after:
 - related (not a registry dependency): R70 (`http-problem-envelope`) decides the error envelope shape (F305/F306) that this item's schema post-processing (F307) must stay in sync with — treat R70's shape as open, do not block on it. R83 (`openapi-contract-fuzzing`) and R84 (`openapi-typed-client-generation`) each consume the committed snapshot this item produces (F332) — do not decide their scope here.
@@ -69,7 +69,7 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 6. binary-size and compile-time cost stated qualitatively.
 
 Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
-- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception. This item substitutes Muse (Meta) for Codex under the `engine_overrides` pilot; its mirrored `- engines:` line is authoritative.
 - This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
 - Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
 - The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.

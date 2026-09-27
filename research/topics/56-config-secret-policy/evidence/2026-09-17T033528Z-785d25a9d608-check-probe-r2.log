@@ -1,0 +1,30 @@
+toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+toolchain: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+host: Darwin arm64 (macOS 26.4)
+date-utc: 2026-09-17T22:58:24Z
+PASS Q0 lockfile-is-current — 0
+PASS Q1 locked-package-count — 18
+PASS Q2 build — cargo build --locked succeeded
+PASS E0 CONTROL stored-tier-is-reachable — with no flag and no env, source=Stored and the stored value is the one on disk
+PASS E1 JF-1 env-outranks-stored — source=Env (R10.1 middle rung: RSLBP_TOKEN > stored credential)
+PASS E2 JF-1 env-value-is-the-one-used — the resolved value is the env token, not the stored credential
+PASS E3 JF-1 stored-value-not-used — the stored credential's bytes are not what resolution returned
+PASS E4 full-chain-in-one-call — all three tiers supplied, source=TokenFile
+PASS F1 JF-2 exactly-one-warning — 1 warning(s)
+PASS F2 JF-2 warning-names-the-file — the warning text contains the scanned layer's path
+PASS F3 JF-2 warning-names-the-key — the warning text names the key `token`
+PASS F4 JF-2 warning-omits-the-value — the warning text contains none of the value's bytes
+PASS F5 key-still-dropped — naming the file did not change the drop behaviour
+PASS F6 other-tables-survive — [output] still survives the drop
+PROBE_R2_FAILURES=0
+stderr: warning: <TMPDIR>/r56-r2-<pid>/rslbp_config.toml: key `token` is ignored — this tool never reads a credential from the config file. Use --token-file, the RSLBP_TOKEN environment variable, or `rslbp auth login`.
+PASS Q3 probe-exit — 0
+PASS Q4 probe-failures — PROBE_R2_FAILURES=0
+PASS Q5 probe-assertion-count — 11
+PASS Q6 JF-1-closed — 4
+PASS Q7 JF-1-control-present — 1
+PASS Q8 JF-2-closed — 6
+PASS Q9 JF-2-emitted-warning-names-a-file — the echoed warning opens with the scanned layer path (run-specific $TMPDIR prefix replaced by a placeholder inside the probe, so this log stays diffable)
+PASS Q10.1 leak-census-fixture-absent — 0
+PASS Q10.2 leak-census-fixture-absent — 0
+CHECK_FAILURES=0

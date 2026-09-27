@@ -1,0 +1,48 @@
+== environment ==
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+original: registry-and-standard.sh sha256 6995148055110883032f379c5d97182894fd15887807a39e174e6351dd4a9060
+
+== rewrites applied to the copy ==
+PASS  S0.crates every crates.io URL now points at crates.invalid
+PASS  S0.rustsec every rustsec.org URL now points at rustsec.invalid
+PASS  S0.standard STANDARD_REPO now names a missing directory
+PASS  S0.gh the gh probe now names a missing command
+
+== the copy, run ==
+== environment ==
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+retrieved: <timestamp>
+
+== stable assertions ==
+SKIP  B1..B9 (every crates.io check)  (crates.io could not be reached)
+curl: (6) Could not resolve host: rustsec.invalid
+GET https://rustsec.invalid/packages/oas3.html -> 000000
+FAIL  B10.oas3 an advisory page now exists for oas3  (HTTP 000000 — gate 3 must be re-evaluated)
+curl: (6) Could not resolve host: rustsec.invalid
+GET https://rustsec.invalid/packages/proptest.html -> 000000
+FAIL  B10.proptest an advisory page now exists for proptest  (HTTP 000000 — gate 3 must be re-evaluated)
+curl: (6) Could not resolve host: rustsec.invalid
+GET https://rustsec.invalid/packages/openapi-fuzzer.html -> 000000
+FAIL  B10.openapi-fuzzer an advisory page now exists for openapi-fuzzer  (HTTP 000000 — gate 3 must be re-evaluated)
+SKIP  B11..B22 (every standard quote and the Spectral cross-check)  (no clone of rest-standards at <work>/no-such-clone)
+
+== volatile figures (counters move; re-read rather than diff) ==
+SKIP  B23, B24 (both GitHub repositories)  (the gh CLI is not on PATH)
+
+== totals ==
+PASS=0 FAIL=3 SKIP=3 TOTAL=6
+exit=1
+
+== assertions ==
+FAIL  S1 crates.io unreachable -> one named SKIP covering B1..B9 and B27  (expected substring not found: SKIP  B1..B9, B27 (every crates.io check)  (crates.io could not be reached))
+FAIL  S2.oas3 rustsec.org unreachable -> B10.oas3 SKIPped by name, not FAILed  (expected substring not found: SKIP  B10.oas3  (rustsec.org could not be reached))
+FAIL  S2.proptest rustsec.org unreachable -> B10.proptest SKIPped by name, not FAILed  (expected substring not found: SKIP  B10.proptest  (rustsec.org could not be reached))
+FAIL  S2.openapi-fuzzer rustsec.org unreachable -> B10.openapi-fuzzer SKIPped by name, not FAILed  (expected substring not found: SKIP  B10.openapi-fuzzer  (rustsec.org could not be reached))
+FAIL  S3 no rest-standards clone -> one named SKIP covering B11..B22, B25 and B26  (expected substring not found: SKIP  B11..B22, B25, B26 (every standard quote and the Spectral cross-check))
+PASS  S4 gh absent -> one named SKIP covering B23 and B24
+FAIL  S5 every check is accounted for: six SKIP lines, no PASS, no FAIL  (expected substring not found: PASS=0 FAIL=0 SKIP=6 TOTAL=6)
+FAIL  S6 the copy exits 0 when every source is unreachable  (exit 1)
+
+== totals ==
+PASS=5 FAIL=7 SKIP=0 TOTAL=12
+exit=1

@@ -1,0 +1,86 @@
+host Darwin 25.4.0 arm64
+git git version 2.50.1 (Apple Git-155) | cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew) | rustfmt 1.9.0 | lefthook 2.1.14 at /opt/homebrew/bin/lefthook
+candidate sha256 17dfcab4c7cd9c260ce07301ca72c8e9dfd366dbb1dba1855cb252f631b56423
+PASS W00 lefthook version equals the pin 2.1.14
+PASS W01 fresh clone: check-install reports not installed (exit 1)
+sync hooks: ✔️(pre-commit)
+PASS W02 after lefthook install: check-install reports installed (exit 0)
+PASS W02 .git/hooks/pre-commit written
+╭──────────────────────────────────────────╮
+│ 🥊 lefthook  v2.1.14   hook:  pre-commit │
+╰──────────────────────────────────────────╯
+│  clippy (skip) tags
+┃  fmt ❯ 
+Diff in /private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.CbwsIieJ1G/clone/src/lib.rs:1:
+-pub fn  f( )->u8{1}
++pub fn f() -> u8 {
++    1
++}
+ 
+
+exit status 1
+  ────────────────────────────────────
+summary: (done in 0.17 seconds)
+🥊 fmt (0.13 seconds)
+PASS W03 wired hook rejects the misformatted commit (exit 1)
+PASS W03 commit count unchanged (1)
+PASS W03b --no-verify lands the commit (count 2)
+╭───────────────────────────────────────╮
+│ lefthook  v2.1.14   hook:  pre-commit │
+╰───────────────────────────────────────╯
+│  clippy (skip) tags
+┃  fmt ❯ 
+Diff in /private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.CbwsIieJ1G/ci/src/lib.rs:1:
+-pub fn  f( )->u8{1}
++pub fn f() -> u8 {
++    1
++}
+ 
+
+exit status 1
+  ────────────────────────────────────
+summary: (done in 0.69 seconds)
+✗ fmt (0.13 seconds)
+PASS W04 CI command fails on the bypassed violation (exit 1)
+PASS W04 compiles-tagged job not executed (CLIPPY-RAN count 0)
+PASS W04 CI command leaves the clone unwired (exit 1)
+PASS W04 no .git/hooks/pre-commit written
+PASS W04b without LEFTHOOK_EXCLUDE the compiles job runs (CLIPPY-RAN count 1)
+╭───────────────────────────────────────╮
+│ lefthook  v2.1.14   hook:  pre-commit │
+╰───────────────────────────────────────╯
+│  clippy (skip) tags
+┃  fmt ❯ 
+
+  ────────────────────────────────────
+summary: (done in 0.17 seconds)
+✓ fmt (0.10 seconds)
+PASS W04c CI command passes on the fixed tree (exit 0)
+Error: required lefthook version (9.9.9) is higher than current (2.1.14) at /opt/homebrew/bin/lefthook
+PASS W05 min_version 9.9.9 refuses lefthook 2.1.14 (exit 1)
+PASS W05 message names the version floor
+PASS W06 ci2 is unwired before the run (exit 1)
+PASS W06 a run without --no-auto-install installed the hooks (exit 0)
+PASS W07 an added hook makes check-install report stale (exit 1)
+[assert_lefthook_installed: true] Can't find lefthook in PATH
+ERROR: Operation is aborted due to lefthook settings.
+Make sure lefthook is available in your environment and re-try.
+To skip these checks use --no-verify git argument or set LEFTHOOK=0 env variable.
+PASS W08 assert_lefthook_installed: true — hook fails when the binary is gone (exit 1)
+[assert_lefthook_installed: false] Can't find lefthook in PATH
+PASS W08 assert_lefthook_installed: false — hook passes silently when the binary is gone (exit 0)
+PASS W09 rewriting job without --fail-on-changes (exit 0)
+PASS W09 the file was rewritten silently
+╭───────────────────────────────────────╮
+│ lefthook  v2.1.14   hook:  pre-commit │
+╰───────────────────────────────────────╯
+┃  fmt-fix ❯ 
+
+Error: files were modified by a hook, and fail_on_changes is enabled
+PASS W10 rewriting job with --fail-on-changes (exit 1)
+All good
+PASS W11 lefthook validate accepts the unmodified candidate (exit 0)
+PASS W12 w12 is unwired before the run (exit 1)
+W12 observed: check-install exit 0 after a CI=true run without --no-auto-install
+PASS W12 CI=true alone does not suppress auto-install, so --no-auto-install is needed in CI (exit 0)
+TOTAL pass=26 fail=0

@@ -1,0 +1,59 @@
+date-utc: 2026-09-27T04:29:35Z
+PASS K1 prompt-medium-question — research/topics/56-config-secret-policy/prompts/config-secret-policy.prompt.md:35 carries: MEDIUM: What warning mechanism (see R58/R59's eventual logging pipeline) surfaces the loose-permissions warning, and is it emitted once at config-load time or on every token read?
+PASS K2 r55-published-title — research/topics/55-config-error-tolerance/DECISION.md:1 carries: # 2026-09-17 — R55 — config-error-tolerance (bundle, Focused) — decision (revision 3)
+PASS K3 r55-published-decision-sha256 — 5d358c1fda2a5ff2782b916f3ca81cf52bbbafd75748774b114345c72a6edd9b
+PASS K4 r55-acceptance-binds-that-sha — 5d358c1fda2a5ff2782b916f3ca81cf52bbbafd75748774b114345c72a6edd9b
+PASS K5 r55-acceptance-sha256 — 017b9e96cfc7db6e3d912572a39606b9e661b9b9cab53498b5dfa2c227fd8301
+PASS K6 r55-owner-acceptance-row — docs/port/OWNER-ACCEPTANCES.md carries it (line 73): | R55 | 3 | `5d358c1fda2a5ff2782b916f3ca81cf52bbbafd75748774b114345c72a6edd9b` | accept | 2026-09-17 |
+PASS K7 r55-index-resolved — research/CLAUDE.md carries it (line 60): | R55 | config-error-tolerance | bundle | different | DIVERGENT | — | [prompt](topics/55-config-error-tolerance/prompts/config-error-tolerance.prompt.md) | resolved |
+PASS K8 r55-publication-ledger-row — docs/planning/p02/execution-ledger.md carries it (line 1159): R55 + R57 + R62 PUBLISHED, 2026-09-23: all three empiricals approved on the claude seat
+PASS K9 r55-publication-transaction — docs/planning/p02/execution-ledger.md carries it (line 1159): Packaged (acceptances 017b9e96/097f2c8b/594d3711) and published (transactions b8c70833/2b58f126/1a8a6a0d)
+K9-detail R55 topic DECISION.md modification time (local): 2026-09-25 08:44
+PASS K10 r55-unknown-keys-warn — research/topics/55-config-error-tolerance/DECISION.md:173 carries: **Unknown keys warn and never fail, in every layer.**
+PASS K11 r55-warnings-returned-as-data — research/topics/55-config-error-tolerance/DECISION.md:264 carries: `Result<(Config, Vec<ConfigWarning>), ConfigError>` with
+PASS K12 r55-warning-type — research/topics/55-config-error-tolerance/DECISION.md:265 carries: `ConfigWarning { source: ConfigSource, key: Option<String>, kind: ConfigWarningKind }`.
+PASS K13 r55-layering-ground — research/topics/55-config-error-tolerance/DECISION.md:267 carries: forbids the library crate from writing to any process stream, and **config loading
+PASS K14 r55-precedes-logger — research/topics/55-config-error-tolerance/DECISION.md:268 carries: precedes logger initialization** — R58 has not published, and a `tracing::warn!`
+PASS K15 r55-binary-renders-once — research/topics/55-config-error-tolerance/DECISION.md:270 carries: warnings once, after the logger exists, to **stderr** (R7.1), naming the offending
+PASS K16 r55-hands-r58-the-carrier — research/topics/55-config-error-tolerance/DECISION.md:561 carries: **R58** must accept a `Vec<ConfigWarning>` rendered by the binary after
+PASS K17 r58-open — research/CLAUDE.md carries it (line 63): | R58 | logging-pipeline-architecture | bundle | py-only | DIVERGENT | logging-pipeline-contract | [prompt](topics/58-logging-pipeline-architecture/prompts/logging-pipeline-architecture.prompt.md) | open |
+PASS K18 r59-open — research/CLAUDE.md carries it (line 64): | R59 | file-log-sink | bundle | py-only | DIVERGENT | — | [prompt](topics/59-file-log-sink/prompts/file-log-sink.prompt.md) | open |
+PASS K19 r58-owns-pipeline-contract — research/topics/58-logging-pipeline-architecture/prompts/logging-pipeline-architecture.prompt.md:25 carries: - owns: logging-pipeline-contract
+PASS K20 r58-hands-file-sink-to-r59 — research/topics/58-logging-pipeline-architecture/prompts/logging-pipeline-architecture.prompt.md:17 carries: R59 (`file-log-sink`) owns F255-F261
+PASS K21 pipeline-contract-owner-r58 — 1
+PASS K22 pipeline-contract-consumers — 1
+PASS K23 r56-does-not-consume-it — 0
+PASS K24 openai-buffered-diagnostic — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/doxa-openai.normalized.md:88 carries: The warning is buffered as a typed diagnostic and emitted once by the application
+PASS K25 openai-library-returns-typed — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/doxa-openai.normalized.md:256 carries: R56 should return typed warnings from the library.
+PASS K26 openai-once-per-file-per-load — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/doxa-openai.normalized.md:323 carries: typed, non-fatal, once per physical file per config load; application adapter emits through R58/R59.
+PASS K27 openai-direct-warn-ranked-lower — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/doxa-openai.normalized.md:521 carries: | Direct `tracing::warn!` in loader | Depends on R58/R59 |
+PASS K28 openai-direct-warn-conditional — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/doxa-openai.normalized.md:545 carries: A direct `tracing::warn!` call in the loader is acceptable only if R58/R59 guarantees a subscriber exists
+PASS K29 openai-assumes-adapter — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/doxa-openai.normalized.md:557 carries: assumes R58/R59 logging pipeline = supplies a user-visible startup-warning adapter
+PASS K30 muse-raw-sha256 — 80472db40500ffae62fb833ffaf7b12b0d16ef08c9c3c46b6b774a580ac01969
+PASS K31 muse-content-addressed-copy — 80472db40500ffae62fb833ffaf7b12b0d16ef08c9c3c46b6b774a580ac01969
+PASS K32 muse-operation-succeeded — succeeded muse-spark 80472db40500ffae62fb833ffaf7b12b0d16ef08c9c3c46b6b774a580ac01969
+PASS K33 manifest-required-engines — muse opus doxa
+PASS K34 manifest-codex-migrated-to-muse — codex muse muse bulk substitution (owner decision Q5.A 2026-09-21)
+PASS K35 owner-decision-q5a — docs/planning/p02/execution-ledger.md carries it (line 1114): Owner decision (2026-09-21, Q5.A): Muse-bulk all 17 remaining legs
+PASS K36 muse-read-the-standard — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/muse.md:56 carries: - The org CLI Design Standard v1.4.14 (local
+PASS K37 muse-read-r10-1 — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/muse.md:63 carries: R10.1 token-file > env > stored with
+PASS K38 muse-two-tier — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/muse.md:204 carries: - A3 Recommended: S1 + S2-conformant two-tier `--token-file <path>` > env,
+PASS K39 muse-says-every-must — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/muse.md:206 carries: Satisfies every MUST
+PASS K40 muse-credentials-file-deferred — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/muse.md:213 carries: for the template; it is the natural form of the deferred stored tier.
+PASS K41 muse-stray-key-fatal — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/muse.md:292 carries: is fatal `RSLB204`/2 with remedy hint; unreadable token file is
+PASS K42 muse-unreadable-rslb104 — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/muse.md:293 carries: `RSLB104`/1; missing token is `RSLB401`/4
+PASS K43 muse-rslb104-ground — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/muse.md:241 carries: `--token-file` is `RSLB104`/1 (R8.2 "unreadable files", verbatim).
+PASS K44 muse-binary-renders-via-r58 — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/muse.md:301 carries: prints nothing (R67 layering); the binary renders once through R58
+PASS K45 muse-keyring-deferred — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/muse.md:303 carries: 4. Deferred, not shipped: `keyring 4.2.0` stored-credential tier (adopt
+PASS K46 muse-adopt-with-auth-login — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/muse.md:304 carries: with an `auth login` surface) and `secrecy 0.10.3` in-memory wrapping
+PASS K47 muse-secrecy-deferred — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/muse.md:223 carries: - A7 In-memory wrapper (`secrecy::SecretString`) for the resolved token.
+PASS K48 muse-once-at-load — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/muse.md:649 carries: is produced exactly once, at config-load time, when the secret file is
+PASS K49 muse-no-library-eprintln — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/muse.md:672 carries: `eprintln!` from the library (rejected — violates R67 layering and is
+PASS K50 muse-warnings-field — research/runs/R56/2026-09-17T033528Z-785d25a9d608/raw/muse.md:697 carries: `Config.warnings: Vec<String>` populated once at load, plus an optional
+PASS K51 r8-2-unreadable-files-exit-1 — 1
+PASS K52 rslb101-row — docs/port/PARAMETERS.md carries it (line 16): `RSLB101` I/O → 1
+PASS K53 rslb104-row — docs/port/PARAMETERS.md carries it (line 16): `RSLB104` config layer unreadable → 1
+PASS K54 probe-returns-finding-as-data — research/runs/R56/2026-09-17T033528Z-785d25a9d608/review/evidence/probe/src/main.rs:36 carries: fn permission_warning(p: &Path) -> Option<String> {
+K55-detail fn main at line 131; first eprintln! at line 215
+PASS K55 probe-writes-stderr-only-in-main — every eprintln! in the probe is inside fn main (line 131 onward)
+CHECK_FAILURES=0

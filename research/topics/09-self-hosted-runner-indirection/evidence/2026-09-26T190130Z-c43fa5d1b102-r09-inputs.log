@@ -1,0 +1,26 @@
+INFO: date-utc 2026-09-27T15:50:29Z
+PASS: I1 live docs/port/PARAMETERS.md byte-identical to inputs snapshot
+PASS: I2 assumes msrv-policy byte-identical to live registry
+PASS: I3 assumes rust-edition byte-identical to live registry
+PASS: I4 assumes target-os-matrix byte-identical to live registry
+PASS: I5 assumes license byte-identical to live registry
+PASS: I6 R11 decision + acceptance hashes match prerequisites.json
+PASS: I7 inputs/prompt.md hash matches manifest input_hashes.prompt
+PASS: I8 F031/F056/F057/F058 DIVERGENT at R09; F072 COMMON present
+INFO: I9 muse sha256 ff66a8232b452fb1cc5fdef273312982ef6f14e8cb2af0c77ef9ca5ac114100b
+INFO: I9 opus sha256 287f51a9c3db69da9362bc4c61a19851913d9e45eae4284b69f4dd0044a3346f
+PASS: I9 both raw reports present and nonempty
+PASS: I10 DECISION H2s exactly Decision/Parameters/Empirical check/Engines
+PASS: I11 Principles H3 and exactly one bare 're-verify: ' line present
+PASS: I12 no CONFLICT line in either raw report or DECISION
+PASS: I13 R11 matrix/single-runner/workflow-lint rules present
+PASS: I14 both raw reports pass check-answer-shape.sh bundle
+PASS: I15 no invented assumes ci-job-structure line
+PASS: I16 prompt consumes empty; R11 related, not a registry dependency
+PASS: I17 DECISION candidate YAML byte-identical to actionlint.candidate.yml
+PASS: I18 SHA256SUMS verifies scripts + candidate file
+PASS: I19 owns: none line present
+PASS: I20 exactly four assumes lines
+INFO: I21 python3 3.14.7; live-override pinned-engines pinned-override manifest = muse,opus codex,opus absent codex,opus
+PASS: I21 live engine_overrides R09 = muse,opus (RUNBOOK Q17.A); pinned inputs + manifest predate it (codex,opus)
+SUMMARY: PASS=21 FAIL=0 SKIP=0
