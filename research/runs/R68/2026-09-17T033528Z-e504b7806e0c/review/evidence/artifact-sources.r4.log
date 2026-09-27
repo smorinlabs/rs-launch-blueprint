@@ -1,0 +1,199 @@
+=== R68 artifact-source checks ===
+date(UTC): 2026-09-27T06:05:08Z
+gh: gh version 2.101.0 (2026-09-15)
+curl: curl 8.7.1
+
+--- A. the base artifact: what cargo publish produces ---
+endpoint: https://doc.rust-lang.org/cargo/commands/cargo-package.html (retrieved this run)
+/usr/bin/grep -c 'distributable, compressed <code>.crate</code> file' = 1
+ASSERT ok   the Cargo Book states cargo package produces a distributable compressed .crate file — the single artifact every other channel is added beside
+
+--- B. Cargo profile defaults, cited for every key this decision leaves silent ---
+endpoint: https://doc.rust-lang.org/cargo/reference/profiles.html (retrieved this run)
+/usr/bin/grep -c '>strip<' profiles.html = 4
+/usr/bin/grep -c '>codegen-units<' profiles.html = 2
+/usr/bin/grep -c '>opt-level<' profiles.html = 3
+/usr/bin/grep -c '>panic<' profiles.html = 4
+/usr/bin/grep -c '>lto<' profiles.html = 3
+/usr/bin/grep -c 'Profile settings defined in dependencies will be' = 1
+203:root of the workspace. Profile settings defined in dependencies will be
+204-ignored.</p>
+ASSERT ok   the Cargo Book states profile settings defined in dependencies are ignored — a downstream library consumer inherits nothing from this manifest's [profile.release]
+/usr/bin/grep -c 'unpacked' profiles.html = 1
+ASSERT ok   the Cargo Book documents the platform-dependent split-debuginfo default whose macOS value (unpacked) explains the measured line-table result in profile-probe.log
+/usr/bin/grep -c 'inherits' profiles.html = 5
+ASSERT ok   the Cargo Book documents that a custom profile must declare inherits
+
+--- C. dist at the pinned tag v0.33.0: follower mode, runner map, generated profile stub ---
+PINNED endpoint: repos/axodotdev/cargo-dist/contents/book/src/reference/config.md?ref=v0.33.0
+/usr/bin/grep -c 'undrafting when all artifacts are uploaded' dist-config.md = 1
+1277:already exists with the title/body you want, and just upload artifacts to it, undrafting when all artifacts are uploaded.
+ASSERT ok   PINNED create-release = false makes dist upload into an existing draft Release and undraft it — the follower mode this decision pairs with release-please
+/usr/bin/grep -c 'github-custom-runners' dist-config.md = 3
+/usr/bin/grep -c 'install-updater' dist-config.md = 3
+/usr/bin/grep -c 'source-tarball' dist-config.md = 4
+/usr/bin/grep -c 'create-release' dist-config.md = 3
+/usr/bin/grep -c 'installers' dist-config.md = 44
+PINNED endpoint: repos/axodotdev/cargo-dist/contents/cargo-dist/src/backend/ci/github.rs?ref=v0.33.0
+/usr/bin/grep -c 'ubuntu-22.04-arm' cargo-dist/src/backend/ci/github.rs = 1
+/usr/bin/grep -c 'ubuntu-22.04' cargo-dist/src/backend/ci/github.rs = 4
+/usr/bin/grep -c 'macos-14' cargo-dist/src/backend/ci/github.rs = 1
+/usr/bin/grep -c 'macos-15-intel' cargo-dist/src/backend/ci/github.rs = 1
+/usr/bin/grep -c 'ubuntu-latest' cargo-dist/src/backend/ci/github.rs = 0
+ASSERT ok   PINNED dist's default GitHub runner labels are pinned point releases (ubuntu-22.04 / macos-*), none of them the fixed target-os-matrix values, so [dist.github-custom-runners] overrides are REQUIRED, not optional
+ASSERT ok   PINNED dist assigns an ARM Linux runner label (ubuntu-22.04-arm) to the ARM Linux target — the fixed matrix has no ARM Linux runner, which is the ground for excluding aarch64-unknown-linux-gnu
+PINNED endpoint: repos/axodotdev/cargo-dist/contents/book/src/reference/concepts.md?ref=v0.33.0
+/usr/bin/grep -c 'profile.dist' book/src/reference/concepts.md = 3
+/usr/bin/grep -c 'lto = "thin"' book/src/reference/concepts.md = 1
+60:[profile.dist]
+61-inherits = "release"
+62-lto = "thin"
+63-```
+64-
+65:The parts we're really interested in here are "installers", "targets", and `[profile.dist]`.
+66-
+67-First the easy part: `profile.dist` is the profile dist will build everything with. We define a separate profile from `release` so that it can be tuned more aggressively for builds that are longer or more resource-intensive without making it tedious to develop locally.
+68-
+69-The other 3 fields are defining the various Artifacts that should be produced for each App in the workspace (because this is `[workspace.metadata]` and not `[package.metadata]`).
+ASSERT ok   PINNED dist's own documentation shows the [profile.dist] stub it generates carrying lto = "thin" — byte-for-byte the owner reference architecture's profile row, and the stub that must be trimmed or it silently overrides the recommended lto = "fat"
+/usr/bin/grep -c 'non-target-specific tasks using the `global` key' dist-config.md = 1
+1534:In addition to defining runners for a target, it's also possible to specify a runner for the global, non-target-specific tasks using the `global` key. This runner will be used for tasks like `plan`, `host`, generating installers, and so on.
+ASSERT ok   PINNED dist documents a 'global' key inside [dist.github-custom-runners] for the non-target-specific tasks, which is what the recommended configuration pins to ubuntu-latest
+PINNED endpoint: repos/axodotdev/cargo-dist/contents/CHANGELOG.md?ref=v0.33.0 (161451 bytes)
+/usr/bin/grep -n 'delete `[profile.dist]`' CHANGELOG.md first hit at line = 2274
+the nearest preceding '# Version' heading above that line is: 2270:# Version 0.0.3 (2023-02-27)
+ASSERT ok   PINNED the 'delete [profile.dist]' instruction belongs to dist's Version 0.0.3 migration notes (2023-02-27), not to 0.32.0 — so the Doxa/Perplexity report that current dist tells users to delete the profile is a misattribution, and the v0.33.0 book still shows the stub being generated
+PINNED endpoint: repos/axodotdev/cargo-dist/contents/book/src/installers/other.md?ref=v0.33.0
+/usr/bin/grep -c -i 'auto-detected' book/src/installers/other.md = 1
+4-
+5-* [cargo-install][] (just [cargo publish][] like normal)
+6:* [cargo-binstall][] (the URL schema we use for Github Releases is auto-detected)
+7-
+8-In the future we might [support displaying these kinds of install methods][issue-info-install].
+ASSERT ok   PINNED dist states its GitHub Release URL schema is auto-detected by cargo-binstall — the maintainer claim behind writing no [package.metadata.binstall] block
+/usr/bin/grep -c -i 'zigbuild' over the pinned dist config + concepts reference = 0
+/usr/bin/grep -c -i 'zigbuild' over the pinned CI backend cargo-dist/src/backend/ci/github.rs = 5
+/usr/bin/grep -c 'CargoBuildWrapper::ZigBuild' over the same file = 1
+865:    if required_wrappers.contains(&CargoBuildWrapper::ZigBuild) {
+866:        pip_pkgs.insert(PipPackageName::new("cargo-zigbuild".to_owned()));
+896:                "cargo-zigbuild" => {
+898:                    lines.push("if ! command -v cargo-zigbuild > /dev/null 2>&1; then".to_owned());
+900:                    lines.push("  pip3 install cargo-zigbuild".to_owned());
+ASSERT ok   PINNED cargo-zigbuild appears 0 times in dist's user-facing configuration reference and only inside a conditional CargoBuildWrapper::ZigBuild guard in its CI backend — so it is an opt-in wrapper dist installs when a target demands one, not the mechanism the three recommended natively-built targets use; the Doxa/Gemini claim that dist 'executes cross-compilation via cargo-zigbuild' overstates it
+PINNED endpoint: repos/axodotdev/cargo-dist/contents/.github/workflows/release.yml?ref=v0.33.0
+/usr/bin/grep -c 'releases/download/v<ver>/cargo-dist-installer.sh' release.yml = 1
+/usr/bin/grep -c 'cargo install cargo-dist' release.yml = 0
+67:        run: "curl --proto '=https' --tlsv1.2 -LsSf https://github.com/axodotdev/cargo-dist/releases/download/v0.32.0/cargo-dist-installer.sh | sh"
+ASSERT ok   PINNED dist's generated release workflow installs dist from its GitHub Release installer script and never from crates.io — so the crates.io publication gap recorded below does not block pinning a version the registry lacks; it is a maintenance signal, not an install blocker
+
+--- D. dist's own v0.33.0 release assets: the naming scheme binstall must infer ---
+PINNED endpoint: repos/axodotdev/cargo-dist/releases/tags/v0.33.0 (.assets[].name)
+asset count = 23
+cargo-dist-aarch64-apple-darwin.tar.xz
+cargo-dist-aarch64-apple-darwin.tar.xz.sha256
+cargo-dist-aarch64-unknown-linux-gnu.tar.xz
+cargo-dist-aarch64-unknown-linux-gnu.tar.xz.sha256
+cargo-dist-aarch64-unknown-linux-musl.tar.xz
+cargo-dist-aarch64-unknown-linux-musl.tar.xz.sha256
+cargo-dist-installer.ps1
+cargo-dist-installer.sh
+cargo-dist-npm-package.tar.gz
+cargo-dist-x86_64-apple-darwin.tar.xz
+cargo-dist-x86_64-apple-darwin.tar.xz.sha256
+cargo-dist-x86_64-pc-windows-msvc.zip
+cargo-dist-x86_64-pc-windows-msvc.zip.sha256
+cargo-dist-x86_64-unknown-linux-gnu.tar.xz
+cargo-dist-x86_64-unknown-linux-gnu.tar.xz.sha256
+cargo-dist-x86_64-unknown-linux-musl.tar.xz
+cargo-dist-x86_64-unknown-linux-musl.tar.xz.sha256
+cargo-dist.rb
+dist-manifest-schema.json
+dist-manifest.json
+sha256.sum
+source.tar.gz
+source.tar.gz.sha256
+ASSERT ok   PINNED the archive is named after the PACKAGE (cargo-dist-<triple>.tar.xz) although the binary inside is named dist — so a dist-produced archive matches cargo-binstall's { name }-based default filename while the binary keeps its own { bin } name
+ASSERT ok   PINNED the release carries a shell installer script
+ASSERT ok   PINNED the release carries a sha256.sum sidecar set
+ASSERT ok   PINNED the release carries the machine-readable dist-manifest.json
+/usr/bin/grep -c -i -E 'windows|\.msi$|\.ps1$' assets.txt = 3 (recorded: dist ships Windows artifacts for itself; this template's fixed matrix has no Windows runner, so its targets list excludes them)
+
+--- E. cargo-binstall's documented default inference rules (moving branch) ---
+HEAD endpoint: repos/cargo-bins/cargo-binstall/contents/SUPPORT.md at commit 422f3094be6a0843857aa008b499caaf6bce0da8
+/usr/bin/grep -c '{ name }-{ target }' SUPPORT.md = 8
+13:pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ target }-v{ version }{ archive-suffix }"
+14:bin-dir = "{ name }-{ target }-v{ version }/{ bin }{ binary-ext }"
+115: - `{ name }-{ target }-v{ version }`
+116: - `{ name }-{ target }-{ version }`
+ASSERT ok   HEAD cargo-binstall's default GitHub filename templates are built from { name }, the CRATE name — which is what a dist archive is named after
+/usr/bin/grep -c '{ bin }{ binary-ext }' SUPPORT.md = 2
+14:bin-dir = "{ name }-{ target }-v{ version }/{ bin }{ binary-ext }"
+124:Then it will concat the dir with `"{ bin }{ binary-ext }"` and use that as the final `bin-dir`.
+ASSERT ok   HEAD cargo-binstall's default bin-dir extracts { bin }, the CARGO BINARY name — so R49's rslbp (binary) / rs-launch-blueprint (package) pair is exactly the case the two defaults already cover
+/usr/bin/grep -c 'versionless' SUPPORT.md = 3
+148:- `{ name }-{ target }{ archive-suffix }` ("versionless")
+149:- `{ name }_{ target }{ archive-suffix }` ("versionless")
+175:Also note that as there are no per-release downloads, the "versionless"
+13:pkg-url = "{ repo }/releases/download/v{ version }/{ name }-{ target }-v{ version }{ archive-suffix }"
+99:pkg-url = "{ repo }/releases/download/v{ version }/{ name }-arm64-linux{ archive-suffix }"
+156:- `{ repo }/releases/download/v{ version }/`
+191:- `{ repo }/releases/download/v{ version }/`
+217:pkg-url = "{ repo }/releases/download/v{ version }/sx128x-util-{ target }-v{ version }{ archive-suffix }"
+ASSERT ok   HEAD cargo-binstall's DEFAULT GitHub pkg-url filename list includes the versionless { name }-{ target }{ archive-suffix } form under the path { repo }/releases/download/v{ version }/ — which is exactly dist's observed asset naming, so no [package.metadata.binstall] block is required
+
+--- F. the runner-up's archive default, which does NOT match binstall's ---
+HEAD endpoint: repos/taiki-e/upload-rust-binary-action/contents/README.md at commit 9db2ba52f2d913fae376c843748c9d2c2ac2c9ba
+/usr/bin/grep -c '$bin-$target' README.md = 5
+41:| archive | | Archive name (non-extension portion of filename) to be uploaded | String | `$bin-$target` |
+91:An archive file with a name like `$bin-$target.tar.gz` will be uploaded to
+140:    # [default value: $bin-$target]
+ASSERT ok   HEAD the runner-up action's default archive name is $bin-$target (the BINARY name), which binstall's { name }-based default will not find for this template — the exact reason the runner-up costs a hand-maintained [package.metadata.binstall] block and the dominant choice does not
+/usr/bin/grep -c 'profile' README.md = 13
+ASSERT ok   HEAD the runner-up exposes a profile input, so it composes with this item's profile recommendation unchanged
+
+--- G. release-please: the draft Release and the tag that fires the dist workflow ---
+HEAD endpoint: repos/googleapis/release-please/contents/docs/manifest-releaser.md at commit edce3d805ef3ac964d1ba2b29b0f42905f2fa412
+/usr/bin/grep -c 'draft' docs/manifest-releaser.md = 4
+ASSERT ok   HEAD release-please documents a draft option that creates the Release as a draft
+/usr/bin/grep -c 'force-tag-creation' docs/manifest-releaser.md = 2
+217:  // changelogs that include the entire commit history. Setting `force-tag-creation` to
+218-  // true ensures the tag is created immediately, allowing release-please to
+219-  // correctly identify the previous release.
+--
+221:  "force-tag-creation": true
+222-
+223-  // Skip creating GitHub Releases
+ASSERT ok   HEAD release-please documents force-tag-creation, needed because GitHub creates no git tag for a draft release until it is published — without the tag the dist workflow never fires
+
+--- H. maintenance figures (VOLATILE: counters and timestamps move) ---
+FIGURE cargo-dist: endpoint GET https://crates.io/api/v1/crates/cargo-dist -> max_stable_version=0.32.0 recent_downloads(90d)=19281 downloads(all-time)=178421
+FIGURE cargo-binstall: endpoint GET https://crates.io/api/v1/crates/cargo-binstall -> max_stable_version=1.24.0 recent_downloads(90d)=130014 downloads(all-time)=3507400
+FIGURE axodotdev/cargo-dist: endpoint GET /repos/axodotdev/cargo-dist -> stars=2123 archived=false pushed_at=2026-09-25T10:05:28Z
+FIGURE axodotdev/cargo-dist: endpoint GET /search/issues?q=repo:axodotdev/cargo-dist+is:issue+is:open -> total_count=298
+FIGURE cargo-bins/cargo-binstall: endpoint GET /repos/cargo-bins/cargo-binstall -> stars=2895 archived=false pushed_at=2026-09-26T12:38:53Z
+FIGURE cargo-bins/cargo-binstall: endpoint GET /search/issues?q=repo:cargo-bins/cargo-binstall+is:issue+is:open -> total_count=95
+FIGURE taiki-e/upload-rust-binary-action: endpoint GET /repos/taiki-e/upload-rust-binary-action -> stars=322 archived=false pushed_at=2026-09-02T11:56:46Z
+FIGURE taiki-e/upload-rust-binary-action: endpoint GET /search/issues?q=repo:taiki-e/upload-rust-binary-action+is:issue+is:open -> total_count=23
+
+--- I. the at-risk signal: is dist's newest GitHub release installable from crates.io? ---
+FIGURE newest non-prerelease GitHub release of axodotdev/cargo-dist = v0.33.0 published 2026-09-11T05:40:23Z
+FIGURE newest stable crates.io version of cargo-dist = 0.32.0
+FIGURE GET https://crates.io/api/v1/crates/cargo-dist/0.33.0 -> {"errors":[{"detail":"crate `cargo-dist` does not have a version `0.33.0`"}]}
+registry-gap-present=1 (1 = the newest GitHub release has no crates.io version)
+NOTE: this is the deciding at-risk signal, and it is VOLATILE by design — the re-verify trigger below re-runs exactly this comparison.
+
+--- J. RustSec advisory pages, with a positive control so 404 means 'no page', not 'fetch failed' ---
+FIGURE https://rustsec.org/packages/time.html -> HTTP 200
+FIGURE https://rustsec.org/packages/openssl.html -> HTTP 200
+FIGURE https://rustsec.org/packages/chrono.html -> HTTP 200
+FIGURE https://rustsec.org/packages/cargo-dist.html -> HTTP 404
+FIGURE https://rustsec.org/packages/cargo-binstall.html -> HTTP 404
+ASSERT ok   the RustSec control (time) returns HTTP 200, so the endpoint is reachable and a 404 is meaningful
+ASSERT ok   cargo-dist has no RustSec advisory page (HTTP 404) — fitness gate 3's advisory half, answered against a working control
+
+--- K. MSRV floor declared by the tools (fitness gate 2) ---
+FIGURE cargo-dist: endpoint GET /api/v1/crates/cargo-dist/versions -> newest non-yanked num=0.32.0 created_at=2026-05-22T05:58:59.298224Z rust_version=1.74
+FIGURE cargo-binstall: endpoint GET /api/v1/crates/cargo-binstall/versions -> newest non-yanked num=1.24.0 created_at=2026-09-26T12:38:43.071287Z rust_version=1.79.0
+NOTE: both tools are host executables, never Cargo dependencies of the template, so neither enters the template's own MSRV surface.
+
+RESULT: PASS — every assertion held

@@ -1,0 +1,79 @@
+# R02 crate-boundary-enforcement — judgment audit, decision revision 2
+
+actor: fable
+model: claude-opus-5-5
+family: anthropic
+decision-sha256: 9e8f8e8c11ffb9b383819b2de1b05eab71a32e3af358b75ea8475d48f3c9707f
+verdict: reject
+unresolved-findings:
+1. JF-3/JF-2 (blocking) — the required Muse engine leg is not represented in `## Engines`.
+2. JF-4/JF-1 (minor) — "two orders above the 190" contradicts the cited log line `EF2d`.
+3. JF-8 (minor) — the rerun figure `0.475 s` is carried in three places, and no committed log contains it.
+
+Target: `research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md`, revision 2. Expected sha256 `9e8f8e8c11ffb9b383819b2de1b05eab71a32e3af358b75ea8475d48f3c9707f`. The recomputed hash matches, so this audit reviews the requested revision.
+
+Scope: this audit judges reasoning and fidelity. It reran no evidence script. It read the decision, `inputs/prompt.md` in its current working-tree form, `inputs/prerequisites.json`, `research/RUNBOOK.md` §4–§5, `raw/opus.md`, the three normalized Doxa twins, `raw/muse.md`, `operations/muse.json`, `manifest.json`, the five committed evidence logs, and the R01, R04, R49 and R67 topic decisions and the R69 revision-10 run decision where the decision quotes them. It did not read any `review/audit-*.md` file or any snapshot of a prior revision.
+
+## Checks
+
+| Check | Result | Evidence |
+|---|---|---|
+| JF-1 internal consistency | **fail (minor)** | See finding 2. The rest is consistent. The JF-3 repair at line 174 ("the four gated things remain the same four, at the member's paths") no longer contradicts the sentence before it. The `RESOLVED` paragraph (line 199) and the kept `CONFLICT:` line agree about what was raised and what is discharged. |
+| JF-2 prompt questions and constraints | **fail** | All six questions are answered. HIGH-1 is answered by check `A` and `C1`–`C4`. HIGH-2 is answered by the four-mechanism table. HIGH-3 is answered by the agreement-level table and the cross-repo adjudication. The two MEDIUM questions are answered by F008/F009 and by the F116 table. The LOW question is answered by F020. The out-of-scope items R01/F011 and R05 are not decided. One constraint now fails: the prompt's tier guidance reads "This item substitutes Muse (Meta) for Codex … its mirrored `- engines:` line is authoritative", and that line reads `- engines: muse, opus, doxa`. The decision accounts for `codex`, `opus` and `doxa` only. See finding 1. |
+| JF-3 `## Engines` fidelity | **fail** | The pinned Opus and Doxa legs are faithfully represented. Spot-checks each returned at least one hit: openai "proposed acceptance measurements" (1) and "concrete adapter package names were unavailable" (1); perplexity `check --all-features` (2); gemini `0.19.0` (2), `578` (1) and `728` (1); Opus "does not exist in maintained form" (1). All eight disagreements are adjudicated with executed checks. The Muse leg is absent. See finding 1. |
+| JF-4 load-bearing claims trace | **pass, with finding 2** | These claims resolve to PASS lines in the committed logs: `EF1a`–`EF1l` (boundary 0.27.0, 30 releases, 5 stars, unchecked monorepo box), `EF2a` (cargo-deny 0.20.2), `EF5b`, `EF5d` and `EF6a`–`EF6c` in `r02-ecosystem-figures.log`; `A`, `B1`–`B4`, `C1`–`C5`, `D1`–`D3` and `H` in `r02-workspace-probe.log`; and `CD6` = 0.437 s at `r02-cargo-deny-bans.log:129,134`. The claims that quote other items are verbatim in their sources: R49 ("R02 resolves to a workspace, which moves these fields to", "no build-orchestration crate", "the selection is shape-neutral"), R04 ("R02 selects a multi-crate topology"), R67 ("the library crate must not depend on `anyhow`"), `DIVERGENCE-ANALYSIS.md:77`, and the OWNER-REVIEW heading at `docs/port/OWNER-REVIEW.md:151`. |
+| JF-5 couplings | **pass** | These items are handed their choices and none is decided here: R11 (job versus step, path-skip, and check `B3`), R12 (aggregate check), R37 (lefthook wiring), R28 (per-member `clippy.toml`), R23/R24/R25/R68 (publish mechanics), and R60 (`clap_complete` wrapper). The facade re-export form is explicitly disclaimed to R04 and P03 (line 201). R69 is handled by `CONFLICT:` plus an owner ruling, not by R02 redesigning it. |
+| JF-6 `assumes` lines match the live registry | **pass** | Lines 192–195 are byte-identical to `docs/port/PARAMETERS.md:7-10`. The prompt's `- owns:` and `- consumes:` lines are empty, so four `assumes` lines is the complete set. |
+| JF-7 prerequisite and published values | **pass** | `research/topics/01-ports-and-adapters-seam/DECISION.md` sha256 `44bf9ae9…` equals `prerequisites.json` R01.decision. The R69 revision-10 run file hashes to `d34ab6e8…`, as the decision claims. `PARAMETERS.md:17` still carries the revision-9 body `web = ["dep:axum", "dep:tokio"]`. The decision says so explicitly (line 199) and does not claim the registry has moved. |
+| JF-8 evidence scripts and counts | **pass, with finding 3** | All five scripts and logs exist. Their summary lines match the decision's table: 26/0, 35/0/0, 17/0/0, 33/0/0 and 66/0/0. |
+| JF-9 decision shape | **pass** | The file has exactly four H2 headings: `## Decision` (line 20), `## Parameters` (188), `## Empirical check` (215) and `## Engines` (270). It has no `## Supersedes`, exactly one `re-verify:` line, and exactly one `OVERRIDE (OV-03)` heading carrying `**Argument:**` and `**Options:**`. |
+| JF-10 recommendation follows from the evidence | **pass** | Execution settles the topology. Check `A` shows the upward edge compiling inside one package. Checks `C1`–`C4` show the same edges failing across crates. Checks `D1`–`D3` show clippy scoping only at package granularity. R49's "no build-orchestration crate" clause excludes every `xtask` design. Nothing in `raw/muse.md` contradicts the recommendation, because Muse recommends the same four-member root-package stack. |
+
+## Findings
+
+### 1. JF-3 / JF-2 (blocking): the required Muse leg is absent from `## Engines`
+
+**Failed claims.**
+- Line 203: "That line is carried verbatim from the Opus raw report (`raw/opus.md`, its `### Parameters` section), **the only engine leg that raised one**."
+- Line 274: "**codex — ABSENT.** … **This synthesis therefore rests on the Opus and Doxa reports only.**"
+
+**Evidence.**
+- `inputs/prompt.md` now reads `- engines: muse, opus, doxa` and "This item substitutes Muse (Meta) for Codex under the `engine_overrides` pilot; its mirrored `- engines:` line is authoritative". `manifest.json` `required_engines` is `["muse","opus","doxa"]`. Its migration entry records "muse bulk substitution (owner decision Q5.A 2026-09-21)".
+- A Muse report exists at `raw/muse.md` (sha256 `e48b9b86e91870105aae49a199ea442c27a245b137bb0cd7a7e02ca88068c825`). Its identity matches `operations/muse.json`: actor `research-muse-2026-09-17T033527Z-40929a603f91`, request `28862c836e8643e2b6fa949bb4b18965`, model `muse-spark`.
+- `raw/muse.md` carries a `CONFLICT: R69 web-extra-surface` line, and `diff` shows it is byte-identical to the decision's line. The claim that Opus was "the only engine leg that raised one" is therefore false against the current run directory.
+- The decision contains 0 occurrences of "muse", checked case-insensitively.
+
+**Why this is a finding and not a timing artefact.** The decision was correct when written on 2026-09-18. The Muse leg is dated 2026-09-26. However, check 3 asks whether `## Engines` represents *each* engine, and the decision's own honesty contract treats claims that later turn false against the tree as reportable. It does this for `EF6a` at line 234. The decision also commits, at line 274, that a later report "would be folded in by revision". That fold-in has not happened.
+
+**What the fold-in must adjudicate.** Muse recommends the same four-member root-package stack, with the same four mechanisms and the same `CONFLICT:`. Nothing read here moves the recommendation, so the repair is an evidence-only revision 3, not a re-synthesis. Every divergence below is already settled by an existing check:
+- Muse's F116 migration row writes `cargo deny check bans` without `--all-features` (`raw/muse.md:576`). The existing checks `CD5a`–`CD5d` settle this, as they do for Disagreement 8.
+- Muse states that an intra-crate layer checker "does not exist in maintained form" (`raw/muse.md:16`) and never names `boundary`. The existing checks `EF1a`–`EF1l` settle this, as they do for Disagreement 4.
+- Muse's landscape adds `cargo-bylaw` 0.1.0, which Muse itself excludes (`raw/muse.md:220,224`). The decision's landscape does not name it.
+- Muse cites `guppy` 0.19.1, created 2026-09-24 (`raw/muse.md:281`). This is after the decision's 2026-09-17 retrieval of 0.18.0. It is a dated-figure divergence to record, not an error in the decision.
+- Muse's `### Parameters` carries `assumes` lines for parameters the prompt does not consume, such as `build-tool-output-shape` and `web-extra-surface`. The decision correctly does not import them, and `## Engines` should say so.
+
+**Repair.**
+1. The controller collects and pins the Muse leg. `operations/muse.json` and the manifest still record `state: "submitting"`, and `raw/muse.md` and the prompt change are uncommitted.
+2. A revision-3 synthesis then adds a `muse` bullet to `## Engines` with its sha256 and operation.
+3. The same revision replaces the Codex-absent paragraph with the substitution record.
+4. It corrects line 203 to name both Opus and Muse as legs that raised the `CONFLICT:` line.
+5. It adjudicates the five divergences above in the disagreements table, citing the existing checks.
+
+### 2. JF-4 / JF-1 (minor): a magnitude claim contradicts its cited log
+
+**Failed claim.** Line 262: "records `cargo-deny` at **2,426** stars, two orders above the 190 the gemini leg attributed".
+
+**Evidence.** `r02-ecosystem-figures.log:37`, check `EF2d`: "cargo-deny has 2426 stars, an order of magnitude above the 190". 2426 / 190 ≈ 12.8×, which is about one order of magnitude, not two.
+
+**Repair.** Change the wording to "an order of magnitude above", matching the log. Line 287 does not state a magnitude and needs no change.
+
+### 3. JF-8 (minor): an unlogged timing figure survives the JF-1 repair
+
+**Failed claims.**
+- Line 144: "0.475 s on the rerun performed for this decision"
+- Line 245: "the rerun performed for this decision read 0.475 s"
+- Line 268: "the rerun performed for this decision read 0.475 s"
+
+**Evidence.** `/usr/bin/grep` for `0.475` over all five committed `review/evidence/*.log` files returns 0 lines. Only `0.437` is logged, at `r02-cargo-deny-bans.log:129,134`. This is the same defect class that round-1 JF-1 repaired for `0.509`: a bare figure that no committed log contains. Severity is low. The figure is labelled as volatile, it bears no load, and it was already present in revision 1.
+
+**Repair.** Either state "a different sub-second value on every rerun" without a number, or commit the rerun's log and cite it by label.

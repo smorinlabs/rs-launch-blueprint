@@ -1,0 +1,16 @@
+== E3 framework-log-foldin — 2026-09-27T04:09:33Z (UTC), Darwin arm64, rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+STATUS /v1/projects/7 -> HTTP/1.1 200 OK
+STATUS /healthz -> HTTP/1.1 200 OK
+STATUS /nope -> HTTP/1.1 404 Not Found
+STATUS /boom -> HTTP/1.1 500 Internal Server Error
+TALLY target=axum::serve level=TRACE count=7
+TALLY target=r75probe::http_access level=INFO count=3
+TALLY target=tower_http::catch_panic level=ERROR count=1
+PASS F01 3 http_request events for 4 requests (probe excluded) :: events=3
+PASS F02 no axum/hyper/tower event at INFO or above besides catch_panic :: loud=0
+PASS F03 no `log` records while a tracing subscriber is set :: log_records=0
+PASS F04 real-listener statuses :: [("/v1/projects/7", "HTTP/1.1 200 OK"), ("/healthz", "HTTP/1.1 200 OK"), ("/nope", "HTTP/1.1 404 Not Found"), ("/boom", "HTTP/1.1 500 Internal Server Error")]
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+== plain-text lines outside the tracing pipeline (std default panic hook):
+thread 'tokio-rt-worker' (<tid>) panicked at tests/common/mod.rs:100:5:
+== 4 pass, 0 fail

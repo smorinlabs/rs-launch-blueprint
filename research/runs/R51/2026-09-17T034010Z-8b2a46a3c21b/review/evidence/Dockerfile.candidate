@@ -1,0 +1,46 @@
+# syntax=docker/dockerfile:1
+# rs-launch-blueprint — container image for the optional `web` Cargo feature.
+# Decided at R51 (F223, F336, F337). Built on demand; this template publishes
+# no image. Build:  docker build -t rslbp-serve:dev .
+# Run:    docker run --rm -p 8000:8000 rslbp-serve:dev
+#
+# Every base is pinned by digest with its human-readable tag in front, so a
+# base bump is a one-line reviewable diff and Dependabot's `docker` ecosystem
+# can raise it (R19's F053).
+
+ARG PROBE_IMAGE=busybox:1.38.0-musl@sha256:32b5cdad7cce41dfd53d0ae06baebcf8357a147ee7694dc706911c373bc30c37
+ARG RUST_IMAGE=rust:1.98.1-slim-trixie@sha256:ca5c572a3d4e8acfa44bc065aa6d9dafbee398bf14ec376d2bcf955820a4c9f3
+ARG RUNTIME_IMAGE=gcr.io/distroless/cc-debian13:nonroot@sha256:54df941ed0d06a1bd95ef5e0ce391fd8d9f94b64782dc9a60062727849ee3f97
+
+# Stage 1 — contributes exactly one statically linked multi-call binary, which
+# is the only HTTP client the shell-less runtime stage will have.
+FROM ${PROBE_IMAGE} AS probe
+
+# Stage 2 — compile. `--locked` needs Cargo.lock in the build context, so
+# .dockerignore must not exclude it. The two cache mounts hold $CARGO_HOME's
+# registry and the workspace target/; `sharing=locked` keeps two concurrent
+# builds from writing one target/. target/ is a mount, so the binary must be
+# installed out of it inside the same RUN.
+FROM ${RUST_IMAGE} AS builder
+WORKDIR /src
+ENV CARGO_TERM_COLOR=never CARGO_INCREMENTAL=0
+COPY . .
+RUN --mount=type=cache,target=/usr/local/cargo/registry,sharing=locked \
+    --mount=type=cache,target=/src/target,sharing=locked \
+    cargo build --release --locked --features web --bin rslbp-serve \
+ && install -D -m 0755 target/release/rslbp-serve /out/rslbp-serve
+
+# Stage 3 — run. cc-debian13 carries glibc, the dynamic loader, libgcc and CA
+# certificates, and a built-in uid/gid 65532 `nonroot`; it has no shell and no
+# package manager, so HEALTHCHECK must use the exec form and the copied applet
+# must be invoked by absolute path.
+FROM ${RUNTIME_IMAGE}
+COPY --from=probe /bin/busybox /bin/busybox
+COPY --from=builder /out/rslbp-serve /usr/local/bin/rslbp-serve
+# Containers bind all interfaces; the in-code default stays loopback (R77).
+ENV RSLBP_WEB_HOST=0.0.0.0
+EXPOSE 8000
+USER nonroot:nonroot
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+    CMD ["/bin/busybox","wget","--spider","-q","-T","2","http://127.0.0.1:8000/healthz"]
+ENTRYPOINT ["/usr/local/bin/rslbp-serve"]

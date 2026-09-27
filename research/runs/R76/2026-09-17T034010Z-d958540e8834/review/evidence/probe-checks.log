@@ -1,11 +1,14 @@
 === R76 CORS-layer probe checks ===
-date(UTC): 2026-09-18T22:53:19Z
-rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
-cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+date(UTC): 2026-09-27T07:08:36Z
+rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+cargo: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
 os:    macOS 26.4 arm64
 grep:  grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
 
---- A. resolve the probe: can this host reach the crates it needs? ---
+--- A. the committed lockfiles: every arm resolves exactly the recorded tree ---
+LOCK  snapshots/probe-with.Cargo.lock sha256 = 2223bdbce4dc20e73240f7863eb6ffc8cc42e0ce662c8e46f4a5a379f086ed05
+LOCK  snapshots/probe-v06.Cargo.lock sha256 = 2a6e2e926bc7d0db735daeb65cdf24573fa695266b3350da8bf680a3c95898a3
+LOCK  snapshots/probe-without.Cargo.lock sha256 = fa4eb3f7be9cc67c76b794af99e3f3e11f33f32daf6b7e7ae8a6830538eb86f9
 FIGURE resolved tower-http = 0.7.1; bitflags = 2.13.2
 ASSERT ok   the probe resolves the exact tower-http version this decision recommends
 
@@ -66,18 +69,18 @@ added by the line:
 removed by the line:
 ASSERT ok   the dependency line adds exactly two packages, tower-http 0.7.1 and bitflags 2.13.2, and nothing else moves
 ASSERT ok   and removes none, so this is a pure addition to R69's accepted graph
-the highest declared rust-version among the resolved dependencies:
-  1.71.0 log
+the highest declared rust-version among the resolved dependencies (numeric order):
   1.78 axum-core
   1.80 axum
-FIGURE maximum declared rust-version in the resolved dependency tree = 1.80
-ASSERT ok   gate 2 over the tree, not just the crate: the highest declared rust-version among the dependencies is axum 0.8.9's 1.80, well inside the 1.96 floor
+  1.85 hyper-util
+FIGURE maximum declared rust-version in the resolved dependency tree = 1.85 (hyper-util), under the committed lockfile
+ASSERT ok   gate 2 over the tree, not just the crate: the highest declared rust-version among the locked dependencies (1.85, hyper-util) is at or below the 1.96 floor, compared numerically
 FIGURE packages declaring no rust-version (9): httparse, matchit, mime, serde_urlencoded, smallvec, sync_wrapper, tower-layer, tower-service, wasi
 ASSERT ok   neither package this item adds is among the undeclared ones — every undeclared package arrives with axum or tokio, which R69 already accepted
 where tower sits in the non-dev graph:
   tower v0.5.3
   └── axum v0.8.9
-      └── r76probe v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r76-probe.7aNDS0/with)
+      └── r76probe v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r76-probe.WeIGVk/with)
 ASSERT ok   tower 0.5.3 is already in the non-dev graph through axum, so this item's dependency line neither adds it nor promotes it — tower stays declared as crates/web's dev-dependency, which is the value R69 fixed
 which tower features axum already activates:
   ├── tower feature "default"
@@ -95,13 +98,13 @@ what tower-http itself pulls in (normal edges, depth 1):
 ASSERT ok   gate 5: with only the cors feature on, tower-http has no tokio edge, so the layer is executor-agnostic and adds no async-runtime coupling
 
 --- E. gate 6: what the dependency costs in build time and bytes ---
-FIGURE clean release build, arm=without, run 1: 17.7 s   (wall clock on a shared host; VARIES between runs and is never asserted)
-FIGURE clean release build, arm=without, run 2: 21.4 s   (wall clock on a shared host; VARIES between runs and is never asserted)
+FIGURE clean release build, arm=without, run 1: 11.5 s   (wall clock on a shared host; VARIES between runs and is never asserted)
+FIGURE clean release build, arm=without, run 2: 11.8 s   (wall clock on a shared host; VARIES between runs and is never asserted)
 FIGURE stripped release binary, arm=without: 502264 bytes
-FIGURE clean release build, arm=with, run 1: 16.4 s   (wall clock on a shared host; VARIES between runs and is never asserted)
-FIGURE clean release build, arm=with, run 2: 13.3 s   (wall clock on a shared host; VARIES between runs and is never asserted)
-FIGURE stripped release binary, arm=with: 668744 bytes
-FIGURE binary-size cost of the CORS layer on this probe = +166480 bytes
+FIGURE clean release build, arm=with, run 1: 11.4 s   (wall clock on a shared host; VARIES between runs and is never asserted)
+FIGURE clean release build, arm=with, run 2: 11.7 s   (wall clock on a shared host; VARIES between runs and is never asserted)
+FIGURE stripped release binary, arm=with: 668728 bytes
+FIGURE binary-size cost of the CORS layer on this probe = +166464 bytes
 ASSERT ok   gate 6: the dependency costs binary size rather than being free, and the cost is measured here rather than estimated
 ASSERT ok   gate 6: that cost is under 400 kB on this probe, which is the order of magnitude the decision states — and the probe contains almost no other code, so the percentage form must not be carried forward
 NOTE  no compile-time cost is asserted: across two runs per arm the two arms

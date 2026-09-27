@@ -61,21 +61,117 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "actor": "controller-muse-spark",
+      "at": "2026-09-21T23:06:19Z",
+      "migration": {
+        "from": "codex",
+        "previous_input_hashes": {
+          "parameters": "8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb",
+          "parameters_semantic": "c044235605428a574e5648d2f67a704d6e1749c2a23dfde27416529befc02989",
+          "parameters_semantic_file": "7ebcbe65241cd395932f0df1d7060744546b0c9919b527fa8e6321bff5b73239",
+          "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+          "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+          "prerequisites": "cbe23dd082a1bcc88fa6e30eabae0e6da6c6230a6f853ba73aad4d77df0eeab6",
+          "prompt": "a7342d7a97edf56f41ccb5a36c6f6898c857658abf851e1168e6adc5c2f796c0",
+          "registry": "6b6887f96798af3588743b8727854606534eebfbbb5dc3062549638e6ebe91cb"
+        },
+        "previous_required_engines": [
+          "codex",
+          "opus"
+        ],
+        "previous_tier": "focused",
+        "reason": "muse bulk substitution (owner decision Q5.A 2026-09-21)",
+        "to": "muse"
+      },
+      "model": "muse-spark",
+      "state": "partial"
+    },
+    {
+      "actor": "research-muse-2026-09-17T034010Z-8b2a46a3c21b",
+      "at": "2026-09-21T23:06:54Z",
+      "operation": {
+        "actor": "research-muse-2026-09-17T034010Z-8b2a46a3c21b",
+        "at": "2026-09-21T23:06:54Z",
+        "model": "muse-spark",
+        "provider": "muse",
+        "request_id": "e4930578681741e9b0f212d4fd5dcf7a",
+        "state": "submitting"
+      },
+      "provider": "muse",
+      "state": "submitting"
+    },
+    {
+      "actor": "unknown",
+      "at": "2026-09-22T01:34:43Z",
+      "operation": {
+        "actor": "research-muse-2026-09-17T034010Z-8b2a46a3c21b",
+        "actual_model": "muse-spark",
+        "actual_provider": "muse-subagent",
+        "at": "2026-09-21T23:06:54Z",
+        "model": "muse-spark",
+        "operation_id": "agent:research-muse-2026-09-17T034010Z-8b2a46a3c21b:a60d11907445",
+        "provider": "muse",
+        "request_id": "e4930578681741e9b0f212d4fd5dcf7a",
+        "returned_at": "2026-09-22T01:34:43Z",
+        "state": "submitted"
+      },
+      "provider": "muse",
+      "state": "submitted"
+    },
+    {
+      "actor": "unknown",
+      "at": "2026-09-22T01:34:43Z",
+      "operation": {
+        "actor": "research-muse-2026-09-17T034010Z-8b2a46a3c21b",
+        "actual_model": "muse-spark",
+        "actual_provider": "muse-subagent",
+        "at": "2026-09-21T23:06:54Z",
+        "collected_at": "2026-09-22T01:34:43Z",
+        "model": "muse-spark",
+        "operation_id": "agent:research-muse-2026-09-17T034010Z-8b2a46a3c21b:a60d11907445",
+        "provider": "muse",
+        "raw": "research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/raw/muse-a60d11907445c99889150f41233bf5f8f31608465bff0ba4bf3069402164fecf.md",
+        "raw_sha256": "a60d11907445c99889150f41233bf5f8f31608465bff0ba4bf3069402164fecf",
+        "reason": "muse bulk leg collected; sha a60d1190, shape bundle OK",
+        "request_id": "e4930578681741e9b0f212d4fd5dcf7a",
+        "returned_at": "2026-09-22T01:34:43Z",
+        "state": "succeeded"
+      },
+      "provider": "muse",
+      "state": "succeeded"
     }
   ],
   "input_hashes": {
     "parameters": "8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb",
     "parameters_semantic": "c044235605428a574e5648d2f67a704d6e1749c2a23dfde27416529befc02989",
     "parameters_semantic_file": "7ebcbe65241cd395932f0df1d7060744546b0c9919b527fa8e6321bff5b73239",
-    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
-    "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+    "policy": "ed5042be86ee5cec4bba6c7fa330dc731addb026a67cca087b75ca7bc37bea6c",
+    "policy_item": "0f765bdaf1b9f40e1a3e04984d6213c8508fb87b63c9ed425a5f393ef16f2631",
     "prerequisites": "cbe23dd082a1bcc88fa6e30eabae0e6da6c6230a6f853ba73aad4d77df0eeab6",
-    "prompt": "a7342d7a97edf56f41ccb5a36c6f6898c857658abf851e1168e6adc5c2f796c0",
-    "registry": "6b6887f96798af3588743b8727854606534eebfbbb5dc3062549638e6ebe91cb"
+    "prompt": "a4a4b31ab7934ac9778948df9d8ece657f0408fff4788ded01e9d65b56472419",
+    "registry": "e82053f11aed9fa4ae16f9a2026452670b43def56e36bea9bb9b808bb3c2102e"
   },
   "item": "R51",
   "model": "claude-fable-5-1",
   "operations": {
+    "muse": {
+      "actor": "research-muse-2026-09-17T034010Z-8b2a46a3c21b",
+      "actual_model": "muse-spark",
+      "actual_provider": "muse-subagent",
+      "at": "2026-09-21T23:06:54Z",
+      "collected_at": "2026-09-22T01:34:43Z",
+      "model": "muse-spark",
+      "operation_id": "agent:research-muse-2026-09-17T034010Z-8b2a46a3c21b:a60d11907445",
+      "provider": "muse",
+      "raw": "research/runs/R51/2026-09-17T034010Z-8b2a46a3c21b/raw/muse-a60d11907445c99889150f41233bf5f8f31608465bff0ba4bf3069402164fecf.md",
+      "raw_sha256": "a60d11907445c99889150f41233bf5f8f31608465bff0ba4bf3069402164fecf",
+      "reason": "muse bulk leg collected; sha a60d1190, shape bundle OK",
+      "request_id": "e4930578681741e9b0f212d4fd5dcf7a",
+      "returned_at": "2026-09-22T01:34:43Z",
+      "state": "succeeded"
+    },
     "opus": {
       "actor": "research-opus-2026-09-17T034010Z-8b2a46a3c21b",
       "actual_model": "claude-opus-5",
@@ -96,12 +192,12 @@
   "prompt_source": "research/topics/51-container-image/prompts/container-image.prompt.md",
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
-    "codex",
+    "muse",
     "opus"
   ],
   "run_id": "2026-09-17T034010Z-8b2a46a3c21b",
   "schema_version": 1,
-  "state": "partial",
+  "state": "collected",
   "tier": "focused",
-  "updated_at": "2026-09-19T00:29:24Z"
+  "updated_at": "2026-09-22T01:34:43Z"
 }

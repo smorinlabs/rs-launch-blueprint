@@ -1,0 +1,4976 @@
+{
+    "meta": {
+        "next_page": null,
+        "total": 58
+    },
+    "versions": [
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2026-09-21T13:08:27.057452Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "790374c727a4cb20877dd2cc99ce7011cbe03b0b8df083acccd37df0d161304d",
+            "crate": "config",
+            "crate_size": 56313,
+            "created_at": "2026-09-21T13:08:27.057452Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.26/download",
+            "documentation": null,
+            "downloads": 71083,
+            "edition": "2024",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "corn": [
+                    "dep:corn"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "dep:json5",
+                    "dep:serde-untagged"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 3287214,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3708,
+                        "comment_lines": 86,
+                        "files": 25
+                    }
+                },
+                "total_code_lines": 3708,
+                "total_comment_lines": 86
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.26/authors",
+                "dependencies": "/api/v1/crates/config/0.15.26/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.26/downloads"
+            },
+            "num": "0.15.26",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.26/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.88.0",
+            "trustpub_data": null,
+            "updated_at": "2026-09-21T13:08:27.057452Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2026-06-26T17:42:54.380787Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "b85f248a4de22d204ceabc6299d89d2c70fbd7f09fea53c06c852369652d8139",
+            "crate": "config",
+            "crate_size": 56026,
+            "created_at": "2026-06-26T17:42:54.380787Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.25/download",
+            "documentation": null,
+            "downloads": 4367261,
+            "edition": "2024",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "corn": [
+                    "dep:corn"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "dep:json5",
+                    "dep:serde-untagged"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 2654249,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3708,
+                        "comment_lines": 86,
+                        "files": 25
+                    }
+                },
+                "total_code_lines": 3708,
+                "total_comment_lines": 86
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.25/authors",
+                "dependencies": "/api/v1/crates/config/0.15.25/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.25/downloads"
+            },
+            "num": "0.15.25",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.25/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.85.0",
+            "trustpub_data": null,
+            "updated_at": "2026-06-26T17:42:54.380787Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2026-06-16T17:55:45.625028Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "0b34d0237145f33580b89724f75d16950efd3e2c91b2d823917ecb69ec7f84f0",
+            "crate": "config",
+            "crate_size": 56043,
+            "created_at": "2026-06-16T17:55:45.625028Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.24/download",
+            "documentation": null,
+            "downloads": 778294,
+            "edition": "2024",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "corn": [
+                    "dep:corn"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "dep:json5",
+                    "dep:serde-untagged"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 2588388,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3709,
+                        "comment_lines": 86,
+                        "files": 25
+                    }
+                },
+                "total_code_lines": 3709,
+                "total_comment_lines": 86
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.24/authors",
+                "dependencies": "/api/v1/crates/config/0.15.24/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.24/downloads"
+            },
+            "num": "0.15.24",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.24/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.85.0",
+            "trustpub_data": null,
+            "updated_at": "2026-06-16T17:55:45.625028Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2026-05-14T21:29:47.617726Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "f316c6237b2d38be61949ecd15268a4c6ca32570079394a2444d9ce2c72a72d8",
+            "crate": "config",
+            "crate_size": 55983,
+            "created_at": "2026-05-14T21:29:47.617726Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.23/download",
+            "documentation": null,
+            "downloads": 2650876,
+            "edition": "2024",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "corn": [
+                    "dep:corn"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "dep:json5",
+                    "dep:serde-untagged"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 2398902,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3707,
+                        "comment_lines": 86,
+                        "files": 25
+                    }
+                },
+                "total_code_lines": 3707,
+                "total_comment_lines": 86
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.23/authors",
+                "dependencies": "/api/v1/crates/config/0.15.23/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.23/downloads"
+            },
+            "num": "0.15.23",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.23/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.85.0",
+            "trustpub_data": null,
+            "updated_at": "2026-05-14T21:29:47.617726Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2026-03-17T20:12:58.606603Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "8e68cfe19cd7d23ffde002c24ffa5cda73931913ef394d5eaaa32037dc940c0c",
+            "crate": "config",
+            "crate_size": 56027,
+            "created_at": "2026-03-17T20:12:58.606603Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.22/download",
+            "documentation": null,
+            "downloads": 6845000,
+            "edition": "2024",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "corn": [
+                    "dep:corn"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "dep:json5",
+                    "dep:serde-untagged"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 2134978,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3703,
+                        "comment_lines": 86,
+                        "files": 25
+                    }
+                },
+                "total_code_lines": 3703,
+                "total_comment_lines": 86
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.22/authors",
+                "dependencies": "/api/v1/crates/config/0.15.22/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.22/downloads"
+            },
+            "num": "0.15.22",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.22/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.85.0",
+            "trustpub_data": null,
+            "updated_at": "2026-03-17T20:12:58.606603Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2026-03-12T20:01:08.633217Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "4fe5feec195269515c4722937cd7ffcfe7b4205d18d2e6577b7223ecb159ab00",
+            "crate": "config",
+            "crate_size": 56492,
+            "created_at": "2026-03-12T20:01:08.633217Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.21/download",
+            "documentation": null,
+            "downloads": 528996,
+            "edition": "2024",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "corn": [
+                    "dep:corn"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "dep:json5",
+                    "dep:serde-untagged"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 2115904,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3703,
+                        "comment_lines": 86,
+                        "files": 25
+                    }
+                },
+                "total_code_lines": 3703,
+                "total_comment_lines": 86
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.21/authors",
+                "dependencies": "/api/v1/crates/config/0.15.21/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.21/downloads"
+            },
+            "num": "0.15.21",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.21/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.85.0",
+            "trustpub_data": null,
+            "updated_at": "2026-03-12T20:01:08.633217Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2026-03-12T19:30:49.663155Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "dc2a5d47fca4d23caca10c9d0c419be5187747e51df2e12e6ee9cd182ac0eaaf",
+            "crate": "config",
+            "crate_size": 57430,
+            "created_at": "2026-03-12T19:30:49.663155Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.20/download",
+            "documentation": null,
+            "downloads": 189377,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "corn": [
+                    "dep:corn"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "dep:json5",
+                    "dep:serde-untagged"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 2115788,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3703,
+                        "comment_lines": 86,
+                        "files": 25
+                    }
+                },
+                "total_code_lines": 3703,
+                "total_comment_lines": 86
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.20/authors",
+                "dependencies": "/api/v1/crates/config/0.15.20/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.20/downloads"
+            },
+            "num": "0.15.20",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.20/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.76.0",
+            "trustpub_data": null,
+            "updated_at": "2026-03-12T19:30:49.663155Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2025-11-12T15:33:17.035038Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "b30fa8254caad766fc03cb0ccae691e14bf3bd72bfff27f72802ce729551b3d6",
+            "crate": "config",
+            "crate_size": 57567,
+            "created_at": "2025-11-12T15:33:17.035038Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.19/download",
+            "documentation": null,
+            "downloads": 7162026,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "corn": [
+                    "dep:corn"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "dep:serde-untagged"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1821816,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3711,
+                        "comment_lines": 86,
+                        "files": 25
+                    }
+                },
+                "total_code_lines": 3711,
+                "total_comment_lines": 86
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.19/authors",
+                "dependencies": "/api/v1/crates/config/0.15.19/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.19/downloads"
+            },
+            "num": "0.15.19",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.19/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2025-11-12T15:33:17.035038Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2025-09-30T18:23:02.974971Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "180e549344080374f9b32ed41bf3b6b57885ff6a289367b3dbc10eea8acc1918",
+            "crate": "config",
+            "crate_size": 59347,
+            "created_at": "2025-09-30T18:23:02.974971Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.18/download",
+            "documentation": null,
+            "downloads": 1931427,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "corn": [
+                    "dep:corn"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "dep:serde-untagged"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1752547,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3702,
+                        "comment_lines": 86,
+                        "files": 25
+                    }
+                },
+                "total_code_lines": 3702,
+                "total_comment_lines": 86
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.18/authors",
+                "dependencies": "/api/v1/crates/config/0.15.18/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.18/downloads"
+            },
+            "num": "0.15.18",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.18/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2025-09-30T18:23:02.974971Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2025-09-24T16:15:31.991911Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "680d3ac2fe066c43300ec831c978871e50113a708d58ab13d231bd92deca5adb",
+            "crate": "config",
+            "crate_size": 59299,
+            "created_at": "2025-09-24T16:15:31.991911Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.17/download",
+            "documentation": null,
+            "downloads": 339719,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "corn": [
+                    "dep:corn"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "dep:serde-untagged"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1744199,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3699,
+                        "comment_lines": 86,
+                        "files": 25
+                    }
+                },
+                "total_code_lines": 3699,
+                "total_comment_lines": 86
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.17/authors",
+                "dependencies": "/api/v1/crates/config/0.15.17/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.17/downloads"
+            },
+            "num": "0.15.17",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.17/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2025-09-24T16:15:31.991911Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2025-09-15T13:35:42.698949Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "cef036f0ecf99baef11555578630e2cca559909b4c50822dbba828c252d21c49",
+            "crate": "config",
+            "crate_size": 56848,
+            "created_at": "2025-09-15T13:35:42.698949Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.16/download",
+            "documentation": null,
+            "downloads": 453604,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "dep:serde-untagged"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1730580,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3652,
+                        "comment_lines": 86,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3652,
+                "total_comment_lines": 86
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.16/authors",
+                "dependencies": "/api/v1/crates/config/0.15.16/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.16/downloads"
+            },
+            "num": "0.15.16",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.16/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2025-09-15T13:35:42.698949Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2025-08-29T16:37:32.807868Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "0faa974509d38b33ff89282db9c3295707ccf031727c0de9772038ec526852ba",
+            "crate": "config",
+            "crate_size": 56766,
+            "created_at": "2025-08-29T16:37:32.807868Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.15/download",
+            "documentation": null,
+            "downloads": 719366,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "dep:serde-untagged"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1706325,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3652,
+                        "comment_lines": 86,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3652,
+                "total_comment_lines": 86
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.15/authors",
+                "dependencies": "/api/v1/crates/config/0.15.15/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.15/downloads"
+            },
+            "num": "0.15.15",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.15/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2025-08-29T16:37:32.807868Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2025-08-12T18:13:06.090616Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "aa4092bf3922a966e2bd74640b80f36c73eaa7251a4fd0fbcda1f8a4de401352",
+            "crate": "config",
+            "crate_size": 59494,
+            "created_at": "2025-08-12T18:13:06.090616Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.14/download",
+            "documentation": null,
+            "downloads": 566442,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "dep:serde-untagged"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1682158,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3654,
+                        "comment_lines": 89,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3654,
+                "total_comment_lines": 89
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.14/authors",
+                "dependencies": "/api/v1/crates/config/0.15.14/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.14/downloads"
+            },
+            "num": "0.15.14",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.14/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2025-08-12T18:13:06.090616Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2025-07-09T15:54:38.755998Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "5b1eb4fb07bc7f012422df02766c7bd5971effb894f573865642f06fa3265440",
+            "crate": "config",
+            "crate_size": 59175,
+            "created_at": "2025-07-09T15:54:38.755998Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.13/download",
+            "documentation": null,
+            "downloads": 1854453,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "serde/derive"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1634491,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3641,
+                        "comment_lines": 89,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3641,
+                "total_comment_lines": 89
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.13/authors",
+                "dependencies": "/api/v1/crates/config/0.15.13/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.13/downloads"
+            },
+            "num": "0.15.13",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.13/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2025-07-09T15:54:38.755998Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2025-07-08T20:55:24.005520Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "9baeea16b4f8fc242a701d2abacd87d3b024af0325fb0b59dd16bc14c214c2af",
+            "crate": "config",
+            "crate_size": 59057,
+            "created_at": "2025-07-08T20:55:24.005520Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.12/download",
+            "documentation": null,
+            "downloads": 12775,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "serde/derive"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1633016,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3634,
+                        "comment_lines": 88,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3634,
+                "total_comment_lines": 88
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.12/authors",
+                "dependencies": "/api/v1/crates/config/0.15.12/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.12/downloads"
+            },
+            "num": "0.15.12",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.12/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2025-07-08T20:55:24.005520Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2025-03-12T15:07:15.158921Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "595aae20e65c3be792d05818e8c63025294ac3cb7e200f11459063a352a6ef80",
+            "crate": "config",
+            "crate_size": 57700,
+            "created_at": "2025-03-12T15:07:15.158921Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.11/download",
+            "documentation": null,
+            "downloads": 4474714,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "serde/derive"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1480471,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3626,
+                        "comment_lines": 88,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3626,
+                "total_comment_lines": 88
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.11/authors",
+                "dependencies": "/api/v1/crates/config/0.15.11/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.11/downloads"
+            },
+            "num": "0.15.11",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.11/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2025-03-12T15:07:15.158921Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2025-03-12T14:36:55.412845Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "3baf6a349130059107f6329bb07936e5b9ea1d3ad2ceada5eeda6814ae023ef6",
+            "crate": "config",
+            "crate_size": 57691,
+            "created_at": "2025-03-12T14:36:55.412845Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.10/download",
+            "documentation": null,
+            "downloads": 1695,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "serde/derive"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1480405,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3625,
+                        "comment_lines": 88,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3625,
+                "total_comment_lines": 88
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.10/authors",
+                "dependencies": "/api/v1/crates/config/0.15.10/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.10/downloads"
+            },
+            "num": "0.15.10",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.10/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2025-03-12T14:36:55.412845Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2025-03-04T14:43:40.600861Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "fb07d21d12f9f0bc5e7c3e97ccc78b2341b9b4a4604eac3ed7c1d0d6e2c3b23e",
+            "crate": "config",
+            "crate_size": 57616,
+            "created_at": "2025-03-04T14:43:40.600861Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.9/download",
+            "documentation": null,
+            "downloads": 162950,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "serde/derive"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1468054,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3614,
+                        "comment_lines": 88,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3614,
+                "total_comment_lines": 88
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.9/authors",
+                "dependencies": "/api/v1/crates/config/0.15.9/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.9/downloads"
+            },
+            "num": "0.15.9",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.9/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2025-03-04T14:43:40.600861Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2025-02-10T19:59:14.630873Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "8cf9dc8d4ef88e27a8cb23e85cb116403dedd57f7971964dc4b18ccead548901",
+            "crate": "config",
+            "crate_size": 57649,
+            "created_at": "2025-02-10T19:59:14.630873Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.8/download",
+            "documentation": null,
+            "downloads": 522965,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "serde/derive"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1441516,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3613,
+                        "comment_lines": 91,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3613,
+                "total_comment_lines": 91
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.8/authors",
+                "dependencies": "/api/v1/crates/config/0.15.8/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.8/downloads"
+            },
+            "num": "0.15.8",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.8/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2025-02-10T19:59:14.630873Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2025-01-30T19:31:50.200703Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "e26695492a475c4a091cfda61446d5ba01aac2e1dfbcd27a12fdd11aa2e32596",
+            "crate": "config",
+            "crate_size": 57435,
+            "created_at": "2025-01-30T19:31:50.200703Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.7/download",
+            "documentation": null,
+            "downloads": 272822,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "serde/derive"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1427773,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3597,
+                        "comment_lines": 88,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3597,
+                "total_comment_lines": 88
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.7/authors",
+                "dependencies": "/api/v1/crates/config/0.15.7/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.7/downloads"
+            },
+            "num": "0.15.7",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.7/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2025-01-30T19:31:50.200703Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2025-01-14T21:24:20.873511Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "e329294a796e9b22329669c1f433a746983f9e324e07f4ef135be81bb2262de4",
+            "crate": "config",
+            "crate_size": 57381,
+            "created_at": "2025-01-14T21:24:20.873511Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.6/download",
+            "documentation": null,
+            "downloads": 293369,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "serde/derive"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1407841,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3597,
+                        "comment_lines": 88,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3597,
+                "total_comment_lines": 88
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.6/authors",
+                "dependencies": "/api/v1/crates/config/0.15.6/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.6/downloads"
+            },
+            "num": "0.15.6",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.6/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2025-01-14T21:24:20.873511Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2025-01-10T16:31:06.704069Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "38bdefe0c9ee4fe0e613bf6d5cc55dfdb12198fb48518fec0706b358e7485d8c",
+            "crate": "config",
+            "crate_size": 57319,
+            "created_at": "2025-01-10T16:31:06.704069Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.5/download",
+            "documentation": null,
+            "downloads": 33972,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "serde/derive"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1402635,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3594,
+                        "comment_lines": 86,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3594,
+                "total_comment_lines": 86
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.5/authors",
+                "dependencies": "/api/v1/crates/config/0.15.5/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.5/downloads"
+            },
+            "num": "0.15.5",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.5/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2025-01-10T16:31:06.704069Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2024-12-20T16:33:18.048094Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "3d84f8d224ac58107d53d3ec2b9ad39fd8c8c4e285d3c9cb35485ffd2ca88cb3",
+            "crate": "config",
+            "crate_size": 57190,
+            "created_at": "2024-12-20T16:33:18.048094Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.4/download",
+            "documentation": null,
+            "downloads": 185337,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "serde/derive"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "toml": [
+                    "dep:toml"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1381762,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3557,
+                        "comment_lines": 85,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3557,
+                "total_comment_lines": 85
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.4/authors",
+                "dependencies": "/api/v1/crates/config/0.15.4/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.4/downloads"
+            },
+            "num": "0.15.4",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.4/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2024-12-20T16:33:18.048094Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2024-12-19T19:34:23.317629Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "d73c1a90f0e9b8aa27881dedf820679d851991c138a3371d6364a38ea0a59552",
+            "crate": "config",
+            "crate_size": 57143,
+            "created_at": "2024-12-19T19:34:23.317629Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.3/download",
+            "documentation": null,
+            "downloads": 8696,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "serde/derive"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1380906,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3557,
+                        "comment_lines": 85,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3557,
+                "total_comment_lines": 85
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.3/authors",
+                "dependencies": "/api/v1/crates/config/0.15.3/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.3/downloads"
+            },
+            "num": "0.15.3",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.3/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2024-12-19T19:34:23.317629Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2024-12-19T15:48:56.845966Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "87a6a7d8628236381296f45bc661db1e67d2f90fa2e00b7d2fc78e2ed0f6cde8",
+            "crate": "config",
+            "crate_size": 57626,
+            "created_at": "2024-12-19T15:48:56.845966Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.2/download",
+            "documentation": null,
+            "downloads": 2762,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "serde/derive"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1380677,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3553,
+                        "comment_lines": 93,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3553,
+                "total_comment_lines": 93
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.2/authors",
+                "dependencies": "/api/v1/crates/config/0.15.2/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.2/downloads"
+            },
+            "num": "0.15.2",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.2/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2024-12-19T15:48:56.845966Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2024-12-19T15:43:59.513005Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "7862407c93909997fb63a3cbaadb2b18639f2a21cf0811755e5c49b1a7e68055",
+            "crate": "config",
+            "crate_size": 57277,
+            "created_at": "2024-12-19T15:43:59.513005Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.1/download",
+            "documentation": null,
+            "downloads": 1122,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "serde/derive"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1380672,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3465,
+                        "comment_lines": 93,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3465,
+                "total_comment_lines": 93
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.1/authors",
+                "dependencies": "/api/v1/crates/config/0.15.1/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.1/downloads"
+            },
+            "num": "0.15.1",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.1/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2024-12-19T15:43:59.513005Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2024-12-17T21:32:48.634696Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "a734575233f9bf1bbbd6fa1e0dc5dda4afc61658d28b30b8e07d492e40b4d03b",
+            "crate": "config",
+            "crate_size": 57164,
+            "created_at": "2024-12-17T21:32:48.634696Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.15.0/download",
+            "documentation": null,
+            "downloads": 80861,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "serde/derive"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1378198,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3456,
+                        "comment_lines": 93,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3456,
+                "total_comment_lines": 93
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.15.0/authors",
+                "dependencies": "/api/v1/crates/config/0.15.0/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.15.0/downloads"
+            },
+            "num": "0.15.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.15.0/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2024-12-17T21:32:48.634696Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2024-10-23T21:28:23.601168Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                        "created_at": "2009-03-07T01:41:56Z",
+                        "github_username_matches": true,
+                        "id": 6743,
+                        "login": "epage",
+                        "name": "Ed Page",
+                        "url": "https://github.com/epage"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "68578f196d2a33ff61b27fae256c3164f65e36382648e30666dde05b8cc9dfdf",
+            "crate": "config",
+            "crate_size": 56031,
+            "created_at": "2024-10-23T21:28:23.601168Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.14.1/download",
+            "documentation": null,
+            "downloads": 23858008,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "serde/derive"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "yaml": [
+                    "yaml-rust2"
+                ]
+            },
+            "has_lib": true,
+            "homepage": null,
+            "id": 1312971,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3532,
+                        "comment_lines": 106,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3532,
+                "total_comment_lines": 106
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.14.1/authors",
+                "dependencies": "/api/v1/crates/config/0.14.1/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.14.1/downloads"
+            },
+            "num": "0.14.1",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/60961?v=4",
+                "created_at": "2009-03-07T01:41:56Z",
+                "github_username_matches": true,
+                "id": 6743,
+                "login": "epage",
+                "name": "Ed Page",
+                "url": "https://github.com/epage"
+            },
+            "readme_path": "/api/v1/crates/config/0.14.1/readme",
+            "repository": "https://github.com/rust-cli/config-rs",
+            "rust_version": "1.75.0",
+            "trustpub_data": null,
+            "updated_at": "2024-10-23T21:28:23.601168Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2024-02-01T06:35:31.162245Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/427866?v=4",
+                        "created_at": "2010-10-05T11:33:07Z",
+                        "github_username_matches": true,
+                        "id": 4003,
+                        "login": "matthiasbeyer",
+                        "name": "Matthias Beyer",
+                        "url": "https://github.com/matthiasbeyer"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "7328b20597b53c2454f0b1919720c25c7339051c02b72b7e05409e00b14132be",
+            "crate": "config",
+            "crate_size": 79442,
+            "created_at": "2024-02-01T06:35:31.162245Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.14.0/download",
+            "documentation": null,
+            "downloads": 7311391,
+            "edition": "2018",
+            "features": {
+                "async": [
+                    "async-trait"
+                ],
+                "convert-case": [
+                    "convert_case"
+                ],
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5",
+                    "convert-case",
+                    "async"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs",
+                    "serde/derive"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml?/preserve_order",
+                    "serde_json?/preserve_order",
+                    "ron?/indexmap"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 1035522,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3532,
+                        "comment_lines": 110,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3532,
+                "total_comment_lines": 110
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.14.0/authors",
+                "dependencies": "/api/v1/crates/config/0.14.0/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.14.0/downloads"
+            },
+            "num": "0.14.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/427866?v=4",
+                "created_at": "2010-10-05T11:33:07Z",
+                "github_username_matches": true,
+                "id": 4003,
+                "login": "matthiasbeyer",
+                "name": "Matthias Beyer",
+                "url": "https://github.com/matthiasbeyer"
+            },
+            "readme_path": "/api/v1/crates/config/0.14.0/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2024-02-01T06:35:31.162245Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2023-11-22T06:59:26.590778Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/427866?v=4",
+                        "created_at": "2010-10-05T11:33:07Z",
+                        "github_username_matches": true,
+                        "id": 4003,
+                        "login": "matthiasbeyer",
+                        "name": "Matthias Beyer",
+                        "url": "https://github.com/matthiasbeyer"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "23738e11972c7643e4ec947840fc463b6a571afcd3e735bdfce7d03c7a784aca",
+            "crate": "config",
+            "crate_size": 80328,
+            "created_at": "2023-11-22T06:59:26.590778Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.13.4/download",
+            "documentation": null,
+            "downloads": 19133790,
+            "edition": "2018",
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml/preserve_order",
+                    "serde_json/preserve_order",
+                    "ron/indexmap"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 963773,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3507,
+                        "comment_lines": 119,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3507,
+                "total_comment_lines": 119
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.13.4/authors",
+                "dependencies": "/api/v1/crates/config/0.13.4/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.13.4/downloads"
+            },
+            "num": "0.13.4",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/427866?v=4",
+                "created_at": "2010-10-05T11:33:07Z",
+                "github_username_matches": true,
+                "id": 4003,
+                "login": "matthiasbeyer",
+                "name": "Matthias Beyer",
+                "url": "https://github.com/matthiasbeyer"
+            },
+            "readme_path": "/api/v1/crates/config/0.13.4/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": "1.56.0",
+            "trustpub_data": null,
+            "updated_at": "2023-11-22T06:59:26.590778Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-12-04T14:38:59.424591Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/427866?v=4",
+                        "created_at": "2010-10-05T11:33:07Z",
+                        "github_username_matches": true,
+                        "id": 4003,
+                        "login": "matthiasbeyer",
+                        "name": "Matthias Beyer",
+                        "url": "https://github.com/matthiasbeyer"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "d379af7f68bfc21714c6c7dea883544201741d2ce8274bb12fa54f89507f52a7",
+            "crate": "config",
+            "crate_size": 67180,
+            "created_at": "2022-12-04T14:38:59.424591Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.13.3/download",
+            "documentation": null,
+            "downloads": 11847944,
+            "edition": "2018",
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml/preserve_order",
+                    "serde_json/preserve_order",
+                    "ron/indexmap"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 676530,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3490,
+                        "comment_lines": 113,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3490,
+                "total_comment_lines": 113
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.13.3/authors",
+                "dependencies": "/api/v1/crates/config/0.13.3/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.13.3/downloads"
+            },
+            "num": "0.13.3",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/427866?v=4",
+                "created_at": "2010-10-05T11:33:07Z",
+                "github_username_matches": true,
+                "id": 4003,
+                "login": "matthiasbeyer",
+                "name": "Matthias Beyer",
+                "url": "https://github.com/matthiasbeyer"
+            },
+            "readme_path": "/api/v1/crates/config/0.13.3/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-12-04T14:38:59.424591Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-08-02T14:48:23.580993Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/427866?v=4",
+                        "created_at": "2010-10-05T11:33:07Z",
+                        "github_username_matches": true,
+                        "id": 4003,
+                        "login": "matthiasbeyer",
+                        "name": "Matthias Beyer",
+                        "url": "https://github.com/matthiasbeyer"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "11f1667b8320afa80d69d8bbe40830df2c8a06003d86f73d8e003b2c48df416d",
+            "crate": "config",
+            "crate_size": 65937,
+            "created_at": "2022-08-02T14:48:23.580993Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.13.2/download",
+            "documentation": null,
+            "downloads": 1129991,
+            "edition": "2018",
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml/preserve_order",
+                    "serde_json/preserve_order",
+                    "ron/indexmap"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 595084,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3490,
+                        "comment_lines": 113,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3490,
+                "total_comment_lines": 113
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.13.2/authors",
+                "dependencies": "/api/v1/crates/config/0.13.2/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.13.2/downloads"
+            },
+            "num": "0.13.2",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/427866?v=4",
+                "created_at": "2010-10-05T11:33:07Z",
+                "github_username_matches": true,
+                "id": 4003,
+                "login": "matthiasbeyer",
+                "name": "Matthias Beyer",
+                "url": "https://github.com/matthiasbeyer"
+            },
+            "readme_path": "/api/v1/crates/config/0.13.2/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-08-02T14:48:23.580993Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-04-13T16:05:37.503376Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/427866?v=4",
+                        "created_at": "2010-10-05T11:33:07Z",
+                        "github_username_matches": true,
+                        "id": 4003,
+                        "login": "matthiasbeyer",
+                        "name": "Matthias Beyer",
+                        "url": "https://github.com/matthiasbeyer"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "3ea917b74b6edfb5024e3b55d3c8f710b5f4ed92646429601a42e96f0812b31b",
+            "crate": "config",
+            "crate_size": 65302,
+            "created_at": "2022-04-13T16:05:37.503376Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.13.1/download",
+            "documentation": null,
+            "downloads": 779985,
+            "edition": "2018",
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml/preserve_order",
+                    "serde_json/preserve_order",
+                    "ron/indexmap"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 531772,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3471,
+                        "comment_lines": 113,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3471,
+                "total_comment_lines": 113
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.13.1/authors",
+                "dependencies": "/api/v1/crates/config/0.13.1/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.13.1/downloads"
+            },
+            "num": "0.13.1",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/427866?v=4",
+                "created_at": "2010-10-05T11:33:07Z",
+                "github_username_matches": true,
+                "id": 4003,
+                "login": "matthiasbeyer",
+                "name": "Matthias Beyer",
+                "url": "https://github.com/matthiasbeyer"
+            },
+            "readme_path": "/api/v1/crates/config/0.13.1/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-04-13T16:05:37.503376Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-04-03T11:20:39.185490Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/427866?v=4",
+                        "created_at": "2010-10-05T11:33:07Z",
+                        "github_username_matches": true,
+                        "id": 4003,
+                        "login": "matthiasbeyer",
+                        "name": "Matthias Beyer",
+                        "url": "https://github.com/matthiasbeyer"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "a623a46970097d353e2c8154fa527d8ce45cd0e02cc1812969b889c49b3728e8",
+            "crate": "config",
+            "crate_size": 64999,
+            "created_at": "2022-04-03T11:20:39.185490Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.13.0/download",
+            "documentation": null,
+            "downloads": 65869,
+            "edition": "2018",
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml/preserve_order",
+                    "serde_json/preserve_order",
+                    "ron/indexmap"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 526453,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3456,
+                        "comment_lines": 111,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3456,
+                "total_comment_lines": 111
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.13.0/authors",
+                "dependencies": "/api/v1/crates/config/0.13.0/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.13.0/downloads"
+            },
+            "num": "0.13.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/427866?v=4",
+                "created_at": "2010-10-05T11:33:07Z",
+                "github_username_matches": true,
+                "id": 4003,
+                "login": "matthiasbeyer",
+                "name": "Matthias Beyer",
+                "url": "https://github.com/matthiasbeyer"
+            },
+            "readme_path": "/api/v1/crates/config/0.13.0/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-04-03T11:20:39.185490Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2022-02-19T10:02:59.120770Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/427866?v=4",
+                        "created_at": "2010-10-05T11:33:07Z",
+                        "github_username_matches": true,
+                        "id": 4003,
+                        "login": "matthiasbeyer",
+                        "name": "Matthias Beyer",
+                        "url": "https://github.com/matthiasbeyer"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "54ad70579325f1a38ea4c13412b82241c5900700a69785d73e2736bd65a33f86",
+            "crate": "config",
+            "crate_size": 63509,
+            "created_at": "2022-02-19T10:02:59.120770Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.12.0/download",
+            "documentation": null,
+            "downloads": 724426,
+            "edition": "2018",
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "ini",
+                    "ron",
+                    "json5"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "json5": [
+                    "json5_rs"
+                ],
+                "preserve_order": [
+                    "indexmap",
+                    "toml/preserve_order",
+                    "serde_json/preserve_order",
+                    "ron/indexmap"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 502497,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3389,
+                        "comment_lines": 110,
+                        "files": 24
+                    }
+                },
+                "total_code_lines": 3389,
+                "total_comment_lines": 110
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.12.0/authors",
+                "dependencies": "/api/v1/crates/config/0.12.0/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.12.0/downloads"
+            },
+            "num": "0.12.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/427866?v=4",
+                "created_at": "2010-10-05T11:33:07Z",
+                "github_username_matches": true,
+                "id": 4003,
+                "login": "matthiasbeyer",
+                "name": "Matthias Beyer",
+                "url": "https://github.com/matthiasbeyer"
+            },
+            "readme_path": "/api/v1/crates/config/0.12.0/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2022-02-19T10:02:59.120770Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2021-03-17T17:03:53.741400Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/427866?v=4",
+                        "created_at": "2010-10-05T11:33:07Z",
+                        "github_username_matches": true,
+                        "id": 4003,
+                        "login": "matthiasbeyer",
+                        "name": "Matthias Beyer",
+                        "url": "https://github.com/matthiasbeyer"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "1b1b9d958c2b1368a663f05538fc1b5975adce1e19f435acceae987aceeeb369",
+            "crate": "config",
+            "crate_size": 32062,
+            "created_at": "2021-03-17T17:03:53.741400Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.11.0/download",
+            "documentation": null,
+            "downloads": 7822582,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "hjson",
+                    "ini"
+                ],
+                "hjson": [
+                    "serde-hjson"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 353435,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 2811,
+                        "comment_lines": 103,
+                        "files": 20
+                    }
+                },
+                "total_code_lines": 2811,
+                "total_comment_lines": 103
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.11.0/authors",
+                "dependencies": "/api/v1/crates/config/0.11.0/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.11.0/downloads"
+            },
+            "num": "0.11.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/427866?v=4",
+                "created_at": "2010-10-05T11:33:07Z",
+                "github_username_matches": true,
+                "id": 4003,
+                "login": "matthiasbeyer",
+                "name": "Matthias Beyer",
+                "url": "https://github.com/matthiasbeyer"
+            },
+            "readme_path": "/api/v1/crates/config/0.11.0/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2021-03-17T17:03:53.741400Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2019-12-08T02:22:57.484981Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/753919?v=4",
+                        "created_at": "2011-04-27T04:33:24Z",
+                        "github_username_matches": true,
+                        "id": 5691,
+                        "login": "mehcode",
+                        "name": "Ryan Leckey",
+                        "url": "https://github.com/mehcode"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "19b076e143e1d9538dde65da30f8481c2a6c44040edb8e02b9bf1351edb92ce3",
+            "crate": "config",
+            "crate_size": 31608,
+            "created_at": "2019-12-08T02:22:57.484981Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.10.1/download",
+            "documentation": null,
+            "downloads": 7179652,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "hjson",
+                    "ini"
+                ],
+                "hjson": [
+                    "serde-hjson"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 194548,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 2822,
+                        "comment_lines": 102,
+                        "files": 20
+                    }
+                },
+                "total_code_lines": 2822,
+                "total_comment_lines": 102
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.10.1/authors",
+                "dependencies": "/api/v1/crates/config/0.10.1/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.10.1/downloads"
+            },
+            "num": "0.10.1",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/753919?v=4",
+                "created_at": "2011-04-27T04:33:24Z",
+                "github_username_matches": true,
+                "id": 5691,
+                "login": "mehcode",
+                "name": "Ryan Leckey",
+                "url": "https://github.com/mehcode"
+            },
+            "readme_path": "/api/v1/crates/config/0.10.1/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2019-12-08T02:22:57.484981Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2019-12-08T02:15:48.482760Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/753919?v=4",
+                        "created_at": "2011-04-27T04:33:24Z",
+                        "github_username_matches": true,
+                        "id": 5691,
+                        "login": "mehcode",
+                        "name": "Ryan Leckey",
+                        "url": "https://github.com/mehcode"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "58e0a7c4007da88bb2f4053d4e4c8d4b8369e04d25a386fdc9ca7bd29c7806b9",
+            "crate": "config",
+            "crate_size": 31305,
+            "created_at": "2019-12-08T02:15:48.482760Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.10.0/download",
+            "documentation": null,
+            "downloads": 3478,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "hjson",
+                    "ini"
+                ],
+                "hjson": [
+                    "serde-hjson"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 194546,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 2822,
+                        "comment_lines": 102,
+                        "files": 20
+                    }
+                },
+                "total_code_lines": 2822,
+                "total_comment_lines": 102
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.10.0/authors",
+                "dependencies": "/api/v1/crates/config/0.10.0/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.10.0/downloads"
+            },
+            "num": "0.10.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/753919?v=4",
+                "created_at": "2011-04-27T04:33:24Z",
+                "github_username_matches": true,
+                "id": 5691,
+                "login": "mehcode",
+                "name": "Ryan Leckey",
+                "url": "https://github.com/mehcode"
+            },
+            "readme_path": "/api/v1/crates/config/0.10.0/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2019-12-08T02:15:48.482760Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "f9107d78ed62b3fa5a86e7d18e647abed48cfd8f8fab6c72f4cdb982d196f7e6",
+            "crate": "config",
+            "crate_size": 31370,
+            "created_at": "2019-05-09T17:11:28.634591Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.9.3/download",
+            "documentation": null,
+            "downloads": 1265131,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "hjson",
+                    "ini"
+                ],
+                "hjson": [
+                    "serde-hjson"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 149435,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 2955,
+                        "comment_lines": 113,
+                        "files": 20
+                    }
+                },
+                "total_code_lines": 2955,
+                "total_comment_lines": 113
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.9.3/authors",
+                "dependencies": "/api/v1/crates/config/0.9.3/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.9.3/downloads"
+            },
+            "num": "0.9.3",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/753919?v=4",
+                "created_at": "2011-04-27T04:33:24Z",
+                "github_username_matches": true,
+                "id": 5691,
+                "login": "mehcode",
+                "name": "Ryan Leckey",
+                "url": "https://github.com/mehcode"
+            },
+            "readme_path": "/api/v1/crates/config/0.9.3/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2019-05-09T17:11:28.634591Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "3e82d07fac0a5eeaa9d959b5194d01bb66e414665f547416958d2b430f8f4852",
+            "crate": "config",
+            "crate_size": 31296,
+            "created_at": "2019-01-03T19:15:59.962415Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.9.2/download",
+            "documentation": null,
+            "downloads": 108008,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "hjson",
+                    "ini"
+                ],
+                "hjson": [
+                    "serde-hjson"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 125368,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 2952,
+                        "comment_lines": 111,
+                        "files": 20
+                    }
+                },
+                "total_code_lines": 2952,
+                "total_comment_lines": 111
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.9.2/authors",
+                "dependencies": "/api/v1/crates/config/0.9.2/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.9.2/downloads"
+            },
+            "num": "0.9.2",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.9.2/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2019-01-03T19:15:59.962415Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "13490293b8a84cc82cd531da41adeae82cd9eaa40e926ac18865aa361f9c9f60",
+            "crate": "config",
+            "crate_size": 29133,
+            "created_at": "2018-09-26T06:48:07.407980Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.9.1/download",
+            "documentation": null,
+            "downloads": 68053,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "hjson",
+                    "ini"
+                ],
+                "hjson": [
+                    "serde-hjson"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 109662,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 2793,
+                        "comment_lines": 110,
+                        "files": 20
+                    }
+                },
+                "total_code_lines": 2793,
+                "total_comment_lines": 110
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.9.1/authors",
+                "dependencies": "/api/v1/crates/config/0.9.1/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.9.1/downloads"
+            },
+            "num": "0.9.1",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.9.1/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2018-09-26T06:48:07.407980Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "b5379dd8b3e7f488a31107d2c9586ce2ddbee2bc839201b3b38dbdf550351c1e",
+            "crate": "config",
+            "crate_size": 29029,
+            "created_at": "2018-07-02T22:41:37.594292Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.9.0/download",
+            "documentation": null,
+            "downloads": 36495,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "hjson",
+                    "ini"
+                ],
+                "hjson": [
+                    "serde-hjson"
+                ],
+                "ini": [
+                    "rust-ini"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 98589,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 2784,
+                        "comment_lines": 109,
+                        "files": 20
+                    }
+                },
+                "total_code_lines": 2784,
+                "total_comment_lines": 109
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.9.0/authors",
+                "dependencies": "/api/v1/crates/config/0.9.0/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.9.0/downloads"
+            },
+            "num": "0.9.0",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.9.0/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2018-07-02T22:41:37.594292Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "e595d1735d8ab6b04906bbdcfc671cce2a5e609b6f8e92865e67331cc2f41ba4",
+            "crate": "config",
+            "crate_size": 25355,
+            "created_at": "2018-01-26T17:02:34.290593Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.8.0/download",
+            "documentation": null,
+            "downloads": 107757,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "hjson"
+                ],
+                "hjson": [
+                    "serde-hjson"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 78823,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 2056,
+                        "comment_lines": 111,
+                        "files": 18
+                    }
+                },
+                "total_code_lines": 2056,
+                "total_comment_lines": 111
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.8.0/authors",
+                "dependencies": "/api/v1/crates/config/0.8.0/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.8.0/downloads"
+            },
+            "num": "0.8.0",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.8.0/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2018-01-26T17:02:34.290593Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "9a76184b44d7a617432e862745268655d510f7acb45a2dc370d1acbac2c5e056",
+            "crate": "config",
+            "crate_size": 25356,
+            "created_at": "2018-01-26T16:57:56.027311Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.7.1/download",
+            "documentation": null,
+            "downloads": 14338,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml",
+                    "hjson"
+                ],
+                "hjson": [
+                    "serde-hjson"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 78822,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 2056,
+                        "comment_lines": 111,
+                        "files": 18
+                    }
+                },
+                "total_code_lines": 2056,
+                "total_comment_lines": 111
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.7.1/authors",
+                "dependencies": "/api/v1/crates/config/0.7.1/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.7.1/downloads"
+            },
+            "num": "0.7.1",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.7.1/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2018-01-26T16:57:56.027311Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "257ad7eba1f5e97f478f9a98f4e70b0c4fab8fb85df99681c1a98aed824223ed",
+            "crate": "config",
+            "crate_size": 24939,
+            "created_at": "2017-08-05T09:07:02.413458Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.7.0/download",
+            "documentation": null,
+            "downloads": 19757,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 61663,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 2007,
+                        "comment_lines": 109,
+                        "files": 17
+                    }
+                },
+                "total_code_lines": 2007,
+                "total_comment_lines": 109
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.7.0/authors",
+                "dependencies": "/api/v1/crates/config/0.7.0/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.7.0/downloads"
+            },
+            "num": "0.7.0",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.7.0/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T03:13:05.528265Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "915365786f8c2a60d7b9bd1abd3fd6db330e78a9d872185d7f428f0f71839afa",
+            "crate": "config",
+            "crate_size": 23907,
+            "created_at": "2017-06-23T00:35:02.347940Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.6.0/download",
+            "documentation": null,
+            "downloads": 17921,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 57651,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 1898,
+                        "comment_lines": 95,
+                        "files": 17
+                    }
+                },
+                "total_code_lines": 1898,
+                "total_comment_lines": 95
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.6.0/authors",
+                "dependencies": "/api/v1/crates/config/0.6.0/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.6.0/downloads"
+            },
+            "num": "0.6.0",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.6.0/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T03:07:51.386237Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "fab064126e2b5dcb7dceb57e6821e0b38220386abdf8801aa715a1d59d0ecbc1",
+            "crate": "config",
+            "crate_size": 22589,
+            "created_at": "2017-06-16T21:31:59.523180Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.5.1/download",
+            "documentation": null,
+            "downloads": 3402,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 56972,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 1765,
+                        "comment_lines": 94,
+                        "files": 17
+                    }
+                },
+                "total_code_lines": 1765,
+                "total_comment_lines": 94
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.5.1/authors",
+                "dependencies": "/api/v1/crates/config/0.5.1/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.5.1/downloads"
+            },
+            "num": "0.5.1",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.5.1/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T03:37:01.657436Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "a3843c4d1ae2ad12b13e591f1b3f944a8a57d0bf841f831facd2f7b3e2c2ac28",
+            "crate": "config",
+            "crate_size": 22569,
+            "created_at": "2017-06-16T18:50:49.153790Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.5.0/download",
+            "documentation": null,
+            "downloads": 3016,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml",
+                    "json",
+                    "yaml"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 56954,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 1765,
+                        "comment_lines": 94,
+                        "files": 17
+                    }
+                },
+                "total_code_lines": 1765,
+                "total_comment_lines": 94
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.5.0/authors",
+                "dependencies": "/api/v1/crates/config/0.5.0/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.5.0/downloads"
+            },
+            "num": "0.5.0",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.5.0/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T03:32:49.727017Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "51517c6ffbd1201b94b75dc16d00978696db5a82292d74fc7375731e79e92cea",
+            "crate": "config",
+            "crate_size": 15604,
+            "created_at": "2017-02-12T19:05:30.800587Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.4.1/download",
+            "documentation": null,
+            "downloads": 11957,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 45308,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 1188,
+                        "comment_lines": 71,
+                        "files": 11
+                    }
+                },
+                "total_code_lines": 1188,
+                "total_comment_lines": 71
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.4.1/authors",
+                "dependencies": "/api/v1/crates/config/0.4.1/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.4.1/downloads"
+            },
+            "num": "0.4.1",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.4.1/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T02:42:44.731604Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "126efe65c60dcbeec19345d62d27130fef3cc686cda773a80fde4a55f8481424",
+            "crate": "config",
+            "crate_size": 15939,
+            "created_at": "2017-02-12T18:11:32.761650Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.4.0/download",
+            "documentation": null,
+            "downloads": 3071,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 45304,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 1188,
+                        "comment_lines": 71,
+                        "files": 11
+                    }
+                },
+                "total_code_lines": 1188,
+                "total_comment_lines": 71
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.4.0/authors",
+                "dependencies": "/api/v1/crates/config/0.4.0/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.4.0/downloads"
+            },
+            "num": "0.4.0",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.4.0/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T03:10:31.184456Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "d77b79e9bc4fd08d44d28c37d14bd4e51cafacd8bc0dc0e250ec303d8fba1808",
+            "crate": "config",
+            "crate_size": 16422,
+            "created_at": "2017-02-08T10:18:52.918665Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.3.1/download",
+            "documentation": null,
+            "downloads": 12774,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 45001,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 1256,
+                        "comment_lines": 81,
+                        "files": 11
+                    }
+                },
+                "total_code_lines": 1256,
+                "total_comment_lines": 81
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.3.1/authors",
+                "dependencies": "/api/v1/crates/config/0.3.1/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.3.1/downloads"
+            },
+            "num": "0.3.1",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.3.1/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T04:20:28.854102Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "8968b419e5688e835f7fa3c7d680e877320c9faebc36ad78b51d750fa5cf99cb",
+            "crate": "config",
+            "crate_size": 16373,
+            "created_at": "2017-02-08T10:14:10.984844Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.3.0/download",
+            "documentation": null,
+            "downloads": 3041,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml"
+                ],
+                "json": [
+                    "serde_json"
+                ],
+                "yaml": [
+                    "yaml-rust"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 45000,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 1241,
+                        "comment_lines": 81,
+                        "files": 11
+                    }
+                },
+                "total_code_lines": 1241,
+                "total_comment_lines": 81
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.3.0/authors",
+                "dependencies": "/api/v1/crates/config/0.3.0/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.3.0/downloads"
+            },
+            "num": "0.3.0",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.3.0/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T02:26:52.462858Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "dc3f81283a08285d9979001b592253719524ac6d9937734aee092d7a8d09d57d",
+            "crate": "config",
+            "crate_size": 11465,
+            "created_at": "2017-01-29T08:04:01.038028Z",
+            "description": "Layered configuration system for Rust applications.",
+            "dl_path": "/api/v1/crates/config/0.2.0/download",
+            "documentation": null,
+            "downloads": 3219,
+            "edition": null,
+            "features": {
+                "default": [
+                    "toml"
+                ],
+                "json": [
+                    "serde_json"
+                ]
+            },
+            "has_lib": true,
+            "homepage": "https://github.com/mehcode/config-rs",
+            "id": 43661,
+            "lib_links": null,
+            "license": "MIT/Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 691,
+                        "comment_lines": 56,
+                        "files": 9
+                    }
+                },
+                "total_code_lines": 691,
+                "total_comment_lines": 56
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.2.0/authors",
+                "dependencies": "/api/v1/crates/config/0.2.0/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.2.0/downloads"
+            },
+            "num": "0.2.0",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.2.0/readme",
+            "repository": "https://github.com/mehcode/config-rs",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T04:07:34.415941Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "90acbe23921c3b07226a6679befa9e906be58a5c7f9691b2f646e064949f23cc",
+            "crate": "config",
+            "crate_size": 29564,
+            "created_at": "2015-11-18T11:01:04.378087Z",
+            "description": "A library to parse and load configuration files",
+            "dl_path": "/api/v1/crates/config/0.1.3/download",
+            "documentation": "http://filipegoncalves.github.io/rust-config/config/",
+            "downloads": 20091,
+            "edition": null,
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/filipegoncalves/rust-config",
+            "id": 18234,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3631,
+                        "comment_lines": 171,
+                        "files": 5
+                    }
+                },
+                "total_code_lines": 3631,
+                "total_comment_lines": 171
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.1.3/authors",
+                "dependencies": "/api/v1/crates/config/0.1.3/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.1.3/downloads"
+            },
+            "num": "0.1.3",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.1.3/readme",
+            "repository": "https://github.com/filipegoncalves/rust-config",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T04:20:30.729516Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "7da1a640ad84e929cf443638f559986bec21bb62a2935dd75d0cb7a3c10456c6",
+            "crate": "config",
+            "crate_size": 27190,
+            "created_at": "2015-10-15T20:03:39.673632Z",
+            "description": "A library to parse and load configuration files",
+            "dl_path": "/api/v1/crates/config/0.1.2/download",
+            "documentation": "http://filipegoncalves.github.io/rust-config/config/",
+            "downloads": 3704,
+            "edition": null,
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/filipegoncalves/rust-config",
+            "id": 16743,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3318,
+                        "comment_lines": 139,
+                        "files": 5
+                    }
+                },
+                "total_code_lines": 3318,
+                "total_comment_lines": 139
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.1.2/authors",
+                "dependencies": "/api/v1/crates/config/0.1.2/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.1.2/downloads"
+            },
+            "num": "0.1.2",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.1.2/readme",
+            "repository": "https://github.com/filipegoncalves/rust-config",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T04:07:34.289337Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "a260a9c9495399b70dd76d27f3a8f76fdff9e393a5136f018180b28beee506d3",
+            "crate": "config",
+            "crate_size": 27180,
+            "created_at": "2015-04-30T17:08:35.067531Z",
+            "description": "A library to parse and load configuration files",
+            "dl_path": "/api/v1/crates/config/0.1.1/download",
+            "documentation": "http://filipegoncalves.github.io/rust-config/config/",
+            "downloads": 3395,
+            "edition": null,
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/filipegoncalves/rust-config",
+            "id": 9642,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3300,
+                        "comment_lines": 139,
+                        "files": 5
+                    }
+                },
+                "total_code_lines": 3300,
+                "total_comment_lines": 139
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.1.1/authors",
+                "dependencies": "/api/v1/crates/config/0.1.1/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.1.1/downloads"
+            },
+            "num": "0.1.1",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.1.1/readme",
+            "repository": "https://github.com/filipegoncalves/rust-config",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T04:07:34.249383Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "87dfc860e5e4463896103722d996d2aaa9f4f99d754f2b7fa078185b92da3f8c",
+            "crate": "config",
+            "crate_size": 27204,
+            "created_at": "2015-04-19T16:33:38.073337Z",
+            "description": "A library to parse and load configuration files",
+            "dl_path": "/api/v1/crates/config/0.1.0/download",
+            "documentation": "http://filipegoncalves.github.io/rust-config/config/",
+            "downloads": 3237,
+            "edition": null,
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/filipegoncalves/rust-config",
+            "id": 9057,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 3300,
+                        "comment_lines": 139,
+                        "files": 5
+                    }
+                },
+                "total_code_lines": 3300,
+                "total_comment_lines": 139
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.1.0/authors",
+                "dependencies": "/api/v1/crates/config/0.1.0/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.1.0/downloads"
+            },
+            "num": "0.1.0",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.1.0/readme",
+            "repository": "https://github.com/filipegoncalves/rust-config",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T04:07:34.247388Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [],
+            "bin_names": [],
+            "checksum": "b2b62f01cd297d8694f3503e9c05f64f9062b7efeb52226d151bd640c29c6cba",
+            "crate": "config",
+            "crate_size": 20046,
+            "created_at": "2015-04-16T18:35:56.419860Z",
+            "description": "A library to parse and load configuration files",
+            "dl_path": "/api/v1/crates/config/0.0.1/download",
+            "documentation": "http://filipegoncalves.github.io/rust-config/config/",
+            "downloads": 3170,
+            "edition": null,
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/filipegoncalves/rust-config",
+            "id": 8922,
+            "lib_links": null,
+            "license": "MIT",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 1451,
+                        "comment_lines": 44,
+                        "files": 5
+                    }
+                },
+                "total_code_lines": 1451,
+                "total_comment_lines": 44
+            },
+            "links": {
+                "authors": "/api/v1/crates/config/0.0.1/authors",
+                "dependencies": "/api/v1/crates/config/0.0.1/dependencies",
+                "version_downloads": "/api/v1/crates/config/0.0.1/downloads"
+            },
+            "num": "0.0.1",
+            "published_by": null,
+            "readme_path": "/api/v1/crates/config/0.0.1/readme",
+            "repository": "https://github.com/filipegoncalves/rust-config",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2017-11-30T04:07:34.242860Z",
+            "yank_message": null,
+            "yanked": false
+        }
+    ]
+}

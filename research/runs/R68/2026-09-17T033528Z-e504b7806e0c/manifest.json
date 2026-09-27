@@ -115,6 +115,69 @@
       },
       "provider": "doxa",
       "state": "succeeded"
+    },
+    {
+      "actor": "research-codex-2026-09-17T033528Z-e504b7806e0c",
+      "at": "2026-09-20T07:02:42Z",
+      "operation": {
+        "actor": "research-codex-2026-09-17T033528Z-e504b7806e0c",
+        "at": "2026-09-20T07:02:42Z",
+        "model": "gpt-5.6-terra",
+        "provider": "codex",
+        "request_id": "f1643ff849514632a4e0be128a3eaafa",
+        "state": "submitting"
+      },
+      "provider": "codex",
+      "state": "submitting"
+    },
+    {
+      "actor": "unknown",
+      "at": "2026-09-21T03:00:44Z",
+      "operation": {
+        "actor": "research-codex-2026-09-17T033528Z-e504b7806e0c",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.155.1",
+        "at": "2026-09-20T07:02:42Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a0c1a1-bc52-7250-a526-aaf7a09ae038",
+        "provider": "codex",
+        "request_id": "f1643ff849514632a4e0be128a3eaafa",
+        "returned_at": "2026-09-21T03:00:44Z",
+        "state": "submitted"
+      },
+      "provider": "codex",
+      "state": "submitted"
+    },
+    {
+      "actor": "unknown",
+      "at": "2026-09-21T03:00:44Z",
+      "operation": {
+        "actor": "research-codex-2026-09-17T033528Z-e504b7806e0c",
+        "actual_model": "gpt-5.6-terra",
+        "actual_provider": "codex-cli-0.155.1",
+        "at": "2026-09-20T07:02:42Z",
+        "collected_at": "2026-09-21T03:00:44Z",
+        "model": "gpt-5.6-terra",
+        "operation_id": "01a0c1a1-bc52-7250-a526-aaf7a09ae038",
+        "provider": "codex",
+        "raw": "research/runs/R68/2026-09-17T033528Z-e504b7806e0c/raw/codex-297219edca2cbdaf2ce69069cf5a9bd562796daa4da5376c1e5b9ead80ae699b.md",
+        "raw_sha256": "297219edca2cbdaf2ce69069cf5a9bd562796daa4da5376c1e5b9ead80ae699b",
+        "reason": "codex leg collected; sha 297219ed, shape crate OK, 479863 tokens",
+        "request_id": "f1643ff849514632a4e0be128a3eaafa",
+        "returned_at": "2026-09-21T03:00:44Z",
+        "state": "succeeded"
+      },
+      "provider": "codex",
+      "state": "succeeded"
+    },
+    {
+      "at": "2026-09-27T22:01:09Z",
+      "publication": {
+        "acceptance_sha256": "6a07ebbad75b011740b881e7d0e858706140114e33cc6a6ddb456404b316806f",
+        "decision_sha256": "37acd7c718c90060d00da77eccd363b911039cab0da3d8d0ba9637e93f20d622",
+        "transaction": "c18a86d9f0cd4cc3913d36ee1534aab7"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -130,6 +193,22 @@
   "item": "R68",
   "model": "claude-fable-5-1",
   "operations": {
+    "codex": {
+      "actor": "research-codex-2026-09-17T033528Z-e504b7806e0c",
+      "actual_model": "gpt-5.6-terra",
+      "actual_provider": "codex-cli-0.155.1",
+      "at": "2026-09-20T07:02:42Z",
+      "collected_at": "2026-09-21T03:00:44Z",
+      "model": "gpt-5.6-terra",
+      "operation_id": "01a0c1a1-bc52-7250-a526-aaf7a09ae038",
+      "provider": "codex",
+      "raw": "research/runs/R68/2026-09-17T033528Z-e504b7806e0c/raw/codex-297219edca2cbdaf2ce69069cf5a9bd562796daa4da5376c1e5b9ead80ae699b.md",
+      "raw_sha256": "297219edca2cbdaf2ce69069cf5a9bd562796daa4da5376c1e5b9ead80ae699b",
+      "reason": "codex leg collected; sha 297219ed, shape crate OK, 479863 tokens",
+      "request_id": "f1643ff849514632a4e0be128a3eaafa",
+      "returned_at": "2026-09-21T03:00:44Z",
+      "state": "succeeded"
+    },
     "doxa": {
       "actor": "research-doxa-2026-09-17T033528Z-e504b7806e0c",
       "actual_model": "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026",
@@ -164,6 +243,11 @@
     }
   },
   "prompt_source": "research/topics/68-release-binary-artifacts/prompts/release-binary-artifacts.prompt.md",
+  "publication": {
+    "acceptance_sha256": "6a07ebbad75b011740b881e7d0e858706140114e33cc6a6ddb456404b316806f",
+    "decision_sha256": "37acd7c718c90060d00da77eccd363b911039cab0da3d8d0ba9637e93f20d622",
+    "transaction": "c18a86d9f0cd4cc3913d36ee1534aab7"
+  },
   "remaining_budget": "USD 238.50 to 263.50 remaining of USD 300.00 bulk Deep ceiling (owner authorisation W1-DOXA 2026-09-16; Doxa in batches of three, no automatic retry)",
   "required_engines": [
     "codex",
@@ -172,7 +256,7 @@
   ],
   "run_id": "2026-09-17T033528Z-e504b7806e0c",
   "schema_version": 1,
-  "state": "partial",
+  "state": "published",
   "tier": "deep",
-  "updated_at": "2026-09-17T15:11:51Z"
+  "updated_at": "2026-09-27T22:01:09Z"
 }

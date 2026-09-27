@@ -1,0 +1,104 @@
+# R31 E5 — inputs and citations — 2026-09-27T19:30:17Z
+# repo root: c/rs-launch-blueprint-p02-plan; run: research/runs/R31/2026-09-26T190203Z-5d8d6465da5a
+
+## E5.1 input and prerequisite hashes
+OK    inputs/prompt.md == manifest input_hashes.prompt
+live topic prompt sha256: a105db60dc9d2a1d8529eaea01e745e2215ad4252b83c303622f2e2a9a480147; diff frozen -> live:
+    25c25
+    < - engines: codex, opus
+    ---
+    > - engines: muse, opus
+    71c71
+    < - Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+    ---
+    > - Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception. This item substitutes Muse (Meta) for Codex under the `engine_overrides` pilot; its mirrored `- engines:` line is authoritative.
+OK    inputs/prompt.md vs live topic prompt: differs only in the engines line and the appended substitution sentence
+live research/EXECUTION.json engine_overrides.R31 = ['muse', 'opus']; frozen inputs/EXECUTION.json engine_overrides.R31 = None
+OK    live policy carries the Q17.A substitution for R31; the frozen policy input predates it
+OK    inputs/parameters.json == manifest parameters_semantic_file
+OK    inputs/prerequisites.json == manifest input_hashes.prerequisites
+OK    R11 DECISION.md == prerequisites R11.decision
+OK    R11 acceptance.json == prerequisites R11.acceptance
+
+## E5.2 the consumed value, byte for byte
+inputs/parameters.json: ci-job-structure owner=R11 kind=researched chars=8093
+OK    registry row value == inputs/parameters.json
+OK    DECISION assumes line == inputs/parameters.json (1 line)
+OK    DECISION: - assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+OK    DECISION: - assumes rust-edition = 2024
+OK    DECISION: - assumes target-os-matrix = ubuntu-latest, macos-latest
+OK    DECISION: - assumes license = MIT OR Apache-2.0
+raw/muse.md:102 quotation identical to registry: False; word-level differences: [('insert', 'a'), ('insert', 'only')]
+raw/opus.md:867 quotation identical to registry: True; word-level differences: []
+
+## E5.3 citations (file:line range must contain the expected text)
+OK    b08bccfb:.github/workflows/lint.yml:112-113
+OK    b08bccfb:.github/workflows/lint.yml:114-114
+OK    b08bccfb:pyproject.toml:267-267
+OK    b08bccfb:lefthook.yml:157-158
+OK    b08bccfb:lefthook.yml:160-161
+OK    cb1cbcb2:docs/port/TS_PORT_DECISIONS.md:131-131
+OK    cb1cbcb2:docs/port/TS_PORT_DECISIONS.md:139-139
+OK    docs/port/COMMONALITY.md:33-33
+OK    docs/port/COMMONALITY.md:120-120
+OK    docs/port/COMMONALITY.md:121-121
+OK    docs/port/COMMONALITY.md:151-151
+OK    docs/port/OWNER-REVIEW.md:47-47
+OK    docs/port/OWNER-REVIEW.md:259-259
+OK    docs/planning/p02/execution-ledger.md:213-213
+OK    docs/planning/p02/execution-ledger.md:495-495
+OK    docs/planning/p02/execution-ledger.md: heading "S5 HANDOFF VERIFIED, 2026-09-27" at line 1225
+OK    research/RUNBOOK.md:70-72
+OK    research/RUNBOOK.md:75-78
+OK    research/RUNBOOK.md:75-78
+OK    research/topics/16-codeql-config-customization/DECISION.md:60-60
+OK    research/topics/16-codeql-config-customization/DECISION.md:100-100
+OK    research/topics/16-codeql-config-customization/DECISION.md:110-110
+OK    research/topics/16-codeql-config-customization/evidence/2026-09-05T163018Z-61c8f49b581d-resolve-queries.log:5-5
+OK    research/topics/16-codeql-config-customization/evidence/2026-09-05T163018Z-61c8f49b581d-resolve-queries.log:25-25
+OK    research/topics/16-codeql-config-customization/evidence/2026-09-05T163018Z-61c8f49b581d-resolve-queries.log:47-47
+OK    research/topics/06-unsafe-code-policy/DECISION.md:53-53
+OK    research/topics/11-ci-workflow-job-structure/DECISION.md:259-259
+OK    research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/review/evidence/ci.candidate.r6-audited.yml:118-118
+OK    research/topics/42-dev-toolchain-provisioning/DECISION.md:27-27
+OK    research/topics/42-dev-toolchain-provisioning/DECISION.md:29-29
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/muse.md:7-17
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/muse.md:25-25
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/muse.md:29-29
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/muse.md:29-29
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/muse.md:29-29
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/muse.md:31-31
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/muse.md:39-39
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/muse.md:57-57
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/muse.md:61-72
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/muse.md:84-84
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/muse.md:84-84
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/muse.md:92-92
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/muse.md:102-102
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/muse.md:116-116
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/muse.md:147-147
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:58-64
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:73-73
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:82-86
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:112-131
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:132-138
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:159-162
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:196-205
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:287-295
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:393-393
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:448-452
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:453-462
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:477-481
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:482-483
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:515-519
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:567-570
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:573-575
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:576-578
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:537-539
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:673-677
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:704-704
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:711-712
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:867-867
+OK    research/runs/R31/2026-09-26T190203Z-5d8d6465da5a/raw/opus.md:892-903
+
+## result: 0 failure(s)

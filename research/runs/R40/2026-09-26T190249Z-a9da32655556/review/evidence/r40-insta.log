@@ -1,0 +1,102 @@
+rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+[dev-dependencies]
+insta = "=1.48.0"
+== I1 record the snapshot (INSTA_UPDATE=always)
+    
+    running 1 test
+    updated snapshot /private/tmp/r40-insta.WENFE3/snapdemo/src/snapshots/snapdemo__tests__help_snapshot.snap
+    .
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+    
+    
+    running 0 tests
+    
+    test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+PASS I1 (exit=0, expected zero)
+snapshot file: src/snapshots/snapdemo__tests__help_snapshot.snap
+-- snapshot bytes (cat -e: $ marks line end)
+    ---$
+    source: src/lib.rs$
+    expression: "super::help()"$
+    ---$
+    Usage: app [OPTIONS]$
+      -v, --verbose  $
+      -q, --quiet$
+snapdemo v0.1.0 (/private/tmp/r40-insta.WENFE3/snapdemo)
+└── insta v1.48.0
+== I2 unchanged snapshot passes with updates disabled
+    
+    running 1 test
+    .
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+    
+    
+    running 0 tests
+    
+    test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+PASS I2 (exit=0, expected zero)
+== I3 simulate an editor trim of every line's trailing whitespace in the .snap
+    ---$
+    source: src/lib.rs$
+    expression: "super::help()"$
+    ---$
+    Usage: app [OPTIONS]$
+      -v, --verbose$
+      -q, --quiet$
+    Source: src/lib.rs:11
+    ────────────────────────────────────────────────────────────────────────────────
+    Expression: super::help()
+    ────────────────────────────────────────────────────────────────────────────────
+    -old snapshot
+    +new results
+    ────────────┬───────────────────────────────────────────────────────────────────
+        1     1 │ Usage: app [OPTIONS]
+        2       │-  -v, --verbose
+              2 │+  -v, --verbose  
+        3     3 │   -q, --quiet
+    ────────────┴───────────────────────────────────────────────────────────────────
+    Stopped on the first failure. Run `cargo insta test` to run all snapshots.
+    
+    thread 'tests::help_snapshot' (1035662640) panicked at /tmp/cargo-r40r2/registry/src/index.crates.io-1949cf8c6b5b557f/insta-1.48.0/src/runtime.rs:719:13:
+    snapshot assertion for 'help_snapshot' failed in line 11
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+    
+    
+    failures:
+        tests::help_snapshot
+    
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+    
+    error: test failed, to rerun pass `--lib`
+PASS I3 (exit=101, expected nonzero)
+== I4 control: a trailing space appended to the body's final line only
+      -v, --verbose  $
+      -q, --quiet   $
+    
+    running 1 test
+    .
+    test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+    
+    
+    running 0 tests
+    
+    test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+PASS I4 (exit=0, expected zero)
+== I5 editorconfig-checker 4.0.2 with the recommended .editorconfig over the crate
+    
+PASS I5 (exit=0, expected zero)
+-- I5i with default excludes ignored, the stanza is what lets the snapshot pass
+    
+PASS I5i (exit=0, expected zero)
+-- I5n the same snapshot without the [*.snap] stanza: still passes, because
+   editorconfig-checker's default excludes contain \.snap$ (README 'Default Excludes')
+    
+PASS I5n (exit=0, expected zero)
+-- I5d without the stanza and with default excludes ignored: the trailing spaces are reported
+    src/snapshots/snapdemo__tests__help_snapshot.snap:
+    	6: trailing whitespace
+    
+    1 errors found
+PASS I5d (exit=1, expected nonzero)
+TOTAL PASS=8 FAIL=0

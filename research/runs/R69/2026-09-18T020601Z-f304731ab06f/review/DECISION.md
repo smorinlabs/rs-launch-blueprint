@@ -1,12 +1,104 @@
-# 2026-09-17 — R69 — web-framework-stack — decision (revision 10)
+# 2026-09-17 — R69 — web-framework-stack — decision (revision 11)
 
-**Revision note (revision 10). Owner ruling W1-R02 of 2026-09-17 renames the thing the `web`
-feature switches on: it now names one optional workspace member, `crates/web`, where it used to
-name two optional crate dependencies. Six clauses of the owned value move and nothing else in
-this decision does — not the recommendation, not a crate, not a version pin, not a feature list,
-not an exclusion, not a fitness-gate answer, not an alternative ranking, not a reference-row
-disposition, not an engine adjudication, and not one byte of any evidence script, log or
-snapshot.** Revision 10 revises revision 9, which the owner accepted on **2026-09-16** at sha256
+**Revision note (revision 11). Finding EF-1 of the round-10 empirical audit
+(`review/audit-claude.r10.md`, verdict reject, its only finding) is repaired, and nothing else
+moves: not the recommendation, not the owned value, not an `- assumes` line, not a crate, a
+version pin or a feature list, and not one byte of any carried evidence file or of either
+revision-10 script, log or diff.** Revision 11 rewrites revision 10 (sha256
+`d34ab6e8339b6f416a510d070ee54daca38a9086a901a6bfbb9df0517f7fce0a`, preserved byte for byte as
+`review/R69-r10-snapshot.md`) in place. Revision 10 was never published, so the supersession
+section at the end of this file still holds the published revision-9 bytes, unchanged.
+
+**The finding.** `review/evidence/supersession-check-r10.sh` passed 23 of 23 at the decision's own
+commit `c6b7d2b1`, but it exits 1 on any later tree that holds a fresh audit. At `HEAD` it
+reported `CHECKS RUN: 23 PASS: 20 FAIL: 3 SKIP: 0`, failing `S8a`, `S8c` and
+`S9-audit-fable.md`. Two structural defects cause this:
+
+- Section 8 built its file set by walking `raw/` and `review/`, excluding only `DECISION.md`,
+  `CARRIED-FROM.md` and the revision-10 evidence. Every audit written into `review/` was therefore
+  counted as a carried file and reported as differing from, or absent from, the publishing run.
+- Section 9 failed whenever `review/audit-codex.md` or `review/audit-fable.md` was present.
+  Presence cannot tell a fresh audit from a carried round-9 audit, and the revision-10 note
+  itself calls for fresh audits.
+
+**The repair is a successor script, `review/evidence/supersession-check-r11.sh`.** The
+revision-10 script and its three outputs stay byte-identical as the record of what revision 10
+ran. Outside its header comment, its banner line, the section-8 and section-9 comments and
+progress labels, and a new `FATAL` exit 2 when `review/CARRIED-FROM.md` is absent, the successor
+differs from `supersession-check-r10.sh` in exactly these checks:
+
+| Check | `supersession-check-r10.sh` | `supersession-check-r11.sh` |
+|---|---|---|
+| `S3b` | pins the title line ending `(revision 10)` | pins the title line ending `(revision 11)` |
+| `S8a`–`S8c` file set | every file found under `raw/` and `review/`, minus three exclusions | the **309 rows** of `review/CARRIED-FROM.md` (each line that is a sha256, three spaces and a run-relative path), so the count is literally the files this run claims to have carried |
+| `S8b` | a walked file absent from the publishing run | a row whose file is absent from this run **or** from the publishing run |
+| `S9` | FAIL if the audit file is present | PASS if absent; PASS if present and byte-**different** from the publishing run's round-9 copy; FAIL if byte-identical to it |
+| `S10` exclusion | skips `*-r10.sh` | skips `*-r10.sh` and `*-r11.sh`, so the carried-script count stays **7** |
+
+Today `review/audit-fable.md` is present with sha256 `824870fc…`, and the publishing run's
+round-9 copy is `d6a20bd6…`, so `S9-audit-fable.md` passes as a fresh audit.
+`review/audit-codex.md` is absent and passes. Every other check is unchanged in text and label.
+
+| Script | Log | Result |
+|---|---|---|
+| `review/evidence/supersession-check-r11.sh` | `review/evidence/supersession-check-r11.log` | **exit 0**, `CHECKS RUN: 23 PASS: 23 FAIL: 0 SKIP: 0` |
+
+The successor keeps every property the revision-10 note claims for its scripts: `set -euo
+pipefail`, `/usr/bin/grep` by absolute path with its version printed, content assertions, a
+non-zero exit on any `FAIL`, the supersession heading assembled at run time, and `shellcheck`
+0.11.0 exit 0 with no directive. As a control, it was run against revision 10's bytes before
+this note was written: it exited 1 with exactly one failure, `S3b`, the title line.
+
+**Reproducibility.** The script was run in place twice; the second run's output compared
+against `review/evidence/supersession-check-r11.log` is recorded as
+`review/evidence/supersession-check-r11-rerun.diff`, which is **empty**. The archive leg extracts
+`git archive HEAD` into a scratch directory with this run directory excluded by `tar --exclude`,
+then copies in exactly the working-tree files that `git ls-files -co --exclude-standard` lists for it.
+That selects the same files revision 10's temporary-index method selected, without writing any
+git object. Its `diff -u` against the log is recorded as
+`review/evidence/supersession-check-r11-archive.diff`. As in revision 10, it differs only in that
+`S10a`, `S10b` and `S10c` **SKIP by name**, their progress line is absent, and the summary reads
+`PASS: 20 FAIL: 0 SKIP: 3`.
+
+**What "on every run" still cannot cover.** `review/identities.json` is one of the 309 rows. The
+revision-10 note records that its `audits.*` entries are replaced when the fresh audits exist.
+Once that replacement lands, `S8c` reports the file as differing and the script exits 1. The
+finding's repair text expected the row-based set to exclude that file, but the file is a row.
+Revision 11 does not exclude it silently; instead the revision-10 note's "on every run" sentence
+is qualified to say so.
+
+**Three edits inside the retained revision-10 note, reported rather than made quietly.**
+
+1. Its opening heading is rewritten into the retention form the revision-9 heading uses; its
+   original text is kept inside the new heading after "Its own heading recorded it as:".
+2. The sentence that read "`review/evidence/supersession-check-r10.sh` re-establishes that on
+   every run — check `S8c` compares all 309 against the publishing run's copies" now names
+   `supersession-check-r11.sh`, adds "until the `audits.*` entries of `review/identities.json`
+   are replaced", and says the 309 are rows of `review/CARRIED-FROM.md`.
+3. The results-table row for `supersession-check-r10.sh`, which read "**exit 0**,
+   `CHECKS RUN: 23 PASS: 23 FAIL: 0 SKIP: 0`", now scopes that result to commit `c6b7d2b1`,
+   records exit 1 on any tree holding a fresh audit, and names the successor.
+
+**A carried check this revision knowingly breaks and does not repair.**
+`review/evidence/owned-value-check-r10.sh` check `V1a` pins the supersession heading at line
+**2685**, revision 10's layout. Its own comment says a reflow "must be looked at rather than
+absorbed silently". This note moves the heading to line **2779**. On revision 11's bytes
+that script therefore exits 1 with `CHECKS RUN: 53 PASS: 52 FAIL: 1 SKIP: 0`, and `V1a` is its only failure; its committed
+log still records revision 10's 53 of 53. Repairing it lies outside EF-1 and is left to the
+owner.
+
+
+**Revision note (revision 10), retained as the record of that revision. It was rejected by the
+round-10 empirical audit on finding EF-1 alone, which revision 11 repairs. Its body below this
+heading is retained verbatim and nothing in it is withdrawn apart from the two sites the
+revision-11 note above accounts for, and this heading itself is the retention form the headings
+below it already use. Its own heading recorded it as: Owner ruling W1-R02 of 2026-09-17 renames
+the thing the `web` feature switches on: it now names one optional workspace member,
+`crates/web`, where it used to name two optional crate dependencies. Six clauses of the owned
+value move and nothing else in this decision does — not the recommendation, not a crate, not a
+version pin, not a feature list, not an exclusion, not a fitness-gate answer, not an alternative
+ranking, not a reference-row disposition, not an engine adjudication, and not one byte of any
+evidence script, log or snapshot.** Revision 10 revises revision 9, which the owner accepted on **2026-09-16** at sha256
 `d4507f5b2ca4201d9837caf013de16f30070cb3e2f5558eb66f7ded9dfd2c10d` and which was **published on
 2026-09-17** (commit `28909ac`, from the carried-forward run
 `research/runs/R69/2026-09-17T014646Z-d5b96f477092`). Those published bytes are preserved
@@ -122,8 +214,10 @@ replaced when the revision-10 audits exist.
 
 **Evidence: two new checks, and not one carried byte moved.** Every script, log and snapshot the
 decision below cites is carried forward unchanged; `review/CARRIED-FROM.md` lists all **309**
-carried files with their sha256, and `review/evidence/supersession-check-r10.sh` re-establishes
-that on every run — check `S8c` compares all 309 against the publishing run's copies, and checks
+carried files with their sha256, and `review/evidence/supersession-check-r11.sh` (revision 11's
+EF-1 successor to `supersession-check-r10.sh`) re-establishes that on every run until the
+`audits.*` entries of `review/identities.json` are replaced — check `S8c` compares all 309 rows of
+`review/CARRIED-FROM.md` against the publishing run's copies, and checks
 `S10a`–`S10c` compare each of the **seven** carried `.sh` files against the blob `git ls-tree
 HEAD` reports for its path in that run. Two new scripts assert what this revision claims, and
 nothing else:
@@ -131,7 +225,7 @@ nothing else:
 | Script | Log | Result |
 |---|---|---|
 | `review/evidence/owned-value-check-r10.sh` | `review/evidence/owned-value-check-r10.log` | **exit 0**, `CHECKS RUN: 53 PASS: 53 FAIL: 0 SKIP: 0` |
-| `review/evidence/supersession-check-r10.sh` | `review/evidence/supersession-check-r10.log` | **exit 0**, `CHECKS RUN: 23 PASS: 23 FAIL: 0 SKIP: 0` |
+| `review/evidence/supersession-check-r10.sh` | `review/evidence/supersession-check-r10.log` | **exit 0**, `CHECKS RUN: 23 PASS: 23 FAIL: 0 SKIP: 0` at commit `c6b7d2b1` only; **exit 1** on any tree holding a fresh audit (EF-1). Superseded by `review/evidence/supersession-check-r11.sh`; see the revision-11 note |
 
 The first pins the sha256 of the `- owns web-extra-surface` line as `/usr/bin/grep` emits it,
 asserts each of the six moved clauses in its new form and each unmoved clause verbatim, asserts

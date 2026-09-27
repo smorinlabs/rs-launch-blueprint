@@ -1,0 +1,120 @@
+# r78-source-census — run 2026-09-27T04:17:15Z (UTC)
+# host: Darwin 25.4.0 arm64; cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew); CARGO_HOME=/tmp/cargo-s13-R78
+# registry source root: /tmp/cargo-s13-R78/registry/src/index.crates.io-1949cf8c6b5b557f
+PASS X00-opentelemetry-0.33.0 extracted source present
+PASS X00-opentelemetry_sdk-0.33.0 extracted source present
+PASS X00-opentelemetry-otlp-0.33.0 extracted source present
+PASS X00-opentelemetry-http-0.33.0 extracted source present
+PASS X00-tracing-opentelemetry-0.34.0 extracted source present
+PASS X00-tracing-subscriber-0.3.23 extracted source present
+
+## 1. Unconfigured endpoint: what an otel build does with no OTEL_EXPORTER_OTLP_* set
+  [HTTP default endpoint constant]
+    55:const OTEL_EXPORTER_OTLP_HTTP_ENDPOINT_DEFAULT: &str = "http://localhost:4318";
+PASS S01 otlp 0.33.0 defaults the HTTP endpoint to http://localhost:4318
+  [lib.rs:222 is the env-var table row, not the default]
+    222://! | `OTEL_EXPORTER_OTLP_ENDPOINT` | Target URL for the exporter. For HTTP, signal paths (`/v1/traces`, `/v1/metrics`, `/v1/logs`) are appended automatically. | `http://localhost:4318` (HTTP), `http://localhost:4317
+  [0.33.0 CHANGELOG: invalid endpoint env var becomes a build error]
+    168:- Return an exporter build error for invalid OTLP/HTTP endpoint environment
+PASS S02 0.33.0 CHANGELOG records invalid OTLP/HTTP endpoint env vars as a build error
+
+## 2. OTEL_SDK_DISABLED (standard kill switch) — honoured by any crate in the set?
+  opentelemetry-0.33.0                     0 matches
+  opentelemetry_sdk-0.33.0                 0 matches
+  opentelemetry-otlp-0.33.0                0 matches
+  opentelemetry-http-0.33.0                0 matches
+  tracing-opentelemetry-0.34.0             0 matches
+PASS S03 no crate in the recommended set reads OTEL_SDK_DISABLED
+
+## 3. Retries in 0.33 (Opus: on by default; Doxa-OpenAI: experimental features, off)
+  [0.33.0 CHANGELOG retry section]
+    37:- Retries are now enabled by default for OTLP/HTTP and OTLP/gRPC. The default
+    43:  `experimental-http-retry`, remove those feature flags. No migration action is
+  [RetryPolicy::recommended()]
+    36:    pub fn recommended() -> Self {
+    37-        Self {
+    38-            max_retries: 3,
+    39-            initial_delay: Duration::from_millis(100),
+    40-            max_delay: Duration::from_millis(1600),
+    41-            max_jitter: Duration::from_millis(100),
+    42-        }
+PASS S04 0.33.0 enables OTLP retries by default (CHANGELOG 0.33.0 section)
+PASS S05 otlp 0.33.0 Cargo.toml declares no experimental retry feature
+
+## 4. global::shutdown_tracer_provider (Gemini's shutdown call) — present in 0.33.0?
+PASS S06 no 'fn shutdown_tracer_provider' in opentelemetry 0.33.0 src
+  [CHANGELOG removal note]
+    130:- **Breaking** `opentelemetry::global::shutdown_tracer_provider()` Removed from this crate, should now use `tracer_provider.shutdown()` see [#2369](https://github.com/open-telemetry/opentelemetry-rust/pull/2369) for 
+
+## 5. Batch span processor: OS thread or Tokio? bounds and shutdown
+  [batch processor worker]
+    571:        let handle = thread::Builder::new()
+PASS S07 BatchSpanProcessor spawns an OS thread (thread::Builder) in 0.33.0
+  [defaults]
+    58:pub const OTEL_BSP_SCHEDULE_DELAY_DEFAULT: Duration = Duration::from_millis(5_000);
+    63:pub const OTEL_BSP_MAX_QUEUE_SIZE_DEFAULT: usize = 2_048;
+    80:pub const OTEL_BSP_EXPORT_TIMEOUT_DEFAULT: Duration = Duration::from_millis(30_000);
+PASS S08 queue bound default is 2_048 spans
+PASS S09 export timeout default is 30_000 ms
+PASS S10 OTEL_BSP_SCHEDULE_DELAY is read from the environment
+  [current-thread deadlock warning]
+    480:/// **Warning**: When using tokio's current-thread runtime, `shutdown()`, which
+    481-/// is a blocking call ,should not be called from your main thread. This can
+    482-/// cause deadlock. Instead, call `shutdown()` from a separate thread or use
+    483-/// tokio's `spawn_blocking`.
+PASS S11 SDK documents shutdown() deadlock risk on a current-thread runtime
+  [provider lifecycle]
+    230:    pub fn force_flush(&self) -> OTelSdkResult {
+    246:    pub fn shutdown_with_timeout(&self, timeout: Duration) -> OTelSdkResult {
+    273:    pub fn shutdown(&self) -> OTelSdkResult {
+PASS S12 SdkTracerProvider::shutdown_with_timeout(Duration) exists
+
+## 6. Blocking HTTP client construction off the async runtime
+  [exporter/http/mod.rs]
+    245:                let client = std::thread::Builder::new()
+PASS S13 OTLP/HTTP builds its blocking client on a separately spawned OS thread
+
+## 7. Propagation default and composition hooks
+  [global propagator default]
+    15:    GLOBAL_TEXT_MAP_PROPAGATOR.get_or_init(|| RwLock::new(Box::new(NoopTextMapPropagator::new())))
+PASS S14 the global text-map propagator defaults to NoopTextMapPropagator
+  [Option<L> is a Layer]
+    1560:impl<L, S> Layer<S> for Option<L>
+PASS S15 tracing-subscriber 0.3.23 implements Layer<S> for Option<L>
+  [set_parent / context]
+    60:    fn set_parent(&self, cx: Context) -> Result<(), SetParentError>;
+    133:    fn context(&self) -> Context;
+    267:    fn set_parent(&self, cx: Context) -> Result<(), SetParentError> {
+    342:    fn context(&self) -> Context {
+PASS S16 bridge 0.34.0 set_parent returns Result<(), SetParentError>
+  [HeaderExtractor / HeaderInjector]
+    77:pub struct HeaderInjector<'a>(pub &'a mut http::HeaderMap);
+    99:pub struct HeaderExtractor<'a>(pub &'a http::HeaderMap);
+PASS S17 opentelemetry-http 0.33.0 exports HeaderExtractor and HeaderInjector
+
+## 8. unsafe census of each crate's src/ (word match)
+  opentelemetry-0.33.0                     0 lines
+  opentelemetry_sdk-0.33.0                 0 lines
+  opentelemetry-otlp-0.33.0                0 lines
+  opentelemetry-http-0.33.0                0 lines
+  tracing-opentelemetry-0.34.0             3 lines
+  [tracing-opentelemetry 0.34.0 unsafe lines]
+    /tmp/cargo-s13-R78/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-opentelemetry-0.34.0/src/layer/filtered.rs:172:    unsafe fn downcast_raw(&self, id: TypeId) -> Option<*const ()> {
+    /tmp/cargo-s13-R78/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-opentelemetry-0.34.0/src/layer/filtered.rs:176:            unsafe { self.inner.downcast_raw(id) }
+    /tmp/cargo-s13-R78/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-opentelemetry-0.34.0/src/layer.rs:1557:    unsafe fn downcast_raw(&self, id: TypeId) -> Option<*const ()> {
+PASS S18 API/SDK/OTLP/HTTP 0.33.0 src contain no unsafe
+PASS S19 bridge 0.34.0 src has exactly 3 unsafe lines (2 downcast_raw fns + 1 block)
+
+## 9. Feature tables in the published manifests
+  [otlp [features] default/http-proto/reqwest-*]
+    49:default = [
+    57:grpc-tonic = [
+    78:http-proto = [
+    112:reqwest-blocking-client = [
+    121:reqwest-rustls = [
+  [bridge [features]]
+    57:default = [
+    61:metrics = [
+PASS S20 otlp reqwest dependency declared with default-features = false (TLS is opt-in)
+
+# TOTAL checks=26 pass=26 fail=0

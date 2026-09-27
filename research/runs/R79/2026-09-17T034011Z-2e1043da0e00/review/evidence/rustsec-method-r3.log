@@ -1,0 +1,27 @@
+== environment (header: these lines differ between runs) ==
+volatile: date-utc 2026-09-27T06:26:50Z
+volatile: curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+
+== the discriminating probe: a crate that carries an advisory ==
+      | https://rustsec.org/packages/metrics-util.html -> HTTP 200
+PASS  metrics-util's page answers 200: per-package pages are live, not retired
+PASS  metrics-util's page names RUSTSEC-2021-0113
+
+== the six crates raw/muse.md checked, plus the recommended pair's other surveyed crates ==
+      | https://rustsec.org/packages/metrics.html -> HTTP 404
+PASS  metrics: HTTP 404, which on a live site means no advisory page exists for it
+      | https://rustsec.org/packages/metrics-exporter-prometheus.html -> HTTP 404
+PASS  metrics-exporter-prometheus: HTTP 404, which on a live site means no advisory page exists for it
+      | https://rustsec.org/packages/axum-prometheus.html -> HTTP 404
+PASS  axum-prometheus: HTTP 404, which on a live site means no advisory page exists for it
+      | https://rustsec.org/packages/prometheus.html -> HTTP 404
+PASS  prometheus: HTTP 404, which on a live site means no advisory page exists for it
+      | https://rustsec.org/packages/opentelemetry-prometheus.html -> HTTP 404
+PASS  opentelemetry-prometheus: HTTP 404, which on a live site means no advisory page exists for it
+      | https://rustsec.org/packages/autometrics.html -> HTTP 404
+PASS  autometrics: HTTP 404, which on a live site means no advisory page exists for it
+      | https://rustsec.org/packages/prometheus-client.html -> HTTP 404
+PASS  prometheus-client: HTTP 404, which on a live site means no advisory page exists for it
+
+== summary ==
+PASS=9 FAIL=0 SKIP=0 TOTAL=9

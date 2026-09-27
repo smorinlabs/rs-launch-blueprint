@@ -1,0 +1,37 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-26T19:03:12Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-26T19:03:12Z",
+      "state": "ready"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa",
+    "parameters_semantic": "958f6eefb210d3add79b959502ceccee076e4aff1b1a2e402b1e731d92c4f053",
+    "parameters_semantic_file": "802224b53a3ce9cdb4db267c47e1154af8a1ef46f8ea2011f1f5e7e1c4c4fde3",
+    "policy": "2a3ca15597691bfc55f211b97c09f342c242532d378482ffba2c5d1df742fd58",
+    "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+    "prerequisites": "53d3a5998471639122b86271263ea8d2042977f985d6be7c077d187ad496ff13",
+    "prompt": "e3ef88cf9e274e336008ba1d20f8661e6a7395331aacdcac144c50b35a824509",
+    "registry": "6b86e81ab06093bf1fced2b6bc79d157cc7ce86ce07f6827d6390339ab8d1f0c"
+  },
+  "item": "R78",
+  "model": "claude-fable-5-1",
+  "operations": {},
+  "prompt_source": "research/topics/78-opentelemetry-integration/prompts/opentelemetry-integration.prompt.md",
+  "remaining_budget": "USD 0.00 at prepare (Opus leg unpaid; Codex leg deferred under W1-CODEX3; Doxa leg pending owner authorisation W2-DOXA)",
+  "required_engines": [
+    "codex",
+    "opus",
+    "doxa"
+  ],
+  "run_id": "2026-09-26T190312Z-8cf4b61ddead",
+  "schema_version": 1,
+  "state": "ready",
+  "tier": "deep",
+  "updated_at": "2026-09-26T19:03:12Z"
+}

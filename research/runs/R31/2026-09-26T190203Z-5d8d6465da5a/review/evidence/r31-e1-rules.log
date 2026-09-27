@@ -1,0 +1,142 @@
+# R31 E1 — rule set — 2026-09-27T19:25:47Z
+# host: Darwin 25.4.0 arm64; macOS 26.4
+# ast-grep: /opt/homebrew/bin/ast-grep — ast-grep 0.45.3
+# fixture: $TMPDIR/r31-e1.XXXXXX (removed on exit)
+# extracted config digest (sha256 over the sorted extracted files): ce58fbb0ed03a11e44eecd90a9dff695717a12703426d0ee78d84504fe3c1a60
+
+## extracted files
+./Justfile
+./lefthook.yml
+./rules/security-tests/rs-predictable-temp-test.yml
+./rules/security-tests/rs-shell-invocation-test.yml
+./rules/security-tests/rs-sql-format-test.yml
+./rules/security-tests/rs-tls-verification-disabled-test.yml
+./rules/security-tests/rs-weak-hash-test.yml
+./rules/security/rs-predictable-temp.yml
+./rules/security/rs-shell-invocation.yml
+./rules/security/rs-sql-format.yml
+./rules/security/rs-tls-verification-disabled.yml
+./rules/security/rs-weak-hash.yml
+./sgconfig.yml
+
+## E1.1 ast-grep test (rule self-tests)
+$ ast-grep test --skip-snapshot-tests
+Running 5 tests
+
+----------- Case Details -----------
+PASS rs-weak-hash  .......
+PASS rs-predictable-temp  .....
+PASS rs-shell-invocation  ......
+PASS rs-tls-verification-disabled  ...
+PASS rs-sql-format  ........
+
+test result: ok. 5 passed; 0 failed;
+exit=0
+
+## E1.2 clean template-shaped tree
+$ ast-grep scan --error
+exit=0
+
+## E1.3a seeded shipped file: scan --error exit code
+$ ast-grep scan --error src/seeded.rs
+error[rs-tls-verification-disabled]: TLS certificate or hostname verification is disabled (bandit B501 analogue).
+  ┌─ src/seeded.rs:5:13
+  │
+5 │     let _ = reqwest::Client::builder().danger_accept_invalid_certs(true);
+  │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[rs-weak-hash]: MD4, MD5 or SHA-1 is used; use SHA-256 or stronger for anything security-relevant (bandit B303/B324 analogue).
+  ┌─ src/seeded.rs:4:13
+  │
+4 │     let _ = md5::compute(b"x");
+  │             ^^^^^^^^^^^^^^^^^^
+
+error[rs-shell-invocation]: A shell is spawned; build the argv directly instead of passing a command string to a shell (bandit B602/B605 analogue).
+  ┌─ src/seeded.rs:2:13
+  │
+2 │     let _ = std::process::Command::new("sh").arg("-c").arg("ls");
+  │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[rs-sql-format]: SQL text is built with format!; bind parameters instead (bandit B608 analogue).
+  ┌─ src/seeded.rs:3:25
+  │
+3 │     let _ = sqlx::query(sqlx::AssertSqlSafe(format!("SELECT * FROM t WHERE id = {id}")));
+  │                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+error[rs-predictable-temp]: A path under the shared temp directory is predictable; use the tempfile crate (bandit B108 analogue).
+  ┌─ src/seeded.rs:6:13
+  │
+6 │     let _ = std::env::temp_dir().join("app.lock");
+  │             ^^^^^^^^^^^^^^^^^^^^
+
+Error: 5 error(s) found in code.
+Help: Scan succeeded and found error level diagnostics in the codebase.
+
+exit=1
+matches (rule file:line):
+rs-predictable-temp src/seeded.rs:6
+rs-shell-invocation src/seeded.rs:2
+rs-sql-format src/seeded.rs:3
+rs-tls-verification-disabled src/seeded.rs:5
+rs-weak-hash src/seeded.rs:4
+
+## E1.4a same seeds under tests/ benches/ fuzz/: full-tree scan
+$ ast-grep scan --error
+exit=0
+
+## E1.4b same seeds, each file named explicitly
+$ ast-grep scan --error tests/seeded.rs benches/seeded.rs fuzz/fuzz_targets/seeded.rs
+exit=0
+
+## E1.4c control: the rule-level ignores are what suppress these findings
+control: rs-tls-verification-disabled with its ignores removed, over tests/seeded.rs:
+ matches: 1
+
+## E1.5 probe file, recommended rules (expected: L7-L21 flagged, L22-L29 not)
+rs-predictable-temp src/probe.rs:11
+rs-predictable-temp src/probe.rs:12
+rs-predictable-temp src/probe.rs:13
+rs-shell-invocation src/probe.rs:10
+rs-shell-invocation src/probe.rs:7
+rs-shell-invocation src/probe.rs:8
+rs-shell-invocation src/probe.rs:9
+rs-sql-format src/probe.rs:18
+rs-sql-format src/probe.rs:19
+rs-sql-format src/probe.rs:20
+rs-tls-verification-disabled src/probe.rs:21
+rs-weak-hash src/probe.rs:14
+rs-weak-hash src/probe.rs:15
+rs-weak-hash src/probe.rs:16
+rs-weak-hash src/probe.rs:17
+flagged lines: 15 (expected 15)
+
+## E1.6 same probe file, the Opus leg's patterns as stated at raw/opus.md:287-295
+rs-shell-invocation src/probe.rs:7
+rs-predictable-temp src/probe.rs:11
+rs-weak-hash src/probe.rs:17
+rs-tls-verification-disabled src/probe.rs:21
+flagged lines: 4 of the 15 insecure lines
+
+## E1.7 inline suppression (expected: only line 4 flagged)
+rs-weak-hash src/suppressed.rs:4
+
+## E1.8 placebo guard: rs-tls pattern broken, ast-grep test must fail
+$ ast-grep test --skip-snapshot-tests
+Running 5 tests
+
+----------- Case Details -----------
+[Missing] Expect rule rs-tls-verification-disabled to report issues, but none found in:
+
+  reqwest::Client::builder().danger_accept_invalid_certs(true).build()
+
+PASS rs-weak-hash  .......
+PASS rs-predictable-temp  .....
+PASS rs-shell-invocation  ......
+FAIL rs-tls-verification-disabled  .M.
+PASS rs-sql-format  ........
+
+Error: test failed. 4 passed; 1 failed;
+Help: You can use ast-grep playground to debug your rules and test cases.
+See also: https://ast-grep.github.io/playground.html
+
+exit=4

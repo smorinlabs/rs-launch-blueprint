@@ -1,0 +1,483 @@
+{
+    "meta": {
+        "next_page": null,
+        "total": 7
+    },
+    "versions": [
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2026-05-29T09:49:53.966176Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1631166?v=4",
+                        "created_at": "2012-04-10T22:44:27Z",
+                        "github_username_matches": true,
+                        "id": 174,
+                        "login": "TheNeikos",
+                        "name": "Marcel M\u00fcller",
+                        "url": "https://github.com/TheNeikos"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "55a0f92310a7f128ed0b81e4bbe2d3d445e937e3bf47979697adecbc8d498b0a",
+            "crate": "envious",
+            "crate_size": 220709,
+            "created_at": "2026-05-29T09:49:53.966176Z",
+            "description": "Deserialize (potentially nested) environment variables into your custom structs",
+            "dl_path": "/api/v1/crates/envious/0.3.0/download",
+            "documentation": null,
+            "downloads": 7539,
+            "edition": "2021",
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/TheNeikos/envious",
+            "id": 2477541,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 725,
+                        "comment_lines": 10,
+                        "files": 4
+                    }
+                },
+                "total_code_lines": 725,
+                "total_comment_lines": 10
+            },
+            "links": {
+                "authors": "/api/v1/crates/envious/0.3.0/authors",
+                "dependencies": "/api/v1/crates/envious/0.3.0/dependencies",
+                "version_downloads": "/api/v1/crates/envious/0.3.0/downloads"
+            },
+            "num": "0.3.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1631166?v=4",
+                "created_at": "2012-04-10T22:44:27Z",
+                "github_username_matches": true,
+                "id": 174,
+                "login": "TheNeikos",
+                "name": "Marcel M\u00fcller",
+                "url": "https://github.com/TheNeikos"
+            },
+            "readme_path": "/api/v1/crates/envious/0.3.0/readme",
+            "repository": "https://github.com/TheNeikos/envious",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2026-05-29T09:49:53.966176Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2023-06-02T13:12:25.241096Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1631166?v=4",
+                        "created_at": "2012-04-10T22:44:27Z",
+                        "github_username_matches": true,
+                        "id": 174,
+                        "login": "TheNeikos",
+                        "name": "Marcel M\u00fcller",
+                        "url": "https://github.com/TheNeikos"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "3e52788a407588138195a40c991f500621fea2cffa87e7345d86dbab77287dc7",
+            "crate": "envious",
+            "crate_size": 221719,
+            "created_at": "2023-06-02T13:12:25.241096Z",
+            "description": "Deserialize (potentially nested) environment variables into your custom structs",
+            "dl_path": "/api/v1/crates/envious/0.2.2/download",
+            "documentation": null,
+            "downloads": 552500,
+            "edition": "2021",
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/TheNeikos/envious",
+            "id": 814128,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 609,
+                        "comment_lines": 6,
+                        "files": 4
+                    }
+                },
+                "total_code_lines": 609,
+                "total_comment_lines": 6
+            },
+            "links": {
+                "authors": "/api/v1/crates/envious/0.2.2/authors",
+                "dependencies": "/api/v1/crates/envious/0.2.2/dependencies",
+                "version_downloads": "/api/v1/crates/envious/0.2.2/downloads"
+            },
+            "num": "0.2.2",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1631166?v=4",
+                "created_at": "2012-04-10T22:44:27Z",
+                "github_username_matches": true,
+                "id": 174,
+                "login": "TheNeikos",
+                "name": "Marcel M\u00fcller",
+                "url": "https://github.com/TheNeikos"
+            },
+            "readme_path": "/api/v1/crates/envious/0.2.2/readme",
+            "repository": "https://github.com/TheNeikos/envious",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2023-06-02T13:12:25.241096Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2023-04-05T16:06:59.074068Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1631166?v=4",
+                        "created_at": "2012-04-10T22:44:27Z",
+                        "github_username_matches": true,
+                        "id": 174,
+                        "login": "TheNeikos",
+                        "name": "Marcel M\u00fcller",
+                        "url": "https://github.com/TheNeikos"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "ed311f248010d6cfae225789473536aec8cd4b8af3ec23ff73c262c4aa10795e",
+            "crate": "envious",
+            "crate_size": 221604,
+            "created_at": "2023-04-05T16:06:59.074068Z",
+            "description": "Deserialize (potentially nested) environment variables into your custom structs",
+            "dl_path": "/api/v1/crates/envious/0.2.1/download",
+            "documentation": null,
+            "downloads": 6480,
+            "edition": "2021",
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/TheNeikos/envious",
+            "id": 769029,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 609,
+                        "comment_lines": 6,
+                        "files": 4
+                    }
+                },
+                "total_code_lines": 609,
+                "total_comment_lines": 6
+            },
+            "links": {
+                "authors": "/api/v1/crates/envious/0.2.1/authors",
+                "dependencies": "/api/v1/crates/envious/0.2.1/dependencies",
+                "version_downloads": "/api/v1/crates/envious/0.2.1/downloads"
+            },
+            "num": "0.2.1",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1631166?v=4",
+                "created_at": "2012-04-10T22:44:27Z",
+                "github_username_matches": true,
+                "id": 174,
+                "login": "TheNeikos",
+                "name": "Marcel M\u00fcller",
+                "url": "https://github.com/TheNeikos"
+            },
+            "readme_path": "/api/v1/crates/envious/0.2.1/readme",
+            "repository": "https://github.com/TheNeikos/envious",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2023-04-05T16:06:59.074068Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2023-03-27T19:05:08.837006Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1631166?v=4",
+                        "created_at": "2012-04-10T22:44:27Z",
+                        "github_username_matches": true,
+                        "id": 174,
+                        "login": "TheNeikos",
+                        "name": "Marcel M\u00fcller",
+                        "url": "https://github.com/TheNeikos"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "c5da1242301398a243cd686a560bf2e97613b28a7439f7076c99e2e605f33c83",
+            "crate": "envious",
+            "crate_size": 221100,
+            "created_at": "2023-03-27T19:05:08.837006Z",
+            "description": "Deserialize (potentially nested) environment variables into your custom structs",
+            "dl_path": "/api/v1/crates/envious/0.2.0/download",
+            "documentation": null,
+            "downloads": 1976,
+            "edition": "2021",
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/TheNeikos/envious",
+            "id": 761003,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 599,
+                        "comment_lines": 2,
+                        "files": 4
+                    }
+                },
+                "total_code_lines": 599,
+                "total_comment_lines": 2
+            },
+            "links": {
+                "authors": "/api/v1/crates/envious/0.2.0/authors",
+                "dependencies": "/api/v1/crates/envious/0.2.0/dependencies",
+                "version_downloads": "/api/v1/crates/envious/0.2.0/downloads"
+            },
+            "num": "0.2.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1631166?v=4",
+                "created_at": "2012-04-10T22:44:27Z",
+                "github_username_matches": true,
+                "id": 174,
+                "login": "TheNeikos",
+                "name": "Marcel M\u00fcller",
+                "url": "https://github.com/TheNeikos"
+            },
+            "readme_path": "/api/v1/crates/envious/0.2.0/readme",
+            "repository": "https://github.com/TheNeikos/envious",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2023-03-27T19:05:08.837006Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2023-02-03T17:53:44.884889Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1631166?v=4",
+                        "created_at": "2012-04-10T22:44:27Z",
+                        "github_username_matches": true,
+                        "id": 174,
+                        "login": "TheNeikos",
+                        "name": "Marcel M\u00fcller",
+                        "url": "https://github.com/TheNeikos"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "3a63836d1c687930845ec65e5d9454cbdd4a1a04c11fed3093da651dee34ef23",
+            "crate": "envious",
+            "crate_size": 216559,
+            "created_at": "2023-02-03T17:53:44.884889Z",
+            "description": "Deserialize (potentially nested) environment variables into your custom structs",
+            "dl_path": "/api/v1/crates/envious/0.1.1/download",
+            "documentation": null,
+            "downloads": 1582,
+            "edition": "2021",
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/TheNeikos/envious",
+            "id": 718642,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 490,
+                        "comment_lines": 0,
+                        "files": 3
+                    }
+                },
+                "total_code_lines": 490,
+                "total_comment_lines": 0
+            },
+            "links": {
+                "authors": "/api/v1/crates/envious/0.1.1/authors",
+                "dependencies": "/api/v1/crates/envious/0.1.1/dependencies",
+                "version_downloads": "/api/v1/crates/envious/0.1.1/downloads"
+            },
+            "num": "0.1.1",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1631166?v=4",
+                "created_at": "2012-04-10T22:44:27Z",
+                "github_username_matches": true,
+                "id": 174,
+                "login": "TheNeikos",
+                "name": "Marcel M\u00fcller",
+                "url": "https://github.com/TheNeikos"
+            },
+            "readme_path": "/api/v1/crates/envious/0.1.1/readme",
+            "repository": "https://github.com/TheNeikos/envious",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2023-02-03T17:53:44.884889Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2023-02-03T17:02:33.537413Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1631166?v=4",
+                        "created_at": "2012-04-10T22:44:27Z",
+                        "github_username_matches": true,
+                        "id": 174,
+                        "login": "TheNeikos",
+                        "name": "Marcel M\u00fcller",
+                        "url": "https://github.com/TheNeikos"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "fe0146cf2907d72f2094a8b2dd8b54a34e957c595bb06a51a496edf66869b479",
+            "crate": "envious",
+            "crate_size": 215298,
+            "created_at": "2023-02-03T17:02:33.537413Z",
+            "description": "Deserialize (potentially nested) environment variables into your custom structs",
+            "dl_path": "/api/v1/crates/envious/0.1.0/download",
+            "documentation": null,
+            "downloads": 1203,
+            "edition": "2021",
+            "features": {},
+            "has_lib": true,
+            "homepage": "https://github.com/TheNeikos/envious",
+            "id": 718614,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 490,
+                        "comment_lines": 0,
+                        "files": 3
+                    }
+                },
+                "total_code_lines": 490,
+                "total_comment_lines": 0
+            },
+            "links": {
+                "authors": "/api/v1/crates/envious/0.1.0/authors",
+                "dependencies": "/api/v1/crates/envious/0.1.0/dependencies",
+                "version_downloads": "/api/v1/crates/envious/0.1.0/downloads"
+            },
+            "num": "0.1.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1631166?v=4",
+                "created_at": "2012-04-10T22:44:27Z",
+                "github_username_matches": true,
+                "id": 174,
+                "login": "TheNeikos",
+                "name": "Marcel M\u00fcller",
+                "url": "https://github.com/TheNeikos"
+            },
+            "readme_path": "/api/v1/crates/envious/0.1.0/readme",
+            "repository": "https://github.com/TheNeikos/envious",
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2023-02-03T17:02:33.537413Z",
+            "yank_message": null,
+            "yanked": false
+        },
+        {
+            "audit_actions": [
+                {
+                    "action": "publish",
+                    "time": "2023-02-03T09:22:28.056779Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1631166?v=4",
+                        "created_at": "2012-04-10T22:44:27Z",
+                        "github_username_matches": true,
+                        "id": 174,
+                        "login": "TheNeikos",
+                        "name": "Marcel M\u00fcller",
+                        "url": "https://github.com/TheNeikos"
+                    }
+                },
+                {
+                    "action": "yank",
+                    "time": "2023-02-03T17:03:03.396028Z",
+                    "user": {
+                        "avatar": "https://avatars.githubusercontent.com/u/1631166?v=4",
+                        "created_at": "2012-04-10T22:44:27Z",
+                        "github_username_matches": true,
+                        "id": 174,
+                        "login": "TheNeikos",
+                        "name": "Marcel M\u00fcller",
+                        "url": "https://github.com/TheNeikos"
+                    }
+                }
+            ],
+            "bin_names": [],
+            "checksum": "85950fdf6c54aedf2c88c485fb46d62071fdd7be237b27ee3e7d60da54facb76",
+            "crate": "envious",
+            "crate_size": 6694,
+            "created_at": "2023-02-03T09:22:28.056779Z",
+            "description": "Deserialize (potentially nested) environment variables into your custom structs",
+            "dl_path": "/api/v1/crates/envious/0.0.0/download",
+            "documentation": null,
+            "downloads": 1113,
+            "edition": "2021",
+            "features": {},
+            "has_lib": true,
+            "homepage": null,
+            "id": 718354,
+            "lib_links": null,
+            "license": "MIT OR Apache-2.0",
+            "linecounts": {
+                "languages": {
+                    "Rust": {
+                        "code_lines": 12,
+                        "comment_lines": 0,
+                        "files": 1
+                    }
+                },
+                "total_code_lines": 12,
+                "total_comment_lines": 0
+            },
+            "links": {
+                "authors": "/api/v1/crates/envious/0.0.0/authors",
+                "dependencies": "/api/v1/crates/envious/0.0.0/dependencies",
+                "version_downloads": "/api/v1/crates/envious/0.0.0/downloads"
+            },
+            "num": "0.0.0",
+            "published_by": {
+                "avatar": "https://avatars.githubusercontent.com/u/1631166?v=4",
+                "created_at": "2012-04-10T22:44:27Z",
+                "github_username_matches": true,
+                "id": 174,
+                "login": "TheNeikos",
+                "name": "Marcel M\u00fcller",
+                "url": "https://github.com/TheNeikos"
+            },
+            "readme_path": "/api/v1/crates/envious/0.0.0/readme",
+            "repository": null,
+            "rust_version": null,
+            "trustpub_data": null,
+            "updated_at": "2023-02-03T17:03:03.392593Z",
+            "yank_message": null,
+            "yanked": true
+        }
+    ]
+}

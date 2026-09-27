@@ -1,0 +1,35 @@
+== environment ==
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+
+== part 1: which parser accepts an OpenAPI 3.1 document ==
+probe-3.1.0.json: openapiv3 Ok openapi=3.1.0 paths=2
+probe-3.1.0.json: oas3 Ok validate_version=Ok("3.1.0") operations=2
+type-array.json: openapiv3 Err invalid type: sequence, expected a string at line 89 column 3
+type-array.json: oas3 Ok validate_version=Ok("3.1.0") operations=2
+numeric-exclusive-minimum.json: openapiv3 Err invalid type: integer `0`, expected a boolean at line 87 column 3
+numeric-exclusive-minimum.json: oas3 Ok validate_version=Ok("3.1.0") operations=2
+PASS  M1 openapiv3 2.2.0 accepts the probe document labelled 3.1.0 (it does not refuse on the version label)
+PASS  M2 openapiv3 2.2.0 rejects a 3.1 type array ["integer","null"]
+PASS  M3 oas3 0.22.0 accepts the same type-array document and validates it as 3.1.0
+PASS  M4 openapiv3 2.2.0 rejects a numeric exclusiveMinimum (3.0 spells it as a boolean)
+PASS  M5 oas3 0.22.0 accepts the same numeric-exclusiveMinimum document
+
+== part 2: where a schema-to-strategy module can live ==
+error[E0433]: cannot find `test_support` in `web`
+error: could not compile `web` (test "contract_fuzz") due to 1 previous error
+PASS  M6 an integration test cannot see a #[cfg(test)] module of src/
+error[E0433]: cannot find module or crate `helper` in this scope
+error: could not compile `web` (lib) due to 1 previous error
+PASS  M7 a src/ module that uses a [dev-dependencies] crate does not build as a library
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <duration>
+     Running tests/contract_fuzz.rs (contract_fuzz)
+test result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in <duration>
+     Running tests/contract_mapper.rs (contract_mapper)
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <duration>
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <duration>
+PASS  M8 tests/common/ shared by two targets: the mapper target runs (1 passed), the fuzz target is excluded (1 ignored)
+
+== totals ==
+PASS=8 FAIL=0 SKIP=0 TOTAL=8

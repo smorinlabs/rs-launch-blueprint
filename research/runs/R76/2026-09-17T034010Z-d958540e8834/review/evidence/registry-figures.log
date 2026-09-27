@@ -1,14 +1,14 @@
 === R76 registry, forge and crate-source checks ===
-date(UTC): 2026-09-18T22:55:21Z
+date(UTC): 2026-09-27T07:10:48Z
 grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
 curl: curl 8.7.1
-gh:   gh version 2.98.0 (2026-08-20)
+gh:   gh version 2.101.0 (2026-09-15)
 jq:   jq-1.8.2
 
 --- A. tower-http on crates.io: the version this decision pins ---
 endpoint: GET https://crates.io/api/v1/crates/tower-http
-FIGURE crate.recent_downloads (90-day) = 149725960
-FIGURE crate.downloads (all-time)      = 462114603
+FIGURE crate.recent_downloads (90-day) = 155482963
+FIGURE crate.downloads (all-time)      = 479378847
 endpoint: GET https://crates.io/api/v1/crates/tower-http/versions
 FIGURE newest non-yanked num       = 0.7.1
 FIGURE newest non-yanked created_at= 2026-08-31T14:49:25.697237Z
@@ -24,44 +24,44 @@ ASSERT ok   tower-http 0.7.1 declares rust-version 1.65, inside the 1.96 floor m
 endpoint: GET https://crates.io/api/v1/crates?keyword=cors&per_page=30&sort=downloads (and &page=2)
 FIGURE keyword=cors meta.total = 36; page1 returned 30, page2 returned 6
 endpoint: GET https://crates.io/api/v1/crates?q=cors&per_page=40
-FIGURE q=cors meta.total = 1452; this run read the 40 highest-ranked
+FIGURE q=cors meta.total = 1476; this run read the 40 highest-ranked
 --- every crate carrying the cors keyword, name / newest stable / 90-day / all-time ---
-  actix-cors 0.7.2 2843244 20974423
-  rocket_cors 0.6.0 78837 1124663
-  tauri-plugin-cors-fetch 5.0.0 4319 35062
-  routerify-cors 3.0.0 708 26738
-  pdk-cors-lib 1.10.0 8162 17817
-  reinhardt-middleware 0.3.18 6648 14869
-  corsware 0.2.0 301 14585
-  axum_cors 0.1.8 161 10672
-  warp-cors 0.3.0 98 5787
-  tower-http-cors-config 0.1.3 1255 5192
-  wasm-dev-server 0.1.1 9 2748
-  cors-proxy 1.0.2 22 2478
-  rocket_ext 0.3.1 17 2119
-  elif-security 0.2.2 28 1394
-  bunner_cors_rs 0.1.2 22 842
-  armature-security 0.4.0 327 773
-  oxidite-middleware null 161 631
-  just-serve 0.1.0 8 527
-  htmstd 0.8.6 155 403
-  tauri-plugin-better-cors-fetch 1.8.0 248 386
-  blazingly-middleware 0.2.2 216 216
-  fandhe-backend-plugin-cors 0.4.0 127 127
-  apollo-cors 0.3.0 86 98
-  toxi-middleware 3.1.0 96 96
-  corx-core 0.2.0 76 91
-  axum-stack 0.2.0 68 68
-  volter-middleware 0.1.0 67 67
-  rok-guard 0.6.0 47 65
-  corx-server 0.2.0 44 58
+  actix-cors 0.7.2 2914000 21295772
+  rocket_cors 0.6.0 81134 1133751
+  tauri-plugin-cors-fetch 5.0.0 4141 35307
+  routerify-cors 3.0.0 697 26784
+  pdk-cors-lib 1.10.0 7855 18286
+  reinhardt-middleware 0.3.20 4959 15163
+  corsware 0.2.0 290 14598
+  axum_cors 0.1.8 146 10682
+  warp-cors 0.3.0 94 5795
+  tower-http-cors-config 0.1.3 1307 5308
+  wasm-dev-server 0.1.1 6 2748
+  cors-proxy 1.0.2 18 2478
+  rocket_ext 0.3.1 13 2120
+  elif-security 0.2.2 23 1394
+  bunner_cors_rs 0.1.2 18 842
+  armature-security 0.4.0 266 792
+  oxidite-middleware null 90 635
+  just-serve 0.1.0 8 528
+  htmstd 0.8.6 155 414
+  tauri-plugin-better-cors-fetch 1.8.0 235 391
+  blazingly-middleware 0.2.2 236 236
+  axum-stack 0.2.0 205 205
+  toxi-middleware 3.1.1 145 145
+  fandhe-backend-plugin-cors 0.4.1 144 144
+  apollo-cors 0.4.0 100 119
+  corx-core 0.2.0 75 99
+  volter-middleware 0.1.0 77 77
+  rok-guard 0.6.0 43 69
+  corx-server 0.2.0 43 62
   trillium-cors 0.1.0 45 45
-  hyper-cors 0.2.0 37 37
+  hyper-cors 0.2.0 41 41
   cors-core 0.1.1 33 33
-  vary-header 0.1.0 26 26
-  corx 0.2.0 10 22
-  rok-cors 0.1.0 8 21
-  lily_middleware 0.1.0 15 15
+  vary-header 0.1.0 12 26
+  corx 0.2.0 9 22
+  rok-cors 0.1.0 7 21
+  lily_middleware 0.1.0 20 20
 ASSERT ok   every crate carrying the cors keyword was read in this run (36 of 36), so the category map is an enumeration
 ASSERT ok   tower-http appears on neither keyword page — it was reached from the axum side, not from the keyword search, and the decision says so
 ASSERT ok   rok-cors is on the enumerated list, so its exclusion is a disposition and not an omission
@@ -150,19 +150,28 @@ FIGURE files differing under src/cors between 0.6.11 and 0.7.1 = 6
 ASSERT ok   the cors module did change between 0.6.11 and 0.7.1, so 'no change' would be the wrong claim; probe-checks.sh measures what the change is observable as
 ASSERT ok   0.7.1 derives the Vary header in update_vary_header from whether each CORS response header is request-dependent — the #674 relaxation
 ASSERT ok   0.6.11 has no such derivation: its Vary default is the fixed preflight_request_headers() list, which is the difference the probe measures
+PINNED tower-http-0.7.1/src/cors/mod.rs, where Cors::call splits preflight from non-preflight:
+          if parts.method == Method::OPTIONS {
+          } else {
+              // This header is applied only to non-preflight requests
+              headers.extend(self.layer.expose_headers.to_header(&parts));
+ASSERT ok   mod.rs:715 branches on Method::OPTIONS, so every OPTIONS request takes the preflight path
+ASSERT ok   mod.rs:728-729 extend Access-Control-Expose-Headers only in the non-preflight branch, so no CorsLayer configuration puts the expose list on a preflight response — the structural ground of OVERRIDE (OV-08)
 
 --- H. GitHub, through the authenticated CLI, one call every 21 s ---
 endpoint: GET https://api.github.com/repos/tower-rs/tower-http
-FIGURE stargazers_count = 913; archived = false; pushed_at = 2026-09-13T22:53:22Z
-FIGURE open_issues_count = 37  (NOT used: it counts pull requests too, per the prompt's rule)
+FIGURE stargazers_count = 918; archived = false; pushed_at = 2026-09-26T12:33:00Z
+FIGURE open_issues_count = 40  (NOT used: it counts pull requests too, per the prompt's rule)
 ASSERT ok   tower-rs/tower-http is not archived
 ASSERT ok   the repository figure resolved rather than returning an empty body
 endpoint: GET https://api.github.com/search/issues?q=repo:tower-rs/tower-http+is:issue+is:open
-FIGURE open issues (total_count, the field the prompt requires) = 30
+FIGURE open issues (total_count, the field the prompt requires) = 32
 ASSERT ok   the open-issue search resolved; the decision quotes this number with today's date
-endpoint: GET https://api.github.com/repos/rust-lang/crates.io/contents/Cargo.toml (default branch)
-HEAD  the Rust project's own registry service pins tower-http at:
-  170:tower-http = { version = "=0.7.1", features = ["add-extension", "fs", "catch-panic", "timeout", "compression-full"] }
+endpoint: GET https://api.github.com/repos/rust-lang/crates.io/commits/HEAD
+FIGURE rust-lang/crates.io default-branch commit = 765bbf478827f421a93ea2634997b2b4f55c87f4
+endpoint: GET https://api.github.com/repos/rust-lang/crates.io/contents/Cargo.toml?ref=765bbf478827f421a93ea2634997b2b4f55c87f4
+HEAD  the Rust project's own registry service pins tower-http at (Cargo.toml@765bbf478827f421a93ea2634997b2b4f55c87f4:<line>):
+  Cargo.toml@765bbf478827f421a93ea2634997b2b4f55c87f4:168:tower-http = { version = "=0.7.1", features = ["add-extension", "fs", "catch-panic", "timeout", "compression-full"] }
 ASSERT ok   rust-lang/crates.io pins tower-http at exactly =0.7.1 in production, which is the practice evidence for recommending the 0.7 line over the owner reference's 0.6
 
 --- I. practice evidence: who activates the cors feature, and on what CI ---
@@ -214,5 +223,5 @@ ASSERT ok   4 of those 8 were nonetheless closed, which is the second figure
 ASSERT ok   at least one of the 8 was opened before the fetched comment page's window, so its silence is unproven rather than measured — a limit the decision states
 
 === RESULT ===
-PASS=54 FAIL=0 SKIP=0 TOTAL=54
+PASS=56 FAIL=0 SKIP=0 TOTAL=56
 RESULT: PASS

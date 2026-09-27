@@ -1,0 +1,58 @@
+=== R51 reproduction record
+date-utc: 2026-09-27T01:10:29Z
+grep:     grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+
+--- r51-registries.sh: fresh run against the committed r51-registries.log
+fresh exit code: 0
+fresh    SUMMARY: PASS=32 FAIL=0 SKIP=0 TOTAL=32
+committed SUMMARY: PASS=32 FAIL=0 SKIP=0 TOTAL=32
+RESULT r51-registries: identical outside the volatile classes
+volatile lines, committed then fresh:
+  c: date-utc: 2026-09-27T00:48:25Z
+  c: PASS  D3c — cc-debian13 publishes 6156 tags
+  c: PASS  D5e — cargo-chef recent_downloads 1036172, downloads 4360576 (adoption is real; the gate is not about it)
+  c: gh-call-1-utc: 2026-09-27T00:48:33Z
+  c: gh-call-2-utc: 2026-09-27T00:48:54Z
+  c: gh-call-2b-utc: 2026-09-27T00:49:16Z
+  c: gh-call-3-utc: 2026-09-27T00:49:37Z
+  f: date-utc: 2026-09-27T01:10:29Z
+  f: PASS  D3c — cc-debian13 publishes 6156 tags
+  f: PASS  D5e — cargo-chef recent_downloads 1036172, downloads 4360576 (adoption is real; the gate is not about it)
+  f: gh-call-1-utc: 2026-09-27T01:10:36Z
+  f: gh-call-2-utc: 2026-09-27T01:10:57Z
+  f: gh-call-2b-utc: 2026-09-27T01:11:19Z
+  f: gh-call-3-utc: 2026-09-27T01:11:41Z
+
+--- r51-sources.sh: fresh run against the committed r51-sources.log
+fresh exit code: 0
+fresh    SUMMARY: PASS=132 FAIL=0 SKIP=0 TOTAL=132
+committed SUMMARY: PASS=132 FAIL=0 SKIP=0 TOTAL=132
+RESULT r51-sources: identical outside the volatile classes
+volatile lines, committed then fresh:
+  c: date-utc: 2026-09-27T01:10:23Z
+  c: PASS  S6c — the recursive search reaches 11 files (S6a/S6b's zeros are not vacuous)
+  c: override-scan-files: 156
+  c: override-numbers-in-use: OVERRIDE (OV-01) OVERRIDE (OV-02) OVERRIDE (OV-03) OVERRIDE (OV-04) OVERRIDE (OV-05) OVERRIDE (OV-07) OVERRIDE (OV-09) OVERRIDE (OV-10) OVERRIDE (OV-11) OVERRIDE (OV-13) OVERRIDE (OV-14) OVERRIDE (OV-16) OVERRIDE (OV-17) 
+  c: PASS  S9c — the scan covered 156 decision and port files
+  f: date-utc: 2026-09-27T01:11:42Z
+  f: PASS  S6c — the recursive search reaches 11 files (S6a/S6b's zeros are not vacuous)
+  f: override-scan-files: 156
+  f: override-numbers-in-use: OVERRIDE (OV-01) OVERRIDE (OV-02) OVERRIDE (OV-03) OVERRIDE (OV-04) OVERRIDE (OV-05) OVERRIDE (OV-07) OVERRIDE (OV-09) OVERRIDE (OV-10) OVERRIDE (OV-11) OVERRIDE (OV-13) OVERRIDE (OV-14) OVERRIDE (OV-16) OVERRIDE (OV-17) 
+  f: PASS  S9c — the scan covered 156 decision and port files
+
+--- r51-container.log (revision 2) against r51-container.r1.log (revision 1)
+r51-container.log: SUMMARY: PASS=54 FAIL=0 SKIP=0 TOTAL=54  docker:   29.8.0
+r51-container.r1.log: SUMMARY: PASS=54 FAIL=0 SKIP=0 TOTAL=54  docker:   29.5.2
+RESULT container: the same check ids carry the same verdicts in both runs
+measured lines, revision 1 then revision 2:
+  measured-binary-size	1271048	1271368
+  measured-disk-usage-debian-slim	-	166539349
+  measured-disk-usage-main	-	57769769
+  measured-size-busybox-delta	813471	812604
+  measured-size-debian-slim	40163283	36869229
+  measured-size-main	12312852	12302310
+  measured-size-noprobe	11499381	11489706
+  measured-wall-incremental-no-mounts	28s	17s
+  measured-wall-incremental-with-mounts	15s	10s
+
+reproduction-exit: 0

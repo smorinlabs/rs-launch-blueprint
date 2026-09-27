@@ -1,0 +1,76 @@
+typos-cli 1.50.3
+2.4.2
+== T1 identifier case: fn recieve_porjects(ans: u32)
+    error: `recieve` should be `receive`
+      ╭▸ src/lib.rs:1:8
+      │
+    1 │ pub fn recieve_porjects(ans: u32) -> u32 {
+      ╰╴       ━━━━━━━
+    error: `porjects` should be `projects`
+      ╭▸ src/lib.rs:1:16
+      │
+    1 │ pub fn recieve_porjects(ans: u32) -> u32 {
+      ╰╴               ━━━━━━━━
+PASS T1-typos (exit=2, expected nonzero)
+-- codespell on the same file (exit and findings recorded; raw/opus.md: 'ans' flagged, 'recieve' missed)
+src/lib.rs:1: ans ==> and
+src/lib.rs:2: ans ==> and
+    codespell exit=65
+    codespell does NOT report recieve
+    typos does NOT report ans
+== T2 a misspelling in a workflow comment under the hidden .github/ directory
+-- T2a no config: whole-tree walk
+    
+PASS T2a-walk-default (exit=0, expected zero)
+    files walked containing .github: 0
+-- T2b no config: explicit path (the hook form)
+    error: `recieve` should be `receive`
+      ╭▸ .github/workflows/ci.yml:2:3
+      │
+    2 │ # recieve the event
+      ╰╴  ━━━━━━━
+PASS T2b-explicit (exit=2, expected nonzero)
+-- T2c typos.toml with [files] ignore-hidden = false, extend-exclude = [".git/"]: whole-tree walk
+    error: `recieve` should be `receive`
+      ╭▸ ./.github/workflows/ci.yml:2:3
+      │
+    2 │ # recieve the event
+      ╰╴  ━━━━━━━
+PASS T2c-walk-configured (exit=2, expected nonzero)
+    files walked under .git/: 0
+== T3 an excluded path passed explicitly
+    error: `teh` should be `the`
+      ╭▸ vendor/third_party.txt:1:1
+      │
+    1 │ teh vendored text
+      ╰╴━━━
+PASS T3a-explicit-no-force (exit=2, expected nonzero)
+    
+PASS T3b-explicit-force-exclude (exit=0, expected zero)
+    
+PASS T3c-walk (exit=0, expected zero)
+== T4 a deliberate spelling allowed by extend-words
+    error: `porjects` should be `projects`
+      ╭▸ src/fixture.txt:1:14
+      │
+    1 │ did you mean porjects?
+      ╰╴             ━━━━━━━━
+PASS T4a-before (exit=2, expected nonzero)
+    
+PASS T4b-after (exit=0, expected zero)
+== T5 prose typo, both tools
+    error: `sentance` should be `sentence`
+      ╭▸ notes.md:1:6
+      │
+    1 │ This sentance has teh typo.
+      ╰╴     ━━━━━━━━
+    error: `teh` should be `the`
+      ╭▸ notes.md:1:19
+      │
+    1 │ This sentance has teh typo.
+      ╰╴                  ━━━
+PASS T5-typos (exit=2, expected nonzero)
+    notes.md:1: sentance ==> sentence
+    notes.md:1: teh ==> the
+PASS T5-codespell (exit=65, expected nonzero)
+TOTAL PASS=11 FAIL=0

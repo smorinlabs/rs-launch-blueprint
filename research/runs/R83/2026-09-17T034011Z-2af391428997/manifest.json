@@ -61,21 +61,78 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "actor": "controller-muse-spark",
+      "at": "2026-09-21T23:06:21Z",
+      "migration": {
+        "from": "codex",
+        "previous_input_hashes": {
+          "parameters": "8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb",
+          "parameters_semantic": "c044235605428a574e5648d2f67a704d6e1749c2a23dfde27416529befc02989",
+          "parameters_semantic_file": "7ebcbe65241cd395932f0df1d7060744546b0c9919b527fa8e6321bff5b73239",
+          "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+          "policy_item": "eec15b198d80571d6ebe8ecdb3e56245343eb7ce93a140b79fcee07e0b32b565",
+          "prerequisites": "cbe23dd082a1bcc88fa6e30eabae0e6da6c6230a6f853ba73aad4d77df0eeab6",
+          "prompt": "626b1db03628dc7d0f13c4041358d5f678f000b04ee82f925519c99f5ddb86fe",
+          "registry": "6b6887f96798af3588743b8727854606534eebfbbb5dc3062549638e6ebe91cb"
+        },
+        "previous_required_engines": [
+          "codex",
+          "opus"
+        ],
+        "previous_tier": "focused",
+        "reason": "muse bulk substitution (owner decision Q5.A 2026-09-21)",
+        "to": "muse"
+      },
+      "model": "muse-spark",
+      "state": "partial"
+    },
+    {
+      "actor": "research-muse-2026-09-17T034011Z-2af391428997",
+      "at": "2026-09-21T23:06:58Z",
+      "operation": {
+        "actor": "research-muse-2026-09-17T034011Z-2af391428997",
+        "at": "2026-09-21T23:06:58Z",
+        "model": "muse-spark",
+        "provider": "muse",
+        "request_id": "2c70e838ded84127bef9ddb00c07276e",
+        "state": "submitting"
+      },
+      "provider": "muse",
+      "state": "submitting"
+    },
+    {
+      "at": "2026-09-27T22:20:51Z",
+      "publication": {
+        "acceptance_sha256": "f990e7cb60bdcb9bda6f3f499509f0bb48905145016f9bd5a4aa15546e19a3da",
+        "decision_sha256": "90bc90e8254dea3be6046d95f0de6791b2005c3694d41a0ace01498d5ecbb209",
+        "transaction": "ab485fd54d884cdd9d7b8a72ed0f21cc"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
     "parameters": "8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb",
     "parameters_semantic": "c044235605428a574e5648d2f67a704d6e1749c2a23dfde27416529befc02989",
     "parameters_semantic_file": "7ebcbe65241cd395932f0df1d7060744546b0c9919b527fa8e6321bff5b73239",
-    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
-    "policy_item": "eec15b198d80571d6ebe8ecdb3e56245343eb7ce93a140b79fcee07e0b32b565",
+    "policy": "ed5042be86ee5cec4bba6c7fa330dc731addb026a67cca087b75ca7bc37bea6c",
+    "policy_item": "ec54b59f5b79c86131477cfd33238442b3b3224206260a94c40478a362c1df78",
     "prerequisites": "cbe23dd082a1bcc88fa6e30eabae0e6da6c6230a6f853ba73aad4d77df0eeab6",
-    "prompt": "626b1db03628dc7d0f13c4041358d5f678f000b04ee82f925519c99f5ddb86fe",
-    "registry": "6b6887f96798af3588743b8727854606534eebfbbb5dc3062549638e6ebe91cb"
+    "prompt": "ab853b01679b2c2c53c5c9d836781f23096a7036736a736e393db664816b6b49",
+    "registry": "e82053f11aed9fa4ae16f9a2026452670b43def56e36bea9bb9b808bb3c2102e"
   },
   "item": "R83",
   "model": "claude-fable-5-1",
   "operations": {
+    "muse": {
+      "actor": "research-muse-2026-09-17T034011Z-2af391428997",
+      "at": "2026-09-21T23:06:58Z",
+      "model": "muse-spark",
+      "provider": "muse",
+      "request_id": "2c70e838ded84127bef9ddb00c07276e",
+      "state": "submitting"
+    },
     "opus": {
       "actor": "research-opus-2026-09-17T034011Z-2af391428997",
       "actual_model": "claude-opus-5",
@@ -94,14 +151,19 @@
     }
   },
   "prompt_source": "research/topics/83-openapi-contract-fuzzing/prompts/openapi-contract-fuzzing.prompt.md",
+  "publication": {
+    "acceptance_sha256": "f990e7cb60bdcb9bda6f3f499509f0bb48905145016f9bd5a4aa15546e19a3da",
+    "decision_sha256": "90bc90e8254dea3be6046d95f0de6791b2005c3694d41a0ace01498d5ecbb209",
+    "transaction": "ab485fd54d884cdd9d7b8a72ed0f21cc"
+  },
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
-    "codex",
+    "muse",
     "opus"
   ],
   "run_id": "2026-09-17T034011Z-2af391428997",
   "schema_version": 1,
-  "state": "partial",
+  "state": "published",
   "tier": "focused",
-  "updated_at": "2026-09-19T00:29:25Z"
+  "updated_at": "2026-09-27T22:20:51Z"
 }

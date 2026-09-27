@@ -20,7 +20,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R14 | large-file-guard-strategy | bundle | py-only | DIVERGENT | — | [prompt](topics/14-large-file-guard-strategy/prompts/large-file-guard-strategy.prompt.md) | open |
 | R15 | template-drift-receipt-guard | pattern | py-only | DIVERGENT | — | [prompt](topics/15-template-drift-receipt-guard/prompts/template-drift-receipt-guard.prompt.md) | resolved |
 | R16 | codeql-config-customization | pattern | py-only | DIVERGENT | — | [prompt](topics/16-codeql-config-customization/prompts/codeql-config-customization.prompt.md) | resolved |
-| R17 | secret-scanning-ci-workflow | crate | py-only | DIVERGENT | — | [prompt](topics/17-secret-scanning-ci-workflow/prompts/secret-scanning-ci-workflow.prompt.md) | open |
+| R17 | secret-scanning-ci-workflow | crate | py-only | DIVERGENT | — | [prompt](topics/17-secret-scanning-ci-workflow/prompts/secret-scanning-ci-workflow.prompt.md) | resolved |
 | R18 | ai-assisted-review-workflows | bundle | py-only | DIVERGENT | — | [prompt](topics/18-ai-assisted-review-workflows/prompts/ai-assisted-review-workflows.prompt.md) | resolved |
 | R19 | dependabot-config-shape | bundle | different | DIVERGENT | — | [prompt](topics/19-dependabot-config-shape/prompts/dependabot-config-shape.prompt.md) | resolved |
 | R20 | third-party-action-pinning-policy | pattern | different | DIVERGENT | — | [prompt](topics/20-third-party-action-pinning-policy/prompts/third-party-action-pinning-policy.prompt.md) | resolved |
@@ -54,8 +54,8 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R49 | build-target-declaration | crate | same | COMMON → SUBSTITUTE | build-tool-output-shape | [prompt](topics/49-build-target-declaration/prompts/build-target-declaration.prompt.md) | resolved |
 | R50 | install-smoke-test | bundle | different | DIVERGENT | — | [prompt](topics/50-install-smoke-test/prompts/install-smoke-test.prompt.md) | open |
 | R51 | container-image | bundle | py-only | DIVERGENT | — | [prompt](topics/51-container-image/prompts/container-image.prompt.md) | open |
-| R52 | toml-crate | bundle | different | DIVERGENT | — | [prompt](topics/52-toml-crate/prompts/toml-crate.prompt.md) | open |
-| R53 | config-schema-validation | crate | different | DIVERGENT | — | [prompt](topics/53-config-schema-validation/prompts/config-schema-validation.prompt.md) | open |
+| R52 | toml-crate | bundle | different | DIVERGENT | — | [prompt](topics/52-toml-crate/prompts/toml-crate.prompt.md) | resolved |
+| R53 | config-schema-validation | crate | different | DIVERGENT | — | [prompt](topics/53-config-schema-validation/prompts/config-schema-validation.prompt.md) | resolved |
 | R54 | config-discovery-tiers | bundle | py-only | DIVERGENT | — | [prompt](topics/54-config-discovery-tiers/prompts/config-discovery-tiers.prompt.md) | open |
 | R55 | config-error-tolerance | bundle | different | DIVERGENT | — | [prompt](topics/55-config-error-tolerance/prompts/config-error-tolerance.prompt.md) | open |
 | R56 | config-secret-policy | bundle | different | DIVERGENT | — | [prompt](topics/56-config-secret-policy/prompts/config-secret-policy.prompt.md) | open |
@@ -71,7 +71,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R66 | output-format-surface | bundle | different | DIVERGENT | — | [prompt](topics/66-output-format-surface/prompts/output-format-surface.prompt.md) | resolved |
 | R67 | error-and-exit-code-contract | bundle | different | DIVERGENT | error-taxonomy-exit-codes | [prompt](topics/67-error-and-exit-code-contract/prompts/error-and-exit-code-contract.prompt.md) | resolved |
 | R68 | release-binary-artifacts | crate | different | DIVERGENT | — | [prompt](topics/68-release-binary-artifacts/prompts/release-binary-artifacts.prompt.md) | open |
-| R69 | web-framework-stack | bundle | py-only | DIVERGENT | web-extra-surface | [prompt](topics/69-web-framework-stack/prompts/web-framework-stack.prompt.md) | open |
+| R69 | web-framework-stack | bundle | py-only | DIVERGENT | web-extra-surface | [prompt](topics/69-web-framework-stack/prompts/web-framework-stack.prompt.md) | resolved |
 | R70 | http-problem-envelope | bundle | py-only | DIVERGENT | — | [prompt](topics/70-http-problem-envelope/prompts/http-problem-envelope.prompt.md) | open |
 | R71 | openapi-generation-pipeline | bundle | py-only | DIVERGENT | — | [prompt](topics/71-openapi-generation-pipeline/prompts/openapi-generation-pipeline.prompt.md) | open |
 | R72 | api-pagination | bundle | py-only | DIVERGENT | — | [prompt](topics/72-api-pagination/prompts/api-pagination.prompt.md) | open |

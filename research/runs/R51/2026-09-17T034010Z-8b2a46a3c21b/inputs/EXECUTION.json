@@ -2,6 +2,94 @@
   "schema_version": 1,
   "approved_on": "2026-09-04",
   "pilot": "R38",
+  "engine_overrides": {
+    "R02": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R03": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R05": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R24": [
+      "muse"
+    ],
+    "R51": [
+      "muse",
+      "opus"
+    ],
+    "R54": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R56": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R58": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R70": [
+      "muse",
+      "opus"
+    ],
+    "R72": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R73": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R74": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R76": [
+      "muse",
+      "opus"
+    ],
+    "R77": [
+      "muse",
+      "opus"
+    ],
+    "R79": [
+      "muse",
+      "opus"
+    ],
+    "R80": [
+      "muse",
+      "opus"
+    ],
+    "R83": [
+      "muse",
+      "opus"
+    ],
+    "R84": [
+      "muse",
+      "opus",
+      "doxa"
+    ],
+    "R86": [
+      "muse",
+      "opus",
+      "doxa"
+    ]
+  },
   "items": {
     "R01": {
       "tier": "deep",
@@ -16,7 +104,7 @@
     "R02": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -26,7 +114,7 @@
     "R03": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -45,7 +133,7 @@
     "R05": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -221,7 +309,7 @@
     "R24": {
       "tier": "light",
       "engines": [
-        "codex"
+        "muse"
       ],
       "evidence_checks": [
         "terra"
@@ -464,7 +552,7 @@
     "R51": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -491,7 +579,7 @@
     "R54": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -510,7 +598,7 @@
     "R56": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -529,7 +617,7 @@
     "R58": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -643,7 +731,7 @@
     "R70": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -662,7 +750,7 @@
     "R72": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -672,7 +760,7 @@
     "R73": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -682,7 +770,7 @@
     "R74": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -702,7 +790,7 @@
     "R76": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -711,7 +799,7 @@
     "R77": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -730,7 +818,7 @@
     "R79": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -739,7 +827,7 @@
     "R80": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -766,7 +854,7 @@
     "R83": {
       "tier": "focused",
       "engines": [
-        "codex",
+        "muse",
         "opus"
       ],
       "evidence_checks": [],
@@ -777,7 +865,7 @@
     "R84": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],
@@ -798,7 +886,7 @@
     "R86": {
       "tier": "deep",
       "engines": [
-        "codex",
+        "muse",
         "opus",
         "doxa"
       ],

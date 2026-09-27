@@ -1,2 +1,4 @@
 docs/port/OWNER-ACCEPTANCES.md
 docs/port/OWNER-REVIEW.md
+research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md
+research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md

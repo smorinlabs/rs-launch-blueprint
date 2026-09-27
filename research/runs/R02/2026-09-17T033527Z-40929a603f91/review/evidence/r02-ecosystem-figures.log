@@ -1,6 +1,7 @@
 
 === C0 environment ===
 retrieval date for every figure below: 2026-09-17
+VOLATILE (not asserted): this run fetched its payloads on 2026-09-27; the EF4 versions are asserted as of 2026-09-17
 curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
 Python 3.14.7
 gh authenticated: yes
@@ -13,7 +14,7 @@ PASS EF1d: crates.io serves a crate named boundary-rust (the Rust analyzer membe
 boundary-rust newest non-yanked (num created_at license): 0.27.0 2026-04-02T20:24:40.350514Z MIT OR Apache-2.0
 PASS EF1e: boundary-rust's newest non-yanked release and its licence
 PASS EF1f: published release count -- this is an actively released crate, not a stub == 30
-VOLATILE (not asserted), 2026-09-17: boundary recent_downloads=185 downloads=611 ; boundary-rust recent_downloads=262 downloads=916
+VOLATILE (not asserted), 2026-09-17: boundary recent_downloads=154 downloads=611 ; boundary-rust recent_downloads=231 downloads=926
 
 === 1g rebelopsio/boundary -- GET https://api.github.com/repos/<o>/<r> (2026-09-17) ===
 PASS EF1g: archived == False
@@ -33,8 +34,8 @@ cargo-deny newest non-yanked (num created_at license): 0.20.2 2026-07-09T17:58:0
 PASS EF2a: cargo-deny's newest non-yanked release is 0.20.2 -- the Opus figure, not gemini's 0.19.0 or perplexity's 0.18.3
 PASS EF2b: repository == https://github.com/EmbarkStudios/cargo-deny
 PASS EF2c: archived == False
-VOLATILE (not asserted), 2026-09-17: cargo-deny stars=2426 pushed_at=2026-09-03T18:06:48Z recent_downloads=1625668 downloads=5746345
-PASS EF2d: cargo-deny has 2426 stars, an order of magnitude above the 190 the gemini leg reported for what it labelled the "Actions repo"
+VOLATILE (not asserted), 2026-09-17: cargo-deny stars=2434 pushed_at=2026-09-18T11:59:03Z recent_downloads=1722876 downloads=5965251
+PASS EF2d: cargo-deny has 2434 stars, an order of magnitude above the 190 the gemini leg reported for what it labelled the "Actions repo"
 
 === 3 RustSec pages -- https://rustsec.org/packages/<name>.html (2026-09-17) ===
   cargo-deny -> HTTP 404
@@ -51,16 +52,16 @@ control: a package that DOES have a RustSec page must not also return 404
 PASS EF3-control: RustSec HTTP status for atty (positive control -- proves the 404s above are not a blanket failure) == 200
 
 === 4 crates named by the Doxa legs -- GET https://crates.io/api/v1/crates/<name> (2026-09-17) ===
-PASS EF4-cargo_metadata: newest version of cargo_metadata == 0.23.1
-  VOLATILE (not asserted), 2026-09-17: cargo_metadata recent_downloads=53323115 downloads=247070477
-PASS EF4-cargo-depgraph-check: newest version of cargo-depgraph-check == 0.1.0
-  VOLATILE (not asserted), 2026-09-17: cargo-depgraph-check recent_downloads=684 downloads=849
-PASS EF4-dep_graph_rs: newest version of dep_graph_rs == 0.2.0
-  VOLATILE (not asserted), 2026-09-17: dep_graph_rs recent_downloads=61 downloads=2055
-PASS EF4-hexser: newest version of hexser == 0.6.0
-  VOLATILE (not asserted), 2026-09-17: hexser recent_downloads=501 downloads=3960
-PASS EF4-guppy: newest version of guppy == 0.18.0
-  VOLATILE (not asserted), 2026-09-17: guppy recent_downloads=3764567 downloads=16383214
+PASS EF4-cargo_metadata: newest non-yanked version of cargo_metadata with created_at <= 2026-09-17T23:59:59Z == 0.23.1
+  VOLATILE (not asserted): cargo_metadata newest version today=0.23.1 recent_downloads=55636660 downloads=254164158
+PASS EF4-cargo-depgraph-check: newest non-yanked version of cargo-depgraph-check with created_at <= 2026-09-17T23:59:59Z == 0.1.0
+  VOLATILE (not asserted): cargo-depgraph-check newest version today=0.1.0 recent_downloads=792 downloads=960
+PASS EF4-dep_graph_rs: newest non-yanked version of dep_graph_rs with created_at <= 2026-09-17T23:59:59Z == 0.2.0
+  VOLATILE (not asserted): dep_graph_rs newest version today=0.2.0 recent_downloads=58 downloads=2058
+PASS EF4-hexser: newest non-yanked version of hexser with created_at <= 2026-09-17T23:59:59Z == 0.6.0
+  VOLATILE (not asserted): hexser newest version today=0.6.0 recent_downloads=887 downloads=4370
+PASS EF4-guppy: newest non-yanked version of guppy with created_at <= 2026-09-17T23:59:59Z == 0.18.0
+  VOLATILE (not asserted): guppy newest version today=0.19.1 recent_downloads=3913392 downloads=16828306
 
 === 5 registry values assumed by this decision ===
 - assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
@@ -73,10 +74,13 @@ PASS EF5c: the R69 clause this decision CONFLICTs with is present in the live re
 PASS EF5d: R49's clause that excludes an xtask boundary checker, quoted verbatim
 
 === 6 next free OVERRIDE number ===
-PASS EF6a: files claiming OV-03 outside this item (by /usr/bin/grep over docs/port, every published topic DECISION.md and every run review DECISION.md) == 0
-/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R61/2026-09-17T020714Z-98ef5e1e7d37/review/DECISION.md
-PASS EF6b: OV-02 is taken (1 file(s)), so the zero above is not a vacuous search
+FAIL EF6a: files claiming OV-03 outside this item (by /usr/bin/grep over docs/port, every published topic DECISION.md and every run review DECISION.md) -- wanted 0, got 4
+/tmp/r02-rev3-x/docs/port/OWNER-ACCEPTANCES.md
+/tmp/r02-rev3-x/research/runs/R61/2026-09-17T020714Z-98ef5e1e7d37/review/DECISION.md
+/tmp/r02-rev3-x/research/runs/R77/2026-09-17T034011Z-5884fd6b6366/review/DECISION.md
+/tmp/r02-rev3-x/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/DECISION.md
+PASS EF6b: OV-02 is taken (4 file(s)), so the zero above is not a vacuous search
 PASS EF6c: and R61's run decision is where OV-02 lives
 
 === SUMMARY ===
-CHECKS RUN: 35 FAILURES: 0 SKIPPED: 0
+CHECKS RUN: 35 FAILURES: 1 SKIPPED: 0

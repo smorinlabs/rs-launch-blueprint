@@ -1,0 +1,14 @@
+started_at=2026-09-27T19:34:14Z
+== reset scratch tools
+== shellcheck
+shellcheck: clean over 10 scripts
+r40-install.sh exit=0 TOTAL n/a (no assertions; last line: DONE)
+r40-ec.sh exit=0 TOTAL PASS=14 FAIL=0
+r40-yaml.sh exit=0 TOTAL PASS=19 FAIL=0
+r40-typos.sh exit=0 TOTAL PASS=11 FAIL=0
+r40-actionlint.sh exit=0 TOTAL PASS=17 FAIL=0
+r40-insta.sh exit=0 TOTAL PASS=8 FAIL=0
+r40-compose.sh exit=0 TOTAL PASS=19 FAIL=0
+r40-figures.sh exit=0 TOTAL n/a (no assertions; last line: DONE)
+r40-citations.sh exit=0 TOTAL PASS=104 FAIL=0
+finished_at=2026-09-27T19:36:31Z

@@ -1,0 +1,55 @@
+== E4 figures — retrieved 2026-09-27T03:58:01Z (UTC)
+CRATE tower-http recent_downloads=155129876 downloads=479026426
+CRATE tower-http newest_non_yanked=0.7.1 created_at=2026-08-31T14:49:25.697237Z license=MIT rust_version=1.65
+CRATE tracing recent_downloads=198651206 downloads=877269566
+CRATE tracing newest_non_yanked=0.1.44 created_at=2025-12-18T14:26:12.360139Z license=MIT rust_version=1.65.0
+CRATE uuid recent_downloads=191550501 downloads=829299521
+CRATE uuid newest_non_yanked=1.26.1 created_at=2026-09-10T00:30:44.938530Z license=Apache-2.0 OR MIT rust_version=1.85.0
+CRATE tower recent_downloads=178757718 downloads=687830161
+CRATE tower newest_non_yanked=0.5.3 created_at=2026-01-12T18:43:05.227461Z license=MIT rust_version=1.64.0
+CRATE tower-helmet recent_downloads=1689 downloads=29225
+CRATE tower-helmet newest_non_yanked=0.3.0 created_at=2024-01-29T20:27:29.186052Z license=MIT rust_version=null
+CRATE axum-helmet recent_downloads=25465 downloads=79665
+CRATE axum-helmet newest_non_yanked=1.0.2 created_at=2026-05-26T15:43:07.045540Z license=MIT rust_version=null
+CRATE helmet-core recent_downloads=27724 downloads=86648
+CRATE helmet-core newest_non_yanked=1.0.1 created_at=2026-05-26T15:42:20.955239Z license=MIT rust_version=null
+CRATE tower-request-id recent_downloads=132590 downloads=864121
+CRATE tower-request-id newest_non_yanked=0.3.0 created_at=2023-12-02T10:41:35.897182Z license=MIT rust_version=null
+REPO tower-rs/tower-http stars=918 archived=false pushed_at=2026-09-26T12:33:00Z
+REPO tower-rs/tower-http open_issues_search_total=32
+REPO tokio-rs/tracing stars=6891 archived=false pushed_at=2026-05-30T06:42:00Z
+REPO tokio-rs/tracing open_issues_search_total=628
+REPO uuid-rs/uuid stars=1247 archived=false pushed_at=2026-09-10T00:29:36Z
+REPO uuid-rs/uuid open_issues_search_total=10
+REPO tower-rs/tower stars=4302 archived=false pushed_at=2026-06-22T13:58:59Z
+REPO tower-rs/tower open_issues_search_total=69
+ISSUE tower-rs/tower-http #741 opened=2026-09-25T08:48:00Z state=open first_maintainer_response_days=none
+ISSUE tower-rs/tower-http #740 opened=2026-09-22T08:34:32Z state=open first_maintainer_response_days=none
+ISSUE tower-rs/tower-http #737 opened=2026-09-16T12:15:33Z state=open first_maintainer_response_days=none
+ISSUE tower-rs/tower-http #736 opened=2026-09-15T04:15:22Z state=closed first_maintainer_response_days=none
+ISSUE tower-rs/tower-http #732 opened=2026-09-01T00:37:34Z state=open first_maintainer_response_days=none
+ISSUE tower-rs/tower-http #731 opened=2026-08-31T17:27:45Z state=open first_maintainer_response_days=none
+ISSUE tower-rs/tower-http #725 opened=2026-08-16T16:56:03Z state=closed first_maintainer_response_days=none
+ISSUE tower-rs/tower-http #713 opened=2026-07-15T19:07:22Z state=closed first_maintainer_response_days=0
+ISSUE tower-rs/tower-http #702 opened=2026-05-30T14:47:50Z state=closed first_maintainer_response_days=0.2
+ISSUE tower-rs/tower-http #701 opened=2026-05-30T14:47:47Z state=open first_maintainer_response_days=none
+RESPONSIVENESS tower-rs/tower-http answered=2 unanswered=8 median_days=0.1
+ISSUE tokio-rs/tracing #3613 opened=2026-09-16T17:32:52Z state=open first_maintainer_response_days=none
+ISSUE tokio-rs/tracing #3612 opened=2026-09-16T13:34:15Z state=open first_maintainer_response_days=none
+ISSUE tokio-rs/tracing #3611 opened=2026-09-15T11:16:39Z state=open first_maintainer_response_days=none
+ISSUE tokio-rs/tracing #3607 opened=2026-09-08T06:34:59Z state=open first_maintainer_response_days=none
+ISSUE tokio-rs/tracing #3601 opened=2026-08-19T00:18:54Z state=open first_maintainer_response_days=none
+ISSUE tokio-rs/tracing #3599 opened=2026-08-16T14:01:54Z state=open first_maintainer_response_days=none
+ISSUE tokio-rs/tracing #3597 opened=2026-08-13T23:59:15Z state=open first_maintainer_response_days=none
+ISSUE tokio-rs/tracing #3595 opened=2026-08-11T13:11:52Z state=open first_maintainer_response_days=none
+ISSUE tokio-rs/tracing #3593 opened=2026-08-09T10:54:58Z state=open first_maintainer_response_days=none
+ISSUE tokio-rs/tracing #3587 opened=2026-07-31T07:16:26Z state=open first_maintainer_response_days=none
+RESPONSIVENESS tokio-rs/tracing answered=0 unanswered=10 median_days=n/a
+RUSTSEC tower-http http=200 advisories=[RUSTSEC-2021-0135 RUSTSEC-2022-0043]
+ADVISORY RUSTSEC-2021-0135 package=tower-http Patched &#62;=0.2.1 &#62;=0.1.3, &#60;0.2.0  withdrawn_mentions=2
+ADVISORY RUSTSEC-2022-0043 package=tower-http Patched &#62;=0.2.1 &#62;=0.1.3, &#60;0.2.0  withdrawn_mentions=0
+RUSTSEC tracing http=200 advisories=[RUSTSEC-2023-0078]
+ADVISORY RUSTSEC-2023-0078 package=tracing Patched &#62;=0.1.40  withdrawn_mentions=0
+RUSTSEC uuid http=404 advisories=[]
+RUSTSEC tower http=404 advisories=[]
+== end
