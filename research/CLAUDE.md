@@ -14,9 +14,9 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R08 | workflow-permission-hardening | bundle | different | DIVERGENT | — | [prompt](topics/08-workflow-permission-hardening/prompts/workflow-permission-hardening.prompt.md) | open |
 | R09 | self-hosted-runner-indirection | bundle | py-only | DIVERGENT | — | [prompt](topics/09-self-hosted-runner-indirection/prompts/self-hosted-runner-indirection.prompt.md) | open |
 | R10 | dependency-cache-action | crate | same | COMMON → SUBSTITUTE | — | [prompt](topics/10-dependency-cache-action/prompts/dependency-cache-action.prompt.md) | open |
-| R11 | ci-workflow-job-structure | bundle | py-only | DIVERGENT | ci-job-structure | [prompt](topics/11-ci-workflow-job-structure/prompts/ci-workflow-job-structure.prompt.md) | open |
+| R11 | ci-workflow-job-structure | bundle | py-only | DIVERGENT | ci-job-structure | [prompt](topics/11-ci-workflow-job-structure/prompts/ci-workflow-job-structure.prompt.md) | resolved |
 | R12 | aggregate-required-status-check | pattern | py-only | DIVERGENT | — | [prompt](topics/12-aggregate-required-status-check/prompts/aggregate-required-status-check.prompt.md) | open |
-| R13 | dependency-vulnerability-scanning | bundle | py-only | DIVERGENT | — | [prompt](topics/13-dependency-vulnerability-scanning/prompts/dependency-vulnerability-scanning.prompt.md) | open |
+| R13 | dependency-vulnerability-scanning | bundle | py-only | DIVERGENT | — | [prompt](topics/13-dependency-vulnerability-scanning/prompts/dependency-vulnerability-scanning.prompt.md) | resolved |
 | R14 | large-file-guard-strategy | bundle | py-only | DIVERGENT | — | [prompt](topics/14-large-file-guard-strategy/prompts/large-file-guard-strategy.prompt.md) | open |
 | R15 | template-drift-receipt-guard | pattern | py-only | DIVERGENT | — | [prompt](topics/15-template-drift-receipt-guard/prompts/template-drift-receipt-guard.prompt.md) | resolved |
 | R16 | codeql-config-customization | pattern | py-only | DIVERGENT | — | [prompt](topics/16-codeql-config-customization/prompts/codeql-config-customization.prompt.md) | resolved |
@@ -57,14 +57,14 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R52 | toml-crate | bundle | different | DIVERGENT | — | [prompt](topics/52-toml-crate/prompts/toml-crate.prompt.md) | resolved |
 | R53 | config-schema-validation | crate | different | DIVERGENT | — | [prompt](topics/53-config-schema-validation/prompts/config-schema-validation.prompt.md) | resolved |
 | R54 | config-discovery-tiers | bundle | py-only | DIVERGENT | — | [prompt](topics/54-config-discovery-tiers/prompts/config-discovery-tiers.prompt.md) | open |
-| R55 | config-error-tolerance | bundle | different | DIVERGENT | — | [prompt](topics/55-config-error-tolerance/prompts/config-error-tolerance.prompt.md) | open |
+| R55 | config-error-tolerance | bundle | different | DIVERGENT | — | [prompt](topics/55-config-error-tolerance/prompts/config-error-tolerance.prompt.md) | resolved |
 | R56 | config-secret-policy | bundle | different | DIVERGENT | — | [prompt](topics/56-config-secret-policy/prompts/config-secret-policy.prompt.md) | open |
-| R57 | xdg-directory-set | pattern | py-only | DIVERGENT | — | [prompt](topics/57-xdg-directory-set/prompts/xdg-directory-set.prompt.md) | open |
+| R57 | xdg-directory-set | pattern | py-only | DIVERGENT | — | [prompt](topics/57-xdg-directory-set/prompts/xdg-directory-set.prompt.md) | resolved |
 | R58 | logging-pipeline-architecture | bundle | py-only | DIVERGENT | logging-pipeline-contract | [prompt](topics/58-logging-pipeline-architecture/prompts/logging-pipeline-architecture.prompt.md) | open |
 | R59 | file-log-sink | bundle | py-only | DIVERGENT | — | [prompt](topics/59-file-log-sink/prompts/file-log-sink.prompt.md) | open |
 | R60 | cli-parsing-framework | bundle | different | DIVERGENT | — | [prompt](topics/60-cli-parsing-framework/prompts/cli-parsing-framework.prompt.md) | resolved |
 | R61 | interactive-prompts | bundle | py-only | DIVERGENT | — | [prompt](topics/61-interactive-prompts/prompts/interactive-prompts.prompt.md) | open |
-| R62 | clipboard-integration | bundle | ts-only | DIVERGENT | — | [prompt](topics/62-clipboard-integration/prompts/clipboard-integration.prompt.md) | open |
+| R62 | clipboard-integration | bundle | ts-only | DIVERGENT | — | [prompt](topics/62-clipboard-integration/prompts/clipboard-integration.prompt.md) | resolved |
 | R63 | progress-spinner | crate | ts-only | DIVERGENT | — | [prompt](topics/63-progress-spinner/prompts/progress-spinner.prompt.md) | resolved |
 | R64 | pager-integration | bundle | py-only | DIVERGENT | — | [prompt](topics/64-pager-integration/prompts/pager-integration.prompt.md) | resolved |
 | R65 | color-enablement-chain | bundle | different | DIVERGENT | — | [prompt](topics/65-color-enablement-chain/prompts/color-enablement-chain.prompt.md) | resolved |
@@ -74,7 +74,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R69 | web-framework-stack | bundle | py-only | DIVERGENT | web-extra-surface | [prompt](topics/69-web-framework-stack/prompts/web-framework-stack.prompt.md) | resolved |
 | R70 | http-problem-envelope | bundle | py-only | DIVERGENT | — | [prompt](topics/70-http-problem-envelope/prompts/http-problem-envelope.prompt.md) | open |
 | R71 | openapi-generation-pipeline | bundle | py-only | DIVERGENT | — | [prompt](topics/71-openapi-generation-pipeline/prompts/openapi-generation-pipeline.prompt.md) | open |
-| R72 | api-pagination | bundle | py-only | DIVERGENT | — | [prompt](topics/72-api-pagination/prompts/api-pagination.prompt.md) | open |
+| R72 | api-pagination | bundle | py-only | DIVERGENT | — | [prompt](topics/72-api-pagination/prompts/api-pagination.prompt.md) | resolved |
 | R73 | idempotency-middleware | bundle | py-only | DIVERGENT | — | [prompt](topics/73-idempotency-middleware/prompts/idempotency-middleware.prompt.md) | open |
 | R74 | rate-limiting-middleware | bundle | py-only | DIVERGENT | — | [prompt](topics/74-rate-limiting-middleware/prompts/rate-limiting-middleware.prompt.md) | open |
 | R75 | http-middleware-stack | bundle | py-only | DIVERGENT | — | [prompt](topics/75-http-middleware-stack/prompts/http-middleware-stack.prompt.md) | open |
