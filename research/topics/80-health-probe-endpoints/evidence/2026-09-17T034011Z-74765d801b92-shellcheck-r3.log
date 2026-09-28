@@ -1,0 +1,1 @@
+shellcheck: clean (exit 0, no findings) for check-offline.sh, check-probe.sh, check-live.sh, check-standard-r2.sh, check-standard-r3.sh — revision 3, 2026-09-18. Revisions 1 and 2's shellcheck.log and shellcheck-r2.log are unchanged; their digests are asserted by check R6.

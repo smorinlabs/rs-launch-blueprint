@@ -1,4 +1,12 @@
 {
+  "R01": {
+    "acceptance": "74f520128e313e5964582b99a23d2f43c05234fbd722f0ce2755563d44f22f10",
+    "decision": "44bf9ae9f55060ed56256dbad4d9a0814b3bd63112602dabe932acb7bfb12d82"
+  },
+  "R49": {
+    "acceptance": "3295e8a00001ad2b215be272e630a0d65a3668abfa68115c09282d2301f23157",
+    "decision": "86b7f925ef89ac682ea00bb0b6fea8a809c1abc712d9e0e0ced8e5082990d948"
+  },
   "R69": {
     "acceptance": "48a7dce8ff07a17296ab5ac30369fe6bf02074c6adfe5d44a6c8fdf84e197338",
     "decision": "d4507f5b2ca4201d9837caf013de16f30070cb3e2f5558eb66f7ded9dfd2c10d"
