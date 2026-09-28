@@ -7,22 +7,54 @@
       "actor": "controller-fable-5-1",
       "at": "2026-09-26T19:02:03Z",
       "state": "ready"
+    },
+    {
+      "actor": "s1-controller",
+      "at": "2026-09-28T02:57:00Z",
+      "migration": {
+        "previous_input_hashes": {
+          "parameters": "85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa",
+          "parameters_semantic": "e3fdc2b0f6f0b9f47b364042cc2f730b0806cd3292555bf083d968af77db3e82",
+          "parameters_semantic_file": "15e7e98ec46a110e555959e48c1b87e042f43397d6264a5d82ae17b848b231cd",
+          "policy": "2a3ca15597691bfc55f211b97c09f342c242532d378482ffba2c5d1df742fd58",
+          "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+          "prerequisites": "63a5620cfc9d15f77870d405f34fadf5be1a5f7fe0b0b6ffcfbee2590ce864b8",
+          "prompt": "17bd44fa75b5156c4e36689dc9ebb2d23d9997ca8e0d3135d213946c7d2e43c7",
+          "registry": "6b86e81ab06093bf1fced2b6bc79d157cc7ce86ce07f6827d6390339ab8d1f0c"
+        },
+        "reason": "Q23 batch-3 re-freeze: live-prompt drift; DECISION bytes unchanged"
+      },
+      "state": "ready"
+    },
+    {
+      "at": "2026-09-28T02:57:26Z",
+      "publication": {
+        "acceptance_sha256": "1cf5de62372ad1be5d970d143c57b755cceeae93a16d01eec339e31fb492d38b",
+        "decision_sha256": "869284d4243ef74f9d2a88d524098ea91bdff83df9075877b352debf6c039fdb",
+        "transaction": "a582b48b96a1402e9cec0cc920307308"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
     "parameters": "85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa",
     "parameters_semantic": "e3fdc2b0f6f0b9f47b364042cc2f730b0806cd3292555bf083d968af77db3e82",
     "parameters_semantic_file": "15e7e98ec46a110e555959e48c1b87e042f43397d6264a5d82ae17b848b231cd",
-    "policy": "2a3ca15597691bfc55f211b97c09f342c242532d378482ffba2c5d1df742fd58",
-    "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+    "policy": "fd746cb86e545023aed589b9d0c4db7125673a62849181ac898db56a5fa3545c",
+    "policy_item": "0f765bdaf1b9f40e1a3e04984d6213c8508fb87b63c9ed425a5f393ef16f2631",
     "prerequisites": "63a5620cfc9d15f77870d405f34fadf5be1a5f7fe0b0b6ffcfbee2590ce864b8",
-    "prompt": "17bd44fa75b5156c4e36689dc9ebb2d23d9997ca8e0d3135d213946c7d2e43c7",
-    "registry": "6b86e81ab06093bf1fced2b6bc79d157cc7ce86ce07f6827d6390339ab8d1f0c"
+    "prompt": "a105db60dc9d2a1d8529eaea01e745e2215ad4252b83c303622f2e2a9a480147",
+    "registry": "a7f2e55722518f0bf645940a8aa882385ccc563f73dd1d3639e65396884b87c9"
   },
   "item": "R31",
   "model": "claude-fable-5-1",
   "operations": {},
   "prompt_source": "research/topics/31-standalone-security-analyzer/prompts/standalone-security-analyzer.prompt.md",
+  "publication": {
+    "acceptance_sha256": "1cf5de62372ad1be5d970d143c57b755cceeae93a16d01eec339e31fb492d38b",
+    "decision_sha256": "869284d4243ef74f9d2a88d524098ea91bdff83df9075877b352debf6c039fdb",
+    "transaction": "a582b48b96a1402e9cec0cc920307308"
+  },
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
     "codex",
@@ -30,7 +62,7 @@
   ],
   "run_id": "2026-09-26T190203Z-5d8d6465da5a",
   "schema_version": 1,
-  "state": "ready",
+  "state": "published",
   "tier": "focused",
-  "updated_at": "2026-09-26T19:02:03Z"
+  "updated_at": "2026-09-28T02:57:26Z"
 }

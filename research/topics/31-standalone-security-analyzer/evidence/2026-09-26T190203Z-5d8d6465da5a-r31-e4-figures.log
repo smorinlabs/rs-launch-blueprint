@@ -1,0 +1,71 @@
+# R31 E4 — live figures — retrieved 2026-09-27T01:49:47Z
+# curl 8.7.1; gh 2.101.0
+
+## E4.1 crates.io
+
+### GET https://crates.io/api/v1/crates/ast-grep (+ /versions)
+crate.recent_downloads = 38223
+crate.downloads = 655883
+crate.repository = https://github.com/ast-grep/ast-grep
+newest non-yanked: num = 0.45.3 ; created_at = 2026-08-31T01:40:29.505185Z ; rust_version = 1.88.0 ; license = MIT
+
+### GET https://crates.io/api/v1/crates/cargo-geiger (+ /versions)
+crate.recent_downloads = 53508
+crate.downloads = 243879
+crate.repository = https://github.com/rust-secure-code/cargo-geiger
+newest non-yanked: num = 0.13.0 ; created_at = 2025-08-31T08:40:31.637036Z ; rust_version = 1.85 ; license = Apache-2.0 OR MIT
+
+## E4.2 RustSec advisory pages (HTTP status)
+GET https://rustsec.org/packages/ast-grep.html -> 404
+GET https://rustsec.org/packages/ast-grep-core.html -> 404
+GET https://rustsec.org/packages/cargo-geiger.html -> 404
+GET https://rustsec.org/packages/tokio.html -> 200
+(tokio is the control: a 200 there shows a 404 means 'no advisory page', not a transport failure)
+
+## E4.3 GitHub REST
+### GET /repos/ast-grep/ast-grep
+stargazers_count = 16053; archived = false; pushed_at = 2026-09-25T15:23:54Z; license = MIT
+### GET /search/issues?q=repo:ast-grep/ast-grep+is:issue+is:open
+total_count = 47
+### GET /repos/ast-grep/ast-grep/releases/tags/0.45.3 (Linux and macOS asset names)
+published_at = 2026-08-31T01:42:23Z
+app-aarch64-apple-darwin.zip
+app-aarch64-unknown-linux-gnu.zip
+app-x86_64-apple-darwin.zip
+app-x86_64-unknown-linux-gnu.zip
+### GET /repos/ast-grep/ast-grep/contents/crates/cli/Cargo.toml (binary names; binstall metadata)
+19:[[bin]]
+20-name = "ast-grep"
+21-path = "src/main.rs"
+--
+23:[[bin]]
+24-name = "sg"
+25-path = "src/bin/alias.rs"
+package.metadata.binstall: present
+### GET /repos/qdrant/qdrant/contents/.github/workflows/rust-lint.yml (ast-grep lines)
+18:    runs-on: ubuntu-latest
+49:  ast-grep:
+51:    runs-on: ubuntu-latest
+57:    - name: Install ast-grep
+58:      run: uv tool install ast-grep-cli==0.44.1
+59:    - name: Test ast-grep rules (tools/ast-grep/rule-tests)
+60:      run: sg test --config tools/ast-grep/sgconfig.yml --skip-snapshot-tests
+61:    - name: Check ast-grep rules (tools/ast-grep/rules)
+62:      run: sg scan --config tools/ast-grep/sgconfig.yml
+### GET /repos/semgrep/semgrep-rules/contents/rust/lang/security (rule files)
+rule files = 10: args-os.yml, args.yml, current-exe.yml, insecure-hashes.yml, reqwest-accept-invalid.yml, reqwest-set-sensitive.yml, rustls-dangerous.yml, ssl-verify-none.yml, temp-dir.yml, unsafe-usage.yml
+### GET /repos/opengrep/opengrep-rules
+archived = true; pushed_at = 2025-11-28T13:17:29Z
+### GET /repos/coderabbitai/ast-grep-essentials
+archived = true; pushed_at = 2026-06-03T18:52:15Z
+### GET /repos/sslab-gatech/Rudra
+archived = true; pushed_at = 2026-04-02T14:32:14Z
+### GET /repos/facebookexperimental/MIRAI
+archived = true; pushed_at = 2024-08-22T01:00:21Z
+### GET /repos/geiger-rs/cargo-geiger/issues/539
+state = open; created_at = 2025-04-11T11:20:51Z; title = cargo-geiger does not detect use of  `unsafe_code = "forbid"` in `Cargo.toml`
+### GET /repos/trailofbits/dylint/contents/examples/general/rust-toolchain.toml
+[toolchain]
+channel = "nightly-2026-08-20"
+components = ["llvm-tools-preview", "rustc-dev"]
+# end of E4

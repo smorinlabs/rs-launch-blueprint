@@ -1,0 +1,65 @@
+# R31 E6 — SQL API signatures — retrieved 2026-09-27T19:28:11Z
+
+newest stable: sqlx 0.9.0; sqlx-core 0.9.0; rusqlite 0.40.2; diesel 2.3.13
+
+## sqlx-core 0.9.0: registry 05b44e85bf579a8eeb4ceaa77a3a523baf2bf0e9bac7e40f405d537b5d2d5ccb 2026-05-21T17:33:20.890999Z yanked=False
+OK    sha256(.crate) == version.checksum
+    sqlx-core-0.9.0/src/query.rs: pub fn query<'a, DB>(sql: impl SqlSafeStr) -> Query<'a, DB, <DB as Database>::Arguments>
+OK    sqlx-core-0.9.0/src/query.rs:653-653
+    sqlx-core-0.9.0/src/query_as.rs: pub fn query_as<'q, DB, O>(sql: impl SqlSafeStr) -> QueryAs<'q, DB, O, <DB as Database>::Arguments>
+OK    sqlx-core-0.9.0/src/query_as.rs:341-341
+    sqlx-core-0.9.0/src/query_scalar.rs: pub fn query_scalar<'q, DB, O>(
+    sqlx-core-0.9.0/src/query_scalar.rs:     sql: impl SqlSafeStr,
+OK    sqlx-core-0.9.0/src/query_scalar.rs:322-323
+    sqlx-core-0.9.0/src/raw_sql.rs: pub fn raw_sql(sql: impl SqlSafeStr) -> RawSql {
+OK    sqlx-core-0.9.0/src/raw_sql.rs:119-119
+    sqlx-core-0.9.0/src/sql_str.rs: /// This is designed to act as a speed bump against naively using `format!()` to add dynamic data
+OK    sqlx-core-0.9.0/src/sql_str.rs:23-23
+    sqlx-core-0.9.0/src/sql_str.rs: To bypass this error, manually audit for potential injection vulnerabilities and wrap with `AssertSqlSafe()`.
+OK    sqlx-core-0.9.0/src/sql_str.rs:43-43
+    sqlx-core-0.9.0/src/sql_str.rs: pub trait SqlSafeStr {
+    sqlx-core-0.9.0/src/sql_str.rs:     /// Convert `self` to a [`SqlStr`].
+    sqlx-core-0.9.0/src/sql_str.rs:     fn into_sql_str(self) -> SqlStr;
+    sqlx-core-0.9.0/src/sql_str.rs: }
+    sqlx-core-0.9.0/src/sql_str.rs: 
+    sqlx-core-0.9.0/src/sql_str.rs: impl SqlSafeStr for &'static str {
+    sqlx-core-0.9.0/src/sql_str.rs:     #[inline]
+    sqlx-core-0.9.0/src/sql_str.rs:     fn into_sql_str(self) -> SqlStr {
+    sqlx-core-0.9.0/src/sql_str.rs:         SqlStr(Repr::Static(self))
+    sqlx-core-0.9.0/src/sql_str.rs:     }
+OK    sqlx-core-0.9.0/src/sql_str.rs:47-56
+    sqlx-core-0.9.0/src/sql_str.rs: pub struct AssertSqlSafe<T>(pub T);
+    sqlx-core-0.9.0/src/sql_str.rs: 
+    sqlx-core-0.9.0/src/sql_str.rs: /// Note: copies the string.
+    sqlx-core-0.9.0/src/sql_str.rs: ///
+    sqlx-core-0.9.0/src/sql_str.rs: /// It is recommended to pass one of the supported owned string types instead.
+    sqlx-core-0.9.0/src/sql_str.rs: impl SqlSafeStr for AssertSqlSafe<&str> {
+    sqlx-core-0.9.0/src/sql_str.rs:     #[inline]
+    sqlx-core-0.9.0/src/sql_str.rs:     fn into_sql_str(self) -> SqlStr {
+OK    sqlx-core-0.9.0/src/sql_str.rs:74-81
+    sqlx-core-0.9.0/src/sql_str.rs: impl SqlSafeStr for AssertSqlSafe<String> {
+OK    sqlx-core-0.9.0/src/sql_str.rs:85-85
+    sqlx-core-0.9.0/src/executor.rs: impl<DB: Database, T> Execute<'_, DB> for T
+    sqlx-core-0.9.0/src/executor.rs: where
+    sqlx-core-0.9.0/src/executor.rs:     T: SqlSafeStr + Send,
+    sqlx-core-0.9.0/src/executor.rs: {
+OK    sqlx-core-0.9.0/src/executor.rs:236-239
+
+## sqlx 0.9.0: registry 378620ccc25c62c89d8be1c819e76a88d59bdcc3304733330788948e619bfd71 2026-05-21T17:35:53.403466Z yanked=False
+OK    sha256(.crate) == version.checksum
+    sqlx-0.9.0/src/lib.rs: pub use sqlx_core::query::{query, query_with};
+OK    sqlx-0.9.0/src/lib.rs:25-25
+    sqlx-0.9.0/src/lib.rs: pub use sqlx_core::sql_str::{AssertSqlSafe, SqlSafeStr, SqlStr};
+OK    sqlx-0.9.0/src/lib.rs:33-33
+
+## rusqlite 0.40.2: registry 23f2a97da3e3873c73cb2a2e71b35c40ff95e0b1eefa8d72d8499a6928c3b5b3 2026-08-08T14:21:52.570893Z yanked=False
+OK    sha256(.crate) == version.checksum
+    rusqlite-0.40.2/src/lib.rs:     pub fn execute<P: Params>(&self, sql: &str, params: P) -> Result<usize> {
+OK    rusqlite-0.40.2/src/lib.rs:620-620
+
+## diesel 2.3.13: registry e3b934ddbdcb2abb9f9fc9c30bd47bcc5618b615eea1d334cda5fdf8ff9b072a 2026-09-04T14:51:08.196268Z yanked=False
+OK    sha256(.crate) == version.checksum
+    diesel-2.3.13/src/query_builder/functions.rs: pub fn sql_query<T: Into<String>>(query: T) -> SqlQuery {
+OK    diesel-2.3.13/src/query_builder/functions.rs:614-614
+
+## result: 0 failure(s)

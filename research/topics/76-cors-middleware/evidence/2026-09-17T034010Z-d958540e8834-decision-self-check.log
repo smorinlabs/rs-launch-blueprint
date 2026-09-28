@@ -1,0 +1,137 @@
+=== R76 decision self-check ===
+date(UTC): 2026-09-27T19:35:29Z
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+decision:  /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R76/2026-09-17T034010Z-d958540e8834/review/DECISION.md
+decision sha256: c732bf24633eb386db07c186324af00a74c7d43f9932e4327c519a37aa40d641
+raw:       /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R76/2026-09-17T034010Z-d958540e8834/raw/opus.md
+registry:  /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/PARAMETERS.md
+
+--- A. the document's shape, which the revision rules fix exactly ---
+H1: # 2026-09-27 — R76 — cors-middleware (crate, Focused) — decision (revision 4)
+ASSERT ok   the H1 is the date-first form the revision rules require, naming the item, kind, tier and revision
+H2 headings: ## Decision|## Parameters|## Empirical check|## Engines|
+ASSERT ok   the four required H2 sections appear exactly once each, in the required order, and no other H2 was added
+ASSERT ok   no Supersedes section heading: revision 3 reverses nothing, so the rules say it must not carry one
+ASSERT ok   the Decision section carries its one required H3 heading, exactly once
+ASSERT ok   and one OVERRIDE (OV-08) heading, the written R4.17 preflight deviation, exactly once
+trigger line at 755; Parameters heading at 757
+ASSERT ok   exactly one line begins with the re-verify marker, which is the rule
+ASSERT ok   and it is the closing line of the Decision section rather than floating elsewhere in the document
+ASSERT ok   that line carries a dated horizon as well as its event triggers
+
+--- B. the parameter lines, compared byte-for-byte with the live registry ---
+registry rows extracted: 6
+assumes lines in the decision: 6
+ASSERT ok   every '- assumes' line is byte-identical to its docs/port/PARAMETERS.md row, in the same order — the comparison the packaging validator performs
+ASSERT ok   the decision records exactly six assumed parameters: the four owner-fixed ones plus the two researched values the design rests on
+ASSERT ok   no '- owns' line: the prompt's Couplings block carries an empty '- owns:' and the registry names no R76-owned row, so inventing one would be a registry edit
+ASSERT ok   no CONFLICT: line, which matches the decision's own statement that no consumed parameter has to change
+ASSERT ok   the rust-edition line carries its value bare, with no backticks, citation or commentary after the '= '
+ASSERT ok   and so does target-os-matrix
+
+--- C. the licence gate: recorded with the exact string, and no residue elsewhere ---
+ASSERT ok   gate 1 is recorded with the required 'inapplicable — owner ruling 2026-09-12 (Q7.B)' string rather than deleted
+ASSERT ok   and the string is completed by 'not evaluated for any dependency or tool', so the row states the ruling in full
+lines containing 'licen' (case-insensitive) = 4; enumerated:
+  182:1. **Licence — `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is
+  184:   `docs/port/OWNER-REVIEW.md`, section *"2026-09-12 — no licence check for anything the
+  774:- assumes license = MIT OR Apache-2.0
+  798:it is also why no Windows behaviour was exercised. `license` is recorded and, per the
+ASSERT ok   exactly four lines mention a licence: the two that carry the inapplicable string and its source, the bare '- assumes license' registry line, and the prose that says the parameter is recorded and evaluated against nothing — no candidate is selected or excluded on a licence ground anywhere
+ASSERT ok   the decision contains no 'MulanPSL' reasoning, which the owner ruling struck
+ASSERT ok   the decision contains no 'copyleft' reasoning, which the owner ruling struck
+ASSERT ok   the decision contains no 'AGPL' reasoning, which the owner ruling struck
+ASSERT ok   the decision contains no 'patent grant' reasoning, which the owner ruling struck
+ASSERT ok   the decision contains no 'licence-compatible' reasoning, which the owner ruling struck
+ASSERT ok   the decision contains no 'license-compatible' reasoning, which the owner ruling struck
+
+--- D. no personal address anywhere in this run's review directory ---
+files containing an email-shaped token: (none)
+ASSERT ok   no file under review/ contains an email-shaped token: the scripts identify themselves with the repository URL instead
+
+--- E. the engine record matches the artifacts it names ---
+sha256(raw/muse.md) = 31be2e15e942401a98031416eef2d7ab2043ddae1a343016c929b87ba88c67c5
+ASSERT ok   raw/muse.md hashes to the value the decision's ## Engines section cites
+ASSERT ok   and that hash appears in the decision, so the citation is checkable without leaving the document
+  errors=0
+ASSERT ok   validate_answer_text(raw/muse.md, 'crate') reports no shape error: all fifteen H3 fields, in order, each with a body
+sha256(raw/opus.md) = c2792a6957df5b84fcb6438f2f14312fcae8bbd801055e07f1235e63333a5cf4
+ASSERT ok   raw/opus.md hashes to the value the decision's ## Engines section cites
+ASSERT ok   and that hash appears in the decision, so the citation is checkable without leaving the document
+  errors=0
+ASSERT ok   validate_answer_text(raw/opus.md, 'crate') reports no shape error: all fifteen H3 fields, in order, each with a body
+ASSERT ok   the decision states the required engine set, muse and opus, in so many words
+ASSERT ok   and names its authority: the policy's engine_overrides entry, the Q5.A migration and the Q9.B ruling
+ASSERT ok   and it no longer claims to be synthesized from a single engine
+
+--- F. every figure the decision quotes from a sibling log is in that log ---
+ASSERT ok   the binary-size cost of the dependency: probe-checks.log prints it as '= +166464 bytes' and the decision quotes it as '+166,464 B'
+ASSERT ok   the stripped size without the dependency: probe-checks.log prints it as 'arm=without: 502264 bytes' and the decision quotes it as '502,264 → 668,728 bytes'
+ASSERT ok   the stripped size with the dependency: probe-checks.log prints it as 'arm=with: 668728 bytes' and the decision quotes it as '502,264 → 668,728 bytes'
+ASSERT ok   the preflight short-circuit, measured from the handler's side: probe-checks.log prints it as 'handler_hits=0' and the decision quotes it as 'handler_hits=0'
+ASSERT ok   the max-age default imported from py and compiled in this run: probe-checks.log prints it as 'access-control-max-age=600' and the decision quotes it as 'access-control-max-age: 600'
+ASSERT ok   the dependency-tree delta: probe-checks.log prints it as 'resolved packages: with the tower-http line 57, without it 55' and the decision quotes it as '**57** packages against **55**'
+ASSERT ok   the maximum declared rust-version in the locked tree: probe-checks.log prints it as 'resolved dependency tree = 1.85 (hyper-util), under the committed lockfile' and the decision quotes it as '**1.85 (`hyper-util`'
+ASSERT ok   tower-http 0.7.1's publication timestamp: registry-figures.log prints it as '2026-08-31T14:49:25.697237Z' and the decision quotes it as '2026-08-31T14:49:25.697237Z'
+ASSERT ok   tower-http 0.7.0's publication timestamp: registry-figures.log prints it as '2026-06-15T14:01:18.432430Z' and the decision quotes it as '2026-06-15T14:01:18.432430Z'
+ASSERT ok   the 90-day download figure: registry-figures.log prints it as '(90-day) = 155482963' and the decision quotes it as '155,482,963'
+ASSERT ok   the all-time download figure: registry-figures.log prints it as '(all-time)      = 479378847' and the decision quotes it as '479,378,847'
+ASSERT ok   the size of the enumerated cors category: registry-figures.log prints it as 'meta.total = 36' and the decision quotes it as '**36**'
+ASSERT ok   the q=cors name-match count: registry-figures.log prints it as 'q=cors meta.total = 1476' and the decision quotes it as '**1,476**'
+ASSERT ok   tower-http's star count: registry-figures.log prints it as 'stargazers_count = 918' and the decision quotes it as '**918** stars'
+ASSERT ok   tower-http's pushed_at: registry-figures.log prints it as 'pushed_at = 2026-09-26T12:33:00Z' and the decision quotes it as '2026-09-26T12:33:00Z'
+ASSERT ok   tower-http's open issues by search total_count: registry-figures.log prints it as 'the field the prompt requires) = 32' and the decision quotes it as '**32** open issues'
+ASSERT ok   the open_issues_count deliberately not used: registry-figures.log prints it as 'open_issues_count = 40' and the decision quotes it as 'reads **40**'
+ASSERT ok   the rust-lang/crates.io pin, by commit and line: registry-figures.log prints it as 'Cargo.toml@765bbf478827f421a93ea2634997b2b4f55c87f4:168:tower-http = { version = "=0.7.1"' and the decision quotes it as 'Cargo.toml@765bbf478827f421a93ea2634997b2b4f55c87f4:168'
+ASSERT ok   tower-http's reverse-dependency count: muse-adjudication.log prints it as 'tower-http reverse_dependencies meta.total = 3532' and the decision quotes it as '**3,532**'
+ASSERT ok   actix-cors's reverse-dependency count: muse-adjudication.log prints it as 'actix-cors reverse_dependencies meta.total = 214' and the decision quotes it as '214 reverse dependencies'
+ASSERT ok   actix-cors's 90-day downloads: muse-adjudication.log prints it as '(90-day) = 2914000; crate.downloads (all-time) = 21295772' and the decision quotes it as '**2,914,000**'
+ASSERT ok   actix-cors's all-time downloads: muse-adjudication.log prints it as '(90-day) = 2914000; crate.downloads (all-time) = 21295772' and the decision quotes it as '**21,295,772**'
+ASSERT ok   actix-cors's tree MSRV: muse-adjudication.log prints it as 'maximum declared rust-version = 1.88.0 (time-macros)' and the decision quotes it as '1.88.0 (`time-macros`)'
+ASSERT ok   actix-extras's star count: muse-adjudication.log prints it as 'actix/actix-extras: stargazers_count = 890' and the decision quotes it as '**890**'
+ASSERT ok   loco's star count: muse-adjudication.log prints it as 'loco-rs/loco: stargazers_count = 9267' and the decision quotes it as '9,267 stars'
+ASSERT ok   console's star count: muse-adjudication.log prints it as 'tokio-rs/console: stargazers_count = 4604' and the decision quotes it as '4,604 stars'
+ASSERT ok   the rubric-window responsiveness figures: muse-adjudication.log prints it as 'rubric_window answered=2 unanswered=8 closed_unanswered=2' and the decision quotes it as '**two** carry a maintainer comment'
+ASSERT ok   the median over the answered subset: muse-adjudication.log prints it as 'median_answered_h=2.30' and the decision quotes it as '**2.30 h**'
+ASSERT ok   the Muse-window responsiveness figures: muse-adjudication.log prints it as 'muse_window answered=0 unanswered=4' and the decision quotes it as '0 of 4'
+ASSERT ok   rocket_cors's last push: muse-adjudication.log prints it as 'pushed_at = 2023-11-20T00:42:55Z' and the decision quotes it as '2023-11-20T00:42:55Z'
+ASSERT ok   the 0.7.0-to-0.7.1 cors source comparison: muse-adjudication.log prints it as 'files differing under src/cors between 0.7.0 and 0.7.1 = 0' and the decision quotes it as 'byte-identical in the published 0.7.0 and 0.7.1'
+ASSERT ok   registry-figures.log ends in RESULT: PASS, so the decision is citing a passing run
+ASSERT ok   registry-figures.log records no ASSERT FAIL line
+ASSERT ok   probe-checks.log ends in RESULT: PASS, so the decision is citing a passing run
+ASSERT ok   probe-checks.log records no ASSERT FAIL line
+ASSERT ok   muse-adjudication.log ends in RESULT: PASS, so the decision is citing a passing run
+ASSERT ok   muse-adjudication.log records no ASSERT FAIL line
+
+--- G. every path:line citation in the decision resolves ---
+  ok   external tower-http-0.7.1/Cargo.toml:161-161
+  ok   external tower-http-0.7.1/src/cors/mod.rs:728-729
+  ok   external tower-http-0.7.1/src/cors/mod.rs:820-820
+  ok   local    docs/port/COMMONALITY.md:326-326 (file has 368 lines)
+  ok   local    docs/port/README.md:71-71 (file has 110 lines)
+  ok   external tower-http-0.7.1/src/cors/mod.rs:715-715
+  ok   local    inputs/owner-reference-axum-companion-stack-2026-09-16.md:141-141 (file has 435 lines)
+  ok   external Cargo.toml:170-170
+  ok   external tower-http-0.7.1/src/lib.rs:200-200
+  ok   external src/services/fs/serve_dir/tests.rs:1246-1246
+  ok   external mod.rs:728-729
+  ok   external axum-0.8.9/src/routing/method_routing.rs:1168-1174
+  ok   external axum-0.8.9/src/routing/route.rs:180-182
+  ok   py       src/py_launch_blueprint/web/app.py:136-136 at b08bccfb (file has 243 lines)
+  ok   py       src/py_launch_blueprint/web/settings.py:60-62 at b08bccfb (file has 76 lines)
+  ok   py       docs/adr/0013-web-service-best-practices.md:40-41 at b08bccfb (file has 86 lines)
+  ok   local    docs/port/areas/web-service.md:100-100 (file has 100 lines)
+  ok   local    inputs/owner-reference-axum-companion-stack-2026-09-16.md:36-36 (file has 435 lines)
+  ok   external console-subscriber/Cargo.toml:65-65
+  ok   external Cargo.toml:31-31
+  ok   external examples/cors/Cargo.toml:10-10
+  ok   external actix-cors-0.7.2/src/lib.rs:53-53
+  ok   external mod.rs:715-715
+  SUMMARY local=5 py=3 external=15 unresolved=0
+ASSERT ok   every path:line citation resolves: each local file exists with at least the cited line, each py-launch-blueprint path exists at pin b08bccfb, and each other path is a named published-artifact path another script reads
+ASSERT ok   and the local set is non-empty, so the check exercised the repository and not only the allowlist
+ASSERT ok   the prose citation of R69 revision 10's '- owns web-extra-surface' line at line 1791 resolves to that line
+
+=== RESULT ===
+PASS=73 FAIL=0 SKIP=0 TOTAL=73
+RESULT: PASS

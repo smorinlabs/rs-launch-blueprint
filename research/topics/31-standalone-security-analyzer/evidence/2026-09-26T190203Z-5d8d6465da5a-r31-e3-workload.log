@@ -1,0 +1,30 @@
+# R31 E3 — scan cost and exclusions on tokio 1.53.1 — 2026-09-27T19:25:51Z
+# host: Darwin 25.4.0 arm64; macOS 26.4; Apple M4 Pro; 14 logical CPUs
+# ast-grep: ast-grep 0.45.3
+
+## fetch
+GET https://crates.io/api/v1/crates/tokio/1.53.1 -> version.checksum = 202caea871b69668250d242070849eb495be178ed697a3e98aebce5bc81a0bed
+GET https://crates.io/api/v1/crates/tokio/1.53.1/download -> 200 https://static.crates.io/crates/tokio/tokio-1.53.1.crate
+sha256(tokio.crate) = 202caea871b69668250d242070849eb495be178ed697a3e98aebce5bc81a0bed
+checksum: match
+
+## E3.1 workload size
+.rs files: 555; lines: 139608
+# extracted config digest (sha256 over the sorted extracted files): ce58fbb0ed03a11e44eecd90a9dff695717a12703426d0ee78d84504fe3c1a60
+scannedFileCount per --inspect summary: 555
+
+## E3.2 full-tree scan time, 5 repetitions (JSON output discarded; warm cache after run 1)
+run 1: real 0.07 user 0.60 sys 0.04 
+run 2: real 0.07 user 0.63 sys 0.06 
+run 3: real 0.07 user 0.64 sys 0.04 
+run 4: real 0.07 user 0.63 sys 0.04 
+run 5: real 0.07 user 0.64 sys 0.04 
+
+## E3.3a findings, recommended rules (ignores active)
+total 0
+
+## E3.3b findings, same rules with the ignores stripped
+total 7
+  rs-shell-invocation tests/ 7
+(pipeline exit 1 — ast-grep exits 1 whenever error-severity findings exist, with or without --error)
+# end of E3

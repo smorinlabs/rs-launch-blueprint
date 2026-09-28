@@ -7,17 +7,35 @@
       "actor": "controller-fable-5-1",
       "at": "2026-09-26T19:03:05Z",
       "state": "ready"
+    },
+    {
+      "actor": "s1-controller",
+      "at": "2026-09-28T02:57:00Z",
+      "migration": {
+        "previous_input_hashes": {
+          "parameters": "85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa",
+          "parameters_semantic": "958f6eefb210d3add79b959502ceccee076e4aff1b1a2e402b1e731d92c4f053",
+          "parameters_semantic_file": "802224b53a3ce9cdb4db267c47e1154af8a1ef46f8ea2011f1f5e7e1c4c4fde3",
+          "policy": "2a3ca15597691bfc55f211b97c09f342c242532d378482ffba2c5d1df742fd58",
+          "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+          "prerequisites": "53d3a5998471639122b86271263ea8d2042977f985d6be7c077d187ad496ff13",
+          "prompt": "a8b034e97c652a676386926dfea025de37806e158068908323f77bf366d74265",
+          "registry": "6b86e81ab06093bf1fced2b6bc79d157cc7ce86ce07f6827d6390339ab8d1f0c"
+        },
+        "reason": "Q23 batch-3 re-freeze: live-prompt drift; DECISION bytes unchanged"
+      },
+      "state": "ready"
     }
   ],
   "input_hashes": {
     "parameters": "85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa",
     "parameters_semantic": "958f6eefb210d3add79b959502ceccee076e4aff1b1a2e402b1e731d92c4f053",
     "parameters_semantic_file": "802224b53a3ce9cdb4db267c47e1154af8a1ef46f8ea2011f1f5e7e1c4c4fde3",
-    "policy": "2a3ca15597691bfc55f211b97c09f342c242532d378482ffba2c5d1df742fd58",
-    "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+    "policy": "fd746cb86e545023aed589b9d0c4db7125673a62849181ac898db56a5fa3545c",
+    "policy_item": "2e5cc5b0da04a866a7d4888d0070674dbe08eb74d464c36f9c929e2b842b9a92",
     "prerequisites": "53d3a5998471639122b86271263ea8d2042977f985d6be7c077d187ad496ff13",
-    "prompt": "a8b034e97c652a676386926dfea025de37806e158068908323f77bf366d74265",
-    "registry": "6b86e81ab06093bf1fced2b6bc79d157cc7ce86ce07f6827d6390339ab8d1f0c"
+    "prompt": "6203e4bf6cca1cc68955c84832d83fdad91f32b20a827ac649ba5abc3f8a37ec",
+    "registry": "a7f2e55722518f0bf645940a8aa882385ccc563f73dd1d3639e65396884b87c9"
   },
   "item": "R75",
   "model": "claude-fable-5-1",
@@ -33,5 +51,5 @@
   "schema_version": 1,
   "state": "ready",
   "tier": "deep",
-  "updated_at": "2026-09-26T19:03:05Z"
+  "updated_at": "2026-09-28T02:57:00Z"
 }

@@ -1,0 +1,215 @@
+=== R76 revision 2: REST API Design Standard conformance ===
+date(UTC): 2026-09-27T19:35:30Z
+grep:  grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+cargo: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+standard repo:   /Users/stevemorin/c/rest-standards
+standard commit: 0850d43e45d919ef5e37f7174c4212b46013c49f
+standard blob:   71bd813c1cf61286586b4ee41ed83ff065e5c8d9
+decision read:   review/DECISION.md sha256 c732bf24633eb386db07c186324af00a74c7d43f9932e4327c519a37aa40d641
+
+--- A. the pinned artifact: is this the document the ruling names? ---
+BLOB  type=blob size=190161 lines=3427
+BLOB  sha256(extracted bytes) = 4d3ea4e898f79a358e16e8ddadcb9b4a5b3726032d1f36c00fb73311c4e79958
+ASSERT ok   the blob is 190,161 bytes, so an auditor is reading the same object the decision quotes
+ASSERT ok   and 3,427 lines, so every line number quoted below addresses this text and not a later edit
+ASSERT ok   its first line names the document
+ASSERT ok   and it declares version 2.0.0, the version owner ruling W2-REST binds
+BLOB  occurrences of this blob in commit 0850d43e45d919ef5e37f7174c4212b46013c49f's tree = 1
+ASSERT ok   the blob is reachable from the commit the ruling names, so the two identifiers agree
+
+--- B. every rule touching CORS, cross-origin access, browser clients, allowed origins, or the security and deployment profile, quoted at its line ---
+BLOB  R1.6 @ line 229:
+        **R1.6** Rules that only make sense for APIs with a given capability are
+ASSERT ok   R1.6 stands at line 229 of the pinned blob with the bytes the decision quotes
+BLOB  R1.6-vocab @ line 237:
+        The switch vocabulary: `webhooks` · `async-operations` · `bulk-operations` ·
+ASSERT ok   R1.6-vocab stands at line 237 of the pinned blob with the bytes the decision quotes
+BLOB  R1.6-audience @ line 241:
+        handling, client audience — belong in the conformance note's free text, not
+ASSERT ok   R1.6-audience stands at line 241 of the pinned blob with the bytes the decision quotes
+BLOB  R1.7 @ line 271:
+        **R1.7 — No silent deviation.** An API deviates from this standard only in
+ASSERT ok   R1.7 stands at line 271 of the pinned blob with the bytes the decision quotes
+BLOB  R1.10-request-id @ line 348:
+        | `request-id` | Response | Correlation ID, emitted on every response including errors. Lowercase name; RFC 6648 deprecates new `X-` prefixed fields, ruling out `X-Request-Id` | Addendum A2.4, completing `OP-018` `[POLICY]` |
+ASSERT ok   R1.10-request-id stands at line 348 of the pinned blob with the bytes the decision quotes
+BLOB  R1.10-allow @ line 351:
+        | `Allow` | Response | Mandatory on every `405 Method Not Allowed` | Addendum A3 · protocol requirement (RFC 9110) |
+ASSERT ok   R1.10-allow stands at line 351 of the pinned blob with the bytes the decision quotes
+BLOB  R4.10 @ line 846:
+        **R4.10** The default media type — served when a request carries no
+ASSERT ok   R4.10 stands at line 846 of the pinned blob with the bytes the decision quotes
+BLOB  R4.11 @ line 856:
+        **R4.11** Every response whose content was selected by a request header
+ASSERT ok   R4.11 stands at line 856 of the pinned blob with the bytes the decision quotes
+BLOB  R4.17 @ line 864:
+        **R4.17** Where an API serves cross-origin browser clients, every
+ASSERT ok   R4.17 stands at line 864 of the pinned blob with the bytes the decision quotes
+BLOB  R4.17-cont @ line 868:
+        response header in use — in `Access-Control-Expose-Headers`. None of
+ASSERT ok   R4.17-cont stands at line 868 of the pinned blob with the bytes the decision quotes
+BLOB  R5.11 @ line 1008:
+        **R5.11** `405 Method Not Allowed` MUST carry an `Allow` header.
+ASSERT ok   R5.11 stands at line 1008 of the pinned blob with the bytes the decision quotes
+BLOB  R8.1 @ line 1317:
+        **R8.1** APIs MUST be served only over TLS 1.2 or higher, preferring 1.3;
+ASSERT ok   R8.1 stands at line 1317 of the pinned blob with the bytes the decision quotes
+BLOB  R8.2 @ line 1323:
+        **R8.2** Access tokens MUST NOT be accepted or emitted in URI query
+ASSERT ok   R8.2 stands at line 1323 of the pinned blob with the bytes the decision quotes
+BLOB  R8.10 @ line 1387:
+        **R8.10** Each axis below carries a ratified default and named
+ASSERT ok   R8.10 stands at line 1387 of the pinned blob with the bytes the decision quotes
+BLOB  R8.11 @ line 1414:
+        **R8.11** Caller-supplied URLs (webhook targets, callbacks) MUST be
+ASSERT ok   R8.11 stands at line 1414 of the pinned blob with the bytes the decision quotes
+BLOB  R11.7 @ line 1752:
+        **R11.7** Every response, including errors, MUST carry the `request-id`
+ASSERT ok   R11.7 stands at line 1752 of the pinned blob with the bytes the decision quotes
+BLOB  AppA-R4.17 @ line 2696:
+        | R4.17 | Cross-origin browser clients: standard-bound headers listed in `Access-Control-Expose-Headers` |
+ASSERT ok   AppA-R4.17 stands at line 2696 of the pinned blob with the bytes the decision quotes
+
+BLOB  R4.17's full sentence, which fixes what must be listed:
+        **R4.17** Where an API serves cross-origin browser clients, every
+        response MUST list the standard-bound response headers it emits — among
+        `request-id`, `ETag`, `Location`, `Retry-After`, `RateLimit`,
+        `RateLimit-Policy`, `Deprecation`, `Sunset`, and any other §1.10
+        response header in use — in `Access-Control-Expose-Headers`. None of
+        those fields is CORS-safelisted, so without this header a cross-origin
+        browser client cannot read them at all. (Numbered out of prose order
+        per R1.2.)
+ASSERT ok   R4.17 names Access-Control-Expose-Headers as the mechanism, so the obligation is on that header and not on a general 'expose things' principle
+ASSERT ok   and it enumerates the standard-bound headers, request-id among them, so the list is not left to taste
+
+BLOB  the applicability-switch vocabulary, which decides whether a CLI-first template can scope CORS away:
+        The switch vocabulary: `webhooks` · `async-operations` · `bulk-operations` ·
+        `streaming`. Every switch controls at least one rule; the vocabulary grows
+        only when a new rule needs a switch, so a declaration never exists that
+        waives nothing. Capability facts with no rule attached — tenancy model, PII
+        handling, client audience — belong in the conformance note's free text, not
+        here.
+        
+        occurrences of cors, origin or browser in the switch vocabulary = 0
+ASSERT ok   the switch vocabulary is webhooks, async-operations, bulk-operations and streaming only: NO switch scopes CORS, so a CLI-first template cannot declare these rules N/A by switch
+ASSERT ok   and R1.6 puts client audience in the conformance note's free text explicitly, which is the opposite of making it a switch
+
+BLOB  the five deployment-profile axes named by R8.10:
+        | Sender-constrained tokens | Bearer over TLS + short TTL + audience restriction + refresh-token rot
+        | Token format | Opaque on the public wire; phantom-token pattern where a gateway exists; a client-v
+        | Rate-limit aggressiveness | Multi-dimensional tiered posture, published: per-principal sustained +
+        | Replay window | 300 s past / 60 s future, asymmetric + mandatory dedup cache held at least the pas
+        | Object-level authorization | Centralized decision, in-handler enforcement (R8.6) | Relationship-de
+        
+        occurrences of cors, cross-origin or allowed origin in the axis table = 0
+ASSERT ok   no axis of the deployment profile is a CORS axis, so this item flips none of the five and R8.10 is engaged only as a hand-off
+
+--- C. the conformance claims, measured ---
+LOCK  snapshots/rest-probe.Cargo.lock sha256 = 804dc21cdf484c21ec984b275dba111372019dacaf50d10a67100b79fac2c554
+  CHECK X1 status=200 OK headers={access-control-allow-origin=https://app.example, access-control-expose-headers=request-id,allow,retry-after,ratelimit, content-length=2, content-type=text/plain; charset=utf-8, vary=origin}
+  CHECK X2 status=200 OK headers={access-control-allow-origin=https://app.example, content-length=2, content-type=text/plain; charset=utf-8, vary=origin}
+  CHECK X3 status=200 OK headers={access-control-allow-origin=https://app.example, access-control-expose-headers=*, content-length=2, content-type=text/plain; charset=utf-8, vary=origin}
+  CHECK X4 status=200 OK headers={access-control-allow-headers=*, access-control-allow-methods=*, access-control-allow-origin=https://app.example, access-control-max-age=600, allow=GET,HEAD, content-length=0, vary=origin}
+  CHECK X5 status=405 Method Not Allowed headers={allow=GET,HEAD, content-length=0}
+  CHECK X6 status=200 OK headers={access-control-allow-headers=*, access-control-allow-methods=*, access-control-allow-origin=https://app.example, access-control-max-age=600, allow=GET,HEAD, content-length=0, vary=origin}
+  CHECK X7 status=200 OK headers={access-control-allow-headers=*, access-control-allow-methods=*, access-control-allow-origin=https://app.example, access-control-max-age=600, allow=GET,HEAD, content-length=0, request-id=req_probe, vary=origin}
+  CHECK X8 status=200 OK headers={content-length=2, content-type=text/plain; charset=utf-8}
+  CHECK X9 status=200 OK headers={access-control-expose-headers=request-id,allow,retry-after,ratelimit, content-length=2, content-type=text/plain; charset=utf-8, vary=origin}
+  CHECK X10 status=200 OK headers={access-control-allow-headers=*, access-control-allow-methods=*, access-control-allow-origin=https://app.example, access-control-expose-headers=request-id,allow,retry-after,ratelimit, access-control-max-age=600, allow=GET,HEAD, content-length=0, request-id=req_probe, vary=origin}
+  CHECK X11 status=200 OK headers={access-control-allow-origin=https://app.example, access-control-expose-headers=request-id,allow,retry-after,ratelimit, content-length=2, content-type=text/plain; charset=utf-8, request-id=req_probe, vary=origin}
+ASSERT ok   R4.17 CONFORMS under revision 2: an explicit expose list reaches the browser client as access-control-expose-headers naming each standard-bound header
+ASSERT ok   R4.17 was VIOLATED by revision 1: with no expose list configured the response carries no access-control-expose-headers at all, so a cross-origin browser client could not read request-id — this measurement is why the recommendation moved
+ASSERT ok   and the wildcard form emits a bare '*', which lists no header name, so it does not satisfy R4.17's instruction to LIST the headers emitted
+ASSERT ok   R4.17 is NOT MET on a preflight response: the preflight 200 carries allow — a section-1.10 response header — and no access-control-expose-headers, because tower-http applies the expose list only to non-preflight responses; revision 3 records this as OVERRIDE (OV-08)
+ASSERT ok   R5.11 CONFORMS: with the allowlist empty the layer is absent and OPTIONS on a GET-only route answers 405 carrying Allow, which is the header R5.11 makes mandatory
+ASSERT ok   R11.7 is VIOLATED when the request-id layer sits inside CorsLayer: the preflight short-circuits and the 200 carries no request-id
+ASSERT ok   R11.7 CONFORMS when it sits outside: the same preflight then carries request-id — the ordering constraint this item hands to R75, now required by a rule rather than only by py's precedent
+ASSERT ok   and under that required order the preflight carries request-id AND allow with no access-control-expose-headers — the second half of the R4.17 gap OVERRIDE (OV-08) records
+ASSERT ok   R4.11 CONFORMS with the allowlist empty: no layer, no negotiation, and correspondingly no Vary, which is R4.11's own stated exception
+ASSERT ok   R4.11 CONFORMS with the allowlist configured: Origin influenced the selection of access-control-allow-origin, which is withheld here for a disallowed origin, and Vary names it
+ASSERT ok   R4.10 is not engaged by the preflight: that 200 carries content-length 0 and no content-type, so no representation was selected and no media-type negotiation arises
+ASSERT ok   OV-08 option 2 is real and measured: an outermost axum from_fn stamp puts the expose list on the preflight, and that list names both allow and request-id, the two section-1.10 headers the preflight carries, with no new crate or feature
+ASSERT ok   and it leaves actual responses as CorsLayer already makes them: one expose header, not a duplicate
+PINNED axum-0.8.9/src/routing/method_routing.rs:1168-1174 (the method router's fallback path):
+                let future = fallback.clone().call_with_state(req, state);
+        
+                match allow_header {
+                    AllowHeader::None => future.allow_header(Bytes::new()),
+                    AllowHeader::Skip => future,
+                    AllowHeader::Bytes(allow_header) => future.allow_header(allow_header.clone().freeze()),
+                }
+PINNED axum-0.8.9/src/routing/route.rs:180-182:
+                Some(allow_header) if !headers.contains_key(header::ALLOW) => {
+                    headers.insert(
+                        header::ALLOW,
+ASSERT ok   the allow header on the preflight is axum's, not tower-http's: an OPTIONS request on a GET-only route takes the method router's fallback, which Router::layer wraps in CorsLayer, and axum then adds Allow to whatever that fallback returned
+
+--- D. the decision records each rule's disposition in writing (R1.7) ---
+ASSERT ok   the decision names R1.6 and states its disposition, so no rule this run quoted is left silent — which R1.7 makes the difference between an exemption and nonconformance
+ASSERT ok   the decision names R1.7 and states its disposition, so no rule this run quoted is left silent — which R1.7 makes the difference between an exemption and nonconformance
+ASSERT ok   the decision names R4.10 and states its disposition, so no rule this run quoted is left silent — which R1.7 makes the difference between an exemption and nonconformance
+ASSERT ok   the decision names R4.11 and states its disposition, so no rule this run quoted is left silent — which R1.7 makes the difference between an exemption and nonconformance
+ASSERT ok   the decision names R4.17 and states its disposition, so no rule this run quoted is left silent — which R1.7 makes the difference between an exemption and nonconformance
+ASSERT ok   the decision names R5.11 and states its disposition, so no rule this run quoted is left silent — which R1.7 makes the difference between an exemption and nonconformance
+ASSERT ok   the decision names R8.1 and states its disposition, so no rule this run quoted is left silent — which R1.7 makes the difference between an exemption and nonconformance
+ASSERT ok   the decision names R8.2 and states its disposition, so no rule this run quoted is left silent — which R1.7 makes the difference between an exemption and nonconformance
+ASSERT ok   the decision names R8.10 and states its disposition, so no rule this run quoted is left silent — which R1.7 makes the difference between an exemption and nonconformance
+ASSERT ok   the decision names R8.11 and states its disposition, so no rule this run quoted is left silent — which R1.7 makes the difference between an exemption and nonconformance
+ASSERT ok   the decision names R11.7 and states its disposition, so no rule this run quoted is left silent — which R1.7 makes the difference between an exemption and nonconformance
+ASSERT ok   and it names the owner ruling that made the standard binding
+ASSERT ok   and pins the blob these quotations were read from
+ASSERT ok   the R4.17 preflight deviation is recorded in writing as an OVERRIDE (OV-08) heading, exactly once — R1.7's 'only in writing'
+ASSERT ok   and that block carries both an **Argument:** and an **Options:** paragraph, the form AGENTS.md requires
+ASSERT ok   and the conformance-note Deviations line this item hands over names OV-08, so the deviation reaches the conformance note rather than staying in research prose
+
+--- E. decision-self-check.sh against revision 3 ---
+        decision-self-check.sh exit=0; ASSERT FAIL lines=0; PASS=73
+ASSERT ok   decision-self-check.sh exits 0 against this revision
+ASSERT ok   and records no ASSERT FAIL line
+
+--- F. the OVERRIDE namespace: what this decision uses from it (OV-08, its allocation) ---
+        occurrences of each OV-<digits> token under research/ and docs/:
+          2767 OV-01
+           167 OV-02
+            82 OV-03
+           137 OV-04
+            60 OV-05
+            20 OV-06
+            68 OV-07
+            89 OV-08
+           108 OV-09
+            21 OV-10
+            13 OV-11
+             3 OV-12
+            16 OV-13
+             4 OV-14
+             5 OV-15
+             3 OV-16
+             5 OV-17
+        distinct tokens in use AT THIS MOMENT: OV-01 OV-02 OV-03 OV-04 OV-05 OV-06 OV-07 OV-08 OV-09 OV-10 OV-11 OV-12 OV-13 OV-14 OV-15 OV-16 OV-17  (17 of them)
+        NOTE: a snapshot of live state, not a register. It moved between two
+              runs of this very script while revision 2 was being written, and
+              allocation has since moved to the controller. Nothing below
+              asserts which numbers are free: that question is the
+              controller's, and such an assertion would be stale by audit.
+ASSERT ok   OV-01 is IN USE (R60, against the CLI Design Standard, refused by the owner on 2026-09-14) — the one fact an earlier draft of this revision got backwards, from a search a timeout had killed; this check is what would have caught it
+ASSERT ok   at least six distinct override numbers are already in the tree, so the namespace is populated and no item may assume it starts empty
+        lines naming this item's controller-allocated number OV-08 = 39
+ASSERT ok   the decision names its controller-allocated number OV-08 in more than one place — its override block and the conformance-note deviation at least — so the allocation is traceable
+        distinct NUMBERED 'OVERRIDE (OV-<digits>)' tokens in this decision = OVERRIDE (OV-08) 
+ASSERT ok   this decision uses exactly one numbered override, OV-08 — the number the controller allocated to it — and no other, so it consumes nothing from the namespace it was not given
+
+--- G. the Fetch Standard text OVERRIDE (OV-08)'s argument rests on ---
+endpoint: GET https://fetch.spec.whatwg.org/
+FIGURE Living Standard — Last Updated 21 September 2026
+HEAD  "An HTTP response to a CORS request that is not a CORS-preflight request can also include the following header: `Access-Control-Expose-Headers` Indicates which headers can be exposed as part of the response by listing their names."
+HEAD  "Let preflightResponse be the result of running CORS-preflight fetch given request. If preflightResponse is a network error, then return preflightResponse."
+HEAD  "A CORS filtered response is a filtered response whose type is "cors" and header list excludes any headers in internal response’s header list whose name is not a CORS-safelisted response-header name, given internal response’s CORS-exposed header-name list."
+ASSERT ok   the Fetch Standard (section HTTP responses) defines Access-Control-Expose-Headers as a header of a response to a CORS request that is NOT a CORS-preflight request
+ASSERT ok   and in its HTTP fetch algorithm the preflight response is returned to the caller only when it is a network error — otherwise the response handed on is the actual request's, so a preflight's own headers never reach script
+ASSERT ok   and the CORS-exposed header-name list is consumed by the CORS filtered response built for that actual response — which is where R4.17's list does its work, and where this decision's recommendation already emits it (check X1)
+
+=== RESULT ===
+PASS=66 FAIL=0 SKIP=0 TOTAL=66
+RESULT: PASS

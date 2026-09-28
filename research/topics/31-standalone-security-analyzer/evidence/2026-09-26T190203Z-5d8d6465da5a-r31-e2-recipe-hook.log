@@ -1,0 +1,148 @@
+# R31 E2 — recipe and hook — 2026-09-27T19:25:48Z
+# host: Darwin 25.4.0 arm64; macOS 26.4
+# ast-grep 0.45.3; just 1.57.0; lefthook 2.1.14; git 2.50.1
+
+# extracted config digest (sha256 over the sorted extracted files): ce58fbb0ed03a11e44eecd90a9dff695717a12703426d0ee78d84504fe3c1a60
+## the extracted recipe
+security:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    ast-grep test --skip-snapshot-tests
+    summary=$(ast-grep scan --error --inspect summary 2>&1 >/dev/null) || { ast-grep scan --error; exit 1; }
+    files=$(printf '%s\n' "$summary" | sed -n 's/.*scannedFileCount=\([0-9]*\).*/\1/p')
+    rules=$(printf '%s\n' "$summary" | sed -n 's/.*effectiveRuleCount=\([0-9]*\).*/\1/p')
+    if [ "${files:-0}" -eq 0 ]; then echo "security: scanned 0 files" >&2; exit 1; fi
+    if [ "${rules:-0}" -eq 0 ]; then echo "security: loaded 0 rules" >&2; exit 1; fi
+    echo "security: ${files} files, ${rules} rules, 0 findings"
+
+## E2.1 just security, clean tree
+$ just security
+Running 5 tests
+
+----------- Case Details -----------
+PASS rs-weak-hash  .......
+PASS rs-predictable-temp  .....
+PASS rs-shell-invocation  ......
+PASS rs-tls-verification-disabled  ...
+PASS rs-sql-format  ........
+
+test result: ok. 5 passed; 0 failed;
+security: 3 files, 5 rules, 0 findings
+exit=0
+
+## E2.2 just security, seeded TLS finding in crates/web/src/lib.rs
+$ just security
+Running 5 tests
+
+----------- Case Details -----------
+PASS rs-weak-hash  .......
+PASS rs-predictable-temp  .....
+PASS rs-shell-invocation  ......
+PASS rs-tls-verification-disabled  ...
+PASS rs-sql-format  ........
+
+test result: ok. 5 passed; 0 failed;
+error[rs-tls-verification-disabled]: TLS certificate or hostname verification is disabled (bandit B501 analogue).
+  ┌─ crates/web/src/lib.rs:5:13
+  │
+5 │     let _ = reqwest::Client::builder().danger_accept_invalid_certs(true);
+  │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Error: 1 error(s) found in code.
+Help: Scan succeeded and found error level diagnostics in the codebase.
+
+error: recipe `security` failed with exit code 1
+exit=1
+
+## E2.3 just security, tree with no .rs files
+$ just security
+Running 5 tests
+
+----------- Case Details -----------
+PASS rs-weak-hash  .......
+PASS rs-predictable-temp  .....
+PASS rs-shell-invocation  ......
+PASS rs-tls-verification-disabled  ...
+PASS rs-sql-format  ........
+
+test result: ok. 5 passed; 0 failed;
+security: scanned 0 files
+error: recipe `security` failed with exit code 1
+exit=1
+
+## E2.4 just security, rules/security renamed away
+$ just security
+Error: Cannot read rule directory /private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r31-e2.ZLi18v/norules/rules/security
+Help: The rule directory cannot be read or traversed
+
+✖ Caused by
+╰▻ /private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r31-e2.ZLi18v/norules/rules/security: IO error for operation on /private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r31-e2.ZLi18v/norules/rules/security: No such file or directory (os error 2)
+
+error: recipe `security` failed with exit code 6
+exit=6
+
+## E2.5a the placebo: ast-grep test with every rule and test deleted
+$ ast-grep test --skip-snapshot-tests
+Running 0 tests
+
+----------- Case Details -----------
+
+test result: ok. 0 passed; 0 failed;
+exit=0
+
+## E2.5b the placebo: ast-grep scan --error with every rule deleted
+$ ast-grep scan --error
+exit=0
+
+## E2.5c just security, every rule and test deleted
+$ just security
+Running 0 tests
+
+----------- Case Details -----------
+
+test result: ok. 0 passed; 0 failed;
+security: loaded 0 rules
+error: recipe `security` failed with exit code 1
+exit=1
+
+## E2.6 bare ast-grep test, no --skip-snapshot-tests (tail)
+$ ast-grep test
+Error: test failed. 0 passed; 5 failed;
+Help: Test failed due to mismatching snapshots. Run with `--update-all` to update all snapshots, or `--interactive` to update selectively.
+See also: https://ast-grep.github.io/guide/test-rule.html
+
+exit=4
+
+## E2.7a lefthook run pre-commit, staged: tests/spawn.rs only
+$ lefthook run pre-commit --no-auto-install
+╭───────────────────────────────────────╮
+│ lefthook  v2.1.14   hook:  [1mpre-commit[m │
+╰───────────────────────────────────────╯
+┃  security-scan ❯ 
+
+[38;2;56;56;56m  ────────────────────────────────────[m
+summary: (done in 0.07 seconds)
+✓ security-scan (0.05 seconds)
+exit=0
+
+## E2.7b lefthook run pre-commit, staged: tests/spawn.rs and src/spawn.rs
+$ lefthook run pre-commit --no-auto-install
+╭───────────────────────────────────────╮
+│ lefthook  v2.1.14   hook:  [1mpre-commit[m │
+╰───────────────────────────────────────╯
+┃  security-scan ❯ 
+error[rs-shell-invocation]: A shell is spawned; build the argv directly instead of passing a command string to a shell (bandit B602/B605 analogue).
+  ┌─ src/spawn.rs:2:13
+  │
+2 │     let _ = std::process::Command::new("sh");
+  │             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Error: 1 error(s) found in code.
+Help: Scan succeeded and found error level diagnostics in the codebase.
+
+
+exit status 1
+[38;2;56;56;56m  ────────────────────────────────────[m
+summary: (done in 0.07 seconds)
+✗ security-scan (0.01 seconds)
+exit=1

@@ -19,7 +19,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 ## Couplings
 - id: R76
 - owns:
-- consumes:
+- consumes: R69: web-extra-surface; R67: error-taxonomy-exit-codes
 - effort: focused
 - engines: muse, opus
 - evidence-checks:

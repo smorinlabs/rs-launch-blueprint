@@ -1,0 +1,138 @@
+=== R76 revision 3: the Muse report's disagreements, settled at source ===
+date(UTC): 2026-09-27T07:22:19Z
+grep:  grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+curl:  curl 8.7.1
+gh:    gh version 2.101.0 (2026-09-15)
+jq:    jq-1.8.2
+cargo: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+mode:  normal (snapshots read, not written)
+
+--- A. the engine set this item requires, and the Muse artifact ---
+LOCAL sha256 99e9acacbe3b7bb78fde07c93d74748b7a6dfb9e04db23be0ee7f4a18f96c61d  research/topics/76-cors-middleware/prompts/cors-middleware.prompt.md
+LOCAL sha256 99e9acacbe3b7bb78fde07c93d74748b7a6dfb9e04db23be0ee7f4a18f96c61d  research/runs/R76/2026-09-17T034010Z-d958540e8834/inputs/prompt.md
+LOCAL sha256 acdcbfff5fa46a68cd0999147b294e41fa6c4d6c88428c9fc7c46cdedfabf137  research/EXECUTION.json
+LOCAL sha256 e0863b1f9140a4ce80e9396d7f9f209ab6f5281d19cde79a9ad4df77b5c9effc  research/RUNBOOK.md
+LOCAL sha256 31be2e15e942401a98031416eef2d7ab2043ddae1a343016c929b87ba88c67c5  research/runs/R76/2026-09-17T034010Z-d958540e8834/raw/muse.md
+LOCAL sha256 13de3324dd1a4013709ae29806f213ef90655439c0540d95470671d19fd3026e  research/runs/R76/2026-09-17T034010Z-d958540e8834/operations/muse.json
+LOCAL sha256 ea031755afa0f14b5b85d4dd39ebf57f9c49ebd471ffe94b515ee6f30d0cfc75  research/runs/R76/2026-09-17T034010Z-d958540e8834/manifest.json
+ASSERT ok   the run's frozen inputs/prompt.md is byte-identical to the live topic prompt, so the engine line read below is the one the run was prepared under
+ASSERT ok   the live prompt's Couplings block reads '- engines: muse, opus'
+ASSERT ok   and it states that the mirrored engines line is authoritative under the engine_overrides pilot
+LOCAL research/EXECUTION.json engine_overrides.R76 = ["muse","opus"]
+ASSERT ok   the policy's engine_overrides entry for R76 is exactly muse and opus: Codex is not a required engine for this item
+LOCAL research/RUNBOOK.md line 72: R76, R77, R79, R80, R83 and R86. Owner decision Q9.B retired Codex from P02
+ASSERT ok   RUNBOOK section 2 lists R76 in the Muse substitution set in the same sentence that records Q9.B retiring Codex from P02
+LOCAL manifest.json migration record: codex->muse muse bulk substitution (owner decision Q5.A 2026-09-21)
+ASSERT ok   the run's own manifest records the codex-to-muse migration under owner decision Q5.A of 2026-09-21
+ASSERT ok   raw/muse.md hashes to the value ## Engines cites
+LOCAL operations/muse.json (live state, printed, not asserted — the controller's collection step changes it):
+        {"state":"submitting","request_id":"0ba3d92b4c3b4a50b843110a4facbb00","raw_sha256":null}
+LOCAL manifest.json state = partial
+        errors=0
+ASSERT ok   validate_answer_text(raw/muse.md, 'crate') reports no shape error: all fifteen H3 fields, in order, each with a body
+LOCAL parameter names on raw/muse.md's '- assumes' lines: web-framework-stack cors-allowlist-value middleware-ordering 
+        web-framework-stack: NOT a row of docs/port/PARAMETERS.md
+        cors-allowlist-value: NOT a row of docs/port/PARAMETERS.md
+        middleware-ordering: NOT a row of docs/port/PARAMETERS.md
+ASSERT ok   all three of Muse's '- assumes' names (web-framework-stack, cors-allowlist-value, middleware-ordering) are absent from the registry, so none can be carried forward: a report defect recorded under ## Engines, not a parameter
+ASSERT ok   the Muse report states that it executed no command, so none of its behavioural claims is measured evidence
+
+--- B. the version floor: 0.7 (Muse) or 0.7.1 (this decision)? ---
+endpoint: GET https://crates.io/api/v1/crates/tower-http/versions
+FIGURE tower-http 0.7.0: created_at=2026-06-15T14:01:18.432430Z yanked=false rust_version=1.65
+FIGURE tower-http 0.7.1: created_at=2026-08-31T14:49:25.697237Z yanked=false rust_version=1.65
+ASSERT ok   0.7.0 is not yanked, so a caret requirement of "0.7" admits it as a resolution for downstream consumers of the published crates/web library
+PINNED tower-http-0.7.0.crate sha256 = b11f75e912b0c2be01b63d8cf8057b8c3f97cf34abb3d431a3a4c8675498e233
+PINNED tower-http-0.7.1.crate sha256 = 08a05a66a4fdd61cbbe0a1d755ffe0ca6aba159dd4820936a0ff8a8278245b9c
+FIGURE files differing under src/cors between 0.7.0 and 0.7.1 = 0
+ASSERT ok   src/cors is byte-identical between 0.7.0 and 0.7.1, so the floor question is not about CORS behaviour
+FIGURE changelog entries naming `cors` in the 0.7.1 section = 0
+HEAD  the 0.7.1 section's Fixed entries that name a regression:
+        24:  truncating. This regressed in 0.7.0 ([#712])
+ASSERT ok   the 0.7.1 changelog section names cors nowhere, consistent with the byte-identical source
+ASSERT ok   and 0.7.1 does fix a regression introduced in 0.7.0 (in decompression, a module this dependency line does not enable) — so 0.7.0 is not simply 0.7.1 with an older date
+
+--- C. actix-cors 0.7.2, gate by gate ---
+endpoint: GET https://crates.io/api/v1/crates/actix-cors (and /versions)
+FIGURE actix-cors newest non-yanked = 0.7.2, created_at = 2026-08-24T14:19:03.269184Z, rust_version = 1.88
+FIGURE actix-cors crate.recent_downloads (90-day) = 2914000; crate.downloads (all-time) = 21295772
+ASSERT ok   actix-cors 0.7.2 is still the newest non-yanked release, the version both reports name
+endpoint: GET https://crates.io/api/v1/crates/actix-cors/0.7.2/dependencies
+FIGURE actix-cors 0.7.2 required normal dependencies = actix-utils, actix-web, derive_more, futures-util, log, once_cell, smallvec
+ASSERT ok   gate 5, stated: actix-cors requires actix-web — its runtime coupling is a whole second HTTP framework, which is a fact to state, not a gate failure
+PINNED actix-cors-0.7.2.crate sha256 = 2aff07ada3254fc02618cb7850da91dceb23b5dbda53c6676ccbb28ba504f150
+PINNED actix-cors-0.7.2/Cargo.toml [features]:
+        [features]
+        draft-private-network-access = []
+PINNED actix-cors-0.7.2/src/lib.rs unsafe-code lint:
+        53:#![forbid(unsafe_code)]
+FIGURE occurrences of the token 'unsafe' in actix-cors-0.7.2/src outside the lint attribute = 0
+ASSERT ok   gate 3, unsafe posture: actix-cors forbids unsafe code at its crate root
+ASSERT ok   and contains no unsafe block
+FIGURE https://rustsec.org/packages/actix-cors.html -> HTTP 404; control https://rustsec.org/packages/atty.html -> HTTP 200
+ASSERT ok   gate 3, advisories: RustSec has no page for actix-cors while the atty control still answers 200, so the 404 means no advisory rather than a changed site
+LOCK  snapshots/actix-cors-probe.Cargo.lock sha256 = 6f5d8cfb4c7eb1da13e040bf39c49ca7a92f1ec5f53c85623b6f3ad7ed7cdd4e
+FIGURE actix-cors 0.7.2 resolved tree (locked, all features): 110 packages; maximum declared rust-version = 1.88.0 (time-macros)
+ASSERT ok   gate 2 over the tree: the highest declared rust-version in actix-cors 0.7.2's locked tree is at or below the 1.96 floor, compared numerically
+FIGURE runtime crates in actix-cors's tree: actix-rt 2.15.0, tokio 1.53.1
+ASSERT ok   gate 5, stated: the tree carries actix-rt, actix's own runtime wrapper, so adopting actix-cors means adopting actix-web's executor model beside R69's axum on tokio
+endpoint: GET https://api.github.com/repos/actix/actix-extras/contents/.github/workflows/ci.yml (default branch)
+HEAD  target and version matrix lines:
+        23:          - { name: Linux, os: ubuntu-latest, triple: x86_64-unknown-linux-gnu }
+        25:          - { name: msrv, version: 1.88.0 }
+        92:          - { name: macOS, os: macos-latest, triple: x86_64-apple-darwin }
+        93:          - { name: Windows, os: windows-latest, triple: x86_64-pc-windows-msvc }
+        95:          - { name: msrv, version: 1.88.0 }
+HEAD  steps of the job whose matrix carries macos-latest: Install OpenSSL;Install Rust (${{ matrix.version.name }});Install cargo-hack, cargo-ci-cache-clean, just;workaround MSRV issues;check minimal;check minimal + examples;check default;tests;tests (actix-settings);tests (tracing-actix-web);CI cache clean;Install Rust (nightly);Install just;Test docs;Build docs;
+ASSERT ok   gate 4: actix-extras's CI runs on both members of target-os-matrix, ubuntu-latest and macos-latest
+FIGURE test steps (named 'tests…') in the macOS/Windows job = 3
+
+--- D. rocket_cors: the concrete signal behind Muse's at-risk ---
+endpoint: GET https://crates.io/api/v1/crates/rocket_cors/versions
+FIGURE rocket_cors newest non-yanked = 0.6.0 created_at=2023-11-18T08:11:42.572441Z rust_version=1.69
+endpoint: GET https://api.github.com/repos/lawliet89/rocket_cors
+FIGURE lawliet89/rocket_cors pushed_at = 2023-11-20T00:42:55Z; archived = false; stargazers_count = 104
+endpoint: GET https://api.github.com/repos/lawliet89/rocket_cors/issues/118
+FIGURE rocket_cors#118 created_at = 2024-11-16T17:44:41Z; state = open; comments = 0
+ASSERT ok   no push to lawliet89/rocket_cors in the two years before this run — a concrete signal of the kind the rubric's at-risk requires, which the decision records beside its fit exclusion
+
+--- E. reverse-dependency counts ---
+FIGURE tower-http reverse_dependencies meta.total = 3532   (GET https://crates.io/api/v1/crates/tower-http/reverse_dependencies)
+FIGURE actix-cors reverse_dependencies meta.total = 214   (GET https://crates.io/api/v1/crates/actix-cors/reverse_dependencies)
+ASSERT ok   the tower-http reverse-dependency count resolved rather than returning an empty body
+
+--- F. tower-http issue responsiveness as of this revision, over both windows ---
+SNAP  /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R76/2026-09-17T034010Z-d958540e8834/review/evidence/snapshots/tower-http-issue-triage-2026-09-27.json sha256 = 69431e694c99cbf3cbe91c4d419cbed0ca9d9451d1e2c3cf05a7677db79095db
+  fetched_utc: 2026-09-27T07:18:17Z
+  comments page covers back to 2026-05-22T08:45:07Z (100 comments)
+  rubric window: the 10 most recently opened non-PR issues: #741, #740, #737, #736, #732, #731, #725, #713, #702, #701
+    #741 opened 2026-09-25T08:48:00Z (NONE) state=open -> no maintainer comment on the fetched page; reporter comments=0
+    #740 opened 2026-09-22T08:34:32Z (NONE) state=open -> no maintainer comment on the fetched page; reporter comments=2
+    #737 opened 2026-09-16T12:15:33Z (NONE) state=open -> no maintainer comment on the fetched page; reporter comments=2
+    #736 opened 2026-09-15T04:15:22Z (NONE) state=closed -> no maintainer comment on the fetched page; reporter comments=0
+    #732 opened 2026-09-01T00:37:34Z (NONE) state=open -> no maintainer comment on the fetched page; reporter comments=0
+    #731 opened 2026-08-31T17:27:45Z (NONE) state=open -> no maintainer comment on the fetched page; reporter comments=0
+    #725 opened 2026-08-16T16:56:03Z (MEMBER) state=closed -> no maintainer comment on the fetched page; reporter comments=0
+    #713 opened 2026-07-15T19:07:22Z (CONTRIBUTOR) state=closed -> first maintainer reply after 0.05 h
+    #702 opened 2026-05-30T14:47:50Z (CONTRIBUTOR) state=closed -> first maintainer reply after 4.55 h
+    #701 opened 2026-05-30T14:47:47Z (CONTRIBUTOR) state=open -> no maintainer comment on the fetched page; reporter comments=0
+  rubric_window answered=2 unanswered=8 closed_unanswered=2 outside_window=0 opened_by_maintainer=1 median_answered_h=2.30
+  muse window: the non-PR issues among the 10 most recently created items: #741, #740, #737, #736
+    #741 opened 2026-09-25T08:48:00Z (NONE) state=open -> no maintainer comment on the fetched page; reporter comments=0
+    #740 opened 2026-09-22T08:34:32Z (NONE) state=open -> no maintainer comment on the fetched page; reporter comments=2
+    #737 opened 2026-09-16T12:15:33Z (NONE) state=open -> no maintainer comment on the fetched page; reporter comments=2
+    #736 opened 2026-09-15T04:15:22Z (NONE) state=closed -> no maintainer comment on the fetched page; reporter comments=0
+  muse_window answered=0 unanswered=4 closed_unanswered=1 outside_window=0 opened_by_maintainer=0 median_answered_h=undefined
+ASSERT ok   the rubric's window (10 most recently opened non-PR issues) was computed from the snapshot
+ASSERT ok   and so was the narrower window the Muse report used, so the two reports' figures can be compared like for like
+
+--- G. repository figures the decision quotes that no other log carries ---
+FIGURE actix/actix-extras: stargazers_count = 890; archived = false; pushed_at = 2026-09-25T17:07:10Z   (GET https://api.github.com/repos/actix/actix-extras)
+FIGURE loco-rs/loco: stargazers_count = 9267; archived = false; pushed_at = 2026-09-24T11:26:24Z   (GET https://api.github.com/repos/loco-rs/loco)
+FIGURE tokio-rs/console: stargazers_count = 4604; archived = false; pushed_at = 2026-08-08T01:38:29Z   (GET https://api.github.com/repos/tokio-rs/console)
+FIGURE actix/actix-extras open issues (search/issues total_count; the WHOLE monorepo, not actix-cors alone) = 16
+ASSERT ok   the actix-extras open-issue search resolved rather than returning an empty body
+
+=== RESULT ===
+PASS=27 FAIL=0 SKIP=0 TOTAL=27
+RESULT: PASS
