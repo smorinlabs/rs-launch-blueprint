@@ -1,0 +1,100 @@
+== raw reports and prompt
+PASS IN1  raw/muse.md sha256
+PASS IN2  raw/opus.md sha256
+PASS IN2b  raw line counts
+PASS IN3  inputs/prompt.md equals the topic prompt
+== R11 prerequisite
+PASS IN4  R11 DECISION.md hash = prerequisites.json
+PASS IN5  R11 acceptance.json hash = prerequisites.json
+== seat facts
+PASS IN6  manifest required_engines
+PASS IN7  inputs/EXECUTION.json R39 engine override
+PASS IN7b  inputs/EXECUTION.json items.R39.engines
+PASS IN8  prompt.md:23 contains: - engines: muse, opus
+== DECISION.md form
+PASS IN9  title line
+PASS IN10  H2 order
+PASS IN11  one re-verify: line, inside ## Decision
+PASS IN12  no owns line
+PASS IN13  exactly five assumes lines
+PASS IN14-msrv-policy  assumes msrv-policy byte-identical to inputs/parameters.json
+PASS IN14-rust-edition  assumes rust-edition byte-identical to inputs/parameters.json
+PASS IN14-target-os-matrix  assumes target-os-matrix byte-identical to inputs/parameters.json
+PASS IN14-license  assumes license byte-identical to inputs/parameters.json
+PASS IN14-ci-job-structure  assumes ci-job-structure byte-identical to inputs/parameters.json
+PASS IN15  prompt.md:20 contains: - owns:
+PASS IN16  prompt.md:21 contains: - consumes: R11: ci-job-structure
+PASS IN17  prompt.md:10 contains: is still open (no `DECISION.md` yet)
+PASS IN18  PARAMETERS.md:14 contains: | package-manager-invocation | researched | R42 |
+PASS IN18b  RUNBOOK.md:88 contains: | Synthesizer | Fresh Claude Fable context
+PASS IN18c  RUNBOOK synthesizer row, content-anchored
+== R42 hand-off lines and Q17.A authority cited by DECISION.md
+PASS IN24  DECISION.md:29 contains: Name **`ubi` 0.12.0**
+PASS IN25  R42 DECISION.md:1701-1702 install form
+PASS IN26  RUNBOOK Q17.A extends the substitution to R39
+== embedded files equal proposed/
+PASS IN19  embedded toml block = proposed/gitleaks.toml
+PASS IN20  embedded text block = proposed/gitleaksignore
+PASS IN21  cited sha256 of proposed/gitleaks.toml
+PASS IN22  cited sha256 of proposed/gitleaksignore
+== raw-report line references cited by DECISION.md
+PASS M3  muse.md:3 contains: No check in this report was executed
+PASS M3b  muse.md:3 contains: Muse (Meta family)
+PASS M17  muse.md:17 contains: b55b8c26364c
+PASS M19  muse.md:19 contains: six mainstream, well-regarded Rust projects
+PASS M25  muse.md:25 contains: zero matches for gitleaks, trufflehog, or detect-secrets
+PASS M27  muse.md:27 contains: stage a canonical AWS example key outside an allowlisted path and the pre-commit job exits non-zero
+PASS M29  muse.md:29 contains: verified-only needs network calls
+PASS M33  muse.md:33 contains: pushes 3 days before retrieval is the dependability anchor
+PASS M35  muse.md:35 contains: AKIAIOSFODNN7EXAMPLE
+PASS M35b  muse.md:35 contains: No `BASELINE-REVIEW:` finding
+PASS M49  muse.md:49 contains: has no range mode, no fingerprint file
+PASS M55  muse.md:55 contains: ripsecrets (Rust-native, MIT, pre-commit-first
+PASS M70  muse.md:70 contains: Kingfisher v2.7.0: Rust-native
+PASS M79  muse.md:79 contains: Template gains `scripts/install-gitleaks.sh`
+PASS M96  muse.md:96 contains: with fallback to `origin/HEAD` then `origin/main` plus a loud skip
+PASS M114  muse.md:114 contains: Port py's `scripts/check-gitleaks.sh`
+PASS M143  muse.md:143 contains: Candidate (b) risks a hard break
+PASS M161  muse.md:161 contains: py's four path entries and two example-key regexes
+PASS M176  muse.md:176 contains: old `[allowlist]` table
+PASS M193  muse.md:193 contains: gitleaks detect --no-banner --redact
+PASS M208  muse.md:208 contains: py's comment header ported verbatim
+PASS O3  opus.md:3 contains: claude-opus-5-5
+PASS O13  opus.md:13 contains: b08bccfb55d05f15e46a83b52c5660b1881d19f5
+PASS O113  opus.md:113 contains: ts: `git grep -i -E
+PASS O131  opus.md:131 contains: 0 of 22 run a secret scanner at any git-hook tier
+PASS O200  opus.md:200 contains: R17 runs `--only-verified`
+PASS O221  opus.md:221 contains: **`at-risk`.**
+PASS O270  opus.md:270 contains: # regexes = ['''^test-only-''']
+PASS O293  opus.md:293 contains: --log-opts="--branches --tags HEAD --not --remotes" .
+PASS O350  opus.md:350 contains: AWS docs example keys under default rules only
+PASS O437  opus.md:437 contains: --results=verified
+PASS O440  opus.md:440 contains: private key block
+PASS O526  opus.md:526 contains: BASELINE-REVIEW: F163
+PASS O527  opus.md:527 contains: BASELINE-REVIEW: F164
+PASS O528  opus.md:528 contains: BASELINE-REVIEW: F165
+PASS O528b  opus.md:528 contains: 8.30.1 still honours it
+PASS O529  opus.md:529 contains: BASELINE-REVIEW: F166
+PASS O517  opus.md:517 contains: backend on both runners, with SHA-256 verification
+PASS O518  opus.md:518 contains: against `gitleaks_8.30.1_checksums.txt`
+PASS O537  opus.md:537 contains: installed as a pinned release binary through R42's
+PASS O538  opus.md:538 contains: release-only backend with its published SHA-256 verified
+PASS O550  opus.md:550 contains: **Ranked runner-up:** Betterleaks 1.8.1
+PASS O593  opus.md:593 contains: **ggshield**
+PASS O596  opus.md:596 contains: **ripsecrets**
+PASS O605  opus.md:605 contains: **detect-secrets**
+PASS O790  opus.md:790 contains: --log-opts="--branches --tags HEAD --not --remotes" .
+PASS O874  opus.md:874 contains: Build it fresh
+PASS O952  opus.md:952 contains: The header recommends
+PASS O1007  opus.md:1007 contains: assumes package-manager-invocation
+PASS O1019  opus.md:1019 contains: `Justfile` tool table (R42)
+PASS O1020  opus.md:1020 contains: **Not added.**
+PASS O1085  opus.md:1085 contains: unrelated `mongrov/kingfisher` 0.1.2
+PASS O1093  opus.md:1093 contains: The scripts and logs are not committed
+PASS O1100  opus.md:1100 contains: R42's `ubi` backend was not exercised for gitleaks
+PASS O1101  opus.md:1101 contains: checksums.
+== every evidence ID cited by DECISION.md is a PASS in a log
+  distinct IDs cited: 112
+PASS IN23  cited evidence IDs missing from the logs
+
+TOTAL PASS=89 FAIL=0

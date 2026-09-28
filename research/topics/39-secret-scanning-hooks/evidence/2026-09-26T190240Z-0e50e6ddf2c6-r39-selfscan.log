@@ -1,0 +1,13 @@
+gitleaks: /opt/homebrew/bin/gitleaks 8.30.1
+PASS SS1  gitleaks dir review/ -> exit 1 (findings present)  (1)
+== findings (path relative to review/, line, rule)
+    | evidence/snapshots/gitleaks-README.md 47 sidekiq-secret
+    | evidence/snapshots/gitleaks-README.md 549 generic-api-key
+    | evidence/snapshots/gitleaks-default-config-v8.30.1.toml 232 aws-amazon-bedrock-api-key-short-lived
+    | evidence/snapshots/gitleaks-open-issues.json 1 generic-api-key
+    | evidence/snapshots/ripsecrets-README.md 130 generic-api-key
+PASS SS2  finding count  (5)
+PASS SS3  findings outside evidence/snapshots/  (0)
+PASS SS4  findings in DECISION.md, scripts, logs or proposed/  (0)
+
+TOTAL PASS=4 FAIL=0

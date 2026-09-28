@@ -1,0 +1,92 @@
+== run:  /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R08/2026-09-26T190123Z-08fb558146f7
+== root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+2026-09-27T18:15:07Z
+Python 3.14.7
+
+== I1 frozen inputs hash to the values manifest.json recorded
+PASS I1-prompt — inputs/prompt.md 4eb4fd643d41… vs manifest 4eb4fd643d41…
+PASS I1-policy — inputs/EXECUTION.json c670184d822b… vs manifest c670184d822b…
+PASS I1-registry — inputs/CLAUDE.md 6b86e81ab060… vs manifest 6b86e81ab060…
+PASS I1-parameters — inputs/PARAMETERS.md 85f998c1dd5f… vs manifest 85f998c1dd5f…
+PASS I1-prerequisites — inputs/prerequisites.json 63a5620cfc9d… vs manifest 63a5620cfc9d…
+PASS I1-parameters_semantic_file — inputs/parameters.json 3dc6038cf8e0… vs manifest 3dc6038cf8e0…
+manifest required_engines=['muse', 'opus'] tier=focused
+PASS I1-engines — manifest required_engines equal the live policy's items.R08.engines, muse, opus
+
+== I-prompt frozen prompt against the live canonical prompt
+canonical: research/topics/08-workflow-permission-hardening/prompts/workflow-permission-hardening.prompt.md sha256=4eb4fd643d41dcefb928ecc01f9551e5ced45fd8e0369a59884da9d4f7369afc
+frozen:    inputs/prompt.md sha256=4eb4fd643d41dcefb928ecc01f9551e5ced45fd8e0369a59884da9d4f7369afc
+PASS I-prompt-canon — inputs/prompt.md is byte-identical to the canonical prompt
+
+== I-migration the appended event records the pre-re-freeze state
+event actor=synth-opus-R08-r3-2026-09-27 model=claude-opus-5-5 at=2026-09-27T06:20:58Z state=ready
+migration from=codex to=muse previous_required_engines=['codex', 'opus'] previous_tier=focused
+previous prompt=656dc096eee4914a0f06d6a92312a012313b0de5fb2cb7b6c46220c0eb070193 policy=2a3ca15597691bfc55f211b97c09f342c242532d378482ffba2c5d1df742fd58
+PASS I-migration-engines — last event migrates codex -> muse from codex, opus at tier focused
+PASS I-migration-hashes — previous_input_hashes carry the revision 2 prompt 656dc096… and policy 2a3ca155…
+PASS I-migration-scope — only prompt, policy and policy_item changed; unchanged: ['registry', 'parameters', 'parameters_semantic', 'parameters_semantic_file', 'prerequisites']
+PASS I-r2-prompt — review/evidence/r2-frozen/prompt.md 656dc096eee4… is the recorded previous prompt
+PASS I-r2-policy — review/evidence/r2-frozen/EXECUTION.json 2a3ca1559769… is the recorded previous policy
+
+== I-prompt-delta revision 2 frozen prompt against the re-frozen prompt
+  --- r2-frozen/prompt.md
+  +++ inputs/prompt.md
+  @@ -22 +22 @@
+  -- engines: codex, opus
+  +- engines: muse, opus
+  @@ -69 +69 @@
+  -- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+  +- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception. This item substitutes Muse (Meta) for Codex under the `engine_overrides` pilot; its mirrored `- engines:` line is authoritative.
+PASS I-prompt-delta — the re-freeze changed only line 22 (engines codex->muse) and the line-69 substitution sentence
+
+== I-policy revision 2 frozen, re-frozen and live EXECUTION.json for R08
+r2 frozen items.R08={'tier': 'focused', 'engines': ['codex', 'opus'], 'evidence_checks': [], 'acceptance_after': []} engine_overrides.R08=None
+re-frozen items.R08={'tier': 'focused', 'engines': ['muse', 'opus'], 'evidence_checks': [], 'acceptance_after': []} engine_overrides.R08=['muse', 'opus']
+live      items.R08={'tier': 'focused', 'engines': ['muse', 'opus'], 'evidence_checks': [], 'acceptance_after': []} engine_overrides.R08=['muse', 'opus']
+PASS I-policy-r2 — the revision 2 frozen policy named codex, opus and no R08 override
+PASS I-policy-frozen — the re-frozen policy names muse, opus in items.R08 and engine_overrides.R08
+frozen sha256=c670184d822b47daa337a88be52454bd18e5a79ccda46f65e062d271959f3ce3  live sha256=1d9f4498efeb2992d9a7336551f5ffa6b8522ac10355e8b97c575b35b95fb9ec
+frozen empirical_auditor_overrides keys=['R11', 'R55', 'R57', 'R61', 'R62', 'R72']
+live   empirical_auditor_overrides keys=['R02', 'R03', 'R09', 'R10', 'R11', 'R12', 'R13', 'R14', 'R22', 'R24', 'R27', 'R28', 'R29', 'R30', 'R31', 'R32', 'R35', 'R40', 'R48', 'R51', 'R54', 'R55', 'R56', 'R57', 'R58', 'R61', 'R62', 'R70', 'R72', 'R74', 'R75', 'R76', 'R77', 'R78', 'R82', 'R84', 'R86']
+R08 slice frozen={'items': {'tier': 'focused', 'engines': ['muse', 'opus'], 'evidence_checks': [], 'acceptance_after': []}, 'engine_overrides': ['muse', 'opus'], 'empirical_auditor_overrides': None}
+R08 slice live  ={'items': {'tier': 'focused', 'engines': ['muse', 'opus'], 'evidence_checks': [], 'acceptance_after': []}, 'engine_overrides': ['muse', 'opus'], 'empirical_auditor_overrides': None}
+PASS I-policy-live — frozen and live policy agree on every R08 key; R08 has no empirical_auditor_overrides entry in either, so its empirical seat is the codex default
+PASS I-policy-scope — tier, evidence_checks and acceptance_after unchanged: {'tier': 'focused', 'evidence_checks': [], 'acceptance_after': []}
+
+== I-runbook the live RUNBOOK names Q17.A and R08
+  RUNBOOK.md:73: (legs Muse, synthesis/judgment/empirical Claude), and Q17.A (2026-09-27)
+  RUNBOOK.md:74: extends the substitution to the research wave R08, R09, R12, R13, R14, R27,
+  RUNBOOK.md:75: R28, R29, R30, R31, R32, R35, R37, R39, R40, R59, R71, R75, R78 and R82
+  RUNBOOK.md:76: (muse+opus; plus doxa for Deep R32, R71, R75, R78). Light items are R22, R23,
+PASS I-runbook — Q17.A at RUNBOOK.md:73 lists R08
+
+== I-other frozen registry and index copies against live
+PASS I-other-PARAMETERS.md — inputs/PARAMETERS.md matches docs/port/PARAMETERS.md
+frozen inputs/CLAUDE.md sha256=6b86e81ab06093bf1fced2b6bc79d157cc7ce86ce07f6827d6390339ab8d1f0c  live research/CLAUDE.md sha256=42e91b6a1b6cfee07a11614b6e3b29fab534f866f4b9e15e6ce70d08ba54154d
+R08 row: ['| R08 | workflow-permission-hardening | bundle | different | DIVERGENT | — | [prompt](topics/08-workflow-permission-hardening/prompts/workflow-permission-hardening.prompt.md) | open |']
+PASS I-other-CLAUDE.md — the R08 row of inputs/CLAUDE.md matches the live research/CLAUDE.md
+
+== I2 prerequisite decision and acceptance are the recorded bytes
+PASS I2-R11-decision — 410e88e5195a…
+PASS I2-R11-acceptance — 774f76490a7f…
+
+== R-fresh the runner's own freshness check (read-only)
+PASS R-fresh — research_runner.freshness_errors returned 0 error(s)
+
+== I3 raw legs
+raw/muse.md lines=262 sha256=e5fa3cb6642383676c77b264410cae279cc8ceec23ac339af1f2cabc70722964
+  raw/muse.md:1: # R08 — workflow-permission-hardening (bundle) — Muse raw report
+  raw/muse.md:2: 
+  raw/muse.md:3: All figures retrieved 2026-09-26 from the topic's named endpoints only (`api.github.com`, `crates.io/api`). Web documentation (GitHub hardening docs, 
+  raw/muse.md:4: 
+  raw/muse.md:5: ### Landscape
+  raw/muse.md:6: 
+raw/opus.md lines=947 sha256=7c752538fc9c2aef3d315b3e8bf9bab6c37a4ea117ee09e60bca07dd01d78adb
+  raw/opus.md:1: # R08 — workflow-permission-hardening (bundle) — Opus raw research report
+  raw/opus.md:2: 
+  raw/opus.md:3: Engine: `claude-opus-5-5`, Opus seat, CLI run 2026-09-26. Retrieval dates are UTC
+  raw/opus.md:4: and fall between 2026-09-26T19:52Z and 2026-09-26T20:40Z. Source repositories are
+  raw/opus.md:5: read at the programme pins: `py-launch-blueprint` at
+  raw/opus.md:6: `b08bccfb55d05f15e46a83b52c5660b1881d19f5` and `ts-launch-blueprint` at
+
+== done: failures=0

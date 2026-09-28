@@ -1,0 +1,23 @@
+== run:  /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R08/2026-09-26T190123Z-08fb558146f7
+== root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+2026-09-27T06:20:58Z
+Python 3.14.7
+live items.R08={'tier': 'focused', 'engines': ['muse', 'opus'], 'evidence_checks': [], 'acceptance_after': []}
+manifest before: required_engines=['codex', 'opus'] tier=focused state=ready
+manifest before: operations={}
+manifest before: input_hashes={"parameters": "85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa", "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4", "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1", "policy": "2a3ca15597691bfc55f211b97c09f342c242532d378482ffba2c5d1df742fd58", "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df", "prerequisites": "63a5620cfc9d15f77870d405f34fadf5be1a5f7fe0b0b6ffcfbee2590ce864b8", "prompt": "656dc096eee4914a0f06d6a92312a012313b0de5fb2cb7b6c46220c0eb070193", "registry": "6b86e81ab06093bf1fced2b6bc79d157cc7ce86ce07f6827d6390339ab8d1f0c"}
+
+== re-frozen: inputs/ rewritten, manifest.json input_hashes and required_engines updated, migration event appended
+
+manifest after: required_engines=['muse', 'opus'] tier=focused state=ready updated_at=2026-09-27T06:20:58Z
+manifest after: input_hashes={"parameters": "85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa", "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4", "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1", "policy": "c670184d822b47daa337a88be52454bd18e5a79ccda46f65e062d271959f3ce3", "policy_item": "0f765bdaf1b9f40e1a3e04984d6213c8508fb87b63c9ed425a5f393ef16f2631", "prerequisites": "63a5620cfc9d15f77870d405f34fadf5be1a5f7fe0b0b6ffcfbee2590ce864b8", "prompt": "4eb4fd643d41dcefb928ecc01f9551e5ced45fd8e0369a59884da9d4f7369afc", "registry": "6b86e81ab06093bf1fced2b6bc79d157cc7ce86ce07f6827d6390339ab8d1f0c"}
+manifest after: last event={"actor": "synth-opus-R08-r3-2026-09-27", "at": "2026-09-27T06:20:58Z", "migration": {"from": "codex", "previous_input_hashes": {"parameters": "85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa", "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4", "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1", "policy": "2a3ca15597691bfc55f211b97c09f342c242532d378482ffba2c5d1df742fd58", "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df", "prerequisites": "63a5620cfc9d15f77870d405f34fadf5be1a5f7fe0b0b6ffcfbee2590ce864b8", "prompt": "656dc096eee4914a0f06d6a92312a012313b0de5fb2cb7b6c46220c0eb070193", "registry": "6b86e81ab06093bf1fced2b6bc79d157cc7ce86ce07f6827d6390339ab8d1f0c"}, "previous_required_engines": ["codex", "opus"], "previous_tier": "focused", "reason": "inputs re-freeze under the R08 revision 3 controller ruling: owner decision Q17.A (2026-09-27, research/RUNBOOK.md) extends the Muse-for-Codex substitution to R08; hand-applied file-level equivalent of run migrate-engines, not the runner CLI", "to": "muse"}, "model": "claude-opus-5-5", "state": "ready"}
+inputs/CLAUDE.md sha256=6b86e81ab06093bf1fced2b6bc79d157cc7ce86ce07f6827d6390339ab8d1f0c
+inputs/EXECUTION.json sha256=c670184d822b47daa337a88be52454bd18e5a79ccda46f65e062d271959f3ce3
+inputs/PARAMETERS.md sha256=85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa
+inputs/parameters.json sha256=3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1
+inputs/prerequisites.json sha256=63a5620cfc9d15f77870d405f34fadf5be1a5f7fe0b0b6ffcfbee2590ce864b8
+inputs/prompt.md sha256=4eb4fd643d41dcefb928ecc01f9551e5ced45fd8e0369a59884da9d4f7369afc
+
+== runner freshness_errors (read-only) for this manifest
+PASS R-fresh — runner freshness_errors returned 0 error(s)

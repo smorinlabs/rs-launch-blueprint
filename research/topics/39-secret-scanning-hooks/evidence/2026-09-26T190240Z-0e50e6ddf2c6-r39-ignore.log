@@ -1,0 +1,117 @@
+== env
+gitleaks: /opt/homebrew/bin/gitleaks 8.30.1
+git version 2.50.1 (Apple Git-155)
+bash: 5.3.20(1)-release
+Darwin arm64
+run at 2026-09-27T02:24:01Z
+== I1 header-only file: suppresses nothing, breaks nothing
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~14 bytes (14 bytes) in 31ms
+    | 7:24PM INF no leaks found
+PASS I1a  clean change -> exit 0  (expected=0 observed=0)
+    | Finding:     const T: &str = "REDACTED";
+    | Secret:      REDACTED
+    | RuleID:      github-pat
+    | Entropy:     4.715312
+    | File:        new.rs
+    | Line:        1
+    | Fingerprint: new.rs:github-pat:1
+    | 
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~60 bytes (60 bytes) in 32.9ms
+    | 7:24PM WRN leaks found: 1
+PASS I1b  staged token with header-only file -> exit 1  (expected=1 observed=1)
+PASS I1c  staged fingerprint is path-form  (expected=new.rs:github-pat:1 observed=new.rs:github-pat:1)
+== I2 path-form entry (with its rationale comment) suppresses the staged finding
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~60 bytes (60 bytes) in 31.8ms
+    | 7:24PM INF no leaks found
+PASS I2  path-form -> staged exit 0  (expected=0 observed=0)
+== I3 commit it (bypassing hooks); range tier
+    | Finding:     const T: &str = "REDACTED";
+    | Secret:      REDACTED
+    | RuleID:      github-pat
+    | Entropy:     4.715312
+    | File:        new.rs
+    | Line:        1
+    | Commit:      dbb8fdd8fca8662491b27e059aca9ffe73a06b93
+    | Author:      r39
+    | Email:       r39@example.invalid
+    | Date:        2026-09-27T02:24:02Z
+    | Fingerprint: dbb8fdd8fca8662491b27e059aca9ffe73a06b93:new.rs:github-pat:1
+    | 
+    | 7:24PM INF 1 commits scanned.
+    | 7:24PM INF scanned ~60 bytes (60 bytes) in 47.6ms
+    | 7:24PM WRN leaks found: 1
+PASS I3a  range, header-only ignore -> exit 1  (expected=1 observed=1)
+PASS I3b  range fingerprint is commit-form  (expected=dbb8fdd8fca8662491b27e059aca9ffe73a06b93:new.rs:github-pat:1 observed=dbb8fdd8fca8662491b27e059aca9ffe73a06b93:new.rs:github-pat:1)
+    | 7:24PM INF 1 commits scanned.
+    | 7:24PM INF scanned ~60 bytes (60 bytes) in 47.1ms
+    | 7:24PM INF no leaks found
+PASS I3c  path-form -> range exit 0 (both tiers)  (expected=0 observed=0)
+    | 7:24PM INF 1 commits scanned.
+    | 7:24PM INF scanned ~60 bytes (60 bytes) in 46.9ms
+    | 7:24PM INF no leaks found
+PASS I3d  commit-form -> range exit 0  (expected=0 observed=0)
+== I4 commit-form does not reach a new occurrence
+    | Finding:     const U: &str = "REDACTED";
+    | Secret:      REDACTED
+    | RuleID:      github-pat
+    | Entropy:     4.715312
+    | File:        other.rs
+    | Line:        1
+    | Fingerprint: other.rs:github-pat:1
+    | 
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~60 bytes (60 bytes) in 30.9ms
+    | 7:24PM WRN leaks found: 1
+PASS I4a  same token re-staged in another file, commit-form only -> exit 1  (expected=1 observed=1)
+    | Finding:     const T: &str = "REDACTED"; // line 1 edited,...
+    | Secret:      REDACTED
+    | RuleID:      github-pat
+    | Entropy:     4.715312
+    | File:        new.rs
+    | Line:        1
+    | Fingerprint: new.rs:github-pat:1
+    | 
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~106 bytes (106 bytes) in 31.9ms
+    | 7:24PM WRN leaks found: 1
+PASS I4b  same file and line re-staged, commit-form only -> exit 1 (staged form has no sha)  (expected=1 observed=1)
+== I5 path-form is line-exact: the finding moves to line 2
+    | Finding:     const T: &str = "REDACTED"; // edited, so lin...
+    | Secret:      REDACTED
+    | RuleID:      github-pat
+    | Entropy:     4.715312
+    | File:        new.rs
+    | Line:        2
+    | Fingerprint: new.rs:github-pat:2
+    | 
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~112 bytes (112 bytes) in 32.1ms
+    | 7:24PM WRN leaks found: 1
+PASS I5  path-form for line 1, finding on line 2 -> exit 1  (expected=1 observed=1)
+== I6 exact match: one character off re-flags
+    | Finding:     const T: &str = "REDACTED";
+    | Secret:      REDACTED
+    | RuleID:      github-pat
+    | Entropy:     4.715312
+    | File:        new.rs
+    | Line:        1
+    | Commit:      dbb8fdd8fca8662491b27e059aca9ffe73a06b93
+    | Author:      r39
+    | Email:       r39@example.invalid
+    | Date:        2026-09-27T02:24:02Z
+    | Fingerprint: dbb8fdd8fca8662491b27e059aca9ffe73a06b93:new.rs:github-pat:1
+    | 
+    | 7:24PM INF 1 commits scanned.
+    | 7:24PM INF scanned ~60 bytes (60 bytes) in 47ms
+    | 7:24PM WRN leaks found: 1
+PASS I6  corrupted commit-form -> exit 1  (expected=1 observed=1)
+== I7 bare entry without the comment still works (the comment is policy, not syntax)
+    | 7:24PM INF 1 commits scanned.
+    | 7:24PM INF scanned ~60 bytes (60 bytes) in 46.6ms
+    | 7:24PM INF no leaks found
+PASS I7  bare commit-form -> exit 0  (expected=0 observed=0)
+
+TOTAL PASS=13 FAIL=0

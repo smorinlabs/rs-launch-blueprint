@@ -1,0 +1,460 @@
+===== 0. environment =====
+2026-09-27T06:22:24Z
+Darwin 25.4.0 arm64
+rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+1.7.12
+zizmor 1.30.1
+actor=smorin
+b55b8c2
+e5100b4
+py pin object: commit
+ts pin object: commit
+===== 1. py census at b08bccfb55d05f15e46a83b52c5660b1881d19f5 =====
+workflow files: 19
+TOP .github/workflows/api-contract.yml :: deny-all :: permissions: {}
+CO .github/workflows/api-contract.yml:26 actions/checkout@v7 persist-credentials: unset
+TOP .github/workflows/canary.yml :: deny-all :: permissions: {}
+CO .github/workflows/canary.yml:36 actions/checkout@v7 persist-credentials: unset
+TOP .github/workflows/ci.yml :: deny-all :: permissions: {}
+CO .github/workflows/ci.yml:40 actions/checkout@v7 persist-credentials: unset
+CO .github/workflows/ci.yml:85 actions/checkout@v7 persist-credentials: unset
+CO .github/workflows/ci.yml:104 actions/checkout@v7 persist-credentials: unset
+CO .github/workflows/ci.yml:126 actions/checkout@v7 persist-credentials: unset
+CO .github/workflows/ci.yml:158 actions/checkout@v7 persist-credentials: unset
+CO .github/workflows/ci.yml:212 actions/checkout@v7 persist-credentials: unset
+CO .github/workflows/ci.yml:236 actions/checkout@v7 persist-credentials: unset
+CO .github/workflows/ci.yml:252 actions/checkout@v7 persist-credentials: unset
+TOP .github/workflows/claude-code-review.yml :: absent :: 
+CO .github/workflows/claude-code-review.yml:40 actions/checkout@v7 persist-credentials: unset
+TOP .github/workflows/claude.yml :: absent :: 
+CO .github/workflows/claude.yml:29 actions/checkout@v7 persist-credentials: unset
+TOP .github/workflows/codeql.yml :: deny-all :: permissions: {}
+CO .github/workflows/codeql.yml:57 actions/checkout@v7 persist-credentials: unset
+TOP .github/workflows/commitlint.yml :: deny-all :: permissions: {}
+CO .github/workflows/commitlint.yml:37 actions/checkout@v7 persist-credentials: unset
+CO .github/workflows/commitlint.yml:56 actions/checkout@v7 persist-credentials: unset
+TOP .github/workflows/dep-audit.yml :: deny-all :: permissions: {}
+CO .github/workflows/dep-audit.yml:33 actions/checkout@v7 persist-credentials: unset
+CO .github/workflows/dep-audit.yml:59 actions/checkout@v7 persist-credentials: unset
+TOP .github/workflows/dependency-review.yml :: grant :: permissions: //   contents: read
+CO .github/workflows/dependency-review.yml:53 actions/checkout@v7 persist-credentials: unset
+TOP .github/workflows/difftree-pr-comment.yml :: grant :: permissions: //   contents: read //   pull-requests: write # REQUIRED — the action posts/updates the PR comment.
+CO .github/workflows/difftree-pr-comment.yml:48 actions/checkout@v6 persist-credentials: false
+TOP .github/workflows/large-file-guard.yml :: deny-all :: permissions: {}
+CO .github/workflows/large-file-guard.yml:24 actions/checkout@v7 persist-credentials: unset
+TOP .github/workflows/lint.yml :: deny-all :: permissions: {}
+CO .github/workflows/lint.yml:39 actions/checkout@v7 persist-credentials: unset
+CO .github/workflows/lint.yml:74 actions/checkout@v7 persist-credentials: unset
+CO .github/workflows/lint.yml:90 actions/checkout@v7 persist-credentials: unset
+CO .github/workflows/lint.yml:105 actions/checkout@v7 persist-credentials: unset
+CO .github/workflows/lint.yml:122 actions/checkout@v7 persist-credentials: unset
+CO .github/workflows/lint.yml:138 actions/checkout@v7 persist-credentials: unset
+TOP .github/workflows/manual-pr-security-scan.yml :: deny-all :: permissions: {}
+CO .github/workflows/manual-pr-security-scan.yml:45 actions/checkout@v7 persist-credentials: unset
+TOP .github/workflows/press-verify.yml :: grant :: permissions: //   contents: read
+CO .github/workflows/press-verify.yml:27 actions/checkout@v7 persist-credentials: unset
+TOP .github/workflows/publish.yml :: deny-all :: permissions: {}
+CO .github/workflows/publish.yml:25 actions/checkout@v7 persist-credentials: unset
+TOP .github/workflows/release-please.yml :: deny-all :: permissions: {}
+CO .github/workflows/release-please.yml :: no-checkout
+TOP .github/workflows/secret-scan.yml :: deny-all :: permissions: {}
+CO .github/workflows/secret-scan.yml:24 actions/checkout@v7 persist-credentials: unset
+TOP .github/workflows/template-receipt-guard.yml :: grant :: permissions: //   contents: read
+CO .github/workflows/template-receipt-guard.yml:21 actions/checkout@v7 persist-credentials: unset
+TOP .github/workflows/update-contributors.yml :: grant :: permissions: //   contents: write //   pull-requests: write //   issues: write
+CO .github/workflows/update-contributors.yml:22 actions/checkout@v7 persist-credentials: unset
+===== 2. ts census at cb1cbcb2e88b898e8c081b0abbfabc1630079c00 =====
+workflow files: 8
+TOP .github/workflows/ci.yml :: deny-all :: permissions: {}
+CO .github/workflows/ci.yml:55 actions/checkout@v7 persist-credentials: false
+CO .github/workflows/ci.yml:151 actions/checkout@v7 persist-credentials: false
+TOP .github/workflows/codeql.yml :: deny-all :: permissions: {}
+CO .github/workflows/codeql.yml:99 actions/checkout@v7 persist-credentials: false
+TOP .github/workflows/dependency-review.yml :: grant :: permissions: //   contents: read
+CO .github/workflows/dependency-review.yml:55 actions/checkout@v7 persist-credentials: false
+TOP .github/workflows/difftree-pr-comment.yml :: grant :: permissions: //   contents: read //   pull-requests: write # REQUIRED — the action posts/updates the PR comment.
+CO .github/workflows/difftree-pr-comment.yml:48 actions/checkout@v6 persist-credentials: false
+TOP .github/workflows/manual-pr-security-scan.yml :: deny-all :: permissions: {}
+CO .github/workflows/manual-pr-security-scan.yml:64 actions/checkout@v7 persist-credentials: false
+TOP .github/workflows/publish.yml :: deny-all :: permissions: {}
+CO .github/workflows/publish.yml:47 actions/checkout@v7 persist-credentials: false
+CO .github/workflows/publish.yml:158 actions/checkout@v7 persist-credentials: false
+TOP .github/workflows/release-please.yml :: deny-all :: permissions: {}
+CO .github/workflows/release-please.yml :: no-checkout
+TOP .github/workflows/update-contributors.yml :: deny-all :: permissions: {}
+CO .github/workflows/update-contributors.yml:67 actions/checkout@v7 persist-credentials: unset
+===== 3. key excerpts (line-numbered) =====
+--- py update-contributors.yml:1-15 ---
+     1	name: Update Contributors
+     2	
+     3	on:
+     4	  push:
+     5	    branches: [main]
+     6	    paths-ignore:
+     7	      - CONTRIBUTORS.md
+     8	      - .contributors.jsonl
+     9	  workflow_dispatch:
+    10	
+    11	permissions:
+    12	  contents: write
+    13	  pull-requests: write
+    14	  issues: write
+    15	
+--- ts update-contributors.yml:54-70 ---
+    54	# Deny-all baseline (D-022(10)); the job re-grants the least-privilege set
+    55	# contributors-please needs to commit, open, and label a PR.
+    56	permissions: {}
+    57	
+    58	jobs:
+    59	  update-contributors:
+    60	    runs-on: ubuntu-latest
+    61	    permissions:
+    62	      contents: write
+    63	      pull-requests: write
+    64	      issues: write
+    65	    steps:
+    66	      - name: Checkout repository
+    67	        uses: actions/checkout@v7
+    68	        with:
+    69	          fetch-depth: 0
+    70	
+--- ts update-contributors.yml app/pat inputs ---
+28:# `mode: pull-request` (verified against its README 2026-07: this mode is
+78:          app-id: ${{ secrets.CONTRIBUTORS_PLEASE_CLIENT_ID }}
+79:          private-key: ${{ secrets.CONTRIBUTORS_PLEASE_PRIVATE_KEY }}
+80:          pat: ${{ secrets.GITHUB_TOKEN }}
+81:          mode: pull-request
+--- difftree-pr-comment verbatim note (py :1-10) ---
+     1	# Canonical consumer workflow for smorinlabs/difftree-action.
+     2	#
+     3	# Copy this file into your repository at:
+     4	#   .github/workflows/difftree-pr-comment.yml
+     5	#
+     6	# It posts an ASCII diff-tree of a pull request's changes as a single,
+     7	# self-updating PR comment (rendered by `difftree --pr`). This file is the
+     8	# single source of truth for the recommended setup: the README links to it and
+     9	# the `difftree-action-setup` skill scaffolds from it. This is the canonical
+    10	# template: copy it verbatim into your repo. difftree-action's own CI lints it.
+--- difftree-pr-comment top-level grant (py :21-23) ---
+    21	permissions:
+    22	  contents: read
+    23	  pull-requests: write # REQUIRED — the action posts/updates the PR comment.
+--- difftree bytes + py-vs-ts diff ---
+    3771
+    3771
+py-vs-ts difftree: IDENTICAL
+--- ts docs/tools/github-actions.md six-workflow claim ---
+    55	The other six workflows follow the same shape (deny-all baseline `permissions`, least-privilege per-job grants, `actions/checkout` with `persist-credentials: false`) but are scoped to a single concern each: static analysis (`codeql.yml`), dependency vulnerability review on PRs (`dependency-review.yml`), a manual environment-gated deep security scan (`manual-pr-security-scan.yml`), the Conventional-Commits-driven release PR (`release-please.yml`), the tag-triggered npm publish (`publish.yml`), and the weekly contributors-list bot PR (`update-contributors.yml`). See [Using CI/CD](../tasks/using-ci-cd.md) for what each one does.
+--- ts docs/tools/github-actions.md every-checkout claim ---
+    74	- **Deny-all baseline**: workflows that don't need to write anything declare `permissions: {}` at the workflow level, then re-grant only what each job needs (e.g. `contents: read` for a read-only checkout).
+    75	- **Token-bearing workflows** grant precisely the scopes their job performs — `contents: write` + `pull-requests: write` for Release Please and Update Contributors (they open/update PRs); `pull-requests: write` for Dependency Review (it posts a PR comment); `security-events: write` + `packages: read` + `actions: read` + `contents: read` for CodeQL (per GitHub's documented CodeQL requirements); `id-token: write` (OIDC only, no long-lived secret) for the `publish` job in `publish.yml`.
+    76	- Every checkout step sets `persist-credentials: false` — no job here pushes using the checked-out token, so the persisted credential is dropped (closing the "artipacked" token-leak pattern that security scanners like `zizmor` flag).
+--- ts ci deny-all + job grant :36-45 ---
+    36	# Deny-all baseline (D-022(10)); the job below re-grants only what it needs.
+    37	permissions: {}
+    38	
+    39	jobs:
+    40	  ci:
+    41	    name: continuous-integration
+    42	    runs-on: ubuntu-latest
+    43	    permissions:
+    44	      # Read-only checkout of the repository; nothing here writes.
+    45	      contents: read
+--- release-please job grants: py :28-35, ts :48-56 ---
+    28	jobs:
+    29	  release-please:
+    30	    name: release-please
+    31	    runs-on: ${{ vars.RUNNER_UBUNTU || 'ubuntu-latest' }}
+    32	    permissions:
+    33	      contents: write
+    34	      pull-requests: write
+    35	    env:
+    48	jobs:
+    49	  release-please:
+    50	    runs-on: ubuntu-latest
+    51	    permissions:
+    52	      # Create/update the Release PR, its branch, and the release + tag.
+    53	      contents: write
+    54	      # Open/update the Release pull request.
+    55	      pull-requests: write
+    56	    env:
+--- ts publish verify checkout :46-52 + no-refetch :74-79 ---
+    46	      - name: Checkout repository (full history)
+    47	        uses: actions/checkout@v7
+    48	        with:
+    49	          # Need the whole graph to prove the tag descends from main.
+    50	          fetch-depth: 0
+    51	          # No job here pushes; drop the persisted token (zizmor artipacked).
+    52	          persist-credentials: false
+    74	        run: |-
+    75	          set -euo pipefail
+    76	          # No re-fetch: the fetch-depth: 0 checkout above already provides
+    77	          # refs/remotes/origin/main, and persist-credentials: false leaves
+    78	          # git unauthenticated — on a private repo a fetch here dies with
+    79	          # "could not read Username" (v0.1.2's publish failed exactly so).
+--- ts publish job grants :42-44 + :151-155 ---
+    42	    permissions:
+    43	      # Read-only checkout + history for the ancestry check; nothing writes.
+    44	      contents: read
+   151	    permissions:
+   152	      contents: read
+   153	      # Mint the OIDC token npm exchanges for a short-lived publish credential
+   154	      # (Trusted Publishing). This is the ONLY auth — no long-lived secret.
+   155	      id-token: write
+--- py difftree single persist :49-55 ---
+    49	        with:
+    50	          fetch-depth: 0
+    51	          # The action's runtime `git fetch origin <base>` (action.yml:111-114)
+    52	          # is a shallow-clone safety net that tolerates failure. With
+    53	          # fetch-depth: 0 the base is already present, so disabling
+    54	          # credential persistence here is safe.
+    55	          persist-credentials: false
+--- ts codeql/dependency-review/manual persist lines ---
+98-      - name: Checkout repository
+99-        uses: actions/checkout@v7
+100-        with:
+101-          # No job here pushes; drop the persisted token (zizmor artipacked).
+102:          persist-credentials: false
+56-        with:
+57-          # No job here pushes; drop the persisted token (zizmor artipacked).
+58:          persist-credentials: false
+59-      # SHA-pinned even though this is an official actions/* action:
+64-        uses: actions/checkout@v7
+65-        with:
+66-          ref: refs/pull/${{ github.event.inputs.pr_number }}/head
+67-          # No job here pushes; drop the persisted token (zizmor artipacked).
+68:          persist-credentials: false
+===== 4. live figures =====
+--- zizmor repo ---
+stars=6580 archived=false pushed_at=2026-09-27T05:17:46Z license=MIT
+--- zizmor open issues ---
+total_count=137
+--- zizmor crates.io ---
+recent_downloads=47504 downloads=247294
+--- zizmor latest non-yanked ---
+1.30.1 2026-09-09T05:17:41.468981Z
+--- advisories: actions/checkout (expect 0) ---
+0
+--- advisories control: tj-actions/changed-files ---
+2
+--- advisories: rust zizmor (expect 0) ---
+0
+--- rustsec zizmor page (expect 404) ---
+404
+--- tag resolutions ---
+zizmor v1.30.1: 99a054ed9283c90abdd2d5b9fb5101d27dde9783
+checkout v7: 3d3c42e5aac5ba805825da76410c181273ba90b1
+contributors-please v1.3.9: 3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1
+release-please v5.0.0: 45996ed1f6d02564a971a2fa1b5860e934307cf7
+github/docs main: 18945a31a4f2d97beb6c5c1a7479102e23c25727
+===== 5. pinned authority reads =====
+--- github/docs@18945a31a4f2d97beb6c5c1a7479102e23c25727 permissions: {} quote ---
+37-
+38-```yaml
+39:permissions: {}
+40-```
+--- github/docs@18945a31a4f2d97beb6c5c1a7479102e23c25727 permission calculation (workflow then job) ---
+   348	### How permissions are calculated for a workflow job
+   349	
+   350	The permissions for the `GITHUB_TOKEN` are initially set to the default setting for the enterprise, organization, or repository. If the default is set to the restricted permissions at any of these levels then this will apply to the relevant repositories. For example, if you choose the restricted default at the organization level then all repositories in that organization will use the restricted permissions as the default. The permissions are then adjusted based on any configuration within the workflow file, first at the workflow level and then at the job level. Finally, if the workflow was triggered by a pull request event other than `pull_request_target` from a forked repository, and the **Send write tokens to workflows from pull requests** setting is not selected, the permissions are adjusted to change any write permissions to read only.
+   351	
+   352	### Setting the `GITHUB_TOKEN` permissions for all jobs in a workflow
+   353	
+   354	You can specify `permissions` at the top level of a workflow, so that the setting applies to all jobs in the workflow.
+--- github/docs@18945a31a4f2d97beb6c5c1a7479102e23c25727 secure-use least-privilege + Scorecard ---
+34:  * Actions can use the `GITHUB_TOKEN` by accessing it from the `github.token` context. For more information, see [AUTOTITLE](/actions/reference/workflows-and-actions/contexts#github-context). You should therefore make sure that the `GITHUB_TOKEN` is granted the minimum required permissions. It's good security practice to set the default permission for the `GITHUB_TOKEN` to read access only for repository contents. The permissions can then be increased, as required, for individual jobs within the workflow file. For more information, see [AUTOTITLE](/actions/tutorials/authenticate-with-github_token#modifying-the-permissions-for-the-github_token).
+115:For additional examples and guidance on the risks of untrusted code checkout, see [Preventing pwn requests](https://securitylab.github.com/research/github-actions-preventing-pwn-requests/) from {% data variables.product.prodname_security %} and the [Dangerous-Workflow](https://github.com/ossf/scorecard/blob/main/docs/checks.md#dangerous-workflow) documentation from OpenSSF Scorecard.
+127:* OpenSSF Scorecards can help you identify potentially vulnerable workflows, along with other security risks when using {% data variables.product.prodname_actions %}. See [Using OpenSSF Scorecards to secure workflow dependencies](#using-openssf-scorecards-to-secure-workflow-dependencies) later in this article.
+222:### Using OpenSSF Scorecards to secure workflow dependencies
+224:[Scorecards](https://github.com/ossf/scorecard) is an automated security tool that flags risky supply chain practices. You can use the [Scorecards action](https://github.com/marketplace/actions/ossf-scorecard-action) and [workflow template](https://github.com/actions/starter-workflows) to follow best security practices. Once configured, the Scorecards action runs automatically on repository changes, and alerts developers about risky supply chain practices using the built-in {% data variables.product.prodname_code_scanning %} experience. The Scorecards project runs a number of checks, including script injection attacks, token permissions, and pinned actions.
+--- actions/checkout README@3d3c42e5aac5ba805825da76410c181273ba90b1 persist-credentials ---
+16:- Improved credential security: `persist-credentials` now stores credentials in a separate file under `$RUNNER_TEMP` instead of directly in `.git/config`
+33:The auth token is persisted in the local git config. This enables your scripts to run authenticated git commands. The token is removed during post-job cleanup. Set `persist-credentials: false` to opt-out.
+114:    persist-credentials: ''
+--- zizmor@99a054ed9283c90abdd2d5b9fb5101d27dde9783 artipacked.rs severity :76-92 ---
+    76	    fn determine_severity(
+    77	        is_v6_or_higher: Option<bool>,
+    78	        has_no_vulnerable_uploads: bool,
+    79	    ) -> Severity {
+    80	        if is_v6_or_higher == Some(true) {
+    81	            // For checkout@v6+, downgrade severity since credentials are stored
+    82	            // in $RUNNER_TEMP instead of .git/config, reducing leakage risk.
+    83	            if has_no_vulnerable_uploads {
+    84	                Severity::Low
+    85	            } else {
+    86	                Severity::Medium
+    87	            }
+    88	        } else if has_no_vulnerable_uploads {
+    89	            Severity::Medium
+    90	        } else {
+    91	            Severity::High
+    92	        }
+--- zizmor@99a054ed9283c90abdd2d5b9fb5101d27dde9783 artipacked.rs persona :133-141 ---
+   133	                    Some("true") => {
+   134	                        // If a user explicitly sets `persist-credentials: true`,
+   135	                        // they probably mean it. Only report if in auditor mode.
+   136	                        vulnerable_checkouts.push((step, Persona::Auditor, is_v6_or_higher))
+   137	                    }
+   138	                    Some(v) if ExplicitExpr::from_curly(v).is_some() => {
+   139	                        vulnerable_checkouts.push((step, Persona::Pedantic, is_v6_or_higher));
+   140	                    }
+   141	                    _ => vulnerable_checkouts.push((step, Persona::default(), is_v6_or_higher)),
+--- zizmor@99a054ed9283c90abdd2d5b9fb5101d27dde9783 excessive_permissions.rs pedantic :79-89 ---
+    79	        // Top-level permissions are a pedantic finding under the following
+    80	        // conditions:
+    81	        //
+    82	        // 1. The workflow has only one job.
+    83	        // 2. All jobs in the workflow have their own explicit permissions.
+    84	        // 3. The workflow is reusable and has only one trigger.
+    85	        let workflow_finding_persona =
+    86	            if workflow.jobs.len() == 1 || all_jobs_have_permissions || workflow_is_reusable_only {
+    87	                Persona::Pedantic
+    88	            } else {
+    89	                Persona::Regular
+--- zizmor@99a054ed9283c90abdd2d5b9fb5101d27dde9783 audits.md artipacked remediation :222-227 ---
+   222	Unless needed for `git` operations, @actions/checkout should be used with
+   223	`#!yaml persist-credentials: false`.
+   224	
+   225	If the persisted credential is needed, it should be made explicit
+   226	with `#!yaml persist-credentials: true`.
+   227	
+--- zizmor@99a054ed9283c90abdd2d5b9fb5101d27dde9783 audits.md excessive-permissions remediation :700-703 ---
+   700	
+   701	In practice, this means that workflows should almost always set
+   702	`#!yaml permissions: {}` at the workflow level to disable all permissions
+   703	by default, and then set specific job-level permissions as needed.
+--- zizmor@99a054ed9283c90abdd2d5b9fb5101d27dde9783 audits.md inheritance model :678-682 ---
+   678	Detects excessive permissions in workflows, both at the workflow level and
+   679	individual job levels.
+   680	
+   681	Users frequently over-scope their workflow and job permissions,
+   682	or set broad workflow-level permissions without realizing that
+--- zizmor@99a054ed9283c90abdd2d5b9fb5101d27dde9783 usage.md exit codes :563-579 + :595-598 ---
+   563	## Exit codes
+   564	
+   565	`zizmor` will exit with a variety of exit codes, depending on how
+   566	you invoke it and what happens during the run. In general:
+   567	
+   568	| Code | Meaning |
+   569	| ---- | ------- |
+   570	| 0    | Successful audit; no findings to report (or SARIF mode enabled). |
+   571	| 1    | Error during audit; consult output. |
+   572	| 2    | Argument parsing failure; consult output. |
+   573	| 3    | No inputs were collected. |
+   574	| 11   | One or more findings found; highest finding is "informational" level. |
+   575	| 12   | One or more findings found; highest finding is "low" level. |
+   576	| 13   | One or more findings found; highest finding is "medium" level. |
+   577	| 14   | One or more findings found; highest finding is "high" level. |
+   578	
+   579	All other exit codes are currently reserved.
+   595	* If you run with `--no-exit-codes`, `zizmor` will **not** use exit codes 11
+   596	  and above.
+   597	* If you use `--format=sarif`, `zizmor` will **not** use exit codes 11 and
+   598	  above.
+--- contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1 own-remote push :588-616 ---
+   588	async function configureGitRemote(config: GitRemoteConfig): Promise<void> {
+   589	  try {
+   590	    await execFileAsync("git", [
+   591	      "remote",
+   592	      "set-url",
+   593	      "origin",
+   594	      authenticatedRemoteUrl(config),
+   595	    ]);
+   596	  } catch {
+   597	    throw new Error("Failed to configure authenticated origin remote.");
+   598	  }
+   599	}
+   600	
+   601	async function pushGitRef(config: GitPushConfig): Promise<void> {
+   602	  try {
+   603	    await execFileAsync("git", ["push", "origin", `HEAD:${config.branch}`]);
+   604	  } catch (error) {
+   605	    const stderr = (error as { stderr?: string }).stderr?.trim();
+   606	    const detail = stderr || (error instanceof Error ? error.message : String(error));
+   607	    throw new Error(`Failed to push contributors-please commit: ${detail}`);
+   608	  }
+   609	}
+   610	
+   611	function authenticatedRemoteUrl(config: GitRemoteConfig): string {
+   612	  const url = new URL(config.serverUrl);
+   613	  const basePath = url.pathname.replace(/\/$/, "");
+   614	  url.username = "x-access-token";
+   615	  url.password = config.token;
+   616	  url.pathname = `${basePath}/${config.owner}/${config.repo}.git`;
+===== 6. credential sources and flag parsing (revision 2) =====
+--- contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1 action.yml credential inputs :7-19 ---
+     7	inputs:
+     8	  app-id:
+     9	    description: GitHub App ID. Use with private-key for App mode.
+    10	    required: false
+    11	    default: ''
+    12	  private-key:
+    13	    description: GitHub App private key. Use with app-id for App mode.
+    14	    required: false
+    15	    default: ''
+    16	  pat:
+    17	    description: Personal access token fallback. Used when App credentials are absent.
+    18	    required: false
+    19	    default: ''
+--- contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1 references to github.token or GITHUB_TOKEN (count per file) ---
+action.yml: 0
+src/index.ts: 0
+--- contributors-please-action@3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1 credential inputs and token use (src/index.ts) ---
+   394	  const appId = coreApi.getInput("app-id");
+   395	  const privateKey = coreApi.getInput("private-key");
+   396	  const pat = coreApi.getInput("pat");
+   131	      token: credentials.token,
+   164	        token: credentials.token,
+--- R21 DECISION: accepted credential (:15) and PAT scopes (:23) ---
+R21 DECISION sha256=66d566a55330e2417a2e5227bcac64e3312fc56280db09d7b74a13425aa346c1
+    15	**The contributors-bot workflow keeps GitHub App credentials as the primary credential and sources its `pat:` fallback from a dedicated repository secret, `CONTRIBUTORS_PLEASE_PAT`, holding a fine-grained personal access token scoped to the single repository. This is `py-launch-blueprint`'s shape. `ts-launch-blueprint`'s `pat: ${{ secrets.GITHUB_TOKEN }}` is not adopted.** The action is `smorinlabs/contributors-please-action` at tag `v1.3.9` = commit `3c6dbff9ef21190aa1f63b3c400ed4f0ab404ac1` (resolved locally in this run, `review/evidence/contributors-bot-credential-source.log` case 01), which both source repos already run in `mode: pull-request` under ledger row F060. The ranked runner-up is App-credentials-only with no `pat:` input at all.
+    23	| F061 Contributors-bot credential source for the PAT fallback | `pat: ${{ secrets.CONTRIBUTORS_PLEASE_PAT }}` — a dedicated repository secret holding a fine-grained PAT (Contents: write, Pull requests: write, Issues: write, single repository, explicit expiry), used only when `app-id` and `private-key` are absent; documented as an either/or with the App path, never as a third required secret |
+--- release-please-action@45996ed1f6d02564a971a2fa1b5860e934307cf7 token input :5-8 and src/index.ts :52 ---
+     5	  token:
+     6	    description: 'GitHub token for creating and grooming release PRs, defaults to using secrets.GITHUB_TOKEN'
+     7	    required: false
+     8	    default: ${{ github.token }}
+    52	    token: core.getInput('token', {required: true}),
+--- release-please token expression at the pins: py :55, ts :79 ---
+    55	          token: ${{ steps.app-token.outputs.token || secrets.RELEASE_PLEASE_APP_TOKEN }}
+    79	          token: ${{ steps.app-token.outputs.token || secrets.RELEASE_PLEASE_APP_TOKEN }}
+--- actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 persist-credentials parsing (src/input-helper.ts :166-168) ---
+   166	  // Persist credentials
+   167	  result.persistCredentials =
+   168	    (core.getInput('persist-credentials') || 'false').toUpperCase() === 'TRUE'
+--- zizmor@99a054ed9283c90abdd2d5b9fb5101d27dde9783 artipacked.rs full persist-credentials match :127-142 ---
+   127	                match with
+   128	                    .get("persist-credentials")
+   129	                    .map(|v| v.to_string())
+   130	                    .as_deref()
+   131	                {
+   132	                    Some("false") => continue,
+   133	                    Some("true") => {
+   134	                        // If a user explicitly sets `persist-credentials: true`,
+   135	                        // they probably mean it. Only report if in auditor mode.
+   136	                        vulnerable_checkouts.push((step, Persona::Auditor, is_v6_or_higher))
+   137	                    }
+   138	                    Some(v) if ExplicitExpr::from_curly(v).is_some() => {
+   139	                        vulnerable_checkouts.push((step, Persona::Pedantic, is_v6_or_higher));
+   140	                    }
+   141	                    _ => vulnerable_checkouts.push((step, Persona::default(), is_v6_or_higher)),
+   142	                }
+--- github/docs@18945a31a4f2d97beb6c5c1a7479102e23c25727 metadata-syntax: when an input default applies (:82-84) ---
+    82	### `inputs.<input_id>.default`
+    83	
+    84	**Optional** A `string` representing the default value. The default value is used when an input parameter isn't specified in a workflow file.
+--- actions/toolkit@a7911ca44eeaa6d87ad79a4703b750fb0993fb99 core.getInput on an empty required input (packages/core/src/core.ts :151-156) ---
+   151	export function getInput(name: string, options?: InputOptions): string {
+   152	  const val: string =
+   153	    process.env[`INPUT_${name.replace(/ /g, '_').toUpperCase()}`] || ''
+   154	  if (options && options.required && !val) {
+   155	    throw new Error(`Input required and not supplied: ${name}`)
+   156	  }
+--- ts release-please.yml :61-65 (GITHUB_TOKEN intentionally not a fallback) ---
+    61	      # App token (D-021(5)): tags pushed with GITHUB_TOKEN cannot trigger
+    62	      # other workflows, so merging a Release PR would never fire publish.yml.
+    63	      # Mint a short-lived App installation token instead; fallback is the
+    64	      # RELEASE_PLEASE_APP_TOKEN fine-grained PAT. GITHUB_TOKEN is
+    65	      # intentionally NOT a fallback — with neither configured, fail fast.
+===== done =====

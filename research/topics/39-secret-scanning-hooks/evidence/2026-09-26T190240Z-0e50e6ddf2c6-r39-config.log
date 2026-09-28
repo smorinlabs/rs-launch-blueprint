@@ -1,0 +1,127 @@
+== env
+gitleaks: /opt/homebrew/bin/gitleaks 8.30.1
+git version 2.50.1 (Apple Git-155)
+bash: 5.3.20(1)-release
+Darwin arm64
+run at 2026-09-27T02:23:59Z
+== the uncommented example table
+    | [[allowlists]]
+    | description = "Fake credentials used by the web service's config-parsing tests"
+    | targetRules = ["generic-api-key"]
+    | condition = "AND"
+    | paths = ['''^crates/web/tests/fixtures/''']
+    | regexes = ['''^fixture-''']
+== C0 every config parses (clean staged change, exit 0, no config error)
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~14 bytes (14 bytes) in 32.7ms
+    | 7:23PM INF no leaks found
+PASS C0-py-shape  py-shape parses and passes a clean change  (expected=0/none observed=0/none)
+    | 7:23PM INF 0 commits scanned.
+    | 7:23PM INF scanned ~14 bytes (14 bytes) in 32.5ms
+    | 7:23PM INF no leaks found
+PASS C0-muse-port  muse-port parses and passes a clean change  (expected=0/none observed=0/none)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~14 bytes (14 bytes) in 31.8ms
+    | 7:24PM INF no leaks found
+PASS C0-proposed  proposed parses and passes a clean change  (expected=0/none observed=0/none)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~14 bytes (14 bytes) in 31ms
+    | 7:24PM INF no leaks found
+PASS C0-example-live  example-live parses and passes a clean change  (expected=0/none observed=0/none)
+== C1 token in a crate README (packaged into the published .crate)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~86 bytes (86 bytes) in 33.1ms
+    | 7:24PM INF no leaks found
+PASS C1a  py-shape: README token -> exit 0 (blind spot)  (expected=0 observed=0)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~86 bytes (86 bytes) in 32.6ms
+    | 7:24PM INF no leaks found
+PASS C1b  muse-port: README token -> exit 0 (blind spot)  (expected=0 observed=0)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~86 bytes (86 bytes) in 34.4ms
+    | 7:24PM WRN leaks found: 1
+PASS C1c  proposed: README token -> exit 1  (expected=1 observed=1)
+== C2 token under docs/
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~48 bytes (48 bytes) in 31.4ms
+    | 7:24PM INF no leaks found
+PASS C2a  py-shape: docs token -> exit 0  (expected=0 observed=0)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~48 bytes (48 bytes) in 31.4ms
+    | 7:24PM INF no leaks found
+PASS C2b  muse-port: docs token -> exit 0  (expected=0 observed=0)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~48 bytes (48 bytes) in 31.3ms
+    | 7:24PM WRN leaks found: 1
+PASS C2c  proposed: docs token -> exit 1  (expected=1 observed=1)
+== C3 the singular [allowlist] is still honoured by 8.30.1 (retires the 'hard break' claim)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~48 bytes (48 bytes) in 32.3ms
+    | 7:24PM WRN leaks found: 1
+PASS C3a  same file, no allowlist table -> exit 1  (expected=1 observed=1)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~48 bytes (48 bytes) in 32.1ms
+    | 7:24PM INF no leaks found
+PASS C3b  same file, singular [allowlist] -> exit 0 (table honoured)  (expected=0 observed=0)
+== C4 AWS documentation example keys under the DEFAULT rules only (Muse's acceptance fixture)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~136 bytes (136 bytes) in 32.1ms
+    | 7:24PM INF no leaks found
+PASS C4a  proposed (defaults only): AWS example pair under src/ -> exit 0  (expected=0 observed=0)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~136 bytes (136 bytes) in 30.9ms
+    | 7:24PM INF no leaks found
+PASS C4b  py-shape: same -> exit 0 (its two regexes add nothing)  (expected=0 observed=0)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~21 bytes (21 bytes) in 32.3ms
+    | 7:24PM INF no leaks found
+PASS C4c  Muse's literal fixture (raw/muse.md:35) does not block -> exit 0  (expected=0 observed=0)
+== C5 the AWS rule is live: a non-example AKIA-shaped key blocks (C4 is not vacuous)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~56 bytes (56 bytes) in 31.5ms
+    | 7:24PM WRN leaks found: 1
+PASS C5  proposed: random AKIA key -> exit 1  (expected=1 observed=1)
+    | Finding:     ...ESS_KEY_ID: &str = "REDACTED";
+    | Secret:      REDACTED
+    | RuleID:      aws-access-token
+    | Entropy:     3.821928
+    | File:        src/config.rs
+    | Line:        1
+    | Fingerprint: src/config.rs:aws-access-token:1
+    | 
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~56 bytes (56 bytes) in 31.9ms
+    | 7:24PM WRN leaks found: 1
+PASS C5b  rule named aws-access-token  (expected=yes observed=yes)
+== C6 a real Rust lockfile needs no exemption (ripgrep Cargo.lock snapshot, 592 lines)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~13550 bytes (13.55 KB) in 39.7ms
+    | 7:24PM INF no leaks found
+PASS C6  proposed: Cargo.lock -> exit 0  (expected=0 observed=0)
+== C7 the commented narrow example works as documented when uncommented
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~41 bytes (41 bytes) in 32.2ms
+    | 7:24PM WRN leaks found: 1
+PASS C7a  proposed: fixture-prefixed fake -> exit 1 (would need the exemption)  (expected=1 observed=1)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~41 bytes (41 bytes) in 32.1ms
+    | 7:24PM INF no leaks found
+PASS C7b  example live: fixture path AND prefix -> exit 0  (expected=0 observed=0)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~41 bytes (41 bytes) in 31.7ms
+    | 7:24PM WRN leaks found: 1
+PASS C7c  example live: same value outside the path -> exit 1 (AND)  (expected=1 observed=1)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~38 bytes (38 bytes) in 31.5ms
+    | 7:24PM WRN leaks found: 1
+PASS C7d  example live: fixture path, no prefix -> exit 1 (AND)  (expected=1 observed=1)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~51 bytes (51 bytes) in 30.7ms
+    | 7:24PM WRN leaks found: 1
+PASS C7e  example live: github-pat in fixture path -> exit 1 (targetRules)  (expected=1 observed=1)
+    | 7:24PM INF 0 commits scanned.
+    | 7:24PM INF scanned ~43 bytes (43 bytes) in 31.7ms
+    | 7:24PM INF no leaks found
+PASS C7f  a test-only- value is never flagged by defaults (why the example uses ^fixture-)  (expected=0 observed=0)
+
+TOTAL PASS=24 FAIL=0
