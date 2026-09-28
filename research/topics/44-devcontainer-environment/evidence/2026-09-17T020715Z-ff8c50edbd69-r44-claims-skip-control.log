@@ -1,0 +1,100 @@
+R44 devcontainer-environment — synthesizer empirical check
+Nothing is built and no container is run. Registry facts come from the
+OCI HTTP API; GitHub facts from the REST API at pinned refs.
+
+========== 1 · The recommended image: identity, portability, size ==========
+
+--- 1a · mcr.microsoft.com/devcontainers/rust:2.1.1-trixie resolves to the pinned index digest ---
+PASS index digest equals the digest the decision pins (expected sha256:1648c1ac19ef6b55a001048d832956c109a5a9ad37fc6b3c82d37b6cd462bbf3, got sha256:1648c1ac19ef6b55a001048d832956c109a5a9ad37fc6b3c82d37b6cd462bbf3; counting binary: /usr/bin/grep)
+PASS registry returned HTTP 200 for the tag (expected 1, got 1; counting binary: /usr/bin/grep)
+
+--- 1b · the index is multi-architecture (the macOS-host fact) ---
+PASS media type is an OCI image index (expected application/vnd.oci.image.index.v1+json, got application/vnd.oci.image.index.v1+json; counting binary: /usr/bin/grep)
+PASS linux platforms present (expected amd64,arm64, got amd64,arm64; counting binary: /usr/bin/grep)
+NOTE an Apple-Silicon macOS host runs the arm64 child natively, not emulated.
+
+--- 1c · the human-readable rolling tag currently resolves to the same digest ---
+PASS 2-trixie resolves to the pinned digest (expected sha256:1648c1ac19ef6b55a001048d832956c109a5a9ad37fc6b3c82d37b6cd462bbf3, got sha256:1648c1ac19ef6b55a001048d832956c109a5a9ad37fc6b3c82d37b6cd462bbf3; counting binary: /usr/bin/grep)
+NOTE this is a CURRENT-STATE check, not a content-addressed one: the alias
+     tag moves when a new 2.x image is published, and this assertion is
+     then expected to fail. That failure is the bump signal, not a defect.
+
+--- 1d · compressed pull size (gate 6 substitute), arm64 ---
+PASS layer count (expected 15, got 15; counting binary: /usr/bin/grep)
+PASS summed compressed layer bytes (expected 871370327, got 871370327; counting binary: /usr/bin/grep)
+NOTE 871370327 bytes is ~831 MiB COMPRESSED. It is not a duration: no pull
+     and no container create was timed in this item.
+
+--- 1e · the image is the Rust project own image, carrying rustup ---
+PASS org.opencontainers.image.source (expected https://github.com/rust-lang/docker-rust, got https://github.com/rust-lang/docker-rust; counting binary: /usr/bin/grep)
+dev.containers.release = v0.4.33
+dev.containers.timestamp = Thu, 10 Sep 2026 12:17:32 GMT
+PASS baked RUST_VERSION (expected RUST_VERSION=1.98.1, got RUST_VERSION=1.98.1; counting binary: /usr/bin/grep)
+PASS CARGO_HOME (the cache mount target) (expected CARGO_HOME=/usr/local/cargo, got CARGO_HOME=/usr/local/cargo; counting binary: /usr/bin/grep)
+PASS RUSTUP_HOME (NOT under that mount) (expected RUSTUP_HOME=/usr/local/rustup, got RUSTUP_HOME=/usr/local/rustup; counting binary: /usr/bin/grep)
+
+--- 1f · what the image already contributes, so the template need not ---
+PASS baked features (expected ghcr.io/devcontainers/features/common-utils:2,ghcr.io/devcontainers/features/git:1,ghcr.io/devcontainers/features/rust:1, got ghcr.io/devcontainers/features/common-utils:2,ghcr.io/devcontainers/features/git:1,ghcr.io/devcontainers/features/rust:1; counting binary: /usr/bin/grep)
+PASS VS Code extensions contributed by the image metadata (expected rust-lang.rust-analyzer,tamasfe.even-better-toml,vadimcn.vscode-lldb, got rust-lang.rust-analyzer,tamasfe.even-better-toml,vadimcn.vscode-lldb; counting binary: /usr/bin/grep)
+PASS remoteUser baked into the image (expected vscode, got vscode; counting binary: /usr/bin/grep)
+PASS files.watcherExclude setting already contributed (expected 1, got 1; counting binary: /usr/bin/grep)
+PASS capAdd (a DEVELOPMENT container loosening, never a deployment image) (expected SYS_PTRACE, got SYS_PTRACE; counting binary: /usr/bin/grep)
+
+========== 2 · The alternative both engines rejected: universal + rust feature ==========
+
+--- 2a · mcr.microsoft.com/devcontainers/universal:6 architecture coverage ---
+PASS linux architectures offered (expected amd64, got amd64; counting binary: /usr/bin/grep)
+amd64 child manifest digest: sha256:d644db7067b95d15b259c75e8c6e251c0f70d83a627b80b946395aeed5944a24
+NOTE amd64-only means an Apple-Silicon host — half the fixed target matrix —
+     runs it under emulation. That is the gate-4 exclusion.
+
+========== 3 · How macOS hosts reach a Linux devcontainer, and where CI proves it ==========
+SKIP 3 runner images — gh absent
+
+========== 4 · Nothing bumps a pinned image digest (the accepted cost) ==========
+SKIP 4 dependabot — gh absent
+
+========== 5 · Installer integrity, and where the Codex defect actually lands ==========
+SKIP 5 installer integrity — gh absent
+
+========== 6 · The one Rust-specific postCreate line, and why it is well-mannered ==========
+
+--- 6a · rustup auto-installs the toolchain rust-toolchain.toml names ---
+SKIP 6a rustup CHANGELOG — gh absent, or no network and no snapshot
+
+--- 6b · `rustup toolchain install` with no argument installs the ACTIVE toolchain ---
+SKIP 6b rustup toolchain install --help — no rustup on this host
+
+========== 7 · The py and ts precedent, read at their pins (F200 and F193) ==========
+SKIP 7a/7b py precedent — sibling checkout /tmp/r44-extract.oYcaCA/fakehome/c/py-launch-blueprint absent
+SKIP 7c ts precedent — sibling checkout /tmp/r44-extract.oYcaCA/fakehome/c/ts-launch-blueprint absent
+
+========== 8 · Practice: how many well-regarded Rust projects ship a devcontainer ==========
+SKIP 8 practice survey — gh absent
+
+========== 9 · Repository-local facts the decision depends on ==========
+
+--- 9a · the four fixed registry rows are byte-identical to this run inputs ---
+PASS msrv-policy row byte-identical between registry and run inputs (binary: /usr/bin/grep)
+PASS rust-edition row byte-identical between registry and run inputs (binary: /usr/bin/grep)
+PASS target-os-matrix row byte-identical between registry and run inputs (binary: /usr/bin/grep)
+PASS license row byte-identical between registry and run inputs (binary: /usr/bin/grep)
+
+--- 9b · the four values this decision writes under ## Parameters ---
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+- assumes license = MIT OR Apache-2.0
+
+--- 9c · the prerequisite decision this run was given is the published one ---
+PASS R42 DECISION.md sha256 matches inputs/prerequisites.json (expected a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c, got a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c; counting binary: /usr/bin/grep)
+
+--- 9d · R69 has since published web-extra-surface; it fixes no port number ---
+PASS web-extra-surface leaves host/port to an R77-named environment variable (binary: /usr/bin/grep)
+NOTE therefore the recommendation declares no forwardPorts key, and the
+     reason is stronger than "R69 is unset": R69 is resolved and fixes no port.
+
+========== Result ==========
+ALL ASSERTIONS PASSED (0 failures)
+Host toolchain record: ./toolchain.txt
+Snapshots and their first-retrieval date: ./snap/RETRIEVED.txt

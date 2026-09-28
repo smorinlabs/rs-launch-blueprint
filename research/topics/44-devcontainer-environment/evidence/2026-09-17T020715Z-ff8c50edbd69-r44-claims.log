@@ -1,0 +1,211 @@
+R44 devcontainer-environment — synthesizer empirical check
+Nothing is built and no container is run. Registry facts come from the
+OCI HTTP API; GitHub facts from the REST API at pinned refs.
+
+========== 1 · The recommended image: identity, portability, size ==========
+
+--- 1a · mcr.microsoft.com/devcontainers/rust:2.1.1-trixie resolves to the pinned index digest ---
+PASS index digest equals the digest the decision pins (expected sha256:1648c1ac19ef6b55a001048d832956c109a5a9ad37fc6b3c82d37b6cd462bbf3, got sha256:1648c1ac19ef6b55a001048d832956c109a5a9ad37fc6b3c82d37b6cd462bbf3; counting binary: /usr/bin/grep)
+PASS registry returned HTTP 200 for the tag (expected 1, got 1; counting binary: /usr/bin/grep)
+
+--- 1b · the index is multi-architecture (the macOS-host fact) ---
+PASS media type is an OCI image index (expected application/vnd.oci.image.index.v1+json, got application/vnd.oci.image.index.v1+json; counting binary: /usr/bin/grep)
+PASS linux platforms present (expected amd64,arm64, got amd64,arm64; counting binary: /usr/bin/grep)
+NOTE an Apple-Silicon macOS host runs the arm64 child natively, not emulated.
+
+--- 1c · the human-readable rolling tag currently resolves to the same digest ---
+PASS 2-trixie resolves to the pinned digest (expected sha256:1648c1ac19ef6b55a001048d832956c109a5a9ad37fc6b3c82d37b6cd462bbf3, got sha256:1648c1ac19ef6b55a001048d832956c109a5a9ad37fc6b3c82d37b6cd462bbf3; counting binary: /usr/bin/grep)
+NOTE this is a CURRENT-STATE check, not a content-addressed one: the alias
+     tag moves when a new 2.x image is published, and this assertion is
+     then expected to fail. That failure is the bump signal, not a defect.
+
+--- 1d · compressed pull size (gate 6 substitute), arm64 ---
+PASS layer count (expected 15, got 15; counting binary: /usr/bin/grep)
+PASS summed compressed layer bytes (expected 871370327, got 871370327; counting binary: /usr/bin/grep)
+NOTE 871370327 bytes is ~831 MiB COMPRESSED. It is not a duration: no pull
+     and no container create was timed in this item.
+
+--- 1e · the image is the Rust project own image, carrying rustup ---
+PASS org.opencontainers.image.source (expected https://github.com/rust-lang/docker-rust, got https://github.com/rust-lang/docker-rust; counting binary: /usr/bin/grep)
+dev.containers.release = v0.4.33
+dev.containers.timestamp = Thu, 10 Sep 2026 12:17:32 GMT
+PASS baked RUST_VERSION (expected RUST_VERSION=1.98.1, got RUST_VERSION=1.98.1; counting binary: /usr/bin/grep)
+PASS CARGO_HOME (the cache mount target) (expected CARGO_HOME=/usr/local/cargo, got CARGO_HOME=/usr/local/cargo; counting binary: /usr/bin/grep)
+PASS RUSTUP_HOME (NOT under that mount) (expected RUSTUP_HOME=/usr/local/rustup, got RUSTUP_HOME=/usr/local/rustup; counting binary: /usr/bin/grep)
+
+--- 1f · what the image already contributes, so the template need not ---
+PASS baked features (expected ghcr.io/devcontainers/features/common-utils:2,ghcr.io/devcontainers/features/git:1,ghcr.io/devcontainers/features/rust:1, got ghcr.io/devcontainers/features/common-utils:2,ghcr.io/devcontainers/features/git:1,ghcr.io/devcontainers/features/rust:1; counting binary: /usr/bin/grep)
+PASS VS Code extensions contributed by the image metadata (expected rust-lang.rust-analyzer,tamasfe.even-better-toml,vadimcn.vscode-lldb, got rust-lang.rust-analyzer,tamasfe.even-better-toml,vadimcn.vscode-lldb; counting binary: /usr/bin/grep)
+PASS remoteUser baked into the image (expected vscode, got vscode; counting binary: /usr/bin/grep)
+PASS files.watcherExclude setting already contributed (expected 1, got 1; counting binary: /usr/bin/grep)
+PASS capAdd (a DEVELOPMENT container loosening, never a deployment image) (expected SYS_PTRACE, got SYS_PTRACE; counting binary: /usr/bin/grep)
+
+========== 2 · The alternative both engines rejected: universal + rust feature ==========
+
+--- 2a · mcr.microsoft.com/devcontainers/universal:6 architecture coverage ---
+PASS linux architectures offered (expected amd64, got amd64; counting binary: /usr/bin/grep)
+amd64 child manifest digest: sha256:d644db7067b95d15b259c75e8c6e251c0f70d83a627b80b946395aeed5944a24
+NOTE amd64-only means an Apple-Silicon host — half the fixed target matrix —
+     runs it under emulation. That is the gate-4 exclusion.
+
+========== 3 · How macOS hosts reach a Linux devcontainer, and where CI proves it ==========
+
+--- 3a · which runner image each -latest label resolves to today ---
+25:| Ubuntu 24.04<br>| x64 | `ubuntu-latest` or `ubuntu-24.04` | [ubuntu-24.04] |
+32:| macOS 26 Arm64<br>| arm64 | `macos-latest`, `macos-26` or `macos-26-xlarge` | [macOS-26-arm64] |
+95:GitHub Actions and Azure DevOps use the `-latest` YAML label (ex: `ubuntu-latest`, `windows-latest`, and `macos-latest`). These labels point towards the newest stable OS version available.
+PASS macos-latest maps to the macOS 26 Arm64 image (>=1 match of \[macOS-26-arm64\]; counting binary: /usr/bin/grep)
+PASS ubuntu-latest maps to the Ubuntu 24.04 image (>=1 match of \[ubuntu-24.04\]; counting binary: /usr/bin/grep)
+
+--- 3b · container runtime inventory of those two images (GitHub own inventory) ---
+macos-26-arm64 readme: 261 lines (whole file read, no head/cut in the count)
+PASS case-insensitive "docker" lines in the macOS runner inventory (expected 0, got 0; counting binary: /usr/bin/grep)
+PASS Ubuntu 24.04 runner ships a Docker server (>=1 match of Docker\ Server; counting binary: /usr/bin/grep)
+PASS Ubuntu 24.04 runner ships a Docker client (>=1 match of Docker\ Client; counting binary: /usr/bin/grep)
+NOTE this says the CI validation job runs on ubuntu-latest only. It says
+     NOTHING against a developer macOS host: section 1b showed the image
+     has a native arm64 child, reached through a runtime the template does
+     not provision (Docker Desktop, OrbStack, Colima, Podman) or through
+     GitHub Codespaces with no local runtime at all.
+
+========== 4 · Nothing bumps a pinned image digest (the accepted cost) ==========
+
+--- 4a · dependabot-core devcontainers parser parses FEATURES only ---
+dependabot-core commit read (pinned for this check): dc25739e082c6d97399b476ad4eb06b5559895e7
+PASS the parser entry point calls parse_features (>=1 match of parse_features\(config_dependency_file\); counting binary: /usr/bin/grep)
+PASS references to an image parser in that file (expected 0, got 0; counting binary: /usr/bin/grep)
+
+--- 4b · the pull request that would have added stale-image detection ---
+PASS #9271 state (expected closed, got closed; counting binary: /usr/bin/grep)
+title: Devcontainers integration for stale images
+closed_at: 2026-03-26T00:11:57Z
+NOTE so a features-free devcontainer.json has no automated bumper. The
+     decision carries that as an accepted cost with a re-verify trigger.
+
+========== 5 · Installer integrity, and where the Codex defect actually lands ==========
+
+--- 5a · the rust FEATURE fetch: unversioned rustup-init, checksum from the same host ---
+PASS fetches an unversioned rustup-init from static.rust-lang.org/rustup/dist (>=1 match of rustup/dist/; counting binary: /usr/bin/grep)
+PASS fetches its checksum from the SAME host (corruption, not provenance) (>=1 match of rustup-init.sha256; counting binary: /usr/bin/grep)
+PASS hard-coded per-architecture sha256 constants in the feature installer (expected 0, got 0; counting binary: /usr/bin/grep)
+
+--- 5b · the version-resolution defect raw/codex.md reported, at the pinned tag ---
+132:    if [ "$(echo "${requested_version}" | grep -o "." | wc -l)" != "2" ]; then
+PASS the "fully specified version" test uses grep -o "." (matches every character) (>=1 match of grep\ -o\ \".\"\ \|\ wc\ -l; counting binary: /usr/bin/grep)
+PASS so version resolution reaches git ls-remote (>=1 match of git\ ls-remote\ --tags; counting binary: /usr/bin/grep)
+
+--- 5c · the same-named issue is open ---
+PASS devcontainers/features#1726 state (expected open, got open; counting binary: /usr/bin/grep)
+title: Version resolution over unauthenticated git makes feature installs fail hard, with no fallback
+
+--- 5d · the IMAGE upstream pins rustup by version AND by hard-coded checksum ---
+rust-lang/docker-rust commit read (pinned for this check): 106af090b12292f33a7719670ba4d683b7273817
+PASS rustup-init fetched from a VERSIONED archive path (>=1 match of rustup/archive/1.29.0/; counting binary: /usr/bin/grep)
+PASS hard-coded per-architecture sha256 constants in the image Dockerfile (expected 7, got 7; counting binary: /usr/bin/grep)
+PASS base image is buildpack-deps:trixie (so make/curl/git are present) (>=1 match of FROM\ buildpack-deps:trixie; counting binary: /usr/bin/grep)
+NOTE gate 3, stated rather than dropped: the image carries provenance
+     pinning the feature lacks. That is a point FOR the image-only shape.
+
+========== 6 · The one Rust-specific postCreate line, and why it is well-mannered ==========
+
+--- 6a · rustup auto-installs the toolchain rust-toolchain.toml names ---
+PASS automatic install restored, opt-out by RUSTUP_AUTO_INSTALL (>=1 match of RUSTUP_AUTO_INSTALL; counting binary: /usr/bin/grep)
+PASS later lower-priority equivalent: rustup set auto-install disable (>=1 match of set\ auto-install\ disable; counting binary: /usr/bin/grep)
+
+--- 6b · `rustup toolchain install` with no argument installs the ACTIVE toolchain ---
+Install or update the given toolchains, or by default the active toolchain
+PASS help text states the no-argument behaviour (expected 1, got 1; counting binary: /usr/bin/grep)
+NOTE the rustup version that produced this is in ./toolchain.txt, not here,
+     so the log stays byte-identical across hosts.
+
+========== 7 · The py and ts precedent, read at their pins (F200 and F193) ==========
+
+--- 7a · py post-create.sh at b08bccfb ends in the repository own two-level chain ---
+export PATH="$HOME/.local/bin:$PATH"
+make bootstrap
+just setup
+PASS post-create.sh runs make bootstrap (expected 1, got 1; counting binary: /usr/bin/grep)
+PASS post-create.sh runs just setup (expected 1, got 1; counting binary: /usr/bin/grep)
+PASS apt-get preamble present in py (absent from the Rust recommendation) (expected 1, got 1; counting binary: /usr/bin/grep)
+
+--- 7b · py two extension lists at b08bccfb have already drifted (the F193 finding) ---
+PASS extensions named in .devcontainer/devcontainer.json (expected 4, got 4; counting binary: /usr/bin/grep)
+PASS extensions named in .vscode/extensions.json (expected 11, got 11; counting binary: /usr/bin/grep)
+PASS extensions named in BOTH (expected 3, got 3; counting binary: /usr/bin/grep)
+in both:
+charliermarsh.ruff
+ms-python.python
+tamasfe.even-better-toml
+devcontainer only:
+EditorConfig.EditorConfig
+PASS recommended natively but withheld from a container contributor (expected 8, got 8; counting binary: /usr/bin/grep)
+
+--- 7c · ts at cb1cbcb2 carries no .devcontainer at all ---
+PASS entries under .devcontainer in the ts pinned tree (expected 0, got 0; counting binary: /usr/bin/grep)
+
+========== 8 · Practice: how many well-regarded Rust projects ship a devcontainer ==========
+
+--- 8a · .devcontainer directory presence, one HTTP status per repository ---
+BurntSushi/ripgrep 404
+SeaQL/sea-orm 404
+astral-sh/ruff 200
+astral-sh/uv 404
+biomejs/biome 200
+bytecodealliance/wasmtime 404
+clap-rs/clap 404
+denoland/deno 200
+gfx-rs/wgpu 404
+helix-editor/helix 404
+influxdata/influxdb 404
+meilisearch/meilisearch 404
+nushell/nushell 404
+openai/codex 404
+paritytech/polkadot-sdk 404
+pola-rs/polars 404
+rust-lang/cargo 404
+rust-lang/rust 404
+rust-lang/rust-analyzer 404
+rust-lang/rustlings 404
+rust-lang/rustup 404
+rustdesk/rustdesk 404
+serde-rs/serde 404
+sharkdp/bat 404
+starship/starship 404
+tauri-apps/tauri 200
+tokio-rs/axum 404
+tokio-rs/tokio 404
+typst/typst 404
+vectordotdev/vector 404
+zed-industries/zed 404
+PASS repositories probed (whole file counted, no head/cut) (expected 31, got 31; counting binary: /usr/bin/grep)
+PASS repositories carrying a .devcontainer directory (expected 4, got 4; counting binary: /usr/bin/grep)
+NOTE the direction of this signal is AGAINST adopting: most well-regarded
+     Rust projects ship no devcontainer. The decision carries that as the
+     runner-up case, not as a refutation of the adopters being template-like.
+
+========== 9 · Repository-local facts the decision depends on ==========
+
+--- 9a · the four fixed registry rows are byte-identical to this run inputs ---
+PASS msrv-policy row byte-identical between registry and run inputs (binary: /usr/bin/grep)
+PASS rust-edition row byte-identical between registry and run inputs (binary: /usr/bin/grep)
+PASS target-os-matrix row byte-identical between registry and run inputs (binary: /usr/bin/grep)
+PASS license row byte-identical between registry and run inputs (binary: /usr/bin/grep)
+
+--- 9b · the four values this decision writes under ## Parameters ---
+- assumes msrv-policy = stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+- assumes rust-edition = 2024
+- assumes target-os-matrix = ubuntu-latest, macos-latest
+- assumes license = MIT OR Apache-2.0
+
+--- 9c · the prerequisite decision this run was given is the published one ---
+PASS R42 DECISION.md sha256 matches inputs/prerequisites.json (expected a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c, got a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c; counting binary: /usr/bin/grep)
+
+--- 9d · R69 has since published web-extra-surface; it fixes no port number ---
+PASS web-extra-surface leaves host/port to an R77-named environment variable (binary: /usr/bin/grep)
+NOTE therefore the recommendation declares no forwardPorts key, and the
+     reason is stronger than "R69 is unset": R69 is resolved and fixes no port.
+
+========== Result ==========
+ALL ASSERTIONS PASSED (0 failures)
+Host toolchain record: ./toolchain.txt
+Snapshots and their first-retrieval date: ./snap/RETRIEVED.txt

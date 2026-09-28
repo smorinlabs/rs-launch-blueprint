@@ -1,0 +1,96 @@
+== environment ==
+repo root:      /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+checkout shape: .git is a file (git worktree)
+/usr/bin/grep version: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+
+== the org CLI Design Standard v1.4.14, blob f9de0437baece3383e73ca2c5f48b7ab399b51c7 ==
+PASS  CLI standard blob f9de0437baece3383e73ca2c5f48b7ab399b51c7 resolves and is readable
+      cli.md:244 | | Required global core | `--verbose` | `-v` | Increase diagnostic detail (repeatable; see R4.4). |
+PASS  R4.1 requires -v/--verbose in the required global core
+      cli.md:245 | | Required global core | `--quiet` | `-q` | Suppress non-essential output. |
+PASS  R4.1 requires -q/--quiet in the required global core
+      cli.md:266 | `-v`/`--verbose` **MUST** be repeatable to raise the level (`-v`, `-vv`, `-vvv`); `--debug` is equivalent to the maximum level plus internal detail; `
+PASS  R4.4 (MUST) is the one-ladder rule and admits --log-level
+      cli.md:266 | `-v`/`--verbose` **MUST** be repeatable to raise the level (`-v`, `-vv`, `-vvv`); `--debug` is equivalent to the maximum level plus internal detail; `
+PASS  R4.4 (MUST) --debug overrides --quiet
+      cli.md:287 | **R5.1 — Precedence chain. (MUST)**
+PASS  R5.1 (MUST) is the precedence-chain rule
+      cli.md:288 | Configuration **MUST** resolve in this order, highest priority first, and the tool **MUST** document it verbatim:
+PASS  R5.1 (MUST) configuration resolves in this order, highest priority first
+      cli.md:290 | 1. Command-line flags
+PASS  R5.1 tier 1 is command-line flags
+      cli.md:291 | 2. Environment variables (`TOOL_*`)
+PASS  R5.1 tier 2 is TOOL_* environment variables, below every flag
+      cli.md:322 | Environment variables **MUST** use the uppercase `TOOL_*` prefix with a deterministic mapping (`--some-flag` → `TOOL_SOME_FLAG`; for the fictional `ac
+PASS  R5.4 (MUST) deterministic flag-to-environment mapping
+      cli.md:332 | Secret values (tokens, passwords, keys) **MUST** be masked in all output — `config view`, `--debug`/request logs, progress, and error messages — e.g. 
+PASS  R5.6 (MUST) secret masking reaches --debug/request logs
+      cli.md:381 | Streams follow the POSIX file-descriptor contract — fd 1 (stdout) carries the command's *requested result*; fd 2 (stderr) carries everything else: dia
+PASS  R7.1 (MUST) stdout carries the result, stderr the diagnostics
+      cli.md:390 | A tool **SHOULD** detect whether stdout is a TTY and adjust *presentation* accordingly: interactive niceties when attached (spinners, pager, prompts),
+PASS  R7.3 (MUST) TTY state must not change the selected output FORMAT
+      cli.md:432 | Under any machine output format (`-o json`/`--json`, `-o jsonl`, `-o yaml`, or `-o name`), an ordinary command error **MUST** be emitted to stderr as 
+PASS  R7.8 (MUST) the machine error object may carry request_id
+
+== the org REST API Design Standard v2.0.0, blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9 ==
+PASS  REST standard blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9 resolves and is readable
+      rest.md:271 | **R1.7 — No silent deviation.** An API deviates from this standard only in
+PASS  R1.7 no silent deviation; a deviation is recorded or it is nonconformance
+      rest.md:348 | | `request-id` | Response | Correlation ID, emitted on every response including errors. Lowercase name; RFC 6648 deprecates new `X-` prefixed fields, 
+PASS  1.10 reserves the response header name request-id
+      rest.md:533 | **R2.10** Personally identifiable information MUST NOT appear in any URI —
+PASS  R2.10 (MUST) PII never in a URI, because URIs land in access logs
+      rest.md:599 | logging and metrics side effects do not violate safety.
+PASS  R3.3 logging side effects do not violate method safety
+      rest.md:1323 | **R8.2** Access tokens MUST NOT be accepted or emitted in URI query
+PASS  R8.2 (MUST) access tokens never in URI query parameters
+      rest.md:1422 | **R8.12** Secrets, credentials, and PII MUST NOT appear in problem
+PASS  R8.12 (MUST) 8.5 Redaction binds RESPONSE CONTENT
+      rest.md:1427 | > Provenance: Apparatus — ratified at Gate D 2026-08-09 — gap review item CLI-R5.6.
+PASS  R8.12 provenance names CLI-R5.6, the rule that reaches logs
+      rest.md:1752 | **R11.7** Every response, including errors, MUST carry the `request-id`
+PASS  R11.7 (MUST) every response carries the request-id header
+      rest.md:1759 | **R11.8** W3C Trace Context `traceparent` MUST be propagated;
+PASS  R11.8 (MUST) traceparent is propagated
+
+== tracing-subscriber 0.3.23 source, read in the local Cargo registry ==
+PASS  tracing-subscriber-0.3.23 source present at /Users/stevemorin/.cargo/registry/src/index.crates.io-1949cf8c6b5b557f/tracing-subscriber-0.3.23
+      json.rs:175 |         match serde_json::from_str::<serde_json::Value>(data) {
+PASS  Format<Json> parses span fields as JSON and panics on failure
+      json.rs:200 |                 "span '{}' had malformed fields! this is a bug.\n  error: {}\n  fields: {:?}",
+PASS  the panic message a non-JSON FormatFields triggers
+      json.rs:253 |             let format_field_marker: std::marker::PhantomData<N> = std::marker::PhantomData;
+PASS  N: FormatFields is reduced to a PhantomData marker
+      json.rs:266 |                 let mut visitor = tracing_serde::SerdeMapVisitor::new(serializer);
+PASS  flattened branch serialises EVENT fields through tracing_serde, not N
+      json.rs:272 |                 serializer.serialize_entry("fields", &event.field_map())?;
+PASS  non-flattened branch also bypasses N, via event.field_map()
+      util.rs:43 |         let _ = tracing_log::LogTracer::init();
+PASS  set_default ignores the log-bridge error (scoped path)
+      util.rs:62 |         dispatcher::set_global_default(self.into()).map_err(TryInitError::new)?;
+PASS  try_init installs the global dispatcher first
+      util.rs:69 |         tracing_log::LogTracer::builder()
+PASS  try_init then installs the log bridge with the max-level hint
+      util.rs:94 |             .expect("failed to set global default subscriber")
+PASS  init() is try_init().expect(..), which is why template code calls try_init
+      mod.rs:88 | pub trait RecordFields: crate::sealed::Sealed<RecordFieldsMarker> {
+PASS  RecordFields is a sealed trait
+      mod.rs:1228 | impl<'a> MakeVisitor<Writer<'a>> for DefaultFields {
+PASS  DefaultFields DOES implement MakeVisitor, so a thin wrapper works
+      time_crate.rs:53 | /// every time it formats a message, which may be unsound or fail. With `OffsetTime`, the offset is
+PASS  LocalTime's own doc: determining the offset may be unsound or fail
+PASS  tracing-subscriber 0.3.23 declares [badges.maintenance] status = experimental
+PASS  the json feature pulls tracing-serde, serde and serde_json
+PASS  JsonFields has NO MakeVisitor impl, so its visitor cannot be decorated
+
+== parameter lines against the live registry ==
+PASS  all five '- assumes' lines are byte-identical to docs/port/PARAMETERS.md
+PASS  exactly one '- owns' line is declared
+PASS  the owned parameter is logging-pipeline-contract, as research/CLAUDE.md's R58 row says
+PASS  the '- owns' value carries no backtick and no pipe
+PASS  the H1 is the date-first title the revision rules require
+PASS  no '## Supersedes' section, correct since RUNBOOK allows it only for a reversal
+PASS  exactly one 're-verify:' line
+PASS  fitness gate 1 is recorded with the owner ruling's exact wording (5 places)
+
+PASS=48 FAIL=0 SKIP=0 TOTAL=48

@@ -1,0 +1,88 @@
+== toolchain ==
+rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+Darwin arm64
+/usr/bin/grep version: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+
+== build ==
+PASS  probe builds on this toolchain (tracing 0.1.44 + tracing-subscriber 0.3.23, edition 2024, rust-version 1.96)
+
+== S1  stock Format<Json> vs a redacting FormatFields ==
+S1:{"timestamp":"","level":"INFO","fields":{"message":"processing request","user":"alice","token":"sk_live_EVENTSECRET","password":"hunter2"},"target":"r58probe","span":{"api_key":"[REDACTED]","request_id":"abc-123","name":"request"},"spans":[{"api_key":"[REDACTED]","request_id":"abc-123","name":"request"}]}
+PASS  S1a stock .json() leaks the event field 'token' in clear
+PASS  S1b stock .json() leaks the event field 'password' in clear
+PASS  S1c the SPAN field IS redacted by the same FormatFields
+
+== S2  template-owned FormatEvent + FormatFields ==
+S2-STDOUT:RESULT-ON-STDOUT
+S2:{"level":"INFO","target":"r58probe","message":"processing request","user":"alice","token":"[REDACTED]","password":"[REDACTED]","span":{"request_id":"abc-123","api_key":"[REDACTED]"}}
+PASS  S2a owned formatter redacts the event field 'token'
+PASS  S2b owned formatter redacts the event field 'password'
+PASS  S2c owned formatter redacts the span field 'api_key'
+PASS  S2d no secret byte survives on the owned structured profile
+
+== S3  human profile, DefaultFields wrapper ==
+S3:  INFO request{request_id="abc-123" api_key="[REDACTED]"}: r58probe: processing request user="alice" token="[REDACTED]" password="[REDACTED]"
+PASS  S3a human profile redacts the span field
+PASS  S3b human profile redacts the event field 'token'
+PASS  S3c no secret byte survives on the human profile
+
+== S4  the global dispatcher installs once ==
+S4:FIRST_IS_OK=true
+S4:SECOND_IS_ERR=true
+PASS  S4a the first try_init() succeeds
+PASS  S4b the second try_init() is Err, not a panic and not a takeover
+
+== S4b a host that installed only a log logger (partial install) ==
+S4B:TRY_INIT_IS_ERR=true
+S4B:  INFO r58probe: S4B:PARTIAL-HOST-EVENT
+PASS  S4c try_init() is Err when the log bridge is already owned
+PASS  S4d the dispatcher is installed anyway, so Err alone cannot mean HostOwned
+
+== S5  reload::Layer swaps the filter after installation ==
+S5:  INFO r58probe: AFTER-SWAP-INFO
+ DEBUG r58probe: AFTER-SWAP-DEBUG
+PASS  S5a an info! before the swap is filtered out by EnvFilter(warn)
+PASS  S5b an info! after the swap renders
+PASS  S5c a debug! after the swap renders
+
+== S6  the log bridge is installed by try_init with no explicit call ==
+  INFO r58probe: S6:LOG-CRATE-RECORD
+  INFO r58probe: S6:TRACING-RECORD
+PASS  S6a a log::info! reaches the fmt layer with no LogTracer call
+PASS  S6b a tracing::info! reaches the same layer
+
+== S7  a secrecy::SecretString never renders its value ==
+S7:  INFO r58probe: secrecy check secret_value=SecretBox<str>([REDACTED])
+PASS  S7a SecretString renders as SecretBox<str>([REDACTED])
+PASS  S7b the secret's plaintext never appears
+
+== S8  RUSTSEC-2025-0055: control bytes are escaped, not emitted raw ==
+S8:RAW_ESC_PRESENT=false
+S8:RAW_BEL_PRESENT=false
+S8:  INFO r58probe: ansi check untrusted="\u{1b}[31mRED\u{1b}[0m\u{7}"
+PASS  S8a no raw ESC (0x1b) byte reaches the sink
+PASS  S8b no raw BEL (0x07) byte reaches the sink
+PASS  S8c the escape is printed in Rust escape notation
+
+== S9  a log::Record carries no field keys to redact ==
+S9:  INFO dep: connecting token=sk_live_LOGFACADE password=hunter2
+  INFO r58probe: tracing side token="[REDACTED]"
+PASS  S9a a secret inside a log::Record's message survives in clear
+PASS  S9b the same key on a tracing::Event IS redacted
+
+== S10 the residual gap in key-based masking (grounds OV-09) ==
+S10:KEYED_SECRET_MASKED=true
+S10:IN_VALUE_SECRET_MASKED=false
+S10:  INFO r58probe: redaction gap url="https://api.example.com/v1/x?token=sk_live_INURL" token="[REDACTED]"
+PASS  S10a a secret under a SENSITIVE key is masked
+PASS  S10b a secret inside a NON-sensitive key's value is NOT masked
+
+== S11 dependency-graph size per manifest (gate 6) ==
+core=4 facade=9 root=26 root_with_json=28
+PASS  S11a crates/core line resolves to 4 crates
+PASS  S11b tracing default features resolve to 9 crates
+PASS  S11c recommended root line resolves to 26 crates
+PASS  S11d the json feature adds exactly 2 crates
+
+PASS=33 FAIL=0 SKIP=0 TOTAL=33

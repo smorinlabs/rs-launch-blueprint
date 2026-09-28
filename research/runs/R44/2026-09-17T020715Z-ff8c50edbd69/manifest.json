@@ -115,17 +115,44 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "actor": "s1-controller",
+      "at": "2026-09-28T05:04:03Z",
+      "migration": {
+        "previous_input_hashes": {
+          "parameters": "88609ba0a3cfaa2a552859c03110c21455c7697eb63ca5a25b59037f87fa0011",
+          "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+          "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+          "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+          "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+          "prerequisites": "43516c5da6e15a18369f50a0dd54d2e6dfdbec3214d1c60e7913bba3cf8b0485",
+          "prompt": "3d5617dd5f38df04e13d2e9693d3535445c3146546ab7b4e8fdc041b720aa904",
+          "registry": "6560edd363acc5b728aef2c39f61c157281a2b403c7077dd76288e765226f593"
+        },
+        "reason": "Q23 batch-4 re-freeze: live-input drift; DECISION bytes unchanged"
+      },
+      "state": "collected"
+    },
+    {
+      "at": "2026-09-28T05:06:27Z",
+      "publication": {
+        "acceptance_sha256": "a75cd889075c98aa207919253cd5fc75ea4c2b1c06668ec6c1e0d2f449ab7487",
+        "decision_sha256": "e3dc9d84bce353cc4ee682a5b28d00bd4fc780ad494ea8284546135f2667a371",
+        "transaction": "89f56a48053143b2aeacd3f9bb089c08"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
-    "parameters": "88609ba0a3cfaa2a552859c03110c21455c7697eb63ca5a25b59037f87fa0011",
+    "parameters": "0b1fdc5f3bc2ffbf8f5d6eae74b3c46629fa1b69666d002a9560dd0a2a6e5bd6",
     "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
     "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
-    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+    "policy": "fd746cb86e545023aed589b9d0c4db7125673a62849181ac898db56a5fa3545c",
     "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
     "prerequisites": "43516c5da6e15a18369f50a0dd54d2e6dfdbec3214d1c60e7913bba3cf8b0485",
     "prompt": "3d5617dd5f38df04e13d2e9693d3535445c3146546ab7b4e8fdc041b720aa904",
-    "registry": "6560edd363acc5b728aef2c39f61c157281a2b403c7077dd76288e765226f593"
+    "registry": "bcd4c4ca4d7bdc76880e80245eb775a7ad05b7b74e6e7644b8ab1511d980aec6"
   },
   "item": "R44",
   "model": "claude-fable-5-1",
@@ -164,6 +191,11 @@
     }
   },
   "prompt_source": "research/topics/44-devcontainer-environment/prompts/devcontainer-environment.prompt.md",
+  "publication": {
+    "acceptance_sha256": "a75cd889075c98aa207919253cd5fc75ea4c2b1c06668ec6c1e0d2f449ab7487",
+    "decision_sha256": "e3dc9d84bce353cc4ee682a5b28d00bd4fc780ad494ea8284546135f2667a371",
+    "transaction": "89f56a48053143b2aeacd3f9bb089c08"
+  },
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
     "codex",
@@ -171,7 +203,7 @@
   ],
   "run_id": "2026-09-17T020715Z-ff8c50edbd69",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "focused",
-  "updated_at": "2026-09-17T05:02:36Z"
+  "updated_at": "2026-09-28T05:06:27Z"
 }
