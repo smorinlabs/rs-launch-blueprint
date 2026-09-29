@@ -1,0 +1,10 @@
+UTC now: 2026-09-26T21:46:18Z
+host: Darwin 25.4.0 arm64 git version 2.50.1 (Apple Git-155)
+cmd: sh r14-rev1-pybody.sh
+BODY PASS verbatim py body,       27 lines
+P1 PASS py=0 guard=1 add-then-delete
+P2 PASS py=0 guard=1 all-zero base
+P3 PASS py=0 guard=1 modified grown
+P4 PASS py=0 guard=1 spaced name
+pybody checks: 4 failures: 0
+exit=0

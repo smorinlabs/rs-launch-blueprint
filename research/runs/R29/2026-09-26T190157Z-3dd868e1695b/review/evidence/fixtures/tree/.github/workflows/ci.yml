@@ -1,0 +1,30 @@
+name: ci
+on:
+  pull_request:
+  push:
+    branches: [main]
+permissions: {}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+jobs:
+  hygiene:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
+        with:
+          persist-credentials: false
+      - name: Install dprint
+        run: just install-tool dprint@0.57.4
+      - name: Non-code formatting (R29)
+        run:   dprint check
+      - name: Report
+        env:
+          PR: ${{ github.event.pull_request.number }}
+        run: |
+          echo "pull request: ${PR:-none}"
+          if [ -n "${PR:-}" ]; then
+            echo "checked"
+          fi

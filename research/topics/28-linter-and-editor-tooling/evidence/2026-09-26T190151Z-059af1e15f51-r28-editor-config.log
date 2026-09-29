@@ -1,0 +1,65 @@
+== tools on PATH
+CARGO_HOME=/tmp/cargo-s9-R28
+/Users/stevemorin/.cargo/bin/rust-analyzer
+/opt/homebrew/bin/cargo
+/opt/homebrew/bin/jq
+rust-analyzer 1.94.0 (4a4ef493 2026-03-02)
+cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+clippy 0.1.98
+jq-1.8.2
+
+== V1 rust-analyzer's check command defaults to cargo check, not clippy
+$ rust-analyzer --print-config-schema
+[{"key":"rust-analyzer.checkOnSave","default":true},{"key":"rust-analyzer.check.command","default":"check"}]
+PASS V1 — check.command default "check"; checkOnSave default true
+
+== V2 on this host the rust-analyzer binary and the cargo that runs the gate come from different toolchains
+rust-analyzer: rust-analyzer 1.94.0 (4a4ef493 2026-03-02)   (resolved: /Users/stevemorin/.cargo/bin/rust-analyzer)
+clippy:        clippy 0.1.98   (resolved: /opt/homebrew/bin/cargo)
+PASS V2 — recorded (observation, not a pass/fail property of the recommendation)
+
+== V3 proposed .vscode/extensions.json (R28-owned entries only) parses and names exactly the two Rust extensions
+{
+  "recommendations": [
+    "rust-lang.rust-analyzer",
+    "vadimcn.vscode-lldb"
+  ]
+}
+PASS V3 — rust-lang.rust-analyzer,vadimcn.vscode-lldb
+
+== V4 proposed .vscode/settings.json parses and holds exactly one key, a lint-visibility key, no version pin
+{
+  "rust-analyzer.check.command": "clippy"
+}
+PASS V4 — one key; the key exists in the server schema
+
+== V5 proposed .vscode/launch.json parses; every configuration is CodeLLDB (type lldb) with a cargo build spec
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "CLI: Launch",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": { "args": ["run", "--package", "<cli-package>", "--bin", "<cli-bin>"] },
+      "cwd": "${workspaceFolder}",
+      "sourceLanguages": ["rust"]
+    },
+    {
+      "name": "CLI: Launch (With Args)",
+      "type": "lldb",
+      "request": "launch",
+      "cargo": { "args": ["run", "--package", "<cli-package>", "--bin", "<cli-bin>"] },
+      "args": ["--help"],
+      "cwd": "${workspaceFolder}",
+      "sourceLanguages": ["rust"]
+    }
+  ]
+}
+PASS V5 — 2 configurations, all type lldb with cargo.args
+
+== V6 the LLDB DAP runner-up needs a system lldb-dap: present on this macOS host through Xcode (observation; ubuntu-latest not checked)
+xcrun -f lldb-dap -> /Applications/Xcode.app/Contents/Developer/usr/bin/lldb-dap
+PASS V6 — recorded (observation, macOS only)
+
+== summary: 0 failing case(s)

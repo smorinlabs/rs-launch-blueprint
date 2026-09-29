@@ -1,0 +1,18 @@
+# R59 check G — enablement precedence
+run (UTC): 2026-09-28T20:01:44Z
+host: Darwin 25.4.0 arm64
+rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+test tests::p1_nothing_is_off ... ok
+test tests::p2_config_path_used ... ok
+test tests::p3_empty_config_is_off ... ok
+test tests::p5_empty_env_selects_default ... ok
+test tests::p6_flag_beats_env ... ok
+test tests::p7_bare_flag_selects_default ... ok
+test tests::p8_bare_flag_without_state_dir_is_off ... ok
+test tests::p4_env_beats_config ... ok
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+PASS G01 — cargo test --lib exits 0 — expected=[0] actual=[0]
+PASS G02 — all 8 precedence tests pass — expected=[8] actual=[8]
+PASS G03 — summary line — expected=[test result: ok. 8 passed; 0 failed] actual=[test result: ok. 8 passed; 0 failed]
+
+SUMMARY: 3 checks, 0 failed, 0 skipped

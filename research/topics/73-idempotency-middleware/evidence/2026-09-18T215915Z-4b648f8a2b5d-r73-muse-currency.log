@@ -1,0 +1,68 @@
+== R73 Muse leg and revision-1 currency ==
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+run_date_utc: 2026-09-27T06:28:55Z
+mode: SNAPSHOT
+
+-- M0 identity and authority --
+PASS M0-raw — raw/muse.md is sha256 aca328034d31b0280241da56ec8f603e21c3230a299023dc00d0b9bac2870536, 291 lines — the leg the ledger recorded as collected on 2026-09-23
+PASS M0-op — operations/muse.json records model muse-spark, request 511e5c1c36164801b65a8c5383665aa3 (state field reads 'submitting'; the leg itself is on disk, see M0-raw)
+PASS M0-policy — research/EXECUTION.json engine_overrides.R73 = [muse,opus,doxa]: Muse is required and Codex is not
+PASS M0-manifest — manifest.json required_engines = [muse,opus,doxa]
+PASS M0-prompt-frozen — inputs/prompt.md is byte-identical to the current topic prompt, so the frozen input already carries the Muse substitution
+PASS M0-prompt-engines — research/topics/73-idempotency-middleware/prompts/idempotency-middleware.prompt.md:25 carries "- engines: muse, opus, doxa" — the mirrored engines line the prompt calls authoritative
+PASS M0-runbook — RUNBOOK.md §2 lists R73 in the Muse bulk set, records Q9.B retiring Codex from P02, and records Q17.A (2026-09-27)
+PASS M0-ledger — execution-ledger.md:1114 records "Owner decision (2026-09-21, Q5.A): Muse-bulk all 17 remaining legs"
+PASS M0-ledger — execution-ledger.md:1121 records "Codex is retired from P02 (legs Muse, synthesis/judgment/empirical Claude)"
+PASS M0-ledger — execution-ledger.md:1215 records "Q17.A IMPLEMENTED (2026-09-27)"
+PASS M0-ledger — execution-ledger.md:1160 records "R73 MUSE LEG COLLECTED, 2026-09-23: sha aca32803"
+
+-- M1 the Muse positions this decision adjudicates --
+PASS M1-none-exists — research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/raw/muse.md:25 carries "none exists for any leading framework" — Muse: no published middleware exists
+PASS M1-tower-dep — research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/raw/muse.md:87 carries "`tower = "0.5"`" — Muse: tower as a direct dependency
+PASS M1-moka — research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/raw/muse.md:140 carries "`moka` 0.12.16 with feature `sync`" — Muse: a moka sync::Cache store
+PASS M1-body-key — research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/raw/muse.md:185 carries "body_hash: [u8; 32]" — Muse: the body hash folded into the cache key
+PASS M1-async-trait — research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/raw/muse.md:87 carries "`IdempotencyStore` async trait" — Muse: an async store trait
+PASS M1-replayed — research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/raw/muse.md:23 carries "`Idempotency-Replayed: true`" — Muse: the replay marker as the token true
+PASS M1-stripe — research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/raw/muse.md:21 carries "only 2xx outcomes are cached so genuine errors are retried for real (Stripe semantics)" — Muse: 2xx-only attributed to Stripe
+PASS M1-z2p-author — research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/raw/muse.md:15 carries "Luke Maxwell, *Zero to Production in Rust*" — Muse: the Zero To Production author as named
+PASS M1-sha2-default — research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/raw/muse.md:209 carries "`sha2` 0.11.0, default features." — Muse: sha2 with default features
+PASS M1-gap-g1 — research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/raw/muse.md:291 carries "(G1) no mainstream Rust template documents in-memory idempotency middleware" — Muse: the LOW-question gap it records
+PASS M1-no-concurrency — raw/muse.md contains no 409, no 422 and no in-flight state anywhere, so its design never rejects a concurrent duplicate or a reused key with a different body
+PASS M1-missed — raw/muse.md never names cratestack-axum or axum-idempotent, both of which are published (registry checks E4-cratestack-exists and E1 rows)
+
+-- M2 crates.io: GET https://crates.io/api/v1/crates/<name> --
+PASS M2-404-idempotency — crates.io idempotency is HTTP 404 (2026-09-27T06:21:55Z) — this Muse probe reproduces
+PASS M2-404-tower-idempotency — crates.io tower-idempotency is HTTP 404 (2026-09-27T06:21:58Z) — this Muse probe reproduces
+PASS M2-404-axum-idempotency — crates.io axum-idempotency is HTTP 404 (2026-09-27T06:22:00Z) — this Muse probe reproduces
+PASS M2-404-idempotency-key — crates.io idempotency-key is HTTP 404 (2026-09-27T06:22:02Z) — this Muse probe reproduces
+PASS M2-minco — minco-plugin-idempotency has 870 all-time downloads (Muse said 869 on 2026-09-25) — a framework plugin with negligible adoption, as Muse says
+PASS M2-lru — lru newest unyanked is 0.18.5 2026-09-23 — published after revision 1's 2026-09-19 retrieval; it is why revision 1's caret-pinned P6-lru stopped reproducing (probe P6-lru-latest)
+
+-- M3 Zero To Production --
+PASS M3-author — https://www.zero2prod.com/ names the author Luca Palmieri and never "Luke Maxwell" — the Muse attribution is wrong
+PASS M3-z2p-module — GET repos/LukeMathWalker/zero-to-production/contents/src/idempotency lists: key.rs mod.rs persistence.rs — the book's companion repository carries the pattern as a named module, DB-backed
+PASS M3-opus-z2p — research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/raw/opus.md:41 carries "`LukeMathWalker/zero-to-production` `src/idempotency/{key,persistence,mod}.rs`" — the Opus leg read the same module at source
+PASS M3-opus-bin — research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/raw/opus.md:24 carries "*Zero To Production in Rust* `src/idempotency/` (Postgres, actix-web)" — the Opus leg files it as a pattern, not a crate or template
+
+-- K1 F314 citation --
+PASS K1-webservice — docs/port/areas/web-service.md:20 carries "Stripe semantics: errors are meant to be retried for real, not replayed." — the F314 Notes text the controller request targets
+PASS K1-webservice-row — docs/port/areas/web-service.md:20 carries "| F314 |" — that line is the F314 row
+PASS K1-prompt — research/runs/R73/2026-09-18T215915Z-4b648f8a2b5d/inputs/prompt.md:9 carries "(Stripe semantics: errors are meant to be retried for real, not replayed)" — the prompt's per-row evidence line carries it too
+PASS K1-ledger-row — docs/port/COMMONALITY.md:318 carries "| F314 |" — COMMONALITY.md:318 is the F314 row
+PASS K1-ledger-nostripe — COMMONALITY.md:318 carries no Stripe text, so revision 1 cited the wrong file
+
+-- K2 R70 currency --
+PASS K2-r70-r3 — R70-r3-snapshot.md is the frozen revision 3 (sha256 802e5292…)
+PASS K2-r70-m1 — research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/R70-r3-snapshot.md:36 carries "`type` becomes **mandatory** and template-bound" — R70 revision 3 move M-1 makes type mandatory under R5.13 point 5
+PASS K2-r70-field — research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/R70-r3-snapshot.md:134 carries "**always present**, never `about:blank`" — R70 revision 3 envelope field table forbids about:blank
+PASS K2-r70-r73 — research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/R70-r3-snapshot.md:497 carries "**R73** hands over five bodies" — R70 revision 3 already records the five bodies this item hands it
+PASS K2-r70-live — the live R70 DECISION.md is revision 4 and still makes type mandatory and forbids about:blank, so the conflict revision 1 flagged is resolved at R70
+
+-- K3 registry snapshot --
+PASS K3-fixed — the 4 fixed rows are identical in inputs/PARAMETERS.md and the live registry — the only rows this decision assumes
+PASS K3-drift — the snapshot and the live registry differ in exactly one row, ci-job-structure (R11, researched) — a value this item neither owns nor consumes
+
+-- K4 revision-1 snapshot --
+PASS K4-r1 — review/R73-r1-snapshot.md is byte-identical to revision 1 (sha256 b7368070…), the text both audits judged
+
+CHECKS RUN: 46 PASS: 46 FAIL: 0 SKIP: 0

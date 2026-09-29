@@ -1,0 +1,64 @@
+== R73 registry figures ==
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+run_date_utc: 2026-09-27T06:28:50Z
+mode: SNAPSHOT — reading committed snapshots, no network
+
+-- crates.io: GET https://crates.io/api/v1/crates/<name> --
+crate              recent_downloads      downloads  newest_unyanked                    rust_version license
+sha2                    257569817      956117098  0.11.0 2026-03-25T15:05:27.949444Z 1.85         MIT OR Apache-2.0
+axum-idempotent               230           6911  0.3.0 2026-08-19T14:12:13.968440Z  1.85.0       MIT
+cratestack-axum             14687          15173  0.12.0 2026-09-06T20:14:16.594857Z 1.98.0       MIT
+use-idempotency                88            135  0.0.1 2026-05-26T00:13:49.411246Z  1.95.0       MIT OR Apache-2.0
+idempotent                     59            144  2.0.0 2026-09-16T11:08:59.905754Z  1.98.0       MPL-2.0
+moka                     36350556      127190824  0.12.16 2026-08-09T23:29:26.591998Z 1.71.1       (MIT OR Apache-2.0) AND Apache-2.0
+mini-moka                 1531658        8352881  0.10.3 2024-01-08T00:26:35.702669Z 1.61         MIT OR Apache-2.0
+lru                      89463264      349269295  0.18.4 2026-09-03T00:26:06.507992Z 1.85.0       MIT
+hashlink                 94153538      336327371  0.12.2 2026-09-07T11:07:51.607641Z 1.85         MIT OR Apache-2.0
+quick_cache               7095707       26545071  0.7.0 2026-06-27T15:59:43.421095Z  1.85         MIT
+blake3                   44485979      184054587  1.8.7 2026-08-20T09:09:56.903547Z  NOT-DECLARED CC0-1.0 OR Apache-2.0 OR Apache-2.0 WITH LLVM-exception
+twox-hash                54271286      245026097  2.1.4 2026-08-27T13:07:54.928244Z  1.81         MIT
+xxhash-rust              30033507      104513030  0.8.18 2026-07-21T10:54:28.375103Z NOT-DECLARED BSL-1.0
+ruts                          261          15033  0.10.1 2026-05-18T20:35:14.893330Z 1.85.0       MIT
+tower                   174508765      670171877  0.5.3 2026-01-12T18:43:05.227461Z  1.64.0       MIT
+
+-- the recommended crate --
+PASS E2-sha2-license — sha2 newest_unyanked_license = MIT OR Apache-2.0 — the licence is exactly the repository license value
+PASS E2-sha2-msrv — sha2 newest_unyanked_msrv = 1.85 — declared, and below the 1.96 floor, so gate 2 passes
+PASS E2-sha2-version — sha2 newest_unyanked = 0.11.0 2026-03-25T15:05:27.949444Z — the recommended pin is the newest unyanked release
+
+-- gate 2 exclusions, asserted rather than asserted-about --
+PASS E3-blake3-msrv — blake3 newest_unyanked_msrv = NOT-DECLARED — blake3 declares no rust-version, so the tree floor is unverifiable
+PASS E3-xxhash-msrv — xxhash-rust newest_unyanked_msrv = NOT-DECLARED — xxhash-rust likewise
+PASS E3-twox-license — twox-hash newest_unyanked_license = MIT — twox-hash is MIT-only, so it forgoes Apache-2.0 patent grant
+PASS E3-cratestack-msrv — cratestack-axum newest_unyanked_msrv = 1.98.0 — cratestack-axum declares 1.98.0, ABOVE the 1.96 floor — gate 2 excludes it
+
+-- claims the four legs disagree on, settled at the registry --
+PASS E4-cratestack-exists — cratestack-axum newest_unyanked = 0.12.0 2026-09-06T20:14:16.594857Z — cratestack-axum IS published; the Opus leg missed it
+PASS E4-cratestack-adoption — cratestack-axum has 14687 90-day downloads against axum-idempotent's 230, so it is the better-adopted implementation, not a curiosity
+PASS E4-idempotent-live — idempotent any_unyanked = YES — the gemini leg claim that `idempotent` was entirely yanked is FALSE
+PASS E4-idempotent-ver — idempotent newest_unyanked = 2.0.0 2026-09-16T11:08:59.905754Z — the Opus leg reading of 2.0.0 is the correct one, not gemini 0.0.0
+PASS E4-use-idempotency — use-idempotency has 135 all-time downloads — the perplexity leg's lead member is effectively unadopted
+PASS E4-tower-license — tower newest_unyanked_license = MIT — tower is MIT-only; correct in the OpenAI leg and easy to assume otherwise
+
+-- RustSec: https://rustsec.org/packages/<name>.html --
+  sha2               HTTP 200
+  moka               HTTP 404
+  hashlink           HTTP 404
+  lru                HTTP 200
+  quick_cache        HTTP 404
+  axum-idempotent    HTTP 404
+  cratestack-axum    HTTP 404
+  axum               HTTP 404
+  tokio              HTTP 200
+  atty               HTTP 200
+PASS E5-control — the positive control (atty, which has a known advisory page) returns 200, so a 404 elsewhere is a real absence and not a blanket network failure
+PASS E5-sha2 — sha2 carries RUSTSEC-2021-0100, patched at >= 0.9.8, so 0.11.0 has no open advisory
+PASS E5-lru — the lru advisory page carries the 2026 memory-corruption advisories the decision cites as a posture finding
+
+-- GitHub, keyring-authenticated gh api, one call per 20 s --
+  RustCrypto/hashes                stars=2264 archived=False pushed_at=2026-09-15T06:42:47Z
+  jimmielovell/axum-idempotent     stars=5 archived=False pushed_at=2026-08-19T14:16:25Z
+  moka-rs/moka                     stars=2686 archived=False pushed_at=2026-08-09T23:17:14Z
+PASS E6-sha2-active — RustCrypto/hashes is not archived — the maintenance-state rubric needs this, not just a release date
+
+CHECKS RUN: 17 PASS: 17 FAIL: 0 SKIP: 0

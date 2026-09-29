@@ -1,17 +1,17 @@
 ================================================================
 R61 interactive-prompts — empirical check
 run directory : /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R61/2026-09-17T020714Z-98ef5e1e7d37
-executed at   : 2026-09-17T05:43:30Z (UTC)
+executed at   : 2026-09-27T08:02:54Z (UTC)
 retrieval date for every live figure below: the date on the line above
 ================================================================
 
 ### Section 1 — toolchain and platform
-rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
-cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
 os: Darwin arm64 / macOS 26.4
 python3: Python 3.14.7
 grep binary: /usr/bin/grep  (grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
-PASS C1a — local rustc is in the 1.9x series (observed 1.98.0)
+PASS C1a — local rustc is in the 1.9x series (observed 1.98.1)
 
 ### Section 2 — candidate tarballs, checksum-verified against crates.io
 endpoint: GET https://static.crates.io/crates/<n>/<n>-<v>.crate
@@ -249,35 +249,35 @@ PASS C9-ctl-body — the atty control page names a real advisory
 ### Section 10 — registry and repository figures (VOLATILE — see the comparison rule in DECISION.md)
 endpoint: GET https://crates.io/api/v1/crates/<name>   fields: crate.recent_downloads, crate.downloads,
           newest versions[] entry with yanked=false -> num, created_at
-  inquire    recent_downloads(90d)=4978577      downloads(all)=20585265     newest_non_yanked=0.9.4 created_at=2026-02-24
-  dialoguer  recent_downloads(90d)=16348116     downloads(all)=82200680     newest_non_yanked=0.12.0 created_at=2025-08-23
-  crossterm  recent_downloads(90d)=43995611     downloads(all)=191657943    newest_non_yanked=0.29.0 created_at=2025-04-05
-  console    recent_downloads(90d)=80406869     downloads(all)=349775351    newest_non_yanked=0.16.6 created_at=2026-09-10
-  cliclack   recent_downloads(90d)=1036365      downloads(all)=3429371      newest_non_yanked=0.5.6 created_at=2026-08-10
-  demand     recent_downloads(90d)=256972       downloads(all)=593441       newest_non_yanked=2.1.0 created_at=2026-08-25
+  inquire    recent_downloads(90d)=4859861      downloads(all)=21129460     newest_non_yanked=0.9.4 created_at=2026-02-24
+  dialoguer  recent_downloads(90d)=16927168     downloads(all)=84378406     newest_non_yanked=0.12.0 created_at=2025-08-23
+  crossterm  recent_downloads(90d)=45926965     downloads(all)=197899486    newest_non_yanked=0.29.0 created_at=2025-04-05
+  console    recent_downloads(90d)=82937148     downloads(all)=360061972    newest_non_yanked=0.16.6 created_at=2026-09-10
+  cliclack   recent_downloads(90d)=1089560      downloads(all)=3587202      newest_non_yanked=0.5.6 created_at=2026-08-10
+  demand     recent_downloads(90d)=273726       downloads(all)=622382       newest_non_yanked=2.3.0 created_at=2026-09-25
 PASS C10a — the recommended version is still inquire's newest non-yanked release [= 0.9.4]
 PASS C10b — the runner-up version is still dialoguer's newest non-yanked release [= 0.12.0]
 endpoint: GET https://api.github.com/repos/<o>/<r>   fields: stargazers_count, archived, pushed_at
 endpoint: GET https://api.github.com/search/issues?q=repo:<o>/<r>+is:issue+is:open   field: total_count
-  mikaelmello/inquire        stars=2626    archived=False pushed_at=2026-03-02
-  console-rs/dialoguer       stars=1614    archived=False pushed_at=2026-09-16
-  crossterm-rs/crossterm     stars=4223    archived=False pushed_at=2026-09-14
-  ast-grep/ast-grep          stars=15932   archived=False pushed_at=2026-09-16
+  mikaelmello/inquire        stars=2633    archived=False pushed_at=2026-03-02
+  console-rs/dialoguer       stars=1616    archived=False pushed_at=2026-09-21
+  crossterm-rs/crossterm     stars=4232    archived=False pushed_at=2026-09-14
+  ast-grep/ast-grep          stars=16050   archived=False pushed_at=2026-09-25
 PASS C10c — mikaelmello/inquire is not archived [= False]
   mikaelmello/inquire newest commit date (GET repos/<o>/<r>/commits?per_page=1, .[0].commit.committer.date): 2026-02-24T17:21:29Z
 PASS C10d — the newest inquire commit is still 2026-02-24 — the at-risk quiet interval is unchanged
   mikaelmello/inquire open issues=59 open PRs=30 (search/issues total_count, never open_issues_count)
 PASS C10e — inquire's open-PR queue is still large (30 >= 20) — at-risk signal (ii) holds
   stars, archived and pushed_at for the repositories not printed above:
-  console-rs/console         stars=1195    archived=False pushed_at=2026-09-10
-  fadeevab/cliclack          stars=367     archived=False pushed_at=2026-08-10
-  jdx/demand                 stars=258     archived=False pushed_at=2026-09-15
+  console-rs/console         stars=1197    archived=False pushed_at=2026-09-10
+  fadeevab/cliclack          stars=372     archived=False pushed_at=2026-08-10
+  jdx/demand                 stars=258     archived=False pushed_at=2026-09-25
   open issues and open PRs for every crate whose figures this decision tabulates:
-  console-rs/dialoguer       open_issues=71     open_prs=28
-  crossterm-rs/crossterm     open_issues=170    open_prs=76
-  console-rs/console         open_issues=48     open_prs=22
+  console-rs/dialoguer       open_issues=70     open_prs=27
+  crossterm-rs/crossterm     open_issues=171    open_prs=82
+  console-rs/console         open_issues=48     open_prs=23
   fadeevab/cliclack          open_issues=10     open_prs=0
-  jdx/demand                 open_issues=8      open_prs=4
+  jdx/demand                 open_issues=0      open_prs=3
 
 ### Section 11 — the shared adopter that proves R60's parser and this item's crate ship together
 38:clap = { version = "4.5.4", features = ["derive"] }
@@ -307,12 +307,12 @@ PASS C12e — no async runtime is pulled in at any depth
     signal-hook v0.3.18
     ├── crossterm v0.29.0
     │   └── inquire v0.9.4
-    │       └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-57813/spike-a)
+    │       └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-28007/spike-a)
     └── signal-hook-mio v0.2.5
         └── crossterm v0.29.0 (*)
     
     signal-hook v0.4.4
-    └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-57813/spike-a)
+    └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-28007/spike-a)
 PASS C12f — crossterm pins signal-hook 0.3.x
 PASS C12g — the template's own R67 signal-hook 0.4.4 stands beside it
 PASS C12h — signal-hook is the ONLY duplicated package (two majors, counted by /usr/bin/grep) [= 2]
@@ -333,15 +333,11 @@ predicate, under two conditions. Nothing from the template is built; the crate i
 PASS C13a — case A: stdin is not a terminal
 PASS C13b — case A: with no controlling terminal the /dev/tty open fails — the negative control
   --- case B: a controlling PTY IS present, stdin still redirected from /dev/null ---
-    stdin_is_terminal=false
-    stderr_is_terminal=true
-    dialoguer_guard_term_stderr_is_term=true
-    crossterm_enable_raw_mode=Ok  (a terminal was acquired)
-    child_exit_status=0
-PASS C13c — case B: stdin is still not a terminal
-PASS C13d — case B: crossterm ACQUIRES the controlling terminal anyway — the surprise-prompt case R8.1 forbids
-PASS C13e — case B: dialoguer's own guard returns true, so no candidate crate blocks this case
-PASS C13f — case B: the observation ran to completion
+    pty_unavailable errno=1 (Operation not permitted)
+SKIP C13c — case B: stdin is still not a terminal — NOT EXECUTED. ENVIRONMENTAL: this seat is refused a pseudo-terminal (openpty errno=1 EPERM), so case B cannot execute here; fallback evidence: C3a-C3f (tty_fd()/Input::unbuffered() open /dev/tty) and C13b (case A, raw_os_error=Some(6) ENXIO) passed above, and the r1 log (evidence/r61-claims-r1.log, git da52246c) recorded case B executing with this result; a pty-capable seat should re-run case B
+SKIP C13d — case B: crossterm ACQUIRES the controlling terminal anyway — NOT EXECUTED. ENVIRONMENTAL: this seat is refused a pseudo-terminal (openpty errno=1 EPERM), so case B cannot execute here; fallback evidence: C3a-C3f (tty_fd()/Input::unbuffered() open /dev/tty) and C13b (case A, raw_os_error=Some(6) ENXIO) passed above, and the r1 log (evidence/r61-claims-r1.log, git da52246c) recorded case B executing with this result; a pty-capable seat should re-run case B
+SKIP C13e — case B: dialoguer's own guard returns true — NOT EXECUTED. ENVIRONMENTAL: this seat is refused a pseudo-terminal (openpty errno=1 EPERM), so case B cannot execute here; fallback evidence: C3a-C3f (tty_fd()/Input::unbuffered() open /dev/tty) and C13b (case A, raw_os_error=Some(6) ENXIO) passed above, and the r1 log (evidence/r61-claims-r1.log, git da52246c) recorded case B executing with this result; a pty-capable seat should re-run case B
+SKIP C13f — case B: the observation ran to completion — NOT EXECUTED. ENVIRONMENTAL: this seat is refused a pseudo-terminal (openpty errno=1 EPERM), so case B cannot execute here; fallback evidence: C3a-C3f (tty_fd()/Input::unbuffered() open /dev/tty) and C13b (case A, raw_os_error=Some(6) ENXIO) passed above, and the r1 log (evidence/r61-claims-r1.log, git da52246c) recorded case B executing with this result; a pty-capable seat should re-run case B
 
 ### Section 14 — the four fixed - assumes lines are byte-identical to the registry
 generated from /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/PARAMETERS.md:
@@ -367,7 +363,9 @@ the prompt's Couplings block, which is what makes C14d and C14e the right expect
 PASS C14f — the prompt carries an - owns: line
 
 ### Section 15 — the OVERRIDE number does not collide
-files mentioning the bare string 'OV-02' outside this item (docs/port/ and research/topics/*/DECISION.md, counted by /usr/bin/grep): 0
+excluded as self-reference (OWNER-ACCEPTANCES.md rows whose item column is R61):
+  68:| R61 | 1 | `3131e895187c096c8866f0f7b4a520549804cd67b32f848b6239cd652b636281` | accept | 2026-09-16 | W1-R61 option 
+files mentioning the bare string 'OV-02' outside this item (docs/port/ less R61's own acceptance rows, and research/topics/*/DECISION.md, counted by /usr/bin/grep): 0
 PASS C15a — the string OV-02 appears in no other published decision or port document [= 0]
 PASS C15b — OV-01 is taken: the owner refused it on 2026-09-14 (R60's CLI-standard waiver)
 PASS C15c — R60 retains OV-01's record rather than deleting it
@@ -393,6 +391,61 @@ PASS C17d — the Codex raw recommends dialoguer
 PASS C17e — the Opus raw recommends inquire
 PASS C17f — the Opus raw numbered its override OV-01, which this decision renumbers to OV-02
 
+### Section 18 — --dry-run ordering at the py pin, read and EXECUTED (revision 3)
+config set reads --dry-run BEFORE the overwrite confirm; config init reads it AFTER the
+guided values. The pinned source is extracted with git archive and run; nothing is installed.
+  src/py_launch_blueprint/cli/commands/config.py at b08bccfb55d05f15e46a83b52c5660b1881d19f5, lines 94, 101, 181-184, 188, 196:
+      94:             chosen[dotted] = click.prompt(
+     101:     if dry_run:
+     181:     if dry_run:
+     182:         app.renderer.message(f"[dry-run] would set {key} = {coerced} in {path}")
+     183:         app.renderer.render(ConfigValue(key=key, value=str(coerced), source="dry-run"))
+     184:         return
+     188:     data = read_config_for_write(path)  # ConfigError if existing+corrupt
+     196:         and not confirm(
+PASS C18a — config init: the guided click.prompt call sits at :94 [=             chosen[dotted] = click.prompt(]
+PASS C18b — config init: --dry-run is read at :101, AFTER the guided values [=     if dry_run:]
+PASS C18c — config set: --dry-run is read at :181 [=     if dry_run:]
+PASS C18d — config set: the --dry-run branch returns at :184, before the read at :188 [=         return]
+PASS C18e — config set: the overwrite confirm is at :196, AFTER the --dry-run return [=         and not confirm(]
+  interpreter: Python 3.12.12; package imported from: <WORK>/py/src/py_launch_blueprint/__init__.py
+PASS C18f — the executed plbp imports the git-archived pin, not an installed copy
+  --- plbp config set output.color always --dry-run --no-input --config <WORK>/py-set-dry.toml   (output.color was "never") ---
+    exit=0
+    stdout:
+      ┏━━━━━━━━━━━━━━┳━━━━━━━━┳━━━━━━━━━┓
+      ┃ Key          ┃ Value  ┃ Source  ┃
+      ┡━━━━━━━━━━━━━━╇━━━━━━━━╇━━━━━━━━━┩
+      │ output.color │ always │ dry-run │
+      └──────────────┴────────┴─────────┘
+    stderr:
+       would set output.color = always in <WORK>/py-set-dry.toml
+    config file unchanged: yes
+PASS C18g — config set --dry-run --no-input, no --yes, existing value differs: exit 0 [= 0]
+PASS C18h — config set --dry-run --no-input: the preview is on stderr
+PASS C18i — config set --dry-run --no-input never reaches the consent refusal — no consent is needed
+PASS C18j — config set --dry-run --no-input: no write (file sha256 unchanged) [= 4f1011dfa6cb4f00cbef3dcd4c966fd1ac1413ca24bc54ead1ec7a6e46c62dfb]
+  --- plbp config set output.color always --no-input --config <WORK>/py-set-nodry.toml   (output.color was "never") ---
+    exit=1
+    stdout:
+    stderr:
+      Error: refusing to proceed without confirmation (--no-input): Overwrite output.color (never → always) in <WORK>/py-set-nodry.toml? (PLBP001)
+      hint: pass --yes to confirm non-interactively
+    config file unchanged: yes
+PASS C18k — control — config set --no-input without --dry-run: py's ConfigError exit 1 (rs maps this class to 2) [= 1]
+PASS C18l — control — without --dry-run the same command reaches the consent refusal
+PASS C18m — control — no write [= 4f1011dfa6cb4f00cbef3dcd4c966fd1ac1413ca24bc54ead1ec7a6e46c62dfb]
+  --- plbp config init --dry-run --no-input --config <WORK>/py-init-dry.toml   (output.color was "never") ---
+    exit=1
+    stdout:
+    stderr:
+      Error: config init cannot prompt (--no-input set) (PLBP001)
+      hint: pass --yes to write the current defaults non-interactively
+    config file unchanged: yes
+PASS C18n — config init --dry-run --no-input, no --yes: py's ConfigError exit 1 — the guided values are gated first [= 1]
+PASS C18o — config init --dry-run --no-input: refused before --dry-run is read, so the order differs by command
+PASS C18p — config init --dry-run --no-input: no write [= 4f1011dfa6cb4f00cbef3dcd4c966fd1ac1413ca24bc54ead1ec7a6e46c62dfb]
+
 ================================================================
-TOTAL  pass=97  fail=0  skip=0
+TOTAL  pass=109  fail=0  skip=4
 ================================================================

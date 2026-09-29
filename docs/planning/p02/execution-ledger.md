@@ -1469,3 +1469,32 @@ Revisit when: any touch-up reports the r11 value breaks (not renames) a claim.
   (run manifests already state=published, committed). All 9 acceptance bindings verified by S1 pre-commit.
 - R51's committed copy is r5 (6cc29e7b); r6 still needs a new run. R72r5 fully migrated to request-id (one historical
   mention at :545); the Q4.A R72 touch-up is MOOT. Committed count was 61, now 70.
+
+## 2026-09-28 — S89 triage: both ACCEPT (R58r4 d39aa4a2da70, R71r4 17620e240f54)
+- Verified: shas match; 6-field headers exact (approve/none, bound to r4s); priors untouched; reruns green.
+- Seat/family disposition: Opus-vehicle audits (family anthropic) cannot serve the codex seat (validator EMPIRICAL_AUDITORS).
+  S1 added R58+R71 to empirical_auditor_overrides as "claude" (14 entries; 12-item precedent incl. R72). Review/ filenames
+  stand — the packager stages as audit-claude.md. Same disposition will cover S87's six if anthropic (no mid-flight fix needed).
+
+## 2026-09-28 — S88 triage: recon accepted; R61+R27 staged for batch-6
+- R61: S1 wrote identities.json (codex gpt-5.6-terra + opus claude-opus-5 legs; r8 audits bind 680d9c090036). Synthesis actor
+  unattested anywhere — used manifest top actor controller-fable-5-1 (non-collision holds); gap recorded. BUILD PASSES.
+- R27: S1 repointed identities empirical claude.r3→codex.r3 (openai approve+MATCH); fable.r3 binds. BUILD PASSES. Seat-rule refusal cleared.
+- R03/R14/R35/R73: need S1 judgment memo + identities (empiricals MATCH). R35 engine "conflict" in recon is wrong — policy says muse+opus, raw matches.
+- R32/R82: Q5.A-stale class (prompt DIFFs working canonical) — join R12, need new run or override.
+
+## 2026-09-28 — S87 triage: 6/6 ACCEPT (660c967b, 7a42ca3a→1efec12e, 7347249f, 9110c4b7, 4fa1e417, 6930aa2d)
+- Verified: shas/headers/bindings exact; priors untouched per coordinator's 51-file check. S1 one-char fix R59 family
+  Anthropic→anthropic (before-sha on record, disclosed in R59 memo). Added R24/R59/R78/R28/R30/R29 to claude overrides.
+- S1 MISTAKE + fix: also overrode published R58/R71 → broke R58 validation + R78's build (prereq unresolved). Reverted same
+  session (overrides 20→18); R58 validates clean, R78 builds. Rule: overrides for re-pubs land atomically with the re-pub apply.
+  S89's R58r4/R71r4 evrs are staged, not wasted — they bind the rev shas for that atomic step.
+
+## 2026-09-28 — Batch-6 staged (8): R61+R27+R28+R30+R03+R14+R73+R78 → 78/85 on apply
+- 10 S1 judgment memos written; 6 new identities (R24/R29/R03/R14/R35/R73) + 4 repoints (R59/R78/R28/R30).
+- Blocked: R24 (policy evidence_checks=[terra], no terra leg ever run — needs fresh leg or policy edit); R59/R29/R35+R12/R32/R82
+  (Q5.A prompt dirt post-dates prep — 6 items, owner call: revert dirt, new runs, or override).
+
+## 2026-09-28 Batch-6: 8 published (78/85) — R61 c0d31ba2 + R27 1868bfa1 + R28 c420e862 + R30 c2141edc + R03 bf3901cf + R14 7f1b32c6 + R73 bf7abfac + R78 de723ac1
+- S87 empiricals (claude seat via override) + S1 judgment memos; S1 identities R24(unused this batch)/R29(held)/R03/R14/R35(held)/R73/R61 + repoints R59(held)/R78/R28/R30.
+- Held: R59/R29/R35 (Q5.A prompt dirt) + R12/R32/R82 (same) + R24 (terra policy). Re-pubs + flag-day await new-run policy.

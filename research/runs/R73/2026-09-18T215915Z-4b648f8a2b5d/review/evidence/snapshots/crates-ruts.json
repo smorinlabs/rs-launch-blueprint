@@ -1,0 +1,243 @@
+{
+ "crate": {
+  "downloads": 15033,
+  "id": "ruts",
+  "max_version": "0.10.1",
+  "name": "ruts",
+  "recent_downloads": 261,
+  "repository": "https://github.com/jimmielovell/ruts"
+ },
+ "versions": [
+  {
+   "created_at": "2026-05-18T20:35:14.893330Z",
+   "license": "MIT",
+   "num": "0.10.1",
+   "rust_version": "1.85.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2026-05-18T19:49:39.553160Z",
+   "license": "MIT",
+   "num": "0.10.0",
+   "rust_version": "1.85.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2026-03-05T22:37:32.127843Z",
+   "license": "MIT",
+   "num": "0.9.0",
+   "rust_version": "1.85.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2026-01-09T21:00:40.278192Z",
+   "license": "MIT",
+   "num": "0.8.1",
+   "rust_version": "1.85.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2026-01-07T21:37:14.899674Z",
+   "license": "MIT",
+   "num": "0.8.0",
+   "rust_version": "1.85.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2026-01-04T23:40:12.468964Z",
+   "license": "MIT",
+   "num": "0.7.4",
+   "rust_version": "1.85.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-12-29T10:02:47.345666Z",
+   "license": "MIT",
+   "num": "0.7.3",
+   "rust_version": "1.85.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-12-28T23:24:15.780541Z",
+   "license": "MIT",
+   "num": "0.7.2",
+   "rust_version": "1.85.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-09-23T02:47:19.182828Z",
+   "license": "MIT",
+   "num": "0.7.1",
+   "rust_version": "1.85.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-09-23T01:34:23.668917Z",
+   "license": "MIT",
+   "num": "0.7.0",
+   "rust_version": "1.85.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-09-12T23:05:11.488296Z",
+   "license": "MIT",
+   "num": "0.6.7",
+   "rust_version": "1.85.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-09-12T22:25:00.300755Z",
+   "license": "MIT",
+   "num": "0.6.6",
+   "rust_version": "1.85.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-09-12T21:55:45.051862Z",
+   "license": "MIT",
+   "num": "0.6.5",
+   "rust_version": "1.85.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-09-12T14:27:54.810965Z",
+   "license": "MIT",
+   "num": "0.6.4",
+   "rust_version": "1.85.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-09-07T22:00:29.178807Z",
+   "license": "MIT",
+   "num": "0.6.3",
+   "rust_version": "1.85.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-09-07T16:15:53.724374Z",
+   "license": "MIT",
+   "num": "0.6.2",
+   "rust_version": "1.85.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-09-07T00:53:37.669110Z",
+   "license": "MIT",
+   "num": "0.6.1",
+   "rust_version": "1.85.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-09-05T16:48:48.250006Z",
+   "license": "MIT",
+   "num": "0.6.0",
+   "rust_version": "1.75.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-08-11T12:26:09.673949Z",
+   "license": "MIT",
+   "num": "0.5.9",
+   "rust_version": "1.75.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-07-07T14:14:37.084614Z",
+   "license": "MIT",
+   "num": "0.5.8",
+   "rust_version": "1.75.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-04-26T13:34:21.355581Z",
+   "license": "MIT",
+   "num": "0.5.7",
+   "rust_version": "1.75.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-02-16T19:39:38.730126Z",
+   "license": "MIT",
+   "num": "0.5.6",
+   "rust_version": "1.75.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-02-16T12:56:59.491349Z",
+   "license": "MIT",
+   "num": "0.5.5",
+   "rust_version": "1.75.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-02-16T11:26:12.760878Z",
+   "license": "MIT",
+   "num": "0.5.4",
+   "rust_version": "1.75.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-02-07T21:44:54.977529Z",
+   "license": "MIT",
+   "num": "0.5.3",
+   "rust_version": "1.75.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-02-06T22:40:31.249134Z",
+   "license": "MIT",
+   "num": "0.5.2",
+   "rust_version": "1.75.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-02-06T04:24:56.932331Z",
+   "license": "MIT",
+   "num": "0.5.1",
+   "rust_version": "1.75.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-01-11T11:07:21.793636Z",
+   "license": "MIT",
+   "num": "0.5.0",
+   "rust_version": "1.75.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2024-12-14T19:54:10.702985Z",
+   "license": "MIT",
+   "num": "0.4.2",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2024-12-14T19:46:01.359715Z",
+   "license": "MIT",
+   "num": "0.4.1",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2024-10-26T20:50:15.199789Z",
+   "license": "MIT",
+   "num": "0.3.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2024-10-17T13:14:22.631974Z",
+   "license": "MIT",
+   "num": "0.2.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2024-10-06T22:12:09.210426Z",
+   "license": "MIT",
+   "num": "0.1.11",
+   "rust_version": null,
+   "yanked": false
+  }
+ ]
+}

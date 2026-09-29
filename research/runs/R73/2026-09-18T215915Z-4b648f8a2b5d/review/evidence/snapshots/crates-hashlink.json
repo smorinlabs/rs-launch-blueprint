@@ -1,0 +1,166 @@
+{
+ "crate": {
+  "downloads": 336327371,
+  "id": "hashlink",
+  "max_version": "0.12.2",
+  "name": "hashlink",
+  "recent_downloads": 94153538,
+  "repository": "https://github.com/djc/hashlink"
+ },
+ "versions": [
+  {
+   "created_at": "2026-09-07T11:07:51.607641Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.12.2",
+   "rust_version": "1.85",
+   "yanked": false
+  },
+  {
+   "created_at": "2026-07-06T08:23:21.895353Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.12.1",
+   "rust_version": "1.85",
+   "yanked": false
+  },
+  {
+   "created_at": "2026-06-05T14:58:03.242015Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.12.0",
+   "rust_version": "1.85",
+   "yanked": false
+  },
+  {
+   "created_at": "2026-06-05T13:47:52.916383Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.11.1",
+   "rust_version": "1.65",
+   "yanked": false
+  },
+  {
+   "created_at": "2025-10-26T12:40:43.199501Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.11.0",
+   "rust_version": "1.65",
+   "yanked": false
+  },
+  {
+   "created_at": "2024-12-09T11:48:51.357012Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.10.0",
+   "rust_version": "1.65",
+   "yanked": false
+  },
+  {
+   "created_at": "2024-05-12T00:35:27.065567Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.9.1",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2024-01-09T01:29:52.055794Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.9.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2023-08-28T18:57:20.855861Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.8.4",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2023-06-11T22:53:05.959656Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.8.3",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2023-05-15T06:53:53.279914Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.8.2",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2022-09-17T17:38:44.631497Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.8.1",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2022-03-14T19:21:08.866920Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.8.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2021-05-03T23:57:47.430414Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.7.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-10-06T18:26:16.427929Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.6.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-05-11T01:40:17.328066Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.5.1",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2020-03-18T23:04:42.435425Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.5.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2019-11-18T20:41:34.393152Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.4.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2019-07-12T00:11:08.432595Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.3.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2019-07-08T07:56:36.624028Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.2.1",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2019-07-06T22:12:42.562159Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.2.0",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2019-07-06T10:17:21.361009Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.1.0",
+   "rust_version": null,
+   "yanked": false
+  }
+ ]
+}

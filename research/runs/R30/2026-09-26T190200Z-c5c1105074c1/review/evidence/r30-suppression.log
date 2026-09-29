@@ -1,0 +1,114 @@
+# r30-suppression.sh  run 2026-09-27T07:25:15Z  host Darwin arm64
+# CARGO_HOME=/tmp/cargo-s34-R30-r3
+# stable: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew) / rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+# 1.96.0: cargo 1.96.0 (30a34c682 2026-05-25) / rustc 1.96.0 (ac68faa20 2026-05-25)
+# CARGO_TARGET_DIR=<ws>/target
+
+== X1 bare #[allow] — malformed attribute is a hard error
+$ env CARGO_BUILD_WARNINGS=deny cargo check --all-targets --locked --keep-going
+error: malformed `allow` attribute input
+error: could not compile `supp` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `supp` (lib test) due to 1 previous error
+exit=101 (expected 101) PASS
+
+== X2 #[allow()] — names nothing; warns, so the denying gate fails
+$ env CARGO_BUILD_WARNINGS=deny cargo check --all-targets --locked --keep-going
+warning: unused attribute
+error: `supp` (lib) generated 1 warning (run `cargo fix --lib -p supp` to apply 1 suggestion)
+error: `supp` (lib test) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.06s
+error: warnings are denied by `build.warnings` configuration
+exit=101 (expected 101) PASS
+
+== X3 misspelled lint name — unknown_lints (and the real warning) fail the gate
+$ env CARGO_BUILD_WARNINGS=deny cargo check --all-targets --locked --keep-going
+warning: unknown lint: `unused_variabels`
+warning: unused variable: `x`
+error: `supp` (lib test) generated 2 warnings (2 duplicates)
+error: `supp` (lib) generated 2 warnings (run `cargo fix --lib -p supp` to apply 1 suggestion)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.06s
+error: warnings are denied by `build.warnings` configuration
+exit=101 (expected 101) PASS
+
+== X4 #[expect] that suppresses nothing — unfulfilled_lint_expectations fails the gate
+$ env CARGO_BUILD_WARNINGS=deny cargo check --all-targets --locked --keep-going
+warning: this lint expectation is unfulfilled
+error: `supp` (lib) generated 1 warning
+error: `supp` (lib test) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.09s
+error: warnings are denied by `build.warnings` configuration
+exit=101 (expected 101) PASS
+
+== X5 fulfilled #[expect(lint, reason)] — silent, gate green
+$ env CARGO_BUILD_WARNINGS=deny cargo check --all-targets --locked --keep-going
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.10s
+exit=0 (expected 0) PASS
+
+== X6 crate-level #![allow(warnings)] — silences the warning; gate green (the known gap)
+$ env CARGO_BUILD_WARNINGS=deny cargo check --all-targets --locked --keep-going
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.09s
+exit=0 (expected 0) PASS
+
+== X7a no suppression, default features — dead_code warning fails the gate
+$ env CARGO_BUILD_WARNINGS=deny cargo check --all-targets --locked --keep-going
+warning: function `helper` is never used
+error: `supp` (lib) generated 1 warning (1 duplicate)
+error: `supp` (lib test) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.35s
+error: warnings are denied by `build.warnings` configuration
+exit=101 (expected 101) PASS
+
+== X7b no suppression, --all-features — clean
+$ env CARGO_BUILD_WARNINGS=deny cargo check --all-targets --all-features --locked --keep-going
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.12s
+exit=0 (expected 0) PASS
+
+== X8a #[expect] on the configuration-dependent lint, default features — fulfilled
+$ env CARGO_BUILD_WARNINGS=deny cargo check --all-targets --locked --keep-going
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.13s
+exit=0 (expected 0) PASS
+
+== X8b #[expect] on the configuration-dependent lint, --all-features — unfulfilled, gate fails
+$ env CARGO_BUILD_WARNINGS=deny cargo check --all-targets --all-features --locked --keep-going
+warning: this lint expectation is unfulfilled
+error: `supp` (lib) generated 1 warning
+error: `supp` (lib test) generated 1 warning (1 duplicate)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.10s
+error: warnings are denied by `build.warnings` configuration
+exit=101 (expected 101) PASS
+
+== X9a cfg_attr(not(web), expect(...)), default features — fulfilled
+$ env CARGO_BUILD_WARNINGS=deny cargo check --all-targets --locked --keep-going
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.11s
+exit=0 (expected 0) PASS
+
+== X9b cfg_attr(not(web), expect(...)), --all-features — absent, clean
+$ env CARGO_BUILD_WARNINGS=deny cargo check --all-targets --all-features --locked --keep-going
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s
+exit=0 (expected 0) PASS
+
+== X10a #[allow(lint, reason)], default features — clean
+$ env CARGO_BUILD_WARNINGS=deny cargo check --all-targets --locked --keep-going
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.06s
+exit=0 (expected 0) PASS
+
+== X10b #[allow(lint, reason)], --all-features — clean
+$ env CARGO_BUILD_WARNINGS=deny cargo check --all-targets --all-features --locked --keep-going
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.10s
+exit=0 (expected 0) PASS
+
+== X11 #[expect(lint, reason)] accepted by the 1.96.0 floor rustc
+$ tcargo 1.96.0 check --all-targets --locked
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s
+exit=0 (expected 0) PASS
+
+== X12 unfulfilled #[expect] warns on the 1.96.0 floor rustc (deny via RUSTFLAGS there)
+$ env RUSTFLAGS=-Dwarnings RUSTC=/Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/rustc /Users/stevemorin/.rustup/toolchains/1.96.0-aarch64-apple-darwin/bin/cargo check --all-targets --locked
+error: this lint expectation is unfulfilled
+error: could not compile `supp` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `supp` (lib test) due to 1 previous error
+exit=101 (expected 101) PASS
+
+# summary: failures=0

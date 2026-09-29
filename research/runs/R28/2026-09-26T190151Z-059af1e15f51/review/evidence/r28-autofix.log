@@ -1,0 +1,52 @@
+== toolchain on PATH
+CARGO_HOME=/tmp/cargo-s9-R28
+/opt/homebrew/bin/cargo
+/opt/homebrew/bin/cargo-clippy
+/usr/bin/git
+cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+clippy 0.1.98
+git version 2.50.1 (Apple Git-155)
+
+== F1 clippy's own contract for --fix
+$ cargo clippy --help
+    --no-deps                Run Clippy only on the given crate, without linting the dependencies
+    --fix                    Automatically apply lint suggestions. This flag implies --no-deps and --all-targets
+PASS F1 — --fix is an explicit flag that implies --no-deps and --all-targets
+
+== scratch: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r28-autofix.Du0fSj (outside any repository)
+
+== F2 the check-only gate fails on a fixable lint and rewrites nothing
+$ cargo clippy --workspace --all-targets --locked -- -D warnings
+error: unneeded `return` statement
+ --> crates/core/src/lib.rs:6:5
+error: could not compile `r28-core` (lib) due to 1 previous error
+tree digest before: efb5e920014bec75de7e05f2d9d8a0dfc2403788dcd19eca9b555102bd6fa5dc  -
+tree digest after:  efb5e920014bec75de7e05f2d9d8a0dfc2403788dcd19eca9b555102bd6fa5dc  -
+PASS F2 — gate exit 101; source tree byte-identical
+
+== scratch git: cb98542 committed (scratch only)
+
+== F3 the lint-fix recipe refuses a dirty tree (no --allow-dirty)
+$ cargo clippy --fix --workspace --all-targets
+error: the working directory of this package has uncommitted changes, and `cargo fix` can potentially perform destructive changes; if you'd like to suppress this error pass `--allow-dirty`, or commit the changes to these files:
+PASS F3 — dirty-tree refusal (exit 101)
+
+== F4 on a clean tree the lint-fix recipe applies the machine-applicable fix
+$ cargo clippy --fix --workspace --all-targets
+    Checking r28-core v0.1.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r28-autofix.Du0fSj/crates/core)
+       Fixed crates/core/src/lib.rs (1 fix)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.17s
+diff --git a/crates/core/src/lib.rs b/crates/core/src/lib.rs
+index f97e040..dc2acbb 100644
+--- a/crates/core/src/lib.rs
++++ b/crates/core/src/lib.rs
+@@ -6 +6 @@ pub fn triple(x: u32) -> u32 {
+-    return x * 3;
++    x * 3
+PASS F4 — needless_return rewritten (exit 0)
+
+== F5 after the fix the check-only gate passes
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.16s
+PASS F5 — exit 0
+
+== summary: 0 failing case(s)

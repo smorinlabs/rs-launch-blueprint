@@ -1,0 +1,72 @@
+== retrieved 2026-09-27T01:15:13Z; gh version 2.101.0 (2026-09-15); jq-1.8.2
+
+-- F1 current stable Rust: GET repos/rust-lang/rust/releases?per_page=4 (tag_name, published_at)
+   1.98.1 2026-09-03T13:14:07Z
+   1.98.0 2026-08-20T18:05:33Z
+   1.97.1 2026-07-16T12:29:15Z
+   1.97.0 2026-07-09T12:25:16Z
+
+-- F2 rustfmt repository: GET repos/rust-lang/rustfmt
+   stargazers_count=6974 archived=false pushed_at=2026-09-24T13:36:12Z license=Apache-2.0
+-- F3 open issues: GET search/issues?q=repo:rust-lang/rustfmt+is:issue+is:open (total_count)
+   total_count=718
+
+-- F4 issue responsiveness: 10 most recently opened issues (PRs excluded); first comment whose
+   author_association is OWNER, MEMBER or COLLABORATOR. Undercounts members with private org membership.
+   #7138 opened 2026-09-26T02:29:13Z (open): no qualifying comment [none]
+   #7136 opened 2026-09-24T18:14:29Z (open): first qualifying comment after 0.6 days
+   #7133 opened 2026-09-22T18:15:04Z (closed): no qualifying comment [none]
+   #7125 opened 2026-09-20T05:11:39Z (closed): no qualifying comment [none]
+   #7123 opened 2026-09-16T19:50:12Z (closed): no qualifying comment [none]
+   #7122 opened 2026-09-15T09:40:17Z (open): no qualifying comment [none]
+   #7121 opened 2026-09-15T09:38:45Z (open): no qualifying comment [none]
+   #7120 opened 2026-09-14T13:45:10Z (open): no qualifying comment [none]
+   #7119 opened 2026-09-13T20:33:09Z (open): no qualifying comment [none]
+   #7114 opened 2026-09-11T13:42:24Z (open): no qualifying comment [none]
+   answered=1 unanswered=9 median_days_answered=0.6
+
+-- F5 rust-toolchain.toml channel in reference repositories (GET repos/<o>/<r>/contents/rust-toolchain.toml)
+   astral-sh/uv: [toolchain];channel = "1.98.1";
+   astral-sh/ruff: [toolchain];channel = "1.98.0";
+   zed-industries/zed: [toolchain];channel = "1.98.1";profile = "minimal";components = [ "rustfmt", "clippy", "rust-analyzer", "rust-src" ];targets = [;    "wasm32-wasip2", # extensions;    "wasm32-unknown-unknown", # gpui on the web;    "x86_64-unknown-linux-musl", # remote server;];
+   cargo-bins/cargo-binstall: [toolchain];channel = "stable";profile = "minimal";components = ["rustfmt", "clippy"];
+   nushell/nushell: [toolchain];profile = "default";channel = "1.96.1";
+
+-- F6 rustfmt.toml in reference repositories (GET repos/<o>/<r>/contents/{rustfmt.toml,.rustfmt.toml})
+   tokio-rs/tokio: rustfmt.toml=[absent (HTTP 404 or error)] .rustfmt.toml=[absent (HTTP 404 or error)]
+   clap-rs/clap: rustfmt.toml=[absent (HTTP 404 or error)] .rustfmt.toml=[absent (HTTP 404 or error)]
+   serde-rs/serde: rustfmt.toml=[absent (HTTP 404 or error)] .rustfmt.toml=[absent (HTTP 404 or error)]
+   rust-lang/crates.io: rustfmt.toml=[absent (HTTP 404 or error)] .rustfmt.toml=[absent (HTTP 404 or error)]
+   astral-sh/uv: rustfmt.toml=[edition = "2024";style_edition = "2024";] .rustfmt.toml=[absent (HTTP 404 or error)]
+   BurntSushi/ripgrep: rustfmt.toml=[max_width = 79;use_small_heuristics = "max";edition = "2024";] .rustfmt.toml=[absent (HTTP 404 or error)]
+   casey/just: rustfmt.toml=[edition = "2024";max_width = 100;newline_style = "Unix";tab_spaces = 2;use_field_init_shorthand = true;use_try_shorthand = true;] .rustfmt.toml=[absent (HTTP 404 or error)]
+   tauri-apps/tauri: rustfmt.toml=[max_width = 100;hard_tabs = false;tab_spaces = 2;newline_style = "Unix";use_small_heuristics = "Default";reorder_imports = true;reorder_modules = true;remove_nested_parens = true;edition = "2024";merge_derives = true;use_try_shorthand = false;use_field_init_shorthand = false;force_explicit_abi = true;] .rustfmt.toml=[absent (HTTP 404 or error)]
+   rust-lang/cargo: rustfmt.toml=[style_edition = "2024";] .rustfmt.toml=[absent (HTTP 404 or error)]
+   tokio-rs/tokio stargazers_count=33247 archived=false pushed_at=2026-09-26T15:24:17Z
+   clap-rs/clap stargazers_count=16726 archived=false pushed_at=2026-09-21T18:47:13Z
+   serde-rs/serde stargazers_count=10835 archived=false pushed_at=2026-09-22T03:42:04Z
+   rust-lang/crates.io stargazers_count=3703 archived=false pushed_at=2026-09-27T00:24:33Z
+
+-- F7 tokio's CI formatter step (GET repos/tokio-rs/tokio/contents/.github/workflows/ci.yml)
+   ci.yml:840:          components: rustfmt
+   ci.yml:843:      - name: "rustfmt --check"
+   ci.yml:846:          if ! rustfmt --check --edition 2021 $(git ls-files '*.rs'); then
+   ci.yml:847:            printf "Please run \`rustfmt --edition 2021 \$(git ls-files '*.rs')\` to fix rustfmt errors.\nSee CONTRIBUTING.md for more details.\n" >&2
+
+-- F8 Dependabot's rust-toolchain ecosystem exists (GET repos/dependabot/dependabot-core/contents/rust_toolchain)
+   entries: .bundle, .gitignore, .rubocop.yml, Dockerfile, README.md, dependabot-rust_toolchain.gemspec, lib, script, spec
+   lib/dependabot: rust_toolchain.rb, rust_toolchain
+
+-- F9 crates.io figures (GET https://crates.io/api/v1/crates/<name> and /versions)
+   rustfmt-nightly: recent_downloads=8297 downloads=475898 newest=1.4.20 at 2020-09-06T02:12:50.817623Z license=Apache-2.0/MIT
+   genemichaels: recent_downloads=4317 downloads=83454 newest=0.12.4 at 2026-08-30T11:22:50.464184Z license=ISC
+   topiary-cli: recent_downloads=153 downloads=5047 newest=0.7.3 at 2026-01-05T14:38:59.999492Z license=MIT
+   prettyplease: recent_downloads=117431573 downloads=511062417 newest=0.3.0 at 2026-07-18T20:47:50.263251Z license=MIT OR Apache-2.0
+
+-- F10 RustSec advisory pages (HTTP status of https://rustsec.org/packages/<name>.html)
+   rustfmt-nightly: HTTP 404
+   genemichaels: HTTP 404
+   topiary-cli: HTTP 404
+   prettyplease: HTTP 404
+
+== done (figures are observations, not assertions; no pass/fail count)

@@ -21,7 +21,7 @@ PASS decision `- owns ` line count (expected 0, got 0; binary: /usr/bin/grep)
 20:- owns:
 21:- consumes: R67: error-taxonomy-exit-codes
 22:- effort: deep
-23:- engines: codex, opus, doxa
+23:- engines: muse, opus, doxa
 PASS prompt `- owns:` line is empty (expected 1, got 1; binary: /usr/bin/grep)
 PASS prompt consumes exactly R67 error-taxonomy-exit-codes (expected 1, got 1; binary: /usr/bin/grep)
 
@@ -35,7 +35,7 @@ PASS index R03 row owns column is an em dash (expected 1, got 1; binary: /usr/bi
 --- inputs/PARAMETERS.md vs docs/port/PARAMETERS.md — which rows differ ---
 < <
 > >
-PASS differing rows all name web-extra-surface (expected 0, got 0; binary: /usr/bin/grep)
+PASS differing rows naming a consumed or fixed row (expected 0, got 0; binary: /usr/bin/grep)
 
 --- every row this item consumes is byte-identical in both files ---
 PASS input row identical: msrv-policy (expected same, got same; binary: /usr/bin/grep)
@@ -81,9 +81,7 @@ PASS the registry cell itself cites R7.6 (the hint field must name the offending
 
 ========== 6. The seam this pattern decorates, as R01 published it ==========
 PASS R01 reserves this items slot in src/core/ports.rs (expected 2, got 2; binary: /usr/bin/grep)
-grep: absence: No such file or directory
-grep: shape: No such file or directory
-grep: R03s): No such file or directory
+117:- `src/core/ports.rs` (new) — `pub trait ProjectsPort: Send + Sync`, the port error type (vocabulary R67's, absence shape R03's), the blanket `Arc<T>` impl; under an async R05, `#[async_trait]`.
 PASS R01 routes a poisoned fake lock to PortError::Unavailable (expected 2, got 2; binary: /usr/bin/grep)
 PASS R01 contemplates Json<Option<Project>> at the web handler (expected 2, got 2; binary: /usr/bin/grep)
 

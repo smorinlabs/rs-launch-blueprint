@@ -1,0 +1,36 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-26T19:02:56Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-26T19:02:56Z",
+      "state": "ready"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa",
+    "parameters_semantic": "958f6eefb210d3add79b959502ceccee076e4aff1b1a2e402b1e731d92c4f053",
+    "parameters_semantic_file": "802224b53a3ce9cdb4db267c47e1154af8a1ef46f8ea2011f1f5e7e1c4c4fde3",
+    "policy": "2a3ca15597691bfc55f211b97c09f342c242532d378482ffba2c5d1df742fd58",
+    "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+    "prerequisites": "12a48dc363d468bb33f0ce24ec89e760e8bf217c8789691a989a590421ff811d",
+    "prompt": "5dfedd5c65801bce28dc40dbfd74d163c9e9a5bd0536d253c78d5bf307197cba",
+    "registry": "6b86e81ab06093bf1fced2b6bc79d157cc7ce86ce07f6827d6390339ab8d1f0c"
+  },
+  "item": "R59",
+  "model": "claude-fable-5-1",
+  "operations": {},
+  "prompt_source": "research/topics/59-file-log-sink/prompts/file-log-sink.prompt.md",
+  "remaining_budget": "no paid engine (Focused tier)",
+  "required_engines": [
+    "codex",
+    "opus"
+  ],
+  "run_id": "2026-09-26T190256Z-4c0fef2a9f93",
+  "schema_version": 1,
+  "state": "ready",
+  "tier": "focused",
+  "updated_at": "2026-09-26T19:02:56Z"
+}

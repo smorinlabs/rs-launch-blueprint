@@ -1,0 +1,104 @@
+== host: Darwin 25.4.0 arm64; sw_vers 26.4
+== build rustup-1.94.0-stable: rustfmt 1.8.0-stable (4a4ef493e3 2026-03-02)
+== build rustup-1.96.0: rustfmt 1.9.0-stable (ac68faa20c 2026-05-25)
+== build rustup-1.96.1: rustfmt 1.9.0-stable (31fca3adb2 2026-06-26)
+== build homebrew-1.98.1: rustfmt 1.9.0
+== homebrew rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+
+== C1.1 the recommended rustfmt.toml, byte for byte: exit 0 and zero warnings on every build
+    | # Rust source formatting (R27). Every key is stable: no nightly toolchain is needed.
+    | edition = "2024"        # bare rustfmt callers parse 2024 syntax; cargo fmt passes Cargo.toml's edition
+    | style_edition = "2024"  # the 2024 style edition
+    | max_width = 100         # F087: rustfmt's default width, stated
+    | newline_style = "Unix"  # F089: LF bytes on every OS; "Auto" keeps whatever a file already has
+    | reorder_imports = true  # F092: the formatter owns import order (rustfmt's default, stated)
+    sha256 of the file as written: a714037d3cb8919614f9b8619ff9a940ac858e5da22b25298abb7f68c310bea8
+  PASS rustup-1.94.0-stable exit=0 warnings=0 output=empty
+  PASS rustup-1.96.0 exit=0 warnings=0 output=empty
+  PASS rustup-1.96.1 exit=0 warnings=0 output=empty
+  PASS homebrew-1.98.1 exit=0 warnings=0 output=empty
+
+== C1.2 each stable key alone is silent (style_edition included; Configurations.md@v1.9.0 still marks it unstable per the Opus leg)
+  PASS rustup-1.94.0-stable [edition = "2024"] exit=0 warnings=0
+  PASS rustup-1.96.0 [edition = "2024"] exit=0 warnings=0
+  PASS rustup-1.96.1 [edition = "2024"] exit=0 warnings=0
+  PASS homebrew-1.98.1 [edition = "2024"] exit=0 warnings=0
+  PASS rustup-1.94.0-stable [style_edition = "2024"] exit=0 warnings=0
+  PASS rustup-1.96.0 [style_edition = "2024"] exit=0 warnings=0
+  PASS rustup-1.96.1 [style_edition = "2024"] exit=0 warnings=0
+  PASS homebrew-1.98.1 [style_edition = "2024"] exit=0 warnings=0
+  PASS rustup-1.94.0-stable [max_width = 100] exit=0 warnings=0
+  PASS rustup-1.96.0 [max_width = 100] exit=0 warnings=0
+  PASS rustup-1.96.1 [max_width = 100] exit=0 warnings=0
+  PASS homebrew-1.98.1 [max_width = 100] exit=0 warnings=0
+  PASS rustup-1.94.0-stable [newline_style = "Unix"] exit=0 warnings=0
+  PASS rustup-1.96.0 [newline_style = "Unix"] exit=0 warnings=0
+  PASS rustup-1.96.1 [newline_style = "Unix"] exit=0 warnings=0
+  PASS homebrew-1.98.1 [newline_style = "Unix"] exit=0 warnings=0
+  PASS rustup-1.94.0-stable [reorder_imports = true] exit=0 warnings=0
+  PASS rustup-1.96.0 [reorder_imports = true] exit=0 warnings=0
+  PASS rustup-1.96.1 [reorder_imports = true] exit=0 warnings=0
+  PASS homebrew-1.98.1 [reorder_imports = true] exit=0 warnings=0
+
+== C1.3 each disputed unstable key: warned, ignored, and exit status still 0 on a formatted file
+  PASS rustup-1.94.0-stable [trailing_comma = "Never"] exit=0 warnings=1
+  PASS rustup-1.96.0 [trailing_comma = "Never"] exit=0 warnings=1
+  PASS rustup-1.96.1 [trailing_comma = "Never"] exit=0 warnings=1
+  PASS homebrew-1.98.1 [trailing_comma = "Never"] exit=0 warnings=1
+    | Warning: can't set `trailing_comma = Never`, unstable features are only available in nightly channel.
+  PASS rustup-1.94.0-stable [imports_granularity = "Crate"] exit=0 warnings=1
+  PASS rustup-1.96.0 [imports_granularity = "Crate"] exit=0 warnings=1
+  PASS rustup-1.96.1 [imports_granularity = "Crate"] exit=0 warnings=1
+  PASS homebrew-1.98.1 [imports_granularity = "Crate"] exit=0 warnings=1
+    | Warning: can't set `imports_granularity = Crate`, unstable features are only available in nightly channel.
+  PASS rustup-1.94.0-stable [group_imports = "StdExternalCrate"] exit=0 warnings=1
+  PASS rustup-1.96.0 [group_imports = "StdExternalCrate"] exit=0 warnings=1
+  PASS rustup-1.96.1 [group_imports = "StdExternalCrate"] exit=0 warnings=1
+  PASS homebrew-1.98.1 [group_imports = "StdExternalCrate"] exit=0 warnings=1
+    | Warning: can't set `group_imports = StdExternalCrate`, unstable features are only available in nightly channel.
+  PASS rustup-1.94.0-stable [imports_layout = "Vertical"] exit=0 warnings=1
+  PASS rustup-1.96.0 [imports_layout = "Vertical"] exit=0 warnings=1
+  PASS rustup-1.96.1 [imports_layout = "Vertical"] exit=0 warnings=1
+  PASS homebrew-1.98.1 [imports_layout = "Vertical"] exit=0 warnings=1
+    | Warning: can't set `imports_layout = Vertical`, unstable features are only available in nightly channel.
+  PASS rustup-1.94.0-stable [ignore = ["lib.rs"]] exit=0 warnings=1
+  PASS rustup-1.96.0 [ignore = ["lib.rs"]] exit=0 warnings=1
+  PASS rustup-1.96.1 [ignore = ["lib.rs"]] exit=0 warnings=1
+  PASS homebrew-1.98.1 [ignore = ["lib.rs"]] exit=0 warnings=1
+    | Warning: can't set `ignore = IgnoreList { path_set: {"lib.rs"}, rustfmt_toml_path: "" }`, unstable features are only available in nightly channel.
+-- C1.3b ignore = ["lib.rs"] on an UNFORMATTED lib.rs: the listed file is still checked (the key has no effect)
+  PASS rustup-1.94.0-stable ignore listed file still diffed, exit=1
+  PASS rustup-1.96.0 ignore listed file still diffed, exit=1
+  PASS rustup-1.96.1 ignore listed file still diffed, exit=1
+  PASS homebrew-1.98.1 ignore listed file still diffed, exit=1
+
+== C1.4 the `edition` key (Muse omits it, Opus sets it): bare rustfmt on edition-2024 syntax
+    config=[NONE] rustup-1.96.0: exit=1 PARSE-ERROR
+  PASS [NONE] rustup-1.96.0 bare rustfmt rejects 2024 syntax
+    config=[NONE] homebrew-1.98.1: exit=1 PARSE-ERROR
+  PASS [NONE] homebrew-1.98.1 bare rustfmt rejects 2024 syntax
+    config=[style_edition = "2024"] rustup-1.96.0: exit=1 PARSE-ERROR
+  PASS [style_edition = "2024"] rustup-1.96.0 bare rustfmt rejects 2024 syntax
+    config=[style_edition = "2024"] homebrew-1.98.1: exit=1 PARSE-ERROR
+  PASS [style_edition = "2024"] homebrew-1.98.1 bare rustfmt rejects 2024 syntax
+    config=[edition = "2024"] rustup-1.96.0: exit=1 parsed
+  PASS [edition = "2024"] rustup-1.96.0 bare rustfmt parses 2024 syntax
+    config=[edition = "2024"] homebrew-1.98.1: exit=1 parsed
+  PASS [edition = "2024"] homebrew-1.98.1 bare rustfmt parses 2024 syntax
+-- C1.4b precedence: rustfmt.toml says edition = "2021", Cargo.toml says 2024; cargo fmt passes Cargo's edition
+    | rustfmt --edition 2024 --check edition-precedence/src/lib.rs
+  PASS cargo fmt ran rustfmt --edition 2024 over a 2021 rustfmt.toml; no parse error (exit=1, a layout diff only)
+
+== C1.5 behaviours under the recommended file (rustup 1.96.0 and homebrew 1.98.1)
+  PASS rustup-1.96.0 F089 Unix: CRLF file -> 'Incorrect newline style', exit=1
+  PASS rustup-1.96.0 F089 Auto: the same CRLF file passes, exit=0
+  PASS rustup-1.96.0 F092 reorder: use std::collections::HashMap;|use std::fmt;|use std::io::{Read, Write};|
+  PASS rustup-1.96.0 F091 Vertical: 'pub struct S {|    pub a: u32,|    pub b: u32,|}|'
+  PASS rustup-1.96.0 F087 max_width = 100 output byte-identical to the default
+  PASS homebrew-1.98.1 F089 Unix: CRLF file -> 'Incorrect newline style', exit=1
+  PASS homebrew-1.98.1 F089 Auto: the same CRLF file passes, exit=0
+  PASS homebrew-1.98.1 F092 reorder: use std::collections::HashMap;|use std::fmt;|use std::io::{Read, Write};|
+  PASS homebrew-1.98.1 F091 Vertical: 'pub struct S {|    pub a: u32,|    pub b: u32,|}|'
+  PASS homebrew-1.98.1 F087 max_width = 100 output byte-identical to the default
+
+== summary: 65 checks, 65 pass, 0 fail

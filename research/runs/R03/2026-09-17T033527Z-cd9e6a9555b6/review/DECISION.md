@@ -1,6 +1,26 @@
-# 2026-09-17 — R03 — port-absence-vs-failure-contract (pattern, Deep) — decision (revision 1)
+# 2026-09-17 — R03 — port-absence-vs-failure-contract (pattern, Deep) — decision (revision 2)
 
-Synthesized 2026-09-17 by a fresh context that produced none of this item's raw
+**Revision note, revision 2.** This is a repair round, written 2026-09-27 (US/Pacific) by an
+Opus-seat repair worker (`claude-opus-5-5`, Claude Code CLI). It answers the two findings of
+the rejecting empirical audit, `review/audit-claude.md`. The judgment audit,
+`review/audit-fable.md`, approves. Its non-blocking JF-1 names the same line-207 defect as
+EA-1 and is resolved by that repair; its non-blocking JF-2 and JF-3 are not repaired here. Revision 1 had sha256 `610e33381016a64c05efd6a1ba1196eb37807abb18d18c68e0d4e7d987586226`,
+and it is preserved byte-for-byte at `review/R03-r1-snapshot.md`. Only the two listed
+findings are repaired. The recommendation, figures and rankings do not move, and no finding
+is a reversal, so there is no `## Supersedes`.
+
+| Finding | Repair in revision 2 |
+|---|---|
+| Empirical Finding 1 (EA-1): `r03-contract.sh:207` single-quotes a pattern that contains apostrophes, so three `grep:` stderr lines replaced the R01 context line, and the log was not pure stdout | Line 207 now double-quotes the pattern. `r03-contract.log` was re-recorded with `bash r03-contract.sh > r03-contract.log 2>&1`; it now carries R01's `117:` line and no `grep:` line. The script writes nothing to stderr, so `bash r03-contract.sh \| diff - r03-contract.log` is empty. `## Empirical check` names the redirect |
+| Empirical Finding 2 (EA-2): the §1.3 assertion "differing rows all name `web-extra-surface`" fails on any unrelated registry publication | `r03-contract.sh:149-150` now asserts that no consumed or fixed row appears in the `inputs/PARAMETERS.md` / `docs/port/PARAMETERS.md` diff. The five byte-identity assertions are unchanged, so the check still counts 32 assertions. §1.3 and the `## Parameters` sentence no longer claim that exactly one row differs |
+
+The regenerated `r03-contract.log` (2026-09-27) differs from revision 1's in the two repaired
+places and in one drift line: §2 prints the working tree's `inputs/prompt.md:23` as
+`- engines: muse, opus, doxa`, where revision 1 printed `- engines: codex, opus, doxa`. That
+drift is disclosed, not adjudicated here. `r03-probe.sh` and `r03-practice.sh` are unchanged,
+and their logs are revision 1's.
+
+**Revision note, revision 1.** Synthesized 2026-09-17 by a fresh context that produced none of this item's raw
 reports, from the engine reports in `raw/` plus the three verification scripts
 recorded under `## Empirical check`. No template code exists, and none was
 written: the only code in this run is a throwaway probe crate built under
@@ -326,8 +346,8 @@ needs — `RSLB301` resource not found → exit `3` — is already published. No
 in R67 has to change for this recommendation to hold. The five values above are
 byte-identical to the current `docs/port/PARAMETERS.md`, which is itself
 byte-identical to the run's `inputs/PARAMETERS.md` on every row this item
-consumes; the two files differ on exactly one row, `web-extra-surface`, which
-this item does not consume (verified, §1.1 and §1.3).
+consumes; no consumed or fixed row appears in the diff between the two files,
+and other rows may differ as later items publish (verified, §1.1 and §1.3).
 
 How each bears on the decision. `error-taxonomy-exit-codes` is the load-bearing
 one: it supplies `RSLB301` → 3 for the absence path, `RSLB101`/`RSLB102`/
@@ -393,7 +413,10 @@ on an exit status, names `/usr/bin/grep` beside every count, and returns the
 number of failed assertions as its exit status. Each log in the table is the
 complete stdout of its script: each script was re-run after its log was written
 and `bash <script> | diff - <log>` was empty, on the same toolchain and against
-the snapshots already in `review/evidence/snap/`.
+the snapshots already in `review/evidence/snap/`. In revision 2,
+`r03-contract.log` was re-recorded as stdout and stderr,
+`bash r03-contract.sh > r03-contract.log 2>&1`; the script writes nothing to
+stderr, so that log is also its complete stdout.
 
 **§1 — the record (`r03-contract.sh`, 32 assertions, 0 failures).** Reads only files in this
 repository; no network, no `.git`.
@@ -404,9 +427,9 @@ repository; no network, no `.git`.
 - §1.2 The prompt's `- owns:` line is empty; its only `- consumes:` line is
   `R67: error-taxonomy-exit-codes`; the registry has **0** rows whose owner is
   `R03`; `research/CLAUDE.md`'s R03 row carries `—`.
-- §1.3 `inputs/PARAMETERS.md` and `docs/port/PARAMETERS.md` differ on exactly one
-  row, `web-extra-surface` (R69 published after this run's inputs were frozen);
-  all five consumed/fixed rows are byte-identical between the two files.
+- §1.3 The consumed and fixed rows are byte-identical between
+  `inputs/PARAMETERS.md` and `docs/port/PARAMETERS.md`, and none of them appears
+  in the diff between the two files; other rows may differ as later items publish.
 - §1.4 `shasum -a 256` of the published `research/topics/01-…/DECISION.md` and
   `research/topics/67-…/DECISION.md` equals the values in
   `inputs/prerequisites.json` — `44bf9ae9…` and `16947ab1…`.

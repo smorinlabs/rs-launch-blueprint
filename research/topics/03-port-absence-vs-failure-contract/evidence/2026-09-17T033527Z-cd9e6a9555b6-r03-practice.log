@@ -1,0 +1,105 @@
+
+========== 1. std at rust-lang/rust tag 1.96.0 — the language claims ==========
+
+--- Option is the std-documented channel for partial functions ---
+PASS option.rs module docs name partial functions (expected 1, got 1; binary: /usr/bin/grep)
+
+--- ok_or_else — the translation combinator — with the stability attribute above it ---
+1360-    #[inline]
+1361-    #[stable(feature = "rust1", since = "1.0.0")]
+1362-    #[rustc_const_unstable(feature = "const_option_ops", issue = "143956")]
+1363:    pub const fn ok_or_else<E, F>(self, err: F) -> Result<T, E>
+PASS ok_or_else is stable since 1.0.0 (expected 1, got 1; binary: /usr/bin/grep)
+
+--- transpose — the std-supplied conversion that names the canonical nesting ---
+2233-    #[inline]
+2234-    #[stable(feature = "transpose_result", since = "1.33.0")]
+2235-    #[rustc_allow_const_fn_unstable(const_precise_live_drops)]
+2236-    #[rustc_const_stable(feature = "const_option", since = "1.83.0")]
+2237:    pub const fn transpose(self) -> Result<Option<T>, E> {
+PASS transpose is stable since 1.33.0 (expected 1, got 1; binary: /usr/bin/grep)
+
+--- std reports filesystem absence as an error variant, not as None — the runner-up shape in std ---
+PASS io::ErrorKind is #[non_exhaustive] (expected 1, got 1; binary: /usr/bin/grep)
+PASS io::ErrorKind carries a NotFound variant (expected 1, got 1; binary: /usr/bin/grep)
+
+--- and std warns against the separate existence probe this decision forbids ---
+PASS Path::exists carries the TOCTOU warning (expected 1, got 1; binary: /usr/bin/grep)
+
+========== 2. rust-lang/crates.io @ 3a31e6c87ee884a3ff0608f0d65ede1f01454c98 — the split shape in a production port ==========
+PASS the port trait is declared (expected 1, got 1; binary: /usr/bin/grep)
+PASS team_membership returns Result<Option<..>> (trait + impl) (expected 2, got 2; binary: /usr/bin/grep)
+PASS org_membership returns Result<Option<..>> (trait + impl) (expected 2, got 2; binary: /usr/bin/grep)
+PASS the adapter owns the 404 rule, per operation (expected 2, got 2; binary: /usr/bin/grep)
+
+--- the per-operation translation, verbatim ---
+288-            Ok(membership) => Ok(Some(membership)),
+289-            // Officially how `false` is returned
+290:            Err(GitHubError::NotFound(_)) => Ok(None),
+291-            Err(err) => Err(err),
+--
+302-        match self.request(&url, auth).await {
+303-            Ok(membership) => Ok(Some(membership)),
+304:            Err(GitHubError::NotFound(_)) => Ok(None),
+305-            Err(err) => Err(err),
+
+========== 3. sqlx @ b54008a329541c0ce230d8b203e0c00fc8e8ea48 — the split shape is the primitive, the fold is derived ==========
+
+--- fetch_optional is declared without a body — a driver author implements the split shape ---
+154:    fn fetch_optional<'e, 'q: 'e, E>(
+155-        self,
+156-        query: E,
+157-    ) -> BoxFuture<'e, Result<Option<<Self::Database as Database>::Row>, Error>>
+158-    where
+159-        'c: 'e,
+160-        E: 'q + Execute<'q, Self::Database>;
+PASS its return type carries the Option inside the Result (expected 1, got 1; binary: /usr/bin/grep)
+PASS and the declaration ends in a semicolon (required, not provided) (expected 1, got 1; binary: /usr/bin/grep)
+PASS fetch_one is built from fetch_optional (expected 1, got 1; binary: /usr/bin/grep)
+PASS and it is the fold that introduces the error (expected 1, got 1; binary: /usr/bin/grep)
+PASS sqlx also ships the folded variant (expected 1, got 1; binary: /usr/bin/grep)
+
+========== 4. The runner-up shape, read at its own pins ==========
+
+--- object_store folds absence into its error enum, with a boxed cause ---
+2263:    NotFound {
+2264-        /// The path to file
+2265-        path: String,
+2266-        /// The wrapped error
+2267-        source: Box<dyn std::error::Error + Send + Sync + 'static>,
+2268-    },
+--
+2374:            Error::NotFound { .. } => std::io::ErrorKind::NotFound,
+2375-            _ => std::io::ErrorKind::Other,
+2376-        };
+2377-        Self::new(kind, e)
+2378-    }
+2379-}
+PASS the NotFound variant carries the boxed std cause (expected 1, got 1; binary: /usr/bin/grep)
+PASS jj folds absence into its backend error (expected 1, got 1; binary: /usr/bin/grep)
+
+========== 5. thiserror, the only crate in the picture (R67 selected it; not re-evaluated here) ==========
+
+--- GET https://crates.io/api/v1/crates/thiserror — retrieval date in ./snap/RETRIEVED.txt ---
+crate.recent_downloads = 362994715
+crate.downloads        = 1470911701
+crate.max_stable_version = 2.0.20
+PASS max_stable_version is the 2.x line the probe pinned (expected 2, got 2; binary: /usr/bin/grep)
+
+========== 6. Source-repository visibility, and the citations given for them ==========
+
+--- visibility through the authenticated gh binary (no token is read or printed here) ---
+repos/smorinlabs/py-launch-blueprint    .private = false
+repos/smorinlabs/ts-launch-blueprint    .private = false
+repos/smorinlabs/rs-launch-blueprint    .private = false
+
+--- unauthenticated HTTP status of the URLs raw/doxa-openai.normalized.md cites as its evidence ---
+200  https://github.com/smorinlabs/ts-launch-blueprint/blob/main/src/lib/api.ts
+PASS the cited URL resolves unauthenticated: api.ts (expected 200, got 200; binary: /usr/bin/grep)
+200  https://raw.githubusercontent.com/smorinlabs/rs-launch-blueprint/main/docs/port/PARAMETERS.md
+PASS the cited URL resolves unauthenticated: PARAMETERS.md (expected 200, got 200; binary: /usr/bin/grep)
+200  https://github.com/smorinlabs/rs-launch-blueprint
+PASS the cited URL resolves unauthenticated: rs-launch-blueprint (expected 200, got 200; binary: /usr/bin/grep)
+
+========== RESULT ==========
+ALL CHECKS PASSED

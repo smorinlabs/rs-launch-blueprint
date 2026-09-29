@@ -1,0 +1,58 @@
+== rustfmt.toml sha256 a714037d3cb8919614f9b8619ff9a940ac858e5da22b25298abb7f68c310bea8
+== toolchain: 1.96-aarch64-apple-darwin (overridden by 'rust-toolchain.toml')
+== rustfmt:   rustfmt 1.9.0-stable (31fca3adb2 2026-06-26)
+== just:      just 1.51.0
+
+== C2.1 baseline: formatted tree, bin + lib members + tests/ + examples/ + build.rs all tracked
+  PASS just format-check exit=0 (both guards pass; tests/, examples/, build.rs reached)
+    reached: build.rs crates/core/src/lib.rs crates/web/src/lib.rs examples/demo.rs src/main.rs tests/it.rs 
+    tracked: build.rs crates/core/src/lib.rs crates/web/src/lib.rs examples/demo.rs src/main.rs tests/it.rs 
+
+== C2.2 `cargo fmt --check` vs `cargo fmt --all --check` (Muse vs Opus): unformatted file in crates/web
+    from root:        cargo fmt --check exit=1; cargo fmt --all --check exit=1
+    from crates/core: cargo fmt --check exit=0; cargo fmt --all --check exit=1
+  PASS at the workspace root both forms see the web member
+  PASS from a member directory only --all sees the web member (the plain form passes a dirty tree)
+
+== C2.3 structural exclusion works, and the reachability guard surfaces it
+    Cargo.toml:3:exclude = ["vendor/legacy"]
+  PASS [workspace] exclude: vendor/legacy/src/lib.rs untouched by cargo fmt --all (1f789ba5570b57ac)
+  PASS guard names the excluded tracked file, exit=1 (an exclusion cannot be silent)
+
+== C2.4 #[rustfmt::skip] on a mod declaration skips the whole file; the guard surfaces it
+  PASS check exit=0 and generated.rs untouched by a write run
+  PASS guard names generated.rs, exit=1
+
+== C2.5 the scope hazard (Opus): an orphan file and a module declared inside a macro
+  PASS cargo fmt --all --check exit=0 while orphan.rs and hidden.rs are unformatted (hazard reproduced)
+    cargo check -p app-core exit=0 (hidden.rs is compiled through the macro)
+  PASS guard names both files, exit=1
+    | error: tracked .rs files that cargo fmt does not reach:
+    | crates/core/src/hidden.rs
+    | crates/core/src/orphan.rs
+    | error: recipe `format-check` failed with exit code 1
+
+== C2.6 the unstable-key guard (Opus A2): an ignored key does not change cargo fmt's exit status
+  PASS cargo fmt --all --check exit=0 with imports_granularity set
+  PASS just format-check exit=1: guard fires
+    | Warning: can't set `imports_granularity = Crate`, unstable features are only available in nightly channel.
+    | Warning: can't set `imports_granularity = Crate`, unstable features are only available in nightly channel.
+    | Warning: can't set `imports_granularity = Crate`, unstable features are only available in nightly channel.
+    | Warning: can't set `imports_granularity = Crate`, unstable features are only available in nightly channel.
+    | Warning: can't set `imports_granularity = Crate`, unstable features are only available in nightly channel.
+    | Warning: can't set `imports_granularity = Crate`, unstable features are only available in nightly channel.
+    | error: rustfmt.toml sets a key this toolchain ignores
+    | error: recipe `format-check` failed with exit code 1
+
+== C2.7 the recipe's verdict: unformatted member file fails, format repairs, check passes
+  PASS format-check exit=1 and prints the diff
+  PASS after just format: format-check exit=0
+
+== C2.8 cost: /usr/bin/time -p cargo fmt --all --check, three consecutive runs on this workspace
+    run 1 real=0.08s
+    run 2 real=0.07s
+    run 3 real=0.07s
+    just format-check real=0.54s
+  PASS format-check measured at 0.54s, under 5 s on this host
+
+== summary: 14 checks, 14 pass, 0 fail

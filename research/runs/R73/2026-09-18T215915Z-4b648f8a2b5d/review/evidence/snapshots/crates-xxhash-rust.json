@@ -1,0 +1,187 @@
+{
+ "crate": {
+  "downloads": 104513030,
+  "id": "xxhash-rust",
+  "max_version": "0.8.18",
+  "name": "xxhash-rust",
+  "recent_downloads": 30033507,
+  "repository": "https://github.com/DoumanAsh/xxhash-rust"
+ },
+ "versions": [
+  {
+   "created_at": "2026-07-21T10:54:28.375103Z",
+   "license": "BSL-1.0",
+   "num": "0.8.18",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2026-07-15T01:48:17.973876Z",
+   "license": "BSL-1.0",
+   "num": "0.8.17",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2026-07-01T13:13:31.701792Z",
+   "license": "BSL-1.0",
+   "num": "0.8.16",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2024-12-30T00:30:43.667195Z",
+   "license": "BSL-1.0",
+   "num": "0.8.15",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2024-12-23T22:32:54.692096Z",
+   "license": "BSL-1.0",
+   "num": "0.8.14",
+   "rust_version": null,
+   "yanked": true
+  },
+  {
+   "created_at": "2024-12-20T01:18:07.477070Z",
+   "license": "BSL-1.0",
+   "num": "0.8.13",
+   "rust_version": null,
+   "yanked": true
+  },
+  {
+   "created_at": "2024-07-26T15:39:52.182603Z",
+   "license": "BSL-1.0",
+   "num": "0.8.12",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2024-07-03T13:34:59.242364Z",
+   "license": "BSL-1.0",
+   "num": "0.8.11",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2024-02-17T04:41:30.440415Z",
+   "license": "BSL-1.0",
+   "num": "0.8.10",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2024-02-17T00:21:48.716550Z",
+   "license": "BSL-1.0",
+   "num": "0.8.9",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2023-12-20T09:58:14.327720Z",
+   "license": "BSL-1.0",
+   "num": "0.8.8",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2023-09-07T10:59:21.101800Z",
+   "license": "BSL-1.0",
+   "num": "0.8.7",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2022-09-27T01:56:00.251242Z",
+   "license": "BSL-1.0",
+   "num": "0.8.6",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2022-04-12T03:35:31.083367Z",
+   "license": "BSL-1.0",
+   "num": "0.8.5",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2022-03-16T10:59:52.610776Z",
+   "license": "BSL-1.0",
+   "num": "0.8.4",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2022-02-13T10:52:33.842741Z",
+   "license": "BSL-1.0",
+   "num": "0.8.3",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2021-03-08T00:19:18.455349Z",
+   "license": "BSL-1.0",
+   "num": "0.8.2",
+   "rust_version": null,
+   "yanked": false
+  },
+  {
+   "created_at": "2021-01-15T11:19:36.390046Z",
+   "license": "BSL-1.0",
+   "num": "0.8.1",
+   "rust_version": null,
+   "yanked": true
+  },
+  {
+   "created_at": "2020-12-05T03:48:56.559028Z",
+   "license": "BSL-1.0",
+   "num": "0.8.0",
+   "rust_version": null,
+   "yanked": true
+  },
+  {
+   "created_at": "2020-12-02T09:42:22.246408Z",
+   "license": "BSL-1.0",
+   "num": "0.8.0-beta.6",
+   "rust_version": null,
+   "yanked": true
+  },
+  {
+   "created_at": "2020-11-18T11:37:06.317962Z",
+   "license": "BSL-1.0",
+   "num": "0.8.0-beta.5",
+   "rust_version": null,
+   "yanked": true
+  },
+  {
+   "created_at": "2020-10-27T08:55:54.035976Z",
+   "license": "BSL-1.0",
+   "num": "0.8.0-beta.4",
+   "rust_version": null,
+   "yanked": true
+  },
+  {
+   "created_at": "2020-10-16T12:50:30.159593Z",
+   "license": "BSL-1.0",
+   "num": "0.8.0-beta.3",
+   "rust_version": null,
+   "yanked": true
+  },
+  {
+   "created_at": "2020-10-16T05:17:40.449906Z",
+   "license": "BSL-1.0",
+   "num": "0.8.0-beta.2",
+   "rust_version": null,
+   "yanked": true
+  },
+  {
+   "created_at": "2020-10-15T20:12:33.324732Z",
+   "license": "BSL-1.0",
+   "num": "0.8.0-beta.1",
+   "rust_version": null,
+   "yanked": true
+  }
+ ]
+}

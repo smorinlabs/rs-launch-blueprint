@@ -1,0 +1,18 @@
+== ruff: /Users/stevemorin/.local/share/mise/installs/ruff/0.15.15/ruff-aarch64-apple-darwin/ruff
+ruff 0.15.15
+== scratch: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r28-ruff.QL8hpO (outside any repository)
+
+== R1 with fix = true, 'ruff check .' rewrites the file and exits 0
+$ ruff check .
+Found 1 error (1 fixed, 0 remaining).
+m.py size after: 0 bytes
+PASS R1 — exit 0; the unused import was removed
+
+== R2 control: --no-fix reports the same violation and exits 1
+$ ruff check --no-fix .
+
+Found 1 error.
+[*] 1 fixable with the `--fix` option.
+PASS R2 — exit 1
+
+== summary: 0 failing case(s)

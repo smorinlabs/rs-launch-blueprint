@@ -1,0 +1,36 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-26T19:02:17Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-26T19:02:17Z",
+      "state": "ready"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa",
+    "parameters_semantic": "e3fdc2b0f6f0b9f47b364042cc2f730b0806cd3292555bf083d968af77db3e82",
+    "parameters_semantic_file": "15e7e98ec46a110e555959e48c1b87e042f43397d6264a5d82ae17b848b231cd",
+    "policy": "2a3ca15597691bfc55f211b97c09f342c242532d378482ffba2c5d1df742fd58",
+    "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+    "prerequisites": "63a5620cfc9d15f77870d405f34fadf5be1a5f7fe0b0b6ffcfbee2590ce864b8",
+    "prompt": "c0a16e9c7f9a5e277b245d9c79ff9c36eb55817ce2875cd2c5a22a0aa3f01923",
+    "registry": "6b86e81ab06093bf1fced2b6bc79d157cc7ce86ce07f6827d6390339ab8d1f0c"
+  },
+  "item": "R35",
+  "model": "claude-fable-5-1",
+  "operations": {},
+  "prompt_source": "research/topics/35-coverage-tooling/prompts/coverage-tooling.prompt.md",
+  "remaining_budget": "no paid engine (Focused tier)",
+  "required_engines": [
+    "codex",
+    "opus"
+  ],
+  "run_id": "2026-09-26T190217Z-be98e8907e97",
+  "schema_version": 1,
+  "state": "ready",
+  "tier": "focused",
+  "updated_at": "2026-09-26T19:02:17Z"
+}

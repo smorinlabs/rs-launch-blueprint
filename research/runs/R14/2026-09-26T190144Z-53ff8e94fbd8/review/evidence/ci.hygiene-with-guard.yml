@@ -1,0 +1,271 @@
+# R11 candidate fixture, revisions 2 to 7: plan-gated compile-tier CI.
+# Revision 2 changes exactly two things against revision 1 (ci.candidate.yml,
+# kept byte-identical beside this file): the web output is computed fail-closed
+# (every code change sets it), and each cargo step of check runs under
+# !cancelled() so one failing step does not hide the results of the later ones.
+# Revision 3 (ci.candidate.r2-audited.yml keeps the audited revision-2 bytes)
+# skips Markdown only at the repository root, so no skip-list entry matches a
+# file any package contains, and rewrites the comments audit F4 named or the new
+# skip rule touches; the graph is unchanged. Revision 4 rewords comments only.
+# Revision 5 (ci.candidate.r4-audited.yml keeps revision 4's bytes) changes the
+# detector body only: code and web start true, no path test is a pipeline, and
+# the diff lists the source side of every rename.
+# Revision 6 (ci.candidate.r5-audited.yml keeps revision 5's bytes) moves R29's
+# non-code formatting slot and R20's two pin-policy checks into hygiene, which
+# always runs; widens workflows to the whole input of the workflow-file lint;
+# and makes workflows and docs start true like code and web.
+# Revision 7 (ci.candidate.r6-audited.yml keeps revision 6's bytes) moves R82's
+# link check into hygiene, which always runs, and puts R82's rustdoc part on
+# check's doc build step; no job reads docs any more. The detector is unchanged.
+# This file is the JOB GRAPH ONLY. Every tool named inside a step is a slot
+# owned by another item (R27 R28 R29 R30 R31 R32 R35 R13 R71 R82) and is
+# written here as the cheapest placeholder that keeps the graph type-correct.
+# Package names are R02's; binary names are R49's and R69's; the serve
+# binary's name is still R69's placeholder and is written as a literal here
+# only so `actionlint` has something to type-check.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  merge_group:
+
+permissions: {}
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  # Tier 0 - always runs. No toolchain, no cache action, no target/ directory.
+  plan:
+    name: plan
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      code: ${{ steps.detect.outputs.code }}
+      web: ${{ steps.detect.outputs.web }}
+      workflows: ${{ steps.detect.outputs.workflows }}
+      docs: ${{ steps.detect.outputs.docs }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Detect changed paths
+        id: detect
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          set -euo pipefail
+          # R11-DETECTOR-BEGIN
+          out() { printf '%s=%s\n' "$1" "$2" >> "$GITHUB_OUTPUT"; }
+          if [ "${EVENT_NAME}" != "pull_request" ]; then
+            out code true; out web true; out workflows true; out docs true
+            echo "INFO: ${EVENT_NAME} event - nothing is skip-gated"
+            exit 0
+          fi
+          # --no-renames lists a rename as a deletion of its source plus an
+          # addition, so moving a packaged file into a skipped directory still
+          # names the packaged path.
+          changed="$(git diff --no-ext-diff --no-textconv --no-renames --name-only "${BASE_SHA}...HEAD")"
+          # Every output starts true and turns false only on proof, so a test
+          # that errors or is cut short leaves it true.
+          code=true; web=true; workflows=true; docs=true
+          # Paths that cannot affect a compile, a package or an installed artifact.
+          # The Markdown entry matches root-level files only; Markdown under docs/
+          # and .github/ISSUE_TEMPLATE/ skips through those entries. /src and every
+          # member with no include list are packaged, so no entry matches there.
+          skip='^docs/|^\.vscode/|^\.github/ISSUE_TEMPLATE/|^[^/]+\.md$'
+          # R49's [package] include allow-list: every entry is a packaging input,
+          # so none of them is skippable however the skip-list reads (/src
+          # needs no entry here: no skip-list alternative matches under src/).
+          packaging='^README\.md$|^CHANGELOG\.md$|^LICENSE-MIT$|^LICENSE-APACHE$'
+          # Every test reads the whole list from a here-string, never from a pipe,
+          # so an early-exiting grep -q cannot SIGPIPE an upstream stage under
+          # pipefail. grep exits 1 only when no line matches; 0 or 2 is no proof.
+          # The ^$ alternative is not a skip entry: it only discards the one empty
+          # line an empty list yields.
+          pkg=0; grep -qE "$packaging" <<<"$changed" || pkg=$?
+          rest=0; grep -qvE "${skip}|^\$" <<<"$changed" || rest=$?
+          if [ "$pkg" -eq 1 ] && [ "$rest" -eq 1 ]; then code=false; fi
+          # web is fail-closed: crates/web depends on crates/core and the facade
+          # that hosts the serve binary depends on every member, so any change
+          # that can affect a compile can affect the web surface. R69's own keys
+          # (crates/web/**, the serve binary's source, the web tests) are a subset:
+          # every one of them already sets code, so today web equals code, and
+          # ^crates/web/ is the place a verified narrowing of web would land.
+          webdir=0; grep -qE '^crates/web/' <<<"$changed" || webdir=$?
+          if [ "$code" = false ] && [ "$webdir" -eq 1 ]; then web=false; fi
+          # workflows gates workflow-lint, so its pattern holds the whole input
+          # of the workflow-file lint: the workflow files, the local actions they
+          # call (which live under .github/actions/) and the linter's config.
+          wf=0; grep -qE '^\.github/workflows/|^\.github/actions/|^\.github/actionlint\.ya?ml$' <<<"$changed" || wf=$?
+          if [ "$wf" -eq 1 ]; then workflows=false; fi
+          dc=0; grep -qE '^docs/|\.md$' <<<"$changed" || dc=$?
+          if [ "$dc" -eq 1 ]; then docs=false; fi
+          out code "$code"; out web "$web"; out workflows "$workflows"; out docs "$docs"
+          echo "INFO: code=$code web=$web workflows=$workflows docs=$docs"
+          # R11-DETECTOR-END
+
+  # Tier 1 - no compilation, therefore no rust-cache step and no cache entry.
+  # Deliberately carries NO `needs:` edge, so a formatting failure still
+  # reports on a pull request whose compile tier is skipped.
+  hygiene:
+    name: hygiene
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # R14: the large-file guard walks every commit in the range.
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Formatter check
+        run: cargo fmt --all --check
+      # R29's files (Cargo.toml, rust-toolchain.toml, rustfmt.toml, YAML, JSON,
+      # Markdown) are what a docs-only or manifest-only change edits, so the slot
+      # is never gated.
+      - name: Non-code formatting slot (R29)
+        run: echo "non-code formatting slot"
+      # R20's input is .github/ plus a root zizmor.yml; an always-run step
+      # needs no key that must contain it.
+      - name: Action-pin checks slot (R20)
+        run: echo "action-pin checks slot"
+      # R82's link check compiles nothing, and its input (the prose and every
+      # file a link names) is R82's to declare, so no key may gate it.
+      - name: Docs link-check slot (R82)
+        run: echo "docs link-check slot"
+      # R14: blob-size guard over every commit in the range.
+      - name: Large-file guard (R14)
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.merge_group.base_sha || github.event.before }}
+        run: scripts/check-large-files.sh --range "${BASE_SHA}" HEAD
+
+  # Tier 1 - path-gated, no compilation. Only checks whose whole input is the
+  # workflow tree live here; workflows is written to contain that input.
+  workflow-lint:
+    name: workflow-lint
+    needs: plan
+    if: ${{ needs.plan.outputs.workflows == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Workflow-file lint slot
+        run: echo "workflow-lint slot"
+
+  # Tier 2 - the one compiling job per runner. One target/ cache entry per OS.
+  check:
+    name: check (${{ matrix.os }})
+    needs: plan
+    if: ${{ needs.plan.outputs.code == 'true' }}
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          env-vars: "ImageOS"
+          cache-on-failure: "true"
+          prefix-key: "v1-rslbp"
+      - name: Record the runner image (R10 criterion A7)
+        run: echo "ImageOS=$ImageOS"
+      - name: Lint, default features
+        if: ${{ !cancelled() }}
+        run: cargo clippy --locked --workspace --all-targets -- -D warnings
+      - name: Lint, web feature on
+        if: ${{ !cancelled() }}
+        run: cargo clippy --locked --workspace --all-targets --features web -- -D warnings
+      - name: Facade builds with no default features (R69)
+        if: ${{ !cancelled() }}
+        run: cargo check --locked --no-default-features -p rs-launch-blueprint
+      - name: Test, default features, root-scoped so feature-off is proven not assumed
+        if: ${{ !cancelled() }}
+        run: cargo test --locked -p rs-launch-blueprint -p rs-launch-blueprint-core -p rs-launch-blueprint-cli
+      - name: Test, web feature on, workspace-scoped
+        if: ${{ !cancelled() }}
+        run: cargo test --locked --workspace --features web
+      - name: Build the serve binary
+        if: ${{ !cancelled() }}
+        run: cargo build --locked --features web --bin rslbp-serve
+      - name: Doc build
+        if: ${{ !cancelled() }}
+        run: cargo doc --locked --workspace --no-deps --features web
+
+  # Tier 2 - the rust-version floor. Its own single-runner job, not a matrix
+  # leg of check: the floor needs only the one check Cargo's CI guide shows,
+  # not check's whole step list; a leg of check's os matrix would widen the
+  # owner's open F033 question; and axum and bat ship a separate floor job.
+  msrv-floor:
+    name: msrv-floor
+    needs: plan
+    if: ${{ needs.plan.outputs.code == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          env-vars: "ImageOS"
+          prefix-key: "v1-rslbp"
+      - name: Verify the declared rust-version floor
+        run: cargo hack check --locked --rust-version --workspace --all-targets --ignore-private
+
+  # Tier 2 - R50's job: one runner, gated on this file's code output, with the
+  # web leg as a step conditioned on this file's web output.
+  install-smoke:
+    name: install-smoke
+    needs: plan
+    if: ${{ needs.plan.outputs.code == 'true' }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: Swatinem/rust-cache@6323deb102c322ba6fcbdcafc7e3dddab59af2b6 # v2.9.2
+        with:
+          env-vars: "ImageOS"
+          prefix-key: "v1-rslbp"
+      - name: Install smoke, default surface
+        run: just install-check
+      - name: Install smoke, web surface
+        if: ${{ needs.plan.outputs.web == 'true' }}
+        run: just install-check web
+
+  # Slots this file leaves open. Each is a job id or step position another
+  # item fills, under the partition rule stated in this item's owned value:
+  #   coverage      (R35)        job;  needs: plan; if code == 'true'
+  #   semver        (R04)        job;  needs: plan; if code == 'true'; its
+  #                              action's own cache is one more cache-bearing id
+  #   deny / bans   (R02 F008, R13)  step of check, or a job if it needs a
+  #                              graph the compile tier does not build
+  #   test tiers    (R32)        steps of check unless a tier needs its own
+  #                              toolchain, runner or target/
+  #   docs checks   (R82)        link check: the hygiene step above; rustdoc
+#                              part: check's doc build step
+  #   openapi-snap  (R71, R84)   job;  needs: plan; if web == 'true'
+  #   permissions   (R08)        the scopes in every permissions: block here
+  #   ci-ok         (R12)        only if R12 aggregates: job; if always();
+  #                              needs: plan, and the jobs R12 folds in

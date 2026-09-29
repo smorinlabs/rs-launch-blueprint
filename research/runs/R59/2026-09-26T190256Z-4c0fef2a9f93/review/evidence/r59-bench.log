@@ -1,0 +1,22 @@
+# R59 check D — indicative throughput
+run (UTC): 2026-09-28T20:02:22Z
+host: Darwin 25.4.0 arm64
+rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+probe crate: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R59/2026-09-26T190256Z-4c0fef2a9f93/review/evidence/r59-check
+CARGO_TARGET_DIR: /tmp/cargo-s81-r59-r4-target
+Cargo.lock sha256: 0f421eeb399bc89aad9036a306c5c00c8ccfde94210925f98b99e89a17155328
+cpu: Apple M4 Pro
+owned run 1: emit_ms=233 total_ms=233
+owned run 2: emit_ms=210 total_ms=210
+owned run 3: emit_ms=212 total_ms=212
+PASS D-owned — owned: 3 runs completed and reported timings — expected=[3] actual=[3]
+fr-surpassed run 1: emit_ms=293 total_ms=293
+fr-surpassed run 2: emit_ms=233 total_ms=233
+fr-surpassed run 3: emit_ms=424 total_ms=424
+PASS D-fr-surpassed — fr-surpassed: 3 runs completed and reported timings — expected=[3] actual=[3]
+owned-nonblocking run 1: emit_ms=46 total_ms=164
+owned-nonblocking run 2: emit_ms=47 total_ms=164
+owned-nonblocking run 3: emit_ms=48 total_ms=233
+PASS D-owned-nonblocking — owned-nonblocking: 3 runs completed and reported timings — expected=[3] actual=[3]
+
+SUMMARY: 3 checks, 0 failed, 0 skipped

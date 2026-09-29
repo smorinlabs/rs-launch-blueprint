@@ -1,0 +1,75 @@
+{
+ "crate": {
+  "downloads": 144,
+  "id": "idempotent",
+  "max_version": "2.0.0",
+  "name": "idempotent",
+  "recent_downloads": 59,
+  "repository": "https://github.com/aklanti/idempotent"
+ },
+ "versions": [
+  {
+   "created_at": "2026-09-16T11:08:59.905754Z",
+   "license": "MPL-2.0",
+   "num": "2.0.0",
+   "rust_version": "1.98.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2026-09-14T19:34:57.689656Z",
+   "license": "MPL-2.0",
+   "num": "1.1.0",
+   "rust_version": "1.98.0",
+   "yanked": true
+  },
+  {
+   "created_at": "2026-09-12T21:14:38.802714Z",
+   "license": "MPL-2.0",
+   "num": "1.0.0",
+   "rust_version": "1.98.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2026-03-07T09:40:51.802922Z",
+   "license": "MPL-2.0",
+   "num": "0.3.0",
+   "rust_version": "1.94.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2026-03-04T00:30:55.770277Z",
+   "license": "MPL-2.0",
+   "num": "0.2.0",
+   "rust_version": "1.93.0",
+   "yanked": false
+  },
+  {
+   "created_at": "2026-03-04T00:21:15.200300Z",
+   "license": "MPL-2.0",
+   "num": "0.1.2",
+   "rust_version": "1.93.0",
+   "yanked": true
+  },
+  {
+   "created_at": "2026-03-04T00:03:32.554897Z",
+   "license": "MPL-2.0",
+   "num": "0.1.1",
+   "rust_version": "1.93.0",
+   "yanked": true
+  },
+  {
+   "created_at": "2026-03-03T23:55:14.836343Z",
+   "license": "MPL-2.0",
+   "num": "0.1.0",
+   "rust_version": "1.93.0",
+   "yanked": true
+  },
+  {
+   "created_at": "2026-01-12T22:22:41.802714Z",
+   "license": "MPL-2.0",
+   "num": "0.0.0",
+   "rust_version": "1.92.0",
+   "yanked": true
+  }
+ ]
+}

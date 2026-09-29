@@ -55,7 +55,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R50 | install-smoke-test | bundle | different | DIVERGENT | — | [prompt](topics/50-install-smoke-test/prompts/install-smoke-test.prompt.md) | open |
 | R51 | container-image | bundle | py-only | DIVERGENT | — | [prompt](topics/51-container-image/prompts/container-image.prompt.md) | open |
 | R52 | toml-crate | bundle | different | DIVERGENT | — | [prompt](topics/52-toml-crate/prompts/toml-crate.prompt.md) | resolved |
-| R53 | config-schema-validation | crate | different | DIVERGENT | — | [prompt](topics/53-config-schema-validation/prompts/config-schema-validation.prompt.md) | open |
+| R53 | config-schema-validation | crate | different | DIVERGENT | — | [prompt](topics/53-config-schema-validation/prompts/config-schema-validation.prompt.md) | resolved |
 | R54 | config-discovery-tiers | bundle | py-only | DIVERGENT | — | [prompt](topics/54-config-discovery-tiers/prompts/config-discovery-tiers.prompt.md) | open |
 | R55 | config-error-tolerance | bundle | different | DIVERGENT | — | [prompt](topics/55-config-error-tolerance/prompts/config-error-tolerance.prompt.md) | open |
 | R56 | config-secret-policy | bundle | different | DIVERGENT | — | [prompt](topics/56-config-secret-policy/prompts/config-secret-policy.prompt.md) | open |

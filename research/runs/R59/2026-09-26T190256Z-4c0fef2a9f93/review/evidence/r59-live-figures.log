@@ -1,0 +1,83 @@
+# R59 check L — live figures
+run (UTC): 2026-09-28T20:02:25Z
+host: Darwin 25.4.0 arm64
+rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+retrieved (UTC): 2026-09-28
+
+## crates.io (GET /api/v1/crates/<name> and /versions)
+file-rotate            recent_downloads=1079949 downloads=5662327 newest=0.8.0 2025-02-27 rust_version=null license=MIT
+rolling-file           recent_downloads=1132205 downloads=7087390 newest=0.2.0 2023-01-14 rust_version=null license=MIT/Apache-2.0
+tracing-rolling-file   recent_downloads=642822 downloads=1725928 newest=0.1.3 2025-08-16 rust_version=null license=MIT/Apache-2.0
+logroller              recent_downloads=163505 downloads=533807 newest=0.1.12 2026-07-01 rust_version=1.71 license=MIT
+tracing-appender       recent_downloads=33278858 downloads=119570040 newest=0.2.5 2026-04-17 rust_version=1.63.0 license=MIT
+tracing-subscriber     recent_downloads=148039380 downloads=630176174 newest=0.3.23 2026-03-13 rust_version=1.65.0 license=MIT
+flexi_logger           recent_downloads=3459002 downloads=24378604 newest=0.31.10 2026-08-07 rust_version=1.87.0 license=MIT OR Apache-2.0
+log4rs                 recent_downloads=1938103 downloads=23344400 newest=1.4.0 2025-09-05 rust_version=1.75 license=MIT OR Apache-2.0
+PASS L01 — file-rotate newest non-yanked is the pinned 0.8.0 — expected=[0.8.0] actual=[0.8.0]
+PASS L02 — tracing-subscriber newest non-yanked is the pinned 0.3.23 — expected=[0.3.23] actual=[0.3.23]
+PASS L03 — tracing-appender newest non-yanked is the pinned 0.2.5 — expected=[0.2.5] actual=[0.2.5]
+PASS L04 — rolling-file newest non-yanked is 0.2.0 — expected=[0.2.0] actual=[0.2.0]
+
+## GitHub repositories (GET /repos/<o>/<r>; open issues via /search/issues total_count)
+kstrafe/file-rotate            stars=41 archived=false pushed_at=2025-08-30T22:03:50Z open_issues=9
+Axcient/rolling-file-rs        stars=19 archived=false pushed_at=2023-02-24T21:59:56Z open_issues=1
+cavivie/tracing-rolling-file   stars=12 archived=false pushed_at=2025-08-16T07:58:50Z open_issues=0
+alasdairpan/logroller          stars=21 archived=false pushed_at=2026-07-01T11:42:17Z open_issues=1
+estk/log4rs                    stars=1134 archived=false pushed_at=2025-11-16T06:30:17Z open_issues=33
+emabee/flexi_logger            stars=395 archived=false pushed_at=2026-08-06T22:11:52Z open_issues=5
+tokio-rs/tracing               stars=6893 archived=false pushed_at=2026-05-30T06:42:00Z open_issues=630
+PASS L05 — kstrafe/file-rotate not archived — expected=[false] actual=[false]
+PASS L06 — cavivie/tracing-rolling-file not archived — expected=[false] actual=[false]
+
+## CI OS matrices (GET /repos/<o>/<r>/contents/.github/workflows/<file>)
+file-rotate rust.yml: macos-latest,ubuntu-latest,windows-latest
+rolling-file test.yaml: ubuntu-18.04,windows-latest
+tracing-rolling-file main.yaml: macos-arm64,macos-latest,ubuntu-latest,windows-amd64,windows-latest,windows-msvc
+logroller ci.yml: macos-latest,ubuntu-latest,windows-latest
+log4rs main.yml: ubuntu-latest,windows-latest
+PASS L07 — file-rotate CI covers macos-latest and ubuntu-latest — expected=[macos-latest,ubuntu-latest,windows-latest] actual=[macos-latest,ubuntu-latest,windows-latest]
+PASS L08 — rolling-file CI is ubuntu-18.04 + windows-latest only (gate 4: no macOS) — expected=[ubuntu-18.04,windows-latest] actual=[ubuntu-18.04,windows-latest]
+PASS L09 — log4rs main.yml is ubuntu-latest + windows-latest only (gate 4: no macOS) — expected=[ubuntu-latest,windows-latest] actual=[ubuntu-latest,windows-latest]
+PASS L10 — tracing-rolling-file CI covers macOS — expected=[yes] actual=[yes]
+PASS L11 — logroller CI covers macOS — expected=[yes] actual=[yes]
+
+## lineage (GET /repos/cavivie/tracing-rolling-file/readme)
+9:A rolling file appender with customizable rolling conditions, based on [rolling-file](https://github.com/Axcient/rolling-file-rs).
+PASS L12 — tracing-rolling-file README says it is based on rolling-file — expected=[1] actual=[1]
+
+## tokio-rs/tracing size-rotation requests (GET /repos/tokio-rs/tracing/issues/<n>)
+#1940 open created=2022-02-18 title=Allow tracing-appender sized log and rotation
+PASS L13 — tokio-rs/tracing#1940 is still open — expected=[open] actual=[open]
+#858 open created=2020-07-28 title=RotatingFileAppender
+PASS L14 — tokio-rs/tracing#858 is still open — expected=[open] actual=[open]
+
+## file-rotate responsiveness: 10 most recently opened issues (PRs excluded)
+#37 opened 2026-02-21: no maintainer reply
+#36 opened 2025-07-30: first maintainer reply after 2.6 days
+#35 opened 2025-07-27: first maintainer reply after 0 days
+#34 opened 2025-06-05: first maintainer reply after 32 days
+#32 opened 2025-04-21: first maintainer reply after 1.9 days
+#31 opened 2025-03-17: no maintainer reply
+#29 opened 2025-02-14: first maintainer reply after 10.4 days
+#27 opened 2024-06-26: no maintainer reply
+#26 opened 2024-05-16: first maintainer reply after 0.3 days
+#24 opened 2023-03-08: first maintainer reply after 0.1 days
+sample=10 answered=7 unanswered=3 median_days_to_first_maintainer_reply=1.9
+PASS L15 — responsiveness sample is the 10 most recent issues — expected=[10] actual=[10]
+
+## RustSec (GET https://rustsec.org/packages/<name>.html; 404 = no advisory page)
+file-rotate            HTTP 404
+PASS L-rs-file-rotate — file-rotate has no advisory page — expected=[404] actual=[404]
+rolling-file           HTTP 404
+PASS L-rs-rolling-file — rolling-file has no advisory page — expected=[404] actual=[404]
+tracing-rolling-file   HTTP 404
+PASS L-rs-tracing-rolling-file — tracing-rolling-file has no advisory page — expected=[404] actual=[404]
+logroller              HTTP 404
+PASS L-rs-logroller — logroller has no advisory page — expected=[404] actual=[404]
+tracing-appender       HTTP 404
+PASS L-rs-tracing-appender — tracing-appender has no advisory page — expected=[404] actual=[404]
+tracing-subscriber     HTTP 200
+PASS L-rs-tracing-subscriber — tracing-subscriber has an advisory page — expected=[200] actual=[200]
+PASS L16 — RUSTSEC-2025-0055 names 0.3.20 as the patched floor (the pinned 0.3.23 is above it) — expected=[yes] actual=[yes]
+
+SUMMARY: 22 checks, 0 failed, 0 skipped

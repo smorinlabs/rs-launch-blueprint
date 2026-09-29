@@ -1,0 +1,46 @@
+{
+ "audits": {
+  "empirical": {
+   "actor": "codex",
+   "family": "openai",
+   "file": "review/audit-codex.r3.md",
+   "model": "gpt-6"
+  },
+  "judgment": {
+   "actor": "fable",
+   "family": "anthropic",
+   "file": "review/audit-fable.r3.md",
+   "model": "claude-opus-5-5"
+  }
+ },
+ "empirical": {
+  "argv": [
+   "bash",
+   "review/evidence/r27-config-surface.sh"
+  ],
+  "cwd": "research/runs/R27/2026-09-26T190148Z-dab70c7ff49f, the run whose evidence the r3 empirical audit reran from the repository root with E=research/runs/R27/2026-09-26T190148Z-dab70c7ff49f/review/evidence and fresh output to /tmp/r27-r3-emp-claude/, the scripts' own scratch trees under $TMPDIR/r27s/. The argv above is the audit primary rerun (r27-config-surface.sh, shellcheck 0, exit 0; 65 checks, 65 pass, 0 fail; fresh output byte-identical to the committed log). The audit also ran r27-workspace-scope.sh (exit 0, 14/14, differs wall-clock timing only at char 3373 line 52), r27-hook.sh (exit 0, 13/13, identical), r27-channel-pin.sh (exit 0, 9/9, identical), r27-figures.sh (exit 0, observation-only, differs live data only) and r27-husky-defaults.sh (exit 0, observation-only F11, not byte-compared). Total 101 assertions, 101 pass, 0 fail, 0 skipped. The output log named below is the committed r27-config-surface log the fresh rerun matched byte-identical.",
+  "exit_code": 0,
+  "output_log": "review/evidence/r27-config-surface.log",
+  "toolchain": "macOS, Darwin 25.4.0 arm64, CARGO_HOME=/tmp/cargo-s38-R27-emp (private), ShellCheck from PATH, as the r3 empirical audit states; review/evidence/ untracked, git status unchanged before and after the reruns, no committed log overwritten."
+ },
+ "engine_reports": {
+  "muse": {
+   "actor": "research-muse-2026-09-26T190148Z-dab70c7ff49f",
+   "family": "meta",
+   "file": "raw/muse.md",
+   "model": "muse-spark"
+  },
+  "opus": {
+   "actor": "research-opus-2026-09-26T190148Z-dab70c7ff49f",
+   "family": "anthropic",
+   "file": "raw/opus.md",
+   "model": "claude-opus-5-5"
+  }
+ },
+ "evidence_checks": {},
+ "synthesis": {
+  "actor": "synth-opus-2026-09-26T190148Z-dab70c7ff49f-r3",
+  "family": "anthropic",
+  "model": "claude-opus-5-5"
+ }
+}

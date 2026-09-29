@@ -1,0 +1,201 @@
+== run:  /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R28/2026-09-26T190151Z-059af1e15f51
+== root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+/Users/stevemorin/.local/share/mise/shims/python3
+/usr/bin/shasum
+/opt/homebrew/bin/shellcheck
+Python 3.14.7
+
+== I1 run inputs hash to the values manifest.json recorded
+PASS I1-prompt — inputs/prompt.md d21a739c0f95… vs manifest d21a739c0f95…
+PASS I1-policy — inputs/EXECUTION.json 2a3ca1559769… vs manifest 2a3ca1559769…
+PASS I1-prerequisites — inputs/prerequisites.json f0755cb8166f… vs manifest f0755cb8166f…
+PASS I1-parameters_semantic_file — inputs/parameters.json 26e3f793259c… vs manifest 26e3f793259c…
+  --- inputs/prompt.md
+  +++ canonical
+  @@ -28 +28 @@
+  -- engines: codex, opus
+  +- engines: muse, opus
+  @@ -79 +79 @@
+  -- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+  +- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception. This item substitutes Muse (Meta) for Codex under the `engine_overrides` pilot; its mirrored `- engines:` line is authoritative.
+PASS I1-canon — canonical prompt differs from inputs/prompt.md only by the Q17.A edit (line 28 engines, line 79 Muse sentence)
+
+== I2 prerequisite decisions and acceptances are the recorded bytes
+PASS I2-R11-decision — 410e88e5195a…
+PASS I2-R11-acceptance — 774f76490a7f…
+PASS I2-R42-decision — a2504aa7e3ad…
+PASS I2-R42-acceptance — a3732b422e67…
+
+== I3 raw-report hashes quoted in the decision
+raw/muse.md 729bc9fc3c8ca14c2aa424284708d7b953dc880d232cfc16968b0cd1fae4c3c8
+PASS I3-muse — full sha256 quoted in DECISION.md
+raw/opus.md 7e7c8f1d32fe13bc2fca136742b5d58ed6f47bcb8fd4f7769838eee35a1ad314
+PASS I3-opus — full sha256 quoted in DECISION.md
+
+== I4 assumes lines are byte-identical to inputs/parameters.json; nothing owned; no CONFLICT
+PASS I4-count — 6 assumes lines
+PASS I4-msrv-policy — 118 value bytes match
+PASS I4-rust-edition — 4 value bytes match
+PASS I4-target-os-matrix — 27 value bytes match
+PASS I4-license — 17 value bytes match
+PASS I4-ci-job-structure — 8093 value bytes match
+PASS I4-package-manager-invocation — 667 value bytes match
+PASS I4-owns — owns none
+PASS I4-conflict — no CONFLICT: line
+
+== I5 decision shape
+H2: ['Decision', 'Parameters', 'Empirical check', 'Engines']
+PASS I5-h2 — exactly Decision, Parameters, Empirical check, Engines (nothing published: no Supersedes)
+PASS I5-title — # 2026-09-26 — R28 — linter-and-editor-tooling (bundle, Focused) — decision (revision 3)
+PASS I5-principles — ### Principles and implementation under ## Decision
+PASS I5-reverify — last line of ## Decision is re-verify:
+PASS I5-narrowed — narrowed: no stated
+PASS I5-F085 — settled row named in ## Decision
+PASS I5-F086 — settled row named in ## Decision
+PASS I5-F093 — settled row named in ## Decision
+PASS I5-F094 — settled row named in ## Decision
+PASS I5-F096 — settled row named in ## Decision
+PASS I5-F101 — settled row named in ## Decision
+PASS I5-F109 — settled row named in ## Decision
+PASS I5-F195 — settled row named in ## Decision
+PASS I5-F196 — settled row named in ## Decision
+PASS I5-note — revision-3 note on line 3; revision-2 and revision-1 notes retained
+PASS I5-snapshot-r2 — review/R28-r2-snapshot.md dd4c07b66eb1… and its sha256 quoted in DECISION.md
+PASS I5-snapshot-r1 — review/R28-r1-snapshot.md 90cbe6ce44b7… and its sha256 quoted in DECISION.md
+
+== I6 every raw citation resolves: line range inside the file and quoted fragment inside the range
+79 distinct raw citations in DECISION.md
+PASS I6-muse:146-152 — '| A. rustup-component linter (clippy)'
+PASS I6-muse:154 — 'No `BASELINE-REVIEW:` finding'
+PASS I6-muse:167 — '`cargo clippy --all-targets` (check-only'
+PASS I6-muse:195-197 — 'the 1.96 floor holds trivially'
+PASS I6-muse:205-206 — 'Maintenance state: active (pushed 2 days ago'
+PASS I6-muse:222-223 — '`unsafe` posture inapplicable — not linked into the template'
+PASS I6-muse:225 — 'features/async-runtime inapplicable — a compiler driver, not a library'
+PASS I6-muse:225-226 — 'zero runtime or binary-size cost'
+PASS I6-muse:228-230 — '`marker` and `dylint`: custom-lint authoring frameworks'
+PASS I6-muse:240 — 'all = { level = "deny",'
+PASS I6-muse:240-242 — 'pedantic = { level = "warn", priority = -1 }'
+PASS I6-muse:242 — '`undocumented_unsafe_blocks = "warn"`'
+PASS I6-muse:3 — 'Engine: muse (Meta)'
+PASS I6-muse:4-6 — 'the floor today is therefore **1.96**'
+PASS I6-muse:416-421 — "F100's exclude-scope question therefore concerns only the formatter side"
+PASS I6-muse:423 — 'Relax test lints with `#[allow(clippy::all, clippy::pedantic)]`'
+PASS I6-muse:481 — '`missing_safety_doc` via `pedantic = "warn"`'
+PASS I6-muse:557-558 — 'the editor surfaces the same checks CI runs'
+PASS I6-muse:564 — 'so editor and CLI cannot'
+PASS I6-muse:577 — 'Maintenance state: active.'
+PASS I6-muse:590 — 'MSRV inapplicable — editor extension, not'
+PASS I6-muse:591 — 'advisories: rustsec 404; `unsafe` inapplicable'
+PASS I6-muse:592-594 — 'the extension host is platform-independent and the project ships server binaries'
+PASS I6-muse:594 — 'features/async inapplicable — not a Rust library dependency'
+PASS I6-muse:595-596 — 'zero template cost (editor-side only;'
+PASS I6-muse:603-605 — "the same command family R30's gate uses — engine owned there"
+PASS I6-muse:692-693 — 'editor extension + prebuilt adapter binary, not compiled into the template'
+PASS I6-muse:693-695 — 'advisories inapplicable — not a crates.io package'
+PASS I6-muse:697-698 — 'features/async inapplicable — not a Rust library dependency'
+PASS I6-muse:698-699 — 'zero template cost (editor-side only; debugs the binaries Cargo already builds)'
+PASS I6-muse:704-707 — '`preLaunchTask: cargo build`'
+PASS I6-muse:715 — '`ms-vscode.cpptools` driving `lldb-mi`'
+PASS I6-muse:78-85 — 'Agreement level is **capability + policy**'
+PASS I6-muse:802 — 'Ship no `.vscode/settings.json` toolchain pin'
+PASS I6-muse:845 — 'cannot disagree on the'
+PASS I6-muse:940-946 — 'Gaps recorded, not filled'
+PASS I6-opus:125-132 — 'P4 — `.cargo/config.toml`'
+PASS I6-opus:159-161 — 'undocumented_unsafe_blocks = "deny"'
+PASS I6-opus:200 — '| E5b | same on a clean tree | **not executed**'
+PASS I6-opus:207 — 'BASELINE-REVIEW: F093'
+PASS I6-opus:207-212 — 'pins 0.15.21'
+PASS I6-opus:21-23 — 'no clippy run at the floor was executed'
+PASS I6-opus:217-219 — "rust-analyzer's `check.command` already runs the same command, so no extra extension is needed"
+PASS I6-opus:262-265 — 'Issue responsiveness'
+PASS I6-opus:265-266 — 'ships every six weeks with rustc'
+PASS I6-opus:269-273 — 'the retired `rust-lang-nursery/rust-clippy` URL'
+PASS I6-opus:274-275 — '`LICENSE-APACHE` both present via `GET /repos/rust-lang/rust-clippy/contents/<file>`'
+PASS I6-opus:275-276 — "versioned with rustc, so the floor toolchain's own clippy is used"
+PASS I6-opus:276-278 — '`unsafe` posture inapplicable (a developer tool, not a dependency)'
+PASS I6-opus:279-280 — 'every rustup tier-1 host incl. `ubuntu-latest`, `macos-latest`'
+PASS I6-opus:280 — 'no default features, no async runtime'
+PASS I6-opus:280-281 — 'zero binary-size cost (never linked); compile time ≈ `cargo check` plus lint passes'
+PASS I6-opus:283-292 — 'fails the **stable Rust** constraint'
+PASS I6-opus:3 — 'Engine: `claude-opus-5-5`'
+PASS I6-opus:49 — '`llvm-vs-code-extensions.lldb-dap` (LLDB DAP)'
+PASS I6-opus:543-544 — 'configured by R16 with `security-extended`'
+PASS I6-opus:617-622 — '`pushed_at` 2026-09-26T10:35:50Z; open issues 1,696; weekly releases'
+PASS I6-opus:624-628 — 'Crate figures **inapplicable** (distributed as a VS Code extension with a bundled server binary'
+PASS I6-opus:626-627 — 'extension does not use it by default'
+PASS I6-opus:627-628 — '`LICENSE-MIT` and `LICENSE-APACHE` both present'
+PASS I6-opus:628 — 'MSRV n/a (not a'
+PASS I6-opus:629 — 'no RustSec entry (not a crate)'
+PASS I6-opus:629-630 — 'bundled binary for Linux, macOS, Windows (S17)'
+PASS I6-opus:630 — '(5) n/a; (6) no binary cost.'
+PASS I6-opus:64-76 — 'Well-regarded projects surveyed'
+PASS I6-opus:644 — "Keep ts's cross-platform"
+PASS I6-opus:691-695 — 'Maintenance: `active` (release within 6 months), with a concentration signal'
+PASS I6-opus:697-699 — 'Crate figures **inapplicable** (VS Code extensions)'
+PASS I6-opus:699 — '(1) CodeLLDB MIT'
+PASS I6-opus:700 — '(2)/(3) n/a'
+PASS I6-opus:700-702 — 'Linux with glibc 2.18+ for x86_64, aarch64 or armhf; MacOS 10.12+ for x86_64 and 11.0+ for arm64'
+PASS I6-opus:704 — '(5) n/a; (6) extension download only.'
+PASS I6-opus:730 — '"cargo": { "args": ["run"'
+PASS I6-opus:738 — '"cargo": { "args": ["run"'
+PASS I6-opus:78-82 — 'VS Code 51.6 %'
+PASS I6-opus:810-814 — 'Record as an override if the synthesizer accepts it'
+PASS I6-opus:90-94 — 'the editor shows the same diagnostics the gate enforces'
+PASS I6-opus:916 — '`/releases`, `/commits`, `/contributors` for codelldb'
+PASS I6-opus:941-943 — 'Independence disclosure'
+PASS I6-table — no stale table entries
+
+== I7 every prerequisite-decision citation resolves
+5 distinct prerequisite citations in DECISION.md
+PASS I7-11-ci-workflow-job-structure:268 — '`-D warnings` is on both clippy steps'
+PASS I7-11-ci-workflow-job-structure:320 — '- owns ci-job-structure = '
+PASS I7-11-ci-workflow-job-structure:82 — 'Fitness gate 1 (licence) is `inapplicable'
+PASS I7-42-dev-toolchain-provisioning:26 — 'components = ["rustfmt", "clippy"]'
+PASS I7-42-dev-toolchain-provisioning:519-521 — "R28's clippy invocation, whatever flags R28 selects, is written `cargo clippy …`"
+
+== I8 the provenance statements are true of the snapshot
+PASS I8-engines — R28 engines ['codex', 'opus'], tier focused
+PASS I8-override — no engine_overrides entry for R28
+PASS I8-operations — manifest operations {} and operations/ empty
+PASS I8-required — required_engines ['codex', 'opus']
+PASS I8-raw — raw/ holds exactly muse.md and opus.md
+
+== I9 every other evidence log reports zero failures with the case counts the decision's table states
+PASS I9-r28-lint-table — PASS 13 FAIL 0 (expected 13)
+PASS I9-r28-lint-table-table — row present in ## Empirical check
+PASS I9-r28-test-relaxation — PASS 11 FAIL 0 (expected 11)
+PASS I9-r28-test-relaxation-table — row present in ## Empirical check
+PASS I9-r28-autofix — PASS 5 FAIL 0 (expected 5)
+PASS I9-r28-autofix-table — row present in ## Empirical check
+PASS I9-r28-floor — PASS 5 FAIL 0 (expected 5)
+PASS I9-r28-floor-table — row present in ## Empirical check
+PASS I9-r28-editor-config — PASS 6 FAIL 0 (expected 6)
+PASS I9-r28-editor-config-table — row present in ## Empirical check
+PASS I9-r28-sources — PASS 10 FAIL 0 (expected 10)
+PASS I9-r28-sources-table — row present in ## Empirical check
+PASS I9-r28-live-figures — PASS 7 FAIL 0 (expected 7)
+PASS I9-r28-live-figures-table — row present in ## Empirical check
+PASS I9-r28-ruff-fix-default — PASS 2 FAIL 0 (expected 2)
+PASS I9-r28-ruff-fix-default-table — row present in ## Empirical check
+
+== I10 every evidence script passes shellcheck
+PASS I10-r28-autofix.sh — shellcheck clean
+PASS I10-r28-editor-config.sh — shellcheck clean
+PASS I10-r28-floor.sh — shellcheck clean
+PASS I10-r28-inputs.sh — shellcheck clean
+PASS I10-r28-lint-table.sh — shellcheck clean
+PASS I10-r28-live-figures.sh — shellcheck clean
+PASS I10-r28-ruff-fix-default.sh — shellcheck clean
+PASS I10-r28-sources.sh — shellcheck clean
+PASS I10-r28-test-relaxation.sh — shellcheck clean
+PASS I10-pairs — one .log per .sh (9 scripts)
+
+== I11 every other file:line citation, and the R30 status claim, resolves
+2 distinct other file:line citations in DECISION.md
+PASS I11-inputs/prompt.md:31 — 'R30 (`type-check-gate`) owns the type-checker engine'
+PASS I11-research/topics/30-type-check-gate/prompts/type-check-gate.prompt.md:9 — 'F107 single engine serving both CI and editor'
+PASS I11-table — no stale table entries
+PASS I11-R30-open — research/CLAUDE.md row R30 status is open, as the decision states
+
+== summary: 0 failing case(s)

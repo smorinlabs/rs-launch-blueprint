@@ -1,0 +1,97 @@
+# r30-wiring-severity.sh  run 2026-09-27T07:25:58Z  host Darwin arm64
+# stable: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew) / rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+# just 1.57.0  lefthook 2.1.14
+# CARGO_TARGET_DIR=<ws>/target
+
+# --- V1: a lint WARNING (unused variable), not a hard error, staged
+
+== V1a plain cargo check — lax, exit 0
+$ cargo check --workspace --all-targets --locked
+warning: unused variable: `unused`
+ --> src/lib.rs:2:18
+warning: `facade` (lib) generated 1 warning (run `cargo fix --lib -p facade` to apply 1 suggestion)
+warning: `facade` (lib test) generated 1 warning (1 duplicate)
+exit=0 (expected 0) PASS
+
+== V1b just typecheck — the line-prefix variable reaches cargo, recipe fails
+$ just typecheck
+warning: unused variable: `unused`
+ --> src/lib.rs:2:18
+error: `facade` (lib) generated 1 warning (run `cargo fix --lib -p facade` to apply 1 suggestion)
+error: `facade` (lib test) generated 1 warning (1 duplicate)
+error: warnings are denied by `build.warnings` configuration
+error: recipe `typecheck` failed on line 4 with exit code 101
+exit=101 (expected 101) PASS
+
+== V1c lefthook run pre-commit — the per-job env: key reaches cargo, hook fails
+$ lefthook run pre-commit
+┃  typecheck (default features) ❯ 
+warning: unused variable: `unused`
+ --> src/lib.rs:2:18
+error: `facade` (lib) generated 1 warning (run `cargo fix --lib -p facade` to apply 1 suggestion)
+error: `facade` (lib test) generated 1 warning (1 duplicate)
+error: warnings are denied by `build.warnings` configuration
+┃  typecheck (all features) ❯ 
+warning: unused variable: `unused`
+ --> src/lib.rs:2:18
+error: `facade` (lib) generated 1 warning (run `cargo fix --lib -p facade` to apply 1 suggestion)
+error: `facade` (lib test) generated 1 warning (1 duplicate)
+error: warnings are denied by `build.warnings` configuration
+🥊 typecheck (default features) (0.56 seconds)
+🥊 typecheck (all features) (0.42 seconds)
+exit=1 (expected 1) PASS
+
+== V1d restored, staged harmless change — just typecheck green
+$ just typecheck
+exit=0 (expected 0) PASS
+
+== V1e restored — lefthook run pre-commit green
+$ lefthook run pre-commit
+┃  typecheck (default features) ❯ 
+┃  typecheck (all features) ❯ 
+✔️ typecheck (default features) (0.05 seconds)
+✔️ typecheck (all features) (0.04 seconds)
+exit=0 (expected 0) PASS
+
+# --- V2: both configurations fail differently — default-only warning AND web-only type error
+
+== V2a just typecheck — stops at the first failing line; the all-features error is not shown
+$ just typecheck
+warning: unused variable: `unused_off`
+ --> src/lib.rs:3:24
+error: `facade` (lib test) generated 1 warning (1 duplicate)
+error: `facade` (lib) generated 1 warning (run `cargo fix --lib -p facade` to apply 1 suggestion)
+error: warnings are denied by `build.warnings` configuration
+error: recipe `typecheck` failed on line 4 with exit code 101
+exit=101 (expected 101) PASS
+
+== V2b lefthook run pre-commit — runs both jobs; both failures are shown
+$ lefthook run pre-commit
+┃  typecheck (default features) ❯ 
+warning: unused variable: `unused_off`
+ --> src/lib.rs:3:24
+error: `facade` (lib test) generated 1 warning (run `cargo fix --lib -p facade --tests` to apply 1 suggestion)
+error: `facade` (lib) generated 1 warning (1 duplicate)
+error: warnings are denied by `build.warnings` configuration
+┃  typecheck (all features) ❯ 
+error[E0308]: mismatched types
+ --> src/lib.rs:5:27
+error: could not compile `facade` (lib) due to 1 previous error
+error: could not compile `facade` (lib test) due to 1 previous error
+🥊 typecheck (default features) (0.05 seconds)
+🥊 typecheck (all features) (0.11 seconds)
+exit=1 (expected 1) PASS
+
+# --- V3: --locked at the pre-commit tier refuses a manifest edit whose lockfile update is missing
+
+== V3 Cargo.toml gains a dependency, Cargo.lock not updated — hook fails on --locked
+$ lefthook run pre-commit
+┃  typecheck (default features) ❯ 
+error: cannot update the lock file <ws>/Cargo.lock because --locked was passed to prevent this
+┃  typecheck (all features) ❯ 
+error: cannot update the lock file <ws>/Cargo.lock because --locked was passed to prevent this
+🥊 typecheck (default features) (0.06 seconds)
+🥊 typecheck (all features) (0.04 seconds)
+exit=1 (expected 1) PASS
+
+# summary: failures=0

@@ -1,0 +1,17 @@
+[package]
+name = "r59-check"
+version = "0.0.0"
+edition = "2024"
+rust-version = "1.96"
+publish = false
+description = "R59 synthesis probe: template-owned RotatingFile vs file-rotate vs tracing-appender, under a tracing-subscriber second fmt layer"
+
+[dependencies]
+tracing = "=0.1.44"
+tracing-subscriber = { version = "=0.3.23", default-features = false, features = ["fmt", "std", "registry", "ansi", "json"] }
+tracing-appender = "=0.2.5"
+file-rotate = "=0.8.0"
+serde_json = "1"
+
+[profile.release]
+debug = false

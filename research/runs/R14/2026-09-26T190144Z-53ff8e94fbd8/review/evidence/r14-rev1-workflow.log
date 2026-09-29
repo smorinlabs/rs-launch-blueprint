@@ -1,0 +1,14 @@
+UTC now: 2026-09-26T21:46:19Z
+host: Darwin 25.4.0 arm64 git version 2.50.1 (Apple Git-155)
+cmd: sh r14-rev1-workflow.sh
+W1 PASS shellcheck -s sh -S warning: [clean]
+W2a PASS diff adds 7 lines, removes 0
+W2b PASS fetch-depth line present
+W2c PASS guard step present
+W3a PASS three-way BASE_SHA
+W3b PASS range call
+W4a PASS no needs edge
+W4b PASS no if gate
+W5 PASS actionlint: [no diagnostics]
+workflow failures: 0
+exit=0

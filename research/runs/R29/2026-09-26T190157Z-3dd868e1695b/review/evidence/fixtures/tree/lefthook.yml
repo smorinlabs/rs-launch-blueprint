@@ -1,0 +1,8 @@
+pre-commit:
+  jobs:
+    - name: format-files
+      glob: "*.{toml,json,jsonc,md,yml,yaml}"
+      exclude:
+        - CHANGELOG.md
+        - .release-please-manifest.json
+      run: dprint check --allow-no-files {staged_files}

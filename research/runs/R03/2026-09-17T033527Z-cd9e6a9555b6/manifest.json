@@ -129,29 +129,102 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "actor": "controller-muse-spark",
+      "at": "2026-09-19T21:36:41Z",
+      "operation": {
+        "actor": "research-codex-2026-09-17T033527Z-cd9e6a9555b6",
+        "at": "2026-09-17T04:39:39Z",
+        "model": "gpt-5.6-terra",
+        "provider": "codex",
+        "reason": "reconcile: intent recorded while Codex unavailable; no provider submission made (op=None); fresh attempt follows on Codex return (Q2.A)",
+        "request_id": "9a15646a2b244499a274fe76e3dab871",
+        "state": "unknown",
+        "unknown_at": "2026-09-19T21:36:41Z"
+      },
+      "provider": "codex",
+      "state": "unknown"
+    },
+    {
+      "actor": "controller-muse-spark",
+      "at": "2026-09-21T23:06:18Z",
+      "migration": {
+        "from": "codex",
+        "previous_input_hashes": {
+          "parameters": "88609ba0a3cfaa2a552859c03110c21455c7697eb63ca5a25b59037f87fa0011",
+          "parameters_semantic": "3b3137cd2186d1c9203234e5934dc9debb6bab4cac31c7fafa3ba4a34e8870e5",
+          "parameters_semantic_file": "73ed4b1f2bc7cf409580e7014a8681831828156ebd6f51364e09e5521d9b4b27",
+          "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+          "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+          "prerequisites": "d1f669f46d960d3376792be39772dfa53edda1862a9fd6569d97e5d62dcde2a4",
+          "prompt": "782ea53a545580a546421908972525fee4c55538562f132cd4bf307730e3be3b",
+          "registry": "6560edd363acc5b728aef2c39f61c157281a2b403c7077dd76288e765226f593"
+        },
+        "previous_required_engines": [
+          "codex",
+          "opus",
+          "doxa"
+        ],
+        "previous_tier": "deep",
+        "reason": "muse bulk substitution (owner decision Q5.A 2026-09-21)",
+        "superseded": {
+          "engine": "codex",
+          "operation": {
+            "actor": "research-codex-2026-09-17T033527Z-cd9e6a9555b6",
+            "at": "2026-09-17T04:39:39Z",
+            "model": "gpt-5.6-terra",
+            "provider": "codex",
+            "reason": "reconcile: intent recorded while Codex unavailable; no provider submission made (op=None); fresh attempt follows on Codex return (Q2.A)",
+            "request_id": "9a15646a2b244499a274fe76e3dab871",
+            "state": "unknown",
+            "unknown_at": "2026-09-19T21:36:41Z"
+          },
+          "prior_state": "unknown",
+          "reason": "muse bulk substitution (owner decision Q5.A 2026-09-21)"
+        },
+        "to": "muse"
+      },
+      "model": "muse-spark",
+      "state": "partial"
+    },
+    {
+      "actor": "research-muse-2026-09-17T033527Z-cd9e6a9555b6",
+      "at": "2026-09-21T23:06:53Z",
+      "operation": {
+        "actor": "research-muse-2026-09-17T033527Z-cd9e6a9555b6",
+        "at": "2026-09-21T23:06:53Z",
+        "model": "muse-spark",
+        "provider": "muse",
+        "request_id": "cfddcf9b0ad94bc79a58749c2a7cea53",
+        "state": "submitting"
+      },
+      "provider": "muse",
+      "state": "submitting"
+    },
+    {
+      "at": "2026-09-29T20:01:37Z",
+      "publication": {
+        "acceptance_sha256": "41491131bc58e927c61020ea2d4d08cf61aee5838e012675309210c129036b7e",
+        "decision_sha256": "560d421be9c7046053ae62b4aab3fd4d6acab53640db4d48be9af9367f1ebf8e",
+        "transaction": "bf3901cf2e5f466caeaeaffa749f4bce"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
-    "parameters": "88609ba0a3cfaa2a552859c03110c21455c7697eb63ca5a25b59037f87fa0011",
+    "parameters": "8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb",
     "parameters_semantic": "3b3137cd2186d1c9203234e5934dc9debb6bab4cac31c7fafa3ba4a34e8870e5",
     "parameters_semantic_file": "73ed4b1f2bc7cf409580e7014a8681831828156ebd6f51364e09e5521d9b4b27",
-    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
-    "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+    "policy": "ed5042be86ee5cec4bba6c7fa330dc731addb026a67cca087b75ca7bc37bea6c",
+    "policy_item": "2e5cc5b0da04a866a7d4888d0070674dbe08eb74d464c36f9c929e2b842b9a92",
     "prerequisites": "d1f669f46d960d3376792be39772dfa53edda1862a9fd6569d97e5d62dcde2a4",
-    "prompt": "782ea53a545580a546421908972525fee4c55538562f132cd4bf307730e3be3b",
-    "registry": "6560edd363acc5b728aef2c39f61c157281a2b403c7077dd76288e765226f593"
+    "prompt": "3c3e4ceca7ca0d5d2083d40a61d4b0e9b8c3c67c09e2bdb3d96f583e1430d924",
+    "registry": "e82053f11aed9fa4ae16f9a2026452670b43def56e36bea9bb9b808bb3c2102e"
   },
   "item": "R03",
   "model": "claude-fable-5-1",
   "operations": {
-    "codex": {
-      "actor": "research-codex-2026-09-17T033527Z-cd9e6a9555b6",
-      "at": "2026-09-17T04:39:39Z",
-      "model": "gpt-5.6-terra",
-      "provider": "codex",
-      "request_id": "9a15646a2b244499a274fe76e3dab871",
-      "state": "submitting"
-    },
     "doxa": {
       "actor": "research-doxa-2026-09-17T033527Z-cd9e6a9555b6",
       "actual_model": "openai gpt-5.6-sol (reasoning_effort max, web_search, max_tool_calls 80, code_interpreter off); perplexity sonar-deep-research; gemini deep-research-preview-04-2026",
@@ -167,6 +240,14 @@
       "request_id": "f3827add841843daab5449c183c997a1",
       "returned_at": "2026-09-17T03:45:28Z",
       "state": "succeeded"
+    },
+    "muse": {
+      "actor": "research-muse-2026-09-17T033527Z-cd9e6a9555b6",
+      "at": "2026-09-21T23:06:53Z",
+      "model": "muse-spark",
+      "provider": "muse",
+      "request_id": "cfddcf9b0ad94bc79a58749c2a7cea53",
+      "state": "submitting"
     },
     "opus": {
       "actor": "research-opus-2026-09-17T033527Z-cd9e6a9555b6",
@@ -186,15 +267,20 @@
     }
   },
   "prompt_source": "research/topics/03-port-absence-vs-failure-contract/prompts/port-absence-vs-failure-contract.prompt.md",
+  "publication": {
+    "acceptance_sha256": "41491131bc58e927c61020ea2d4d08cf61aee5838e012675309210c129036b7e",
+    "decision_sha256": "560d421be9c7046053ae62b4aab3fd4d6acab53640db4d48be9af9367f1ebf8e",
+    "transaction": "bf3901cf2e5f466caeaeaffa749f4bce"
+  },
   "remaining_budget": "USD 238.50 to 263.50 remaining of USD 300.00 bulk Deep ceiling (owner authorisation W1-DOXA 2026-09-16; Doxa in batches of three, no automatic retry)",
   "required_engines": [
-    "codex",
+    "muse",
     "opus",
     "doxa"
   ],
   "run_id": "2026-09-17T033527Z-cd9e6a9555b6",
   "schema_version": 1,
-  "state": "partial",
+  "state": "published",
   "tier": "deep",
-  "updated_at": "2026-09-17T06:00:55Z"
+  "updated_at": "2026-09-29T20:01:37Z"
 }

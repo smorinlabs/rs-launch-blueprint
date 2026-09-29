@@ -115,17 +115,67 @@
       },
       "provider": "opus",
       "state": "succeeded"
+    },
+    {
+      "actor": "controller-muse-spark",
+      "at": "2026-09-21T23:06:20Z",
+      "migration": {
+        "from": "codex",
+        "previous_input_hashes": {
+          "parameters": "8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb",
+          "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
+          "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
+          "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
+          "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+          "prerequisites": "cbe23dd082a1bcc88fa6e30eabae0e6da6c6230a6f853ba73aad4d77df0eeab6",
+          "prompt": "e7c951781317203ad7c6e8530f18f4a78b27049faaa7902d3e59db6cd18de2ee",
+          "registry": "95fea74fa8415b94d81c62bf3a3d1de13ca37dc05d366e978c8135915f9e544a"
+        },
+        "previous_required_engines": [
+          "codex",
+          "opus",
+          "doxa"
+        ],
+        "previous_tier": "deep",
+        "reason": "muse bulk substitution (owner decision Q5.A 2026-09-21)",
+        "to": "muse"
+      },
+      "model": "muse-spark",
+      "state": "partial"
+    },
+    {
+      "actor": "research-muse-2026-09-18T215915Z-4b648f8a2b5d",
+      "at": "2026-09-21T23:06:56Z",
+      "operation": {
+        "actor": "research-muse-2026-09-18T215915Z-4b648f8a2b5d",
+        "at": "2026-09-21T23:06:56Z",
+        "model": "muse-spark",
+        "provider": "muse",
+        "request_id": "511e5c1c36164801b65a8c5383665aa3",
+        "state": "submitting"
+      },
+      "provider": "muse",
+      "state": "submitting"
+    },
+    {
+      "at": "2026-09-29T20:02:47Z",
+      "publication": {
+        "acceptance_sha256": "2bc1e3c54a81deeda92e8c7b94b97c67810ed00750731b2ce905cdf082dccacb",
+        "decision_sha256": "9e5aaf13544bc41f5ca56cac563a5c0e1dfd7bb9f9373afec6302de34e0ff775",
+        "transaction": "bf7abfac4ed546469cec2204c6650e00"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
     "parameters": "8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb",
     "parameters_semantic": "398bc6aa62e61e8af813fa3acfdc79fe97e016f2454e4ef7bcd0bc0fcd8ae9c4",
     "parameters_semantic_file": "3dc6038cf8e0c4e6d220184b727048c09cec6d38fa24e14c2cc7670342bfb0f1",
-    "policy": "d67f1e012c224fa3446e27c841cca45f9f6b14b55c34e7342a9def85abee2417",
-    "policy_item": "f0e0f706f3d4af6ed9fa641ec37153234b7e882881ae2148a1ac063b106a0880",
+    "policy": "ed5042be86ee5cec4bba6c7fa330dc731addb026a67cca087b75ca7bc37bea6c",
+    "policy_item": "2e5cc5b0da04a866a7d4888d0070674dbe08eb74d464c36f9c929e2b842b9a92",
     "prerequisites": "cbe23dd082a1bcc88fa6e30eabae0e6da6c6230a6f853ba73aad4d77df0eeab6",
-    "prompt": "e7c951781317203ad7c6e8530f18f4a78b27049faaa7902d3e59db6cd18de2ee",
-    "registry": "95fea74fa8415b94d81c62bf3a3d1de13ca37dc05d366e978c8135915f9e544a"
+    "prompt": "2138d4acd47cd287eb7790434db41f8aa6705f9812591f382c4a7d2a0afaa033",
+    "registry": "e82053f11aed9fa4ae16f9a2026452670b43def56e36bea9bb9b808bb3c2102e"
   },
   "item": "R73",
   "model": "claude-fable-5-1",
@@ -146,6 +196,14 @@
       "returned_at": "2026-09-18T22:17:57Z",
       "state": "succeeded"
     },
+    "muse": {
+      "actor": "research-muse-2026-09-18T215915Z-4b648f8a2b5d",
+      "at": "2026-09-21T23:06:56Z",
+      "model": "muse-spark",
+      "provider": "muse",
+      "request_id": "511e5c1c36164801b65a8c5383665aa3",
+      "state": "submitting"
+    },
     "opus": {
       "actor": "research-opus-2026-09-18T215915Z-4b648f8a2b5d",
       "actual_model": "claude-opus-5",
@@ -164,15 +222,20 @@
     }
   },
   "prompt_source": "research/topics/73-idempotency-middleware/prompts/idempotency-middleware.prompt.md",
+  "publication": {
+    "acceptance_sha256": "2bc1e3c54a81deeda92e8c7b94b97c67810ed00750731b2ce905cdf082dccacb",
+    "decision_sha256": "9e5aaf13544bc41f5ca56cac563a5c0e1dfd7bb9f9373afec6302de34e0ff775",
+    "transaction": "bf7abfac4ed546469cec2204c6650e00"
+  },
   "remaining_budget": "USD 0.00 at prepare (Opus leg unpaid; Codex leg deferred under W1-CODEX3; Doxa leg pending owner authorisation W2-DOXA)",
   "required_engines": [
-    "codex",
+    "muse",
     "opus",
     "doxa"
   ],
   "run_id": "2026-09-18T215915Z-4b648f8a2b5d",
   "schema_version": 1,
-  "state": "partial",
+  "state": "published",
   "tier": "deep",
-  "updated_at": "2026-09-19T00:29:26Z"
+  "updated_at": "2026-09-29T20:02:47Z"
 }

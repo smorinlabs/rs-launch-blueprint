@@ -1,0 +1,18 @@
+INFO date_utc=2026-09-28T04:39:53Z
+INFO snapshot cargo-tarpaulin-0.37.4-README.md lines=626 sha256=a91934c36d6fda12354aa80860fd53e6a276e05b4e3be4c52de73308a3a32f81
+PASS S12a — README:14 — Tarpaulin's line coverage 'may still contain  minor inaccuracies' (said without naming an engine)
+PASS S12b — README:19-21 — ptrace is the Linux default (x86_64 only), --engine llvm switches it, LLVM is the default on Mac and Windows
+PASS S12c — README:73 — the --forward option list entry says forwarding 'is now the default behaviour'
+PASS S12d — README:113 is the heading '### Note on tests using signals'
+PASS S12e — README:115-116 — tests using unix signals 'may not work with ptrace instrumentation'
+PASS S12f — README:118-119 — the --forward option forwards signals to the test binary
+PASS S12g — README:123 — LLVM coverage is 'generally being far more accurate'
+INFO README at tag 0.37.5 lines=626 sha256=a91934c36d6fda12354aa80860fd53e6a276e05b4e3be4c52de73308a3a32f81
+PASS S12h — the README at tag 0.37.5 is byte-identical to the 0.37.4 snapshot, so S12a-S12g hold for 0.37.5
+INFO README: 14:may still contain  minor inaccuracies in the results. A lot of work has been
+INFO README: 19:On Linux, Tarpaulin's default tracing backend is still Ptrace and will only work
+INFO README: 73:  -f, --forward                    Forwards unexpected signals to test. This is now the default behaviour
+INFO README: 113:### Note on tests using signals
+INFO README: 115:If your tests or application make use of unix signals they may not work with
+INFO README: 123:Despite generally being far more accurate there are some nuances with the LLVM
+SUMMARY PASS=8 FAIL=0

@@ -25,6 +25,15 @@
         "reason": "Q23 pre-S63 re-freeze: EA-1 (Q17.A inputs); DECISION bytes unchanged"
       },
       "state": "ready"
+    },
+    {
+      "at": "2026-09-29T20:02:13Z",
+      "publication": {
+        "acceptance_sha256": "17327579128f88afeca32e0658281677b024e45062dcd9c37c73a19c0e6fe3dd",
+        "decision_sha256": "a5879b95aeff19ea292f414f83d0757f7c1fedc147344f54eecfb0d4a1d86bc2",
+        "transaction": "7f1b32c6d54043369431e4163a518937"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -41,6 +50,11 @@
   "model": "claude-fable-5-1",
   "operations": {},
   "prompt_source": "research/topics/14-large-file-guard-strategy/prompts/large-file-guard-strategy.prompt.md",
+  "publication": {
+    "acceptance_sha256": "17327579128f88afeca32e0658281677b024e45062dcd9c37c73a19c0e6fe3dd",
+    "decision_sha256": "a5879b95aeff19ea292f414f83d0757f7c1fedc147344f54eecfb0d4a1d86bc2",
+    "transaction": "7f1b32c6d54043369431e4163a518937"
+  },
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
     "codex",
@@ -48,7 +62,7 @@
   ],
   "run_id": "2026-09-26T190144Z-53ff8e94fbd8",
   "schema_version": 1,
-  "state": "ready",
+  "state": "published",
   "tier": "focused",
-  "updated_at": "2026-09-27T22:22:59Z"
+  "updated_at": "2026-09-29T20:02:13Z"
 }

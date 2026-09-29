@@ -1,11 +1,11 @@
---- /tmp/r61-fin-A.log	2026-09-16 22:43:17
-+++ r61-claims.log	2026-09-16 22:44:34
+--- research/runs/R61/2026-09-17T020714Z-98ef5e1e7d37/review/evidence/r61-claims.log	2026-09-27 01:07:58
++++ /tmp/r61r8-second.log	2026-09-27 01:07:19
 @@ -1,7 +1,7 @@
  ================================================================
  R61 interactive-prompts — empirical check
  run directory : /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R61/2026-09-17T020714Z-98ef5e1e7d37
--executed at   : 2026-09-17T05:42:12Z (UTC)
-+executed at   : 2026-09-17T05:43:30Z (UTC)
+-executed at   : 2026-09-27T08:02:54Z (UTC)
++executed at   : 2026-09-27T08:05:52Z (UTC)
  retrieval date for every live figure below: the date on the line above
  ================================================================
  
@@ -13,14 +13,14 @@
      signal-hook v0.3.18
      ├── crossterm v0.29.0
      │   └── inquire v0.9.4
--    │       └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-45144/spike-a)
-+    │       └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-57813/spike-a)
+-    │       └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-28007/spike-a)
++    │       └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-49769/spike-a)
      └── signal-hook-mio v0.2.5
          └── crossterm v0.29.0 (*)
      
      signal-hook v0.4.4
--    └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-45144/spike-a)
-+    └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-57813/spike-a)
+-    └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-28007/spike-a)
++    └── spikea v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r61-claims-49769/spike-a)
  PASS C12f — crossterm pins signal-hook 0.3.x
  PASS C12g — the template's own R67 signal-hook 0.4.4 stands beside it
  PASS C12h — signal-hook is the ONLY duplicated package (two majors, counted by /usr/bin/grep) [= 2]

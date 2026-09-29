@@ -1,0 +1,24 @@
+[package]
+description = "R29 fixture: a CLI + library + web template package"
+edition = "2024"
+license = "MIT OR Apache-2.0"
+name = "rs-launch-blueprint"
+rust-version = "1.96"
+version = "0.1.0"
+include = ["/src", "/README.md", "/CHANGELOG.md"]
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "rslbp"
+path = "src/main.rs"
+
+[features]
+default = []
+web = [ "dep:serde" ]
+
+[dependencies]
+serde = { version = "1", optional = true }
+anyhow="1"
+clap = { version = "4", features = ["derive"] }

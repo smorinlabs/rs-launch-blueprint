@@ -1,0 +1,115 @@
+== retrieved 2026-09-27T01:11:15Z
+/Users/stevemorin/.local/share/mise/shims/gh
+/opt/homebrew/bin/jq
+/usr/bin/shasum
+
+== S1-S3 rust-analyzer VS Code extension settings schema @ 86493cee
+
+GET https://api.github.com/repos/rust-lang/rust-analyzer/contents/editors/code/package.json?ref=86493cee4d8902389c3217d8e95a3aae9368fd98
+sha256 e7d8e860d1919450b903486dbb540842fdc0fbfeb9644eaa10c3f08ef8665972  bytes 180282
+[
+  {
+    "key": "rust-analyzer.server.path",
+    "default": null,
+    "enum": null,
+    "description": "Path to rust-analyzer executable (points to bundled binary by default)."
+  },
+  {
+    "key": "rust-analyzer.debug.engine",
+    "default": "auto",
+    "enum": [
+      "auto",
+      "llvm-vs-code-extensions.lldb-dap",
+      "vadimcn.vscode-lldb",
+      "ms-vscode.cpptools",
+      "webfreak.debug"
+    ],
+    "description": "Preferred debug engine."
+  },
+  {
+    "key": "rust-analyzer.check.command",
+    "default": "check",
+    "enum": null,
+    "description": "Cargo command to use for `cargo check`."
+  }
+]
+PASS S1 — server.path: the extension runs its bundled server by default
+PASS S2 — check.command defaults to "check"
+PASS S3 — debug.engine default auto; lldb-dap listed before vscode-lldb
+
+== S4 rust-analyzer's auto debug engine takes the first installed entry of knownEngines, and lldb-dap is first
+
+GET https://api.github.com/repos/rust-lang/rust-analyzer/contents/editors/code/src/debug.ts?ref=86493cee4d8902389c3217d8e95a3aae9368fd98
+sha256 126c58f373c858cb5335e8cd2a9cf24bbfb7926ae9b8e22989ac01e9b8deb61a  bytes 16012
+95:    if (debugOptions.engine === "auto") {
+96:        for (const engineId in knownEngines) {
+247:const knownEngines: {
+253:    "llvm-vs-code-extensions.lldb-dap": {
+263:    "vadimcn.vscode-lldb": {
+first knownEngines entry: "llvm-vs-code-extensions.lldb-dap":{
+PASS S4 — auto prefers lldb-dap when installed (rust-analyzer's own Debug lens, not launch.json)
+
+== S5-S6 CodeLLDB cargo launch support @ 62def434
+
+GET https://api.github.com/repos/vadimcn/codelldb/contents/CHANGELOG.md?ref=62def434dc22c1d77d4837c4d99cddef7ac3338f
+sha256 bb229e878a4dec4b9281b6bc1085f706a94a6ed042e67390d14ff64ba4d64088  bytes 31809
+72:  For example, use `cargo: ["run"]` instead of `cargo: ["build"]`, as was required in previous versions..
+PASS S5 — cargo: ["run", ...] is accepted since 1.11.6
+
+GET https://api.github.com/repos/vadimcn/codelldb/contents/MANUAL.md?ref=62def434dc22c1d77d4837c4d99cddef7ac3338f
+sha256 ec893bbb65cc8447019889ff3350a205f6c44b825d906ef6deb183ebf465e9ed  bytes 51722
+838:To enable this feature, add `"sourceLanguages": ["rust"]` into your launch configuration.
+843:To use this feature, replace the `program` property in your launch configuration with `cargo`:
+PASS S6 — cargo replaces program; sourceLanguages rust loads the Rust formatters
+
+== S7 astral-sh/ruff commits the one-key lint-visibility setting and recommends only rust-analyzer @ 51f3437d
+
+GET https://api.github.com/repos/astral-sh/ruff/contents/.vscode/settings.json?ref=51f3437d0344b1909007acf42fe6b124369f8439
+sha256 2e26699eb124f90932c18e0fb8f0f3c16f046d683556e11ad4d8ef61baa51844  bytes 218
+{
+    "rust-analyzer.check.extraArgs": [
+        "--all-features"
+    ],
+    "rust-analyzer.check.command": "clippy",
+    "search.exclude": {
+        "**/*.snap": true
+    },
+    "ty.diagnosticMode": "openFilesOnly"
+}
+
+
+GET https://api.github.com/repos/astral-sh/ruff/contents/.vscode/extensions.json?ref=51f3437d0344b1909007acf42fe6b124369f8439
+sha256 e5e04ca70052da0dcdb8f801bdfa82eeaa8dd41eb86638615d5b78e0bbbd48e3  bytes 68
+{
+    "recommendations": [
+        "rust-lang.rust-analyzer"
+    ]
+}
+PASS S7 — check.command = clippy; recommendations = [rust-analyzer]
+
+== S8 rust-lang/rust-analyzer recommends CodeLLDB for its own contributors @ 86493cee
+
+GET https://api.github.com/repos/rust-lang/rust-analyzer/contents/.vscode/extensions.json?ref=86493cee4d8902389c3217d8e95a3aae9368fd98
+sha256 6a40bde293a6393644293b2942bb63e514226044f0fd0175639e380a58fc483c  bytes 447
+6:  "recommendations": ["vadimcn.vscode-lldb"],
+PASS S8 — recommendations = [vadimcn.vscode-lldb]
+
+== S9 astral-sh/uv: pedantic at warn with a curated allow-list @ 136ef973
+
+GET https://api.github.com/repos/astral-sh/uv/contents/Cargo.toml?ref=136ef97330781a0f5f2be6613aac4382ebbcecea
+sha256 7f5d65e26296d63e04eb482c1329f8199b220dd88546b97d35659b3b13428cd3  bytes 22914
+418:pedantic = { level = "warn", priority = -2 }
+419:# Allowed pedantic lints
+435:# Disallowed restriction lints
+allow entries in the 'Allowed pedantic lints' block: 15
+PASS S9 — pedantic warn at priority -2 with 15 allowed pedantic lints
+
+== S10 rust-lang/cargo relaxes tests through clippy.toml values @ 07b80494
+
+GET https://api.github.com/repos/rust-lang/cargo/contents/clippy.toml?ref=07b80494920f3824e2515e536b76ff282e23993e
+sha256 d12b0b1b6ec81e7ea8333ff60c3aaef4fc612fc7c8110c709670e8f6e2731ab2  bytes 2020
+1:allow-print-in-tests = true
+2:allow-dbg-in-tests = true
+PASS S10 — allow-print-in-tests and allow-dbg-in-tests are set
+
+== summary: 0 failing case(s)

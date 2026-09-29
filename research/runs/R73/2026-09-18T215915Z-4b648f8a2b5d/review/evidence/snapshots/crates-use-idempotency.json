@@ -1,0 +1,19 @@
+{
+ "crate": {
+  "downloads": 135,
+  "id": "use-idempotency",
+  "max_version": "0.0.1",
+  "name": "use-idempotency",
+  "recent_downloads": 88,
+  "repository": "https://github.com/RustUse/use-api"
+ },
+ "versions": [
+  {
+   "created_at": "2026-05-26T00:13:49.411246Z",
+   "license": "MIT OR Apache-2.0",
+   "num": "0.0.1",
+   "rust_version": "1.95.0",
+   "yanked": false
+  }
+ ]
+}

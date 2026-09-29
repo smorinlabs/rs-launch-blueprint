@@ -1,0 +1,46 @@
+{
+ "audits": {
+  "empirical": {
+   "actor": "codex-empirical-r30-r3d",
+   "family": "anthropic",
+   "file": "review/audit-codex.r3d.md",
+   "model": "claude-opus-5-5"
+  },
+  "judgment": {
+   "actor": "s1-controller",
+   "family": "meta",
+   "file": "review/audit-fable.r3d.md",
+   "model": "muse-spark"
+  }
+ },
+ "empirical": {
+  "argv": [
+   "bash",
+   "review/evidence/r30-lints.sh"
+  ],
+  "cwd": "research/runs/R30/2026-09-26T190200Z-c5c1105074c1, the run whose evidence the r3 empirical audit reran from research/runs/R30/2026-09-26T190200Z-c5c1105074c1/review/evidence/ with fresh output to /tmp/r30-r3-emp/ scratch only, the seven scripts in the decision's order then r30-inputs.sh. The argv above is the audit primary rerun (bash r30-lints.sh, exit 0; 14 PASS, 0 FAIL, 0 SKIP, failures=0; fresh case outcomes and exit codes equal the committed log, bytes differing only in per-run fields). The audit also ran r30-scope.sh (exit 0, 20 PASS), r30-severity.sh (exit 0, 17 PASS), r30-suppression.sh (exit 0, 16 PASS), r30-upstream-docs.sh (exit 0, 6 files, 29 matched lines), r30-wiring-cost.sh (exit 0, 17 PASS), r30-wiring-severity.sh (exit 0, 8 PASS) and r30-inputs.sh (exit 0, PASS=43 FAIL=0), every byte difference classified as run timestamps, CARGO_HOME, elapsed times, cargo parallel-job line order or target dir size, with a normalized comparison identical across all eight logs. The output log named below is the committed r30-lints log the fresh rerun matched in every case outcome.",
+  "exit_code": 0,
+  "output_log": "review/evidence/r30-lints.log",
+  "toolchain": "macOS Darwin 25.4.0, arm64, 14 CPUs; CARGO_HOME=/tmp/cargo-s38-R30-emp, CARGO_TARGET_DIR=/tmp/cargo-s38-R30-emp-target (private); cargo/rustc 1.98.1, cargo 1.97.1 and 1.96.0 via rustup, just 1.57.0, lefthook 2.1.14, as the r3 empirical audit states; nothing under review/evidence/ written."
+ },
+ "engine_reports": {
+  "muse": {
+   "actor": "research-muse-2026-09-26T190200Z-c5c1105074c1",
+   "family": "meta",
+   "file": "raw/muse.md",
+   "model": "muse-spark"
+  },
+  "opus": {
+   "actor": "research-opus-2026-09-26T190200Z-c5c1105074c1",
+   "family": "anthropic",
+   "file": "raw/opus.md",
+   "model": "claude-opus-5-5"
+  }
+ },
+ "evidence_checks": {},
+ "synthesis": {
+  "actor": "synth-opus-2026-09-26T190200Z-c5c1105074c1-r3",
+  "family": "anthropic",
+  "model": "claude-opus-5-5"
+ }
+}

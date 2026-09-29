@@ -1,0 +1,94 @@
+== R73 probe ==
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+date_utc: 2026-09-27T06:28:56Z
+rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+cargo: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+uname: Darwin 25.4.0 arm64
+work: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r73probe.rtEoAe (created by this script, deleted on exit)
+
+-- pins --
+PASS P1-pin — Cargo.toml declares axum = "=0.8.9"
+PASS P1-pin — Cargo.toml declares sha2 = { version = "=0.11.0", default-features = false, features = \["alloc"\] }
+PASS P1-pin — Cargo.toml declares edition = "2024"
+PASS P1-pin — Cargo.toml declares rust-version = "1.96"
+PASS P1-tower-dev — tower 0.5.3 is declared under [dev-dependencies] only, as R69 revision 10 requires
+PASS P1-unsafe — the probe crate root carries #![forbid(unsafe_code)]
+
+-- resolve, build, lint --
+     Locking 62 packages to latest Rust 1.96 compatible versions
+      Adding matchit v0.8.4 (available: v0.8.6)
+PASS P2-resolve — cargo metadata resolved the tree under the declared 1.96 floor
+PASS P2-build — cargo build is clean
+PASS P2-clippy — cargo clippy --all-targets -- -D warnings is clean
+tower v0.5.3
+└── axum v0.8.9
+    └── r73_probe v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r73probe.rtEoAe/probe)
+PASS P2-tower-edge — tower v0.5.3 reaches the probe only through axum v0.8.9, so R69 dev-only declaration is undisturbed
+
+-- store checks s01-s10 --
+test s01_fresh_then_in_flight_then_replay ... ok
+test s09_blanket_arc_impl_and_erased_handle ... ok
+test s02_fingerprint_mismatch ... ok
+test s04_ttl_boundary_asserted_at_one_millisecond ... ok
+test s07_keys_are_scoped_by_method_path_and_query ... ok
+test s05_in_flight_deadline_is_separate_and_shorter ... ok
+test s03_abandon_releases_the_claim ... ok
+test s06_eviction_removes_the_least_recently_used ... ok
+test s10_poisoned_lock_returns_unavailable_rather_than_panicking ... ok
+s08 ns_per_op=1113 entries=1024 iterations=10000
+test s08_hit_path_cost_at_one_thousand_twenty_four_entries ... ok
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+PASS P3-store — all 10 store checks pass
+PASS P3-sync — the store suite carries plain #[test] attributes and no #[tokio::test] — the port needs no async runtime
+PASS P3-poison — s10 asserts the poisoned-Mutex branch the raw report left unexecuted
+
+-- router checks w01-w17 --
+test w08_an_oversize_request_body_with_a_key_is_rejected_before_the_handler ... ok
+test w05_no_key_means_no_caching ... ok
+test w11_a_duplicate_arriving_while_the_first_is_in_flight_conflicts ... ok
+test w09b_an_oversize_response_behaves_the_same_way ... ok
+test w09_an_unknown_length_response_streams_through_whole_and_is_not_replayed ... ok
+test w13_a_non_two_hundred_releases_the_claim ... ok
+test w10_an_empty_key_and_an_oversize_key_are_both_rejected ... ok
+test w04_a_different_query_string_executes_independently ... ok
+test w07_multi_valued_headers_survive_and_the_marker_does_not_stack ... ok
+test w03_same_key_different_body_is_unprocessable ... ok
+test w02_a_five_hundred_is_not_cached ... ok
+test w06_a_get_carrying_the_header_passes_through_untouched ... ok
+test w12_an_entry_expires_at_its_ttl_and_the_handler_runs_again ... ok
+test w01_second_request_replays_byte_for_byte_and_the_handler_ran_once ... ok
+test w16_correlation_headers_are_never_replayed ... ok
+test w17_a_dry_run_never_consumes_the_key ... ok
+test w15_a_poisoned_store_surfaces_as_service_unavailable ... ok
+test w14_two_live_concurrent_requests_execute_the_handler_once ... ok
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+PASS P4-web — all 18 router checks pass
+PASS P4-race — w14 races two genuinely concurrent live requests on a multi-thread runtime
+
+-- hit-path cost, release --
+release ns_per_op=184
+PASS P5-bench — the release hit path measured 184 ns/op, three orders of magnitude below one millisecond, which is what decides the inline-versus-spawn_blocking question
+NOTE raw/opus.md claimed 159 ns/op release; this re-derivation measures 184 ns/op. Not asserted equal.
+
+-- dependency-tree deltas (unique name+version in the normal graph, root included) --
+PASS P6-baseline — the axum 0.8.9 + tokio 1.53.1 baseline is 51 packages, reproducing the raw report's baseline exactly
+  sha2 =0.11.0           total=59   delta=+8   raw-report-claimed=+8   resolved=sha2 v0.11.0
+PASS P6-sha2 — sha2 =0.11.0 adds +8 packages, reproducing the raw report's +8
+  hashlink =0.12.2       total=54   delta=+3   raw-report-claimed=+3   resolved=hashlink v0.12.2
+PASS P6-hashlink — hashlink =0.12.2 adds +3 packages, reproducing the raw report's +3
+  lru =0.18.4            total=56   delta=+5   raw-report-claimed=+5   resolved=lru v0.18.4
+PASS P6-lru — lru =0.18.4 adds +5 packages, reproducing the raw report's +5
+  quick_cache =0.7.0     total=60   delta=+9   raw-report-claimed=+9   resolved=quick_cache v0.7.0
+PASS P6-quickcache — quick_cache =0.7.0 adds +9 packages, reproducing the raw report's +9
+  mini-moka =0.10.3      total=62   delta=+11  raw-report-claimed=+11  resolved=mini-moka v0.10.3
+PASS P6-minimoka — mini-moka =0.10.3 adds +11 packages, reproducing the raw report's +11
+  moka =0.12.16          total=65   delta=+14  raw-report-claimed=+14  resolved=moka v0.12.16
+PASS P6-moka — moka =0.12.16 adds +14 packages, reproducing the raw report's +14
+  lru =0.18.5            total=54   delta=+3   resolved=lru v0.18.5
+PASS P6-lru-latest — lru 0.18.5 adds +3 packages (its hashbrown v0.17.1 edge no longer pulls allocator-api2 and equivalent), two fewer than 0.18.4's +5; neither figure moves the recommendation, which adopts no cache crate
+  axum-idempotent stack  total=88   delta=+37  raw-report-claimed=+48
+PASS P6-axumidem — the axum-idempotent + ruts + tower-cookies stack adds +37 packages, more than four times the recommendation's +8
+PASS P6-axumidem-raw — the raw report's +48 does NOT reproduce; measured +37 under the same method that reproduced all six rows above
+PASS P6-axumidem-versions — every package the raw report named in that stack is present at the version it named, so the delta difference is a count, not a different resolution
+
+CHECKS RUN: 27 PASS: 27 FAIL: 0 SKIP: 0

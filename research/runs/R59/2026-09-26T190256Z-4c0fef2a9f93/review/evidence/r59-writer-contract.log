@@ -1,0 +1,167 @@
+# R59 check W — rotating-writer contract
+run (UTC): 2026-09-28T20:01:40Z
+host: Darwin 25.4.0 arm64
+rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+probe crate: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R59/2026-09-26T190256Z-4c0fef2a9f93/review/evidence/r59-check
+CARGO_TARGET_DIR: /tmp/cargo-s81-r59-r4-target
+Cargo.lock sha256: 0f421eeb399bc89aad9036a306c5c00c8ccfde94210925f98b99e89a17155328
+
+## W1 rotation layout and record integrity
+
+$ r59-check rotate /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.z3PXDnmVBi/owned owned 400   (exit 0)
+files=rslbp.log,rslbp.log.1,rslbp.log.2,rslbp.log.3,rslbp.log.4,rslbp.log.5
+file[base] size=2808 whole=36 partial=0 first_seq=364 last_seq=399
+file[.1] size=4056 whole=52 partial=0 first_seq=312 last_seq=363
+file[.2] size=4056 whole=52 partial=0 first_seq=260 last_seq=311
+file[.3] size=4056 whole=52 partial=0 first_seq=208 last_seq=259
+file[.4] size=4056 whole=52 partial=0 first_seq=156 last_seq=207
+file[.5] size=4056 whole=52 partial=0 first_seq=104 last_seq=155
+total_whole=296 total_partial=0
+PASS W01 — owned: exactly base + .1..=.5, no .6 — expected=[rslbp.log,rslbp.log.1,rslbp.log.2,rslbp.log.3,rslbp.log.4,rslbp.log.5] actual=[rslbp.log,rslbp.log.1,rslbp.log.2,rslbp.log.3,rslbp.log.4,rslbp.log.5]
+PASS W02 — owned: no torn record in any file — expected=[0] actual=[0]
+PASS W03 — owned: no file exceeds the 4,096-byte limit (py pre-write rule) — expected=[yes] actual=[yes]
+PASS W04 — owned: .1 is the newest backup (.1 last_seq > .2 last_seq) — expected=[yes] actual=[yes]
+PASS W05 — owned: base continues .1 (base first_seq = .1 last_seq + 1) — expected=[364] actual=[364]
+
+$ r59-check rotate /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.z3PXDnmVBi/frb fr-bytes 400   (exit 0)
+files=rslbp.log,rslbp.log.1,rslbp.log.2,rslbp.log.3,rslbp.log.4,rslbp.log.5
+file[base] size=2528 whole=32 partial=1 first_seq=368 last_seq=399
+file[.1] size=4096 whole=51 partial=2 first_seq=316 last_seq=366
+file[.2] size=4096 whole=52 partial=2 first_seq=263 last_seq=314
+file[.3] size=4096 whole=51 partial=2 first_seq=211 last_seq=261
+file[.4] size=4096 whole=52 partial=2 first_seq=158 last_seq=209
+file[.5] size=4096 whole=51 partial=2 first_seq=106 last_seq=156
+total_whole=289 total_partial=11
+PASS W06 — file-rotate Bytes: tears records across files (total_partial > 0) — expected=[yes] actual=[yes]
+
+$ r59-check rotate /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.z3PXDnmVBi/frs fr-surpassed 400   (exit 0)
+files=rslbp.log,rslbp.log.1,rslbp.log.2,rslbp.log.3,rslbp.log.4,rslbp.log.5
+file[base] size=2262 whole=29 partial=0 first_seq=371 last_seq=399
+file[.1] size=4134 whole=53 partial=0 first_seq=318 last_seq=370
+file[.2] size=4134 whole=53 partial=0 first_seq=265 last_seq=317
+file[.3] size=4134 whole=53 partial=0 first_seq=212 last_seq=264
+file[.4] size=4134 whole=53 partial=0 first_seq=159 last_seq=211
+file[.5] size=4134 whole=53 partial=0 first_seq=106 last_seq=158
+total_whole=294 total_partial=0
+PASS W07 — file-rotate BytesSurpassed: base + .1..=.5, no .6 — expected=[rslbp.log,rslbp.log.1,rslbp.log.2,rslbp.log.3,rslbp.log.4,rslbp.log.5] actual=[rslbp.log,rslbp.log.1,rslbp.log.2,rslbp.log.3,rslbp.log.4,rslbp.log.5]
+PASS W08 — file-rotate BytesSurpassed: no torn record — expected=[0] actual=[0]
+PASS W09 — file-rotate BytesSurpassed: overshoots the limit, by at most one 78-byte record — expected=[yes] actual=[yes]
+PASS W10 — file-rotate BytesSurpassed: .1 is the newest backup — expected=[yes] actual=[yes]
+
+## W2 constructor when the parent directory cannot be created
+
+$ r59-check ctor-fail /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.z3PXDnmVBi/ctor   (exit 0)
+owned=Err(NotADirectory)
+file_rotate_panicked=true
+[stderr]
+
+thread 'main' (1053518183) panicked at /tmp/cargo-s81-r59-r4/registry/src/index.crates.io-1949cf8c6b5b557f/file-rotate-0.8.0/src/lib.rs:425:56:
+create dir: Os { code: 20, kind: NotADirectory, message: "Not a directory" }
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+PASS W11 — owned: returns an error, no panic — expected=[Err(NotADirectory)] actual=[Err(NotADirectory)]
+PASS W12 — file-rotate: FileRotate::new panics — expected=[true] actual=[true]
+PASS W13 — file-rotate: panic site is the expect in new (src/lib.rs:425) — expected=[yes] actual=[yes]
+
+## W3 the log path itself is unopenable (a directory sits there)
+
+$ r59-check unopenable /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.z3PXDnmVBi/unop   (exit 0)
+owned=Err(IsADirectory)
+file_rotate_write=Ok(10)
+file_rotate_flush=Ok(())
+PASS W14 — owned: returns an error — expected=[Err(IsADirectory)] actual=[Err(IsADirectory)]
+PASS W15 — file-rotate: write reports success for bytes it did not write — expected=[Ok(10)] actual=[Ok(10)]
+PASS W16 — file-rotate: no regular file anywhere received the bytes — expected=[0] actual=[0]
+
+## W4 the log directory disappears mid-run
+
+$ r59-check dirgone /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.z3PXDnmVBi/dg-or owned recreatable   (exit 0)
+write[0]=Err(NotFound)
+write[1]=Err(NotFound)
+write[2]=Err(NotFound)
+PASS W17 — owned, directory removed: every write returns Err(NotFound), none panics — expected=[3/0] actual=[3/0]
+
+$ r59-check dirgone /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.z3PXDnmVBi/dg-ob owned blocked   (exit 0)
+write[0]=Err(NotADirectory)
+write[1]=Err(NotADirectory)
+write[2]=Err(NotADirectory)
+PASS W18 — owned, directory replaced by a file: errors, none panics — expected=[3/0] actual=[3/0]
+
+$ r59-check dirgone /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.z3PXDnmVBi/dg-fr fr-surpassed recreatable   (exit 0)
+write[0]=Ok(80)
+write[1]=Ok(80)
+write[2]=Ok(80)
+PASS W19 — file-rotate, directory removed but recreatable: self-heals (3 x Ok(80)) — expected=[3] actual=[3]
+
+$ r59-check dirgone /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.z3PXDnmVBi/dg-fb fr-surpassed blocked   (exit 0)
+write[0]=Ok(80)
+write[1]=PANICKED
+write[2]=Ok(80)
+[stderr]
+
+thread 'main' (1053518407) panicked at /tmp/cargo-s81-r59-r4/registry/src/index.crates.io-1949cf8c6b5b557f/file-rotate-0.8.0/src/lib.rs:553:9:
+assertion failed: old_path.exists()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+PASS W20 — file-rotate, directory replaced by a file: a write panics — expected=[yes] actual=[yes]
+PASS W21 — file-rotate: that panic is assert!(old_path.exists()) (src/lib.rs:553) — expected=[yes] actual=[yes]
+
+## W5 two writers share one path (two concurrent CLI invocations), 400-byte limit
+
+$ r59-check shared /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.z3PXDnmVBi/sh-o owned   (exit 0)
+panics=0 errors=0
+files=rslbp.log,rslbp.log.1,rslbp.log.2,rslbp.log.3,rslbp.log.4,rslbp.log.5
+file[base] size=390 whole=5 partial=0 first_seq=51 last_seq=59
+file[.1] size=390 whole=5 partial=0 first_seq=50 last_seq=58
+file[.2] size=390 whole=5 partial=0 first_seq=41 last_seq=49
+file[.3] size=390 whole=5 partial=0 first_seq=40 last_seq=48
+file[.4] size=390 whole=5 partial=0 first_seq=31 last_seq=39
+file[.5] size=390 whole=5 partial=0 first_seq=30 last_seq=38
+total_whole=30 total_partial=0
+PASS W22 — owned: no panic, no error — expected=[0/0] actual=[0/0]
+PASS W23 — owned: no torn record — expected=[0] actual=[0]
+
+$ r59-check shared /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.z3PXDnmVBi/sh-f fr-surpassed   (exit 0)
+panics=5 errors=0
+files=rslbp.log,rslbp.log.1,rslbp.log.2,rslbp.log.3,rslbp.log.4
+file[base] size=468 whole=6 partial=0 first_seq=48 last_seq=58
+file[.1] size=468 whole=6 partial=0 first_seq=36 last_seq=46
+file[.2] size=468 whole=6 partial=0 first_seq=24 last_seq=34
+file[.3] size=468 whole=6 partial=0 first_seq=12 last_seq=22
+file[.4] size=936 whole=12 partial=0 first_seq=0 last_seq=11
+total_whole=36 total_partial=0
+[stderr]
+
+thread 'main' (1053518470) panicked at /tmp/cargo-s81-r59-r4/registry/src/index.crates.io-1949cf8c6b5b557f/file-rotate-0.8.0/src/lib.rs:554:9:
+assertion failed: !new_path.exists()
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'main' (1053518470) panicked at /tmp/cargo-s81-r59-r4/registry/src/index.crates.io-1949cf8c6b5b557f/file-rotate-0.8.0/src/lib.rs:554:9:
+assertion failed: !new_path.exists()
+
+thread 'main' (1053518470) panicked at /tmp/cargo-s81-r59-r4/registry/src/index.crates.io-1949cf8c6b5b557f/file-rotate-0.8.0/src/lib.rs:554:9:
+assertion failed: !new_path.exists()
+
+thread 'main' (1053518470) panicked at /tmp/cargo-s81-r59-r4/registry/src/index.crates.io-1949cf8c6b5b557f/file-rotate-0.8.0/src/lib.rs:554:9:
+assertion failed: !new_path.exists()
+
+thread 'main' (1053518470) panicked at /tmp/cargo-s81-r59-r4/registry/src/index.crates.io-1949cf8c6b5b557f/file-rotate-0.8.0/src/lib.rs:554:9:
+assertion failed: !new_path.exists()
+PASS W24 — file-rotate: at least one write panics — expected=[yes] actual=[yes]
+PASS W25 — file-rotate: that panic is assert!(!new_path.exists()) (src/lib.rs:554) — expected=[yes] actual=[yes]
+
+## W6 B8 end to end: a failing writer under the fmt layer
+
+$ r59-check report /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.z3PXDnmVBi/rep-d default   (exit 0)
+continued=true
+PASS W26 — tracing-subscriber default: program continues and exits 0 — expected=[true/0] actual=[true/0]
+PASS W27 — tracing-subscriber default: the lost events are NOT reported on stderr — expected=[0] actual=[0]
+
+$ r59-check report /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/tmp.z3PXDnmVBi/rep-o on   (exit 0)
+continued=true
+[stderr]
+[tracing-subscriber] Unable to write an event to the Writer for this Subscriber! Error: No such file or directory (os error 2)
+
+[tracing-subscriber] Unable to write an event to the Writer for this Subscriber! Error: No such file or directory (os error 2)
+PASS W28 — log_internal_errors(true): program continues and exits 0 — expected=[true/0] actual=[true/0]
+PASS W29 — log_internal_errors(true): each lost event reported on stderr (2 events) — expected=[2] actual=[2]
+
+SUMMARY: 29 checks, 0 failed, 0 skipped

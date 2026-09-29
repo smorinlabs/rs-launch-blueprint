@@ -1,0 +1,7 @@
+PASS H0 — lefthook 2.1.14 installed the pre-commit hook from the fixture lefthook.yml
+PASS H1 — staged unformatted .github/workflows/ci.yml blocks the commit (commit exit 1; hook output has 'exit status 20')
+PASS H2 — a CHANGELOG.md-only commit passes: the job is skipped by exclude: (commit exit 0; hook output has 'no files for inspection')
+PASS H3 — a formatted docs/notes.md commit runs the job and passes (commit exit 0; hook output has '✔️ format-files')
+PASS H4 — without exclude:, --allow-no-files keeps a CHANGELOG.md-only commit green (job ran) (commit exit 0; hook output has '✔️ format-files')
+PASS H5 — without exclude: and without --allow-no-files the same commit fails (commit exit 1; hook output has 'exit status 14')
+r29-lefthook: PASS=6 FAIL=0

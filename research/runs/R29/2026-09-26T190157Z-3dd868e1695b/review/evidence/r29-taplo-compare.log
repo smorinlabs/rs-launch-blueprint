@@ -1,0 +1,18 @@
+taplo: /Users/stevemorin/.local/share/mise/shims/taplo -> taplo 0.10.0
+PASS T0 — taplo 0.10.0 (the Muse leg's pin)
+    default collection: Cargo.toml rust-toolchain.toml rustfmt.toml target/debug/decoy.toml 
+PASS T1 — default collection: the 3 TOML files plus the gitignored target/debug/decoy.toml; Cargo.lock never matched
+PASS T2 — taplo format --check on the authored tree (exit 1)
+PASS T3 — taplo format rewrites (exit 0)
+    taplo [package]: description,edition,license,name,rust-version,version,include; [dependencies]: serde,anyhow,clap
+PASS T3b — defaults keep the authored key order: Style Guide [package] and dependency order are not applied
+PASS T3c — taplo rewrote target/debug/decoy.toml (default walk ignores .gitignore; a template .taplo.toml would need an exclude)
+PASS T4 — taplo format is idempotent
+    reorder_keys=true [package]: description,edition,include,license,name,rust-version,version
+PASS T5 — global reorder_keys sorts [package] alphabetically (description first), contradicting cargo.md:11-15
+    scoped rule: [package]: description,edition,license,name,rust-version,version,include; [dependencies]: anyhow,clap,serde
+PASS T5b — a rule scoped to dependency tables sorts them and leaves [package] as authored (rustup's shape)
+PASS T6 — dprint check on taplo's output: Cargo.toml fails on key order only (exit 20)
+PASS T6b — only Cargo.toml differs
+PASS T6c — taplo format --check on dprint's output (default config) accepts it unchanged (exit 0)
+r29-taplo-compare: PASS=12 FAIL=0

@@ -1,6 +1,24 @@
-# 2026-09-27 — R78 — opentelemetry-integration (crate, Deep) — decision (revision 2)
+# 2026-09-27 — R78 — opentelemetry-integration (crate, Deep) — decision (revision 3)
 
-**Revision note, revision 2.** This is fix round 1. It repairs revision 1 (sha256
+**Revision note, revision 3.** This is the restaged repair after S80's STOP, which correctly
+stopped the earlier wave because R58 revision 3 lacked the `deny.toml` exception. R58 revision 4
+(sha256 `04a4100ddfb1549369fbbdfdad1747e4cd7943e6e5401f9a62779c55bf04e48a`, at
+`research/runs/R58/2026-09-18T215915Z-184041b91674/review/DECISION.md`) carries it. Revision 2
+(sha256 `45458354b105abd05b55ee2229963d2812a8e9b20a1d4bb61ef150d1f4f965c4`) is preserved byte for
+byte at `review/R78-r2-snapshot.md`; its audits, `review/audit-codex.r2.md` and
+`review/audit-fable.r2.md`, both approved and asked for no repair. This revision applies only
+the five S1 rulings below. **The recommendation does not move**, and no evidence script was
+edited. R58 revision 4 is cited, not re-decided.
+
+| Ruling | Change | Where in revision 3 |
+|---|---|---|
+| 1 — contract adoption | The `- assumes logging-pipeline-contract` placeholder `—` is replaced by R58 revision 4's owned value (`:1592`), copied verbatim after the prefix and byte-compared. The unresolved note becomes an adoption note, and the five assumed conditions are checked against the adopted value. Two lines that asserted the placeholder state are updated so the decision does not contradict its own adopted line: the re-verify trigger and gap 1 | `- assumes` line 573; adoption note 575-583; conditions 588-602; re-verify line 555; gap 1, lines 924-925 |
+| 2 — exporter self-redaction | R78's OTel exporter layer wraps the OTLP exporter in a redacting `SpanExporter`, labelled a proposal. "Pure addition" now holds for the subscriber chain only. The ruling cites "R58:652"; in R58 revision 4 that line is the crate-edges paragraph, and the duty passage resolves at `:750-753` (also `:1476-1478`, `:2139-2142`), which is what this revision cites | instrumentation point 1, lines 219-235; the `src/web/telemetry.rs` row of *Migration implications* (536); *What P03 must validate* item 10 (960-962) |
+| 3 — `traceparent` split | Instrumentation point 3 states that "ignored" means ignored by the OTel layer, not dropped on the wire. With `otel` off, propagation is an opaque middleware passthrough on R75's HTTP surface, per R58's REST R11.8 constraint. The propagator, extraction and injection operate only with `otel` on | instrumentation point 3, lines 242-251 |
+| 4 — `deny.toml` | R58 revision 4's named `tracing-opentelemetry` exception is cited at `:660`, `:1117` and `:1642`; the literal name was verified at all three sites before this edit | the `deny.toml` paragraph after *No `CONFLICT:` line* (608-614); the CI row of *Migration implications* (543) |
+| 5 — evidence | `shellcheck r78-figures.sh` exits 0. A fresh rerun on 2026-09-28, written to `/tmp/r78-figures-r3-rerun.log` and not to `review/evidence/`, gave **32/33, not 33/33**. The sole delta is `V04`: `axum-tracing-opentelemetry` 0.42.1 and `tracing-opentelemetry-instrumentation-sdk` 0.42.1 now require `opentelemetry ^0.33`. That is OBS-1 of `review/audit-codex.r2.md`, which `review/audit-fable.r2.md` accepted as this decision's re-verify trigger rather than a round. `V06` still passes, so the runner-up's winning condition remains unmet. The committed `r78-figures.log` (33/33) is unchanged, because prior raw evidence is never overwritten (RUNBOOK §5) | `## Empirical check` is unchanged |
+
+**Revision 2's note, retained as written for revision 2 (superseded by the note above).** This is fix round 1. It repairs revision 1 (sha256
 `ba104e3c2891b076d93c938c1ebc1c36a749315addce76ea5f37d28062fcf440`, preserved byte-for-byte at
 `review/R78-r1-snapshot.md`) against the two unresolved findings of `review/audit-fable.md`
 (verdict `reject`); `review/audit-claude.md` approved revision 1 and asked for no repair. Only
@@ -198,14 +216,39 @@ piece below; the names are illustrative.
    `impl<L, S> Layer<S> for Option<L>` (`S15`), so R58's
    `registry().with(...).with(fmt_layer)` chain takes one more `.with(otel_layer_option)`,
    `None` whenever a gate is closed, and the subscriber type is identical in every
-   configuration. The probe composed exactly that (`r78-probe.log` §4).
+   configuration. The probe composed exactly that (`r78-probe.log` §4). **"Pure addition"
+   holds for the subscriber chain only; redaction lives in the exporter.** R58 revision 4
+   applies redaction at format time, as a property of rendered output, so "any exporter R78
+   adds sees unredacted fields and must apply the policy itself" (R58r4 `review/DECISION.md:750-753`;
+   also `:1476-1478` and `:2139-2142`). A `Layer` cannot rewrite an `Event` (R58r4 `:2152`), so
+   the bridge copies fields into spans unredacted, and the only place to mask them is the span
+   data before it leaves the process. R78's exporter layer therefore wraps the OTLP exporter in a
+   template-owned redacting exporter. It implements `opentelemetry_sdk`'s `SpanExporter` trait
+   (`src/trace/export.rs:17`), and its `export(&self, batch: Vec<SpanData>)` (`:30-33`) masks
+   every entry of `SpanData.attributes` (`:96`) and of each span event's attributes (`events`,
+   `:101`) whose key matches the adopted contract's STRUCTURED-FIELD AND REDACTION CONTRACT
+   (F252's vocabulary, ASCII-lowercased substring match, mask `[REDACTED]`; `## Parameters`)
+   before delegating the batch to the OTLP exporter. It inherits the contract's residual gap,
+   `OVERRIDE (OV-09)`: a secret inside a non-sensitive key's value is not masked. The trait and
+   field sites were read from the published `opentelemetry_sdk` 0.33.0 source in the census's
+   `CARGO_HOME`, not by a scripted check. **This redacting exporter is a proposal, not executed**:
+   the probe did not exercise it, and P03 must validate it (*What P03 must validate*, item 10).
 2. **A per-layer filter on the OpenTelemetry layer.** `Targets` turning off `hyper`,
    `hyper_util`, `h2`, `reqwest` and the `opentelemetry*` targets keeps the exporter's own HTTP
    client from generating exported spans. With it, only the application's spans were exported
    (`E10`). This is the one coupling R58 must accept; it does not alter R58's global filter.
 3. **Propagator installation.** The global text-map propagator defaults to
    `NoopTextMapPropagator` (`S14`), so `global::set_text_map_propagator(TraceContextPropagator::new())`
-   is mandatory; without it an incoming `traceparent` is ignored.
+   is mandatory; without it an incoming `traceparent` is ignored. **"Ignored" here means
+   ignored by the OpenTelemetry layer, not dropped on the wire.** Without the propagator, no
+   remote parent is extracted, so the server span becomes a trace root. The propagator,
+   extraction (point 4) and injection (point 5) all operate only with `otel` on. With `otel`
+   off, `traceparent` propagation still happens: it is an opaque middleware passthrough on the
+   HTTP surface, which needs no OpenTelemetry SDK. That is the REST R11.8 **(MUST)**
+   constraint R58 places on this boundary: `otel` gates export and log correlation, never
+   propagation (R58r4 `review/DECISION.md:370-376`, `:750-751`, and the EXTENSION INTERFACE
+   clause of the adopted value, `## Parameters`). R75's HTTP surface inherits that constraint
+   from R58; R75 has not yet decided the middleware.
 4. **Server span with remote parent.** A request middleware creates the server span from the
    matched route (axum's `MatchedPath`, a default feature R69 kept for R78 and R79,
    `DECISION.md:2349`), calls `OpenTelemetrySpanExt::set_parent` with the context extracted
@@ -490,14 +533,14 @@ Doxa-OpenAI recommended.
 | File | Change |
 |---|---|
 | `Cargo.toml` | The `otel` feature and five optional dependencies above. Dev-dependency for hermetic tests: `opentelemetry_sdk` with its `testing` feature (in-memory exporter). |
-| `src/web/telemetry.rs` | Enable-flag and `OTEL_SDK_DISABLED` gate; exporter build returning a value on error; provider with batch exporter and `service.name = <app>-web`; propagator installation; the optional, per-layer-filtered bridge layer; the guard; the `cfg(not(feature = "otel"))` path that warns once when OTLP variables are set. |
+| `src/web/telemetry.rs` | Enable-flag and `OTEL_SDK_DISABLED` gate; exporter build returning a value on error; provider with batch exporter and `service.name = <app>-web`; the redacting `SpanExporter` wrapper around the OTLP exporter, applying the adopted contract's key vocabulary and mask (proposal; point 1 under *Instrumentation points*); propagator installation; the optional, per-layer-filtered bridge layer; the guard; the `cfg(not(feature = "otel"))` path that warns once when OTLP variables are set. |
 | R58's subscriber assembly | One `.with(otel_layer_option)`; log `otel_unavailable` after `init()`. |
 | `src/web/` router (R69's `build_router`) | The server-span middleware, or its `set_parent` call folded into R75's request-span middleware. |
 | Serve binary (R69) | `shutdown_with_timeout(budget)` in `spawn_blocking` after `with_graceful_shutdown`; warn on `Err`; exit code unchanged. |
 | R01's production adapter | The outbound client span and `HeaderInjector` call around the adapter's HTTP request. |
 | R77's settings | The enable flag (default `false`) and the shutdown budget (not above the drain deadline). |
 | Collector recipe for the acceptance job | A pinned OpenTelemetry Collector with an OTLP/HTTP receiver on 4318 and a file exporter, on `ubuntu-latest`; the `macos-latest` leg runs the hermetic in-memory tests (GitHub's macOS runners lack Docker, `raw/opus.md:705`, carried). |
-| CI | `web` and `web,otel` builds and tests on both OSes; the `cargo tree` absence checks; `cargo +1.96` check of `web,otel`. |
+| CI | `web` and `web,otel` builds and tests on both OSes; the `cargo tree` absence checks; `cargo +1.96` check of `web,otel`; `cargo deny --all-features check bans` passing through R58's named `tracing-opentelemetry` exception (`## Parameters`). |
 
 **Validation strategy.** Everything in `r78-probe.sh` is **executed** evidence on one macOS host
 (`## Empirical check`). The same sequence against the real template is **planned** for P03 and
@@ -509,7 +552,7 @@ generation: 0.33/0.34 compiles, resolves singly, runs end to end and compiles at
 but it is 8 days old and no surveyed adopter runs it yet. Medium on anything Linux-specific:
 nothing ran on `ubuntu-latest`.
 
-re-verify: 2026-12-27, or earlier on any of — R58 publishing `logging-pipeline-contract` (this decision's assumptions below must then be checked, and the decision revised if R58 does not assemble a `tracing_subscriber::Registry` with an optional-layer extension point); opentelemetry-rust publishing 0.34.0 or any 0.33.x that changes the trace, OTLP-HTTP or batch-processor behavior this decision measured, or tracing-opentelemetry publishing 0.35.0; axum-tracing-opentelemetry and reqwest-tracing both publishing releases compatible with opentelemetry 0.33 (the runner-up's winning condition); R79 choosing OpenTelemetry metrics (shared generation, shared Resource, one shutdown place); R75 selecting tower-http 0.7.x (the duplicate tower-http recorded above); R77 naming the enable flag; the SIG's README declaring traces stable; a RustSec advisory against any of the five crates; or any of the five declaring a rust-version above the then-current stable-minus-2 floor.
+re-verify: 2026-12-27, or earlier on any of — R58 revising `logging-pipeline-contract` past `logging-pipeline/v1` as adopted from R58 revision 4 (the conditions under `## Parameters` must then be re-checked, and the decision revised if R58 no longer assembles a `tracing_subscriber::Registry` with an optional-layer extension point); opentelemetry-rust publishing 0.34.0 or any 0.33.x that changes the trace, OTLP-HTTP or batch-processor behavior this decision measured, or tracing-opentelemetry publishing 0.35.0; axum-tracing-opentelemetry and reqwest-tracing both publishing releases compatible with opentelemetry 0.33 (the runner-up's winning condition); R79 choosing OpenTelemetry metrics (shared generation, shared Resource, one shutdown place); R75 selecting tower-http 0.7.x (the duplicate tower-http recorded above); R77 naming the enable flag; the SIG's README declaring traces stable; a RustSec advisory against any of the five crates; or any of the five declaring a rust-version above the then-current stable-minus-2 floor.
 
 ## Parameters
 
@@ -527,29 +570,48 @@ list, exactly as registered.
 - assumes rust-edition = 2024
 - assumes target-os-matrix = ubuntu-latest, macos-latest
 - assumes license = MIT OR Apache-2.0
-- assumes logging-pipeline-contract = —
+- assumes logging-pipeline-contract = logging-pipeline/v1: STACK - tracing 0.1.44 is the only diagnostic facade any package may name, taken default-features = false, features = ["std"] by rs-launch-blueprint-core and rs-launch-blueprint-web and with its defaults (std, attributes) by the root package rs-launch-blueprint and rs-launch-blueprint-cli; tracing-subscriber 0.3.23 with features = ["env-filter"] over its default set (smallvec, fmt, ansi, tracing-log, std) is declared on the root package only, with the json feature OFF because the template owns the structured formatter and the feature adds exactly two crates (serde, tracing-serde) for a formatter it replaces, and with local-time NEVER enabled because the crate's own documentation says the local-offset lookup may be unsound or fail; timestamps are UTC ISO-8601; tracing-log 0.2.0 enters through tracing-subscriber's default tracing-log feature and is never declared directly; no other logging crate is added; crates/core, crates/cli and crates/web must not name tracing-subscriber, enforced by R02's cargo deny --all-features check bans [bans] deny[].wrappers rule and its crates/core allow-list test; the version floor is 0.3.20, RUSTSEC-2025-0055's patched floor. INITIALISATION - exactly one telemetry::init(Profile) -> Init in the root package's src/telemetry.rs, called first in each binary's main before anything that can log; it builds Registry::default() with a reload::Layer<EnvFilter> and one fmt layer whose writer is stderr, and first checks tracing::dispatcher::has_been_set(): if a dispatcher is already set, a host owns diagnostics, nothing is installed and init returns Init::HostOwned; otherwise it installs with SubscriberInitExt::try_init() and NEVER init(), which is try_init().expect(..), returning Init::Installed(Handles { level: reload::Handle<EnvFilter, Registry>, log_bridge_refused: false }) on Ok and Init::Installed(Handles { level, log_bridge_refused: true }) on Err, because try_init sets the global dispatcher before it installs the log bridge, so an Err after a clear check means only that a host already owns the log logger while the template's dispatcher is live; init never panics, never replaces and never tears down anything; template code never calls tracing_log::LogTracer::init(), because try_init already installs the bridge with the subscriber's max-level hint and a second installation fails with SetLoggerError; tests and embedders use the scoped set_default guard instead of the global path. RECONFIGURATION - the level is swappable after the configuration file is read, through the returned reload::Handle, which is how F274's config tier is reached without logging being absent while the configuration file is parsed; the format and the writer are fixed at init and are not reloadable, a deliberate departure from py's handler-replacement model recorded as a migration risk. STRUCTURED-FIELD AND REDACTION CONTRACT - key-based masking is applied at format time, not event time, because a tracing::Event is immutable, RecordFields is a sealed trait and no Layer can rewrite an event; the key vocabulary is F252's verbatim (token, password, secret, authorization, api_key, apikey, credential, cookie, matched as an ASCII-lowercased substring) and the mask is [REDACTED]; the human profile uses a template-owned FormatFields wrapping DefaultFields, and the structured profile uses a template-owned FormatEvent plus a template-owned JSON FormatFields, because tracing-subscriber's stock Format<Json> serialises event fields itself through tracing_serde in both its flattened and non-flattened branches and uses its N: FormatFields parameter only for span fields, so a redacting field formatter under .json() leaks every event field and panics if its output is not valid JSON; secrecy::SecretString (R56 revision 2) is the type-level first line of defence and the key match is the second; the structured line's key order is level, target, the R78 trace-correlation slot, the event's own fields, then span; the HTTP correlation field is named request_id, matching CLI Design Standard R7.8's spelling, while the wire header stays request-id per REST API Design Standard R11.7 and section 1.10; redaction is a property of rendered output, so any later exporter layer must apply the policy itself; and the residual gap - a secret carried inside a non-sensitive field's value is not masked - is recorded as OVERRIDE (OV-09) against CLI Design Standard R5.6. PROFILES (one engine, two policies; one subscriber per process, since each front end is its own binary) - Profile::Cli for the CLI binary R49 names: format auto, console or json, where auto resolves to console when std::io::stderr().is_terminal() and to json otherwise, colour from R65's resolved anstream::ColorChoice passed to .with_ansi(bool), default level WARN; Profile::Service { level, format } for the serve binary R69 gates: format from RSLBP_WEB_LOG_FORMAT, whose value set is json (the default) or console with no auto and no TTY test, any other value rejected by the FromStr R77's WebSettings::from_env() calls as R67's RSLB203 before init runs; default level INFO; no file sink; level and format are the values R77's WebSettings::from_env() parsed from RSLBP_WEB_LOG_LEVEL and RSLBP_WEB_LOG_FORMAT and passes in, and telemetry reads no environment variable itself; plus R75's request-span layer. LEVEL LADDER (F274), one total order, highest first, with every command-line flag above the environment variable as CLI Design Standard R5.1 requires - --debug (TRACE plus internal detail: target, file, line, thread) > --log-level with the values off, error, warn, info, debug and trace > --quiet/-q (ERROR) > -v/-vv/-vvv (INFO/DEBUG/TRACE) > RSLBP_LOG_LEVEL > config-file [logging].level > default WARN; --log-format with the values auto, console and json, plus RSLBP_LOG_FORMAT, selects the render mode by the same deterministic flag-to-environment mapping. STREAMS - every diagnostic byte goes to stderr and stdout is never written by the pipeline, per CLI Design Standard R7.1 and R67's requirement that stdout stays byte-empty on the error path; the pipeline never emits R67's error envelope, which the error boundary owns. EXTENSION INTERFACE - two declared slots with nothing decided in them: a layer slot in telemetry::init where R78's tracing-opentelemetry layer attaches under an otel = ["web", ...] feature nesting on R69's web, with a matching trace_id/span_id serialisation point in the owned FormatEvent, and with W3C traceparent propagation deliberately NOT gated by that feature because REST API Design Standard R11.8 requires it unconditionally on the HTTP surface; and a sink slot where R59's file sink attaches as a second Layer with its own MakeWriter and its own per-layer Filter, which is how a sink gets a level independent of the console.
 
-**`logging-pipeline-contract` is unresolved.** The registered value is `—`
-(`inputs/parameters.json`), and `inputs/prerequisites.json` records R58 `decision: missing`,
-`acceptance: missing`.
+**`logging-pipeline-contract` is adopted from R58 revision 4.** The value above is R58's
+owned line copied verbatim after the `- assumes logging-pipeline-contract = ` prefix, from
+`research/runs/R58/2026-09-18T215915Z-184041b91674/review/DECISION.md:1592` (sha256
+`04a4100ddfb1549369fbbdfdad1747e4cd7943e6e5401f9a62779c55bf04e48a`), and byte-compared with
+that line after the prefix. This run's re-snapshotted `inputs/parameters.json` now carries the
+same value, byte-identical to that line after the prefix. `inputs/prerequisites.json` binds R58's
+published `research/topics/58-logging-pipeline-architecture/DECISION.md` (sha256
+`8dc8ce955c58abd508d45bd74a6b2c3f9eb96bde5c43ae20538f2439c8867aae`, revision 2), whose
+`- owns logging-pipeline-contract` line is byte-identical to revision 4's.
 
 **Relied on from the R69 prerequisite decision (not a consumed parameter):**
 `web-extra-surface` = one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files
 
-**The conditions this decision assumes of R58, stated so the controller can check them against
-R58's published value.** (1) The base pipeline is a `tracing_subscriber::Registry` assembled
-from composable layers. (2) Before `.init()`, it accepts one additional `Option<L>` layer from
-`src/web/telemetry.rs`, compiled only with `otel`. (3) It accepts a per-layer `Targets` filter
-on that layer, independent of its global filter; if R58 does not enable `tracing-subscriber`'s
-`env-filter` feature, `Targets` needs none (the probe used `Targets`). (4) Warnings emitted
-after `.init()` reach the operator, so `otel_unavailable` is visible. (5) R58 decides whether
-log correlation is a local `trace_id` field or OpenTelemetry log export; this decision
-supports either and adds no crate for it. If R58 selects a non-`tracing` substrate, this
-decision must be re-run rather than patched.
+**The conditions this decision assumed of R58, checked against the adopted value.** Each
+quotation below is from the adopted value.
+(1) *The base pipeline is a `tracing_subscriber::Registry` assembled from composable layers*:
+met, since `init` "builds Registry::default() with a reload::Layer<EnvFilter> and one fmt
+layer". (2) *It accepts one additional `Option<L>` layer, compiled only with `otel`*: met by
+the EXTENSION INTERFACE's "layer slot in telemetry::init where R78's tracing-opentelemetry
+layer attaches under an otel = ["web", ...] feature". (3) *It accepts a per-layer `Targets`
+filter on that layer, independent of its global filter*: met; `env-filter` is enabled, so the
+revision-2 parenthetical about its absence no longer applies. (4) *Warnings emitted after
+initialization reach the operator*: met, since the fmt layer's "writer is stderr". (5) *R58
+decides whether log correlation is a local `trace_id` field or OpenTelemetry log export*: R58
+chose the local route, "a matching trace_id/span_id serialisation point in the owned
+FormatEvent", placed in the key order "level, target, the R78 trace-correlation slot"; this
+decision adds no log-export crate. The substrate is `tracing`, so the re-run condition of
+revision 2 does not arise.
 
 **No `CONFLICT:` line.** No report raised one, and nothing here requires a registered value to
 change. R69's owned value already names `otel = ["web", …]` and "heavier opt-ins nest on top
 rather than widening it"; this decision fills that slot and moves nothing in `web`.
+
+**The `deny.toml` finding is resolved on R58's side.** `tracing-opentelemetry` depends on
+`tracing-subscriber` non-optionally. Without an exception, the adopted value's ban (no member
+but the root package may name `tracing-subscriber`, enforced by R02's `cargo deny --all-features
+check bans` `[bans] deny[].wrappers` rule) would fail R78's CI. R58 revision 4 names
+`tracing-opentelemetry` as that rule's one named exception at `review/DECISION.md:660`, `:1117`
+and `:1642`; each site carries the literal crate name. This decision cites that resolution and
+does not re-decide it.
 
 **How the assumed parameters bear on the decision.** `msrv-policy` sets the floor at 1.96
 against local stable 1.98.1; all five crates declare 1.75.0 (`C04-*`) and the locked `otel` tree
@@ -859,8 +921,8 @@ behind gate 4; and `fastrace`'s `unsafe` block.
 
 **Gaps recorded.**
 
-1. **R58's `logging-pipeline-contract` is unpublished.** Acceptance cannot complete until it
-   is, and the conditions under `## Parameters` must then be checked.
+1. **R58's `logging-pipeline-contract`: closed in revision 3.** The value is adopted from R58
+   revision 4, and the conditions under `## Parameters` are checked against it.
 2. **The Muse leg's model identity is not recorded**, and `manifest.json` has not been updated
    with the collected operations (controller).
 3. **Prompt snapshot drift** (engines line only) awaits the controller's revalidation ruling.
@@ -895,3 +957,6 @@ behind gate 4; and `fastrace`'s `unsafe` block.
 8. **Cost**, by the stated workload, in release mode; the flag-off configuration within noise of
    `web`.
 9. **TLS**: whether the template's documented deployment needs `reqwest-rustls`.
+10. **Exporter self-redaction.** A hermetic test with `opentelemetry_sdk`'s in-memory exporter
+    behind the redacting wrapper: a span field and a span-event field keyed `password` (and one
+    keyed `api_key`) arrive as `[REDACTED]`, and a non-sensitive key arrives unchanged.

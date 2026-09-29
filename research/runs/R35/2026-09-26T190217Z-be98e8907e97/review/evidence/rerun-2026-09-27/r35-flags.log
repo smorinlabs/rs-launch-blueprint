@@ -1,0 +1,55 @@
+INFO date_utc=2026-09-27T07:41:59Z | rustc 1.93.0 (254b59607 2026-01-19) | cargo-llvm-cov 0.9.1
+PASS F1--fail-under-lines — cargo llvm-cov report accepts --fail-under-lines
+PASS F1--fail-under-functions — cargo llvm-cov report accepts --fail-under-functions
+PASS F1--fail-under-regions — cargo llvm-cov report accepts --fail-under-regions
+PASS F1--show-missing-lines — cargo llvm-cov report accepts --show-missing-lines
+PASS F1--ignore-filename-regex — cargo llvm-cov report accepts --ignore-filename-regex
+PASS F1--lcov — cargo llvm-cov report accepts --lcov
+PASS F1--html — cargo llvm-cov report accepts --html
+PASS F1--cobertura — cargo llvm-cov report accepts --cobertura
+PASS F1--json — cargo llvm-cov report accepts --json
+PASS F1--output-path — cargo llvm-cov report accepts --output-path
+PASS F2a — main help marks --doctests as unstable
+INFO help:         --branch
+INFO help:             Enable branch coverage. (unstable)
+INFO help: --
+INFO help:         --doctests
+INFO help:             Including doc tests (unstable)
+INFO help: --
+INFO help:         --doc
+INFO help:             Test only this library's documentation (unstable)
+PASS F2b — main help documents --no-report
+PASS F3 — cargo llvm-cov (no doc flags) succeeds on stable 1.93.0
+INFO functions covered without doc tests: 2/3 — double, triple, and the in-file #[cfg(test)] fn doubles
+INFO flags lcov: FNDA:0,_RNvCseogz7aDB2Lo_6flagfx6triple
+INFO flags lcov: FNDA:1,_RNvCseogz7aDB2Lo_6flagfx6double
+INFO flags lcov: FNDA:1,_RNvNtCseogz7aDB2Lo_6flagfx5testss_7doubles
+PASS F3b — without doc tests, triple() (reached only by its doc test) is recorded with zero executions
+PASS F3c — an in-file #[cfg(test)] test function is itself counted as a function (the default regex excludes tests/ dirs and tests.rs files only)
+INFO F4a: `cargo llvm-cov --doctests --locked` exit=1: error: the option `Z` is only accepted on the nightly compiler
+PASS F4a — cargo llvm-cov --doctests is rejected on stable
+INFO F4b: `cargo llvm-cov --doc --locked` exit=1: error: the option `Z` is only accepted on the nightly compiler
+PASS F4b — cargo llvm-cov --doc (Muse's flag) is rejected on stable
+PASS F4c — cargo test --doc still runs the doc tests uninstrumented (R32's F132 path)
+INFO F5: `cargo llvm-cov --branch --locked` exit=101: error: the option `Z` is only accepted on the nightly compiler
+PASS F5 — cargo llvm-cov --branch is rejected on stable (regions are not branches)
+INFO F6a: `cargo llvm-cov --lcov --html --locked` exit=1: error: --html may not be used together with --lcov
+PASS F6a — --lcov and --html together are rejected (one format per invocation)
+PASS F6b — one --no-report run feeds both report --html and report --lcov
+INFO report --fail-under-lines 100 exit=1
+PASS F6c — the gate flag on report fails a below-floor run
+info: cargo-llvm-cov currently setting cfg(coverage); you can opt-out it by passing --no-cfg-coverage
+PASS F7 — cargo llvm-cov show-env prints the instrumentation environment
+PASS F8a — README Known limitations: doc-test support is unstable
+PASS F8b — README Known limitations: branch coverage is unstable
+PASS F8c — README: #[coverage(off)] is unstable (item-level exclusion is nightly-only)
+PASS F8d — README default ignore regex excludes tests/examples/benches directories
+PASS F8e — README default ignore regex excludes the Cargo registry
+PASS F8f — README names no threshold environment variable (the flags are the only declaration)
+INFO README:13:- Support for proc-macro, including coverage of UI tests ([trybuild](https://github.com/dtolnay/trybuild), [ui_test](https://github.com/oli-obk/ui_test)).
+INFO README:14:- Support for doc tests. (this is currently optional and requires nightly, see [#2] for more)
+INFO README:555:^{WORKSPACE_ROOT}({SEPARATOR}.*)?{SEPARATOR}(tests|examples|benches){SEPARATOR}
+INFO README:568:Since `#[coverage(off)]` is unstable, it is recommended to use it together with `cfg(coverage)` or `cfg(coverage_nightly)` set by cargo-llvm-cov.
+INFO README:916:- Support for branch coverage is unstable. See [#8] and [rust-lang/rust#79649] for more.
+INFO README:917:- Support for doc tests is unstable and has known issues. See [#2] and [rust-lang/rust#79417] for more.
+SUMMARY PASS=29 FAIL=0

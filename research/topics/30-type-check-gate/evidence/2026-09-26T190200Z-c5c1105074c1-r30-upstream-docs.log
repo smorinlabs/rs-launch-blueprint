@@ -1,0 +1,50 @@
+# r30-upstream-docs.sh  run 2026-09-27T07:25:19Z  gh 2.101.0
+
+== rust-lang/cargo doc/book/src/guide/continuous-integration.md
+blob f1261a532f7329fa25fdce79a2ff539a5ff795c3, 237 lines
+207:## Checking for warnings
+209:Customarily, projects want to be "warnings clean" on official branches while being lax for local development.
+210:[`build.warnings = "deny"`] can be used to fail a CI job if warnings are present.
+232:[`build.warnings = "deny"`]: ../reference/config.md#buildwarnings
+210:[`build.warnings = "deny"`] can be used to fail a CI job if warnings are present.
+27:        toolchain:
+33:      - run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
+39:This will test all three release channels (note a failure in any toolchain version will fail the entire job). You can also click `"Actions" > "new workflow"` in the GitHub UI and select Rust to add the [default configuration](https://git
+
+== rust-lang/cargo doc/book/src/reference/config.md
+blob 862802328eb54a151e8c4e46d5e0ec984968bd60, 1663 lines
+471:#### `build.warnings`
+1216:- `deny`: ignore pubtime-incompatible versions unless they already exist in the lock file
+
+== rust-lang/cargo doc/book/src/CHANGELOG.md
+blob 7a18848524770272ae138233e081fb65aabec361, 8355 lines
+394:## Cargo 1.97 (2026-07-09)
+399:- 🎉 Stabilize `build.warnings` config.
+4151:## Cargo 1.74 (2023-11-16)
+4156:- 🎉 The `[lints]` table has been stabilized, allowing you to configure reporting levels for rustc and other tool lints in `Cargo.toml`.
+
+== rust-lang/cargo doc/book/src/reference/manifest.md
+blob d3f9c4b65c6f0820799de282feb46fdd809ff1ef, 665 lines
+532:## The `[lints]` section
+544:unsafe_code = { level = "forbid", priority = 0 }
+553:`priority` is a signed integer that controls which lints or lint groups override other lint groups:
+554:- lower (particularly negative) numbers have lower priority, being overridden
+
+== rust-lang/rust src/doc/rustc/src/lints/levels.md
+blob 57c5a8dbe4c616b84a5a8e13a4d912421d749197, 428 lines
+37:## expect
+278:All lint attributes support an additional `reason` parameter, to give context why
+279:a certain attribute was added. This reason will be displayed as part of the lint
+285:    #[allow(unused_mut, reason = "this is only modified on some platforms")]
+
+== rust-lang/rust-analyzer crates/rust-analyzer/src/config.rs
+blob 1e7c8257d15b40f299abe768934b10d1c7b9f3cf, 4494 lines
+891:        check_command | checkOnSave_command: String                      = "check".to_owned(),
+787:        cargo_allTargets: bool           = true,
+847:        cargo_features: CargoFeaturesDef      = CargoFeaturesDef::Selected(vec![]),
+962:        check_workspace: bool = true,
+884:        checkOnSave | checkOnSave_enable: bool                         = true,
+901:        check_features | checkOnSave_features: Option<CargoFeaturesDef>  = None,
+878:        cargo_targetDir | rust_analyzerTargetDir: Option<TargetDirectory> = None,
+
+# summary: failures=0

@@ -1,0 +1,42 @@
+== retrieved 2026-09-27T07:24:00Z; gh version 2.101.0 (2026-09-15)
+
+-- F11a GET repos/rhysd/cargo-husky/contents/Cargo.toml: [features] table (numbered lines)
+   27: [features]
+   28: default = ["prepush-hook", "run-cargo-test", "run-for-all"]
+   29: prepush-hook = []
+   30: precommit-hook = []
+   31: postmerge-hook = []
+   32: run-cargo-test = []
+   33: run-cargo-check = []
+   34: run-cargo-clippy = []
+   35: run-cargo-fmt = []
+   36: run-for-all = []
+   37: user-hooks = []
+   38: 
+
+-- F11b GET repos/rhysd/cargo-husky/contents/build.rs: lines 130-150 (numbered)
+   130:     let script = {
+   131:         let mut s = String::new();
+   132:         if cfg!(feature = "run-cargo-test") {
+   133:             s += cmd!("cargo test");
+   134:         }
+   135:         if cfg!(feature = "run-cargo-check") {
+   136:             s += cmd!("cargo check");
+   137:         }
+   138:         if cfg!(feature = "run-cargo-clippy") {
+   139:             s += cmd!("cargo clippy", "-D warnings");
+   140:         }
+   141:         if cfg!(feature = "run-cargo-fmt") {
+   142:             s += cmd!("cargo fmt", "--check");
+   143:         }
+   144:         s
+   145:     };
+   146: 
+   147:     writeln!(
+   148:         w,
+   149:         r#"#!/bin/sh
+   150: #
+   hook-kind selection (every line naming a *-hook feature):
+   301:     if cfg!(feature = "prepush-hook") {
+   304:     if cfg!(feature = "precommit-hook") {
+   307:     if cfg!(feature = "postmerge-hook") {

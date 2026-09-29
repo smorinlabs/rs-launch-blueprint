@@ -6,7 +6,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 |---|---|---|---|---|---|---|---|
 | R01 | ports-and-adapters-seam | bundle | different | DIVERGENT | http-transport-injection-seam | [prompt](topics/01-ports-and-adapters-seam/prompts/ports-and-adapters-seam.prompt.md) | resolved |
 | R02 | crate-boundary-enforcement | bundle | py-only | DIVERGENT | — | [prompt](topics/02-crate-boundary-enforcement/prompts/crate-boundary-enforcement.prompt.md) | resolved |
-| R03 | port-absence-vs-failure-contract | pattern | different | DIVERGENT | — | [prompt](topics/03-port-absence-vs-failure-contract/prompts/port-absence-vs-failure-contract.prompt.md) | open |
+| R03 | port-absence-vs-failure-contract | pattern | different | DIVERGENT | — | [prompt](topics/03-port-absence-vs-failure-contract/prompts/port-absence-vs-failure-contract.prompt.md) | resolved |
 | R04 | public-api-surface-enforcement | pattern | different | DIVERGENT | — | [prompt](topics/04-public-api-surface-enforcement/prompts/public-api-surface-enforcement.prompt.md) | resolved |
 | R05 | sync-async-execution-model | bundle | different | DIVERGENT | — | [prompt](topics/05-sync-async-execution-model/prompts/sync-async-execution-model.prompt.md) | resolved |
 | R06 | unsafe-code-policy | pattern | none | RUST-ONLY | — | [prompt](topics/06-unsafe-code-policy/prompts/unsafe-code-policy.prompt.md) | resolved |
@@ -17,7 +17,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R11 | ci-workflow-job-structure | bundle | py-only | DIVERGENT | ci-job-structure | [prompt](topics/11-ci-workflow-job-structure/prompts/ci-workflow-job-structure.prompt.md) | resolved |
 | R12 | aggregate-required-status-check | pattern | py-only | DIVERGENT | — | [prompt](topics/12-aggregate-required-status-check/prompts/aggregate-required-status-check.prompt.md) | open |
 | R13 | dependency-vulnerability-scanning | bundle | py-only | DIVERGENT | — | [prompt](topics/13-dependency-vulnerability-scanning/prompts/dependency-vulnerability-scanning.prompt.md) | resolved |
-| R14 | large-file-guard-strategy | bundle | py-only | DIVERGENT | — | [prompt](topics/14-large-file-guard-strategy/prompts/large-file-guard-strategy.prompt.md) | open |
+| R14 | large-file-guard-strategy | bundle | py-only | DIVERGENT | — | [prompt](topics/14-large-file-guard-strategy/prompts/large-file-guard-strategy.prompt.md) | resolved |
 | R15 | template-drift-receipt-guard | pattern | py-only | DIVERGENT | — | [prompt](topics/15-template-drift-receipt-guard/prompts/template-drift-receipt-guard.prompt.md) | resolved |
 | R16 | codeql-config-customization | pattern | py-only | DIVERGENT | — | [prompt](topics/16-codeql-config-customization/prompts/codeql-config-customization.prompt.md) | resolved |
 | R17 | secret-scanning-ci-workflow | crate | py-only | DIVERGENT | — | [prompt](topics/17-secret-scanning-ci-workflow/prompts/secret-scanning-ci-workflow.prompt.md) | resolved |
@@ -30,10 +30,10 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R24 | changelog-section-mapping | pattern | different | DIVERGENT | — | [prompt](topics/24-changelog-section-mapping/prompts/changelog-section-mapping.prompt.md) | open |
 | R25 | semver-bump-strategy | pattern | ts-only | DIVERGENT | — | [prompt](topics/25-semver-bump-strategy/prompts/semver-bump-strategy.prompt.md) | resolved |
 | R26 | packed-artifact-content-guard | bundle | ts-only | DIVERGENT | — | [prompt](topics/26-packed-artifact-content-guard/prompts/packed-artifact-content-guard.prompt.md) | resolved |
-| R27 | formatter-config-surface | bundle | different | DIVERGENT | — | [prompt](topics/27-formatter-config-surface/prompts/formatter-config-surface.prompt.md) | open |
-| R28 | linter-and-editor-tooling | bundle | different | DIVERGENT | — | [prompt](topics/28-linter-and-editor-tooling/prompts/linter-and-editor-tooling.prompt.md) | open |
+| R27 | formatter-config-surface | bundle | different | DIVERGENT | — | [prompt](topics/27-formatter-config-surface/prompts/formatter-config-surface.prompt.md) | resolved |
+| R28 | linter-and-editor-tooling | bundle | different | DIVERGENT | — | [prompt](topics/28-linter-and-editor-tooling/prompts/linter-and-editor-tooling.prompt.md) | resolved |
 | R29 | non-code-file-formatting | bundle | py-only | DIVERGENT | — | [prompt](topics/29-non-code-file-formatting/prompts/non-code-file-formatting.prompt.md) | open |
-| R30 | type-check-gate | bundle | different | DIVERGENT | — | [prompt](topics/30-type-check-gate/prompts/type-check-gate.prompt.md) | open |
+| R30 | type-check-gate | bundle | different | DIVERGENT | — | [prompt](topics/30-type-check-gate/prompts/type-check-gate.prompt.md) | resolved |
 | R31 | standalone-security-analyzer | bundle | py-only | DIVERGENT | — | [prompt](topics/31-standalone-security-analyzer/prompts/standalone-security-analyzer.prompt.md) | resolved |
 | R32 | test-harness-and-execution | bundle | different | DIVERGENT | — | [prompt](topics/32-test-harness-and-execution/prompts/test-harness-and-execution.prompt.md) | open |
 | R33 | property-and-snapshot-testing | bundle | py-only | DIVERGENT | — | [prompt](topics/33-property-and-snapshot-testing/prompts/property-and-snapshot-testing.prompt.md) | resolved |
@@ -63,7 +63,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R58 | logging-pipeline-architecture | bundle | py-only | DIVERGENT | logging-pipeline-contract | [prompt](topics/58-logging-pipeline-architecture/prompts/logging-pipeline-architecture.prompt.md) | resolved |
 | R59 | file-log-sink | bundle | py-only | DIVERGENT | — | [prompt](topics/59-file-log-sink/prompts/file-log-sink.prompt.md) | open |
 | R60 | cli-parsing-framework | bundle | different | DIVERGENT | — | [prompt](topics/60-cli-parsing-framework/prompts/cli-parsing-framework.prompt.md) | resolved |
-| R61 | interactive-prompts | bundle | py-only | DIVERGENT | — | [prompt](topics/61-interactive-prompts/prompts/interactive-prompts.prompt.md) | open |
+| R61 | interactive-prompts | bundle | py-only | DIVERGENT | — | [prompt](topics/61-interactive-prompts/prompts/interactive-prompts.prompt.md) | resolved |
 | R62 | clipboard-integration | bundle | ts-only | DIVERGENT | — | [prompt](topics/62-clipboard-integration/prompts/clipboard-integration.prompt.md) | resolved |
 | R63 | progress-spinner | crate | ts-only | DIVERGENT | — | [prompt](topics/63-progress-spinner/prompts/progress-spinner.prompt.md) | resolved |
 | R64 | pager-integration | bundle | py-only | DIVERGENT | — | [prompt](topics/64-pager-integration/prompts/pager-integration.prompt.md) | resolved |
@@ -75,12 +75,12 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R70 | http-problem-envelope | bundle | py-only | DIVERGENT | — | [prompt](topics/70-http-problem-envelope/prompts/http-problem-envelope.prompt.md) | resolved |
 | R71 | openapi-generation-pipeline | bundle | py-only | DIVERGENT | — | [prompt](topics/71-openapi-generation-pipeline/prompts/openapi-generation-pipeline.prompt.md) | resolved |
 | R72 | api-pagination | bundle | py-only | DIVERGENT | — | [prompt](topics/72-api-pagination/prompts/api-pagination.prompt.md) | resolved |
-| R73 | idempotency-middleware | bundle | py-only | DIVERGENT | — | [prompt](topics/73-idempotency-middleware/prompts/idempotency-middleware.prompt.md) | open |
+| R73 | idempotency-middleware | bundle | py-only | DIVERGENT | — | [prompt](topics/73-idempotency-middleware/prompts/idempotency-middleware.prompt.md) | resolved |
 | R74 | rate-limiting-middleware | bundle | py-only | DIVERGENT | — | [prompt](topics/74-rate-limiting-middleware/prompts/rate-limiting-middleware.prompt.md) | resolved |
 | R75 | http-middleware-stack | bundle | py-only | DIVERGENT | — | [prompt](topics/75-http-middleware-stack/prompts/http-middleware-stack.prompt.md) | resolved |
 | R76 | cors-middleware | crate | py-only | DIVERGENT | — | [prompt](topics/76-cors-middleware/prompts/cors-middleware.prompt.md) | resolved |
 | R77 | web-env-settings | crate | py-only | DIVERGENT | — | [prompt](topics/77-web-env-settings/prompts/web-env-settings.prompt.md) | resolved |
-| R78 | opentelemetry-integration | crate | py-only | DIVERGENT | — | [prompt](topics/78-opentelemetry-integration/prompts/opentelemetry-integration.prompt.md) | open |
+| R78 | opentelemetry-integration | crate | py-only | DIVERGENT | — | [prompt](topics/78-opentelemetry-integration/prompts/opentelemetry-integration.prompt.md) | resolved |
 | R79 | prometheus-metrics | crate | py-only | DIVERGENT | — | [prompt](topics/79-prometheus-metrics/prompts/prometheus-metrics.prompt.md) | resolved |
 | R80 | health-probe-endpoints | bundle | py-only | DIVERGENT | — | [prompt](topics/80-health-probe-endpoints/prompts/health-probe-endpoints.prompt.md) | resolved |
 | R81 | docs-delivery-model | bundle | different | DIVERGENT | — | [prompt](topics/81-docs-delivery-model/prompts/docs-delivery-model.prompt.md) | resolved |

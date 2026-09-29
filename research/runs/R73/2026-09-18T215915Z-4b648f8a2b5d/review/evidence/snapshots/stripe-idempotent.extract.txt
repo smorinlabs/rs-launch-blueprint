@@ -1,0 +1,13 @@
+source: https://docs.stripe.com/api/idempotent_requests
+retrieved_utc: 2026-09-19T01:35:58Z
+full_page_sha256: b2300334b9c9fbee27f7e505242e4f5ace45be4a1c8fc744b607f3a9a6858102
+full_page_bytes: 1351748
+NOTE: this file is a compact extract of the rendered page, not the page.
+
+"]},{"\u0024\u0024mdtype":"Tag","name":"Paragraph","attributes":{},"children":["Stripe’s idempotency works by saving the resulting status code and body of the first request made for any given idempotency key, regardless of whether it succeeds or fails
+"]},{"\u0024\u0024mdtype":"Tag","name":"Paragraph","attributes":{},"children":["We save results only after the execution of an endpoint begins
+"]},{"\u0024\u0024mdtype":"Tag","name":"Paragraph","attributes":{},"children":["You can remove keys from the system automatically after they’re at least 24 hours old
+Idempotency keys are up to 255 characters long
+Stripe’s idempotency works by saving the resulting status code and body of the first request made for any given idempotency key, regardless of whether it succeeds or fails
+We save results only after the execution of an endpoint begins
+You can remove keys from the system automatically after they’re at least 24 hours old

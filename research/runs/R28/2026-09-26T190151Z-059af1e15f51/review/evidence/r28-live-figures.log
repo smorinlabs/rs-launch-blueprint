@@ -1,0 +1,40 @@
+== retrieved 2026-09-27T01:11:29Z
+/Users/stevemorin/.local/share/mise/shims/gh
+/usr/bin/curl
+/opt/homebrew/bin/jq
+
+== G1 GET https://api.github.com/repos/rust-lang/rust-clippy
+{"archived":false,"license":"Apache-2.0","pushed_at":"2026-09-24T14:26:18Z","stargazers_count":13536}
+PASS G1 — rust-lang/rust-clippy not archived
+== G1-issues GET https://api.github.com/search/issues?q=repo:rust-lang/rust-clippy+is:issue+is:open
+total_count 2506
+
+== G2 GET https://api.github.com/repos/rust-lang/rust-analyzer
+{"archived":false,"license":"Apache-2.0","pushed_at":"2026-09-26T10:35:50Z","stargazers_count":16877}
+PASS G2 — rust-lang/rust-analyzer not archived
+== G2-issues GET https://api.github.com/search/issues?q=repo:rust-lang/rust-analyzer+is:issue+is:open
+total_count 1696
+
+== G3 GET https://api.github.com/repos/vadimcn/codelldb
+{"archived":false,"license":"MIT","pushed_at":"2026-08-23T22:32:49Z","stargazers_count":3309}
+PASS G3 — vadimcn/codelldb not archived
+== G3-issues GET https://api.github.com/search/issues?q=repo:vadimcn/codelldb+is:issue+is:open
+total_count 166
+
+== S1 https://rustsec.org/packages/clippy.html
+HTTP 404
+PASS S1 — no advisory page for clippy
+
+== S2 https://rustsec.org/packages/rust-analyzer.html
+HTTP 404
+PASS S2 — no advisory page for rust-analyzer
+
+== C1 GET https://crates.io/api/v1/crates/clippy (the retired shim, not the rustup component)
+{"max_stable_version":"0.0.302","created_at":"2015-05-09T09:52:36.818972Z","recent_downloads":95559,"downloads":2067318,"repository":"https://github.com/rust-lang-nursery/rust-clippy"}
+PASS C1 — shim version 0.0.302
+
+== C2 GET https://crates.io/api/v1/crates/clippy/versions (newest non-yanked num and created_at)
+{"num":"0.0.302","created_at":"2018-10-05T19:39:15.372568Z"}
+PASS C2 — newest non-yanked version 0.0.302
+
+== summary: 0 failing case(s)

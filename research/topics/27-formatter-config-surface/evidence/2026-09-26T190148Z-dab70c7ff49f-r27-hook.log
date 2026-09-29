@@ -1,0 +1,31 @@
+== lefthook 2.1.14; git version 2.50.1 (Apple Git-155); toolchain via rust-toolchain.toml: rustfmt 1.9.0-stable (31fca3adb2 2026-06-26)
+
+== variant A: pre-commit: jobs: - name: rustfmt run: cargo fmt --all --check 
+  PASS A H1 staged unformatted .rs: commit rejected (exit=1), file bytes unchanged
+  PASS A H2 staged formatted .rs: commit accepted
+  PASS A H3 README-only commit accepted; formatter job ran
+    H4 rustfmt.toml-only change to max_width = 40: the tree is now unformatted (cargo fmt --all --check exit=1)
+  PASS A H4 config-only commit that unformats the tree: rejected (exit=1)
+
+== variant B: pre-commit: jobs: - name: rustfmt glob: "*.rs" run: cargo fmt --all --check 
+  PASS B H1 staged unformatted .rs: commit rejected (exit=1), file bytes unchanged
+  PASS B H2 staged formatted .rs: commit accepted
+  PASS B H3 README-only commit accepted; formatter job skipped
+    H4 rustfmt.toml-only change to max_width = 40: the tree is now unformatted (cargo fmt --all --check exit=1)
+  PASS B H4 config-only commit that unformats the tree: ACCEPTED, job skipped by glob (the discriminating case)
+
+== variant A, working-tree interaction (lefthook hides the unstaged part of partially staged files only)
+  PASS A H5 index unformatted, working tree formatted (partially staged): rejected (exit=1); unstaged bytes restored
+  PASS A H6 formatted staged change + unrelated UNSTAGED unformatted edit to web.rs: rejected (exit=1) — a conservative false block
+    | Diff in A-h6/src/web.rs:1:
+
+== variant C (ts shape: write mode + stage_fixed): the same H6 situation
+    commit exit=0; files in the new commit: src/lib.rs ; web.rs working-tree sha 42d5faa69c075d32 -> 57cf546bb1e7a5ba; status:  M src/web.rs 
+  PASS C H6 the hook rewrote web.rs, a file the contributor never staged, and left it out of the commit
+
+== W: `cargo fmt` cannot be scoped to named files (why the ts write mode does not transfer under R42's invocation rule)
+    cargo fmt -- --check src/web.rs: exit=1; diffs reported per file:    1 src/lib.rs;   2 src/web.rs;
+  PASS W1 naming one file still checks lib.rs
+  PASS W2 write run naming only web.rs rewrote lib.rs too (70f1439be14cb7f1 -> d15bcc83f5d1235b)
+
+== summary: 13 checks, 13 pass, 0 fail

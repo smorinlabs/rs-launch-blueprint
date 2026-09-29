@@ -1,0 +1,34 @@
+UTC now: 2026-09-26T21:46:12Z
+host: Darwin 25.4.0 arm64 git version 2.50.1 (Apple Git-155)
+cmd: sh r14-rev1-guard.sh
+H1[sh] PASS expected=0 got=0 nothing staged
+H2[sh] PASS expected=0 got=0 1048576 passes
+H3[sh] PASS expected=1 got=1 1048577 fails
+H4[sh] PASS expected=1 got=1 spaced name fails msg-names=yes
+H5[sh] PASS expected=1 got=1 modified grown fails
+H6[sh] PASS expected=0 got=0 attribute exempt allow-line=yes
+H7a[sh] PASS expected=0 got=0 staged small worktree big passes
+H7b[sh] PASS expected=1 got=1 staged big worktree small fails
+H10[sh] PASS expected=1 got=1 unborn branch fails
+H1[dash] PASS expected=0 got=0 nothing staged
+H2[dash] PASS expected=0 got=0 1048576 passes
+H3[dash] PASS expected=1 got=1 1048577 fails
+H4[dash] PASS expected=1 got=1 spaced name fails msg-names=yes
+H5[dash] PASS expected=1 got=1 modified grown fails
+H6[dash] PASS expected=0 got=0 attribute exempt allow-line=yes
+H7a[dash] PASS expected=0 got=0 staged small worktree big passes
+H7b[dash] PASS expected=1 got=1 staged big worktree small fails
+H10[dash] PASS expected=1 got=1 unborn branch fails
+H8[sh] PASS expected=0 got=0 LFS pointer passes
+H9[sh] PASS expected=0 got=0 gitlink skipped
+R1 PASS expected=1 got=1 added-then-deleted fails
+R3 PASS expected=1 got=1 all-zero base fails closed
+R3e PASS expected=1 got=1 empty base fails closed
+R4 PASS expected=1 got=1 modified grown fails
+R5 PASS expected=1 got=1 spaced name fails
+R6 PASS expected=0 got=0 empty range passes
+R7 PASS expected=2 got=2 unknown base errors closed
+R8 PASS expected=2 got=2 usage error
+R9 PASS expected=0 got=0 clean range passes
+guard checks: 29 failures: 0
+exit=0

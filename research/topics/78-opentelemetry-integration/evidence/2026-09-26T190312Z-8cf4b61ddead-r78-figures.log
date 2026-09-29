@@ -1,0 +1,131 @@
+# r78-figures — run 2026-09-27T04:27:30Z (UTC)
+# host: Darwin 25.4.0 arm64; curl: curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0; jq: jq-1.8.2; gh: gh version 2.101.0 (2026-09-15)
+
+## 1. Crate figures (crates.io)
+crate                                              90d-dl   all-time-dl newest     date       rust_ver license
+opentelemetry                                    62093844     273950228 0.33.0     2026-09-18 1.75.0   Apache-2.0
+opentelemetry_sdk                                56201160     228219587 0.33.0     2026-09-18 1.75.0   Apache-2.0
+opentelemetry-otlp                               42378989     160163609 0.33.0     2026-09-18 1.75.0   Apache-2.0
+opentelemetry-http                               37981616     152353252 0.33.0     2026-09-18 1.75.0   Apache-2.0
+tracing-opentelemetry                            46120245     210366232 0.34.0     2026-09-23 1.75.0   MIT
+opentelemetry-appender-tracing                    8504463      19617877 0.33.0     2026-09-18 1.75.0   Apache-2.0
+opentelemetry-stdout                              3500801      33184410 0.33.0     2026-09-18 1.75.0   Apache-2.0
+opentelemetry-zipkin                               199644       2726098 0.33.0     2026-09-18 1.75.0   Apache-2.0
+opentelemetry-jaeger                              1773426      20383677 0.22.0     2024-05-15 1.65     Apache-2.0
+axum-tracing-opentelemetry                        2386325      16371187 0.39.1     2026-08-30 1.91.0   CC0-1.0
+tracing-opentelemetry-instrumentation-sdk         3263242      19122877 0.38.3     2026-08-30 none     CC0-1.0
+init-tracing-opentelemetry                         552846       1951545 0.41.1     2026-08-30 none     CC0-1.0
+reqwest-tracing                                   5326354      31545126 0.7.1      2026-05-19 none     MIT OR Apache-2.0
+tracing-otel                                         2060          2060 0.33.2     2026-08-11 none     MIT/Apache-2.0
+fastrace                                          1408144       7177731 0.7.19     2026-07-31 1.91.0   Apache-2.0
+fastrace-opentelemetry                            1057902       4970189 0.18.1     2026-06-17 1.91.0   Apache-2.0
+minitrace                                           68314       1042569 0.6.7      2024-06-23 none     Apache-2.0
+tracing                                         198651206     877269566 0.1.44     2025-12-18 1.65.0   MIT
+tracing-subscriber                              146641301     627181762 0.3.23     2026-03-13 1.65.0   MIT
+
+PASS C01 tracing-opentelemetry newest non-yanked is 0.34.0
+PASS C02 tracing-opentelemetry 0.34.0 published 2026-09-23
+PASS C03-opentelemetry opentelemetry newest non-yanked is 0.33.0 (2026-09-18)
+PASS C03-opentelemetry_sdk opentelemetry_sdk newest non-yanked is 0.33.0 (2026-09-18)
+PASS C03-opentelemetry-otlp opentelemetry-otlp newest non-yanked is 0.33.0 (2026-09-18)
+PASS C03-opentelemetry-http opentelemetry-http newest non-yanked is 0.33.0 (2026-09-18)
+PASS C03-opentelemetry-appender-tracing opentelemetry-appender-tracing newest non-yanked is 0.33.0 (2026-09-18)
+PASS C04-opentelemetry opentelemetry newest declares rust_version 1.75.0 (<= the 1.96 floor)
+PASS C04-opentelemetry_sdk opentelemetry_sdk newest declares rust_version 1.75.0 (<= the 1.96 floor)
+PASS C04-opentelemetry-otlp opentelemetry-otlp newest declares rust_version 1.75.0 (<= the 1.96 floor)
+PASS C04-opentelemetry-http opentelemetry-http newest declares rust_version 1.75.0 (<= the 1.96 floor)
+PASS C04-tracing-opentelemetry tracing-opentelemetry newest declares rust_version 1.75.0 (<= the 1.96 floor)
+
+## 2. Version-compatibility edges (crates.io /<ver>/dependencies, normal kind)
+tracing-opentelemetry 0.34.0 -> opentelemetry ^0.33.0 ; tracing-subscriber ^0.3.22 ; tracing ^0.1.35
+tracing-opentelemetry 0.33.0 -> opentelemetry ^0.32.0
+PASS V01 bridge 0.34.0 requires opentelemetry ^0.33.0
+PASS V02 bridge 0.33.0 requires opentelemetry ^0.32.0 (the previous pairing)
+PASS V03 bridge 0.34.0 requires tracing-subscriber ^0.3.22
+axum-tracing-opentelemetry 0.39.1 -> opentelemetry '^0.32' ; tracing-opentelemetry '^0.33' ; axum '^0.8'
+tracing-opentelemetry-instrumentation-sdk 0.38.3 -> opentelemetry '^0.32' ; tracing-opentelemetry '^0.33'
+PASS V04 axum-tracing-opentelemetry newest still requires the 0.32 generation (not ^0.33)
+init-tracing-opentelemetry 0.41.1 -> opentelemetry '^0.32'
+fastrace-opentelemetry 0.18.1 -> opentelemetry '^0.32.0'
+PASS V05 fastrace-opentelemetry newest requires opentelemetry 0.32 (not 0.33)
+tracing-otel 0.33.2 -> opentelemetry '^0.32.0'
+reqwest-tracing 0.7.1 opentelemetry_* features: opentelemetry_0_20 opentelemetry_0_21 opentelemetry_0_22 opentelemetry_0_23 opentelemetry_0_24 opentelemetry_0_25 opentelemetry_0_26 opentelemetry_0_27 opentelemetry_0_28 opentelemetry_0_29 opentelemetry_0_30 opentelemetry_0_31 opentelemetry_0_32
+PASS V06 reqwest-tracing newest offers no opentelemetry_0_33 feature
+opentelemetry-otlp 0.33.0 -> reqwest ^0.13.1 optional=true ; reqwest 0.13.5 -> tower-http ^0.6.8 optional=false
+PASS V07 reqwest 0.13.5 depends on tower-http ^0.6.8 non-optionally (otel brings tower-http 0.6)
+
+## 3. Default features and the metrics side effect (crates.io /versions features map)
+opentelemetry-otlp 0.33.0 default    = [http-proto,reqwest-blocking-client,trace,metrics,logs,internal-logs]
+opentelemetry-otlp 0.33.0 http-proto = [prost,opentelemetry-http,opentelemetry-proto/gen-tonic-messages,http,httpdate,trace,metrics]
+opentelemetry-otlp 0.33.0 retry-ish features: 
+opentelemetry_sdk 0.33.0 default     = [trace,metrics,logs,internal-logs]
+opentelemetry_sdk 0.33.0 has testing = true
+tracing-opentelemetry 0.34.0 default = [tracing-log,metrics]
+PASS F01 otlp 0.33.0 default includes http-proto and reqwest-blocking-client
+PASS F02 otlp 0.33.0 default does not include grpc-tonic
+PASS F03 otlp 0.33.0 http-proto feature itself enables metrics
+PASS F04 bridge 0.34.0 default features are metrics + tracing-log
+
+## 4. Reverse dependencies (crates.io reverse_dependencies meta.total)
+opentelemetry_sdk                1294
+opentelemetry-otlp               1003
+tracing-opentelemetry            1056
+axum-tracing-opentelemetry       18
+reqwest-tracing                  108
+fastrace-opentelemetry           4
+
+## 5. GitHub repository figures (authenticated gh api)
+repo                                                 stars archived pushed_at            open_issues
+open-telemetry/opentelemetry-rust                     2718 false    2026-09-25T08:11:20Z 216
+tokio-rs/tracing-opentelemetry                         409 false    2026-09-23T08:23:27Z 18
+tokio-rs/tracing                                      6891 false    2026-05-30T06:42:00Z 628
+davidB/tracing-opentelemetry-instrumentation-sdk       249 false    2026-09-23T23:09:42Z 7
+fast/fastrace                                         1135 false    2026-07-31T09:34:35Z 11
+TrueLayer/reqwest-middleware                           381 false    2026-05-19T15:12:07Z 29
+PASS G01 bridge repo has under 1,000 stars (Gemini's 6.9k is not the bridge's figure)
+PASS G02 tokio-rs/tracing has over 5,000 stars (the figure Gemini's 6.9k matches in magnitude)
+
+## 6. Issue responsiveness — 10 most recently opened issues (PRs excluded)
+#    first response = first comment whose author_association is OWNER, MEMBER or COLLABORATOR
+  #3757   created 2026-09-25T13:54:25Z  no maintainer comment
+  #3755   created 2026-09-24T17:57:58Z  no maintainer comment
+  #3754   created 2026-09-24T11:57:26Z  no maintainer comment
+  #3753   created 2026-09-23T12:23:05Z  no maintainer comment
+  #3746   created 2026-09-17T19:11:21Z  first maintainer response after 0.1 days
+  #3738   created 2026-09-15T11:13:48Z  first maintainer response after 1.9 days
+  #3735   created 2026-09-14T15:09:12Z  no maintainer comment
+  #3714   created 2026-09-07T22:53:04Z  first maintainer response after 0 days
+  #3713   created 2026-09-07T18:14:30Z  no maintainer comment
+  #3691   created 2026-09-03T23:32:02Z  no maintainer comment
+open-telemetry/opentelemetry-rust: sampled 10 issues; median first response 0.1 days over answered; unanswered 7
+  #266    created 2026-07-03T00:57:15Z  no maintainer comment
+  #265    created 2026-07-03T00:57:14Z  no maintainer comment
+  #257    created 2026-03-22T09:47:54Z  first maintainer response after 124.1 days
+  #254    created 2026-02-23T19:19:17Z  no maintainer comment
+  #253    created 2026-02-11T16:54:56Z  first maintainer response after 0 days
+  #250    created 2026-01-26T20:18:27Z  first maintainer response after 0.8 days
+  #248    created 2025-12-25T11:32:56Z  first maintainer response after 1 days
+  #247    created 2025-12-24T10:14:27Z  no maintainer comment
+  #242    created 2025-12-04T06:48:03Z  first maintainer response after 0.2 days
+  #240    created 2025-11-27T21:09:40Z  first maintainer response after 0.1 days
+tokio-rs/tracing-opentelemetry: sampled 10 issues; median first response 0.5 days over answered; unanswered 4
+
+## 7. RustSec package pages (HTTP status and advisory IDs on the page)
+opentelemetry                    HTTP 404  no advisory id on page
+opentelemetry_sdk                HTTP 404  no advisory id on page
+opentelemetry-otlp               HTTP 404  no advisory id on page
+opentelemetry-http               HTTP 404  no advisory id on page
+tracing-opentelemetry            HTTP 404  no advisory id on page
+opentelemetry-jaeger             HTTP 200  RUSTSEC-2025-0123
+minitrace                        HTTP 200  RUSTSEC-2024-0390
+atty                             HTTP 200  RUSTSEC-2021-0145 RUSTSEC-2024-0375
+PASS R01 control atty page is HTTP 200 with advisories (validates the 404 reading)
+PASS R02 opentelemetry-jaeger carries RUSTSEC-2025-0123
+PASS R03 minitrace carries RUSTSEC-2024-0390
+PASS R04-opentelemetry opentelemetry has no RustSec package page (HTTP 404 = no advisory)
+PASS R04-opentelemetry_sdk opentelemetry_sdk has no RustSec package page (HTTP 404 = no advisory)
+PASS R04-opentelemetry_otlp opentelemetry_otlp has no RustSec package page (HTTP 404 = no advisory)
+PASS R04-opentelemetry_http opentelemetry_http has no RustSec package page (HTTP 404 = no advisory)
+PASS R04-tracing_opentelemetry tracing_opentelemetry has no RustSec package page (HTTP 404 = no advisory)
+
+# TOTAL checks=33 pass=33 fail=0

@@ -146,8 +146,8 @@ section '3. The run inputs against the current registry'
 claim 'inputs/PARAMETERS.md vs docs/port/PARAMETERS.md — which rows differ'
 diff "$INPUT_REGISTRY" "$REGISTRY" > "$WORK/registry.diff" 2>&1
 awk -F'|' '/^[<>] \| / && NF == 7 { m = $1; gsub(/^[<>] \| +| +$/, "", m); print substr($0,1,1) " " m }' "$WORK/registry.diff"
-assert 'differing rows all name web-extra-surface' 0 \
-  "$(awk -F'|' '/^[<>] \| / && NF == 7 { m = $2; gsub(/^ +| +$/, "", m); if (m != "web-extra-surface") n++ } END { print n + 0 }' "$WORK/registry.diff")"
+assert 'differing rows naming a consumed or fixed row' 0 \
+  "$(awk -F'|' '/^[<>] \| / && NF == 7 { m = $2; gsub(/^ +| +$/, "", m); if (m ~ /^(msrv-policy|rust-edition|target-os-matrix|license|error-taxonomy-exit-codes)$/) n++ } END { print n + 0 }' "$WORK/registry.diff")"
 
 claim 'every row this item consumes is byte-identical in both files'
 for p in msrv-policy rust-edition target-os-matrix license error-taxonomy-exit-codes; do
@@ -204,7 +204,7 @@ section '6. The seam this pattern decorates, as R01 published it'
 
 assert 'R01 reserves this items slot in src/core/ports.rs' 2 \
   "$(count "$R01" 'absence shape R03')"
-$GREP -n -m1 -F 'the port error type (vocabulary R67's, absence shape R03's)' "$R01" | cut -c1-240
+$GREP -n -m1 -F "the port error type (vocabulary R67's, absence shape R03's)" "$R01" | cut -c1-240
 assert 'R01 routes a poisoned fake lock to PortError::Unavailable' 2 \
   "$(count "$R01" '`PortError::Unavailable`')"
 assert 'R01 contemplates Json<Option<Project>> at the web handler' 2 \

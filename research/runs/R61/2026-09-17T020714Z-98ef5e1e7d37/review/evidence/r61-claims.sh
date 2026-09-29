@@ -3,7 +3,7 @@
 #                              the sources being asserted on; expansion here would corrupt the match.
 # shellcheck disable=SC2329  # cleanup() is invoked indirectly, by the EXIT trap below.
 #
-# R61 interactive-prompts — empirical check for review/DECISION.md (revision 1).
+# R61 interactive-prompts — empirical check for review/DECISION.md (revision 8).
 #
 # Verifies the claims the decision rests on. It never implements the
 # recommendation: no prompt seam, no template scaffold, no CLI. The two cargo
@@ -434,6 +434,12 @@ RS
     cat > "$WORK/ptyspike.py" <<'PY'
 import os, pty, sys, select
 binary = sys.argv[1]
+try:                          # probe first: a seat may be refused any pty at all
+    m, s = os.openpty()
+    os.close(m); os.close(s)
+except OSError as e:
+    print("pty_unavailable errno=%s (%s)" % (e.errno, e.strerror))
+    sys.exit(3)
 pid, fd = pty.fork()          # the child gets a new session whose controlling terminal is the pty
 if pid == 0:
     devnull = os.open("/dev/null", os.O_RDONLY)
@@ -459,12 +465,25 @@ PY
     echo "  --- case B: a controlling PTY IS present, stdin still redirected from /dev/null ---"
     python3 "$WORK/ptyspike.py" "$BIN" > "$WORK/tty-b.txt" 2>&1
     sed 's/^/    /' "$WORK/tty-b.txt"
-    assert_contains C13c "$WORK/tty-b.txt" "stdin_is_terminal=false" "case B: stdin is still not a terminal"
-    assert_contains C13d "$WORK/tty-b.txt" "crossterm_enable_raw_mode=Ok" \
-      "case B: crossterm ACQUIRES the controlling terminal anyway — the surprise-prompt case R8.1 forbids"
-    assert_contains C13e "$WORK/tty-b.txt" "dialoguer_guard_term_stderr_is_term=true" \
-      "case B: dialoguer's own guard returns true, so no candidate crate blocks this case"
-    assert_contains C13f "$WORK/tty-b.txt" "child_exit_status=0" "case B: the observation ran to completion"
+    # Only EPERM on openpty() is environmental (the seat is refused a pty); any other
+    # outcome, including another errno, runs the four assertions and can fail.
+    if "$GREP" -qF 'pty_unavailable errno=1 ' "$WORK/tty-b.txt"; then
+      why="ENVIRONMENTAL: this seat is refused a pseudo-terminal (openpty errno=1 EPERM), so case B cannot execute here"
+      why="$why; fallback evidence: C3a-C3f (tty_fd()/Input::unbuffered() open /dev/tty) and C13b (case A, raw_os_error=Some(6) ENXIO) passed above"
+      why="$why, and the r1 log (evidence/r61-claims-r1.log, git da52246c) recorded case B executing with this result"
+      why="$why; a pty-capable seat should re-run case B"
+      skip C13c "case B: stdin is still not a terminal — NOT EXECUTED. $why"
+      skip C13d "case B: crossterm ACQUIRES the controlling terminal anyway — NOT EXECUTED. $why"
+      skip C13e "case B: dialoguer's own guard returns true — NOT EXECUTED. $why"
+      skip C13f "case B: the observation ran to completion — NOT EXECUTED. $why"
+    else
+      assert_contains C13c "$WORK/tty-b.txt" "stdin_is_terminal=false" "case B: stdin is still not a terminal"
+      assert_contains C13d "$WORK/tty-b.txt" "crossterm_enable_raw_mode=Ok" \
+        "case B: crossterm ACQUIRES the controlling terminal anyway — the surprise-prompt case R8.1 forbids"
+      assert_contains C13e "$WORK/tty-b.txt" "dialoguer_guard_term_stderr_is_term=true" \
+        "case B: dialoguer's own guard returns true, so no candidate crate blocks this case"
+      assert_contains C13f "$WORK/tty-b.txt" "child_exit_status=0" "case B: the observation ran to completion"
+    fi
   else
     skip C13 "the crossterm/console spike did not build (offline, or no registry access)"
   fi
@@ -531,8 +550,21 @@ OVDIRS=""
 [ -d "$REPO_ROOT/docs/port" ] && OVDIRS="$REPO_ROOT/docs/port"
 OVHITS="$WORK/ov-hits.txt"
 : > "$OVHITS"
+# The owner's acceptance ledger quotes the override numbers it accepts, so its
+# rows for R61 itself mention OV-02 by design. Only those rows are excluded: any
+# other file, and any OWNER-ACCEPTANCES.md row for another item, still counts.
+ACCEPT="$REPO_ROOT/docs/port/OWNER-ACCEPTANCES.md"
 if [ -n "$OVDIRS" ]; then
-  "$GREP" -rlF 'OV-02' "$REPO_ROOT/docs/port" >> "$OVHITS" 2>/dev/null
+  while IFS= read -r f; do
+    if [ "$f" = "$ACCEPT" ]; then
+      n="$("$GREP" -F 'OV-02' "$f" | "$GREP" -cvE '^\| R61 \|' || true)"
+      echo "excluded as self-reference (OWNER-ACCEPTANCES.md rows whose item column is R61):"
+      "$GREP" -nF 'OV-02' "$f" | "$GREP" -E '^[0-9]+:\| R61 \|' | cut -c1-120 | sed 's/^/  /'
+      [ "${n:-0}" -gt 0 ] && echo "$f" >> "$OVHITS"
+    else
+      echo "$f" >> "$OVHITS"
+    fi
+  done < <("$GREP" -rlF 'OV-02' "$REPO_ROOT/docs/port" 2>/dev/null)
 fi
 for f in "$REPO_ROOT"/research/topics/*/DECISION.md; do
   case "$f" in *"/61-"*) continue;; esac
@@ -540,7 +572,8 @@ for f in "$REPO_ROOT"/research/topics/*/DECISION.md; do
   "$GREP" -lF 'OV-02' "$f" >> "$OVHITS" 2>/dev/null
 done
 OVCOUNT="$(wc -l < "$OVHITS" | tr -d ' ')"
-echo "files mentioning the bare string 'OV-02' outside this item (docs/port/ and research/topics/*/DECISION.md, counted by $GREP): $OVCOUNT"
+echo "files mentioning the bare string 'OV-02' outside this item (docs/port/ less R61's own acceptance rows, and research/topics/*/DECISION.md, counted by $GREP): $OVCOUNT"
+[ "$OVCOUNT" -gt 0 ] && sed 's/^/  collision: /' "$OVHITS"
 assert_eq C15a "${OVCOUNT:-0}" "0" "the string OV-02 appears in no other published decision or port document"
 assert_contains C15b "$REPO_ROOT/docs/port/OWNER-REVIEW.md" 'Override OV-01 is REFUSED.' \
   "OV-01 is taken: the owner refused it on 2026-09-14 (R60's CLI-standard waiver)"
@@ -587,6 +620,84 @@ assert_contains C17c "$RUN_DIR/raw/codex.md" 'BASELINE-REVIEW: F360' "the Codex 
 assert_contains C17d "$RUN_DIR/raw/codex.md" 'dialoguer = { version = "0.12.0", default-features = false }' "the Codex raw recommends dialoguer"
 assert_contains C17e "$RUN_DIR/raw/opus.md" 'inquire = { version = "0.9.4", default-features = false, features = ["crossterm", "macros"] }' "the Opus raw recommends inquire"
 assert_contains C17f "$RUN_DIR/raw/opus.md" 'OVERRIDE (OV-01)' "the Opus raw numbered its override OV-01, which this decision renumbers to OV-02"
+
+echo
+echo "### Section 18 — --dry-run ordering at the py pin, read and EXECUTED (revision 3)"
+echo "config set reads --dry-run BEFORE the overwrite confirm; config init reads it AFTER the"
+echo "guided values. The pinned source is extracted with git archive and run; nothing is installed."
+PY_REPO=/Users/stevemorin/c/py-launch-blueprint
+PY_PIN=b08bccfb55d05f15e46a83b52c5660b1881d19f5
+PY_VENV="$PY_REPO/.venv"
+PY_CFG_SRC=src/py_launch_blueprint/cli/commands/config.py
+if git -C "$PY_REPO" cat-file -e "$PY_PIN^{commit}" 2>/dev/null; then
+  git -C "$PY_REPO" show "$PY_PIN:$PY_CFG_SRC" > "$WORK/py-config.py"
+  echo "  $PY_CFG_SRC at $PY_PIN, lines 94, 101, 181-184, 188, 196:"
+  for n in 94 101 181 182 183 184 188 196; do printf '    %4d: %s\n' "$n" "$(sed -n "${n}p" "$WORK/py-config.py")"; done
+  assert_eq C18a "$(sed -n 94p "$WORK/py-config.py")" '            chosen[dotted] = click.prompt(' \
+    "config init: the guided click.prompt call sits at :94"
+  assert_eq C18b "$(sed -n 101p "$WORK/py-config.py")" '    if dry_run:' \
+    "config init: --dry-run is read at :101, AFTER the guided values"
+  assert_eq C18c "$(sed -n 181p "$WORK/py-config.py")" '    if dry_run:' \
+    "config set: --dry-run is read at :181"
+  assert_eq C18d "$(sed -n 184p "$WORK/py-config.py")" '        return' \
+    "config set: the --dry-run branch returns at :184, before the read at :188"
+  assert_eq C18e "$(sed -n 196p "$WORK/py-config.py")" '        and not confirm(' \
+    "config set: the overwrite confirm is at :196, AFTER the --dry-run return"
+  if [ -x "$PY_VENV/bin/plbp" ] && "$PY_VENV/bin/python" -c 'import click, pydantic, structlog, tomli_w, requests, rich' 2>/dev/null; then
+    mkdir -p "$WORK/py" "$WORK/pyhome"
+    git -C "$PY_REPO" archive "$PY_PIN" | tar -x -C "$WORK/py"
+    WORK_N="$(printf '%s' "$WORK" | tr -s /)"   # $TMPDIR may end in '/'; Python reports single slashes
+    PYSRC="$(env -i HOME="$WORK/pyhome" PATH=/usr/bin:/bin PYTHONPATH="$WORK/py/src" \
+      "$PY_VENV/bin/python" -c 'import py_launch_blueprint as p; print(p.__file__)')"
+    echo "  interpreter: $("$PY_VENV/bin/python" --version 2>&1); package imported from: ${PYSRC/#$WORK_N/<WORK>}"
+    case "$PYSRC" in
+      "$WORK_N/py/src/"*) ok C18f "the executed plbp imports the git-archived pin, not an installed copy";;
+      *)                bad C18f "the executed plbp imported '$PYSRC', not the extraction";;
+    esac
+    # py_case <label> <args...> : run plbp with an empty environment against a config whose
+    # output.color is "never"; record the exit status, both streams and the file's sha256 after.
+    # COLUMNS=300 stops rich wrapping the $TMPDIR path mid-line, so <WORK> masks it in the log.
+    py_case() {
+      local label="$1"; shift
+      printf '[output]\ncolor = "never"\n' > "$WORK/py-$label.toml"
+      PYC_BEFORE="$($SHASUM -a 256 "$WORK/py-$label.toml" | cut -d' ' -f1)"
+      env -i HOME="$WORK/pyhome" PATH=/usr/bin:/bin PYTHONPATH="$WORK/py/src" COLUMNS=300 \
+        "$PY_VENV/bin/plbp" "$@" --config "$WORK/py-$label.toml" \
+        > "$WORK/py-$label.out" 2> "$WORK/py-$label.err" < /dev/null
+      PYC_EXIT=$?
+      PYC_AFTER="$($SHASUM -a 256 "$WORK/py-$label.toml" | cut -d' ' -f1)"
+      echo "  --- plbp $* --config <WORK>/py-$label.toml   (output.color was \"never\") ---"
+      echo "    exit=$PYC_EXIT"
+      echo "    stdout:"; sed -e "s#$WORK_N#<WORK>#g" -e 's/^/      /' "$WORK/py-$label.out"
+      echo "    stderr:"; sed -e "s#$WORK_N#<WORK>#g" -e 's/^/      /' "$WORK/py-$label.err"
+      echo "    config file unchanged: $([ "$PYC_BEFORE" = "$PYC_AFTER" ] && echo yes || echo NO)"
+    }
+    py_case set-dry config set output.color always --dry-run --no-input
+    assert_eq C18g "$PYC_EXIT" "0" "config set --dry-run --no-input, no --yes, existing value differs: exit 0"
+    assert_contains C18h "$WORK/py-set-dry.err" 'would set output.color = always' \
+      "config set --dry-run --no-input: the preview is on stderr"
+    if "$GREP" -qF 'refusing to proceed' "$WORK/py-set-dry.err"; then
+      bad C18i "config set --dry-run --no-input reached the --no-input consent refusal"
+    else
+      ok C18i "config set --dry-run --no-input never reaches the consent refusal — no consent is needed"
+    fi
+    assert_eq C18j "$PYC_AFTER" "$PYC_BEFORE" "config set --dry-run --no-input: no write (file sha256 unchanged)"
+    py_case set-nodry config set output.color always --no-input
+    assert_eq C18k "$PYC_EXIT" "1" "control — config set --no-input without --dry-run: py's ConfigError exit 1 (rs maps this class to 2)"
+    assert_contains C18l "$WORK/py-set-nodry.err" 'refusing to proceed without confirmation (--no-input)' \
+      "control — without --dry-run the same command reaches the consent refusal"
+    assert_eq C18m "$PYC_AFTER" "$PYC_BEFORE" "control — no write"
+    py_case init-dry config init --dry-run --no-input
+    assert_eq C18n "$PYC_EXIT" "1" "config init --dry-run --no-input, no --yes: py's ConfigError exit 1 — the guided values are gated first"
+    assert_contains C18o "$WORK/py-init-dry.err" 'config init cannot prompt (--no-input set)' \
+      "config init --dry-run --no-input: refused before --dry-run is read, so the order differs by command"
+    assert_eq C18p "$PYC_AFTER" "$PYC_BEFORE" "config init --dry-run --no-input: no write"
+  else
+    skip C18-exec "the py checkout's .venv (plbp and its dependencies) is absent; the executed cases cannot run"
+  fi
+else
+  skip C18 "the py checkout $PY_REPO or pin $PY_PIN is absent; the py ordering cannot be read"
+fi
 
 echo
 echo "================================================================"

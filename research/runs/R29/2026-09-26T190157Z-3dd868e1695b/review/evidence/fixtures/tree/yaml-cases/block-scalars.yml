@@ -1,0 +1,22 @@
+# pretty_yaml issue #4 reproduction, plus chomping variants
+a: |
+  hello
+  world
+b: |
+  hello
+  world
+keep: |+
+  kept
+
+strip: |-
+  stripped
+folded: >
+  folded
+  text
+defaults: &defaults
+  retries: 3
+job:
+  <<: *defaults
+  expr: ${{ matrix.os }}
+  quoted: 'it''s'
+  flow: {a: 1, b: [x, y]}
