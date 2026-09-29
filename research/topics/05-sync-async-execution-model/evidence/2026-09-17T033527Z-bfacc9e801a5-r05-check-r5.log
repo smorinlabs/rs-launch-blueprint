@@ -1,0 +1,70 @@
+== R05 sync-async-execution-model — revision 5 evidence checks ==
+repository root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+run directory:   /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R05/2026-09-17T033527Z-bfacc9e801a5
+toolchain:       rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+cargo:           cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+host:            Darwin 25.4.0 arm64
+retrieved-on:    2026-09-27 (UTC; one of the two lines that advance on rerun)
+grep binary:     /usr/bin/grep
+
+PASS V00 — repository HEAD resolved
+     HEAD = e0b0d1c1762ee8aa4b28c62282a2225103e594eb
+PASS V01 — raw/muse.md is the collected Muse report: its digest equals operations/muse.json's raw_sha256 and its content-addressed twin
+     operations/muse.json state=succeeded
+     operations/muse.json model=muse-spark
+     operations/muse.json actual_model=muse-spark
+     operations/muse.json provider=muse
+     operations/muse.json actual_provider=muse-subagent
+     operations/muse.json actor=research-muse-2026-09-17T033527Z-bfacc9e801a5
+     operations/muse.json collected_at=2026-09-22T01:34:43Z
+     operations/muse.json raw_sha256=7f1fd61df5925dd15c112d87d488d87c049f02d830ff4569766b9cba935d4d93
+     raw/muse.md sha256=7f1fd61df5925dd15c112d87d488d87c049f02d830ff4569766b9cba935d4d93, 692 lines; the body's own model label (line 3) is 'Muse Code powered by Meta Muse Spark' - an embedded label, recorded beside the operation's resolved model, not as a CLI model ID
+PASS V02 — inputs/prompt.md line 22 reads '- engines: muse, opus, doxa' and states the Muse-for-Codex substitution; every R05 entry in inputs/EXECUTION.json agrees
+     inputs/EXECUTION.json engine_overrides: ['muse', 'opus', 'doxa']
+     inputs/EXECUTION.json items: ['muse', 'opus', 'doxa']
+PASS V03 — Muse's recommendation, its objections to a sync core, its R69 reading and its no-CONFLICT line sit at the cited lines of raw/muse.md
+     line 47 cites R69 rev 9 as its authority; line 223 notes revision 10 in prose only
+     line 132/136: the measured counts and 'The async tax is real'; line 207: 'wrong trade once R69 put tokio in the tree'
+     line 175 (its alternative A) and line 178 (its alternative D): the two-I/O-models and per-callsite-bridge objections
+     line 233: 'Async end-to-end: tokio 1.53.1'; line 601: 'No CONFLICT: line'; line 58: rust-lang/crates.io as reference
+PASS V04 — the Muse body cites R69, async-trait and spawn_blocking, and labels three validation blocks as executed; it never writes dep:tokio
+     /usr/bin/grep -c line counts in raw/muse.md: R69=26, dep:tokio=0, async-trait=8, spawn_blocking=6, 'revision 10|rev 10'=2, lines opening 'Executed 2026-09-21'=3
+     contrast with r05-check.sh C18: each Doxa body carries 0 / 0 / 0 for dep:tokio, R69 and async-trait
+     p_muse_ureq: muse-method=30 (Muse reported 30, today minus Muse = 0), decision-method=28, tokio v1.53.1 present=0
+     p_muse_async: muse-method=117 (Muse reported 118, today minus Muse = -1), decision-method=88, tokio v1.53.1 present=1
+     p_muse_async_defaults: muse-method=135 (Muse reported 136, today minus Muse = -1), decision-method=104, tokio v1.53.1 present=1
+     p_muse_blocking: muse-method=114 (Muse reported 115, today minus Muse = -1), decision-method=85, tokio v1.53.1 present=1
+PASS V05 — Muse's counts are reproduced to within one package by Muse's own method, and the decision's method gives 28 / 88 / 104 / 85 for the same four configurations
+     method: the muse method keeps cargo's ' (*)' repeat lines, which inflates every tokio-bearing tree by 29-31 lines; ureq's tree only by 2
+     configuration: the decision's C10/C11 scenarios add serde + serde_json (and ureq's json feature, or async-trait and tokio's six R69 features) to these bare clients, which is 38 - 28 = 10 on the sync side and 93 - 88 = 5 on the async side
+     the one-package shortfall against Muse on the three tokio-bearing trees is unexplained: Muse resolved on 2026-09-21 and committed no lockfile
+     the direction is the same under both methods and both configurations: the async client stacks are 3-4x the sync one, and reqwest::blocking carries tokio v1.53.1
+PASS V06 — working tree: inputs/PARAMETERS.md and docs/port/PARAMETERS.md differ in exactly one row, ci-job-structure; web-extra-surface is identical in both
+     inputs/PARAMETERS.md sha256=8ad1b72c2f2d76ad91bb5c264e4ec1dcd43277152700a7b7970535cb72920cbb; docs/port/PARAMETERS.md sha256=85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa
+     historical, at HEAD: rows that differ = 'web-extra-surface'; HEAD's inputs/PARAMETERS.md sha256=88609ba0a3cfaa2a552859c03110c21455c7697eb63ca5a25b59037f87fa0011
+PASS V07 — under R69 revision 10's shape Muse's core parses (no CONFLICT: needed) and puts tokio v1.53.1 in the root package's DEFAULT tree (criterion 1 fails)
+     cargo metadata exit=0; cargo tree -i tokio -e normal (feature off) exit=0, /usr/bin/grep matches for 'tokio v1.53.1'=1
+     root package default tree: 106 unique normal deps (decision method) against r05-check-r3.sh T06's 38 for the synchronous core in the same shape
+PASS V08 — under R69 revision 9's form Muse's non-optional tokio makes the owned feature string a manifest error, so against the revision Muse cites a CONFLICT: line would have been required
+     cargo metadata exit=101; /usr/bin/grep -c for the dep:tokio diagnostic=1
+     diagnostic:   feature `web` includes `dep:tokio`, but `tokio` is not an optional dependency
+PASS V09 — rust-lang/crates.io pins async-trait =0.1.92, axum =0.8.9, reqwest =0.13.5 and tokio =1.53.1; rustup-init is a sync fn main driving tokio through block_on
+     GET https://api.github.com/repos/rust-lang/crates.io/contents/Cargo.toml?ref=067b45e1a15fc1b97f7321792b86bdf8d6371d7c: lines 74 / 82 / 150 / 163 (Muse cited :82, :151, :164 on its own date's main)
+     GET https://api.github.com/repos/rust-lang/rustup/contents/src/bin/rustup-init.rs?ref=b32adec5ab613c26d7f35e398c8a54f4a46f585b: fn main -> ExitCode=1, new_multi_thread=1, block_on=1; Cargo.toml line 79 reqwest with the blocking feature=1
+PASS V10 — reqwest v0.13.5's blocking in-runtime guard is compiled only under debug_assertions
+     GET https://api.github.com/repos/seanmonstar/reqwest/contents/src/blocking/wait.rs?ref=v0.13.5: 'fn enter() {' at line 81, '#[cfg(debug_assertions)]' at 83, the shell runtime at 85 - Muse's cited range 77-86 is off by four lines; the substance holds
+     r05-check.sh sha256=e036bb2833c4263cd680627754f5ef792c87d82dea94e0e3e401ead1d1779459
+     r05-check.log sha256=610bf43d97c41039c6929f5daf1702f23618af5f3df217a50dedb9e85593df1e
+     r05-check-archive-r2.log sha256=c961172b3cd6e657462acf93d43913ab7dc97f903dd777c5a0c5e5f541ed6da5
+     p_scen_sync.Cargo.lock sha256=abcfd78e46fd7f2ff89a7bb3d43d4d62510a3aed9cf098c72ed82eee991850a1
+     p_scen_async.Cargo.lock sha256=4be720643bfcf535430f70f8e652eda51d746dcd7bd62bb86cc13d4892efcef9
+     p_scen_async_defaults.Cargo.lock sha256=48d4aa737bdafbc28bb606a09849c32265381bb0c0db4b38263210ee8729961b
+     r05-check-r3.sh sha256=3225b798bb42e26c426b340b169f6c1e7515c3991db68890a543a87a42af7c67
+     r05-check-r3.log sha256=12d7caddb04d9b7d2125f955dc39efeffaf0d8d0eff012f9cf200ef3fcd6eaa5
+     r05-check-r3-archive.log sha256=620001fdcdc177e7ebe6534a232bbb5bdaef861c8d204680f2c4be39f66c4a9b
+     p_ws_rev10.Cargo.lock sha256=34a98f37f5493b9b55f15ba4c2b0e3c961c72a53b307f5ff64b7e5a238a88e90
+PASS V11 — the ten revision-1 to revision-3 evidence artifacts are byte-identical to their committed digests
+
+== summary ==
+passed=12 failed=0 skipped=0
+RESULT: PASS

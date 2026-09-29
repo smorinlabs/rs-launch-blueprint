@@ -1,0 +1,21 @@
+PASS B0 the fixture and R10's accepted decision are both readable
+INFO per-job table (job cached runners):
+plan 0 1
+hygiene 0 1
+workflow-lint 0 1
+check 1 2
+msrv-floor 1 1
+install-smoke 1 1
+PASS B1 exactly three job ids carry a rust-cache step: check install-smoke msrv-floor. plan, hygiene and workflow-lint compile nothing and carry none
+PASS B2 the design claims 4 cache-bearing job-runner pairs, and summing the table gives 4: check x 2 runners, msrv-floor x 1, install-smoke x 1
+PASS B3 cache-bearing job ids per runner: ubuntu-latest 3, macos-latest 1. Total job ids in the file: 6
+PASS B4a R10's decision does say 'the entry count against the storage budget is two times the number of job ids'
+PASS B4b R10's shorthand applied to this design gives 6, the computed figure is 4. The shorthand is the special case where EVERY cache-bearing job is matrixed across both entries of target-os-matrix; msrv-floor and install-smoke are single-runner, so the general formula is the sum over cache-bearing job ids of that job id's runner count
+PASS B5a R10's re-verify line names the threshold: 'R11 resolving with a job count materially above six per OS'
+PASS B5b this design is under the threshold on both readings: 3 cache-bearing job ids on the busier runner, and 6 job ids in the file
+PASS B6 alternative B (one job per check) is 12 job ids for this template's slot list against this design's 6, so it crosses R10's threshold by construction rather than by measurement
+PASS B7a R10 assertion A3.6: add-job-id-key reads GITHUB_JOB, which 'does not include matrix values'
+PASS B7b the fixture declares exactly one matrix dimension and it is os: [ubuntu-latest, macos-latest], so no leg changes the build graph without changing the key - no extra key: segment is needed
+PASS B7c the fixture contains no Cargo-feature matrix dimension; the two feature configurations are ordered STEPS of one job sharing one target/
+
+PASS=12 FAIL=0 SKIP=0 TOTAL=12

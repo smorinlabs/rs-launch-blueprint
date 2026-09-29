@@ -1463,3 +1463,9 @@ Revisit when: any touch-up reports the r11 value breaks (not renames) a claim.
 - 5 refused in 3 classes: (1) R51/R76/R77/R80 — same-run republication forbidden (runner line 542; precedent R01 used a NEW run per rev; needs owner new-run decision, count-neutral since already published); (2) R12 — Q5.A prompt+policy edit post-dates run prep (working-tree prompt dirt is the authorized muse substitution, uncommitted; manifest hashes match HEAD); needs fresh run or owner override; (3) none pending CAS — R74/R75/R84 needed sequential rebuild+apply after R70 moved research/CLAUDE.md.
 - Held out of pack for missing bound empirical (S1 never covers empirical — uniform precedent): R24r2, R59r4, R58r4, R71r4, R78r3 (no r-bound evr), R28 (r3b blocked), R30 (r3c approve-with-observations), R29 (r2b list-format header unparseable by AUDIT_FIELD regex).
 - R24 muse leg registered (succeeded, 9b8bd885). check-research-tree.sh green pre-commit.
+
+## 2026-09-28 Batch-5b: commit 9 applied-but-uncommitted publications (70/85 committed)
+- Found: topics 05/11/40/48/51/55/57/62/72 had runner-applied DECISION+acceptance in the working tree, never committed
+  (run manifests already state=published, committed). All 9 acceptance bindings verified by S1 pre-commit.
+- R51's committed copy is r5 (6cc29e7b); r6 still needs a new run. R72r5 fully migrated to request-id (one historical
+  mention at :545); the Q4.A R72 touch-up is MOOT. Committed count was 61, now 70.

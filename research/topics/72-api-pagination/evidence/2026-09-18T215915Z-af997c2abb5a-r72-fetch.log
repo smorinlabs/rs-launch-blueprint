@@ -1,0 +1,95 @@
+## environment
+curl: curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+gh:   gh version 2.98.0 (2026-08-20)
+retrieved (UTC): 2026-09-21
+retrieved (UTC, full): 2026-09-21T23:14:26Z
+
+## crates.io crate records — crate.recent_downloads, crate.downloads
+crate paginator-axum                                       200  https://crates.io/api/v1/crates/paginator-axum
+crate paginator-utils                                      200  https://crates.io/api/v1/crates/paginator-utils
+crate paginator-rs                                         200  https://crates.io/api/v1/crates/paginator-rs
+crate paginate                                             200  https://crates.io/api/v1/crates/paginate
+crate sqlx-paginated                                       200  https://crates.io/api/v1/crates/sqlx-paginated
+crate api-paginate                                         200  https://crates.io/api/v1/crates/api-paginate
+crate page-hunter                                          200  https://crates.io/api/v1/crates/page-hunter
+crate api-bones                                            200  https://crates.io/api/v1/crates/api-bones
+crate axum-api-kit                                         200  https://crates.io/api/v1/crates/axum-api-kit
+crate page-turner                                          200  https://crates.io/api/v1/crates/page-turner
+crate dropshot                                             200  https://crates.io/api/v1/crates/dropshot
+crate base64                                               200  https://crates.io/api/v1/crates/base64
+
+## crates.io version records — newest yanked:false num, created_at, license, rust_version
+versions paginator-axum                                    200  https://crates.io/api/v1/crates/paginator-axum/versions
+versions paginator-utils                                   200  https://crates.io/api/v1/crates/paginator-utils/versions
+versions paginator-rs                                      200  https://crates.io/api/v1/crates/paginator-rs/versions
+versions paginate                                          200  https://crates.io/api/v1/crates/paginate/versions
+versions sqlx-paginated                                    200  https://crates.io/api/v1/crates/sqlx-paginated/versions
+versions api-paginate                                      200  https://crates.io/api/v1/crates/api-paginate/versions
+versions page-hunter                                       200  https://crates.io/api/v1/crates/page-hunter/versions
+versions api-bones                                         200  https://crates.io/api/v1/crates/api-bones/versions
+versions axum-api-kit                                      200  https://crates.io/api/v1/crates/axum-api-kit/versions
+versions page-turner                                       200  https://crates.io/api/v1/crates/page-turner/versions
+versions dropshot                                          200  https://crates.io/api/v1/crates/dropshot/versions
+versions base64                                            200  https://crates.io/api/v1/crates/base64/versions
+
+## crates.io dependency records for the crates whose tree decides a gate
+deps paginator-axum 0.4.0                                  200  https://crates.io/api/v1/crates/paginator-axum/0.4.0/dependencies
+deps paginator-utils 0.4.0                                 200  https://crates.io/api/v1/crates/paginator-utils/0.4.0/dependencies
+deps base64 0.23.1                                         200  https://crates.io/api/v1/crates/base64/0.23.1/dependencies
+deps api-paginate 0.1.1                                    200  https://crates.io/api/v1/crates/api-paginate/0.1.1/dependencies
+deps sqlx-paginated 0.6.2                                  200  https://crates.io/api/v1/crates/sqlx-paginated/0.6.2/dependencies
+
+## crates.io reverse dependencies — the adopters row
+revdeps paginator-axum                                     200  https://crates.io/api/v1/crates/paginator-axum/reverse_dependencies
+revdeps paginate                                           200  https://crates.io/api/v1/crates/paginate/reverse_dependencies
+revdeps base64                                             200  https://crates.io/api/v1/crates/base64/reverse_dependencies
+
+## the published crate sources whose API text this decision quotes
+source paginator-axum 0.4.0                                200  https://static.crates.io/crates/paginator-axum/paginator-axum-0.4.0.crate
+source paginator-utils 0.4.0                               200  https://static.crates.io/crates/paginator-utils/paginator-utils-0.4.0.crate
+
+## github repository records — stargazers_count, archived, pushed_at
+repo maulanasdqn/paginator-rs                              200  https://api.github.com/repos/maulanasdqn/paginator-rs
+repo daniel-samson/paginate                                200  https://api.github.com/repos/daniel-samson/paginate
+repo marshallpierce/rust-base64                            200  https://api.github.com/repos/marshallpierce/rust-base64
+repo oxidecomputer/dropshot                                200  https://api.github.com/repos/oxidecomputer/dropshot
+repo WyattAu/paginate                                      200  https://api.github.com/repos/WyattAu/paginate
+repo alexandrughinea/sqlx-paginated                        200  https://api.github.com/repos/alexandrughinea/sqlx-paginated
+repo jmtamayo/page-hunter                                  200  https://api.github.com/repos/jmtamayo/page-hunter
+repo brefwiz/api-bones                                     200  https://api.github.com/repos/brefwiz/api-bones
+
+## github open-issue counts — search total_count, never open_issues_count
+issues maulanasdqn/paginator-rs                            200  gh api search/issues?q=repo:maulanasdqn/paginator-rs+is:issue+is:open
+issues daniel-samson/paginate                              200  gh api search/issues?q=repo:daniel-samson/paginate+is:issue+is:open
+issues marshallpierce/rust-base64                          200  gh api search/issues?q=repo:marshallpierce/rust-base64+is:issue+is:open
+issues oxidecomputer/dropshot                              200  gh api search/issues?q=repo:oxidecomputer/dropshot+is:issue+is:open
+issues WyattAu/paginate                                    200  gh api search/issues?q=repo:WyattAu/paginate+is:issue+is:open
+issues alexandrughinea/sqlx-paginated                      200  gh api search/issues?q=repo:alexandrughinea/sqlx-paginated+is:issue+is:open
+issues jmtamayo/page-hunter                                200  gh api search/issues?q=repo:jmtamayo/page-hunter+is:issue+is:open
+issues brefwiz/api-bones                                   200  gh api search/issues?q=repo:brefwiz/api-bones+is:issue+is:open
+
+## issue responsiveness — the ten most recently opened issues, and
+## every comment on them, for the crate this decision adds and the crate
+## family it ranks as the runner-up
+recent issues marshallpierce/rust-base64                   200
+recent issues maulanasdqn/paginator-rs                     200
+
+## rustsec package pages — 404 means no advisory page exists for the crate
+rustsec paginator-axum                                     404
+rustsec paginator-utils                                    404
+rustsec paginator-rs                                       404
+rustsec paginate                                           404
+rustsec sqlx-paginated                                     404
+rustsec api-paginate                                       404
+rustsec page-hunter                                        404
+rustsec api-bones                                          404
+rustsec axum-api-kit                                       404
+rustsec page-turner                                        404
+rustsec dropshot                                           404
+rustsec base64                                             200
+rustsec rsa                                                200
+advisory RUSTSEC-2017-0004                                 200  https://rustsec.org/advisories/RUSTSEC-2017-0004.html
+
+## totals
+OK 59
+GAP 0

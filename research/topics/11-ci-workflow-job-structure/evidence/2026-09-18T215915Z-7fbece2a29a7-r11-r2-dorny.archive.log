@@ -1,0 +1,23 @@
+INFO node v26.9.0; jq jq-1.8.2
+PASS R2-P0 the committed src/filter.ts snapshot at ceb8a2b8 contains, as whole lines, all eight statements the harness mirrors (dot:true, the negation split, the exclude-is-final loop, one rule item per list entry)
+PASS R2-P1 the action's package-lock.json pins picomatch 2.3.1 and the vendored copy's package.json reads 2.3.1
+PASS R2-P2 the pinned Codex raw report is present
+PASS R2-P3 the Codex probe selects predicate-quantifier some-with-excludes, the branch the harness mirrors
+PASS R2-P10 extracted the Codex filter block verbatim from raw lines 530-547: base has 10 patterns, web_affected has 5 (["Cargo.toml","Cargo.lock","src/**","!src/web/**","!src/bin/*-serve.rs","tests/**","!tests/web/**","build.rs","rust-toolchain.toml",".github/workflows/**"])
+PASS R2-P11 Codex filter, docs-only: base=false web_affected=false - the docs-only skip works as Codex intends
+PASS R2-P12 Codex filter, facade-lib: base=true web_affected=true - a src/ change runs both matrices, as Codex intends
+PASS R2-P13 Codex filter, facade-web-dir: base=false web_affected=true - on the revision-9 single-package layout a web-only edit skips the base matrix, as Codex intends
+PASS R2-P14 Codex filter, lockfile: base=true web_affected=true - the lockfile is on both lists
+PASS R2-P15 Codex filter, core: base=false web_affected=false - FAIL-OPEN on R02's accepted layout: a crates/core change runs NO test matrix, because the allow-list names src/** and tests/** and never crates/**
+PASS R2-P16 Codex filter, web-crate: base=false web_affected=false - FAIL-OPEN: a crates/web change (R69 revision 10's key) runs neither matrix
+PASS R2-P17 Codex filter, cli-crate: base=false web_affected=false - FAIL-OPEN: a crates/cli change runs neither matrix
+PASS R2-P18 Codex filter, readme: base=false web_affected=false - FAIL-OPEN: README.md, a packaging input under R49, is on neither list
+PASS R2-P19 Codex filter, justfile: base=false web_affected=false - FAIL-OPEN: the justfile that holds R50's install-check recipe is on neither list
+PASS R2-P20 Codex filter, cargo-config: base=false web_affected=false - FAIL-OPEN: .cargo/config.toml, which can change every compile, is on neither list
+PASS R2-P21 Codex filter, bench-example: base=false web_affected=false - FAIL-OPEN: bench and example targets, which --all-targets compiles, are on neither list
+PASS R2-P30 the fail-closed rule written as a dorny some-with-excludes filter agrees with the fixture's bash detector on all 26 cases, all four outputs each (web = code OR web_extra, composed in the job's outputs expression)
+PASS R2-P31 the translation needs a double-negated extglob, !!(README|CHANGELOG).md, because an exclusion is final under some-with-excludes and a later pattern cannot re-include a packaged .md file - so the YAML form is not simpler than the regular expression it replaces
+PASS R2-P32 negative control: dropping the extglob makes the dorny filter say code=true for a CONTRIBUTING.md-only diff where the bash detector says code=false, so P30 is a comparison that can fail
+PASS R3-P1 the revision-2 translation (with !*/**/*.md) says code=false for src/notes.md and crates/core/README.md where the current bash body says code=true - the comparison sees the audit-F3 narrowing, and the root-only extglob alone expresses it
+
+PASS=20 FAIL=0 SKIP=0 TOTAL=20

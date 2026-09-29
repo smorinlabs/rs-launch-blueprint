@@ -1,0 +1,66 @@
+PASS R2-D0a detector bodies extracted: the current body (ci.candidate.r2.yml, revision 7) is 47 lines, revision 1 is 22 lines
+PASS R2-D0b the revision-2 body contains exactly one git diff line, the one the driver replaces
+PASS R2-D0c the git-diff line was replaced by the driver input in both bodies; every other line is the fixture's
+PASS R2-D0d the extracted revision-2 detector body is shellcheck-clean at severity=warning
+PASS R2-D1 code/web/workflows/docs = true true true true - a non-pull_request event is never skip-gated (push to main, merge_group)
+PASS R2-D2 code/web/workflows/docs = false false false true - a docs-only pull request skips the whole compile tier and every web-only job
+PASS R2-D3 code/web/workflows/docs = true true false true - README.md is a packaging input (R49), so it sets code, and therefore web
+PASS R2-D4 code/web/workflows/docs = true true false true - CHANGELOG.md is in the same allow-list
+PASS R2-D5 code/web/workflows/docs = true true false false - LICENSE-MIT is in the same allow-list
+PASS R2-D6 code/web/workflows/docs = true true false false - LICENSE-APACHE, the allow-list entry revision 1's suite had no case for (audit JF-3)
+PASS R2-D7 code/web/workflows/docs = true true false false - a core change sets web, because crates/web depends on crates/core (R02) - revision 1 gave web=false here
+PASS R2-D8 code/web/workflows/docs = true true false false - a lockfile change sets web, because it can move axum or tokio - revision 1 gave web=false here
+PASS R2-D9 code/web/workflows/docs = true true false false - R69 revision 10's crates/web/** keys set web
+PASS R2-D10 code/web/workflows/docs = true true false false - the serve binary's source sets web under either path R02 and revision 1 wrote for it, without naming it
+PASS R2-D11 code/web/workflows/docs = true true false false - the same for revision 1's spelling of the serve binary's path
+PASS R2-D12 code/web/workflows/docs = true true false true - a member's README is package content (the member has no include list), so it sets code and therefore web - revision 2 gave code=false here (R3-D11)
+PASS R2-D13 code/web/workflows/docs = true true true false - a workflow edit sets workflows, code and web
+PASS R2-D14 code/web/workflows/docs = true true false false - a CLI-crate change sets web too: the facade hosting the serve binary depends on crates/cli (R02), so there is no CLI-only skip
+PASS R2-D15 code/web/workflows/docs = true true false false - compile configuration, the justfile R50's recipe lives in, and bench and example targets are not on the skip-list, so they fail closed
+PASS R2-D16 code/web/workflows/docs = false false false false - the degenerate empty diff skips every gated job
+PASS R2-D17 code/web/workflows/docs = false false false false - editor furniture is skippable
+PASS R2-D18 code/web/workflows/docs = false false false false - an issue template is skippable and does not set workflows
+PASS R2-D19 code/web/workflows/docs = true false false false - REVISION 1: a core change left web=false, so openapi-snap and install-smoke's web step would skip on the change most likely to alter the API schema
+PASS R2-D20 code/web/workflows/docs = true false false false - REVISION 1: a lockfile change (an axum bump) left web=false
+PASS R2-D21 code/web/workflows/docs = true false false false - REVISION 1: a CLI-crate change left web=false although the serve binary's package depends on crates/cli
+PASS R2-D22 the unmodified detector body, with its real git diff line, exits 0 on a diff whose file names carry $( ), backticks, a semicolon and a newline
+PASS R2-D23 no PWNED-* file was created in the detector's working directory - the 3 hostile names were read as data, never evaluated
+PASS R2-D24 code/web/workflows/docs = true true false true - git quotes the newline name as "docs/nl\nsrc-lib.rs", which matches no skip pattern, so the hostile diff fails CLOSED rather than being read as docs-only
+PASS R3-D0 the audited revision-2 body extracted from ci.candidate.r2-audited.yml (27 lines) and its git-diff line replaced by the driver input
+PASS R3-D1 code/web/workflows/docs = true true false true - Markdown under src/, which R49's include allow-list packages as /src, sets code
+PASS R3-D2 code/web/workflows/docs = true true false true - R69 revision 9's src/web/** prose sets code and therefore web, so the consumed key is contained
+PASS R3-D3 code/web/workflows/docs = true true false false - R69 revision 9's src/web/** source sets web
+PASS R3-D4 code/web/workflows/docs = true true false true - a member's README (the usual crates.io readme of a member R02 publishes) sets code
+PASS R3-D5 code/web/workflows/docs = true true false true - Markdown at any depth inside a member directory sets code
+PASS R3-D6 code/web/workflows/docs = false false false true - root prose outside R49's allow-list stays skippable - the narrowing is bounded
+PASS R3-D7 code/web/workflows/docs = true true false true - the cost of the narrowing: Markdown below the root outside docs/ now fails closed
+PASS R3-D8 code/web/workflows/docs = false false false true - REVISION 2 as audited: Markdown under src/ skipped every compile gate - the over-broad \.md$ entry failed open
+PASS R3-D9 code/web/workflows/docs = false false false true - REVISION 2 as audited: a member's README skipped every compile gate
+PASS R3-D10 code/web/workflows/docs = false false false true - REVISION 2 as audited: R69 revision 9's src/web/** prose did not set web
+PASS R3-D11 code/web/workflows/docs = false true false true - REVISION 2 as audited: the web member's README set web but not code
+PASS R4-D1 code/web/workflows/docs = false false false true - Markdown under .github/ISSUE_TEMPLATE/ stays skippable through that directory entry, as Markdown under docs/ does (R2-D2) - the root-level Markdown entry is not the only one that matches Markdown
+PASS R5-D0 the audited revision-4 body extracted from ci.candidate.r4-audited.yml (31 lines)
+PASS R5-D1 the current body pipes nothing into grep (revision 4 had 5 such pipelines) and initialises code and web to true, so false needs proof
+PASS R5-D2 code/web/workflows/docs = true true false false - the unmodified current body on 3000 changed crates/core paths (187890 bytes of path names, above a 64 KB pipe buffer) sets code and therefore web
+PASS R5-D3 code/web/workflows/docs = false false false true - on 3000 changed docs/ paths (154890 bytes) the proof that every path is skippable still completes, so the large-list repair does not simply force code
+PASS R5-D4 code/web/workflows/docs = false false false false - REVISION 4 as audited: the same 187890-byte list skipped every compile gate (audit F1)
+PASS R5-D8 revision 4's code pipeline (its line 75, retyped) on that list reports PIPESTATUS 141 141 0: grep -q exits 0 on its first match, printf and grep -v take SIGPIPE (141), and pipefail turns the pipeline's status into 141, so the if that set code=true was false
+PASS R5-D5 git mv src/foo.rs docs/foo.rs: git's default diff lists only 'docs/foo.rs', and --no-renames lists 'docs/foo.rs src/foo.rs' - the source side of the rename
+PASS R5-D6 code/web/workflows/docs = true true false true - the unmodified current body on a rename out of src/ into docs/, which leaves src/lib.rs naming a missing module, sets code
+PASS R5-D7 code/web/workflows/docs = false false false true - REVISION 4 as audited: the same rename skipped every compile gate, because its diff line listed only the docs/ destination (audit F2)
+PASS R6-D0 the audited revision-5 body extracted from ci.candidate.r5-audited.yml (42 lines) and driven; the current body starts all four outputs true and still pipes nothing into grep
+PASS R6-D1 code/web/workflows/docs = true true true false - a local action's metadata is workflow-lint's input (R6-L2 in r11-r2-actionlint.sh), so it sets workflows
+PASS R6-D2 code/web/workflows/docs = true true true false - actionlint's config is workflow-lint's input (R6-L3), so it sets workflows
+PASS R6-D3 code/web/workflows/docs = true true true false - the config's other file name sets workflows too
+PASS R6-D4 code/web/workflows/docs = true true false false - REVISION 5 as audited: a local-action-only change gave workflows=false, so workflow-lint skipped and reported Success
+PASS R6-D5 code/web/workflows/docs = true true false false - REVISION 5 as audited: a config-only change gave workflows=false
+PASS R6-D6 code/web/workflows/docs = true true false false - R20's zizmor.yml sets no workflow key and needs none: R20's two checks are steps of hygiene, which has no needs edge and runs on every pull request; code is set only because a root file outside the skip-list fails closed
+PASS R6-D7 code/web/workflows/docs = true true false false - REVISION 5 as audited gave the same workflows=false on a zizmor.yml-only change, and R20's pin checks sat in workflow-lint, so they skipped (audit F2); the outputs are unchanged, and the placement is what moved
+PASS R6-D8 code/web/workflows/docs = true true true true - a workflow change still sets workflows, and Markdown under docs/ still sets docs, after both became start-true
+PASS R6-D9 code/web/workflows/docs = false false false false - every output still turns false on proof: a path no key's input contains clears all four
+PASS R7-D0 the current detector body is byte-identical to revision 6's; revision 6's slot comment gated R82 on 'docs == 'true' || code == 'true'', and no condition in the current fixture reads docs
+PASS R7-D1 code/web/workflows/docs = false false false false - the unmodified current body on git mv .github/ISSUE_TEMPLATE/bug_report.yml .github/ISSUE_TEMPLATE/bug.yml (listed as '.github/ISSUE_TEMPLATE/bug.yml .github/ISSUE_TEMPLATE/bug_report.yml') clears every output, so no check this rename can break may sit behind a key
+PASS R7-D2 REVISION 6 as audited: the rename leaves CONTRIBUTING.md linking to the missing .github/ISSUE_TEMPLATE/bug_report.yml, and revision 6's docs-gate condition evaluates to false on these outputs, so R82's link check would have skipped and reported Success on a broken link (audit F1)
+PASS R7-D3 code/web/workflows/docs = false false false false - a .vscode/extensions.json-only change clears every output too, the audit's second input class; R82's link check now runs on both because hygiene reads no output (R7-L1 in r11-r2-actionlint.sh)
+
+PASS=64 FAIL=0 SKIP=0 TOTAL=64

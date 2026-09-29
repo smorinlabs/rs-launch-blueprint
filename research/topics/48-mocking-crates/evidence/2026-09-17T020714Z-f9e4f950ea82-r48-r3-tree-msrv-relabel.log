@@ -1,0 +1,193 @@
+# R48 mocking-crates — revision 3 attribution correction for the MSRV-floor compiles (JF-9)
+# retrieved: 2026-09-17T05:19:57Z
+# host: Darwin arm64; macOS product version 26.4
+# msrv cargo: cargo 1.96.0 (30a34c682 2026-05-25)
+# probe directory (temporary, deleted on exit): /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r48-r3-relabel-Y4rIVH
+# This log supersedes the WORDING of the D01 PASS line in r48-r2-msrv-macos-spike.log,
+# which credited D01 with compiling both members trees. That log is a committed
+# artifact and is not edited; its D02 and D05 lines were correct as written.
+#
+PASS G00: probe crate is built in a temporary directory outside the repository and removed when this script exits; no template, seam or scaffold is created inside the repository
+PASS G01: cargo +1.96.0 test (feature off) exit 0, 1 'test result: ok. 1 passed' line, 1 'Compiling httpmock v0.8.3' line, 0 'Compiling mockall v' lines and 0 'Compiling mockall_derive v' lines (counts by /usr/bin/grep -c) — this run establishes that HTTPMOCK's resolved dependency tree compiles at the msrv-policy floor, and establishes NOTHING about mockall's, which is behind an off-by-default feature and absent from this build graph
+PASS G02: cargo +1.96.0 test --features mock exit 0, 2 'test result: ok. 1 passed' lines, 1 'Compiling mockall v0.15.0' line, 1 'Compiling mockall_derive v0.15.0' line and 1 'test generated_mock_is_send_sync_and_dyn_erasable ... ok' line (counts by /usr/bin/grep -c) — THIS is the run that establishes mockall 0.15.0's resolved dependency tree compiles at the msrv-policy floor, and that the generated mock is Send + Sync and erases to Arc<dyn ProbePort>
+PASS G03: shellcheck reports no findings and exits 0 for all 4 evidence scripts in this run (r48-claims-check.sh, r48-r2-msrv-macos-spike.sh, r48-r2-citations-check.sh, r48-r3-tree-msrv-relabel.sh); its output was 0 lines long
+#
+# ---- appendix, volatile: cargo output for the two runs ----
+# ===== off.txt =====
+#     Updating crates.io index
+#      Locking 113 packages to latest Rust 1.96.0 compatible versions
+#    Compiling proc-macro2 v1.0.107
+#    Compiling quote v1.0.47
+#    Compiling unicode-ident v1.0.25
+#    Compiling serde_core v1.0.229
+#    Compiling serde v1.0.229
+#    Compiling stable_deref_trait v1.2.1
+#    Compiling pin-project-lite v0.2.17
+#    Compiling libc v0.2.189
+#    Compiling itoa v1.0.18
+#    Compiling futures-core v0.3.34
+#    Compiling writeable v0.6.4
+#    Compiling litemap v0.8.3
+#    Compiling smallvec v1.16.1
+#    Compiling memchr v2.8.3
+#    Compiling icu_properties_data v2.3.0
+#    Compiling utf8_iter v1.0.4
+#    Compiling icu_normalizer_data v2.3.0
+#    Compiling once_cell v1.21.4
+#    Compiling futures-sink v0.3.34
+#    Compiling equivalent v1.0.2
+#    Compiling hashbrown v0.17.1
+#    Compiling slab v0.4.12
+#    Compiling httparse v1.10.1
+#    Compiling zmij v1.0.23
+#    Compiling tracing-core v0.1.36
+#    Compiling parking v2.2.1
+#    Compiling log v0.4.34
+#    Compiling event-listener v5.4.2
+#    Compiling aho-corasick v1.1.5
+#    Compiling fnv v1.0.7
+#    Compiling serde_json v1.0.151
+#    Compiling try-lock v0.2.5
+#    Compiling atomic-waker v1.1.2
+#    Compiling regex-syntax v0.8.11
+#    Compiling event-listener-strategy v0.5.4
+#    Compiling want v0.3.1
+#    Compiling futures-channel v0.3.34
+#    Compiling crossbeam-utils v0.8.23
+#    Compiling indexmap v2.14.2
+#    Compiling percent-encoding v2.3.2
+#    Compiling httpdate v1.0.3
+#    Compiling thiserror v2.0.20
+#    Compiling form_urlencoded v1.2.2
+#    Compiling async-lock v3.4.2
+#    Compiling futures-task v0.3.34
+#    Compiling unicode-width v0.2.2
+#    Compiling path-tree v0.8.3
+#    Compiling tabwriter v1.4.1
+#    Compiling base64 v0.22.1
+#    Compiling async-object-pool v0.2.0
+#    Compiling futures-timer v3.0.4
+#    Compiling stringmetrics v2.2.2
+#    Compiling similar v2.7.0
+#    Compiling r48-mockall-probe v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r48-r3-relabel-Y4rIVH)
+#    Compiling syn v3.0.6
+#    Compiling syn v2.0.119
+#    Compiling errno v0.3.14
+#    Compiling mio v1.2.3
+#    Compiling socket2 v0.6.5
+#    Compiling signal-hook-registry v1.4.8
+#    Compiling regex-automata v0.4.18
+#    Compiling regex v1.13.1
+#    Compiling tracing-attributes v0.1.31
+#    Compiling synstructure v0.14.0
+#    Compiling zerofrom-derive v0.1.8
+#    Compiling yoke-derive v0.8.3
+#    Compiling serde_derive v1.0.229
+#    Compiling zerovec-derive v0.11.6
+#    Compiling displaydoc v0.2.7
+#    Compiling tokio-macros v2.7.2
+#    Compiling futures-macro v0.3.34
+#    Compiling thiserror-impl v2.0.20
+#    Compiling async-trait v0.1.92
+#    Compiling tracing v0.1.44
+#    Compiling futures-util v0.3.34
+#    Compiling zerofrom v0.1.8
+#    Compiling yoke v0.8.3
+#    Compiling zerovec v0.11.8
+#    Compiling zerotrie v0.2.5
+#    Compiling bytes v1.12.1
+#    Compiling assert-json-diff v2.0.2
+#    Compiling serde_regex v1.2.0
+#    Compiling tinystr v0.8.4
+#    Compiling potential_utf v0.1.6
+#    Compiling http v1.5.0
+#    Compiling tokio v1.53.1
+#    Compiling icu_collections v2.3.0
+#    Compiling icu_locale_core v2.3.0
+#    Compiling http-body v1.1.0
+#    Compiling http-body-util v0.1.5
+#    Compiling icu_provider v2.3.1
+#    Compiling icu_normalizer v2.3.0
+#    Compiling icu_properties v2.3.0
+#    Compiling idna_adapter v1.2.2
+#    Compiling idna v1.1.0
+#    Compiling url v2.5.8
+#    Compiling tokio-util v0.7.19
+#    Compiling h2 v0.4.19
+#    Compiling hyper v1.11.1
+#    Compiling hyper-util v0.1.20
+#    Compiling httpmock v0.8.3
+#     Finished `test` profile [unoptimized + debuginfo] target(s) in 29.23s
+#      Running unittests src/lib.rs (target/debug/deps/r48_mockall_probe-7fb836635872b141)
+# 
+# running 0 tests
+# 
+# test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+# 
+#      Running tests/httpmock_pin.rs (target/debug/deps/httpmock_pin-529dbb121e54fd6b)
+# 
+# running 1 test
+# test httpmock_pin_links_and_its_types_are_nameable ... ok
+# 
+# test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+# 
+#      Running tests/probe.rs (target/debug/deps/probe-0751319c9cfca15f)
+# 
+# running 0 tests
+# 
+# test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+# 
+#    Doc-tests r48_mockall_probe
+# 
+# running 0 tests
+# 
+# test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+# 
+# ===== on.txt =====
+#    Compiling mockall_derive v0.15.0
+#    Compiling syn v2.0.119
+#    Compiling predicates-core v1.0.10
+#    Compiling anstyle v1.0.14
+#    Compiling cfg-if v1.0.5
+#    Compiling mockall v0.15.0
+#    Compiling termtree v0.5.1
+#    Compiling fragile v2.1.0
+#    Compiling downcast v0.11.0
+#    Compiling predicates-tree v1.0.13
+#    Compiling predicates v3.1.4
+#    Compiling tracing-attributes v0.1.31
+#    Compiling tracing v0.1.44
+#    Compiling h2 v0.4.19
+#    Compiling r48-mockall-probe v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r48-r3-relabel-Y4rIVH)
+#    Compiling hyper v1.11.1
+#    Compiling hyper-util v0.1.20
+#    Compiling httpmock v0.8.3
+#     Finished `test` profile [unoptimized + debuginfo] target(s) in 14.05s
+#      Running unittests src/lib.rs (target/debug/deps/r48_mockall_probe-2bb6184d821aa521)
+# 
+# running 0 tests
+# 
+# test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+# 
+#      Running tests/httpmock_pin.rs (target/debug/deps/httpmock_pin-ea3898bc287d7ea6)
+# 
+# running 1 test
+# test httpmock_pin_links_and_its_types_are_nameable ... ok
+# 
+# test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+# 
+#      Running tests/probe.rs (target/debug/deps/probe-1c1b6d9dd4702ed7)
+# 
+# running 1 test
+# test generated_mock_is_send_sync_and_dyn_erasable ... ok
+# 
+# test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+# 
+#    Doc-tests r48_mockall_probe
+# 
+# running 0 tests
+# 
+# test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+# 
+#
+RESULT: all checks passed (0 FAIL)

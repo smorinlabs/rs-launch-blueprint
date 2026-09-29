@@ -1,0 +1,14 @@
+# R48 mocking-crates — revision 4 narrowed C14 compatibility claim (E-1)
+# retrieved: 2026-09-26T19:14:18Z
+# host: Darwin arm64
+# grep binary: /usr/bin/grep (grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+# This log supersedes the WORDING of the C14 PASS line in r48-claims-check.log,
+# which says both members "resolve in one lockfile in a shipping project". That
+# log is a committed artifact and is not edited; its line counts (1 and 1) were
+# correct as written, and only the resolution wording overstated them.
+#
+PASS H01: contentauth/c2pa-rs sdk/Cargo.toml declares 1 'mockall = "0.15.0"' version-requirement line and 1 'httpmock = "0.8.3"' version-requirement line (counts by /usr/bin/grep -c) — both members are co-declared in one shipping manifest as semver requirements, which is compatibility evidence short of a jointly resolved lockfile
+PASS H02: api.github.com repos/contentauth/c2pa-rs main tree: truncated = false, 0 paths ending in Cargo.lock — the repository commits no lockfile, so the H01 requirement lines are semver requirements with no jointly resolved pins to cite, and C14's 'resolve in one lockfile' wording is superseded
+PASS H03: shellcheck reports no findings and exits 0 for all 5 evidence scripts in this run (r48-claims-check.sh, r48-r2-msrv-macos-spike.sh, r48-r2-citations-check.sh, r48-r3-tree-msrv-relabel.sh, r48-r4-c14-narrow.sh); its output was 0 lines long
+#
+RESULT: all checks passed (0 FAIL)

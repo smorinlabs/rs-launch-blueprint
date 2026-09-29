@@ -1,0 +1,61 @@
+## environment
+curl: curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+gh:   gh version 2.101.0 (2026-09-15)
+retrieved (UTC): 2026-09-22T17:47:35Z
+
+## JA-09 — the ten most recently opened issues (is:issue excludes pull
+## requests in the query itself), and every comment on each of them
+ten newest issues marshallpierce/rust-base64         200  gh api search/issues?q=repo:marshallpierce/rust-base64+is:issue&sort=created&order=desc&per_page=10
+comments marshallpierce/rust-base64#309              200  gh api repos/marshallpierce/rust-base64/issues/309/comments?per_page=100
+comments marshallpierce/rust-base64#307              200  gh api repos/marshallpierce/rust-base64/issues/307/comments?per_page=100
+comments marshallpierce/rust-base64#302              200  gh api repos/marshallpierce/rust-base64/issues/302/comments?per_page=100
+comments marshallpierce/rust-base64#298              200  gh api repos/marshallpierce/rust-base64/issues/298/comments?per_page=100
+comments marshallpierce/rust-base64#291              200  gh api repos/marshallpierce/rust-base64/issues/291/comments?per_page=100
+comments marshallpierce/rust-base64#289              200  gh api repos/marshallpierce/rust-base64/issues/289/comments?per_page=100
+comments marshallpierce/rust-base64#288              200  gh api repos/marshallpierce/rust-base64/issues/288/comments?per_page=100
+comments marshallpierce/rust-base64#286              200  gh api repos/marshallpierce/rust-base64/issues/286/comments?per_page=100
+comments marshallpierce/rust-base64#282              200  gh api repos/marshallpierce/rust-base64/issues/282/comments?per_page=100
+comments marshallpierce/rust-base64#276              200  gh api repos/marshallpierce/rust-base64/issues/276/comments?per_page=100
+ten newest issues maulanasdqn/paginator-rs           200  gh api search/issues?q=repo:maulanasdqn/paginator-rs+is:issue&sort=created&order=desc&per_page=10
+comments maulanasdqn/paginator-rs#14                 200  gh api repos/maulanasdqn/paginator-rs/issues/14/comments?per_page=100
+comments maulanasdqn/paginator-rs#8                  200  gh api repos/maulanasdqn/paginator-rs/issues/8/comments?per_page=100
+comments maulanasdqn/paginator-rs#7                  200  gh api repos/maulanasdqn/paginator-rs/issues/7/comments?per_page=100
+comments maulanasdqn/paginator-rs#6                  200  gh api repos/maulanasdqn/paginator-rs/issues/6/comments?per_page=100
+comments maulanasdqn/paginator-rs#5                  200  gh api repos/maulanasdqn/paginator-rs/issues/5/comments?per_page=100
+comments maulanasdqn/paginator-rs#3                  200  gh api repos/maulanasdqn/paginator-rs/issues/3/comments?per_page=100
+comments maulanasdqn/paginator-rs#2                  200  gh api repos/maulanasdqn/paginator-rs/issues/2/comments?per_page=100
+comments maulanasdqn/paginator-rs#1                  200  gh api repos/maulanasdqn/paginator-rs/issues/1/comments?per_page=100
+
+## JA-06 — the three templates the Muse leg named for the LOW question
+
+### 99minutos/template-agents-rust — the API, the web page and the
+### Wayback Machine, so an absence is established three ways
+api repos/99minutos/template-agents-rust             404  gh api repos/99minutos/template-agents-rust
+github.com/99minutos/template-agents-rust            404  https://github.com/99minutos/template-agents-rust
+wayback 99minutos/template-agents-rust               200  https://archive.org/wayback/available?url=github.com/99minutos/template-agents-rust
+wayback 99minutos AGENTS.md                          200  https://archive.org/wayback/available?url=github.com/99minutos/template-agents-rust/blob/main/AGENTS.md
+### the only public repository carrying the name, read in its place
+repo joshua-mo-143/99minutos-template-agents-rust    200  gh api repos/joshua-mo-143/99minutos-template-agents-rust
+pinned commit: 9142f9985ffb3b52980a9792b900b844521ee92e
+tree joshua-mo-143/99minutos-template-agents-rust    200  gh api repos/joshua-mo-143/99minutos-template-agents-rust/git/trees/9142f9985ffb3b52980a9792b900b844521ee92e?recursive=1
+README joshua-mo-143/99minutos-template-agents-rust  200  https://raw.githubusercontent.com/joshua-mo-143/99minutos-template-agents-rust/9142f9985ffb3b52980a9792b900b844521ee92e/README.md
+
+### hendrixmar/rust-axum-seaorm-boilerplate — a fork; the upstream it
+### forks is read too, since that is the maintained original
+repo hendrixmar/rust-axum-seaorm-boilerplate         200  gh api repos/hendrixmar/rust-axum-seaorm-boilerplate
+repo nakamuraos/rust-axum-seaorm-boilerplate         200  gh api repos/nakamuraos/rust-axum-seaorm-boilerplate
+pinned commits: fork 9bb388c706ab7b789b6edf8a79dce5453b8b00f1, upstream 2ad8073c13404a0a2e49845938a2301dfdf433fd
+pagination.rs hendrixmar/rust-axum-seaorm-boilerplate 200  https://raw.githubusercontent.com/hendrixmar/rust-axum-seaorm-boilerplate/9bb388c706ab7b789b6edf8a79dce5453b8b00f1/src/common/pagination.rs
+pagination.rs nakamuraos/rust-axum-seaorm-boilerplate 200  https://raw.githubusercontent.com/nakamuraos/rust-axum-seaorm-boilerplate/2ad8073c13404a0a2e49845938a2301dfdf433fd/src/common/pagination.rs
+
+### coreapostrophe/axum-template
+repo coreapostrophe/axum-template                    200  gh api repos/coreapostrophe/axum-template
+pinned commit: f1bd22bfe07a2c58ee21d30d9d92e51814e0adc6
+tree coreapostrophe/axum-template                    200  gh api repos/coreapostrophe/axum-template/git/trees/f1bd22bfe07a2c58ee21d30d9d92e51814e0adc6?recursive=1
+handlers.rs coreapostrophe/axum-template             200  https://raw.githubusercontent.com/coreapostrophe/axum-template/f1bd22bfe07a2c58ee21d30d9d92e51814e0adc6/crates/app/lib/api/domains/todos/handlers.rs
+response/data.rs coreapostrophe/axum-template        200  https://raw.githubusercontent.com/coreapostrophe/axum-template/f1bd22bfe07a2c58ee21d30d9d92e51814e0adc6/crates/app/lib/api/utils/response/data.rs
+
+## totals
+OK 33
+ABSENT 2
+GAP 0

@@ -1,0 +1,180 @@
+
+
+========== 0. Run header and scope ==========
+Run started (UTC): 2026-09-17T15:13:37Z
+Item            : R62 clipboard-integration (bundle, Focused), revision 2
+Run directory   : research/runs/R62/2026-09-17T020715Z-7f97cd917c54
+Repository root : /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+Answers         : review/audit-fable.md findings JF-1 through JF-7
+Scratch (removed on exit): /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r62-evidence-r2.viYOcW
+OS              : Darwin 25.4.0 arm64
+curl            : curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+grep (absolute) : grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+gh              : gh version 2.98.0 (2026-08-20)
+
+verify.sh, spike-build.sh and their logs are unchanged by this revision.
+Nothing is implemented here.
+
+
+========== 1. JF-1 — what the org CLI Design Standard requires of a post-result failure ==========
+org CLI Design Standard v1.4.14, blob f9de0437baece3383e73ca2c5f48b7ab399b51c7, 77990 bytes
+
+--- R7.8 — the envelope is required even when output has already been produced ---
+[R01 PASS] R7.8 requires the single stderr error object INCLUDING a failure that occurs mid-stream — a failure after output has begun still gets the envelope
+[R02 PASS] R7.8 nowhere requires stdout to be empty on an error path — the envelope rule governs stderr only
+
+--- R7.1 — the stream split that decides where each half goes ---
+[R03 PASS] R7.1 exists
+[R04 PASS] R7.1: stdout carries the REQUESTED RESULT and stderr everything else — exactly the two halves a post-result clipboard failure produces
+[R04b PASS] R7.1 contemplates a diagnostic raised DURING a normal data command and routes it to stderr — it does not withdraw the data already written to stdout
+
+--- R6.3 — read at its literal scope, not stretched ---
+[R05 PASS] R6.3 exists and is a SHOULD
+[R06 PASS] R6.3's literal scope is a command operating on MANY ITEMS. It is a shape analogy for --copy, NOT a rule that binds it; the binding exit-code rule is R8.2. Recording this stops the decision from citing R6.3 more absolutely than it reads.
+
+--- R8.2 — the binding exit-status assignment ---
+[R07 PASS] R8.2 assigns exit 1 to runtime failures — not the exit-2 arm, which is for required input or consent that prompting cannot supply
+
+
+========== 2. JF-1 — R67's envelope wording, quoted exactly, and its two locations ==========
+[R08 PASS] R67's owned parameter value carries the clause verbatim — this is the sentence R62's design does not satisfy literally, and the reason is recorded in the decision rather than asserted away
+[R09 PASS] R67 repeats the clause in its own AC2 — so the tension is with two locations, not one
+[R10 PASS] R67's contract DOES distinguish the *result* stream from the error path elsewhere, which is the internal evidence that 'the error path' was written for failures that produced no result
+  [/usr/bin/grep -cF] count=2 needle=byte-empty file=DECISION.md
+[R11 PASS] occurrences of 'byte-empty' in R67 — the complete location list a future R67 revision would have to touch = 2
+
+--- Check A95 of revision 1 asserted only the envelope substring. Here is what it did assert: ---
+[R12 PASS] the envelope substring — the ONLY claim revision 1's check A95 established. R08 and R09 above are the checks that carry the byte-empty claim, and R13 below carries the hint-omission claim.
+[R13 PASS] R67 requires hint OMITTED rather than null when absent — revision 1 attributed this to A95, which does not assert it
+
+
+========== 3. JF-2 — fitness gate 3's `unsafe` posture for arboard, censused at v3.6.1 ==========
+Gate 3 is "no open RustSec advisory; `unsafe` posture stated". Revision 1
+answered the advisory half and omitted the posture half. This censuses the
+selected crate rather than repeating a raw report.
+
+[HTTP 200] https://raw.githubusercontent.com/1Password/arboard/v3.6.1/src/lib.rs
+  [/usr/bin/grep -cE] count=0 needle=unsafe(word) file=src/lib.rs
+[HTTP 200] https://raw.githubusercontent.com/1Password/arboard/v3.6.1/src/common.rs
+  [/usr/bin/grep -cE] count=0 needle=unsafe(word) file=src/common.rs
+[HTTP 200] https://raw.githubusercontent.com/1Password/arboard/v3.6.1/src/platform/linux/mod.rs
+  [/usr/bin/grep -cE] count=0 needle=unsafe(word) file=src/platform/linux/mod.rs
+[HTTP 200] https://raw.githubusercontent.com/1Password/arboard/v3.6.1/src/platform/linux/x11.rs
+  [/usr/bin/grep -cE] count=0 needle=unsafe(word) file=src/platform/linux/x11.rs
+[HTTP 200] https://raw.githubusercontent.com/1Password/arboard/v3.6.1/src/platform/osx.rs
+  [/usr/bin/grep -cE] count=40 needle=unsafe(word) file=src/platform/osx.rs
+[HTTP 200] https://raw.githubusercontent.com/1Password/arboard/v3.6.1/src/platform/windows.rs
+  [/usr/bin/grep -cE] count=27 needle=unsafe(word) file=src/platform/windows.rs
+FIGURE arboard.unsafe_lines_surveyed = 67  [endpoint https://raw.githubusercontent.com/1Password/arboard/v3.6.1/{src/lib.rs,src/common.rs,src/platform/linux/{mod,x11}.rs,src/platform/{osx,windows}.rs} (/usr/bin/grep -cE word-boundary 'unsafe'), retrieved 2026-09-17]
+[R14 PASS] lines containing the `unsafe` keyword across the surveyed arboard sources — the crate DOES use `unsafe` internally, in platform FFI. Gate 3's posture half is therefore: uses `unsafe`, stated, not zero. = 67 (>= 1)
+  [/usr/bin/grep -cF] count=0 needle=unsafe file=ar-src_common.rs
+[R15 PASS] `unsafe` occurrences in arboard's public error module — the surface the template's adapter actually touches returns `Result` and exposes none = 0
+[R16 PASS] R06's accepted decision scopes unsafe_code = "forbid" to FIRST-PARTY crates — so arboard's internal `unsafe` neither breaks the policy nor is covered by it
+[R17 PASS] the policy R62's Member 3 obeys by choosing re-exec over the `unsafe fn` `libc::fork()`
+
+
+========== 4. JF-3 — the spec 7.6 issue-responsiveness figure, per crate member ==========
+Rule: "10 most recently opened issues | median days to first maintainer
+response; unanswered count". Pull requests are excluded (the /issues
+endpoint mixes them in). "Maintainer" = a comment whose author_association
+is OWNER, MEMBER or COLLABORATOR and who is not the issue author. The
+median is taken over the ANSWERED subset; the unanswered count is reported
+beside it, never folded into it. No account login or e-mail is printed.
+
+--- issue responsiveness: 1Password/arboard ---
+  issue #235: no maintainer response
+  issue #234: no maintainer response
+  issue #230: first maintainer response after 3.30 days
+  issue #226: no maintainer response
+  issue #223: no maintainer response
+  issue #218: first maintainer response after 0.07 days
+  issue #216: no maintainer response
+  issue #212: no maintainer response
+  issue #211: no maintainer response
+  issue #207: no maintainer response
+FIGURE 1Password/arboard.issues_sampled = 10  [endpoint https://api.github.com/repos/1Password/arboard/issues?state=all&sort=created&direction=desc (pull_request == null, newest 10), retrieved 2026-09-17]
+FIGURE 1Password/arboard.median_days_to_first_maintainer_response = 1.68  [endpoint https://api.github.com/repos/1Password/arboard/issues/<n>/comments (author_association OWNER|MEMBER|COLLABORATOR, excluding the issue author), retrieved 2026-09-17]
+FIGURE 1Password/arboard.unanswered = 8  [endpoint same sample; an issue with no qualifying comment, retrieved 2026-09-17]
+[R18arboard PASS] issues sampled for 1Password/arboard (spec 7.6 asks for the 10 most recently opened) = 10
+
+--- issue responsiveness: alacritty/copypasta ---
+  issue #82: first maintainer response after 0.03 days
+  issue #81: no maintainer response
+  issue #76: first maintainer response after 0.51 days
+  issue #73: first maintainer response after 0.04 days
+  issue #72: first maintainer response after 0.00 days
+  issue #71: first maintainer response after 0.04 days
+  issue #69: first maintainer response after 0.01 days
+  issue #65: first maintainer response after 0.00 days
+  issue #64: first maintainer response after 0.02 days
+  issue #55: first maintainer response after 0.00 days
+FIGURE alacritty/copypasta.issues_sampled = 10  [endpoint https://api.github.com/repos/alacritty/copypasta/issues?state=all&sort=created&direction=desc (pull_request == null, newest 10), retrieved 2026-09-17]
+FIGURE alacritty/copypasta.median_days_to_first_maintainer_response = 0.02  [endpoint https://api.github.com/repos/alacritty/copypasta/issues/<n>/comments (author_association OWNER|MEMBER|COLLABORATOR, excluding the issue author), retrieved 2026-09-17]
+FIGURE alacritty/copypasta.unanswered = 1  [endpoint same sample; an issue with no qualifying comment, retrieved 2026-09-17]
+[R18copypasta PASS] issues sampled for alacritty/copypasta (spec 7.6 asks for the 10 most recently opened) = 10
+
+--- issue responsiveness: ChurchTao/clipboard-rs ---
+  issue #85: first maintainer response after 0.02 days
+  issue #80: first maintainer response after 7.92 days
+  issue #79: first maintainer response after 0.11 days
+  issue #77: no maintainer response
+  issue #76: first maintainer response after 10.67 days
+  issue #75: first maintainer response after 32.70 days
+  issue #74: no maintainer response
+  issue #73: no maintainer response
+  issue #72: no maintainer response
+  issue #67: no maintainer response
+FIGURE ChurchTao/clipboard-rs.issues_sampled = 10  [endpoint https://api.github.com/repos/ChurchTao/clipboard-rs/issues?state=all&sort=created&direction=desc (pull_request == null, newest 10), retrieved 2026-09-17]
+FIGURE ChurchTao/clipboard-rs.median_days_to_first_maintainer_response = 7.92  [endpoint https://api.github.com/repos/ChurchTao/clipboard-rs/issues/<n>/comments (author_association OWNER|MEMBER|COLLABORATOR, excluding the issue author), retrieved 2026-09-17]
+FIGURE ChurchTao/clipboard-rs.unanswered = 5  [endpoint same sample; an issue with no qualifying comment, retrieved 2026-09-17]
+[R18clipboard-rs PASS] issues sampled for ChurchTao/clipboard-rs (spec 7.6 asks for the 10 most recently opened) = 10
+
+
+========== 5. JF-5 — what R5.6 actually says, and what it does not ==========
+[R19 PASS] R5.6's title is *Secret redaction in output*
+[R20 PASS] R5.6 governs MASKING SECRET VALUES IN OUTPUT
+[R21 PASS] R5.6 says nothing about argv, a process listing or /proc — revision 1 cited it as the rule REQUIRING the stdin handoff, which it is not. It is motivation (the standard's posture on exposing secret values), and the operative reasons are that argv is world-readable on Linux via /proc/<pid>/cmdline and that ARG_MAX bounds a payload.
+
+
+========== 6. JF-6 — the nushell reference pins 3.6.0, not 3.6.1 ==========
+[HTTP 200] https://raw.githubusercontent.com/nushell/nushell/main/crates/nu-command/Cargo.toml
+[R22 PASS] nushell nu-command manifest fetched = 200
+[R23 PASS] nushell's line carries the recommended SHAPE — default-features = false plus wayland-data-control — pinned at 3.6.0
+  [/usr/bin/grep -cF] count=0 needle=arboard = { version = "3.6.1" file=nu.toml
+[R24 PASS] occurrences of a 3.6.1 pin in nushell's manifest — so 'verbatim' was the wrong word for a 3.6.1 recommendation, and revision 2 says 'the same dependency-line shape, pinned one patch earlier' = 0
+
+
+========== 7. JF-4 and JF-7 — the alternatives and the rejected policy, sourced to raw/opus.md ==========
+[R25 PASS] Member 2's ranked runner-up is Alternative 2b — absence modelled as a VALUE rather than an error (note: the audit narrative calls it 2a; raw/opus.md numbers it 2b and ranks it above 2a and 2c)
+[R26 PASS] and its migration cost, which the re-verify trigger's consequence rests on
+[R27 PASS] Member 3's acknowledgement-byte alternative is Alternative 3a
+[R28 PASS] and the reason it is not the recommendation, which is what a reader needs to evaluate the trigger
+[R29 PASS] the rejected warning policy, stated in the raw and omitted by revision 1
+[R30 PASS] and the ground on which it was rejected
+[R31 PASS] and that the flip costs no change to the port, the error type or Member 1 — which is why it belongs in the decision as a choice rather than only as a trigger
+
+
+========== 8. Self-audit: no account identity in this log ==========
+GitHub reads in section 4 project to issue numbers, timestamps, comment
+author_association and a login used only as an in-memory comparison key.
+No login is printed. This asserts the result rather than trusting it, by
+re-reading the last fetched comment payload.
+
+[R32 PASS] no e-mail address in the issue sample this script held in scratch
+
+
+========== 9. Summary ==========
+assertions run : 35
+failures       : 0
+skipped        : 0
+
+What this script does NOT establish:
+  - anything about runtime behaviour. Nothing was executed against a
+    clipboard, a display server or a built template.
+  - whether R67 will revise its envelope wording. Sections 1-2 establish
+    what each document says; the disposition is argued in DECISION.md and
+    a re-verify trigger records the open end.
+  - the issue-responsiveness figures are a snapshot of a moving window;
+    they are FIGURE lines and will differ on any rerun.
+
+exit status = failures = 0

@@ -1,0 +1,124 @@
+== inputs and hashes
+4d7c2634b7b34a9289d82b23ebbe6d95c9e6a9105b0b6ddd3b012211f132cdfd  research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/muse.md
+4be5d4d1bbde408454b393c26dd9655f9e91945bf7056e9df43e6ef30c51772b  research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/opus.md
+34b65c18a31d8946062aefa1d8cf1d1e876ac06bffaa2b85f61ec453614b84f5  research/runs/R40/2026-09-26T190249Z-a9da32655556/inputs/prompt.md
+410e88e5195a08def126037e9c451988633b1e48437ac82edca0a08c7a62418c  research/topics/11-ci-workflow-job-structure/DECISION.md
+a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c  research/topics/42-dev-toolchain-provisioning/DECISION.md
+prerequisites: R11 decision=410e88e5195a08def126037e9c451988633b1e48437ac82edca0a08c7a62418c R42 decision=a2504aa7e3ad210e788e41ef53fbf37505a5254f54fd31955f9d1d2b574f5e1c
+PASS run prompt is byte-identical to the canonical prompt
+PASS run policy snapshot equals research/EXECUTION.json on .engine_overrides.R40, .items.R40 and .pilot
+PASS R40 recorded under engine_overrides pilot as [muse,opus]; policy and manifest agree
+manifest required_engines=muse,opus operations=0
+== ledger and divergence analysis
+PASS docs/port/COMMONALITY.md:3 contains: py-launch-blueprint` (b08bccf) and `ts-launch-blueprint` (cb1cbcb)
+PASS docs/port/COMMONALITY.md:171 contains: | F167 | whitespace/EOL/format-validity hygiene linter
+PASS docs/port/COMMONALITY.md:172 contains: | F168 | YAML lint hook
+PASS docs/port/COMMONALITY.md:173 contains: | F169 | spell-check hook
+PASS docs/port/COMMONALITY.md:174 contains: | F170 | GitHub Actions workflow syntax lint hook
+PASS docs/port/COMMONALITY.md:195 contains: | F191 | cross-editor formatting baseline file
+PASS docs/port/COMMONALITY.md:196 contains: | F192 | documented per-filetype `.editorconfig` exceptions
+PASS docs/port/DIVERGENCE-ANALYSIS.md:164 contains: | R40 auxiliary-hygiene-hooks | item |
+PASS docs/port/DIVERGENCE-ANALYSIS.md:164 contains: For each of the 4 tools: does the value justify adoption for Rust, independent of language
+PASS docs/port/DIVERGENCE-ANALYSIS.md:165 contains: | R40 | F167 |
+PASS docs/port/DIVERGENCE-ANALYSIS.md:165 contains: Does rustfmt plus the chosen non-Rust-file formatter already cover trailing-whitespace/EOF-newline for every staged file type
+== prerequisite decisions (consumed)
+PASS research/topics/11-ci-workflow-job-structure/DECISION.md:82 contains: owner ruling 2026-09-12 (Q7.B)
+PASS research/topics/11-ci-workflow-job-structure/DECISION.md:189 contains: Its hook tier is R40's (F170)
+PASS research/topics/11-ci-workflow-job-structure/DECISION.md:189 contains: moves from exit 0 to exit 1 when only a called local action's
+PASS research/topics/11-ci-workflow-job-structure/DECISION.md:276 contains: ### Slots this decision leaves open
+PASS research/topics/11-ci-workflow-job-structure/DECISION.md:278 contains: a check that compiles nothing is a step of `hygiene`
+PASS research/topics/11-ci-workflow-job-structure/DECISION.md:289 contains: workflow-file lint (py's `actionlint`; hook tier R40's F170
+PASS research/topics/11-ci-workflow-job-structure/DECISION.md:292 contains: | R37, R39, R40 | hook manager, secret hooks, hygiene hooks |
+PASS research/topics/42-dev-toolchain-provisioning/DECISION.md:13 contains: no licence check for any tool or
+PASS research/topics/42-dev-toolchain-provisioning/DECISION.md:27 contains: cargo binstall --locked --no-confirm <name>@<version>
+PASS research/topics/42-dev-toolchain-provisioning/DECISION.md:28 contains: **None.** No `mise.toml`
+PASS research/topics/42-dev-toolchain-provisioning/DECISION.md:29 contains: a release-only tool must justify itself
+PASS research/topics/42-dev-toolchain-provisioning/DECISION.md:29 contains: reserves the slot for R37/R39/R40
+PASS research/topics/42-dev-toolchain-provisioning/DECISION.md:331 contains: R37, R39, R40 each own their own pick
+PASS research/topics/42-dev-toolchain-provisioning/DECISION.md:470 contains: R37, R39 or R40 selects a tool not
+PASS research/topics/42-dev-toolchain-provisioning/DECISION.md:1701 contains: Proof: when R37, R39 or R40 selects a non-crates.io tool, install it with
+== related decisions (read for the cited lines only)
+PASS research/topics/33-property-and-snapshot-testing/DECISION.md:28 contains: `insta` 1.48.0
+PASS research/topics/33-property-and-snapshot-testing/DECISION.md:28 contains: committed golden `--help` snapshots in files separate from the test source
+PASS research/topics/20-third-party-action-pinning-policy/DECISION.md:70 contains: `owner/repo@<40-hex> # vX.Y.Z`
+== raw reports (lines this decision quotes or adjudicates)
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/muse.md:3 contains: Actor: `research-muse-2026-09-26T190249Z-a9da32655556`. Engine: Muse (Meta).
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/muse.md:17 contains: model snapshot than the engine family recorded above
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/muse.md:187 contains: pipx-isolated
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/muse.md:275 contains: Adopt `editorconfig-checker` v4.0.2: hook job `ec -config
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/muse.md:360 contains: pipx-style isolated install
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/muse.md:681 contains: Keep `actionlint` v1.7.12 at both tiers: hook job on staged
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/muse.md:682 contains: `.github/workflows/*.{yml,yaml}`
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/muse.md:630 contains: Maintenance: **stable-quiet**
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/muse.md:775 contains: flagged as gap G4
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/muse.md:915 contains: `ec -config
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/opus.md:279 contains: BASELINE-REVIEW: F170
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/opus.md:280 contains: BASELINE-REVIEW: F169
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/opus.md:281 contains: BASELINE-REVIEW: F167
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/opus.md:356 contains: The config key `"Version": "4.0.2"`
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/opus.md:441 contains: is **unverified**
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/opus.md:516 contains: semantics is **unverified**
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/opus.md:550 contains: binary, so neither `cargo binstall` nor `ubi` can provision it
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/opus.md:692 contains: skips hidden directories by default
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/opus.md:855 contains: (`glob: ".github/**/*.{yml,yaml}"`)
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/opus.md:888 contains: **at-risk**
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/opus.md:1007 contains: `insta/src/snapshot.rs:753-765`
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/opus.md:1173 contains: {"Version": "4.0.2", "Disable": {"Indentation": true, "IndentSize": true}}
+PASS research/runs/R40/2026-09-26T190249Z-a9da32655556/raw/opus.md:1192 contains: glob: ".github/**/*.{yml,yaml}"
+== py-launch-blueprint at the ledger pin b08bccf (and b55b8c2, the pin raw/opus.md read)
+PASS py-launch-blueprint@b08bccf:lefthook.yml:82 contains: uv run ec
+PASS py-launch-blueprint@b08bccf:lefthook.yml:88 contains: uv run yamllint -c .yamllint {staged_files}
+PASS py-launch-blueprint@b08bccf:lefthook.yml:99 contains: actionlint {staged_files}
+PASS py-launch-blueprint@b08bccf:lefthook.yml:102 contains: uv run codespell --toml pyproject.toml {staged_files}
+PASS py-launch-blueprint@b08bccf:.editorconfig:3 contains: root = true
+PASS py-launch-blueprint@b08bccf:.editorconfig:16 contains: [*.{yml,yaml,json,toml}]
+PASS py-launch-blueprint@b08bccf:.editorconfig:19 contains: [Makefile]
+PASS py-launch-blueprint@b08bccf:.editorconfig:20 contains: indent_style = tab
+PASS py-launch-blueprint@b08bccf:.editorconfig:22 contains: Preserve Markdown hard breaks
+PASS py-launch-blueprint@b08bccf:.editorconfig:24 contains: [*.md]
+PASS py-launch-blueprint@b08bccf:.editorconfig:25 contains: trim_trailing_whitespace = false
+PASS py-launch-blueprint@b08bccf:.editorconfig:30 contains: [*.ambr]
+PASS py-launch-blueprint@b08bccf:.editorconfig-checker.json:2 contains: Indent rules disabled
+PASS py-launch-blueprint@b55b8c2:lefthook.yml:80 contains: editorconfig-checker:
+PASS py-launch-blueprint@b55b8c2:lefthook.yml:86 contains: yamllint:
+PASS py-launch-blueprint@b55b8c2:lefthook.yml:97 contains: actionlint:
+PASS py-launch-blueprint@b55b8c2:lefthook.yml:106 contains: codespell:
+== ts-launch-blueprint at the ledger pin cb1cbcb and at e5100b4
+PASS ts@cb1cbcb:lefthook.yml has 0 occurrences of actionlint
+PASS ts@cb1cbcb has no .editorconfig
+PASS ts-launch-blueprint@cb1cbcb:Justfile:83 contains: actionlint not installed
+PASS ts-launch-blueprint@e5100b4:lefthook.yml:15 contains: name: actionlint
+PASS ts-launch-blueprint@e5100b4:lefthook.yml:16 contains: .github/workflows/*.{yml,yaml}
+PASS ts-launch-blueprint@e5100b4:lefthook.yml:17 contains: actionlint {staged_files}
+PASS ts-launch-blueprint@e5100b4:.github/workflows/ci.yml:90 contains: just check-shell check-workflows
+   ts commit 3799ac6 2026-09-15 "ci: check shell scripts and workflow commands"
+== upstream: insta 1.48.0 snapshot normalisation (api.github.com)
+   tag 1.48.0 -> 7f23d2e4684a789a85c50503004fb38a23c9ea58
+PASS /tmp/r40-snapshot.rs:645 contains: pub fn matches_fully(&self, other: &TextSnapshotContents) -> bool {
+PASS /tmp/r40-snapshot.rs:646 contains: self.contents == other.contents
+PASS /tmp/r40-snapshot.rs:753 contains: fn normalize(&self) -> String {
+PASS /tmp/r40-snapshot.rs:759 contains: let out = kind_specific_normalization.trim_end();
+PASS /tmp/r40-snapshot.rs:765 contains: out.replace("\r\n", "\n")
+== upstream CI OS matrices (fitness gate 4; api.github.com contents at the default branch)
+PASS crate-ci/typos:.github/workflows/ci.yml:40 contains: os: ["ubuntu-latest", "windows-latest", "macos-latest"]
+PASS owenlamont/ryl:.github/workflows/ci.yml:6 contains: runs-on: ubuntu-latest
+PASS owenlamont/ryl:.github/workflows/release.yml:327 contains: smoke-macos:
+PASS editorconfig-checker/editorconfig-checker:.github/workflows/ci.yml:29 contains: - ubuntu-latest
+PASS editorconfig-checker/editorconfig-checker:.github/workflows/ci.yml:30 contains: - macos-latest
+PASS editorconfig-checker/editorconfig-checker:.github/workflows/ci.yml:31 contains: - windows-latest
+PASS rhysd/actionlint:.github/workflows/ci.yaml:9 contains: os: [ubuntu-latest, ubuntu-24.04-arm, macos-latest
+== output lines quoted under the decision's '## Empirical check' exist in the named logs
+PASS r40-install.log contains: no executable named ec in the 4.0.2 darwin-all tarball
+PASS r40-ec.log contains: Version from config file is not the same as the version of the binary
+PASS r40-ec.log contains: Binary: v4.0.2, Config 4.0.2
+PASS r40-yaml.log contains: 2:12      warning  truthy value should be one of [false, true]  (truthy)
+PASS r40-yaml.log contains: 2:12      error    truthy value should be one of [false, true]  (truthy)
+PASS r40-typos.log contains: files walked containing .github: 0
+PASS r40-actionlint.log contains: │  opus-shape (skip) no matching staged files
+PASS r40-actionlint.log contains: ┃  synth-shape ❯
+PASS r40-insta.log contains: snapshot assertion for 'help_snapshot' failed in line 11
+PASS r40-insta.log contains: error: test failed, to rerun pass `--lib`
+PASS r40-compose.log contains: PASS C3-actionlint-failed (output contains: ✗ actionlint)
+PASS r40-figures.log contains: commits on main since 2026-04-20: 0
+PASS r40-figures.log contains: non-maintainer issues=10 responded=0 unanswered=10 median_days_to_first_maintainer_response=n/a (maintainer-opened, excluded=0)
+TOTAL PASS=104 FAIL=0

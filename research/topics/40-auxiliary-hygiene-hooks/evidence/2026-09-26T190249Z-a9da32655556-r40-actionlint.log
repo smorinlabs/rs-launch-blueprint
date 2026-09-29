@@ -1,0 +1,112 @@
+1.7.12
+2.1.14
+== A1 clean fixture
+    
+PASS A1 (exit=0, expected zero)
+    All good
+PASS A1-validate (exit=0, expected zero)
+== A2 missing runs-on (raw/muse.md P3)
+    ../r40-a2.yml:6:3: "runs-on" section is missing in job "build" [syntax-check]
+      |
+    6 |   build:
+      |   ^~~~~~
+PASS A2 (exit=1, expected nonzero)
+== A3 duplicated runs-on (raw/opus.md E3)
+    .github/workflows/dup.yml:8:5: key "runs-on" is duplicated in "build" job. previously defined at line:7,col:5 [syntax-check]
+      |
+    8 |     runs-on: ubuntu-latest
+      |     ^~~~~~~~
+PASS A3 (exit=1, expected nonzero)
+== A4 event-payload property typo is not typed (raw/opus.md's stated limit)
+    
+PASS A4 (exit=0, expected zero)
+== A5 only the local action's metadata changes (input renamed); the workflow is unchanged
+    .github/workflows/ci.yml:10:15: missing input "channel" which is required by action "setup" defined at "./.github/actions/setup". all required inputs are "channel" [action]
+       |
+    10 |       - uses: ./.github/actions/setup
+       |               ^~~~~~~~~~~~~~~~~~~~~~~
+    .github/workflows/ci.yml:12:11: input "toolchain" is not defined in action "setup" defined at "./.github/actions/setup". available inputs are "channel" [action]
+       |
+    12 |           toolchain: stable
+       |           ^~~~~~~~~~
+PASS A5-bare-actionlint (exit=1, expected nonzero)
+    ╭───────────────────────────────────────╮
+    │ lefthook  v2.1.14   hook:  [1mpre-commit[m │
+    ╰───────────────────────────────────────╯
+    sync hooks: ✔️(pre-commit)
+    │  muse-shape (skip) no files for inspection
+    ┃  opus-shape ❯ 
+    .github/workflows/ci.yml:10:15: missing input "channel" which is required by action "setup" defined at "./.github/actions/setup". all required inputs are "channel" [action]
+       |
+    10 |       - uses: ./.github/actions/setup
+       |               ^~~~~~~~~~~~~~~~~~~~~~~
+    .github/workflows/ci.yml:12:11: input "toolchain" is not defined in action "setup" defined at "./.github/actions/setup". available inputs are "channel" [action]
+       |
+    12 |           toolchain: stable
+       |           ^~~~~~~~~~
+    
+    exit status 1
+    ┃  synth-shape ❯ 
+    .github/workflows/ci.yml:10:15: missing input "channel" which is required by action "setup" defined at "./.github/actions/setup". all required inputs are "channel" [action]
+       |
+    10 |       - uses: ./.github/actions/setup
+       |               ^~~~~~~~~~~~~~~~~~~~~~~
+    .github/workflows/ci.yml:12:11: input "toolchain" is not defined in action "setup" defined at "./.github/actions/setup". available inputs are "channel" [action]
+       |
+    12 |           toolchain: stable
+       |           ^~~~~~~~~~
+    
+    exit status 1
+    [38;2;56;56;56m  ────────────────────────────────────[m
+    summary: (done in 0.14 seconds)
+    ✗ opus-shape (0.08 seconds)
+    ✗ synth-shape (0.06 seconds)
+    lefthook exit=1
+PASS A5-muse-shape-skipped (output contains: muse-shape (skip))
+PASS A5-opus-shape-ran (output contains: opus-shape ❯)
+PASS A5-synth-shape-ran (output contains: synth-shape ❯)
+PASS A5-hook-blocks (lefthook exit=1)
+== A6 only .github/actionlint.yaml changes (runner label removed); the workflow is unchanged
+    .github/workflows/ci.yml:7:28: label "big-box" is unknown. available labels are "windows-latest", "windows-latest-8-cores", "windows-2025", "windows-2025-vs2026", "windows-2022", "windows-11-arm", "ubuntu-slim", "ubuntu-latest", "ubuntu-latest-4-cores", "ubuntu-latest-8-cores", "ubuntu-latest-16-cores", "ubuntu-24.04", "ubuntu-24.04-arm", "ubuntu-22.04", "ubuntu-22.04-arm", "macos-latest", "macos-latest-xlarge", "macos-latest-large", "macos-26-intel", "macos-26-xlarge", "macos-26-large", "macos-26", "macos-15-intel", "macos-15-xlarge", "macos-15-large", "macos-15", "macos-14-xlarge", "macos-14-large", "macos-14", "self-hosted", "x64", "arm", "arm64", "linux", "macos", "windows". if it is a custom label for self-hosted runner, set list of labels in actionlint.yaml config file [runner-label]
+      |
+    7 |     runs-on: [self-hosted, big-box]
+      |                            ^~~~~~~~
+PASS A6-bare-actionlint (exit=1, expected nonzero)
+    ╭───────────────────────────────────────╮
+    │ lefthook  v2.1.14   hook:  [1mpre-commit[m │
+    ╰───────────────────────────────────────╯
+    │  muse-shape (skip) no files for inspection
+    │  opus-shape (skip) no matching staged files
+    ┃  synth-shape ❯ 
+    .github/workflows/ci.yml:7:28: label "big-box" is unknown. available labels are "windows-latest", "windows-latest-8-cores", "windows-2025", "windows-2025-vs2026", "windows-2022", "windows-11-arm", "ubuntu-slim", "ubuntu-latest", "ubuntu-latest-4-cores", "ubuntu-latest-8-cores", "ubuntu-latest-16-cores", "ubuntu-24.04", "ubuntu-24.04-arm", "ubuntu-22.04", "ubuntu-22.04-arm", "macos-latest", "macos-latest-xlarge", "macos-latest-large", "macos-26-intel", "macos-26-xlarge", "macos-26-large", "macos-26", "macos-15-intel", "macos-15-xlarge", "macos-15-large", "macos-15", "macos-14-xlarge", "macos-14-large", "macos-14", "self-hosted", "x64", "arm", "arm64", "linux", "macos", "windows". if it is a custom label for self-hosted runner, set list of labels in actionlint.yaml config file [runner-label]
+      |
+    7 |     runs-on: [self-hosted, big-box]
+      |                            ^~~~~~~~
+    
+    exit status 1
+    [38;2;56;56;56m  ────────────────────────────────────[m
+    summary: (done in 0.08 seconds)
+    ✗ synth-shape (0.03 seconds)
+    lefthook exit=1
+PASS A6-muse-shape-skipped (output contains: muse-shape (skip))
+PASS A6-opus-shape-skipped (output contains: opus-shape (skip))
+PASS A6-synth-shape-ran (output contains: synth-shape ❯)
+PASS A6-hook-blocks (lefthook exit=1)
+== A7 staging only .github/dependabot.yml: which shapes select it (raw/opus.md: opus-shape selected)
+    ╭───────────────────────────────────────╮
+    │ lefthook  v2.1.14   hook:  [1mpre-commit[m │
+    ╰───────────────────────────────────────╯
+    │  muse-shape (skip) no files for inspection
+    │  opus-shape (skip) no matching staged files
+    ┃  synth-shape ❯ 
+    
+    [38;2;56;56;56m  ────────────────────────────────────[m
+    summary: (done in 0.08 seconds)
+    ✓ synth-shape (0.03 seconds)
+PASS A7-opus-shape-skipped (output contains: opus-shape (skip))
+PASS A7-synth-shape-ran (output contains: synth-shape ❯)
+== A8 wall time of bare actionlint over the fixture (3 runs)
+    run 1: 0.065 s
+    run 2: 0.068 s
+    run 3: 0.069 s
+TOTAL PASS=17 FAIL=0

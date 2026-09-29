@@ -1,0 +1,21 @@
+## environment
+gh:   gh version 2.101.0 (2026-09-15)
+retrieved (UTC): 2026-09-23T05:20:21Z
+
+## finding 2 — the repository record and the open-issue count for the
+## two candidate repositories r72-fetch.sh did not cover
+repo rodmen07/axum-api-kit                                 200  gh api repos/rodmen07/axum-api-kit
+  stargazers_count 0 archived False pushed_at 2026-08-18T12:32:29Z
+open issues rodmen07/axum-api-kit                          200  gh api search/issues?q=repo:rodmen07/axum-api-kit+is:issue+is:open
+  total_count 0
+repo a1akris/page-turner                                   200  gh api repos/a1akris/page-turner
+  stargazers_count 63 archived False pushed_at 2024-01-15T19:40:10Z
+open issues a1akris/page-turner                            200  gh api search/issues?q=repo:a1akris/page-turner+is:issue+is:open
+  total_count 3
+
+## finding 2 — page-turner README, for a maintainer notice
+readme a1akris/page-turner                                 200  gh api repos/a1akris/page-turner/readme
+
+## totals
+OK 5
+GAP 0

@@ -1,0 +1,396 @@
+## environment
+python3: Python 3.14.7
+snapshots: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R72/2026-09-18T215915Z-af997c2abb5a/review/evidence/snapshots
+  R72 api-pagination — snapshot provenance
+  retrieved (UTC): 2026-09-21T23:16:25Z
+  user-agent: rs-launch-blueprint-research (steve@smorin.com)
+  endpoints answered: 59
+  endpoints that did not answer: 0
+
+## 90-day and all-time downloads — GET /api/v1/crates/<name>, crate.recent_downloads / crate.downloads
+  paginator-axum recent_downloads                6714
+PASS F01 paginator-axum recent_downloads = 6714
+  paginator-axum downloads                       12252
+PASS F01.b paginator-axum downloads = 12252
+  paginator-utils recent_downloads               8149
+PASS F02 paginator-utils recent_downloads = 8149
+  paginator-utils downloads                      16950
+PASS F02.b paginator-utils downloads = 16950
+  paginator-rs recent_downloads                  8119
+PASS F03 paginator-rs recent_downloads = 8119
+  paginator-rs downloads                         16634
+PASS F03.b paginator-rs downloads = 16634
+  paginate recent_downloads                      9579
+PASS F04 paginate recent_downloads = 9579
+  paginate downloads                             103030
+PASS F04.b paginate downloads = 103030
+  sqlx-paginated recent_downloads                1937
+PASS F05 sqlx-paginated recent_downloads = 1937
+  sqlx-paginated downloads                       22451
+PASS F05.b sqlx-paginated downloads = 22451
+  api-paginate recent_downloads                  31
+PASS F06 api-paginate recent_downloads = 31
+  api-paginate downloads                         31
+PASS F06.b api-paginate downloads = 31
+  page-hunter recent_downloads                   150
+PASS F07 page-hunter recent_downloads = 150
+  page-hunter downloads                          12934
+PASS F07.b page-hunter downloads = 12934
+  api-bones recent_downloads                     6982
+PASS F08 api-bones recent_downloads = 6982
+  api-bones downloads                            54621
+PASS F08.b api-bones downloads = 54621
+  axum-api-kit recent_downloads                  3465
+PASS F09 axum-api-kit recent_downloads = 3465
+  axum-api-kit downloads                         3592
+PASS F09.b axum-api-kit downloads = 3592
+  page-turner recent_downloads                   6482
+PASS F10 page-turner recent_downloads = 6482
+  page-turner downloads                          129842
+PASS F10.b page-turner downloads = 129842
+  dropshot recent_downloads                      129506
+PASS F11 dropshot recent_downloads = 129506
+  dropshot downloads                             862512
+PASS F11.b dropshot downloads = 862512
+  base64 recent_downloads                        329396349
+PASS F12 base64 recent_downloads = 329396349
+  base64 downloads                               1596330399
+PASS F12.b base64 downloads = 1596330399
+
+## last release, licence, declared rust-version — GET /api/v1/crates/<name>/versions, newest yanked:false
+  paginator-axum newest unyanked num             0.4.0
+PASS F13 paginator-axum newest unyanked num = 0.4.0
+  paginator-axum created_at                      2026-09-07
+PASS F13.b paginator-axum created_at = 2026-09-07
+  paginator-axum license                         MIT
+PASS F13.c paginator-axum license = MIT
+  paginator-axum rust_version                    None
+PASS F13.d paginator-axum rust_version = None
+  paginator-utils newest unyanked num            0.4.0
+PASS F14 paginator-utils newest unyanked num = 0.4.0
+  paginator-utils created_at                     2026-09-07
+PASS F14.b paginator-utils created_at = 2026-09-07
+  paginator-utils license                        MIT
+PASS F14.c paginator-utils license = MIT
+  paginator-utils rust_version                   None
+PASS F14.d paginator-utils rust_version = None
+  paginator-rs newest unyanked num               0.4.0
+PASS F15 paginator-rs newest unyanked num = 0.4.0
+  paginator-rs created_at                        2026-09-07
+PASS F15.b paginator-rs created_at = 2026-09-07
+  paginator-rs license                           MIT
+PASS F15.c paginator-rs license = MIT
+  paginator-rs rust_version                      None
+PASS F15.d paginator-rs rust_version = None
+  paginate newest unyanked num                   1.1.11
+PASS F16 paginate newest unyanked num = 1.1.11
+  paginate created_at                            2022-04-11
+PASS F16.b paginate created_at = 2022-04-11
+  paginate license                               Apache-2.0
+PASS F16.c paginate license = Apache-2.0
+  paginate rust_version                          None
+PASS F16.d paginate rust_version = None
+  sqlx-paginated newest unyanked num             0.6.2
+PASS F17 sqlx-paginated newest unyanked num = 0.6.2
+  sqlx-paginated created_at                      2026-08-17
+PASS F17.b sqlx-paginated created_at = 2026-08-17
+  sqlx-paginated license                         MIT
+PASS F17.c sqlx-paginated license = MIT
+  sqlx-paginated rust_version                    None
+PASS F17.d sqlx-paginated rust_version = None
+  api-paginate newest unyanked num               0.1.1
+PASS F18 api-paginate newest unyanked num = 0.1.1
+  api-paginate created_at                        2026-09-12
+PASS F18.b api-paginate created_at = 2026-09-12
+SKIP F18.c api-paginate licence carries a space — asserted literally below
+  api-paginate rust_version                      1.85
+PASS F18.d api-paginate rust_version = 1.85
+  page-hunter newest unyanked num                0.7.0
+PASS F19 page-hunter newest unyanked num = 0.7.0
+  page-hunter created_at                         2026-03-07
+PASS F19.b page-hunter created_at = 2026-03-07
+  page-hunter license                            non-standard
+PASS F19.c page-hunter license = non-standard
+  page-hunter rust_version                       None
+PASS F19.d page-hunter rust_version = None
+  api-bones newest unyanked num                  6.12.0
+PASS F20 api-bones newest unyanked num = 6.12.0
+  api-bones created_at                           2026-08-16
+PASS F20.b api-bones created_at = 2026-08-16
+  api-bones license                              MIT
+PASS F20.c api-bones license = MIT
+  api-bones rust_version                         1.85
+PASS F20.d api-bones rust_version = 1.85
+  axum-api-kit newest unyanked num               2.2.0
+PASS F21 axum-api-kit newest unyanked num = 2.2.0
+  axum-api-kit created_at                        2026-08-12
+PASS F21.b axum-api-kit created_at = 2026-08-12
+  axum-api-kit license                           MIT
+PASS F21.c axum-api-kit license = MIT
+  axum-api-kit rust_version                      1.81
+PASS F21.d axum-api-kit rust_version = 1.81
+  page-turner newest unyanked num                1.0.0
+PASS F22 page-turner newest unyanked num = 1.0.0
+  page-turner created_at                         2024-01-15
+PASS F22.b page-turner created_at = 2024-01-15
+SKIP F22.c page-turner licence carries a space — asserted literally below
+  page-turner rust_version                       1.75
+PASS F22.d page-turner rust_version = 1.75
+  dropshot newest unyanked num                   0.17.1
+PASS F23 dropshot newest unyanked num = 0.17.1
+  dropshot created_at                            2026-06-02
+PASS F23.b dropshot created_at = 2026-06-02
+  dropshot license                               Apache-2.0
+PASS F23.c dropshot license = Apache-2.0
+  dropshot rust_version                          1.85
+PASS F23.d dropshot rust_version = 1.85
+  base64 newest unyanked num                     0.23.1
+PASS F24 base64 newest unyanked num = 0.23.1
+  base64 created_at                              2026-08-04
+PASS F24.b base64 created_at = 2026-08-04
+SKIP F24.c base64 licence carries a space — asserted literally below
+  base64 rust_version                            1.71.0
+PASS F24.d base64 rust_version = 1.71.0
+  api-paginate license                           MIT OR Apache-2.0
+PASS F18.e api-paginate license = MIT OR Apache-2.0
+  page-turner license                            MIT OR Apache-2.0
+PASS F22.e page-turner license = MIT OR Apache-2.0
+  base64 license                                 MIT OR Apache-2.0
+PASS F24.e base64 license = MIT OR Apache-2.0
+  candidate crates declaring no rust-version     6 of 11
+PASS F73 candidate crates declaring no rust-version = 6 of 11
+
+## stars, archived, pushed_at — GET https://api.github.com/repos/<o>/<r>
+  maulanasdqn-paginator-rs stargazers_count      6
+PASS F25 maulanasdqn-paginator-rs stargazers_count = 6
+  maulanasdqn-paginator-rs archived              False
+PASS F25.b maulanasdqn-paginator-rs archived = False
+  maulanasdqn-paginator-rs pushed_at             2026-09-07
+PASS F25.c maulanasdqn-paginator-rs pushed_at = 2026-09-07
+  daniel-samson-paginate stargazers_count        17
+PASS F26 daniel-samson-paginate stargazers_count = 17
+  daniel-samson-paginate archived                False
+PASS F26.b daniel-samson-paginate archived = False
+  daniel-samson-paginate pushed_at               2024-01-23
+PASS F26.c daniel-samson-paginate pushed_at = 2024-01-23
+  marshallpierce-rust-base64 stargazers_count    737
+PASS F27 marshallpierce-rust-base64 stargazers_count = 737
+  marshallpierce-rust-base64 archived            False
+PASS F27.b marshallpierce-rust-base64 archived = False
+  marshallpierce-rust-base64 pushed_at           2026-08-18
+PASS F27.c marshallpierce-rust-base64 pushed_at = 2026-08-18
+  oxidecomputer-dropshot stargazers_count        1202
+PASS F28 oxidecomputer-dropshot stargazers_count = 1202
+  oxidecomputer-dropshot archived                False
+PASS F28.b oxidecomputer-dropshot archived = False
+  oxidecomputer-dropshot pushed_at               2026-09-21
+PASS F28.c oxidecomputer-dropshot pushed_at = 2026-09-21
+  WyattAu-paginate stargazers_count              0
+PASS F29 WyattAu-paginate stargazers_count = 0
+  WyattAu-paginate archived                      False
+PASS F29.b WyattAu-paginate archived = False
+  WyattAu-paginate pushed_at                     2026-09-19
+PASS F29.c WyattAu-paginate pushed_at = 2026-09-19
+  alexandrughinea-sqlx-paginated stargazers_count 25
+PASS F30 alexandrughinea-sqlx-paginated stargazers_count = 25
+  alexandrughinea-sqlx-paginated archived        False
+PASS F30.b alexandrughinea-sqlx-paginated archived = False
+  alexandrughinea-sqlx-paginated pushed_at       2026-09-14
+PASS F30.c alexandrughinea-sqlx-paginated pushed_at = 2026-09-14
+  jmtamayo-page-hunter stargazers_count          6
+PASS F31 jmtamayo-page-hunter stargazers_count = 6
+  jmtamayo-page-hunter archived                  False
+PASS F31.b jmtamayo-page-hunter archived = False
+  jmtamayo-page-hunter pushed_at                 2026-03-07
+PASS F31.c jmtamayo-page-hunter pushed_at = 2026-03-07
+  brefwiz-api-bones stargazers_count             4
+PASS F32 brefwiz-api-bones stargazers_count = 4
+  brefwiz-api-bones archived                     False
+PASS F32.b brefwiz-api-bones archived = False
+  brefwiz-api-bones pushed_at                    2026-09-21
+PASS F32.c brefwiz-api-bones pushed_at = 2026-09-21
+  rodmen07-axum-api-kit stargazers_count         0
+PASS F74 rodmen07-axum-api-kit stargazers_count = 0
+  rodmen07-axum-api-kit archived                 False
+PASS F74.b rodmen07-axum-api-kit archived = False
+  rodmen07-axum-api-kit pushed_at                2026-08-18
+PASS F74.c rodmen07-axum-api-kit pushed_at = 2026-08-18
+  a1akris-page-turner stargazers_count           63
+PASS F75 a1akris-page-turner stargazers_count = 63
+  a1akris-page-turner archived                   False
+PASS F75.b a1akris-page-turner archived = False
+  a1akris-page-turner pushed_at                  2024-01-15
+PASS F75.c a1akris-page-turner pushed_at = 2024-01-15
+
+## open issues — GET /search/issues?q=repo:<o>/<r>+is:issue+is:open, total_count
+  maulanasdqn-paginator-rs open issues           0
+PASS F33 maulanasdqn-paginator-rs open issues = 0
+  daniel-samson-paginate open issues             2
+PASS F34 daniel-samson-paginate open issues = 2
+  marshallpierce-rust-base64 open issues         11
+PASS F35 marshallpierce-rust-base64 open issues = 11
+  oxidecomputer-dropshot open issues             58
+PASS F36 oxidecomputer-dropshot open issues = 58
+  WyattAu-paginate open issues                   0
+PASS F37 WyattAu-paginate open issues = 0
+  alexandrughinea-sqlx-paginated open issues     0
+PASS F38 alexandrughinea-sqlx-paginated open issues = 0
+  jmtamayo-page-hunter open issues               0
+PASS F39 jmtamayo-page-hunter open issues = 0
+  brefwiz-api-bones open issues                  2
+PASS F40 brefwiz-api-bones open issues = 2
+  rodmen07-axum-api-kit open issues              0
+PASS F76 rodmen07-axum-api-kit open issues = 0
+  a1akris-page-turner open issues                3
+PASS F77 a1akris-page-turner open issues = 3
+
+## page-turner maintenance state (revision 4, audit finding 2): the newest
+## maintainer comment anywhere in its issue population, and whether its README
+## carries a maintainer notice (the rubric's third dormant signal)
+  page-turner newest maintainer comment          2026-07-26
+PASS F78 page-turner newest maintainer comment = 2026-07-26
+  page-turner README notice lines                README.md 2c0cf245 0
+PASS F79 page-turner README notice lines = README.md 2c0cf245 0
+
+## issue responsiveness — up to the ten most recently opened issues (the
+## search query carries is:issue, so pull requests never enter the population;
+## retrieved by r72-fetch-revision2.sh), median days to the first comment by an
+## OWNER/MEMBER/COLLABORATOR who is not the author
+  base64 issues/answered/unanswered/median-days  10 7 3 0.4
+PASS F41 base64 issues/answered/unanswered/median-days = 10 7 3 0.4
+  paginator-rs issues/answered/unanswered/median-days 8 8 0 1.3
+PASS F42 paginator-rs issues/answered/unanswered/median-days = 8 8 0 1.3
+
+## issue responsiveness for the seven remaining declined candidates (revision
+## 3, audit finding 6; retrieved by r72-fetch-revision3.sh), same population and
+## same rule. "0 0 0 none" means the repository has no issue at all, so the
+## figure is inapplicable. The .b check counts issues opened by an
+## OWNER/MEMBER/COLLABORATOR: a self-filed issue can never receive a reply from
+## a maintainer who is not its author, so it always counts as unanswered.
+  marshallpierce-rust-base64 issues self-filed by a maintainer 0
+PASS F41.b marshallpierce-rust-base64 issues self-filed by a maintainer = 0
+  maulanasdqn-paginator-rs issues self-filed by a maintainer 0
+PASS F42.b maulanasdqn-paginator-rs issues self-filed by a maintainer = 0
+  daniel-samson-paginate issues/answered/unanswered/median-days 4 0 4 none
+PASS F66 daniel-samson-paginate issues/answered/unanswered/median-days = 4 0 4 none
+  daniel-samson-paginate issues self-filed by a maintainer 4
+PASS F66.b daniel-samson-paginate issues self-filed by a maintainer = 4
+  alexandrughinea-sqlx-paginated issues/answered/unanswered/median-days 0 0 0 none
+PASS F67 alexandrughinea-sqlx-paginated issues/answered/unanswered/median-days = 0 0 0 none
+  alexandrughinea-sqlx-paginated issues self-filed by a maintainer 0
+PASS F67.b alexandrughinea-sqlx-paginated issues self-filed by a maintainer = 0
+  WyattAu-paginate issues/answered/unanswered/median-days 0 0 0 none
+PASS F68 WyattAu-paginate issues/answered/unanswered/median-days = 0 0 0 none
+  WyattAu-paginate issues self-filed by a maintainer 0
+PASS F68.b WyattAu-paginate issues self-filed by a maintainer = 0
+  jmtamayo-page-hunter issues/answered/unanswered/median-days 8 2 6 266.8
+PASS F69 jmtamayo-page-hunter issues/answered/unanswered/median-days = 8 2 6 266.8
+  jmtamayo-page-hunter issues self-filed by a maintainer 6
+PASS F69.b jmtamayo-page-hunter issues self-filed by a maintainer = 6
+  brefwiz-api-bones issues/answered/unanswered/median-days 8 0 8 none
+PASS F70 brefwiz-api-bones issues/answered/unanswered/median-days = 8 0 8 none
+  brefwiz-api-bones issues self-filed by a maintainer 0
+PASS F70.b brefwiz-api-bones issues self-filed by a maintainer = 0
+  rodmen07-axum-api-kit issues/answered/unanswered/median-days 0 0 0 none
+PASS F71 rodmen07-axum-api-kit issues/answered/unanswered/median-days = 0 0 0 none
+  rodmen07-axum-api-kit issues self-filed by a maintainer 0
+PASS F71.b rodmen07-axum-api-kit issues self-filed by a maintainer = 0
+  a1akris-page-turner issues/answered/unanswered/median-days 5 0 5 none
+PASS F72 a1akris-page-turner issues/answered/unanswered/median-days = 5 0 5 none
+  a1akris-page-turner issues self-filed by a maintainer 4
+PASS F72.b a1akris-page-turner issues self-filed by a maintainer = 4
+  brefwiz-api-bones distinct issue authors       ['gsalingu']
+PASS F70.c brefwiz-api-bones distinct issue authors = ['gsalingu']
+
+## gate 3 — RustSec. A 404 is evidence of absence only because rsa, the
+## control, answers 200 and renders an advisory in the same run.
+  rustsec paginator-axum                         404
+PASS F43.paginator-axum rustsec paginator-axum = 404
+  rustsec paginator-utils                        404
+PASS F43.paginator-utils rustsec paginator-utils = 404
+  rustsec paginator-rs                           404
+PASS F43.paginator-rs rustsec paginator-rs = 404
+  rustsec paginate                               404
+PASS F43.paginate rustsec paginate = 404
+  rustsec sqlx-paginated                         404
+PASS F43.sqlx-paginated rustsec sqlx-paginated = 404
+  rustsec api-paginate                           404
+PASS F43.api-paginate rustsec api-paginate = 404
+  rustsec page-hunter                            404
+PASS F43.page-hunter rustsec page-hunter = 404
+  rustsec api-bones                              404
+PASS F43.api-bones rustsec api-bones = 404
+  rustsec axum-api-kit                           404
+PASS F43.axum-api-kit rustsec axum-api-kit = 404
+  rustsec page-turner                            404
+PASS F43.page-turner rustsec page-turner = 404
+  rustsec dropshot                               404
+PASS F43.dropshot rustsec dropshot = 404
+  rustsec rsa (control)                          200
+PASS F44 rustsec rsa (control) = 200
+PASS F45 the rsa control page renders RUSTSEC-2023-0071, so the fetch path works
+  rustsec base64                                 200
+PASS F46 rustsec base64 = 200
+PASS F47 base64 has an advisory page listing RUSTSEC-2017-0004
+PASS F48 RUSTSEC-2017-0004 records a patched range at 0.5.2, far below 0.23.1
+
+## gate 5 — declared features and async-runtime coupling, from the crates.io
+## dependency records rather than from a README
+  paginator-axum normal dependencies             async-trait axum form_urlencoded http paginator-rs paginator-utils serde serde_json
+PASS F49 paginator-axum normal dependencies = async-trait axum form_urlencoded http paginator-rs paginator-utils serde serde_json
+  base64 normal dependencies (none)              
+PASS F50 base64 normal dependencies (none) = 
+  paginator-axum declares no utoipa dependency:
+PASS F51 paginator-axum declares no utoipa dependency in any kind
+  paginator-axum declares tokio only as a dev-dependency:
+  paginator-axum tokio dependency kind           dev
+PASS F52 paginator-axum tokio dependency kind = dev
+  sqlx-paginated couples a runtime and a database driver sqlx tokio
+PASS F53 sqlx-paginated couples a runtime and a database driver = sqlx tokio
+
+## the crate sources this decision quotes, read from the published .crate
+  17:    pub per_page: u32,
+PASS F54 query.rs carries:     pub per_page: u32,
+  67:                "per_page" => {
+PASS F55 query.rs carries:                 "per_page" => {
+  121:            per_page: per_page.clamp(1, 100),
+PASS F56 query.rs carries:             per_page: per_page.clamp(1, 100),
+  37:impl<S> FromRequestParts<S> for PaginationQuery
+PASS F57 query.rs carries: impl<S> FromRequestParts<S> for PaginationQuery
+  6:pub use link::create_link_header;
+PASS F58 lib.rs carries: pub use link::create_link_header;
+  37:                "X-Total-Count",
+PASS F59 response.rs carries:                 "X-Total-Count",
+  7:    pub data: Vec<T>,
+PASS F60 response.rs carries:     pub data: Vec<T>,
+  8:    pub meta: PaginatorResponseMeta,
+PASS F61 response.rs carries:     pub meta: PaginatorResponseMeta,
+  the crate exports no application-level registration entry point:
+  matches: 0
+PASS F62 neither crate exports an app-wide pagination registration function
+  everything lib.rs exports:
+    6:pub use link::create_link_header;
+    7:pub use query::{PaginationQuery, PaginationQueryParams};
+    8:pub use response::PaginatedJson;
+
+## adopters — reverse dependencies
+  paginator-axum reverse dependencies            1
+PASS F63 paginator-axum reverse dependencies = 1
+  paginate reverse dependencies                  1
+PASS F64 paginate reverse dependencies = 1
+  base64 reverse dependencies: 17502
+PASS F65 base64 has more than a thousand reverse dependencies
+Traceback (most recent call last):
+  File "<string>", line 4, in <module>
+    print(', '.join(v['crate_version']['crate'] for v in d['versions']))
+          ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 4, in <genexpr>
+    print(', '.join(v['crate_version']['crate'] for v in d['versions']))
+                    ~^^^^^^^^^^^^^^^^^
+KeyError: 'crate_version'
+  the single crate depending on paginator-axum: 
+
+## totals
+PASS 167
+FAIL 0
+SKIP 3

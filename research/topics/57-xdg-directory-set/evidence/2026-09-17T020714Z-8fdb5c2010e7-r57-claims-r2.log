@@ -1,0 +1,75 @@
+
+========== JF-1. evidence/snap/ inventory, recounted ==========
+
+--- every file evidence/snap/ holds, and which of them .gitignore excludes ---
+  tracked   advisory-directories.md
+  tracked   advisory-dirs.md
+  gitignored directories-6.0.0.crate   <- .gitignore:12  research/runs/**/*.crate
+  gitignored etcetera-0.11.0.crate   <- .gitignore:12  research/runs/**/*.crate
+  tracked   etcetera-crate.json
+  tracked   etcetera-deps.json
+  tracked   etcetera-versions.json
+  tracked   rustsec-anyhow.txt
+  tracked   rustsec-directories.txt
+  tracked   rustsec-etcetera.txt
+  tracked   spike-macos-arm64.txt
+
+--- the two figures revision 1 stated as 12 and 10 ---
+files evidence/snap/ holds        : 11 (binary: /usr/bin/grep)
+of those, tracked in HEAD         : 9 (binary: /usr/bin/grep)
+the difference, gitignored tarballs: 2
+
+--- assertions ---
+PASS evidence/snap/ holds 11 files, not the 12 revision 1 claimed (expected 11, got 11; binary: /usr/bin/grep)
+PASS 9 of them are tracked in HEAD, not the 10 revision 1 claimed (expected 9, got 9; binary: /usr/bin/grep)
+PASS the .gitignore rule that excludes the other two is still present (expected 1, got 1; binary: /usr/bin/grep)
+
+========== JF-3. py and ts namespace constants, read at their pins ==========
+
+--- py src/py_launch_blueprint/core/paths.py at pin b08bccfb — the lines this decision cites ---
+36:* state  — ``%LOCALAPPDATA%\\plbp``      (Windows has no data/state split)
+40:files are named ``<app>_<kind>.<ext>`` so a stray file on disk announces both
+50:paths). Resolve once; never read the raw env vars elsewhere.
+58:APP_NAME = "plbp"
+73:        if candidate.is_absolute():
+90:    if raw and Path(raw).is_absolute():
+124:        if raw_pd and Path(raw_pd).is_absolute():
+
+--- py — the four kinds, as its own module docstring names them ---
+25:* ``$XDG_CONFIG_HOME`` (default ``~/.config``)      — config
+26:* ``$XDG_DATA_HOME``   (default ``~/.local/share``) — data you'd hate to lose
+27:* ``$XDG_STATE_HOME``  (default ``~/.local/state``) — logs/history (recoverable)
+28:* ``$XDG_CACHE_HOME``  (default ``~/.cache``)       — regenerable cache
+
+--- ts src/lib/xdg-paths.ts at pin cb1cbcb2 — the lines this decision cites ---
+10:// parity with the source and cli-standards R5.3.
+14:export const TOOL_DIR_NAME = 'ts-projects';
+21:export function configDir(env: Record<string, string | undefined>, homedir: () => string): string {
+
+--- assertions ---
+PASS py names its tool directory plbp, at line 58 (raw/opus.md said 56) (expected 1, got 1; binary: /usr/bin/grep)
+PASS that constant is on line 58 (expected 58, got 58; binary: /usr/bin/grep)
+PASS ts names its tool directory ts-projects, at line 14 (raw/opus.md said 13) (expected 14, got 14; binary: /usr/bin/grep)
+PASS ts resolves through a FREE function taking env and homedir as parameters (expected 21, got 21; binary: /usr/bin/grep)
+PASS py validates absoluteness, which ts does not (expected 1, got 1; binary: /usr/bin/grep)
+PASS py states the resolve-once rule in its own docstring (expected 1, got 1; binary: /usr/bin/grep)
+PASS py documents the Windows data/state collapse this decision reproduces (expected 1, got 1; binary: /usr/bin/grep)
+PASS ts cites cli-standards R5.3 in its own header (expected 1, got 1; binary: /usr/bin/grep)
+
+========== JF-5. directories download figures, from the prescribed endpoint ==========
+
+--- GET https://crates.io/api/v1/crates/<name> - crate.recent_downloads, crate.downloads ---
+etcetera     recent_downloads (90-day) =     32829812 | downloads (all-time) =    108370911 | latest = 0.11.0
+directories  recent_downloads (90-day) =     12362480 | downloads (all-time) =     70441621 | latest = 6.0.0
+dirs         recent_downloads (90-day) =     77979289 | downloads (all-time) =    329160223 | latest = 7.0.0
+
+etcetera / directories, 90-day = 2.66  -> etcetera has MORE, not fewer
+dirs / etcetera,        90-day = 2.38  -> this is the ~2.4x raw/opus.md reports,
+                                          and it is `dirs`, NOT `directories`.
+
+--- assertions ---
+PASS the directories response carries a recent_downloads field (expected 1, got 1; binary: /usr/bin/grep)
+PASS the dirs response carries a recent_downloads field (expected 1, got 1; binary: /usr/bin/grep)
+
+========== result ==========
+failed assertions: 0

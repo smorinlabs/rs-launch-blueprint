@@ -1,0 +1,93 @@
+# R11 revision 7 - reproduction from a clean git archive extraction (file name kept from revision 2)
+# record date (UTC): 2026-09-26T02:23:21Z (this file written then; the extraction it records ran 2026-09-23)
+# extraction ran (UTC): 2026-09-23T13:00:09Z to 2026-09-23T13:00:14Z (first/last mtime of the committed extraction outputs, TZ=UTC)
+# extraction directory: $TMPDIR/r11-r7-archive.ss7yNL (concrete name also visible in the r11-programme-inputs diff body)
+# HEAD: e0b0d1c1762ee8aa4b28c62282a2225103e594eb
+# extraction: git archive HEAD | tar -x -C "$TMPDIR/r11-r7-archive.XXXXXX"
+# overlay (the only working-tree bytes copied in; HEAD does not contain them and this synthesis may not write to git):
+#   rm -rf <x>/research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/review && cp -R research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/review <x>/research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/review
+#   cp research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/codex-a788076a845c7ca779b0b78cdde89cd2acd7628a751139df221b744da2bb76bb.md <x>/research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/raw/
+# PATH prefix: /Users/stevemorin/.local/bin:/opt/homebrew/bin
+# each script was run as: bash <x>/research/runs/R11/2026-09-18T215915Z-7fbece2a29a7/review/evidence/<name>.sh from <x>; output compared with diff against the in-place log
+
+## r11-r2-detector.sh: exit 0; PASS=64 FAIL=0 SKIP=0 TOTAL=64
+$ diff r11-r2-detector.log r11-r2-detector.archive.log
+(no difference)
+
+## r11-r2-dorny.sh: exit 0; PASS=20 FAIL=0 SKIP=0 TOTAL=20
+$ diff r11-r2-dorny.log r11-r2-dorny.archive.log
+(no difference)
+
+## r11-r2-actionlint.sh: exit 0; PASS=21 FAIL=0 SKIP=0 TOTAL=21
+$ diff r11-r2-actionlint.log r11-r2-actionlint.archive.log
+(no difference)
+
+## r11-r2-sources.sh: exit 0; PASS=60 FAIL=0 SKIP=0 TOTAL=60
+$ diff r11-r2-sources.log r11-r2-sources.archive.log
+(no difference)
+
+## r11-r2-inputs.sh: exit 0; PASS=66 FAIL=0 SKIP=0 TOTAL=66
+$ diff r11-r2-inputs.log r11-r2-inputs.archive.log
+1c1
+< INFO .git is present - this is a checkout
+---
+> INFO .git is absent - this is a git archive extraction; no assertion below needs git
+
+## r11-actionlint.sh (revision 1, unchanged): exit 0; PASS=10 FAIL=0 SKIP=0 TOTAL=10
+$ diff r11-actionlint.r2-rerun.log r11-actionlint.r2-archive.log
+(no difference)
+$ diff r11-actionlint.archive.log r11-actionlint.r2-archive.log   # revision 1's own archive log against this extraction
+(no difference)
+
+## r11-detector.sh (revision 1, unchanged): exit 0; PASS=21 FAIL=0 SKIP=0 TOTAL=21
+$ diff r11-detector.r2-rerun.log r11-detector.r2-archive.log
+(no difference)
+$ diff r11-detector.archive.log r11-detector.r2-archive.log   # revision 1's own archive log against this extraction
+(no difference)
+
+## r11-cache-budget.sh (revision 1, unchanged): exit 0; PASS=12 FAIL=0 SKIP=0 TOTAL=12
+$ diff r11-cache-budget.r2-rerun.log r11-cache-budget.r2-archive.log
+(no difference)
+$ diff r11-cache-budget.archive.log r11-cache-budget.r2-archive.log   # revision 1's own archive log against this extraction
+(no difference)
+
+## r11-platform-docs.sh (revision 1, unchanged): exit 0; PASS=14 FAIL=0 SKIP=0 TOTAL=14
+$ diff r11-platform-docs.r2-rerun.log r11-platform-docs.r2-archive.log
+(no difference)
+$ diff r11-platform-docs.archive.log r11-platform-docs.r2-archive.log   # revision 1's own archive log against this extraction
+(no difference)
+
+## r11-programme-inputs.sh (revision 1, unchanged): exit 0; PASS=54 FAIL=0 SKIP=0 TOTAL=54
+$ diff r11-programme-inputs.r2-rerun.log r11-programme-inputs.r2-archive.log
+1c1
+< INFO repository root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+---
+> INFO repository root: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r11-r7-archive.ss7yNL
+3c3
+< INFO .git is present (a file, so a worktree) - this is a checkout, not an extraction
+---
+> INFO .git is absent - this is a git archive extraction; no assertion below needs git
+$ diff r11-programme-inputs.archive.log r11-programme-inputs.r2-archive.log   # revision 1's own archive log against this extraction
+1c1
+< INFO repository root: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r11-arch.tw8QBD
+---
+> INFO repository root: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r11-r7-archive.ss7yNL
+
+## r11-tool-figures.sh (revision 1, unchanged): exit 0; PASS=17 FAIL=0 SKIP=0 TOTAL=17
+$ diff r11-tool-figures.r2-rerun.log r11-tool-figures.r2-archive.log
+(no difference)
+$ diff r11-tool-figures.archive.log r11-tool-figures.r2-archive.log   # revision 1's own archive log against this extraction
+(no difference)
+
+## PASS/FAIL/SKIP lines differing between any in-place log and its extraction log:
+0
+
+## structural checker on this extraction (it creates research/runs/.publication.lock, so it is never run on the live tree):
+$ bash scripts/check-research-tree.sh <x>
+OK: research tree structure valid
+exit 0
+
+## Codex report shape on this extraction:
+$ python3 scripts/research_validation.py --legacy-output answer <codex raw> bundle
+OK: validation passed
+exit 0

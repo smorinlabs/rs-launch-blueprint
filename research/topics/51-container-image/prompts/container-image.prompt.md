@@ -20,7 +20,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - owns:
 - consumes: R69: web-extra-surface
 - effort: focused
-- engines: codex, opus
+- engines: muse, opus
 - evidence-checks:
 - acceptance-after:
 - related (not a registry dependency): R80 (`health-probe-endpoints`) decides the `/healthz` endpoint's own behavior; this item's container `HEALTHCHECK` instruction, if adopted, probes whatever endpoint R80 resolves to, but registers no dependency on it beyond that.
@@ -66,7 +66,7 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 6. binary-size and compile-time cost stated qualitatively.
 
 Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
-- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception. This item substitutes Muse (Meta) for Codex under the `engine_overrides` pilot; its mirrored `- engines:` line is authoritative.
 - This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
 - Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
 - The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.

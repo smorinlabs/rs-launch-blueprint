@@ -1,0 +1,62 @@
+PASS S0 all 41 files listed in SHA256SUMS-r2 (snapshots/r2, vendor/picomatch-2.3.1, the revision-1, audited revision-2, audited revision-3, audited revision-4, audited revision-5, audited revision-6 and current fixtures, the harness) match their recorded sha256
+PASS S1a .stargazers_count = 3340 (GET https://api.github.com/repos/dorny/paths-filter @ 2026-09-22T20:05:54Z) - stars (the Codex leg read 3,339 on 2026-09-20)
+PASS S1b .archived = false (GET https://api.github.com/repos/dorny/paths-filter @ 2026-09-22T20:05:54Z) - not archived
+PASS S1c .pushed_at = 2026-08-05T12:20:34Z (GET https://api.github.com/repos/dorny/paths-filter @ 2026-09-22T20:05:54Z) - last push, unchanged since revision 1's snapshot
+PASS S2 "\(.tag_name) \(.published_at)" = v4.0.3 2026-08-05T12:17:06Z (GET https://api.github.com/repos/dorny/paths-filter/releases/latest @ 2026-09-22T20:05:57Z) - latest release
+PASS S3 "\(.object_type) \(.object_sha)" = commit ceb8a2b8f2d89434be7ff52d3de7ec3738c5cc9d (GET https://api.github.com/repos/dorny/paths-filter/git/ref/tags/v4.0.3 @ 2026-09-22T20:06:00Z) - the v4.0.3 tag resolves to the commit the Codex leg pinned and every dorny snapshot here was read at
+PASS S4 .total_count = 20 (GET https://api.github.com/search/issues?q=repo:dorny/paths-filter+is:issue+is:open @ 2026-09-22T20:06:03Z) - open issues from search/issues total_count, never open_issues_count
+PASS S5 ten newest non-PR issues, first OWNER/MEMBER/COLLABORATOR comment: median 3.016 days over the 9 answered, 1 unanswered (GET https://api.github.com/repos/dorny/paths-filter/issues?state=all&sort=created&direction=desc&per_page=40 (ten newest non-PR issues) + GET /repos/dorny/paths-filter/issues/<n>/comments?per_page=100 @ 2026-09-22T20:07:44Z) - reproduces the Codex leg's GraphQL figure by REST
+PASS S6a dorny-paths-filter-README.md:21: pull_request mode diffs against the base branch (the Codex leg's citation, line-exact)
+PASS S6b dorny-paths-filter-README.md:22: pull_request mode needs no checkout - the one real cost advantage over a fetch-depth 0 clone
+PASS S6c dorny-paths-filter-README.md:23: and it needs a pull-requests: read grant on the detector job
+PASS S6d dorny-paths-filter-README.md:34: merge_group mode uses git and needs a checkout, which is why the Codex probe forces true on merge_group instead
+PASS S6e dorny-paths-filter-README.md:284: the maintainer's own example gates with a positive == 'true' predicate
+PASS S7a dorny-paths-filter-action.yml:38: list-files defaults to none, so no file names reach a later shell by default
+PASS S7b dorny-paths-filter-action.yml:60: a Node 24 JavaScript action - third-party code that runs with the job's token on every pull request
+PASS S8 dorny-paths-filter-README.md: adopters named by the maintainer (sentry.io, web.dev), each linked to a pinned workflow - the figure-table adopters row
+PASS S9 .count = 0 (GET https://api.github.com/advisories?ecosystem=actions&affects=dorny/paths-filter @ 2026-09-22T20:20:23Z) - no GitHub advisory names dorny/paths-filter in the actions ecosystem (RustSec is inapplicable: it is not a crate)
+PASS S10a cratesio-ci.yml: rust-lang/crates.io at 5723cfaf has a detector job
+PASS S10b cratesio-ci.yml: it uses tj-actions/changed-files, SHA-pinned at v47.0.6 - above GHSA-mrrh-fwg8-r2c3's affected range
+PASS S10c cratesio-ci.yml: and gates named jobs with a positive predicate
+PASS S10d cratesio-ci.yml: its path lists are per-job allow-lists kept in a separate file
+PASS S10e cratesio-ci.yml: its detector also takes a full clone
+PASS S10f "\(.stargazers_count) \(.archived)" = 3701 false (GET https://api.github.com/repos/rust-lang/crates.io @ 2026-09-22T20:06:05Z) - crates.io repository stars and archived flag
+PASS S10g revision 1's committed advisory snapshot bounds GHSA-mrrh-fwg8-r2c3 at 'through 45.0.7', so crates.io's v47.0.6 pin is outside it - the category risk revision 1 cited is a patched incident, not a standing defect
+PASS S11a tokio-ci.yml: tokio-rs/tokio at cf782c5b has an aggregate prerequisite job
+PASS S11b tokio's basics job needs clippy, fmt, docs and minrust
+PASS S11c 37 tokio jobs carry needs: basics - tokio DOES serialise its test tier behind lint, the shape revision 1 rejected in Perplexity's leg
+PASS S11d rust-cache appears 43 times in tokio's workflow - cache per job
+PASS S11e "\(.stargazers_count) \(.archived)" = 33209 false (GET https://api.github.com/repos/tokio-rs/tokio @ 2026-09-22T20:06:08Z) - tokio repository stars and archived flag
+PASS S12a clap-rs/clap at 8542fea5 keeps test, check, docs, rustfmt and clippy as separate jobs
+PASS S12b clap-ci.yml:130: clap's MSRV is a matrix LEG of its check job, not a separate job
+PASS S12c clap-ci.yml:78: clap uses the same rust-cache commit R10 pins
+PASS S12d clap-ci.yml: clap's ci aggregate job - R12's question, not this item's
+PASS S12e "\(.stargazers_count) \(.archived)" = 16723 false (GET https://api.github.com/repos/clap-rs/clap @ 2026-09-22T20:06:11Z) - clap repository stars and archived flag
+PASS S13a "\(.object_type) \(.object_sha)" = commit 3d3c42e5aac5ba805825da76410c181273ba90b1 (GET https://api.github.com/repos/actions/checkout/git/ref/tags/v7 @ 2026-09-22T20:06:25Z) - actions/checkout's v7 tag exists, so the fixture's actions/checkout@v7 resolves
+PASS S13b cratesio-ci.yml: and crates.io pins the same commit as v7.0.1
+PASS R3-S1 cargo-reference-manifest.md:372: the Cargo Book reference section on package contents (cargo @ 98a09e7e)
+PASS R3-S2 cargo-reference-manifest.md:397: a package with no include or exclude list packages every file under its root - so a workspace member without an include list packages Markdown anywhere in its directory
+PASS R3-S3 cargo-reference-manifest.md:390: an include entry /src packages the whole src/ tree, Markdown included
+PASS R4-S1a github-expressions.md:320: the GitHub docs expressions page, section on status check functions (github/docs @ 1fa3a6df)
+PASS R4-S1 github-expressions.md:322: an if: with no status function carries an implicit success(), so a job whose needs dependency failed or was skipped does not run, whatever the rest of the condition says - both predicate polarities skip on a failed or skipped plan
+PASS R4-S1b github-expressions.md:377: the same page restates it under failure(): only an explicit status function overrides the default
+PASS S14a cargo-guide-continuous-integration.md:183: the Cargo Book's CI chapter has a section on verifying rust-version (cargo @ 98a09e7e)
+PASS S14b cargo-guide-continuous-integration.md:186: the sentence revision 1 quoted, now asserted
+PASS S14c cargo-guide-continuous-integration.md:195: its example is a separate job
+PASS S14d cargo-guide-continuous-integration.md:196: on one runner
+PASS S14e cargo-guide-continuous-integration.md:200: running one check command, the reference command this decision names
+PASS S14f cargo-guide-continuous-integration.md:203: the guide's own reason for one runner
+PASS S14g cargo-guide-continuous-integration.md:204: and for check rather than the full test and lint list - the grounds the floor job now rests on
+PASS S20a py ci.yml at b08bccfb has jobs changes, lint, typecheck, import-boundaries, test, build-smoke, docs, toml-format, ci-ok
+PASS S20b py-ci.yml: py's detector is a deliberate hand-rolled shell step
+PASS S20c py-ci.yml: and it is a SKIP-list (fail-closed), not an allow-list
+PASS S20d py-ci.yml: with positive predicates
+PASS S20e py's lint job carries no needs edge - it always runs, as this decision's hygiene job does
+PASS S20f py-ci.yml: py triggers on merge_group
+PASS S21 py lint.yml has lint-changes plus five tool jobs
+PASS S22a ts ci.yml at cb1cbcb2 has exactly two jobs, ci and bun-lane - the prompt's 'single ci job' and the Codex leg's summary both omit the second
+PASS S22b ts-ci.yml: bun-lane is advisory (continue-on-error), so the gating shape is one job
+PASS S22c ts-ci.yml: ts has no needs edge and therefore no detector
+PASS S22d ts-ci.yml: ts does not trigger on merge_group
+
+PASS=60 FAIL=0 SKIP=0 TOTAL=60

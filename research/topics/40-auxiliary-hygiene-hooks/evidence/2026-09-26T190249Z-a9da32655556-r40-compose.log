@@ -1,0 +1,117 @@
+== tool versions as resolved on PATH
+editorconfig-checker -> /tmp/r40-synth-tools/bin/editorconfig-checker
+ryl -> /tmp/cargo-r40r2/bin/ryl
+typos -> /tmp/cargo-r40r2/bin/typos
+actionlint -> /Users/stevemorin/.local/share/mise/shims/actionlint
+lefthook -> /opt/homebrew/bin/lefthook
+v4.0.2
+ryl 0.22.0
+typos-cli 1.50.3
+1.7.12
+2.1.14
+== C1 lefthook accepts the four-job config
+    All good
+PASS C1 (exit=0, expected zero)
+== C2 clean tree: the four CI whole-tree commands (hygiene steps + workflow-lint)
+PASS C2 (exit=0, expected zero)
+== C3 stage one defect per member, then run the pre-commit hook
+    ╭───────────────────────────────────────╮
+    │ lefthook  v2.1.14   hook:  [1mpre-commit[m │
+    ╰───────────────────────────────────────╯
+    sync hooks: ✔️(pre-commit)
+    ┃  yaml-lint ❯ 
+    .github/dependabot.yml
+      7:5       error    duplication of key "schedule" in mapping  (key-duplicates)
+    exit status 1
+    ┃  editorconfig-checker ❯ 
+    Justfile:
+    	3: trailing whitespace
+    1 errors found
+    exit status 1
+    ┃  typos ❯ 
+    error: `recieve` should be `receive`
+       ╭▸ .github/workflows/ci.yml:14:22
+       │
+    14 │       - run: typos # recieve
+       ╰╴                     ━━━━━━━
+    exit status 2
+    ┃  actionlint ❯ 
+    .github/workflows/ci.yml:15:3: job "check" needs job "nope" which does not exist in this workflow [job-needs]
+       |
+    15 |   check:
+       |   ^~~~~~
+    exit status 1
+    [38;2;56;56;56m  ────────────────────────────────────[m
+    summary: (done in 0.09 seconds)
+    ✗ yaml-lint (0.01 seconds)
+    ✗ editorconfig-checker (0.01 seconds)
+    ✗ typos (0.03 seconds)
+    ✗ actionlint (0.07 seconds)
+    lefthook exit=1
+PASS C3-hook-blocks
+PASS C3-editorconfig-checker-failed (output contains: ✗ editorconfig-checker)
+PASS C3-yaml-lint-failed (output contains: ✗ yaml-lint)
+PASS C3-typos-failed (output contains: ✗ typos)
+PASS C3-actionlint-failed (output contains: ✗ actionlint)
+PASS C3-ec-names-Justfile (output contains: Justfile)
+PASS C3-ryl-key-duplicates (output contains: key-duplicates)
+PASS C3-typos-recieve (output contains: `recieve` should be `receive`)
+PASS C3-actionlint-needs (output contains: nope)
+== C4 the same defects through each CI whole-tree command (parity with C3)
+    Justfile:
+    	3: trailing whitespace
+    1 errors found
+PASS C4-ec (exit=1, expected nonzero)
+    ./.github/dependabot.yml
+      7:5       error    duplication of key "schedule" in mapping  (key-duplicates)
+PASS C4-ryl (exit=1, expected nonzero)
+    error: `recieve` should be `receive`
+       ╭▸ ./.github/workflows/ci.yml:14:22
+       │
+    14 │       - run: typos # recieve
+       ╰╴                     ━━━━━━━
+PASS C4-typos (exit=2, expected nonzero)
+    .github/workflows/ci.yml:15:3: job "check" needs job "nope" which does not exist in this workflow [job-needs]
+       |
+    15 |   check:
+       |   ^~~~~~
+PASS C4-actionlint (exit=1, expected nonzero)
+== C5 revert the defects: hook and CI pass; the Markdown hard break and the .snap line are exempt
+    ╭───────────────────────────────────────╮
+    │ lefthook  v2.1.14   hook:  [1mpre-commit[m │
+    ╰───────────────────────────────────────╯
+    │  actionlint (skip) no matching staged files
+    │  yaml-lint (skip) no files for inspection
+    ┃  editorconfig-checker ❯ 
+    ┃  typos ❯ 
+    [38;2;56;56;56m  ────────────────────────────────────[m
+    summary: (done in 0.07 seconds)
+    ✓ editorconfig-checker (0.01 seconds)
+    ✓ typos (0.02 seconds)
+PASS C5-hook (exit=0, expected zero)
+PASS C5-ci (exit=0, expected zero)
+== C6 a missing tool fails loudly (the private CARGO_HOME/bin, holding ryl and typos, removed from PATH)
+    ╭───────────────────────────────────────╮
+    │ lefthook  v2.1.14   hook:  [1mpre-commit[m │
+    ╰───────────────────────────────────────╯
+    │  actionlint (skip) no matching staged files
+    ┃  yaml-lint ❯ 
+    ┃  typos ❯ 
+    sh: ryl: command not found
+    sh: typos: command not found
+    exit status 127
+    exit status 127
+    ┃  editorconfig-checker ❯ 
+    [38;2;56;56;56m  ────────────────────────────────────[m
+    summary: (done in 0.06 seconds)
+    ✓ editorconfig-checker (0.04 seconds)
+    ✗ typos (0.04 seconds)
+    ✗ yaml-lint (0.04 seconds)
+    lefthook exit=1
+PASS C6-ryl-127 (output contains: exit status 127)
+PASS C6-hook-blocks
+== C7 wall time of the four CI commands over the clean tree (3 runs)
+    run 1: 0.173 s
+    run 2: 0.163 s
+    run 3: 0.156 s
+TOTAL PASS=19 FAIL=0

@@ -1,0 +1,33 @@
+== host
+Darwin 25.4.0 arm64
+26.4
+rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+CARGO_HOME=/tmp/cargo-r40r2
+CARGO_TARGET_DIR=/tmp/cargo-r40r2-target
+== crates.io tools (cargo install --locked, private CARGO_HOME)
+installed typos-cli@1.50.3 in 35 s (wall, full source build into an empty target dir; crate sources cached in CARGO_HOME)
+installed ryl@0.22.0 in 36 s (wall, full source build into an empty target dir; crate sources cached in CARGO_HOME)
+typos-cli 1.50.3
+ryl 0.22.0
+== editorconfig-checker 4.0.2 release asset (api.github.com)
+GET https://api.github.com/repos/editorconfig-checker/editorconfig-checker/releases/tags/v4.0.2
+asset editorconfig-checker-darwin-all.tar.gz id=574675773
+GET https://api.github.com/repos/editorconfig-checker/editorconfig-checker/releases/assets/574675773 (Accept: application/octet-stream)
+ff59f57717d95fc62b8e372c8051dbbb766f7d660942409a85d027b0feb2422c  /tmp/r40-synth-tools/ec-darwin-all.tar.gz
+-- tarball listing (executable name)
+CHANGELOG.md
+LICENSE
+README.md
+editorconfig-checker
+extracted: editorconfig-checker
+no executable named ec in the 4.0.2 darwin-all tarball
+v4.0.2
+x86_64 arm64
+== tools already on this host (used as instruments, versions as run)
+1.7.12
+yamllint 1.38.0
+2.4.2
+2.1.14
+version: 0.11.0
+DONE

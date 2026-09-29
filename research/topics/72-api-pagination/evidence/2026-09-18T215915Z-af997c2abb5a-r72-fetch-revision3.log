@@ -1,0 +1,51 @@
+## environment
+gh:   gh version 2.101.0 (2026-09-15)
+retrieved (UTC): 2026-09-22T19:14:45Z
+
+## finding 6 — the ten most recently opened issues of each remaining
+## declined candidate (is:issue excludes pull requests in the query), and
+## every comment on each of them. The repository is the one each crate
+## declares in crate.repository (snapshots/crate-<name>.json).
+ten newest issues daniel-samson/paginate                   200  gh api search/issues?q=repo:daniel-samson/paginate+is:issue&sort=created&order=desc&per_page=10
+  total_count 4
+comments daniel-samson/paginate#7                          200  gh api repos/daniel-samson/paginate/issues/7/comments?per_page=100
+comments daniel-samson/paginate#6                          200  gh api repos/daniel-samson/paginate/issues/6/comments?per_page=100
+comments daniel-samson/paginate#5                          200  gh api repos/daniel-samson/paginate/issues/5/comments?per_page=100
+comments daniel-samson/paginate#3                          200  gh api repos/daniel-samson/paginate/issues/3/comments?per_page=100
+ten newest issues alexandrughinea/sqlx-paginated           200  gh api search/issues?q=repo:alexandrughinea/sqlx-paginated+is:issue&sort=created&order=desc&per_page=10
+  total_count 0
+ten newest issues WyattAu/paginate                         200  gh api search/issues?q=repo:WyattAu/paginate+is:issue&sort=created&order=desc&per_page=10
+  total_count 0
+ten newest issues jmtamayo/page-hunter                     200  gh api search/issues?q=repo:jmtamayo/page-hunter+is:issue&sort=created&order=desc&per_page=10
+  total_count 8
+comments jmtamayo/page-hunter#23                           200  gh api repos/jmtamayo/page-hunter/issues/23/comments?per_page=100
+comments jmtamayo/page-hunter#22                           200  gh api repos/jmtamayo/page-hunter/issues/22/comments?per_page=100
+comments jmtamayo/page-hunter#20                           200  gh api repos/jmtamayo/page-hunter/issues/20/comments?per_page=100
+comments jmtamayo/page-hunter#17                           200  gh api repos/jmtamayo/page-hunter/issues/17/comments?per_page=100
+comments jmtamayo/page-hunter#13                           200  gh api repos/jmtamayo/page-hunter/issues/13/comments?per_page=100
+comments jmtamayo/page-hunter#12                           200  gh api repos/jmtamayo/page-hunter/issues/12/comments?per_page=100
+comments jmtamayo/page-hunter#11                           200  gh api repos/jmtamayo/page-hunter/issues/11/comments?per_page=100
+comments jmtamayo/page-hunter#10                           200  gh api repos/jmtamayo/page-hunter/issues/10/comments?per_page=100
+ten newest issues brefwiz/api-bones                        200  gh api search/issues?q=repo:brefwiz/api-bones+is:issue&sort=created&order=desc&per_page=10
+  total_count 8
+comments brefwiz/api-bones#122                             200  gh api repos/brefwiz/api-bones/issues/122/comments?per_page=100
+comments brefwiz/api-bones#117                             200  gh api repos/brefwiz/api-bones/issues/117/comments?per_page=100
+comments brefwiz/api-bones#116                             200  gh api repos/brefwiz/api-bones/issues/116/comments?per_page=100
+comments brefwiz/api-bones#89                              200  gh api repos/brefwiz/api-bones/issues/89/comments?per_page=100
+comments brefwiz/api-bones#75                              200  gh api repos/brefwiz/api-bones/issues/75/comments?per_page=100
+comments brefwiz/api-bones#50                              200  gh api repos/brefwiz/api-bones/issues/50/comments?per_page=100
+comments brefwiz/api-bones#49                              200  gh api repos/brefwiz/api-bones/issues/49/comments?per_page=100
+comments brefwiz/api-bones#34                              200  gh api repos/brefwiz/api-bones/issues/34/comments?per_page=100
+ten newest issues rodmen07/axum-api-kit                    200  gh api search/issues?q=repo:rodmen07/axum-api-kit+is:issue&sort=created&order=desc&per_page=10
+  total_count 0
+ten newest issues a1akris/page-turner                      200  gh api search/issues?q=repo:a1akris/page-turner+is:issue&sort=created&order=desc&per_page=10
+  total_count 5
+comments a1akris/page-turner#9                             200  gh api repos/a1akris/page-turner/issues/9/comments?per_page=100
+comments a1akris/page-turner#8                             200  gh api repos/a1akris/page-turner/issues/8/comments?per_page=100
+comments a1akris/page-turner#6                             200  gh api repos/a1akris/page-turner/issues/6/comments?per_page=100
+comments a1akris/page-turner#5                             200  gh api repos/a1akris/page-turner/issues/5/comments?per_page=100
+comments a1akris/page-turner#2                             200  gh api repos/a1akris/page-turner/issues/2/comments?per_page=100
+
+## totals
+OK 32
+GAP 0

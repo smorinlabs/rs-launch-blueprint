@@ -1,0 +1,1969 @@
+Combined empirical rerun output for R72 api-pagination, DECISION.md revision 5 (ddc9e134).
+Auditor: audit-claude-2026-09-18T215915Z-af997c2abb5a (claude-opus-5-5), 2026-09-23 UTC.
+Assembled verbatim by the controller from the auditor's rerun logs in /tmp/r72audit/; section banners are the only added lines.
+Exits and comparisons are as recorded in review/audit-claude.md (verdict approve): all eleven scripts exit 0;
+fetch-revision2 returned 31 of 33 answers (two archive.org timeouts, recorded as a network problem, not a defect).
+
+===== r72-standard.sh rerun (standard.log) =====
+## environment
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+git:  git version 2.50.1 (Apple Git-155)
+
+## the pin
+blob re-hashed from the extracted bytes: 71bd813c1cf61286586b4ee41ed83ff065e5c8d9
+PASS S01 the extracted bytes hash to the pinned blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9
+sha256 of the extracted file: 4d3ea4e898f79a358e16e8ddadcb9b4a5b3726032d1f36c00fb73311c4e79958
+lines: 3427
+
+## version
+  :3 **Version 2.0.0.** Version 1.0.0 was released 2026-08-10 after Gates C, D,
+PASS S02 line 3 carries: **Version 2.0.0.**
+
+## 1.9 deviations — the instrument an override must use
+  :271 **R1.7 — No silent deviation.** An API deviates from this standard only in
+PASS S03 line 271 carries: **R1.7 — No silent deviation.**
+  :272 writing. Every deviation from a **SHOULD** MUST be recorded in the API's
+PASS S04 line 272 carries: writing. Every deviation from a **SHOULD** MUST be recorded
+  :273 conformance note with its reason. A deviation from a **MUST** makes the API
+PASS S05 line 273 carries: conformance note with its reason. A deviation from a **MUST** makes the API
+  :274 nonconformant unless it is recorded as an approved exception in the
+PASS S06 line 274 carries: nonconformant unless it is recorded as an approved exception in the
+  :275 conformance note; silent deviation from any rule strength is nonconformance
+PASS S07 line 275 carries: conformance note; silent deviation from any rule strength is nonconformance
+
+## 1.10 reserved names — R1.8 and the query-parameter register
+  :312 **R1.8 — Reservation discipline.** A conforming API MUST NOT use a reserved
+PASS S08 line 312 carries: **R1.8 — Reservation discipline.** A conforming API MUST NOT use a reserved
+  :313 name for any purpose other than the meaning registered here, and when it
+PASS S09 line 313 carries: name for any purpose other than the meaning registered here, and when it
+  :314 offers the corresponding capability it MUST use the reserved name rather
+PASS S10 line 314 carries: offers the corresponding capability it MUST use the reserved name rather
+  :315 than a synonym (same concept, same name — everywhere). Reserved names are
+PASS S11 line 315 carries: than a synonym (same concept, same name — everywhere). Reserved names are
+  :336 | `cursor` | Opaque pagination position | Request-side name for cursor pagination; cursors are opaque and non-constructable (`AC-013`) | Addendum A2.3, completing `AC-013`/`AC-014` `[POLICY]` |
+PASS S12 line 336 carries: | `cursor` | Opaque pagination position | Request-side name for cursor pagination
+  :337 | `limit` | Requested page size | Request-side name; each collection documents its default and maximum (`OP-009`) | Addendum A2.3 `[POLICY]` |
+PASS S13 line 337 carries: | `limit` | Requested page size | Request-side name; each collection documents its default and maximum
+
+## the register does not name a page index
+  occurrences of `page`: 0
+PASS S14 the standard nowhere reserves or names a `page` query parameter
+  occurrences of `offset`: 0
+PASS S15 the standard nowhere reserves or names an `offset` query parameter
+  occurrences of `size`: 0
+PASS S16 the standard nowhere reserves or names a `size` query parameter
+
+## 6.1 the collection envelope
+  :1129 ## 6. Collections, pagination, filtering, and sorting
+PASS S17 line 1129 carries: ## 6. Collections, pagination, filtering, and sorting
+  :1133 **R6.1** Every collection response MUST return a top-level object carrying
+PASS S18 line 1133 carries: **R6.1** Every collection response MUST return a top-level object carrying
+  :1134 both the items and the continuation state — never a bare array — so that
+PASS S19 line 1134 carries: both the items and the continuation state — never a bare array — so that
+  :1135 metadata can be added without a breaking change.
+PASS S20 line 1135 carries: metadata can be added without a breaking change.
+  :1154 **R6.2** An empty collection returns `200 OK` with an empty items array —
+PASS S21 line 1154 carries: **R6.2** An empty collection returns `200 OK` with an empty items array —
+  :1155 never `404 Not Found`. A **streamed** empty collection returns `200 OK` with
+PASS S22 line 1155 carries: never `404 Not Found`.
+
+## 6.2 pagination
+  :1170 **R6.3** Pagination SHOULD use opaque, non-constructable cursors — offset
+PASS S23 line 1170 carries: **R6.3** Pagination SHOULD use opaque, non-constructable cursors — offset
+  :1171 pagination is incorrect under concurrent mutation. **Exception:** small or
+PASS S24 line 1171 carries: pagination is incorrect under concurrent mutation. **Exception:** small or
+  :1172 stable collections; UI requiring jump-to-page. The exception applies only
+PASS S25 line 1172 carries: stable collections; UI requiring jump-to-page. The exception applies only
+  :1173 where the contract documents the property claimed — a bounded size or an
+PASS S26 line 1173 carries: where the contract documents the property claimed — a bounded size or an
+  :1174 append-only/immutable mutation pattern. The corresponding client
+PASS S27 line 1174 carries: append-only/immutable mutation pattern.
+  :1180 **R6.4** Pagination state lives only in the body representation — the
+PASS S28 line 1180 carries: **R6.4** Pagination state lives only in the body representation — the
+  :1182 RFC 8288 `Link` headers MUST NOT be emitted for pagination — dual emission
+PASS S29 line 1182 carries: RFC 8288 `Link` headers MUST NOT be emitted for pagination
+  :1194 **R6.5** The pagination request parameters are `cursor` and `limit`
+PASS S30 line 1194 carries: **R6.5** The pagination request parameters are `cursor` and `limit`
+  :1195 (§1.10). Each collection MUST document its default and maximum `limit`
+PASS S31 line 1195 carries: (§1.10). Each collection MUST document its default and maximum `limit`
+  :1196 (the enforcement obligation is R11.1). **This binds a streamed collection
+PASS S32 line 1196 carries: (the enforcement obligation is R11.1).
+
+## 6.3 ordering
+  :1207 **R6.6** Every collection MUST document a total, stable default order,
+PASS S33 line 1207 carries: **R6.6** Every collection MUST document a total, stable default order,
+  :1208 with ties broken by an immutable key (`id`). A cursor over
+PASS S34 line 1208 carries: with ties broken by an immutable key (`id`). A cursor over
+  :1209 nondeterministic order silently skips or duplicates rows, so this rule is
+PASS S35 line 1209 carries: nondeterministic order silently skips or duplicates rows, so this rule is
+
+## what "non-constructable" means in this standard — a contract, not cryptography
+  :1175 obligation not to construct or modify cursors is R12.5.
+PASS S56 line 1175 carries: obligation not to construct or modify cursors is R12.5.
+  :336 | `cursor` | Opaque pagination position | Request-side name for cursor pagination; cursors are opaque and non-constructable (`AC-013`) | Addendum A2.3, completing `AC-013`/`AC-014` `[POLICY]` |
+PASS S57 line 336 carries: cursors are opaque and non-constructable (`AC-013`)
+  :2497 | `AC-013` | R6.3, R12.5 | B2 |
+PASS S58 line 2497 carries: | `AC-013` | R6.3, R12.5 | B2 |
+  example cursor b3BhcXVlLW5vdC1jb25zdHJ1Y3RhYmxl decodes to: opaque-not-constructable
+PASS S59 the standard example cursor at line 3050 is plain base64 of the text opaque-not-constructable
+
+## the one section 6 MUST NOT with no capability here to bind
+  :1235 **R6.9** Filter parameters MUST NOT expose storage or query-engine
+PASS S60 line 1235 carries: **R6.9** Filter parameters MUST NOT expose storage or query-engine
+  :2499 | `AC-015` | R6.9 | B2 |
+PASS S61 line 2499 carries: | `AC-015` | R6.9 | B2 |
+
+## section 6 rules this item does not exercise: R6.7 and R6.10 are MAY; R6.8
+## fixes the filter grammar and carries no MAY (revision 3, audit finding 5)
+  :1215 **R6.7** Offering sorting is MAY. When offered, the syntax is fixed: the
+PASS S36 line 1215 carries: **R6.7** Offering sorting is MAY.
+  :1226 **R6.8** Collection list endpoints filter via per-field equality
+PASS S37 line 1226 carries: **R6.8** Collection list endpoints filter via per-field equality
+  :1244 **R6.10** Offering sparse fieldsets is MAY — a fixed response shape is a
+PASS S38 line 1244 carries: **R6.10** Offering sparse fieldsets is MAY
+  | **R6.8** Collection list endpoints filter via per-field equality
+  | parameters plus the bracket range operators `[gte]`, `[gt]`, `[lte]`,
+  | `[lt]`, combined AND-only (§1.10). A structured query DSL is permitted
+  | only as a separately documented search endpoint, never mixed into
+  | collection listing.
+  RFC 2119 keywords in R6.8 (lines 1226-1230): 0
+PASS S62 R6.8 at lines 1226-1230 carries no MAY, MUST or SHOULD — it is not a MAY rule
+
+## what the conformance note records under N/A declarations
+  :293 N/A declarations:
+PASS S63 line 293 carries: N/A declarations:
+  :294 - <rule ID or switch> · why it cannot apply
+PASS S64 line 294 carries: - <rule ID or switch> · why it cannot apply
+  :2934 N/A declarations: none beyond the switch reasons above.
+PASS S65 line 2934 carries: N/A declarations: none beyond the switch reasons above.
+  :233 rules as not applicable — MUST carry a stated reason in the conformance
+PASS S66 line 233 carries: rules as not applicable — MUST carry a stated reason in the conformance
+  :286   (every switch declared off carries a one-line reason)
+PASS S67 line 286 carries:   (every switch declared off carries a one-line reason)
+
+## 5.3 which status a rejected window carries
+  :939 **R5.3** `422 Unprocessable Content` SHOULD be used for semantically
+PASS S39 line 939 carries: **R5.3** `422 Unprocessable Content` SHOULD be used for semantically
+  :940 invalid but well-formed requests, `409 Conflict` for conflicts with
+PASS S40 line 940 carries: invalid but well-formed requests
+  :941 current resource state; `400 Bad Request` remains correct for malformed
+PASS S41 line 941 carries: current resource state; `400 Bad Request` remains correct for malformed
+  :942 syntax.
+PASS S42 line 942 carries: syntax.
+  :2847 | Malformed syntax | 400 |
+PASS S43 line 2847 carries: | Malformed syntax | 400 |
+  :2853 | Semantically invalid | 422 |
+PASS S44 line 2853 carries: | Semantically invalid | 422 |
+
+## 11.1 the enforcement obligation behind the maximum
+  :1678 **R11.1** An API MUST publish and enforce a maximum page size, expansion
+PASS S45 line 1678 carries: **R11.1** An API MUST publish and enforce a maximum page size, expansion
+  :1679 depth, and bulk item count.
+PASS S46 line 1679 carries: depth, and bulk item count.
+
+## 12.5 the client obligation that makes a cursor opaque
+  :1807 **R12.5** Clients MUST treat cursors (R6.3) as opaque: never construct,
+PASS S47 line 1807 carries: **R12.5** Clients MUST treat cursors (R6.3) as opaque: never construct,
+
+## how the standard itself renders a conforming collection
+  :2861 **Collections.** `cursor` + `limit` in; `items` + continuation out;
+PASS S48 line 2861 carries: **Collections.** `cursor` + `limit` in; `items` + continuation out;
+  :2895 | R6.1, R6.5 | A shared collection envelope schema (`items` + continuation member); shared `cursor`/`limit` query parameters with documented default and maximum |
+PASS S49 line 2895 carries: | R6.1, R6.5 | A shared collection envelope schema (`items` + continuation member); shared `cursor`/`limit` query parameters with documented default and maximum |
+  :3039   "items": [
+PASS S50 line 3039 carries:   "items": [
+  :3050   "next_cursor": "b3BhcXVlLW5vdC1jb25zdHJ1Y3RhYmxl"
+PASS S51 line 3050 carries:   "next_cursor": "b3BhcXVlLW5vdC1jb25zdHJ1Y3RhYmxl"
+  :3058 `GET /v1/orders?cursor=…&limit=50` and the cursor is opaque (R6.3,
+PASS S52 line 3058 carries: `GET /v1/orders?cursor=…&limit=50` and the cursor is opaque (R6.3,
+  :3414 | Empty collection | List with a filter matching nothing | 200 + empty `items` | R6.2 |
+PASS S53 line 3414 carries: | Empty collection | List with a filter matching nothing | 200 + empty `items` | R6.2 |
+  :2718 | R6.5 | `cursor` and `limit` names; default and maximum documented — including for a collection delivered as a stream, where the documented maximum is enforced per page and not waived by incremental delivery |
+PASS S54 line 2718 carries: | R6.5 | `cursor` and `limit` names; default and maximum documented
+  :2716 | R6.3 | Cursor pagination (recommendation-strength, with documented bounded/append-only and jump-to-page exceptions); cursors opaque and non-constructable |
+PASS S55 line 2716 carries: | R6.3 | Cursor pagination (recommendation-strength, with documented bounded/append-only and jump-to-page exceptions); cursors opaque and non-constructable |
+
+## R13.3, the stream rejection guard: not scoped by the streaming switch,
+## bound per endpoint (revision 4, audit finding 1)
+  :258 **A switch never waives a guard.** A rule whose whole purpose is to define
+PASS S68 line 258 carries: **A switch never waives a guard.**
+  :262 `R1.9` (the `dry_run` rejection guard) and `R13.3` (the `stream` rejection
+PASS S69 line 262 carries: `R1.9` (the `dry_run` rejection guard) and `R13.3` (the `stream` rejection
+  :263 guard). Both bind **per endpoint**, not per API: an API that streams on some
+PASS S70 line 263 carries: guard). Both bind **per endpoint**, not per API
+  :1896 **Switch scope.** Rules R13.1, R13.2, R13.4–R13.11, and R13.12–R13.17 are
+PASS S71 line 1896 carries: **Switch scope.** Rules R13.1, R13.2, R13.4–R13.11, and R13.12–R13.17 are
+  :1898 `streaming` applicability switch (§1.8), as is R12.10. **R13.3 is not** — it
+PASS S72 line 1898 carries: `streaming` applicability switch (§1.8), as is R12.10. **R13.3 is not**
+  :1899 binds **every endpoint that does not implement streaming, whatever the API's
+PASS S73 line 1899 carries: binds **every endpoint that does not implement streaming, whatever the API's
+  :1935 **R13.3** `stream` is a reserved request-modifier name (§1.10) meaning
+PASS S74 line 1935 carries: **R13.3** `stream` is a reserved request-modifier name (§1.10)
+  :1937 streaming and receives `stream` — as a query parameter or a request-body
+PASS S75 line 1937 carries: streaming and receives `stream` — as a query parameter or a request-body
+  :1938 member, with any value — MUST reject the request with `400`, and MUST NOT
+PASS S76 line 1938 carries: member, with any value — MUST reject the request with `400`, and MUST NOT
+  :1939 silently answer with a non-streamed response.
+PASS S77 line 1939 carries: silently answer with a non-streamed response.
+  :2776 | R13.3 | `stream` on a non-streaming endpoint rejected with `400`, never silently ignored; on a streaming endpoint, a `stream` modifier disagreeing with the negotiated representation rejected with `400` *(binds per endpoint, whatever the `streaming` switch says)* |
+PASS S78 line 2776 carries: | R13.3 | `stream` on a non-streaming endpoint rejected with `400`, never silently ignored;
+  :3422 | Stream guard | `stream=true` to an endpoint without streaming | 400, never a silently non-streamed 200 | R13.3 |
+PASS S79 line 3422 carries: | Stream guard | `stream=true` to an endpoint without streaming | 400, never a silently non-streamed 200 | R13.3 |
+
+## R7.1 and R11.7, headers every response must carry, which other items
+## add and this item's tests must not constrain (revision 5, audit JA4-02)
+  :1259 **R7.1** Every response MUST carry an explicit `Cache-Control` header —
+PASS S80 line 1259 carries: **R7.1** Every response MUST carry an explicit `Cache-Control` header —
+  :1752 **R11.7** Every response, including errors, MUST carry the `request-id`
+PASS S81 line 1752 carries: **R11.7** Every response, including errors, MUST carry the `request-id`
+  :1753 correlation header (§1.10).
+PASS S82 line 1753 carries: correlation header (§1.10).
+
+## totals
+PASS 82
+FAIL 0
+SKIP 0
+
+===== r72-inputs.sh rerun (inputs.log) =====
+## environment
+root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+
+## the three collected engine reports, at the hashes the run pinned
+  research/runs/R72/2026-09-18T215915Z-af997c2abb5a/raw/muse-107925801a224c71ad22e4d6ca4425223700e99163c709fd96d3fde558aca079.md
+  107925801a224c71ad22e4d6ca4425223700e99163c709fd96d3fde558aca079
+PASS I01 research/runs/R72/2026-09-18T215915Z-af997c2abb5a/raw/muse-107925801a224c71ad22e4d6ca4425223700e99163c709fd96d3fde558aca079.md is 107925801a224c71ad22e4d6ca4425223700e99163c709fd96d3fde558aca079
+  research/runs/R72/2026-09-18T215915Z-af997c2abb5a/raw/opus-95db4ad7bf2bda0242c0bc7c4f7be2de289bde6da989fa3d126635af3ea332d0.md
+  95db4ad7bf2bda0242c0bc7c4f7be2de289bde6da989fa3d126635af3ea332d0
+PASS I02 research/runs/R72/2026-09-18T215915Z-af997c2abb5a/raw/opus-95db4ad7bf2bda0242c0bc7c4f7be2de289bde6da989fa3d126635af3ea332d0.md is 95db4ad7bf2bda0242c0bc7c4f7be2de289bde6da989fa3d126635af3ea332d0
+  research/runs/R72/2026-09-18T215915Z-af997c2abb5a/raw/doxa-6f73f6c3bcca672d641c5cd77e178bbad8296d3feaa808e5c18ad5e0d62da540.md
+  6f73f6c3bcca672d641c5cd77e178bbad8296d3feaa808e5c18ad5e0d62da540
+PASS I03 research/runs/R72/2026-09-18T215915Z-af997c2abb5a/raw/doxa-6f73f6c3bcca672d641c5cd77e178bbad8296d3feaa808e5c18ad5e0d62da540.md is 6f73f6c3bcca672d641c5cd77e178bbad8296d3feaa808e5c18ad5e0d62da540
+
+## the four fixed parameters, quoted at the bytes the run captured
+  research/runs/R72/2026-09-18T215915Z-af997c2abb5a/inputs/parameters.json: 12:    "value": "2024"
+PASS I04 research/runs/R72/2026-09-18T215915Z-af997c2abb5a/inputs/parameters.json carries: "value": "2024"
+  research/runs/R72/2026-09-18T215915Z-af997c2abb5a/inputs/parameters.json: 11:    "param": "rust-edition",
+PASS I05 research/runs/R72/2026-09-18T215915Z-af997c2abb5a/inputs/parameters.json carries: "param": "rust-edition"
+  research/runs/R72/2026-09-18T215915Z-af997c2abb5a/inputs/parameters.json: 6:    "value": "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI"
+PASS I06 research/runs/R72/2026-09-18T215915Z-af997c2abb5a/inputs/parameters.json carries: "value": "stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI"
+  research/runs/R72/2026-09-18T215915Z-af997c2abb5a/inputs/parameters.json: 18:    "value": "ubuntu-latest, macos-latest"
+PASS I07 research/runs/R72/2026-09-18T215915Z-af997c2abb5a/inputs/parameters.json carries: "value": "ubuntu-latest, macos-latest"
+  research/runs/R72/2026-09-18T215915Z-af997c2abb5a/inputs/parameters.json: 24:    "value": "MIT OR Apache-2.0"
+PASS I08 research/runs/R72/2026-09-18T215915Z-af997c2abb5a/inputs/parameters.json carries: "value": "MIT OR Apache-2.0"
+  every one of the four values is still live in the registry:
+PASS I09 docs/port/PARAMETERS.md still carries: 2024
+PASS I09 docs/port/PARAMETERS.md still carries: ubuntu-latest, macos-latest
+PASS I09 docs/port/PARAMETERS.md still carries: MIT OR Apache-2.0
+PASS I09 docs/port/PARAMETERS.md still carries: stable minus 2 minor versions, raised only in a minor release, declared as rust-version in Cargo.toml and tested in CI
+
+## the prompt declares no consumed parameter
+PASS I10 the prompt Couplings block has an empty `consumes:` list
+  research/runs/R72/2026-09-18T215915Z-af997c2abb5a/inputs/prompt.md: 24:- engines: muse, opus, doxa
+PASS I11 research/runs/R72/2026-09-18T215915Z-af997c2abb5a/inputs/prompt.md carries: - engines: muse, opus, doxa
+  research/runs/R72/2026-09-18T215915Z-af997c2abb5a/inputs/prompt.md: 23:- effort: deep
+PASS I12 research/runs/R72/2026-09-18T215915Z-af997c2abb5a/inputs/prompt.md carries: - effort: deep
+
+## R69 — the prerequisite, at the hash prerequisites.json records
+  research/runs/R72/2026-09-18T215915Z-af997c2abb5a/inputs/prerequisites.json: 4:    "decision": "d4507f5b2ca4201d9837caf013de16f30070cb3e2f5558eb66f7ded9dfd2c10d"
+PASS I13 research/runs/R72/2026-09-18T215915Z-af997c2abb5a/inputs/prerequisites.json carries: d4507f5b2ca4201d9837caf013de16f30070cb3e2f5558eb66f7ded9dfd2c10d
+  research/topics/69-web-framework-stack/DECISION.md
+  d4507f5b2ca4201d9837caf013de16f30070cb3e2f5558eb66f7ded9dfd2c10d
+PASS I14 research/topics/69-web-framework-stack/DECISION.md is d4507f5b2ca4201d9837caf013de16f30070cb3e2f5558eb66f7ded9dfd2c10d
+
+## the published R69 places the web tree at src/web/, not crates/web/
+  research/topics/69-web-framework-stack/DECISION.md: 1413:| `src/web/mod.rs` (new) | `AppState` and its `FromRef` impls, `build_router(state) -> Router`, `shutdown_signal()`, `serve_until(..)` |
+PASS I15 research/topics/69-web-framework-stack/DECISION.md carries: `src/web/mod.rs` (new)
+  research/topics/69-web-framework-stack/DECISION.md: 1414:| `src/web/routes/projects.rs` (new) | `pub(crate) fn router() -> Router<AppState>` and the handlers, returning the library's own contract types |
+PASS I16 research/topics/69-web-framework-stack/DECISION.md carries: `src/web/routes/projects.rs` (new)
+  research/topics/69-web-framework-stack/DECISION.md: 1586:- owns web-extra-surface = one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files
+PASS I17 research/topics/69-web-framework-stack/DECISION.md carries: axum 0.8.9 optional and its default features on
+  the published R69 mentions crates/web this many times:
+  0
+PASS I18 the published R69 never says crates/web — the revision-10 layout is unpublished
+
+## R01 — the handler observable and the fake's field (not a port signature), and no id type is named
+  research/topics/01-ports-and-adapters-seam/DECISION.md: 53:6. The web front end serializes the types the CLI renders. *Observable:* the handler returns `Json<Vec<Project>>` and `Json<Option<Project>>` from the library's contract module, no mirror struct exists, and a real HTTP GET against a bound listener decodes into the library's `Vec<Project>` and equals the CLI's output. This is P03's to demonstrate; see `## Engines`.
+PASS I19 research/topics/01-ports-and-adapters-seam/DECISION.md carries: Json<Vec<Project>>
+  research/topics/01-ports-and-adapters-seam/DECISION.md: 16:| Shipped first-class fake | F013 | `pub struct InMemoryProjectsPort { rows: std::sync::Mutex<Vec<Project>> }`, public, unconditional (no `cfg(test)`, no feature) | `std::sync::Mutex`, no crate |
+PASS I20 research/topics/01-ports-and-adapters-seam/DECISION.md carries: std::sync::Mutex<Vec<Project>>
+  occurrences of a declared Project id type in the published R01:
+  0
+PASS I21 no accepted decision declares the Project struct or its id type
+
+## the py precedent, read at the programme pin
+  src/py_launch_blueprint/web/routers/projects.py: 30:from fastapi_pagination import Page, paginate
+PASS I22 py src/py_launch_blueprint/web/routers/projects.py carries: from fastapi_pagination import Page, paginate
+  src/py_launch_blueprint/web/routers/projects.py: 24:envelope (WEB-03: ``page``/``size`` query params, ``items``/``total`` body).
+PASS I23 py src/py_launch_blueprint/web/routers/projects.py carries: WEB-03: ``page``/``size`` query params, ``items``/``total`` body
+  src/py_launch_blueprint/web/routers/projects.py: 47:    the upstream universe. True pass-through pagination needs cursor support
+PASS I24 py src/py_launch_blueprint/web/routers/projects.py carries: True pass-through pagination needs cursor support
+  src/py_launch_blueprint/web/app.py: 204:    add_pagination(app)
+PASS I25 py src/py_launch_blueprint/web/app.py carries: add_pagination(app)
+  src/py_launch_blueprint/core/models.py: 77:    id: str
+PASS I26 py src/py_launch_blueprint/core/models.py carries:     id: str
+  uv.lock: 496:version = "0.15.15"
+PASS I27 py uv.lock carries: version = "0.15.15"
+
+## fastapi-pagination 0.15.15 default window, read from the resolved install
+  /Users/stevemorin/c/py-launch-blueprint/.venv/lib/python3.12/site-packages/fastapi_pagination/default.py
+  sha256 b5a76d5888cfed2981cd316f504b11c6b2d8fa0879625b5e93cde72fe82263b8
+  24:    page: int = Query(1, ge=1, description="Page number")
+PASS I28 fastapi-pagination declares:     page: int = Query(1, ge=1, description="Page number")
+  25:    size: int = Query(50, ge=1, le=100, description="Page size")
+PASS I29 fastapi-pagination declares:     size: int = Query(50, ge=1, le=100, description="Page size")
+
+## the owner ruling that binds the standard
+  docs/port/OWNER-REVIEW.md: 187:### 2026-09-18 — the REST API Design Standard binds the HTTP surface (W2-REST)
+PASS I30 docs/port/OWNER-REVIEW.md carries: ### 2026-09-18 — the REST API Design Standard binds the HTTP surface (W2-REST)
+  docs/port/OWNER-REVIEW.md: 196:R6.4 forbids `Link` headers for pagination, so py's `page`/`size` request and
+PASS I31 docs/port/OWNER-REVIEW.md carries: so py
+  docs/port/OWNER-REVIEW.md: 198:stands. Every web item (R70 R72 R73 R74 R76 R77 R80 and the later R71 R83 R84)
+PASS I32 docs/port/OWNER-REVIEW.md carries: stands. Every web item
+  docs/port/OWNER-REVIEW.md: 192:`0850d43e45d919ef5e37f7174c4212b46013c49f`, file blob `71bd813c`), governs
+PASS I33 docs/port/OWNER-REVIEW.md carries: `0850d43e45d919ef5e37f7174c4212b46013c49f`
+
+## the ledger rows this item settles
+  docs/port/COMMONALITY.md: 314:| F310 | collection pagination via page/size query params and items/total envelope | web-service | py-only | DIVERGENT | R72 | bundle; whether Rust adopts a pagination crate/extractor for the page/size + items/total envelope — decides F311 |
+PASS I34 docs/port/COMMONALITY.md carries: F310
+  docs/port/COMMONALITY.md: 314:| F310 | collection pagination via page/size query params and items/total envelope | web-service | py-only | DIVERGENT | R72 | bundle; whether Rust adopts a pagination crate/extractor for the page/size + items/total envelope — decides F311 |
+PASS I35 docs/port/COMMONALITY.md carries: F311
+
+## R69 clause (4): a later web layer is gated by the same feature, and R69
+## itself reads a later layer s dependency as leaving its value unchanged
+  docs/port/PARAMETERS.md: 17:| web-extra-surface | researched | R69 | one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files | whether the template ships an optional web and API surface behind a Cargo feature, and what that surface contains; consumed by R11 (CI job and skip-gating structure), R32 (test tiers), R37 (hook wiring for the OpenAPI snapshot check), R51 (container image), R58 (shared logging pipeline profiles) and R71, R82, R83, R84 (the OpenAPI and docs gates) |
+PASS I36 docs/port/PARAMETERS.md carries: web = ["dep:axum", "dep:tokio"]
+  docs/port/PARAMETERS.md: 17:| web-extra-surface | researched | R69 | one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files | whether the template ships an optional web and API surface behind a Cargo feature, and what that surface contains; consumed by R11 (CI job and skip-gating structure), R32 (test tiers), R37 (hook wiring for the OpenAPI snapshot check), R51 (container image), R58 (shared logging pipeline profiles) and R71, R82, R83, R84 (the OpenAPI and docs gates) |
+PASS I37 docs/port/PARAMETERS.md carries: (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware
+  docs/port/PARAMETERS.md: 17:| web-extra-surface | researched | R69 | one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files | whether the template ships an optional web and API surface behind a Cargo feature, and what that surface contains; consumed by R11 (CI job and skip-gating structure), R32 (test tiers), R37 (hook wiring for the OpenAPI snapshot check), R51 (container image), R58 (shared logging pipeline profiles) and R71, R82, R83, R84 (the OpenAPI and docs gates) |
+PASS I38 docs/port/PARAMETERS.md carries: as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off
+  research/topics/69-web-framework-stack/DECISION.md: 2341:   fixed by the owned parameter and needs no change here: `axum-extra` would be an **additive**
+PASS I39 research/topics/69-web-framework-stack/DECISION.md carries: fixed by the owned parameter and needs no change here: `axum-extra` would be an **additive**
+  research/topics/69-web-framework-stack/DECISION.md: 2345:   and the owned value is byte-identical.
+PASS I40 research/topics/69-web-framework-stack/DECISION.md carries: and the owned value is byte-identical.
+  research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/DECISION.md: 728:| `crates/web/Cargo.toml` | one `[dependencies]` line: `problem_details = { version = "0.10.0", features = ["axum", "json"] }`. No `optional = true` — the whole member is already optional at the root |
+PASS I41 research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/DECISION.md carries: No `optional = true` — the whole member is already optional at the root
+
+## R70 is still open: nothing is published under its topic directory
+  prompts
+PASS I42 research/topics/70-http-problem-envelope/ carries no DECISION.md
+  research/CLAUDE.md: 75:| R70 | http-problem-envelope | bundle | py-only | DIVERGENT | — | [prompt](topics/70-http-problem-envelope/prompts/http-problem-envelope.prompt.md) | open |
+PASS I43 research/CLAUDE.md carries: | R70 | http-problem-envelope | bundle | py-only | DIVERGENT | — | [prompt](topics/70-http-problem-envelope/prompts/http-problem-envelope.prompt.md) | open |
+
+## revision 3, audit finding 1 — every CONFLICT line the raws carry
+  :1420 CONFLICT: R69 `web-framework-stack` — **needed value: one of `axum`, `actix-web`, or `rocket`** — **reason: `paginator-rs` currently provides integration crates only for these frameworks and must integrate with the chosen extractor model.**
+PASS I44 doxa-6f73f6c3bcca672d641c5cd77e178bbad8296d3feaa808e5c18ad5e0d62da540.md line 1420 carries: CONFLICT: R69 `web-framework-stack` — **needed value: one of `axum`, `actix-web`, or `rocket`** — **reason: `paginator-rs` currently provides integration crates only for these frameworks
+  :1636 CONFLICT: R69 `web-framework-stack` — **needed value: one of `axum`, `actix-web`, or `rocket`** — **reason: required for `paginator-rs` integration; other frameworks would require additional integration work or a different pagination bundle.**
+PASS I45 doxa-6f73f6c3bcca672d641c5cd77e178bbad8296d3feaa808e5c18ad5e0d62da540.md line 1636 carries: CONFLICT: R69 `web-framework-stack` — **needed value: one of `axum`, `actix-web`, or `rocket`** — **reason: required for `paginator-rs` integration
+  :2105 *   `CONFLICT: R69 web-framework-stack — axum — The paginator-axum crate requires Axum as the host web framework; if R69 resolves to Actix-Web or Rocket, the equivalent paginator-actix or paginator-rocket crates must be substituted in the dependency manifest.`
+PASS I46 doxa-6f73f6c3bcca672d641c5cd77e178bbad8296d3feaa808e5c18ad5e0d62da540.md line 2105 carries: `CONFLICT: R69 web-framework-stack — axum — The paginator-axum crate requires Axum as the host web framework
+  :2151 *   `CONFLICT: R69 web-framework-stack — axum — The paginator-axum crate requires Axum as the host web framework; if R69 resolves to Actix-Web or Rocket, the equivalent paginator-actix or paginator-rocket crates must be substituted in the dependency manifest.`
+PASS I47 doxa-6f73f6c3bcca672d641c5cd77e178bbad8296d3feaa808e5c18ad5e0d62da540.md line 2151 carries: `CONFLICT: R69 web-framework-stack — axum — The paginator-axum crate requires Axum as the host web framework
+  :749 CONFLICT: none
+PASS I48 doxa-6f73f6c3bcca672d641c5cd77e178bbad8296d3feaa808e5c18ad5e0d62da540.md line 749 carries: CONFLICT: none
+  :15 ## Openai Results
+PASS I49 doxa-6f73f6c3bcca672d641c5cd77e178bbad8296d3feaa808e5c18ad5e0d62da540.md line 15 carries: ## Openai Results
+  :1074 ## Perplexity Results
+PASS I50 doxa-6f73f6c3bcca672d641c5cd77e178bbad8296d3feaa808e5c18ad5e0d62da540.md line 1074 carries: ## Perplexity Results
+  :1758 ## Gemini Results
+PASS I51 doxa-6f73f6c3bcca672d641c5cd77e178bbad8296d3feaa808e5c18ad5e0d62da540.md line 1758 carries: ## Gemini Results
+  CONFLICT lines naming an item, per raw:
+  4 doxa-6f73f6c3bcca672d641c5cd77e178bbad8296d3feaa808e5c18ad5e0d62da540.md
+  0 muse-107925801a224c71ad22e4d6ca4425223700e99163c709fd96d3fde558aca079.md
+  0 opus-95db4ad7bf2bda0242c0bc7c4f7be2de289bde6da989fa3d126635af3ea332d0.md
+PASS I52 the Doxa raw carries exactly four CONFLICT lines naming an item
+PASS I53 the Muse and Opus raws carry no CONFLICT line naming an item
+  web-framework-stack is R69 s slug; the parameter R69 owns is web-extra-surface:
+  research/CLAUDE.md: 74:| R69 | web-framework-stack | bundle | py-only | DIVERGENT | web-extra-surface | [prompt](topics/69-web-framework-stack/prompts/web-framework-stack.prompt.md) | resolved |
+PASS I54 research/CLAUDE.md carries: | R69 | web-framework-stack | bundle | py-only | DIVERGENT | web-extra-surface |
+PASS I55 docs/port/PARAMETERS.md registers no parameter named web-framework-stack
+  docs/port/PARAMETERS.md: 17:| web-extra-surface | researched | R69 | one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files | whether the template ships an optional web and API surface behind a Cargo feature, and what that surface contains; consumed by R11 (CI job and skip-gating structure), R32 (test tiers), R37 (hook wiring for the OpenAPI snapshot check), R51 (container image), R58 (shared logging pipeline profiles) and R71, R82, R83, R84 (the OpenAPI and docs gates) |
+PASS I56 docs/port/PARAMETERS.md carries: | web-extra-surface | researched | R69 |
+
+## revision 3, audit finding 2 — R69 s axum-extra sentence in full, and the
+## value s own partition of later items into clause (4) and heavier opt-ins
+  :2340    they belong to whichever of **R72**–**R76** needs one. Either way the mechanism is already
+PASS I57 DECISION.md line 2340 carries: they belong to whichever of **R72**–**R76** needs one. Either way the mechanism is already
+  :2341    fixed by the owned parameter and needs no change here: `axum-extra` would be an **additive**
+PASS I58 DECISION.md line 2341 carries: fixed by the owned parameter and needs no change here: `axum-extra` would be an **additive**
+  :2342    dependency of a later layer nested inside the gated `src/web/` tree, under the clause
+PASS I59 DECISION.md line 2342 carries: dependency of a later layer nested inside the gated `src/web/` tree, under the clause
+  :2343    *"heavier opt-ins nest on top rather than widening it"*. **This item neither selects nor
+PASS I60 DECISION.md line 2343 carries: *"heavier opt-ins nest on top rather than widening it"*. **This item neither selects nor
+  :2344    excludes it on fitness** — no gate is answered for it, because it is not a candidate here —
+PASS I61 DECISION.md line 2344 carries: excludes it on fitness** — no gate is answered for it, because it is not a candidate here —
+  :2345    and the owned value is byte-identical.
+PASS I62 DECISION.md line 2345 carries: and the owned value is byte-identical.
+  docs/port/PARAMETERS.md: 17:| web-extra-surface | researched | R69 | one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files | whether the template ships an optional web and API surface behind a Cargo feature, and what that surface contains; consumed by R11 (CI job and skip-gating structure), R32 (test tiers), R37 (hook wiring for the OpenAPI snapshot check), R51 (container image), R58 (shared logging pipeline profiles) and R71, R82, R83, R84 (the OpenAPI and docs gates) |
+PASS I69 docs/port/PARAMETERS.md carries: (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers
+  docs/port/PARAMETERS.md: 17:| web-extra-surface | researched | R69 | one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files | whether the template ships an optional web and API surface behind a Cargo feature, and what that surface contains; consumed by R11 (CI job and skip-gating structure), R32 (test tiers), R37 (hook wiring for the OpenAPI snapshot check), R51 (container image), R58 (shared logging pipeline profiles) and R71, R82, R83, R84 (the OpenAPI and docs gates) |
+PASS I63 docs/port/PARAMETERS.md carries: R77's settings, R80's probes - as modules inside that same gated src/web/ tree
+  docs/port/PARAMETERS.md: 17:| web-extra-surface | researched | R69 | one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files | whether the template ships an optional web and API surface behind a Cargo feature, and what that surface contains; consumed by R11 (CI job and skip-gating structure), R32 (test tiers), R37 (hook wiring for the OpenAPI snapshot check), R51 (container image), R58 (shared logging pipeline profiles) and R71, R82, R83, R84 (the OpenAPI and docs gates) |
+PASS I64 docs/port/PARAMETERS.md carries: heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras
+  web arrays with a third dep: entry in other decisions: 0
+PASS I70 no other run or published decision adds a dep: entry to the web feature array
+  pyproject.toml: 56:web = [
+PASS I65 py pyproject.toml carries: web = [
+  pyproject.toml: 60:  "fastapi-pagination>=0.12.26",              # WEB-03 pagination conventions
+PASS I66 py pyproject.toml carries:   "fastapi-pagination>=0.12.26",              # WEB-03 pagination conventions
+  pyproject.toml: 64:otel = [
+PASS I67 py pyproject.toml carries: otel = [
+  pyproject.toml: 62:  "prometheus-fastapi-instrumentator>=7.0.0", # WEB-11 RED metrics + /metrics
+PASS I68 py pyproject.toml carries:   "prometheus-fastapi-instrumentator>=7.0.0", # WEB-11 RED metrics + /metrics
+
+## revision 5, audit JA4-01 — Opus rejects an out-of-range limit with 400
+  :168 item's contract call, and it is made as **reject with `400`**, on two grounds — a
+PASS I71 opus-95db4ad7bf2bda0242c0bc7c4f7be2de289bde6da989fa3d126635af3ea332d0.md line 168 carries: item's contract call, and it is made as **reject with `400`**
+  :278 | 3 | A custom `FromRequestParts` extractor rejects `limit=0`, `limit=101` and a malformed `cursor` with `400` and a body the extractor chose | **Verified** |
+PASS I72 opus-95db4ad7bf2bda0242c0bc7c4f7be2de289bde6da989fa3d126635af3ea332d0.md line 278 carries: rejects `limit=0`, `limit=101` and a malformed `cursor` with `400`
+  :437 **rejected with `400`, never clamped**.
+PASS I73 opus-95db4ad7bf2bda0242c0bc7c4f7be2de289bde6da989fa3d126635af3ea332d0.md line 437 carries: **rejected with `400`, never clamped**.
+  :1093 CUSTOM limit=0                                -> 400 Bad Request ct=Some("application/json") body={"code":"limit_out_of_range","detail":"limit 0 is outside 1..=100"}
+PASS I74 opus-95db4ad7bf2bda0242c0bc7c4f7be2de289bde6da989fa3d126635af3ea332d0.md line 1093 carries: CUSTOM limit=0                                -> 400 Bad Request
+  :1094 CUSTOM limit=101                              -> 400 Bad Request ct=Some("application/json") body={"code":"limit_out_of_range","detail":"limit 101 is outside 1..=100"}
+PASS I75 opus-95db4ad7bf2bda0242c0bc7c4f7be2de289bde6da989fa3d126635af3ea332d0.md line 1094 carries: CUSTOM limit=101                              -> 400 Bad Request
+
+## revision 5, audit JA4-02 — who owns the headers R7.1 and R11.7 require
+  research/topics/75-http-middleware-stack/prompts/http-middleware-stack.prompt.md: 4:Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template shaped as CLI + library + web service. Deliver a named stack of crates and reference pattern (with versions) for: what Rust middleware/layer stack gives the web service request-id propagation, one canonical structured access-log event per request excluding probe endpoints, unconditional security response headers, a defined outermost-to-innermost ordering with the id/security-header middleware outermost, and folds the chosen framework/server's own logs into the shared tracing pipeline instead of double-logging. Item kind: `bundle`. Value test: if this answer is wrong, the middleware/layer composition order in the composition root, the request-id and security-header layers, the structured access-log layer and its path-exclusion list, and the framework/server log-silencing step all get rewritten.
+PASS I76 research/topics/75-http-middleware-stack/prompts/http-middleware-stack.prompt.md carries: the web service request-id propagation
+  research/topics/75-http-middleware-stack/prompts/http-middleware-stack.prompt.md: 9:- Per-row evidence for the rest of this bundle: F318 request-id propagation — py `src/py_launch_blueprint/web/middleware.py:72` (reads `x-request-id` or generates one, binds it to log context), echoed back via `src/py_launch_blueprint/web/middleware.py:82` (`response.headers["x-request-id"] = request_id`); ts: none. F319 one canonical structured access-log event — py `src/py_launch_blueprint/web/middleware.py:95` — `log.info("http_request", ...)` with route template, status, duration_ms (WEB-12; replaces uvicorn's plain-text access line); ts: none. F320 probe endpoints excluded from access-log volume — py `src/py_launch_blueprint/web/middleware.py:49` — `ACCESS_LOG_EXCLUDED_PATHS: frozenset[str]` (`/healthz`, `/readyz`, `/metrics` would otherwise dominate log volume); ts: none. F321 security response headers stamped unconditionally — py `src/py_launch_blueprint/web/middleware.py:56` — `SECURITY_HEADERS: dict[str, str] = {` (nosniff, DENY, no-referrer, HSTS; WEB-23; set unconditionally, including HSTS over plain http in dev); ts: none. F327 the framework/server's own loggers folded into the shared pipeline — py `src/py_launch_blueprint/web/logging.py:71` — `access_logger = logging.getLogger("uvicorn.access")` handlers cleared (server lifecycle lines come out structured like every other event; access logging silenced in favor of the canonical event); ts: none.
+PASS I77 research/topics/75-http-middleware-stack/prompts/http-middleware-stack.prompt.md carries: (`response.headers["x-request-id"] = request_id`)
+  item prompts naming cache-control: 0
+PASS I78 no item prompt names the Cache-Control header, so R7.1 has no assigned owner
+
+## revision 5, audit JA4-03 — R01 behavior 6, and the port signature is R03's
+  :53 6. The web front end serializes the types the CLI renders. *Observable:* the handler returns `Json<Vec<Project>>` and `Json<Option<Project>>` from the library's contract module, no mirror struct exists, and a real HTTP GET against a bound listener decodes into the library's `Vec<Project>` and equals the CLI's output. This is P03's to demonstrate; see `## Engines`.
+PASS I79 DECISION.md line 53 carries: 6. The web front end serializes the types the CLI renders. *Observable:* the handler returns `Json<Vec<Project>>` and `Json<Option<Project>>` from the library's contract module, no mirror struct exists, and a real HTTP GET against a bound listener decodes into the library's `Vec<Project>` and equals the CLI's output.
+  lines of the published R01 carrying `fn list` or `Result<Vec`: 0
+PASS I80 the published R01 declares no port method signature
+  docs/port/OWNER-ACCEPTANCES.md: 70:| R03 | 1 | `610e33381016a64c05efd6a1ba1196eb37807abb18d18c68e0d4e7d987586226` | accept | 2026-09-17 | W1-R03 option A (Wave 1): port methods return Result<Option<T>, PortError> with no NotFound variant; the adapter maps 404 to Ok(None); only the use case turns None into DomainError::NotFound (RSLB301, exit 3); runner-up the fold (PortError::NotFound); judgment-only acceptance under W1-CODEX; publication waits for the empirical audit |
+PASS I81 docs/port/OWNER-ACCEPTANCES.md carries: | R03 | 1 | `610e33381016a64c05efd6a1ba1196eb37807abb18d18c68e0d4e7d987586226` | accept | 2026-09-17 |
+  research/runs/R03/2026-09-17T033527Z-cd9e6a9555b6/review/DECISION.md
+  610e33381016a64c05efd6a1ba1196eb37807abb18d18c68e0d4e7d987586226
+PASS I82 research/runs/R03/2026-09-17T033527Z-cd9e6a9555b6/review/DECISION.md is 610e33381016a64c05efd6a1ba1196eb37807abb18d18c68e0d4e7d987586226
+  :26    collection returns `Result<Vec<T>, PortError>`, where an empty vector is a
+PASS I83 DECISION.md line 26 carries: collection returns `Result<Vec<T>, PortError>`, where an empty vector is a
+  :199     fn list(&self, workspace: Option<&str>) -> Result<Vec<Project>, PortError>;
+PASS I84 DECISION.md line 199 carries: fn list(&self, workspace: Option<&str>) -> Result<Vec<Project>, PortError>;
+  docs/port/PARAMETERS.md: 11:| http-transport-injection-seam | researched | R01 | trait-object port erased at the composition root: the driven-I/O contract is a dyn-compatible Rust trait (pub trait ProjectsPort: Send + Sync; no async fn, generic methods, associated consts or non-receiver Self) with a blanket impl for Arc<T>; the use case is generic over it (ProjectsService<P: ProjectsPort>); the composition root (plain functions, no DI container) erases the production adapter to Arc<dyn ProjectsPort> and hands the single ProjectsService<Arc<dyn ProjectsPort>> to the CLI and the web layer; fakes and test doubles are injected as any ProjectsPort implementor (the shipped InMemoryProjectsPort), never as injected function values and never by patching a transport; under an async R05 the trait keeps dyn compatibility with async-trait 0.1.92 | the shape of the driven-I/O seam that fakes are injected through (trait object, generic bound, or an injected client value); consumed by R48 (mock crates), R32 (test tiers) and R69 (web adapter wiring) |
+PASS I86 docs/port/PARAMETERS.md carries: | http-transport-injection-seam | researched | R01 |
+
+## revision 5, audit JA4-04 — serde is not gated by the web feature
+  lines of docs/port/PARAMETERS.md carrying the ungated list: 1
+PASS I85 R69's value: the web feature does not gate serde or serde_json
+
+## totals
+PASS 89
+FAIL 0
+SKIP 0
+
+===== r72-figures.sh rerun (figures.log) =====
+## environment
+python3: Python 3.14.7
+snapshots: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R72/2026-09-18T215915Z-af997c2abb5a/review/evidence/snapshots
+  R72 api-pagination — snapshot provenance
+  retrieved (UTC): 2026-09-21T23:16:25Z
+  user-agent: rs-launch-blueprint-research (steve@smorin.com)
+  endpoints answered: 59
+  endpoints that did not answer: 0
+
+## 90-day and all-time downloads — GET /api/v1/crates/<name>, crate.recent_downloads / crate.downloads
+  paginator-axum recent_downloads                6714
+PASS F01 paginator-axum recent_downloads = 6714
+  paginator-axum downloads                       12252
+PASS F01.b paginator-axum downloads = 12252
+  paginator-utils recent_downloads               8149
+PASS F02 paginator-utils recent_downloads = 8149
+  paginator-utils downloads                      16950
+PASS F02.b paginator-utils downloads = 16950
+  paginator-rs recent_downloads                  8119
+PASS F03 paginator-rs recent_downloads = 8119
+  paginator-rs downloads                         16634
+PASS F03.b paginator-rs downloads = 16634
+  paginate recent_downloads                      9579
+PASS F04 paginate recent_downloads = 9579
+  paginate downloads                             103030
+PASS F04.b paginate downloads = 103030
+  sqlx-paginated recent_downloads                1937
+PASS F05 sqlx-paginated recent_downloads = 1937
+  sqlx-paginated downloads                       22451
+PASS F05.b sqlx-paginated downloads = 22451
+  api-paginate recent_downloads                  31
+PASS F06 api-paginate recent_downloads = 31
+  api-paginate downloads                         31
+PASS F06.b api-paginate downloads = 31
+  page-hunter recent_downloads                   150
+PASS F07 page-hunter recent_downloads = 150
+  page-hunter downloads                          12934
+PASS F07.b page-hunter downloads = 12934
+  api-bones recent_downloads                     6982
+PASS F08 api-bones recent_downloads = 6982
+  api-bones downloads                            54621
+PASS F08.b api-bones downloads = 54621
+  axum-api-kit recent_downloads                  3465
+PASS F09 axum-api-kit recent_downloads = 3465
+  axum-api-kit downloads                         3592
+PASS F09.b axum-api-kit downloads = 3592
+  page-turner recent_downloads                   6482
+PASS F10 page-turner recent_downloads = 6482
+  page-turner downloads                          129842
+PASS F10.b page-turner downloads = 129842
+  dropshot recent_downloads                      129506
+PASS F11 dropshot recent_downloads = 129506
+  dropshot downloads                             862512
+PASS F11.b dropshot downloads = 862512
+  base64 recent_downloads                        329396349
+PASS F12 base64 recent_downloads = 329396349
+  base64 downloads                               1596330399
+PASS F12.b base64 downloads = 1596330399
+
+## last release, licence, declared rust-version — GET /api/v1/crates/<name>/versions, newest yanked:false
+  paginator-axum newest unyanked num             0.4.0
+PASS F13 paginator-axum newest unyanked num = 0.4.0
+  paginator-axum created_at                      2026-09-07
+PASS F13.b paginator-axum created_at = 2026-09-07
+  paginator-axum license                         MIT
+PASS F13.c paginator-axum license = MIT
+  paginator-axum rust_version                    None
+PASS F13.d paginator-axum rust_version = None
+  paginator-utils newest unyanked num            0.4.0
+PASS F14 paginator-utils newest unyanked num = 0.4.0
+  paginator-utils created_at                     2026-09-07
+PASS F14.b paginator-utils created_at = 2026-09-07
+  paginator-utils license                        MIT
+PASS F14.c paginator-utils license = MIT
+  paginator-utils rust_version                   None
+PASS F14.d paginator-utils rust_version = None
+  paginator-rs newest unyanked num               0.4.0
+PASS F15 paginator-rs newest unyanked num = 0.4.0
+  paginator-rs created_at                        2026-09-07
+PASS F15.b paginator-rs created_at = 2026-09-07
+  paginator-rs license                           MIT
+PASS F15.c paginator-rs license = MIT
+  paginator-rs rust_version                      None
+PASS F15.d paginator-rs rust_version = None
+  paginate newest unyanked num                   1.1.11
+PASS F16 paginate newest unyanked num = 1.1.11
+  paginate created_at                            2022-04-11
+PASS F16.b paginate created_at = 2022-04-11
+  paginate license                               Apache-2.0
+PASS F16.c paginate license = Apache-2.0
+  paginate rust_version                          None
+PASS F16.d paginate rust_version = None
+  sqlx-paginated newest unyanked num             0.6.2
+PASS F17 sqlx-paginated newest unyanked num = 0.6.2
+  sqlx-paginated created_at                      2026-08-17
+PASS F17.b sqlx-paginated created_at = 2026-08-17
+  sqlx-paginated license                         MIT
+PASS F17.c sqlx-paginated license = MIT
+  sqlx-paginated rust_version                    None
+PASS F17.d sqlx-paginated rust_version = None
+  api-paginate newest unyanked num               0.1.1
+PASS F18 api-paginate newest unyanked num = 0.1.1
+  api-paginate created_at                        2026-09-12
+PASS F18.b api-paginate created_at = 2026-09-12
+SKIP F18.c api-paginate licence carries a space — asserted literally below
+  api-paginate rust_version                      1.85
+PASS F18.d api-paginate rust_version = 1.85
+  page-hunter newest unyanked num                0.7.0
+PASS F19 page-hunter newest unyanked num = 0.7.0
+  page-hunter created_at                         2026-03-07
+PASS F19.b page-hunter created_at = 2026-03-07
+  page-hunter license                            non-standard
+PASS F19.c page-hunter license = non-standard
+  page-hunter rust_version                       None
+PASS F19.d page-hunter rust_version = None
+  api-bones newest unyanked num                  6.12.0
+PASS F20 api-bones newest unyanked num = 6.12.0
+  api-bones created_at                           2026-08-16
+PASS F20.b api-bones created_at = 2026-08-16
+  api-bones license                              MIT
+PASS F20.c api-bones license = MIT
+  api-bones rust_version                         1.85
+PASS F20.d api-bones rust_version = 1.85
+  axum-api-kit newest unyanked num               2.2.0
+PASS F21 axum-api-kit newest unyanked num = 2.2.0
+  axum-api-kit created_at                        2026-08-12
+PASS F21.b axum-api-kit created_at = 2026-08-12
+  axum-api-kit license                           MIT
+PASS F21.c axum-api-kit license = MIT
+  axum-api-kit rust_version                      1.81
+PASS F21.d axum-api-kit rust_version = 1.81
+  page-turner newest unyanked num                1.0.0
+PASS F22 page-turner newest unyanked num = 1.0.0
+  page-turner created_at                         2024-01-15
+PASS F22.b page-turner created_at = 2024-01-15
+SKIP F22.c page-turner licence carries a space — asserted literally below
+  page-turner rust_version                       1.75
+PASS F22.d page-turner rust_version = 1.75
+  dropshot newest unyanked num                   0.17.1
+PASS F23 dropshot newest unyanked num = 0.17.1
+  dropshot created_at                            2026-06-02
+PASS F23.b dropshot created_at = 2026-06-02
+  dropshot license                               Apache-2.0
+PASS F23.c dropshot license = Apache-2.0
+  dropshot rust_version                          1.85
+PASS F23.d dropshot rust_version = 1.85
+  base64 newest unyanked num                     0.23.1
+PASS F24 base64 newest unyanked num = 0.23.1
+  base64 created_at                              2026-08-04
+PASS F24.b base64 created_at = 2026-08-04
+SKIP F24.c base64 licence carries a space — asserted literally below
+  base64 rust_version                            1.71.0
+PASS F24.d base64 rust_version = 1.71.0
+  api-paginate license                           MIT OR Apache-2.0
+PASS F18.e api-paginate license = MIT OR Apache-2.0
+  page-turner license                            MIT OR Apache-2.0
+PASS F22.e page-turner license = MIT OR Apache-2.0
+  base64 license                                 MIT OR Apache-2.0
+PASS F24.e base64 license = MIT OR Apache-2.0
+  candidate crates declaring no rust-version     6 of 11
+PASS F73 candidate crates declaring no rust-version = 6 of 11
+
+## stars, archived, pushed_at — GET https://api.github.com/repos/<o>/<r>
+  maulanasdqn-paginator-rs stargazers_count      6
+PASS F25 maulanasdqn-paginator-rs stargazers_count = 6
+  maulanasdqn-paginator-rs archived              False
+PASS F25.b maulanasdqn-paginator-rs archived = False
+  maulanasdqn-paginator-rs pushed_at             2026-09-07
+PASS F25.c maulanasdqn-paginator-rs pushed_at = 2026-09-07
+  daniel-samson-paginate stargazers_count        17
+PASS F26 daniel-samson-paginate stargazers_count = 17
+  daniel-samson-paginate archived                False
+PASS F26.b daniel-samson-paginate archived = False
+  daniel-samson-paginate pushed_at               2024-01-23
+PASS F26.c daniel-samson-paginate pushed_at = 2024-01-23
+  marshallpierce-rust-base64 stargazers_count    737
+PASS F27 marshallpierce-rust-base64 stargazers_count = 737
+  marshallpierce-rust-base64 archived            False
+PASS F27.b marshallpierce-rust-base64 archived = False
+  marshallpierce-rust-base64 pushed_at           2026-08-18
+PASS F27.c marshallpierce-rust-base64 pushed_at = 2026-08-18
+  oxidecomputer-dropshot stargazers_count        1202
+PASS F28 oxidecomputer-dropshot stargazers_count = 1202
+  oxidecomputer-dropshot archived                False
+PASS F28.b oxidecomputer-dropshot archived = False
+  oxidecomputer-dropshot pushed_at               2026-09-21
+PASS F28.c oxidecomputer-dropshot pushed_at = 2026-09-21
+  WyattAu-paginate stargazers_count              0
+PASS F29 WyattAu-paginate stargazers_count = 0
+  WyattAu-paginate archived                      False
+PASS F29.b WyattAu-paginate archived = False
+  WyattAu-paginate pushed_at                     2026-09-19
+PASS F29.c WyattAu-paginate pushed_at = 2026-09-19
+  alexandrughinea-sqlx-paginated stargazers_count 25
+PASS F30 alexandrughinea-sqlx-paginated stargazers_count = 25
+  alexandrughinea-sqlx-paginated archived        False
+PASS F30.b alexandrughinea-sqlx-paginated archived = False
+  alexandrughinea-sqlx-paginated pushed_at       2026-09-14
+PASS F30.c alexandrughinea-sqlx-paginated pushed_at = 2026-09-14
+  jmtamayo-page-hunter stargazers_count          6
+PASS F31 jmtamayo-page-hunter stargazers_count = 6
+  jmtamayo-page-hunter archived                  False
+PASS F31.b jmtamayo-page-hunter archived = False
+  jmtamayo-page-hunter pushed_at                 2026-03-07
+PASS F31.c jmtamayo-page-hunter pushed_at = 2026-03-07
+  brefwiz-api-bones stargazers_count             4
+PASS F32 brefwiz-api-bones stargazers_count = 4
+  brefwiz-api-bones archived                     False
+PASS F32.b brefwiz-api-bones archived = False
+  brefwiz-api-bones pushed_at                    2026-09-21
+PASS F32.c brefwiz-api-bones pushed_at = 2026-09-21
+  rodmen07-axum-api-kit stargazers_count         0
+PASS F74 rodmen07-axum-api-kit stargazers_count = 0
+  rodmen07-axum-api-kit archived                 False
+PASS F74.b rodmen07-axum-api-kit archived = False
+  rodmen07-axum-api-kit pushed_at                2026-08-18
+PASS F74.c rodmen07-axum-api-kit pushed_at = 2026-08-18
+  a1akris-page-turner stargazers_count           63
+PASS F75 a1akris-page-turner stargazers_count = 63
+  a1akris-page-turner archived                   False
+PASS F75.b a1akris-page-turner archived = False
+  a1akris-page-turner pushed_at                  2024-01-15
+PASS F75.c a1akris-page-turner pushed_at = 2024-01-15
+
+## open issues — GET /search/issues?q=repo:<o>/<r>+is:issue+is:open, total_count
+  maulanasdqn-paginator-rs open issues           0
+PASS F33 maulanasdqn-paginator-rs open issues = 0
+  daniel-samson-paginate open issues             2
+PASS F34 daniel-samson-paginate open issues = 2
+  marshallpierce-rust-base64 open issues         11
+PASS F35 marshallpierce-rust-base64 open issues = 11
+  oxidecomputer-dropshot open issues             58
+PASS F36 oxidecomputer-dropshot open issues = 58
+  WyattAu-paginate open issues                   0
+PASS F37 WyattAu-paginate open issues = 0
+  alexandrughinea-sqlx-paginated open issues     0
+PASS F38 alexandrughinea-sqlx-paginated open issues = 0
+  jmtamayo-page-hunter open issues               0
+PASS F39 jmtamayo-page-hunter open issues = 0
+  brefwiz-api-bones open issues                  2
+PASS F40 brefwiz-api-bones open issues = 2
+  rodmen07-axum-api-kit open issues              0
+PASS F76 rodmen07-axum-api-kit open issues = 0
+  a1akris-page-turner open issues                3
+PASS F77 a1akris-page-turner open issues = 3
+
+## page-turner maintenance state (revision 4, audit finding 2): the newest
+## maintainer comment anywhere in its issue population, and whether its README
+## carries a maintainer notice (the rubric's third dormant signal)
+  page-turner newest maintainer comment          2026-07-26
+PASS F78 page-turner newest maintainer comment = 2026-07-26
+  page-turner README notice lines                README.md 2c0cf245 0
+PASS F79 page-turner README notice lines = README.md 2c0cf245 0
+
+## issue responsiveness — up to the ten most recently opened issues (the
+## search query carries is:issue, so pull requests never enter the population;
+## retrieved by r72-fetch-revision2.sh), median days to the first comment by an
+## OWNER/MEMBER/COLLABORATOR who is not the author
+  base64 issues/answered/unanswered/median-days  10 7 3 0.4
+PASS F41 base64 issues/answered/unanswered/median-days = 10 7 3 0.4
+  paginator-rs issues/answered/unanswered/median-days 8 8 0 1.3
+PASS F42 paginator-rs issues/answered/unanswered/median-days = 8 8 0 1.3
+
+## issue responsiveness for the seven remaining declined candidates (revision
+## 3, audit finding 6; retrieved by r72-fetch-revision3.sh), same population and
+## same rule. "0 0 0 none" means the repository has no issue at all, so the
+## figure is inapplicable. The .b check counts issues opened by an
+## OWNER/MEMBER/COLLABORATOR: a self-filed issue can never receive a reply from
+## a maintainer who is not its author, so it always counts as unanswered.
+  marshallpierce-rust-base64 issues self-filed by a maintainer 0
+PASS F41.b marshallpierce-rust-base64 issues self-filed by a maintainer = 0
+  maulanasdqn-paginator-rs issues self-filed by a maintainer 0
+PASS F42.b maulanasdqn-paginator-rs issues self-filed by a maintainer = 0
+  daniel-samson-paginate issues/answered/unanswered/median-days 4 0 4 none
+PASS F66 daniel-samson-paginate issues/answered/unanswered/median-days = 4 0 4 none
+  daniel-samson-paginate issues self-filed by a maintainer 4
+PASS F66.b daniel-samson-paginate issues self-filed by a maintainer = 4
+  alexandrughinea-sqlx-paginated issues/answered/unanswered/median-days 0 0 0 none
+PASS F67 alexandrughinea-sqlx-paginated issues/answered/unanswered/median-days = 0 0 0 none
+  alexandrughinea-sqlx-paginated issues self-filed by a maintainer 0
+PASS F67.b alexandrughinea-sqlx-paginated issues self-filed by a maintainer = 0
+  WyattAu-paginate issues/answered/unanswered/median-days 0 0 0 none
+PASS F68 WyattAu-paginate issues/answered/unanswered/median-days = 0 0 0 none
+  WyattAu-paginate issues self-filed by a maintainer 0
+PASS F68.b WyattAu-paginate issues self-filed by a maintainer = 0
+  jmtamayo-page-hunter issues/answered/unanswered/median-days 8 2 6 266.8
+PASS F69 jmtamayo-page-hunter issues/answered/unanswered/median-days = 8 2 6 266.8
+  jmtamayo-page-hunter issues self-filed by a maintainer 6
+PASS F69.b jmtamayo-page-hunter issues self-filed by a maintainer = 6
+  brefwiz-api-bones issues/answered/unanswered/median-days 8 0 8 none
+PASS F70 brefwiz-api-bones issues/answered/unanswered/median-days = 8 0 8 none
+  brefwiz-api-bones issues self-filed by a maintainer 0
+PASS F70.b brefwiz-api-bones issues self-filed by a maintainer = 0
+  rodmen07-axum-api-kit issues/answered/unanswered/median-days 0 0 0 none
+PASS F71 rodmen07-axum-api-kit issues/answered/unanswered/median-days = 0 0 0 none
+  rodmen07-axum-api-kit issues self-filed by a maintainer 0
+PASS F71.b rodmen07-axum-api-kit issues self-filed by a maintainer = 0
+  a1akris-page-turner issues/answered/unanswered/median-days 5 0 5 none
+PASS F72 a1akris-page-turner issues/answered/unanswered/median-days = 5 0 5 none
+  a1akris-page-turner issues self-filed by a maintainer 4
+PASS F72.b a1akris-page-turner issues self-filed by a maintainer = 4
+  brefwiz-api-bones distinct issue authors       ['gsalingu']
+PASS F70.c brefwiz-api-bones distinct issue authors = ['gsalingu']
+
+## gate 3 — RustSec. A 404 is evidence of absence only because rsa, the
+## control, answers 200 and renders an advisory in the same run.
+  rustsec paginator-axum                         404
+PASS F43.paginator-axum rustsec paginator-axum = 404
+  rustsec paginator-utils                        404
+PASS F43.paginator-utils rustsec paginator-utils = 404
+  rustsec paginator-rs                           404
+PASS F43.paginator-rs rustsec paginator-rs = 404
+  rustsec paginate                               404
+PASS F43.paginate rustsec paginate = 404
+  rustsec sqlx-paginated                         404
+PASS F43.sqlx-paginated rustsec sqlx-paginated = 404
+  rustsec api-paginate                           404
+PASS F43.api-paginate rustsec api-paginate = 404
+  rustsec page-hunter                            404
+PASS F43.page-hunter rustsec page-hunter = 404
+  rustsec api-bones                              404
+PASS F43.api-bones rustsec api-bones = 404
+  rustsec axum-api-kit                           404
+PASS F43.axum-api-kit rustsec axum-api-kit = 404
+  rustsec page-turner                            404
+PASS F43.page-turner rustsec page-turner = 404
+  rustsec dropshot                               404
+PASS F43.dropshot rustsec dropshot = 404
+  rustsec rsa (control)                          200
+PASS F44 rustsec rsa (control) = 200
+PASS F45 the rsa control page renders RUSTSEC-2023-0071, so the fetch path works
+  rustsec base64                                 200
+PASS F46 rustsec base64 = 200
+PASS F47 base64 has an advisory page listing RUSTSEC-2017-0004
+PASS F48 RUSTSEC-2017-0004 records a patched range at 0.5.2, far below 0.23.1
+
+## gate 5 — declared features and async-runtime coupling, from the crates.io
+## dependency records rather than from a README
+  paginator-axum normal dependencies             async-trait axum form_urlencoded http paginator-rs paginator-utils serde serde_json
+PASS F49 paginator-axum normal dependencies = async-trait axum form_urlencoded http paginator-rs paginator-utils serde serde_json
+  base64 normal dependencies (none)              
+PASS F50 base64 normal dependencies (none) = 
+  paginator-axum declares no utoipa dependency:
+PASS F51 paginator-axum declares no utoipa dependency in any kind
+  paginator-axum declares tokio only as a dev-dependency:
+  paginator-axum tokio dependency kind           dev
+PASS F52 paginator-axum tokio dependency kind = dev
+  sqlx-paginated couples a runtime and a database driver sqlx tokio
+PASS F53 sqlx-paginated couples a runtime and a database driver = sqlx tokio
+
+## the crate sources this decision quotes, read from the published .crate
+  17:    pub per_page: u32,
+PASS F54 query.rs carries:     pub per_page: u32,
+  67:                "per_page" => {
+PASS F55 query.rs carries:                 "per_page" => {
+  121:            per_page: per_page.clamp(1, 100),
+PASS F56 query.rs carries:             per_page: per_page.clamp(1, 100),
+  37:impl<S> FromRequestParts<S> for PaginationQuery
+PASS F57 query.rs carries: impl<S> FromRequestParts<S> for PaginationQuery
+  6:pub use link::create_link_header;
+PASS F58 lib.rs carries: pub use link::create_link_header;
+  37:                "X-Total-Count",
+PASS F59 response.rs carries:                 "X-Total-Count",
+  7:    pub data: Vec<T>,
+PASS F60 response.rs carries:     pub data: Vec<T>,
+  8:    pub meta: PaginatorResponseMeta,
+PASS F61 response.rs carries:     pub meta: PaginatorResponseMeta,
+  the crate exports no application-level registration entry point:
+  matches: 0
+PASS F62 neither crate exports an app-wide pagination registration function
+  everything lib.rs exports:
+    6:pub use link::create_link_header;
+    7:pub use query::{PaginationQuery, PaginationQueryParams};
+    8:pub use response::PaginatedJson;
+
+## adopters — reverse dependencies
+  paginator-axum reverse dependencies            1
+PASS F63 paginator-axum reverse dependencies = 1
+  paginate reverse dependencies                  1
+PASS F64 paginate reverse dependencies = 1
+  base64 reverse dependencies: 17502
+PASS F65 base64 has more than a thousand reverse dependencies
+Traceback (most recent call last):
+  File "<string>", line 4, in <module>
+    print(', '.join(v['crate_version']['crate'] for v in d['versions']))
+          ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 4, in <genexpr>
+    print(', '.join(v['crate_version']['crate'] for v in d['versions']))
+                    ~^^^^^^^^^^^^^^^^^
+KeyError: 'crate_version'
+  the single crate depending on paginator-axum: 
+
+## totals
+PASS 167
+FAIL 0
+SKIP 3
+
+===== r72-practice.sh rerun (practice.log) =====
+## environment
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+  R72 api-pagination — practice-source provenance
+  retrieved (UTC): 2026-09-22T01:16:23Z
+  rust-lang/crates.io src/controllers/helpers/pagination.rs at commit 30c4ed7fd9b79eba10e42d5c173e9bdd8aab1b4c
+
+## rust-lang/crates.io — the Rust project s own registry service
+  pinned commit: 30c4ed7fd9b79eba10e42d5c173e9bdd8aab1b4c
+  21:const DEFAULT_PER_PAGE: i64 = 10;
+PASS C01 cratesio-pagination.rs carries: const DEFAULT_PER_PAGE: i64 = 10;
+  22:const MAX_PER_PAGE: i64 = 100;
+PASS C02 cratesio-pagination.rs carries: const MAX_PER_PAGE: i64 = 100;
+  55:#[derive(Debug, Deserialize, FromRequestParts, utoipa::IntoParams)]
+PASS C03 cratesio-pagination.rs carries: #[derive(Debug, Deserialize, FromRequestParts, utoipa::IntoParams)]
+  58:pub struct PaginationQueryParams {
+PASS C04 cratesio-pagination.rs carries: pub struct PaginationQueryParams {
+  151:        if per_page > MAX_PER_PAGE {
+PASS C05 cratesio-pagination.rs carries:         if per_page > MAX_PER_PAGE {
+  153:                "cannot request more than {MAX_PER_PAGE} items",
+PASS C06 cratesio-pagination.rs carries: cannot request more than {MAX_PER_PAGE} items
+  332:    let encoded = general_purpose::URL_SAFE_NO_PAD.encode(serde_json::to_vec(&params)?);
+PASS C07 cratesio-pagination.rs carries: URL_SAFE_NO_PAD
+  77:    pub seek: Option<String>,
+PASS C08 cratesio-pagination.rs carries:     pub seek: Option<String>,
+  the file imports no pagination crate:
+  matches: 0
+PASS C09 crates.io uses no third-party pagination crate
+
+## api-bones 6.12.0 — the envelope one Doxa leg proposes borrowing, and the
+## cursor and keyset types the same file defines
+  57:pub struct PaginatedResponse<T> {
+PASS C15 pagination.rs carries: pub struct PaginatedResponse<T> {
+  59:    pub items: Vec<T>,
+PASS C16 pagination.rs carries:     pub items: Vec<T>,
+  67:    pub offset: u64,
+PASS C17 pagination.rs carries:     pub offset: u64,
+  61:    pub total_count: u64,
+PASS C18 pagination.rs carries:     pub total_count: u64,
+  :561 pub struct KeysetPaginatedResponse<T> {
+PASS C49 pagination.rs line 561 is: pub struct KeysetPaginatedResponse<T> {
+  :563     pub items: Vec<T>,
+PASS C50 pagination.rs line 563 is:     pub items: Vec<T>,
+  :565     pub has_next: bool,
+PASS C51 pagination.rs line 565 is:     pub has_next: bool,
+  :567     pub has_prev: bool,
+PASS C52 pagination.rs line 567 is:     pub has_prev: bool,
+  :575     pub prev_cursor: Option<String>,
+PASS C53 pagination.rs line 575 is:     pub prev_cursor: Option<String>,
+  :583     pub next_cursor: Option<String>,
+PASS C54 pagination.rs line 583 is:     pub next_cursor: Option<String>,
+  :243 pub struct CursorPaginatedResponse<T> {
+PASS C55 pagination.rs line 243 is: pub struct CursorPaginatedResponse<T> {
+  :245     pub data: Vec<T>,
+PASS C56 pagination.rs line 245 is:     pub data: Vec<T>,
+  :355 pub struct CursorPaginationParams {
+PASS C57 pagination.rs line 355 is: pub struct CursorPaginationParams {
+  :363     pub limit: Option<u64>,
+PASS C58 pagination.rs line 363 is:     pub limit: Option<u64>,
+  :369     pub after: Option<String>,
+PASS C59 pagination.rs line 369 is:     pub after: Option<String>,
+  :461 pub struct KeysetPaginationParams<K> {
+PASS C60 pagination.rs line 461 is: pub struct KeysetPaginationParams<K> {
+  :467     pub after: Option<K>,
+PASS C61 pagination.rs line 467 is:     pub after: Option<K>,
+  :473     pub before: Option<K>,
+PASS C62 pagination.rs line 473 is:     pub before: Option<K>,
+  :477     pub limit: Option<u64>,
+PASS C63 pagination.rs line 477 is:     pub limit: Option<u64>,
+
+## oxidecomputer/dropshot — the other production first-party page type
+PASS C10.ResultsPage the dropshot ResultsPage page names: ResultsPage
+PASS C10.next_page the dropshot ResultsPage page names: next_page
+PASS C10.items the dropshot ResultsPage page names: items
+
+## axum 0.8.9 — the extractor model the template must fit
+  axum source: axum-0.8.9
+  20:/// struct Pagination {
+PASS C11 query.rs carries: /// struct Pagination {
+  27:/// async fn list_things(pagination: Query<Pagination>) {
+PASS C12 query.rs carries: /// async fn list_things(pagination: Query<Pagination>) {
+  13:pub trait FromRef<T> {
+PASS C13 from_ref.rs carries: pub trait FromRef<T> {
+  application-wide extractor registration hooks in axum:
+  matches: 0
+PASS C14 axum exposes no application-wide extractor-registration hook, so py's add_pagination(app) has no direct counterpart
+
+## fitness gate 3, second limb — the `unsafe` posture of the one crate
+## this decision adds, and of the crates it declines, read from their
+## published sources rather than asserted from a README
+  base64 source: base64-0.23.1
+  284:#![cfg_attr(not(feature = "simd-unsafe"), forbid(unsafe_code))]
+PASS C19 lib.rs carries: #![cfg_attr(not(feature = "simd-unsafe"), forbid(unsafe_code))]
+  285:#![cfg_attr(feature = "simd-unsafe", deny(unsafe_code))]
+PASS C20 lib.rs carries: #![cfg_attr(feature = "simd-unsafe", deny(unsafe_code))]
+  45:    "simd-unsafe",
+PASS C21 Cargo.toml carries:     "simd-unsafe",
+  files containing the word `unsafe` in base64 src:
+    src/display.rs
+    src/lib.rs
+    src/engine/simd.rs
+    src/engine/general_purpose/mod.rs
+    src/engine/mod.rs
+    src/engine/tests.rs
+  `unsafe` occurrences outside comment lines: 48
+PASS C22 the `unsafe` lives in the SIMD engine module the feature gates
+
+## and the declined crates, censused the same way. A nonzero count is the
+## posture, not a failure: the assertion is that the count is the one this
+## decision reports, so a later release changing it is caught.
+  paginator-axum-0.4.0     occurrences of the word unsafe: 0
+PASS C23 paginator-axum-0.4.0 has 0
+  paginator-utils-0.4.0    occurrences of the word unsafe: 0
+PASS C27 paginator-utils-0.4.0 has 0
+  api-bones-6.12.0         occurrences of the word unsafe: 5
+PASS C28 api-bones-6.12.0 has 5
+
+## fitness gate 4 — the platform list base64 actually tests on
+  37:      - image: << parameters.rust_img >>
+PASS C24 base64-circleci.yml carries:       - image: << parameters.rust_img >>
+  17:                'rust:1.71.0'
+PASS C25 base64-circleci.yml carries:                 'rust:1.71.0'
+  macOS/xcode executors in base64 CI: 0
+PASS C26 base64 CI covers Linux only — macOS is not covered by the crate own CI
+
+## the LOW question — the three Rust API templates the Muse leg named,
+## read at source (retrieved by r72-fetch-revision2.sh, pinned to commits)
+  R72 api-pagination — revision 2 provenance
+  retrieved (UTC): 2026-09-22T17:48:52Z
+  joshua-mo-143/99minutos-template-agents-rust at commit 9142f9985ffb3b52980a9792b900b844521ee92e
+  hendrixmar/rust-axum-seaorm-boilerplate at commit 9bb388c706ab7b789b6edf8a79dce5453b8b00f1
+  nakamuraos/rust-axum-seaorm-boilerplate at commit 2ad8073c13404a0a2e49845938a2301dfdf433fd
+  coreapostrophe/axum-template at commit f1bd22bfe07a2c58ee21d30d9d92e51814e0adc6
+
+### 99minutos/template-agents-rust — absent, established three ways
+  authenticated API repos/99minutos/template-agents-rust     404
+PASS C29 authenticated API repos/99minutos/template-agents-rust = 404
+  github.com/99minutos/template-agents-rust                  404
+PASS C30 github.com/99minutos/template-agents-rust = 404
+  Wayback snapshots of the repo and of AGENTS.md: both empty 2
+PASS C31 Wayback snapshots of the repo and of AGENTS.md: both empty = 2
+  the only public repository with the name, joshua-mo-143/99minutos-template-agents-rust:
+  copy stars / fork / parent                                 0 False -
+PASS C32 copy stars / fork / parent = 0 False -
+  copy tree paths / truncated / pagination-or-AGENTS.md paths 44 False 0
+PASS C33 copy tree paths / truncated / pagination-or-AGENTS.md paths = 44 False 0
+  copy README lines naming pagination, per_page or total     0
+PASS C34 copy README lines naming pagination, per_page or total = 0
+
+### nakamuraos/rust-axum-seaorm-boilerplate, and the hendrixmar fork Muse named
+  hendrixmar stars / fork / parent                           1 True nakamuraos/rust-axum-seaorm-boilerplate
+PASS C35 hendrixmar stars / fork / parent = 1 True nakamuraos/rust-axum-seaorm-boilerplate
+  nakamuraos stars / fork / parent                           31 False -
+PASS C36 nakamuraos stars / fork / parent = 31 False -
+PASS C37 the fork pagination.rs is byte-identical to the upstream one
+  10:/// - **Page mode** (default): `?page=1&per_page=20`
+PASS C38 tmpl-nakamuraos-pagination.rs carries: /// - **Page mode** (default): `?page=1&per_page=20`
+  45:  pub data: Vec<T>,
+PASS C39 tmpl-nakamuraos-pagination.rs carries:   pub data: Vec<T>,
+  52:  pub total: u64,
+PASS C40 tmpl-nakamuraos-pagination.rs carries:   pub total: u64,
+  11:/// - **Cursor mode**: `?cursor=<id>&per_page=20`
+PASS C41 tmpl-nakamuraos-pagination.rs carries: /// - **Cursor mode**: `?cursor=<id>&per_page=20`
+  69:  pub next_cursor: Option<String>,
+PASS C42 tmpl-nakamuraos-pagination.rs carries:   pub next_cursor: Option<String>,
+  29:      .min(MAX_PER_PAGE)
+PASS C43 tmpl-nakamuraos-pagination.rs carries:       .min(MAX_PER_PAGE)
+
+### coreapostrophe/axum-template
+  coreapostrophe stars / fork / parent                       0 False -
+PASS C44 coreapostrophe stars / fork / parent = 0 False -
+  tree paths / truncated / pagination-or-AGENTS.md paths     68 False 0
+PASS C45 tree paths / truncated / pagination-or-AGENTS.md paths = 68 False 0
+  58:) -> ApiResult<ApiDataResponse<Vec<Todo>>> {
+PASS C46 tmpl-coreapostrophe-handlers.rs carries: ) -> ApiResult<ApiDataResponse<Vec<Todo>>> {
+  handler lines naming page, limit, cursor or pagination     0
+PASS C47 handler lines naming page, limit, cursor or pagination = 0
+  16:    pub data: D,
+PASS C48 tmpl-coreapostrophe-data.rs carries:     pub data: D,
+
+## totals
+PASS 65
+FAIL 0
+SKIP 0
+
+===== r72-probe.sh rerun (probe.log) =====
+## environment
+host rustc:  rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+host cargo:  cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+floor rustc: rustc 1.96.0 (ac68faa20 2026-05-25)
+sources written (sha256):
+42ba8bd8e791ecc1445f5123d874b40bd854f67b4fc465157415bf5c47faedb5    Cargo.toml
+20a98816aaf39d7ce450d21746a274a7dc39e12a72ffaccf367ed7c279d0773c    src/lib.rs
+b958409db3d91a4a993d9e24bb93781efd25b6cdccbaa591c034d01d3caf28d7    tests/contract.rs
+
+## the dependency the recommendation adds, and where it sits in the tree
+  lines in cargo tree -e normal: 118
+  occurrences of base64 in the normal tree: 1
+PASS E01 base64 appears once: it is a direct dependency and nothing else pulls it in
+PASS E02 the probe resolves axum 0.8.9, the version published R69 selects
+  r72probe v0.0.0 (<scratch>)
+  ├── axum v0.8.9
+  │   ├── axum-core v0.5.6
+
+## the recommended feature selection, asserted on the manifest that built
+PASS E06 the probe builds base64 with default-features = false, features = ["std"]
+
+## build and test on the host toolchain
+  test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <elapsed>
+  test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <elapsed>
+  test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <elapsed>
+PASS E03 all 15 contract tests pass on the host toolchain
+
+## build and test at the MSRV floor
+  test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <elapsed>
+  test result: ok. 15 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <elapsed>
+  test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in <elapsed>
+PASS E04 all 15 contract tests pass at the 1.96.0 floor
+
+## the individual behaviours, named
+PASS E05.p01_default_limit_comes_from_state
+PASS E05.p02_over_maximum_limit_is_rejected_422
+PASS E05.p03_zero_limit_is_422
+PASS E05.p04_non_numeric_limit_is_400
+PASS E05.p05_undecodable_cursor_is_400
+PASS E05.p06_cursor_round_trips_and_windows_are_disjoint
+PASS E05.p07_exhausted_and_empty_windows
+PASS E05.p08_items_are_the_plain_domain_type
+PASS E05.p09_no_pagination_headers
+PASS E05.p10_envelope_is_an_object_with_items_plus_continuation
+PASS E05.p11_the_same_extractor_serves_a_second_collection
+PASS E05.p12_keyset_is_stable_under_concurrent_insert_where_offset_is_not
+PASS E05.p13_limit_cannot_be_constructed_out_of_range
+PASS E05.p14_the_route_establishes_the_documented_order
+PASS E05.p15_stream_on_a_non_streaming_route_is_400
+
+## totals
+PASS 20
+FAIL 0
+SKIP 0
+
+===== r72-fetch.sh rerun (fetch.log) =====
+## environment
+curl: curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+gh:   gh version 2.101.0 (2026-09-15)
+retrieved (UTC): 2026-09-23
+retrieved (UTC, full): 2026-09-23T07:02:54Z
+
+## crates.io crate records — crate.recent_downloads, crate.downloads
+crate paginator-axum                                       200  https://crates.io/api/v1/crates/paginator-axum
+crate paginator-utils                                      200  https://crates.io/api/v1/crates/paginator-utils
+crate paginator-rs                                         200  https://crates.io/api/v1/crates/paginator-rs
+crate paginate                                             200  https://crates.io/api/v1/crates/paginate
+crate sqlx-paginated                                       200  https://crates.io/api/v1/crates/sqlx-paginated
+crate api-paginate                                         200  https://crates.io/api/v1/crates/api-paginate
+crate page-hunter                                          200  https://crates.io/api/v1/crates/page-hunter
+crate api-bones                                            200  https://crates.io/api/v1/crates/api-bones
+crate axum-api-kit                                         200  https://crates.io/api/v1/crates/axum-api-kit
+crate page-turner                                          200  https://crates.io/api/v1/crates/page-turner
+crate dropshot                                             200  https://crates.io/api/v1/crates/dropshot
+crate base64                                               200  https://crates.io/api/v1/crates/base64
+
+## crates.io version records — newest yanked:false num, created_at, license, rust_version
+versions paginator-axum                                    200  https://crates.io/api/v1/crates/paginator-axum/versions
+versions paginator-utils                                   200  https://crates.io/api/v1/crates/paginator-utils/versions
+versions paginator-rs                                      200  https://crates.io/api/v1/crates/paginator-rs/versions
+versions paginate                                          200  https://crates.io/api/v1/crates/paginate/versions
+versions sqlx-paginated                                    200  https://crates.io/api/v1/crates/sqlx-paginated/versions
+versions api-paginate                                      200  https://crates.io/api/v1/crates/api-paginate/versions
+versions page-hunter                                       200  https://crates.io/api/v1/crates/page-hunter/versions
+versions api-bones                                         200  https://crates.io/api/v1/crates/api-bones/versions
+versions axum-api-kit                                      200  https://crates.io/api/v1/crates/axum-api-kit/versions
+versions page-turner                                       200  https://crates.io/api/v1/crates/page-turner/versions
+versions dropshot                                          200  https://crates.io/api/v1/crates/dropshot/versions
+versions base64                                            200  https://crates.io/api/v1/crates/base64/versions
+
+## crates.io dependency records for the crates whose tree decides a gate
+deps paginator-axum 0.4.0                                  200  https://crates.io/api/v1/crates/paginator-axum/0.4.0/dependencies
+deps paginator-utils 0.4.0                                 200  https://crates.io/api/v1/crates/paginator-utils/0.4.0/dependencies
+deps base64 0.23.1                                         200  https://crates.io/api/v1/crates/base64/0.23.1/dependencies
+deps api-paginate 0.1.1                                    200  https://crates.io/api/v1/crates/api-paginate/0.1.1/dependencies
+deps sqlx-paginated 0.6.2                                  200  https://crates.io/api/v1/crates/sqlx-paginated/0.6.2/dependencies
+
+## crates.io reverse dependencies — the adopters row
+revdeps paginator-axum                                     200  https://crates.io/api/v1/crates/paginator-axum/reverse_dependencies
+revdeps paginate                                           200  https://crates.io/api/v1/crates/paginate/reverse_dependencies
+revdeps base64                                             200  https://crates.io/api/v1/crates/base64/reverse_dependencies
+
+## the published crate sources whose API text this decision quotes
+source paginator-axum 0.4.0                                200  https://static.crates.io/crates/paginator-axum/paginator-axum-0.4.0.crate
+source paginator-utils 0.4.0                               200  https://static.crates.io/crates/paginator-utils/paginator-utils-0.4.0.crate
+
+## github repository records — stargazers_count, archived, pushed_at
+repo maulanasdqn/paginator-rs                              200  https://api.github.com/repos/maulanasdqn/paginator-rs
+repo daniel-samson/paginate                                200  https://api.github.com/repos/daniel-samson/paginate
+repo marshallpierce/rust-base64                            200  https://api.github.com/repos/marshallpierce/rust-base64
+repo oxidecomputer/dropshot                                200  https://api.github.com/repos/oxidecomputer/dropshot
+repo WyattAu/paginate                                      200  https://api.github.com/repos/WyattAu/paginate
+repo alexandrughinea/sqlx-paginated                        200  https://api.github.com/repos/alexandrughinea/sqlx-paginated
+repo jmtamayo/page-hunter                                  200  https://api.github.com/repos/jmtamayo/page-hunter
+repo brefwiz/api-bones                                     200  https://api.github.com/repos/brefwiz/api-bones
+
+## github open-issue counts — search total_count, never open_issues_count
+issues maulanasdqn/paginator-rs                            200  gh api search/issues?q=repo:maulanasdqn/paginator-rs+is:issue+is:open
+issues daniel-samson/paginate                              200  gh api search/issues?q=repo:daniel-samson/paginate+is:issue+is:open
+issues marshallpierce/rust-base64                          200  gh api search/issues?q=repo:marshallpierce/rust-base64+is:issue+is:open
+issues oxidecomputer/dropshot                              200  gh api search/issues?q=repo:oxidecomputer/dropshot+is:issue+is:open
+issues WyattAu/paginate                                    200  gh api search/issues?q=repo:WyattAu/paginate+is:issue+is:open
+issues alexandrughinea/sqlx-paginated                      200  gh api search/issues?q=repo:alexandrughinea/sqlx-paginated+is:issue+is:open
+issues jmtamayo/page-hunter                                200  gh api search/issues?q=repo:jmtamayo/page-hunter+is:issue+is:open
+issues brefwiz/api-bones                                   200  gh api search/issues?q=repo:brefwiz/api-bones+is:issue+is:open
+
+## issue responsiveness — the ten most recently opened issues, and
+## every comment on them, for the crate this decision adds and the crate
+## family it ranks as the runner-up
+recent issues marshallpierce/rust-base64                   200
+recent issues maulanasdqn/paginator-rs                     200
+
+## rustsec package pages — 404 means no advisory page exists for the crate
+rustsec paginator-axum                                     404
+rustsec paginator-utils                                    404
+rustsec paginator-rs                                       404
+rustsec paginate                                           404
+rustsec sqlx-paginated                                     404
+rustsec api-paginate                                       404
+rustsec page-hunter                                        404
+rustsec api-bones                                          404
+rustsec axum-api-kit                                       404
+rustsec page-turner                                        404
+rustsec dropshot                                           404
+rustsec base64                                             200
+rustsec rsa                                                200
+advisory RUSTSEC-2017-0004                                 200  https://rustsec.org/advisories/RUSTSEC-2017-0004.html
+
+## totals
+OK 59
+GAP 0
+
+===== r72-fetch-practice.sh rerun (fetch-practice.log) =====
+## environment
+curl: curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+retrieved (UTC): 2026-09-23T07:04:54Z
+
+## the Rust project s own registry service, pinned to a commit rather than
+## to a moving branch so the line numbers this decision quotes stay valid
+crates.io pagination.rs newest commit: 30c4ed7fd9b79eba10e42d5c173e9bdd8aab1b4c
+crates.io pagination.rs                        200  https://raw.githubusercontent.com/rust-lang/crates.io/30c4ed7fd9b79eba10e42d5c173e9bdd8aab1b4c/src/controllers/helpers/pagination.rs
+
+## api-bones, the envelope the Doxa perplexity leg proposes borrowing
+source api-bones 6.12.0                        200  https://static.crates.io/crates/api-bones/api-bones-6.12.0.crate
+
+## dropshot, the other production framework with a first-party page type
+dropshot ResultsPage                           200  https://docs.rs/dropshot/0.17.1/dropshot/struct.ResultsPage.html
+
+## the CI configuration of the one crate this decision adds, so gate 4
+## rests on a read platform list rather than on an inference. The project
+## uses CircleCI, not GitHub Actions: repos/.../contents/.github/workflows
+## answers 404 and .github holds only ISSUE_TEMPLATE.
+base64 .circleci/config.yml                    200  https://raw.githubusercontent.com/marshallpierce/rust-base64/master/.circleci/config.yml
+
+## totals
+OK 4
+GAP 0
+
+===== r72-fetch-revision2.sh rerun (fetch-revision2.log) =====
+## environment
+curl: curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+gh:   gh version 2.101.0 (2026-09-15)
+retrieved (UTC): 2026-09-23T07:05:00Z
+
+## JA-09 — the ten most recently opened issues (is:issue excludes pull
+## requests in the query itself), and every comment on each of them
+ten newest issues marshallpierce/rust-base64         200  gh api search/issues?q=repo:marshallpierce/rust-base64+is:issue&sort=created&order=desc&per_page=10
+comments marshallpierce/rust-base64#309              200  gh api repos/marshallpierce/rust-base64/issues/309/comments?per_page=100
+comments marshallpierce/rust-base64#307              200  gh api repos/marshallpierce/rust-base64/issues/307/comments?per_page=100
+comments marshallpierce/rust-base64#302              200  gh api repos/marshallpierce/rust-base64/issues/302/comments?per_page=100
+comments marshallpierce/rust-base64#298              200  gh api repos/marshallpierce/rust-base64/issues/298/comments?per_page=100
+comments marshallpierce/rust-base64#291              200  gh api repos/marshallpierce/rust-base64/issues/291/comments?per_page=100
+comments marshallpierce/rust-base64#289              200  gh api repos/marshallpierce/rust-base64/issues/289/comments?per_page=100
+comments marshallpierce/rust-base64#288              200  gh api repos/marshallpierce/rust-base64/issues/288/comments?per_page=100
+comments marshallpierce/rust-base64#286              200  gh api repos/marshallpierce/rust-base64/issues/286/comments?per_page=100
+comments marshallpierce/rust-base64#282              200  gh api repos/marshallpierce/rust-base64/issues/282/comments?per_page=100
+comments marshallpierce/rust-base64#276              200  gh api repos/marshallpierce/rust-base64/issues/276/comments?per_page=100
+ten newest issues maulanasdqn/paginator-rs           200  gh api search/issues?q=repo:maulanasdqn/paginator-rs+is:issue&sort=created&order=desc&per_page=10
+comments maulanasdqn/paginator-rs#14                 200  gh api repos/maulanasdqn/paginator-rs/issues/14/comments?per_page=100
+comments maulanasdqn/paginator-rs#8                  200  gh api repos/maulanasdqn/paginator-rs/issues/8/comments?per_page=100
+comments maulanasdqn/paginator-rs#7                  200  gh api repos/maulanasdqn/paginator-rs/issues/7/comments?per_page=100
+comments maulanasdqn/paginator-rs#6                  200  gh api repos/maulanasdqn/paginator-rs/issues/6/comments?per_page=100
+comments maulanasdqn/paginator-rs#5                  200  gh api repos/maulanasdqn/paginator-rs/issues/5/comments?per_page=100
+comments maulanasdqn/paginator-rs#3                  200  gh api repos/maulanasdqn/paginator-rs/issues/3/comments?per_page=100
+comments maulanasdqn/paginator-rs#2                  200  gh api repos/maulanasdqn/paginator-rs/issues/2/comments?per_page=100
+comments maulanasdqn/paginator-rs#1                  200  gh api repos/maulanasdqn/paginator-rs/issues/1/comments?per_page=100
+
+## JA-06 — the three templates the Muse leg named for the LOW question
+
+### 99minutos/template-agents-rust — the API, the web page and the
+### Wayback Machine, so an absence is established three ways
+api repos/99minutos/template-agents-rust             404  gh api repos/99minutos/template-agents-rust
+github.com/99minutos/template-agents-rust            404  https://github.com/99minutos/template-agents-rust
+curl: (28) Connection timed out after 40011 milliseconds
+wayback 99minutos/template-agents-rust               000000  https://archive.org/wayback/available?url=github.com/99minutos/template-agents-rust
+curl: (28) Connection timed out after 40002 milliseconds
+wayback 99minutos AGENTS.md                          000000  https://archive.org/wayback/available?url=github.com/99minutos/template-agents-rust/blob/main/AGENTS.md
+### the only public repository carrying the name, read in its place
+repo joshua-mo-143/99minutos-template-agents-rust    200  gh api repos/joshua-mo-143/99minutos-template-agents-rust
+pinned commit: 9142f9985ffb3b52980a9792b900b844521ee92e
+tree joshua-mo-143/99minutos-template-agents-rust    200  gh api repos/joshua-mo-143/99minutos-template-agents-rust/git/trees/9142f9985ffb3b52980a9792b900b844521ee92e?recursive=1
+README joshua-mo-143/99minutos-template-agents-rust  200  https://raw.githubusercontent.com/joshua-mo-143/99minutos-template-agents-rust/9142f9985ffb3b52980a9792b900b844521ee92e/README.md
+
+### hendrixmar/rust-axum-seaorm-boilerplate — a fork; the upstream it
+### forks is read too, since that is the maintained original
+repo hendrixmar/rust-axum-seaorm-boilerplate         200  gh api repos/hendrixmar/rust-axum-seaorm-boilerplate
+repo nakamuraos/rust-axum-seaorm-boilerplate         200  gh api repos/nakamuraos/rust-axum-seaorm-boilerplate
+pinned commits: fork 9bb388c706ab7b789b6edf8a79dce5453b8b00f1, upstream 2ad8073c13404a0a2e49845938a2301dfdf433fd
+pagination.rs hendrixmar/rust-axum-seaorm-boilerplate 200  https://raw.githubusercontent.com/hendrixmar/rust-axum-seaorm-boilerplate/9bb388c706ab7b789b6edf8a79dce5453b8b00f1/src/common/pagination.rs
+pagination.rs nakamuraos/rust-axum-seaorm-boilerplate 200  https://raw.githubusercontent.com/nakamuraos/rust-axum-seaorm-boilerplate/2ad8073c13404a0a2e49845938a2301dfdf433fd/src/common/pagination.rs
+
+### coreapostrophe/axum-template
+repo coreapostrophe/axum-template                    200  gh api repos/coreapostrophe/axum-template
+pinned commit: f1bd22bfe07a2c58ee21d30d9d92e51814e0adc6
+tree coreapostrophe/axum-template                    200  gh api repos/coreapostrophe/axum-template/git/trees/f1bd22bfe07a2c58ee21d30d9d92e51814e0adc6?recursive=1
+handlers.rs coreapostrophe/axum-template             200  https://raw.githubusercontent.com/coreapostrophe/axum-template/f1bd22bfe07a2c58ee21d30d9d92e51814e0adc6/crates/app/lib/api/domains/todos/handlers.rs
+response/data.rs coreapostrophe/axum-template        200  https://raw.githubusercontent.com/coreapostrophe/axum-template/f1bd22bfe07a2c58ee21d30d9d92e51814e0adc6/crates/app/lib/api/utils/response/data.rs
+
+## totals
+OK 31
+ABSENT 2
+GAP 2
+
+===== r72-fetch-revision3.sh rerun (fetch-revision3.log) =====
+## environment
+gh:   gh version 2.101.0 (2026-09-15)
+retrieved (UTC): 2026-09-23T07:07:40Z
+
+## finding 6 — the ten most recently opened issues of each remaining
+## declined candidate (is:issue excludes pull requests in the query), and
+## every comment on each of them. The repository is the one each crate
+## declares in crate.repository (snapshots/crate-<name>.json).
+ten newest issues daniel-samson/paginate                   200  gh api search/issues?q=repo:daniel-samson/paginate+is:issue&sort=created&order=desc&per_page=10
+  total_count 4
+comments daniel-samson/paginate#7                          200  gh api repos/daniel-samson/paginate/issues/7/comments?per_page=100
+comments daniel-samson/paginate#6                          200  gh api repos/daniel-samson/paginate/issues/6/comments?per_page=100
+comments daniel-samson/paginate#5                          200  gh api repos/daniel-samson/paginate/issues/5/comments?per_page=100
+comments daniel-samson/paginate#3                          200  gh api repos/daniel-samson/paginate/issues/3/comments?per_page=100
+ten newest issues alexandrughinea/sqlx-paginated           200  gh api search/issues?q=repo:alexandrughinea/sqlx-paginated+is:issue&sort=created&order=desc&per_page=10
+  total_count 0
+ten newest issues WyattAu/paginate                         200  gh api search/issues?q=repo:WyattAu/paginate+is:issue&sort=created&order=desc&per_page=10
+  total_count 0
+ten newest issues jmtamayo/page-hunter                     200  gh api search/issues?q=repo:jmtamayo/page-hunter+is:issue&sort=created&order=desc&per_page=10
+  total_count 8
+comments jmtamayo/page-hunter#23                           200  gh api repos/jmtamayo/page-hunter/issues/23/comments?per_page=100
+comments jmtamayo/page-hunter#22                           200  gh api repos/jmtamayo/page-hunter/issues/22/comments?per_page=100
+comments jmtamayo/page-hunter#20                           200  gh api repos/jmtamayo/page-hunter/issues/20/comments?per_page=100
+comments jmtamayo/page-hunter#17                           200  gh api repos/jmtamayo/page-hunter/issues/17/comments?per_page=100
+comments jmtamayo/page-hunter#13                           200  gh api repos/jmtamayo/page-hunter/issues/13/comments?per_page=100
+comments jmtamayo/page-hunter#12                           200  gh api repos/jmtamayo/page-hunter/issues/12/comments?per_page=100
+comments jmtamayo/page-hunter#11                           200  gh api repos/jmtamayo/page-hunter/issues/11/comments?per_page=100
+comments jmtamayo/page-hunter#10                           200  gh api repos/jmtamayo/page-hunter/issues/10/comments?per_page=100
+ten newest issues brefwiz/api-bones                        200  gh api search/issues?q=repo:brefwiz/api-bones+is:issue&sort=created&order=desc&per_page=10
+  total_count 8
+comments brefwiz/api-bones#122                             200  gh api repos/brefwiz/api-bones/issues/122/comments?per_page=100
+comments brefwiz/api-bones#117                             200  gh api repos/brefwiz/api-bones/issues/117/comments?per_page=100
+comments brefwiz/api-bones#116                             200  gh api repos/brefwiz/api-bones/issues/116/comments?per_page=100
+comments brefwiz/api-bones#89                              200  gh api repos/brefwiz/api-bones/issues/89/comments?per_page=100
+comments brefwiz/api-bones#75                              200  gh api repos/brefwiz/api-bones/issues/75/comments?per_page=100
+comments brefwiz/api-bones#50                              200  gh api repos/brefwiz/api-bones/issues/50/comments?per_page=100
+comments brefwiz/api-bones#49                              200  gh api repos/brefwiz/api-bones/issues/49/comments?per_page=100
+comments brefwiz/api-bones#34                              200  gh api repos/brefwiz/api-bones/issues/34/comments?per_page=100
+ten newest issues rodmen07/axum-api-kit                    200  gh api search/issues?q=repo:rodmen07/axum-api-kit+is:issue&sort=created&order=desc&per_page=10
+  total_count 0
+ten newest issues a1akris/page-turner                      200  gh api search/issues?q=repo:a1akris/page-turner+is:issue&sort=created&order=desc&per_page=10
+  total_count 5
+comments a1akris/page-turner#9                             200  gh api repos/a1akris/page-turner/issues/9/comments?per_page=100
+comments a1akris/page-turner#8                             200  gh api repos/a1akris/page-turner/issues/8/comments?per_page=100
+comments a1akris/page-turner#6                             200  gh api repos/a1akris/page-turner/issues/6/comments?per_page=100
+comments a1akris/page-turner#5                             200  gh api repos/a1akris/page-turner/issues/5/comments?per_page=100
+comments a1akris/page-turner#2                             200  gh api repos/a1akris/page-turner/issues/2/comments?per_page=100
+
+## totals
+OK 32
+GAP 0
+
+===== r72-fetch-revision4.sh rerun (fetch-revision4.log) =====
+## environment
+gh:   gh version 2.101.0 (2026-09-15)
+retrieved (UTC): 2026-09-23T07:08:59Z
+
+## finding 2 — the repository record and the open-issue count for the
+## two candidate repositories r72-fetch.sh did not cover
+repo rodmen07/axum-api-kit                                 200  gh api repos/rodmen07/axum-api-kit
+  stargazers_count 0 archived False pushed_at 2026-08-18T12:32:29Z
+open issues rodmen07/axum-api-kit                          200  gh api search/issues?q=repo:rodmen07/axum-api-kit+is:issue+is:open
+  total_count 0
+repo a1akris/page-turner                                   200  gh api repos/a1akris/page-turner
+  stargazers_count 63 archived False pushed_at 2024-01-15T19:40:10Z
+open issues a1akris/page-turner                            200  gh api search/issues?q=repo:a1akris/page-turner+is:issue+is:open
+  total_count 3
+
+## finding 2 — page-turner README, for a maintainer notice
+readme a1akris/page-turner                                 200  gh api repos/a1akris/page-turner/readme
+
+## totals
+OK 5
+GAP 0
+
+===== r72-archive.sh rerun (archive.log) =====
+## environment
+git: git version 2.50.1 (Apple Git-155)
+HEAD: e0b0d1c1762ee8aa4b28c62282a2225103e594eb
+files extracted from HEAD: 7365
+scripts copied into the extraction: 11
+  r72-standard: 218 committed lines, 218 rerun lines
+PASS r72-standard.log reproduces byte for byte from a clean git archive extraction
+  r72-inputs: 231 committed lines, 231 rerun lines
+PASS r72-inputs.log reproduces byte for byte from a clean git archive extraction
+  r72-figures: 396 committed lines, 396 rerun lines
+PASS r72-figures.log reproduces byte for byte from a clean git archive extraction
+  r72-practice: 183 committed lines, 183 rerun lines
+PASS r72-practice.log reproduces byte for byte from a clean git archive extraction
+  r72-probe: 54 committed lines, 54 rerun lines
+PASS r72-probe.log reproduces byte for byte from a clean git archive extraction
+
+## the normalised lines, shown in full so the normalisation hides nothing
+  committed:  root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
+  extraction: root: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r72archive.HJFke7
+  committed:  snapshots: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R72/2026-09-18T215915Z-af997c2abb5a/review/evidence/snapshots
+  extraction: snapshots: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r72archive.HJFke7/research/runs/R72/2026-09-18T215915Z-af997c2abb5a/review/evidence/snapshots
+
+## totals
+PASS 5
+FAIL 0
+
+===== supplementary: fresh figures/practice re-derivation =====
+## environment
+python3: Python 3.14.7
+snapshots: /tmp/r72audit/snap-merged
+  R72 api-pagination — snapshot provenance
+  retrieved (UTC): 2026-09-23T07:04:54Z
+  user-agent: rs-launch-blueprint-research (steve@smorin.com)
+  endpoints answered: 59
+  endpoints that did not answer: 0
+
+## 90-day and all-time downloads — GET /api/v1/crates/<name>, crate.recent_downloads / crate.downloads
+  paginator-axum recent_downloads                6193
+FAIL F01 paginator-axum recent_downloads is 6193, expected 6714
+  paginator-axum downloads                       12335
+FAIL F01.b paginator-axum downloads is 12335, expected 12252
+  paginator-utils recent_downloads               7581
+FAIL F02 paginator-utils recent_downloads is 7581, expected 8149
+  paginator-utils downloads                      17039
+FAIL F02.b paginator-utils downloads is 17039, expected 16950
+  paginator-rs recent_downloads                  7550
+FAIL F03 paginator-rs recent_downloads is 7550, expected 8119
+  paginator-rs downloads                         16722
+FAIL F03.b paginator-rs downloads is 16722, expected 16634
+  paginate recent_downloads                      9522
+FAIL F04 paginate recent_downloads is 9522, expected 9579
+  paginate downloads                             103101
+FAIL F04.b paginate downloads is 103101, expected 103030
+  sqlx-paginated recent_downloads                1806
+FAIL F05 sqlx-paginated recent_downloads is 1806, expected 1937
+  sqlx-paginated downloads                       22457
+FAIL F05.b sqlx-paginated downloads is 22457, expected 22451
+  api-paginate recent_downloads                  31
+PASS F06 api-paginate recent_downloads = 31
+  api-paginate downloads                         31
+PASS F06.b api-paginate downloads = 31
+  page-hunter recent_downloads                   148
+FAIL F07 page-hunter recent_downloads is 148, expected 150
+  page-hunter downloads                          12937
+FAIL F07.b page-hunter downloads is 12937, expected 12934
+  api-bones recent_downloads                     12994
+FAIL F08 api-bones recent_downloads is 12994, expected 6982
+  api-bones downloads                            60687
+FAIL F08.b api-bones downloads is 60687, expected 54621
+  axum-api-kit recent_downloads                  3469
+FAIL F09 axum-api-kit recent_downloads is 3469, expected 3465
+  axum-api-kit downloads                         3598
+FAIL F09.b axum-api-kit downloads is 3598, expected 3592
+  page-turner recent_downloads                   6552
+FAIL F10 page-turner recent_downloads is 6552, expected 6482
+  page-turner downloads                          129954
+FAIL F10.b page-turner downloads is 129954, expected 129842
+  dropshot recent_downloads                      128754
+FAIL F11 dropshot recent_downloads is 128754, expected 129506
+  dropshot downloads                             864680
+FAIL F11.b dropshot downloads is 864680, expected 862512
+  base64 recent_downloads                        330736739
+FAIL F12 base64 recent_downloads is 330736739, expected 329396349
+  base64 downloads                               1604446286
+FAIL F12.b base64 downloads is 1604446286, expected 1596330399
+
+## last release, licence, declared rust-version — GET /api/v1/crates/<name>/versions, newest yanked:false
+  paginator-axum newest unyanked num             0.4.0
+PASS F13 paginator-axum newest unyanked num = 0.4.0
+  paginator-axum created_at                      2026-09-07
+PASS F13.b paginator-axum created_at = 2026-09-07
+  paginator-axum license                         MIT
+PASS F13.c paginator-axum license = MIT
+  paginator-axum rust_version                    None
+PASS F13.d paginator-axum rust_version = None
+  paginator-utils newest unyanked num            0.4.0
+PASS F14 paginator-utils newest unyanked num = 0.4.0
+  paginator-utils created_at                     2026-09-07
+PASS F14.b paginator-utils created_at = 2026-09-07
+  paginator-utils license                        MIT
+PASS F14.c paginator-utils license = MIT
+  paginator-utils rust_version                   None
+PASS F14.d paginator-utils rust_version = None
+  paginator-rs newest unyanked num               0.4.0
+PASS F15 paginator-rs newest unyanked num = 0.4.0
+  paginator-rs created_at                        2026-09-07
+PASS F15.b paginator-rs created_at = 2026-09-07
+  paginator-rs license                           MIT
+PASS F15.c paginator-rs license = MIT
+  paginator-rs rust_version                      None
+PASS F15.d paginator-rs rust_version = None
+  paginate newest unyanked num                   1.1.11
+PASS F16 paginate newest unyanked num = 1.1.11
+  paginate created_at                            2022-04-11
+PASS F16.b paginate created_at = 2022-04-11
+  paginate license                               Apache-2.0
+PASS F16.c paginate license = Apache-2.0
+  paginate rust_version                          None
+PASS F16.d paginate rust_version = None
+  sqlx-paginated newest unyanked num             0.6.2
+PASS F17 sqlx-paginated newest unyanked num = 0.6.2
+  sqlx-paginated created_at                      2026-08-17
+PASS F17.b sqlx-paginated created_at = 2026-08-17
+  sqlx-paginated license                         MIT
+PASS F17.c sqlx-paginated license = MIT
+  sqlx-paginated rust_version                    None
+PASS F17.d sqlx-paginated rust_version = None
+  api-paginate newest unyanked num               0.1.1
+PASS F18 api-paginate newest unyanked num = 0.1.1
+  api-paginate created_at                        2026-09-12
+PASS F18.b api-paginate created_at = 2026-09-12
+SKIP F18.c api-paginate licence carries a space — asserted literally below
+  api-paginate rust_version                      1.85
+PASS F18.d api-paginate rust_version = 1.85
+  page-hunter newest unyanked num                0.7.0
+PASS F19 page-hunter newest unyanked num = 0.7.0
+  page-hunter created_at                         2026-03-07
+PASS F19.b page-hunter created_at = 2026-03-07
+  page-hunter license                            non-standard
+PASS F19.c page-hunter license = non-standard
+  page-hunter rust_version                       None
+PASS F19.d page-hunter rust_version = None
+  api-bones newest unyanked num                  6.12.0
+PASS F20 api-bones newest unyanked num = 6.12.0
+  api-bones created_at                           2026-08-16
+PASS F20.b api-bones created_at = 2026-08-16
+  api-bones license                              MIT
+PASS F20.c api-bones license = MIT
+  api-bones rust_version                         1.85
+PASS F20.d api-bones rust_version = 1.85
+  axum-api-kit newest unyanked num               2.2.0
+PASS F21 axum-api-kit newest unyanked num = 2.2.0
+  axum-api-kit created_at                        2026-08-12
+PASS F21.b axum-api-kit created_at = 2026-08-12
+  axum-api-kit license                           MIT
+PASS F21.c axum-api-kit license = MIT
+  axum-api-kit rust_version                      1.81
+PASS F21.d axum-api-kit rust_version = 1.81
+  page-turner newest unyanked num                1.0.0
+PASS F22 page-turner newest unyanked num = 1.0.0
+  page-turner created_at                         2024-01-15
+PASS F22.b page-turner created_at = 2024-01-15
+SKIP F22.c page-turner licence carries a space — asserted literally below
+  page-turner rust_version                       1.75
+PASS F22.d page-turner rust_version = 1.75
+  dropshot newest unyanked num                   0.17.1
+PASS F23 dropshot newest unyanked num = 0.17.1
+  dropshot created_at                            2026-06-02
+PASS F23.b dropshot created_at = 2026-06-02
+  dropshot license                               Apache-2.0
+PASS F23.c dropshot license = Apache-2.0
+  dropshot rust_version                          1.85
+PASS F23.d dropshot rust_version = 1.85
+  base64 newest unyanked num                     0.23.1
+PASS F24 base64 newest unyanked num = 0.23.1
+  base64 created_at                              2026-08-04
+PASS F24.b base64 created_at = 2026-08-04
+SKIP F24.c base64 licence carries a space — asserted literally below
+  base64 rust_version                            1.71.0
+PASS F24.d base64 rust_version = 1.71.0
+  api-paginate license                           MIT OR Apache-2.0
+PASS F18.e api-paginate license = MIT OR Apache-2.0
+  page-turner license                            MIT OR Apache-2.0
+PASS F22.e page-turner license = MIT OR Apache-2.0
+  base64 license                                 MIT OR Apache-2.0
+PASS F24.e base64 license = MIT OR Apache-2.0
+  candidate crates declaring no rust-version     6 of 11
+PASS F73 candidate crates declaring no rust-version = 6 of 11
+
+## stars, archived, pushed_at — GET https://api.github.com/repos/<o>/<r>
+  maulanasdqn-paginator-rs stargazers_count      6
+PASS F25 maulanasdqn-paginator-rs stargazers_count = 6
+  maulanasdqn-paginator-rs archived              False
+PASS F25.b maulanasdqn-paginator-rs archived = False
+  maulanasdqn-paginator-rs pushed_at             2026-09-07
+PASS F25.c maulanasdqn-paginator-rs pushed_at = 2026-09-07
+  daniel-samson-paginate stargazers_count        17
+PASS F26 daniel-samson-paginate stargazers_count = 17
+  daniel-samson-paginate archived                False
+PASS F26.b daniel-samson-paginate archived = False
+  daniel-samson-paginate pushed_at               2024-01-23
+PASS F26.c daniel-samson-paginate pushed_at = 2024-01-23
+  marshallpierce-rust-base64 stargazers_count    737
+PASS F27 marshallpierce-rust-base64 stargazers_count = 737
+  marshallpierce-rust-base64 archived            False
+PASS F27.b marshallpierce-rust-base64 archived = False
+  marshallpierce-rust-base64 pushed_at           2026-08-18
+PASS F27.c marshallpierce-rust-base64 pushed_at = 2026-08-18
+  oxidecomputer-dropshot stargazers_count        1202
+PASS F28 oxidecomputer-dropshot stargazers_count = 1202
+  oxidecomputer-dropshot archived                False
+PASS F28.b oxidecomputer-dropshot archived = False
+  oxidecomputer-dropshot pushed_at               2026-09-21
+PASS F28.c oxidecomputer-dropshot pushed_at = 2026-09-21
+  WyattAu-paginate stargazers_count              0
+PASS F29 WyattAu-paginate stargazers_count = 0
+  WyattAu-paginate archived                      False
+PASS F29.b WyattAu-paginate archived = False
+  WyattAu-paginate pushed_at                     2026-09-19
+PASS F29.c WyattAu-paginate pushed_at = 2026-09-19
+  alexandrughinea-sqlx-paginated stargazers_count 25
+PASS F30 alexandrughinea-sqlx-paginated stargazers_count = 25
+  alexandrughinea-sqlx-paginated archived        False
+PASS F30.b alexandrughinea-sqlx-paginated archived = False
+  alexandrughinea-sqlx-paginated pushed_at       2026-09-14
+PASS F30.c alexandrughinea-sqlx-paginated pushed_at = 2026-09-14
+  jmtamayo-page-hunter stargazers_count          6
+PASS F31 jmtamayo-page-hunter stargazers_count = 6
+  jmtamayo-page-hunter archived                  False
+PASS F31.b jmtamayo-page-hunter archived = False
+  jmtamayo-page-hunter pushed_at                 2026-03-07
+PASS F31.c jmtamayo-page-hunter pushed_at = 2026-03-07
+  brefwiz-api-bones stargazers_count             4
+PASS F32 brefwiz-api-bones stargazers_count = 4
+  brefwiz-api-bones archived                     False
+PASS F32.b brefwiz-api-bones archived = False
+  brefwiz-api-bones pushed_at                    2026-09-21
+PASS F32.c brefwiz-api-bones pushed_at = 2026-09-21
+  rodmen07-axum-api-kit stargazers_count         0
+PASS F74 rodmen07-axum-api-kit stargazers_count = 0
+  rodmen07-axum-api-kit archived                 False
+PASS F74.b rodmen07-axum-api-kit archived = False
+  rodmen07-axum-api-kit pushed_at                2026-08-18
+PASS F74.c rodmen07-axum-api-kit pushed_at = 2026-08-18
+  a1akris-page-turner stargazers_count           63
+PASS F75 a1akris-page-turner stargazers_count = 63
+  a1akris-page-turner archived                   False
+PASS F75.b a1akris-page-turner archived = False
+  a1akris-page-turner pushed_at                  2024-01-15
+PASS F75.c a1akris-page-turner pushed_at = 2024-01-15
+
+## open issues — GET /search/issues?q=repo:<o>/<r>+is:issue+is:open, total_count
+  maulanasdqn-paginator-rs open issues           0
+PASS F33 maulanasdqn-paginator-rs open issues = 0
+  daniel-samson-paginate open issues             2
+PASS F34 daniel-samson-paginate open issues = 2
+  marshallpierce-rust-base64 open issues         11
+PASS F35 marshallpierce-rust-base64 open issues = 11
+  oxidecomputer-dropshot open issues             58
+PASS F36 oxidecomputer-dropshot open issues = 58
+  WyattAu-paginate open issues                   0
+PASS F37 WyattAu-paginate open issues = 0
+  alexandrughinea-sqlx-paginated open issues     0
+PASS F38 alexandrughinea-sqlx-paginated open issues = 0
+  jmtamayo-page-hunter open issues               0
+PASS F39 jmtamayo-page-hunter open issues = 0
+  brefwiz-api-bones open issues                  2
+PASS F40 brefwiz-api-bones open issues = 2
+  rodmen07-axum-api-kit open issues              0
+PASS F76 rodmen07-axum-api-kit open issues = 0
+  a1akris-page-turner open issues                3
+PASS F77 a1akris-page-turner open issues = 3
+
+## page-turner maintenance state (revision 4, audit finding 2): the newest
+## maintainer comment anywhere in its issue population, and whether its README
+## carries a maintainer notice (the rubric's third dormant signal)
+  page-turner newest maintainer comment          2026-07-26
+PASS F78 page-turner newest maintainer comment = 2026-07-26
+  page-turner README notice lines                README.md 2c0cf245 0
+PASS F79 page-turner README notice lines = README.md 2c0cf245 0
+
+## issue responsiveness — up to the ten most recently opened issues (the
+## search query carries is:issue, so pull requests never enter the population;
+## retrieved by r72-fetch-revision2.sh), median days to the first comment by an
+## OWNER/MEMBER/COLLABORATOR who is not the author
+  base64 issues/answered/unanswered/median-days  10 7 3 0.4
+PASS F41 base64 issues/answered/unanswered/median-days = 10 7 3 0.4
+  paginator-rs issues/answered/unanswered/median-days 8 8 0 1.3
+PASS F42 paginator-rs issues/answered/unanswered/median-days = 8 8 0 1.3
+
+## issue responsiveness for the seven remaining declined candidates (revision
+## 3, audit finding 6; retrieved by r72-fetch-revision3.sh), same population and
+## same rule. "0 0 0 none" means the repository has no issue at all, so the
+## figure is inapplicable. The .b check counts issues opened by an
+## OWNER/MEMBER/COLLABORATOR: a self-filed issue can never receive a reply from
+## a maintainer who is not its author, so it always counts as unanswered.
+  marshallpierce-rust-base64 issues self-filed by a maintainer 0
+PASS F41.b marshallpierce-rust-base64 issues self-filed by a maintainer = 0
+  maulanasdqn-paginator-rs issues self-filed by a maintainer 0
+PASS F42.b maulanasdqn-paginator-rs issues self-filed by a maintainer = 0
+  daniel-samson-paginate issues/answered/unanswered/median-days 4 0 4 none
+PASS F66 daniel-samson-paginate issues/answered/unanswered/median-days = 4 0 4 none
+  daniel-samson-paginate issues self-filed by a maintainer 4
+PASS F66.b daniel-samson-paginate issues self-filed by a maintainer = 4
+  alexandrughinea-sqlx-paginated issues/answered/unanswered/median-days 0 0 0 none
+PASS F67 alexandrughinea-sqlx-paginated issues/answered/unanswered/median-days = 0 0 0 none
+  alexandrughinea-sqlx-paginated issues self-filed by a maintainer 0
+PASS F67.b alexandrughinea-sqlx-paginated issues self-filed by a maintainer = 0
+  WyattAu-paginate issues/answered/unanswered/median-days 0 0 0 none
+PASS F68 WyattAu-paginate issues/answered/unanswered/median-days = 0 0 0 none
+  WyattAu-paginate issues self-filed by a maintainer 0
+PASS F68.b WyattAu-paginate issues self-filed by a maintainer = 0
+  jmtamayo-page-hunter issues/answered/unanswered/median-days 8 2 6 266.8
+PASS F69 jmtamayo-page-hunter issues/answered/unanswered/median-days = 8 2 6 266.8
+  jmtamayo-page-hunter issues self-filed by a maintainer 6
+PASS F69.b jmtamayo-page-hunter issues self-filed by a maintainer = 6
+  brefwiz-api-bones issues/answered/unanswered/median-days 8 0 8 none
+PASS F70 brefwiz-api-bones issues/answered/unanswered/median-days = 8 0 8 none
+  brefwiz-api-bones issues self-filed by a maintainer 0
+PASS F70.b brefwiz-api-bones issues self-filed by a maintainer = 0
+  rodmen07-axum-api-kit issues/answered/unanswered/median-days 0 0 0 none
+PASS F71 rodmen07-axum-api-kit issues/answered/unanswered/median-days = 0 0 0 none
+  rodmen07-axum-api-kit issues self-filed by a maintainer 0
+PASS F71.b rodmen07-axum-api-kit issues self-filed by a maintainer = 0
+  a1akris-page-turner issues/answered/unanswered/median-days 5 0 5 none
+PASS F72 a1akris-page-turner issues/answered/unanswered/median-days = 5 0 5 none
+  a1akris-page-turner issues self-filed by a maintainer 4
+PASS F72.b a1akris-page-turner issues self-filed by a maintainer = 4
+  brefwiz-api-bones distinct issue authors       ['gsalingu']
+PASS F70.c brefwiz-api-bones distinct issue authors = ['gsalingu']
+
+## gate 3 — RustSec. A 404 is evidence of absence only because rsa, the
+## control, answers 200 and renders an advisory in the same run.
+  rustsec paginator-axum                         404
+PASS F43.paginator-axum rustsec paginator-axum = 404
+  rustsec paginator-utils                        404
+PASS F43.paginator-utils rustsec paginator-utils = 404
+  rustsec paginator-rs                           404
+PASS F43.paginator-rs rustsec paginator-rs = 404
+  rustsec paginate                               404
+PASS F43.paginate rustsec paginate = 404
+  rustsec sqlx-paginated                         404
+PASS F43.sqlx-paginated rustsec sqlx-paginated = 404
+  rustsec api-paginate                           404
+PASS F43.api-paginate rustsec api-paginate = 404
+  rustsec page-hunter                            404
+PASS F43.page-hunter rustsec page-hunter = 404
+  rustsec api-bones                              404
+PASS F43.api-bones rustsec api-bones = 404
+  rustsec axum-api-kit                           404
+PASS F43.axum-api-kit rustsec axum-api-kit = 404
+  rustsec page-turner                            404
+PASS F43.page-turner rustsec page-turner = 404
+  rustsec dropshot                               404
+PASS F43.dropshot rustsec dropshot = 404
+  rustsec rsa (control)                          200
+PASS F44 rustsec rsa (control) = 200
+PASS F45 the rsa control page renders RUSTSEC-2023-0071, so the fetch path works
+  rustsec base64                                 200
+PASS F46 rustsec base64 = 200
+PASS F47 base64 has an advisory page listing RUSTSEC-2017-0004
+PASS F48 RUSTSEC-2017-0004 records a patched range at 0.5.2, far below 0.23.1
+
+## gate 5 — declared features and async-runtime coupling, from the crates.io
+## dependency records rather than from a README
+  paginator-axum normal dependencies             async-trait axum form_urlencoded http paginator-rs paginator-utils serde serde_json
+PASS F49 paginator-axum normal dependencies = async-trait axum form_urlencoded http paginator-rs paginator-utils serde serde_json
+  base64 normal dependencies (none)              
+PASS F50 base64 normal dependencies (none) = 
+  paginator-axum declares no utoipa dependency:
+PASS F51 paginator-axum declares no utoipa dependency in any kind
+  paginator-axum declares tokio only as a dev-dependency:
+  paginator-axum tokio dependency kind           dev
+PASS F52 paginator-axum tokio dependency kind = dev
+  sqlx-paginated couples a runtime and a database driver sqlx tokio
+PASS F53 sqlx-paginated couples a runtime and a database driver = sqlx tokio
+
+## the crate sources this decision quotes, read from the published .crate
+  17:    pub per_page: u32,
+PASS F54 query.rs carries:     pub per_page: u32,
+  67:                "per_page" => {
+PASS F55 query.rs carries:                 "per_page" => {
+  121:            per_page: per_page.clamp(1, 100),
+PASS F56 query.rs carries:             per_page: per_page.clamp(1, 100),
+  37:impl<S> FromRequestParts<S> for PaginationQuery
+PASS F57 query.rs carries: impl<S> FromRequestParts<S> for PaginationQuery
+  6:pub use link::create_link_header;
+PASS F58 lib.rs carries: pub use link::create_link_header;
+  37:                "X-Total-Count",
+PASS F59 response.rs carries:                 "X-Total-Count",
+  7:    pub data: Vec<T>,
+PASS F60 response.rs carries:     pub data: Vec<T>,
+  8:    pub meta: PaginatorResponseMeta,
+PASS F61 response.rs carries:     pub meta: PaginatorResponseMeta,
+  the crate exports no application-level registration entry point:
+  matches: 0
+PASS F62 neither crate exports an app-wide pagination registration function
+  everything lib.rs exports:
+    6:pub use link::create_link_header;
+    7:pub use query::{PaginationQuery, PaginationQueryParams};
+    8:pub use response::PaginatedJson;
+
+## adopters — reverse dependencies
+  paginator-axum reverse dependencies            1
+PASS F63 paginator-axum reverse dependencies = 1
+  paginate reverse dependencies                  1
+PASS F64 paginate reverse dependencies = 1
+  base64 reverse dependencies: 17567
+PASS F65 base64 has more than a thousand reverse dependencies
+Traceback (most recent call last):
+  File "<string>", line 4, in <module>
+    print(', '.join(v['crate_version']['crate'] for v in d['versions']))
+          ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "<string>", line 4, in <genexpr>
+    print(', '.join(v['crate_version']['crate'] for v in d['versions']))
+                    ~^^^^^^^^^^^^^^^^^
+KeyError: 'crate_version'
+  the single crate depending on paginator-axum: 
+
+## totals
+PASS 145
+FAIL 22
+SKIP 3
+## environment
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+  R72 api-pagination — practice-source provenance
+  retrieved (UTC): 2026-09-23T07:05:00Z
+  rust-lang/crates.io src/controllers/helpers/pagination.rs at commit 30c4ed7fd9b79eba10e42d5c173e9bdd8aab1b4c
+
+## rust-lang/crates.io — the Rust project s own registry service
+  pinned commit: 30c4ed7fd9b79eba10e42d5c173e9bdd8aab1b4c
+  21:const DEFAULT_PER_PAGE: i64 = 10;
+PASS C01 cratesio-pagination.rs carries: const DEFAULT_PER_PAGE: i64 = 10;
+  22:const MAX_PER_PAGE: i64 = 100;
+PASS C02 cratesio-pagination.rs carries: const MAX_PER_PAGE: i64 = 100;
+  55:#[derive(Debug, Deserialize, FromRequestParts, utoipa::IntoParams)]
+PASS C03 cratesio-pagination.rs carries: #[derive(Debug, Deserialize, FromRequestParts, utoipa::IntoParams)]
+  58:pub struct PaginationQueryParams {
+PASS C04 cratesio-pagination.rs carries: pub struct PaginationQueryParams {
+  151:        if per_page > MAX_PER_PAGE {
+PASS C05 cratesio-pagination.rs carries:         if per_page > MAX_PER_PAGE {
+  153:                "cannot request more than {MAX_PER_PAGE} items",
+PASS C06 cratesio-pagination.rs carries: cannot request more than {MAX_PER_PAGE} items
+  332:    let encoded = general_purpose::URL_SAFE_NO_PAD.encode(serde_json::to_vec(&params)?);
+PASS C07 cratesio-pagination.rs carries: URL_SAFE_NO_PAD
+  77:    pub seek: Option<String>,
+PASS C08 cratesio-pagination.rs carries:     pub seek: Option<String>,
+  the file imports no pagination crate:
+  matches: 0
+PASS C09 crates.io uses no third-party pagination crate
+
+## api-bones 6.12.0 — the envelope one Doxa leg proposes borrowing, and the
+## cursor and keyset types the same file defines
+  57:pub struct PaginatedResponse<T> {
+PASS C15 pagination.rs carries: pub struct PaginatedResponse<T> {
+  59:    pub items: Vec<T>,
+PASS C16 pagination.rs carries:     pub items: Vec<T>,
+  67:    pub offset: u64,
+PASS C17 pagination.rs carries:     pub offset: u64,
+  61:    pub total_count: u64,
+PASS C18 pagination.rs carries:     pub total_count: u64,
+  :561 pub struct KeysetPaginatedResponse<T> {
+PASS C49 pagination.rs line 561 is: pub struct KeysetPaginatedResponse<T> {
+  :563     pub items: Vec<T>,
+PASS C50 pagination.rs line 563 is:     pub items: Vec<T>,
+  :565     pub has_next: bool,
+PASS C51 pagination.rs line 565 is:     pub has_next: bool,
+  :567     pub has_prev: bool,
+PASS C52 pagination.rs line 567 is:     pub has_prev: bool,
+  :575     pub prev_cursor: Option<String>,
+PASS C53 pagination.rs line 575 is:     pub prev_cursor: Option<String>,
+  :583     pub next_cursor: Option<String>,
+PASS C54 pagination.rs line 583 is:     pub next_cursor: Option<String>,
+  :243 pub struct CursorPaginatedResponse<T> {
+PASS C55 pagination.rs line 243 is: pub struct CursorPaginatedResponse<T> {
+  :245     pub data: Vec<T>,
+PASS C56 pagination.rs line 245 is:     pub data: Vec<T>,
+  :355 pub struct CursorPaginationParams {
+PASS C57 pagination.rs line 355 is: pub struct CursorPaginationParams {
+  :363     pub limit: Option<u64>,
+PASS C58 pagination.rs line 363 is:     pub limit: Option<u64>,
+  :369     pub after: Option<String>,
+PASS C59 pagination.rs line 369 is:     pub after: Option<String>,
+  :461 pub struct KeysetPaginationParams<K> {
+PASS C60 pagination.rs line 461 is: pub struct KeysetPaginationParams<K> {
+  :467     pub after: Option<K>,
+PASS C61 pagination.rs line 467 is:     pub after: Option<K>,
+  :473     pub before: Option<K>,
+PASS C62 pagination.rs line 473 is:     pub before: Option<K>,
+  :477     pub limit: Option<u64>,
+PASS C63 pagination.rs line 477 is:     pub limit: Option<u64>,
+
+## oxidecomputer/dropshot — the other production first-party page type
+PASS C10.ResultsPage the dropshot ResultsPage page names: ResultsPage
+PASS C10.next_page the dropshot ResultsPage page names: next_page
+PASS C10.items the dropshot ResultsPage page names: items
+
+## axum 0.8.9 — the extractor model the template must fit
+  axum source: axum-0.8.9
+  20:/// struct Pagination {
+PASS C11 query.rs carries: /// struct Pagination {
+  27:/// async fn list_things(pagination: Query<Pagination>) {
+PASS C12 query.rs carries: /// async fn list_things(pagination: Query<Pagination>) {
+  13:pub trait FromRef<T> {
+PASS C13 from_ref.rs carries: pub trait FromRef<T> {
+  application-wide extractor registration hooks in axum:
+  matches: 0
+PASS C14 axum exposes no application-wide extractor-registration hook, so py's add_pagination(app) has no direct counterpart
+
+## fitness gate 3, second limb — the `unsafe` posture of the one crate
+## this decision adds, and of the crates it declines, read from their
+## published sources rather than asserted from a README
+  base64 source: base64-0.23.1
+  284:#![cfg_attr(not(feature = "simd-unsafe"), forbid(unsafe_code))]
+PASS C19 lib.rs carries: #![cfg_attr(not(feature = "simd-unsafe"), forbid(unsafe_code))]
+  285:#![cfg_attr(feature = "simd-unsafe", deny(unsafe_code))]
+PASS C20 lib.rs carries: #![cfg_attr(feature = "simd-unsafe", deny(unsafe_code))]
+  45:    "simd-unsafe",
+PASS C21 Cargo.toml carries:     "simd-unsafe",
+  files containing the word `unsafe` in base64 src:
+    src/display.rs
+    src/lib.rs
+    src/engine/simd.rs
+    src/engine/general_purpose/mod.rs
+    src/engine/mod.rs
+    src/engine/tests.rs
+  `unsafe` occurrences outside comment lines: 48
+PASS C22 the `unsafe` lives in the SIMD engine module the feature gates
+
+## and the declined crates, censused the same way. A nonzero count is the
+## posture, not a failure: the assertion is that the count is the one this
+## decision reports, so a later release changing it is caught.
+  paginator-axum-0.4.0     occurrences of the word unsafe: 0
+PASS C23 paginator-axum-0.4.0 has 0
+  paginator-utils-0.4.0    occurrences of the word unsafe: 0
+PASS C27 paginator-utils-0.4.0 has 0
+  api-bones-6.12.0         occurrences of the word unsafe: 5
+PASS C28 api-bones-6.12.0 has 5
+
+## fitness gate 4 — the platform list base64 actually tests on
+  37:      - image: << parameters.rust_img >>
+PASS C24 base64-circleci.yml carries:       - image: << parameters.rust_img >>
+  17:                'rust:1.71.0'
+PASS C25 base64-circleci.yml carries:                 'rust:1.71.0'
+  macOS/xcode executors in base64 CI: 0
+PASS C26 base64 CI covers Linux only — macOS is not covered by the crate own CI
+
+## the LOW question — the three Rust API templates the Muse leg named,
+## read at source (retrieved by r72-fetch-revision2.sh, pinned to commits)
+  R72 api-pagination — revision 2 provenance
+  retrieved (UTC): 2026-09-23T07:07:39Z
+  joshua-mo-143/99minutos-template-agents-rust at commit 9142f9985ffb3b52980a9792b900b844521ee92e
+  hendrixmar/rust-axum-seaorm-boilerplate at commit 9bb388c706ab7b789b6edf8a79dce5453b8b00f1
+  nakamuraos/rust-axum-seaorm-boilerplate at commit 2ad8073c13404a0a2e49845938a2301dfdf433fd
+  coreapostrophe/axum-template at commit f1bd22bfe07a2c58ee21d30d9d92e51814e0adc6
+
+### 99minutos/template-agents-rust — absent, established three ways
+  authenticated API repos/99minutos/template-agents-rust     404
+PASS C29 authenticated API repos/99minutos/template-agents-rust = 404
+  github.com/99minutos/template-agents-rust                  404
+PASS C30 github.com/99minutos/template-agents-rust = 404
+  Wayback snapshots of the repo and of AGENTS.md: both empty 2
+PASS C31 Wayback snapshots of the repo and of AGENTS.md: both empty = 2
+  the only public repository with the name, joshua-mo-143/99minutos-template-agents-rust:
+  copy stars / fork / parent                                 0 False -
+PASS C32 copy stars / fork / parent = 0 False -
+  copy tree paths / truncated / pagination-or-AGENTS.md paths 44 False 0
+PASS C33 copy tree paths / truncated / pagination-or-AGENTS.md paths = 44 False 0
+  copy README lines naming pagination, per_page or total     0
+PASS C34 copy README lines naming pagination, per_page or total = 0
+
+### nakamuraos/rust-axum-seaorm-boilerplate, and the hendrixmar fork Muse named
+  hendrixmar stars / fork / parent                           1 True nakamuraos/rust-axum-seaorm-boilerplate
+PASS C35 hendrixmar stars / fork / parent = 1 True nakamuraos/rust-axum-seaorm-boilerplate
+  nakamuraos stars / fork / parent                           31 False -
+PASS C36 nakamuraos stars / fork / parent = 31 False -
+PASS C37 the fork pagination.rs is byte-identical to the upstream one
+  10:/// - **Page mode** (default): `?page=1&per_page=20`
+PASS C38 tmpl-nakamuraos-pagination.rs carries: /// - **Page mode** (default): `?page=1&per_page=20`
+  45:  pub data: Vec<T>,
+PASS C39 tmpl-nakamuraos-pagination.rs carries:   pub data: Vec<T>,
+  52:  pub total: u64,
+PASS C40 tmpl-nakamuraos-pagination.rs carries:   pub total: u64,
+  11:/// - **Cursor mode**: `?cursor=<id>&per_page=20`
+PASS C41 tmpl-nakamuraos-pagination.rs carries: /// - **Cursor mode**: `?cursor=<id>&per_page=20`
+  69:  pub next_cursor: Option<String>,
+PASS C42 tmpl-nakamuraos-pagination.rs carries:   pub next_cursor: Option<String>,
+  29:      .min(MAX_PER_PAGE)
+PASS C43 tmpl-nakamuraos-pagination.rs carries:       .min(MAX_PER_PAGE)
+
+### coreapostrophe/axum-template
+  coreapostrophe stars / fork / parent                       0 False -
+PASS C44 coreapostrophe stars / fork / parent = 0 False -
+  tree paths / truncated / pagination-or-AGENTS.md paths     68 False 0
+PASS C45 tree paths / truncated / pagination-or-AGENTS.md paths = 68 False 0
+  58:) -> ApiResult<ApiDataResponse<Vec<Todo>>> {
+PASS C46 tmpl-coreapostrophe-handlers.rs carries: ) -> ApiResult<ApiDataResponse<Vec<Todo>>> {
+  handler lines naming page, limit, cursor or pagination     0
+PASS C47 handler lines naming page, limit, cursor or pagination = 0
+  16:    pub data: D,
+PASS C48 tmpl-coreapostrophe-data.rs carries:     pub data: D,
+
+## totals
+PASS 65
+FAIL 0
+SKIP 0

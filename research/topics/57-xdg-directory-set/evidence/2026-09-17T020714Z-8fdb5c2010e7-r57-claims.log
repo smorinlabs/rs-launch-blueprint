@@ -1,0 +1,424 @@
+
+========== 1. org CLI Design Standard v1.4.14 — R5.3 at the pinned blob ==========
+
+--- R5.3, verbatim ---
+**R5.3 — Filesystem locations (XDG). (MUST)**
+Per-user paths **MUST** follow the XDG Base Directory Specification, namespaced under the tool name, honoring `XDG_*` overrides and falling back to the defaults below.
+
+| Purpose | Variable | Default |
+|---------|----------|---------|
+| Config | `$XDG_CONFIG_HOME/acme/` | `~/.config/acme/` (file: `acme_config.toml`) |
+| Data | `$XDG_DATA_HOME/acme/` | `~/.local/share/acme/` |
+| State (logs, history) | `$XDG_STATE_HOME/acme/` | `~/.local/state/acme/` |
+| Cache | `$XDG_CACHE_HOME/acme/` | `~/.cache/acme/` |
+| Runtime (sockets) | `$XDG_RUNTIME_DIR/acme/` | (set by system) |
+
+System-wide config search uses `$XDG_CONFIG_DIRS` (default `/etc/xdg`). Native non-Linux equivalents are permitted deviations (macOS `~/Library/Application Support/acme/`; Windows `%APPDATA%`/`%LOCALAPPDATA%`), but XDG paths are the canonical reference.
+❌ writing config to `~/.acme/` (a dotdir in `$HOME`) by default
+
+--- provenance row 10, verbatim ---
+72:| 10 | Filesystem paths | XDG Base Directory Specification | Modern standard; predictable | org-locked |
+
+--- Appendix E — the Rust sentence that names the two candidate crates ---
+Pair with `figment`/`config` crates for the precedence chain and `directories`/`etcetera` for XDG paths.
+
+--- assertions ---
+PASS R5.3 carries the MUST conformance keyword (expected 1, got 1; binary: /usr/bin/grep)
+PASS R5.3 purpose table has a State (logs, history) row (expected 1, got 1; binary: /usr/bin/grep)
+PASS R5.3 purpose table has a Runtime (sockets) row (expected 1, got 1; binary: /usr/bin/grep)
+PASS provenance row 10 marks filesystem paths org-locked (expected 1, got 1; binary: /usr/bin/grep)
+PASS the document states version 1.4.14 (expected 1, got 1; binary: /usr/bin/grep)
+PASS R5.9 makes documenting a cache location a SHOULD (expected 1, got 1; binary: /usr/bin/grep)
+PASS R10.1 places a stored credential under $XDG_STATE_HOME (expected 1, got 1; binary: /usr/bin/grep)
+
+========== 2. prerequisite decisions and ledger rows, read in this repository ==========
+
+--- R67 DECISION.md:33 — the crash record defers its location to R57 ---
+| Crash record | `std::fs` behind an injected sink; **location deferred to R57** | CLI binary only |
+
+--- R67 DECISION.md:126 — acceptance criterion AC7 ---
+| AC7 | A crash-record write failure leaves the exit code and the envelope unchanged |
+
+--- R67 DECISION.md:587 — the RSLB104 catalogue row and its basis ---
+| `RSLB104` config layer unreadable | 1 | **Standard-derived.** R8.2's "runtime input failures such as unreadable files", verbatim. |
+
+--- R67 — where RSLB101 is defined, and the fact that it is defined nowhere else ---
+occurrences of RSLB101 in the whole file: 1 (binary: /usr/bin/grep)
+the line numbers carrying it:
+383
+the catalogue clause inside the owned parameter value on line 383:
+`RSLB101` I/O → 1
+
+--- COMMONALITY.md:253 — ledger row F249, the row this item settles ---
+| F249 | separate XDG-style data/state/cache directories beyond config | config-env-logging | py-only | DIVERGENT | R57 | standalone; whether Rust adopts the full XDG data/state/cache directory set beyond just config — contingent on whether a file log sink (R59) or a crash log (see F302) end up needing a state/cache path; kept a standalone item at the Task 10 reconciliation because the directory set is consumed by both R59 (file-sink default path) and R67 (crash-log path), so folding it into R59 would hide an R67 dependency inside another item |
+
+--- COMMONALITY.md:251 — ledger row F247, named out of scope by the prompt ---
+| F247 | XDG override mechanism (env var must be set, non-empty, absolute) | config-env-logging | same | COMMON → REUSE | — | rust-ok: yes; live: n/a; behavioral requirement independent of crate choice: `XDG_CONFIG_HOME` is honored on ubuntu-latest and macos-latest and ignored when empty, which std-library validation can satisfy before any directory crate supplies the fallback; `directories` 6.0.0 ignores the variable on macOS while `etcetera` 0.11.0 offers an XDG strategy, so R54's crate choice must not silently drop the behavior; py additionally requires absoluteness, a minor same-origin implementation nuance, not a verdict-changing difference; BASELINE-REVIEW 2026-09-04: acceptance criteria attached to R54; py's absoluteness check pending disposition [was: "native XDG Base Directory convention (tool-free)"] |
+
+--- R06 DECISION.md:24 — the workspace lint this item's accessor shape turns on ---
+unsafe_code = "forbid"
+
+--- assertions ---
+PASS R67 defers the crash-record location to R57 (expected 1, got 1; binary: /usr/bin/grep)
+PASS R67 AC7 leaves the exit code and envelope unchanged on a write failure (expected 1, got 1; binary: /usr/bin/grep)
+PASS R67 maps a config layer that cannot be read to RSLB104 and exit 1 (expected 1, got 1; binary: /usr/bin/grep)
+PASS RSLB101 appears in R67 exactly once, inside its owned parameter value (expected 1, got 1; binary: /usr/bin/grep)
+PASS that single occurrence defines RSLB101 as I/O mapping to exit 1 (expected 1, got 1; binary: /usr/bin/grep)
+PASS F249 still carries the contingency clause this decision replaces (expected 1, got 1; binary: /usr/bin/grep)
+PASS R06 states unsafe_code = "forbid", at 6 places in its decision (expected 6, got 6; binary: /usr/bin/grep)
+PASS R06 puts that lint in the workspace table every member inherits, at 5 places (expected 5, got 5; binary: /usr/bin/grep)
+
+--- R67 prerequisite hash recorded in inputs/prerequisites.json vs the file on disk ---
+recorded: 16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497
+on disk : 16947ab16f8a7bbfe8f911f7d3450b94ec1b4c0e2e6ca79175e1b0b90e649497
+PASS the recorded R67 decision hash matches the file on disk (expected 1, got 1; binary: /usr/bin/grep)
+
+========== 3. parameter registry rows and this item's couplings ==========
+
+--- the four fixed rows, inputs/PARAMETERS.md against docs/port/PARAMETERS.md ---
+PASS fixed rows are byte-identical between the run input and the registry
+
+--- the prompt's owns and consumes lines ---
+23:- owns:
+24:- consumes:
+PASS the prompt's owns line is bare, so this item owns no parameter (expected 1, got 1; binary: /usr/bin/grep)
+PASS the prompt's consumes line is bare, so this item consumes no parameter (expected 1, got 1; binary: /usr/bin/grep)
+
+========== 4. etcetera 0.11.0 — the published artifact, read at a pinned sha256 ==========
+
+--- tarball identity ---
+expected sha256: de48cc4d1c1d97a20fd819def54b890cadde72ed3ad0c614822a0a433361be96
+observed sha256: de48cc4d1c1d97a20fd819def54b890cadde72ed3ad0c614822a0a433361be96
+PASS etcetera tarball sha256 matches the pin
+
+--- Cargo.toml — package metadata and the whole dependency set ---
+[package]
+edition = "2024"
+rust-version = "1.87.0"
+name = "etcetera"
+version = "0.11.0"
+build = false
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
+description = "An unopinionated library for obtaining configuration, data, cache, & other directories"
+homepage = "https://github.com/lunacookies/etcetera"
+documentation = "https://docs.rs/etcetera"
+readme = "README.md"
+keywords = [
+    "xdg",
+    "dirs",
+    "directories",
+    "basedir",
+    "path",
+]
+categories = ["config"]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/lunacookies/etcetera"
+
+[lib]
+name = "etcetera"
+path = "src/lib.rs"
+
+[dependencies.cfg-if]
+version = "1"
+
+[target."cfg(windows)".dependencies.windows-sys]
+version = "0.61"
+features = [
+    "Win32_Foundation",
+    "Win32_System_Com",
+    "Win32_UI_Shell",
+]
+
+--- src/base_strategy.rs — the trait and the per-OS dispatch ---
+pub trait BaseStrategy {
+    /// Gets the home directory of the current user.
+    fn home_dir(&self) -> &Path;
+
+    /// Gets the user’s configuration directory.
+    fn config_dir(&self) -> PathBuf;
+
+    /// Gets the user’s data directory.
+    fn data_dir(&self) -> PathBuf;
+
+    /// Gets the user’s cache directory.
+    fn cache_dir(&self) -> PathBuf;
+
+    /// Gets the user’s state directory.
+    /// Currently, only the [`Xdg`](struct.Xdg.html) strategy supports this.
+    fn state_dir(&self) -> Option<PathBuf>;
+
+    /// Gets the user’s runtime directory.
+    /// Currently, only the [`Xdg`](struct.Xdg.html) strategy supports this.
+    ///
+    /// Note: The [XDG Base Directory Specification](spec) places additional requirements on this
+    /// directory related to ownership, permissions, and persistence. This library does not check
+    /// these requirements.
+    ///
+    /// [spec]: https://specifications.freedesktop.org/basedir-spec/basedir-spec-latest.html
+    fn runtime_dir(&self) -> Option<PathBuf>;
+}
+cfg_if::cfg_if! {
+    if #[cfg(target_os = "windows")] {
+        create_strategies!(Windows, Windows);
+    } else if #[cfg(any(target_os = "macos", target_os = "ios"))] {
+        create_strategies!(Apple, Xdg);
+    } else {
+        create_strategies!(Xdg, Xdg);
+    }
+}
+
+--- src/base_strategy/xdg.rs — the constructor, the absoluteness check, the fallbacks ---
+impl Xdg {
+    /// Create a new Xdg BaseStrategy
+    pub fn new() -> Result<Self, HomeDirError> {
+        Ok(Self {
+            home_dir: crate::home_dir()?,
+        })
+    }
+
+    fn env_var_or_none(env_var: &str) -> Option<PathBuf> {
+        std::env::var_os(env_var).and_then(|path| {
+            let path = PathBuf::from(path);
+
+            // Return None if the path obtained from the environment variable isn’t absolute.
+            if path.is_absolute() { Some(path) } else { None }
+        })
+    }
+
+    fn env_var_or_default(&self, env_var: &str, default: impl AsRef<Path>) -> PathBuf {
+        Self::env_var_or_none(env_var).unwrap_or_else(|| self.home_dir.join(default))
+    }
+}
+impl super::BaseStrategy for Xdg {
+    fn home_dir(&self) -> &Path {
+        &self.home_dir
+    }
+
+    fn config_dir(&self) -> PathBuf {
+        self.env_var_or_default("XDG_CONFIG_HOME", ".config/")
+    }
+
+    fn data_dir(&self) -> PathBuf {
+        self.env_var_or_default("XDG_DATA_HOME", ".local/share/")
+    }
+
+    fn cache_dir(&self) -> PathBuf {
+        self.env_var_or_default("XDG_CACHE_HOME", ".cache/")
+    }
+
+    fn state_dir(&self) -> Option<PathBuf> {
+        Some(self.env_var_or_default("XDG_STATE_HOME", ".local/state/"))
+    }
+
+    fn runtime_dir(&self) -> Option<PathBuf> {
+        Self::env_var_or_none("XDG_RUNTIME_DIR")
+    }
+}
+
+--- src/lib.rs — what home_dir() actually resolves ---
+/// A convenience function that wraps the [`home_dir`](https://doc.rust-lang.org/std/env/fn.home_dir.html) function from the standard library.
+pub fn home_dir() -> Result<std::path::PathBuf, HomeDirError> {
+    std::env::home_dir().ok_or(HomeDirError)
+}
+
+/// This error occurs when the home directory cannot be located.
+#[derive(Debug)]
+pub struct HomeDirError;
+
+impl std::fmt::Display for HomeDirError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "could not locate home directory")
+    }
+}
+
+impl std::error::Error for HomeDirError {}
+
+--- .github/workflows/ci.yaml — the matrix shipped with 0.11.0 itself ---
+
+  ci:
+    strategy:
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+        toolchain: [beta, stable, 1.87.0]
+
+    name: Test on ${{ matrix.os }} with Rust ${{ matrix.toolchain }}
+    runs-on: ${{ matrix.os }}
+
+    steps:
+
+--- assertions ---
+PASS 0.11.0 declares rust-version 1.87.0 (expected 1, got 1; binary: /usr/bin/grep)
+PASS 0.11.0 declares license MIT OR Apache-2.0 (expected 1, got 1; binary: /usr/bin/grep)
+PASS 0.11.0 is edition 2024 (expected 1, got 1; binary: /usr/bin/grep)
+PASS cfg-if is the only unconditional dependency (expected 1, got 1; binary: /usr/bin/grep)
+PASS windows-sys is target-gated to cfg(windows) (expected 1, got 1; binary: /usr/bin/grep)
+PASS 0.11.0 declares no Cargo feature table (expected 0, got 0; binary: /usr/bin/grep)
+PASS choose_base_strategy picks Xdg on macOS and iOS (expected 1, got 1; binary: /usr/bin/grep)
+PASS BaseStrategy::state_dir returns an Option (expected 1, got 1; binary: /usr/bin/grep)
+PASS BaseStrategy is a plain public trait, not sealed (expected 1, got 1; binary: /usr/bin/grep)
+PASS the Xdg strategy ignores a non-absolute override (expected 1, got 1; binary: /usr/bin/grep)
+PASS XDG_STATE_HOME falls back to .local/state/ (expected 1, got 1; binary: /usr/bin/grep)
+PASS XDG_RUNTIME_DIR has no fallback at all (expected 1, got 1; binary: /usr/bin/grep)
+PASS the runtime_dir doc records the unchecked ownership contract (expected 1, got 1; binary: /usr/bin/grep)
+PASS Xdg::new is the sole constructor and is fallible (expected 1, got 1; binary: /usr/bin/grep)
+PASS etcetera::home_dir wraps std::env::home_dir (expected 1, got 1; binary: /usr/bin/grep)
+PASS the 0.11.0 CI matrix names macos-latest and ubuntu-latest (expected 1, got 1; binary: /usr/bin/grep)
+PASS the 0.11.0 CI matrix pins its MSRV row at 1.87.0 (expected 1, got 1; binary: /usr/bin/grep)
+
+========== 5. directories 6.0.0 — the macOS capability gap, read at its own source ==========
+
+--- tarball identity ---
+expected sha256: 16f5094c54661b38d03bd7e50df373292118db60b585c08a411c6d840017fe7d
+observed sha256: 16f5094c54661b38d03bd7e50df373292118db60b585c08a411c6d840017fe7d
+PASS directories tarball sha256 matches the pin
+
+--- Cargo.toml — package metadata and the whole dependency set ---
+[package]
+name = "directories"
+version = "6.0.0"
+authors = ["Simon Ochsenreither <simon@ochsenreither.de>"]
+build = false
+autolib = false
+autobins = false
+autoexamples = false
+autotests = false
+autobenches = false
+description = "A tiny mid-level library that provides platform-specific standard locations of directories for config, cache and other data on Linux, Windows and macOS by leveraging the mechanisms defined by the XDG base/user directory specifications on Linux, the Known Folder API on Windows, and the Standard Directory guidelines on macOS."
+readme = "README.md"
+keywords = [
+    "xdg",
+    "basedir",
+    "app_dirs",
+    "path",
+    "folder",
+]
+license = "MIT OR Apache-2.0"
+repository = "https://github.com/soc/directories-rs"
+
+[lib]
+name = "directories"
+path = "src/lib.rs"
+
+[[bench]]
+name = "constructors"
+path = "benches/constructors.rs"
+harness = false
+
+[dependencies.dirs-sys]
+version = "0.5.0"
+
+[dev-dependencies.bencher]
+version = "0.1.5"
+
+--- src/mac.rs — every state_dir assignment on the macOS path ---
+28:            state_dir:        None
+83:            state_dir:        None
+
+--- src/mac.rs — what config_dir and data_dir resolve to on macOS ---
+11:        let cache_dir        = home_dir.join("Library/Caches");
+12:        let config_dir       = home_dir.join("Library/Application Support");
+14:        let data_dir         = config_dir.clone();
+67:        let cache_dir        = home_dir.join("Library/Caches").join(&project_path);
+68:        let config_dir       = home_dir.join("Library/Application Support").join(&project_path);
+70:        let data_dir         = config_dir.clone();
+
+--- assertions ---
+PASS macOS assigns state_dir None at both construction sites (expected 2, got 2; binary: /usr/bin/grep)
+PASS macOS config_dir is Library/Application Support, not an XDG path (expected 1, got 1; binary: /usr/bin/grep)
+PASS no XDG environment variable is read anywhere on the macOS path (expected 0, got 0; binary: /usr/bin/grep)
+PASS directories 6.0.0 declares no rust-version, so its MSRV floor is unstated (expected 0, got 0; binary: /usr/bin/grep)
+PASS directories 6.0.0 depends on dirs-sys (expected 1, got 1; binary: /usr/bin/grep)
+
+========== 6. crates.io figures — endpoint, retrieved 2026-09-16 ==========
+
+--- GET https://crates.io/api/v1/crates/etcetera — crate.recent_downloads, crate.downloads ---
+recent_downloads (90-day) = 32829812
+downloads (all-time)      = 108370911
+max_stable_version        = 0.11.0
+
+--- GET https://crates.io/api/v1/crates/etcetera/versions — newest with yanked: false ---
+num = 0.11.0 | created_at = 2025-10-28T13:28:11.765603Z
+rust_version = 1.87.0 | license = MIT OR Apache-2.0
+
+--- GET https://crates.io/api/v1/crates/etcetera/0.11.0/dependencies ---
+cfg-if       ^1       kind=normal optional=False target=None
+windows-sys  ^0.61    kind=normal optional=False target=cfg(windows)
+
+========== 7. RustSec — advisory status with a live positive control ==========
+
+--- HTTP status of https://rustsec.org/packages/<name>.html ---
+etcetera    404
+directories 200
+anyhow      200   <- live positive control: a crate known to carry an advisory
+
+--- assertions ---
+PASS etcetera has no RustSec package page (expected 404, got 404; binary: /usr/bin/grep)
+PASS the control returns 200, so the 404 is absence and not a broken endpoint (expected 200, got 200; binary: /usr/bin/grep)
+
+--- the two advisories the directories family's 200 pages carry ---
+advisory-directories: id = "RUSTSEC-2020-0054" informational = "unmaintained" withdrawn = "2021-04-19" patched = [] 
+advisory-dirs: id = "RUSTSEC-2020-0053" informational = "unmaintained" withdrawn = "2021-04-19" patched = [] 
+
+--- assertions ---
+PASS the directories advisory is withdrawn (expected 1, got 1; binary: /usr/bin/grep)
+PASS the dirs advisory is withdrawn (expected 1, got 1; binary: /usr/bin/grep)
+
+========== 8. throwaway macOS spike — observed behaviour of choose_base_strategy() ==========
+A ~14-line binary built OUTSIDE this repository, depending on the
+sha256-pinned etcetera 0.11.0 source extracted in section 4, run under
+`env -i` with a fixed fake HOME. It builds nothing this decision
+recommends: it prints what the crate resolves, so the macOS behaviour
+the two engines disagree about is observed rather than inferred. The
+toolchain that produced it is in ./toolchain.txt.
+
+--- observed output ---
+case 1 — HOME=/fixed/fake, no XDG_* set
+config = /fixed/fake/.config/
+data   = /fixed/fake/.local/share/
+state  = Some("/fixed/fake/.local/state/")
+cache  = /fixed/fake/.cache/
+runtime= None
+
+case 2 — HOME=/fixed/fake, XDG_STATE_HOME=/abs/state (absolute)
+config = /fixed/fake/.config/
+data   = /fixed/fake/.local/share/
+state  = Some("/abs/state")
+cache  = /fixed/fake/.cache/
+runtime= None
+
+case 3 — HOME=/fixed/fake, XDG_STATE_HOME= (empty)
+config = /fixed/fake/.config/
+data   = /fixed/fake/.local/share/
+state  = Some("/fixed/fake/.local/state/")
+cache  = /fixed/fake/.cache/
+runtime= None
+
+case 4 — HOME=/fixed/fake, XDG_STATE_HOME=rel/ative (relative)
+config = /fixed/fake/.config/
+data   = /fixed/fake/.local/share/
+state  = Some("/fixed/fake/.local/state/")
+cache  = /fixed/fake/.cache/
+runtime= None
+
+case 5 — no HOME and no XDG_* at all. The absolute paths are this
+machine passwd entry home, so only the shape is printed:
+config = <passwd-home>/.config/
+data   = <passwd-home>/.local/share/
+state  = Some("<passwd-home>/.local/state/")
+cache  = <passwd-home>/.cache/
+runtime= None
+
+--- assertions ---
+PASS macOS resolves a state directory at all, in the 3 cases with no usable override (expected 3, got 3; binary: /usr/bin/grep)
+PASS an absolute XDG_STATE_HOME is honoured on macOS (expected 1, got 1; binary: /usr/bin/grep)
+PASS macOS config_dir is the XDG default, not Library/Application Support (expected 4, got 4; binary: /usr/bin/grep)
+PASS no XDG_RUNTIME_DIR fallback is invented (expected 5, got 5; binary: /usr/bin/grep)
+PASS removing HOME does NOT produce HomeDirError on this platform (expected 0, got 0; binary: /usr/bin/grep)
+PASS with HOME removed the passwd entry supplies the home directory (expected 1, got 1; binary: /usr/bin/grep)
+
+========== result ==========
+failed assertions: 0

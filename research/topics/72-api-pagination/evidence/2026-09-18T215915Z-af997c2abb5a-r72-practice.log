@@ -1,0 +1,183 @@
+## environment
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+  R72 api-pagination — practice-source provenance
+  retrieved (UTC): 2026-09-22T01:16:23Z
+  rust-lang/crates.io src/controllers/helpers/pagination.rs at commit 30c4ed7fd9b79eba10e42d5c173e9bdd8aab1b4c
+
+## rust-lang/crates.io — the Rust project s own registry service
+  pinned commit: 30c4ed7fd9b79eba10e42d5c173e9bdd8aab1b4c
+  21:const DEFAULT_PER_PAGE: i64 = 10;
+PASS C01 cratesio-pagination.rs carries: const DEFAULT_PER_PAGE: i64 = 10;
+  22:const MAX_PER_PAGE: i64 = 100;
+PASS C02 cratesio-pagination.rs carries: const MAX_PER_PAGE: i64 = 100;
+  55:#[derive(Debug, Deserialize, FromRequestParts, utoipa::IntoParams)]
+PASS C03 cratesio-pagination.rs carries: #[derive(Debug, Deserialize, FromRequestParts, utoipa::IntoParams)]
+  58:pub struct PaginationQueryParams {
+PASS C04 cratesio-pagination.rs carries: pub struct PaginationQueryParams {
+  151:        if per_page > MAX_PER_PAGE {
+PASS C05 cratesio-pagination.rs carries:         if per_page > MAX_PER_PAGE {
+  153:                "cannot request more than {MAX_PER_PAGE} items",
+PASS C06 cratesio-pagination.rs carries: cannot request more than {MAX_PER_PAGE} items
+  332:    let encoded = general_purpose::URL_SAFE_NO_PAD.encode(serde_json::to_vec(&params)?);
+PASS C07 cratesio-pagination.rs carries: URL_SAFE_NO_PAD
+  77:    pub seek: Option<String>,
+PASS C08 cratesio-pagination.rs carries:     pub seek: Option<String>,
+  the file imports no pagination crate:
+  matches: 0
+PASS C09 crates.io uses no third-party pagination crate
+
+## api-bones 6.12.0 — the envelope one Doxa leg proposes borrowing, and the
+## cursor and keyset types the same file defines
+  57:pub struct PaginatedResponse<T> {
+PASS C15 pagination.rs carries: pub struct PaginatedResponse<T> {
+  59:    pub items: Vec<T>,
+PASS C16 pagination.rs carries:     pub items: Vec<T>,
+  67:    pub offset: u64,
+PASS C17 pagination.rs carries:     pub offset: u64,
+  61:    pub total_count: u64,
+PASS C18 pagination.rs carries:     pub total_count: u64,
+  :561 pub struct KeysetPaginatedResponse<T> {
+PASS C49 pagination.rs line 561 is: pub struct KeysetPaginatedResponse<T> {
+  :563     pub items: Vec<T>,
+PASS C50 pagination.rs line 563 is:     pub items: Vec<T>,
+  :565     pub has_next: bool,
+PASS C51 pagination.rs line 565 is:     pub has_next: bool,
+  :567     pub has_prev: bool,
+PASS C52 pagination.rs line 567 is:     pub has_prev: bool,
+  :575     pub prev_cursor: Option<String>,
+PASS C53 pagination.rs line 575 is:     pub prev_cursor: Option<String>,
+  :583     pub next_cursor: Option<String>,
+PASS C54 pagination.rs line 583 is:     pub next_cursor: Option<String>,
+  :243 pub struct CursorPaginatedResponse<T> {
+PASS C55 pagination.rs line 243 is: pub struct CursorPaginatedResponse<T> {
+  :245     pub data: Vec<T>,
+PASS C56 pagination.rs line 245 is:     pub data: Vec<T>,
+  :355 pub struct CursorPaginationParams {
+PASS C57 pagination.rs line 355 is: pub struct CursorPaginationParams {
+  :363     pub limit: Option<u64>,
+PASS C58 pagination.rs line 363 is:     pub limit: Option<u64>,
+  :369     pub after: Option<String>,
+PASS C59 pagination.rs line 369 is:     pub after: Option<String>,
+  :461 pub struct KeysetPaginationParams<K> {
+PASS C60 pagination.rs line 461 is: pub struct KeysetPaginationParams<K> {
+  :467     pub after: Option<K>,
+PASS C61 pagination.rs line 467 is:     pub after: Option<K>,
+  :473     pub before: Option<K>,
+PASS C62 pagination.rs line 473 is:     pub before: Option<K>,
+  :477     pub limit: Option<u64>,
+PASS C63 pagination.rs line 477 is:     pub limit: Option<u64>,
+
+## oxidecomputer/dropshot — the other production first-party page type
+PASS C10.ResultsPage the dropshot ResultsPage page names: ResultsPage
+PASS C10.next_page the dropshot ResultsPage page names: next_page
+PASS C10.items the dropshot ResultsPage page names: items
+
+## axum 0.8.9 — the extractor model the template must fit
+  axum source: axum-0.8.9
+  20:/// struct Pagination {
+PASS C11 query.rs carries: /// struct Pagination {
+  27:/// async fn list_things(pagination: Query<Pagination>) {
+PASS C12 query.rs carries: /// async fn list_things(pagination: Query<Pagination>) {
+  13:pub trait FromRef<T> {
+PASS C13 from_ref.rs carries: pub trait FromRef<T> {
+  application-wide extractor registration hooks in axum:
+  matches: 0
+PASS C14 axum exposes no application-wide extractor-registration hook, so py's add_pagination(app) has no direct counterpart
+
+## fitness gate 3, second limb — the `unsafe` posture of the one crate
+## this decision adds, and of the crates it declines, read from their
+## published sources rather than asserted from a README
+  base64 source: base64-0.23.1
+  284:#![cfg_attr(not(feature = "simd-unsafe"), forbid(unsafe_code))]
+PASS C19 lib.rs carries: #![cfg_attr(not(feature = "simd-unsafe"), forbid(unsafe_code))]
+  285:#![cfg_attr(feature = "simd-unsafe", deny(unsafe_code))]
+PASS C20 lib.rs carries: #![cfg_attr(feature = "simd-unsafe", deny(unsafe_code))]
+  45:    "simd-unsafe",
+PASS C21 Cargo.toml carries:     "simd-unsafe",
+  files containing the word `unsafe` in base64 src:
+    src/display.rs
+    src/lib.rs
+    src/engine/simd.rs
+    src/engine/general_purpose/mod.rs
+    src/engine/mod.rs
+    src/engine/tests.rs
+  `unsafe` occurrences outside comment lines: 48
+PASS C22 the `unsafe` lives in the SIMD engine module the feature gates
+
+## and the declined crates, censused the same way. A nonzero count is the
+## posture, not a failure: the assertion is that the count is the one this
+## decision reports, so a later release changing it is caught.
+  paginator-axum-0.4.0     occurrences of the word unsafe: 0
+PASS C23 paginator-axum-0.4.0 has 0
+  paginator-utils-0.4.0    occurrences of the word unsafe: 0
+PASS C27 paginator-utils-0.4.0 has 0
+  api-bones-6.12.0         occurrences of the word unsafe: 5
+PASS C28 api-bones-6.12.0 has 5
+
+## fitness gate 4 — the platform list base64 actually tests on
+  37:      - image: << parameters.rust_img >>
+PASS C24 base64-circleci.yml carries:       - image: << parameters.rust_img >>
+  17:                'rust:1.71.0'
+PASS C25 base64-circleci.yml carries:                 'rust:1.71.0'
+  macOS/xcode executors in base64 CI: 0
+PASS C26 base64 CI covers Linux only — macOS is not covered by the crate own CI
+
+## the LOW question — the three Rust API templates the Muse leg named,
+## read at source (retrieved by r72-fetch-revision2.sh, pinned to commits)
+  R72 api-pagination — revision 2 provenance
+  retrieved (UTC): 2026-09-22T17:48:52Z
+  joshua-mo-143/99minutos-template-agents-rust at commit 9142f9985ffb3b52980a9792b900b844521ee92e
+  hendrixmar/rust-axum-seaorm-boilerplate at commit 9bb388c706ab7b789b6edf8a79dce5453b8b00f1
+  nakamuraos/rust-axum-seaorm-boilerplate at commit 2ad8073c13404a0a2e49845938a2301dfdf433fd
+  coreapostrophe/axum-template at commit f1bd22bfe07a2c58ee21d30d9d92e51814e0adc6
+
+### 99minutos/template-agents-rust — absent, established three ways
+  authenticated API repos/99minutos/template-agents-rust     404
+PASS C29 authenticated API repos/99minutos/template-agents-rust = 404
+  github.com/99minutos/template-agents-rust                  404
+PASS C30 github.com/99minutos/template-agents-rust = 404
+  Wayback snapshots of the repo and of AGENTS.md: both empty 2
+PASS C31 Wayback snapshots of the repo and of AGENTS.md: both empty = 2
+  the only public repository with the name, joshua-mo-143/99minutos-template-agents-rust:
+  copy stars / fork / parent                                 0 False -
+PASS C32 copy stars / fork / parent = 0 False -
+  copy tree paths / truncated / pagination-or-AGENTS.md paths 44 False 0
+PASS C33 copy tree paths / truncated / pagination-or-AGENTS.md paths = 44 False 0
+  copy README lines naming pagination, per_page or total     0
+PASS C34 copy README lines naming pagination, per_page or total = 0
+
+### nakamuraos/rust-axum-seaorm-boilerplate, and the hendrixmar fork Muse named
+  hendrixmar stars / fork / parent                           1 True nakamuraos/rust-axum-seaorm-boilerplate
+PASS C35 hendrixmar stars / fork / parent = 1 True nakamuraos/rust-axum-seaorm-boilerplate
+  nakamuraos stars / fork / parent                           31 False -
+PASS C36 nakamuraos stars / fork / parent = 31 False -
+PASS C37 the fork pagination.rs is byte-identical to the upstream one
+  10:/// - **Page mode** (default): `?page=1&per_page=20`
+PASS C38 tmpl-nakamuraos-pagination.rs carries: /// - **Page mode** (default): `?page=1&per_page=20`
+  45:  pub data: Vec<T>,
+PASS C39 tmpl-nakamuraos-pagination.rs carries:   pub data: Vec<T>,
+  52:  pub total: u64,
+PASS C40 tmpl-nakamuraos-pagination.rs carries:   pub total: u64,
+  11:/// - **Cursor mode**: `?cursor=<id>&per_page=20`
+PASS C41 tmpl-nakamuraos-pagination.rs carries: /// - **Cursor mode**: `?cursor=<id>&per_page=20`
+  69:  pub next_cursor: Option<String>,
+PASS C42 tmpl-nakamuraos-pagination.rs carries:   pub next_cursor: Option<String>,
+  29:      .min(MAX_PER_PAGE)
+PASS C43 tmpl-nakamuraos-pagination.rs carries:       .min(MAX_PER_PAGE)
+
+### coreapostrophe/axum-template
+  coreapostrophe stars / fork / parent                       0 False -
+PASS C44 coreapostrophe stars / fork / parent = 0 False -
+  tree paths / truncated / pagination-or-AGENTS.md paths     68 False 0
+PASS C45 tree paths / truncated / pagination-or-AGENTS.md paths = 68 False 0
+  58:) -> ApiResult<ApiDataResponse<Vec<Todo>>> {
+PASS C46 tmpl-coreapostrophe-handlers.rs carries: ) -> ApiResult<ApiDataResponse<Vec<Todo>>> {
+  handler lines naming page, limit, cursor or pagination     0
+PASS C47 handler lines naming page, limit, cursor or pagination = 0
+  16:    pub data: D,
+PASS C48 tmpl-coreapostrophe-data.rs carries:     pub data: D,
+
+## totals
+PASS 65
+FAIL 0
+SKIP 0

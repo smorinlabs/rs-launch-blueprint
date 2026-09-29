@@ -1,0 +1,70 @@
+# R48 mocking-crates — revision 4 clean-extraction rerun of ALL FIVE evidence scripts
+# Procedure: git archive HEAD | tar -x -C <tmpdir>  (a tree with no .git), then this
+# revision's review/DECISION.md and all five review/evidence/*.sh placed at their paths
+# inside the extraction — the state that extraction has once this commit lands. Each
+# script was then run with the extraction as the repository root.
+# Result: exit 0 from each; every PASS line below is identical to the corresponding
+# committed log after dropping the volatile "# " header lines.
+# r48-archive-rerun.log (revision 1), r48-r2-archive-rerun.log (revision 2) and
+# r48-r3-archive-rerun.log (revision 3) are unchanged and still record their own runs.
+#
+# ========== r48-claims-check.sh ==========
+#
+PASS C01: mockall newest non-yanked = 0.15.0, declared rust-version = 1.77.0, licence recorded as MIT OR Apache-2.0 (not evaluated — gate 1 inapplicable, owner ruling 2026-09-12 Q7.B)
+PASS C02: httpmock newest non-yanked = 0.8.3, declared rust-version = 1.88.0, licence recorded as MIT (not evaluated — gate 1 inapplicable, owner ruling 2026-09-12 Q7.B)
+PASS C03: wiremock newest non-yanked = 0.6.5, declared rust-version = NONE, licence recorded as MIT/Apache-2.0 (not evaluated — gate 1 inapplicable, owner ruling 2026-09-12 Q7.B)
+PASS C04: mockito newest non-yanked = 1.7.2, declared rust-version = 1.70, licence recorded as MIT (not evaluated — gate 1 inapplicable, owner ruling 2026-09-12 Q7.B)
+PASS C05: httpmock 0.8.3 default feature set is exactly [cookies] — default-features = false is a real change, not a no-op
+PASS C06: tag v0.8.3 Cargo.toml: 0 unsafe_code lines and edition = "2021"; master Cargo.toml: 1 unsafe_code line (counts by /usr/bin/grep -c) — the forbid lint and edition 2024 are unreleased 0.9.0 facts
+PASS C07: rustsec.org control lock_api = HTTP 200 (RUSTSEC-2020-0070 exists), candidates mockall=404 httpmock=404 wiremock=404 mockito=404 — the probe distinguishes, so 404 is evidence of no open advisory, gate 3 passes for all four
+PASS C08: mockall 0.15.0 required normal dependencies are exactly: cfg-if downcast fragile mockall_derive predicates predicates-tree — no tokio, no hyper, no async runtime
+PASS C09: httpmock .github/workflows/platform.yml carries 1 matrix line 'os: [ubuntu-latest, macos-latest, windows-latest]' (count by /usr/bin/grep -c) — gate 4 closed on the crate's own CI
+PASS C10: wiremock-rs .github/workflows/general.yml: 0 macos mentions and 5 'runs-on: ubuntu-latest' jobs (counts by /usr/bin/grep -ci and /usr/bin/grep -c) — its own CI does not cover macOS; gate 4 therefore rests on adopter evidence, not on the crate's CI
+PASS C11: wiremock's own README comparison table: 1 row 'wiremock … Async', 1 row 'httpmock … Async/Sync', 1 row 'mockito … Async/Sync' (counts by /usr/bin/grep -c) — choosing wiremock would make the test suite async before R05 decides
+PASS C12: docs.rs httpmock 0.8.3: struct.Then.html carries method.respond_with and struct.When.html carries method.is_true (present, counts by /usr/bin/grep -c are 2 and 2) — the dynamic responder and the closure matcher the F121 suite needs are in the released version, not only on master
+PASS C13: api.github.com repos/LukeMathWalker/wiremock-rs: archived = false, pushed_at date = 2025-08-24 — not archived, but not pushed since the 0.6.5 release; at-risk, not dormant
+PASS C14: contentauth/c2pa-rs sdk/Cargo.toml carries 1 'mockall = "0.15.0"' line and 1 'httpmock = "0.8.3"' line (counts by /usr/bin/grep -c) — both members at the recommended versions resolve in one lockfile in a shipping project
+PASS C15: inputs/owner-reference-axum-companion-stack-2026-09-16.md carries 1 pin line 'wiremock = "0.6"' and 1 C12 Testing row naming wiremock (counts by /usr/bin/grep -c) — the row this decision differs from, with ground
+PASS C16: all 5 '- assumes' lines in review/DECISION.md are byte-identical to column 4 of the matching docs/port/PARAMETERS.md row (lines selected by /usr/bin/grep, compared by shell string equality)
+PASS C17: research/topics/01-ports-and-adapters-seam/DECISION.md sha256 matches inputs/prerequisites.json R01.decision — the published R01 read here is the revision this run pinned
+PASS C18: py at pin b08bccfb: 1 pyproject.toml line pairing 'responses>=0.25' with 'HTTP mock for the port-contract suite' and 1 contract-suite docstring line naming 'the in-memory fake and the real HTTP adapter' (counts by /usr/bin/grep -c) — the contract suite is run against the real adapter over a mocked network
+PASS C19: required normal dependencies at the newest non-yanked version: wiremock=15 mockito=16 httpmock=25 — httpmock carries the heaviest tree of the three, and the figure is 25, not the 26 the opus report states
+PASS C20: api.github.com repos/LukeMathWalker/wiremock-rs/issues/173: title 'Error: `let` expressions in this position are unstable', created 2025-08-27, state closed — a let-chain compile failure reported against 0.6.5, so the crate's effective floor is at least Rust 1.88.0 even though it declares no rust-version
+#
+RESULT: all checks passed (0 FAIL)
+# ========== r48-r2-msrv-macos-spike.sh ==========
+#
+PASS D00: probe crate is built in a temporary directory outside the repository and removed when this script exits; no template, seam or scaffold is created inside the repository
+PASS D01: cargo +1.96.0 test (feature off) exit 0 with exactly 1 'test result: ok. 1 passed' line (count by /usr/bin/grep -c) — mockall's and httpmock's resolved dependency trees compile at the msrv-policy floor of 1.96.0 on this macOS host, which is the dependency-tree half of gate 2, and the gated mockall test is correctly invisible without the feature
+PASS D02: cargo +1.96.0 test --features mock exit 0 with 2 'test result: ok. 1 passed' lines and 1 'test generated_mock_is_send_sync_and_dyn_erasable ... ok' line (counts by /usr/bin/grep -c) — at 1.96.0 on macOS the #[automock] macro expands, the generated mock is Send + Sync, and Arc::new(mock) as Arc<dyn ProbePort> compiles and returns the programmed value under a .with(eq(7)).times(1) expectation
+PASS D03: cargo test --locked --features mock at current stable exit 0 with 2 'test result: ok. 1 passed' lines (count by /usr/bin/grep -c) — mockall 0.15.0 and httpmock 0.8.3 build and their tests pass on macOS at stable as well as at the floor, against the one lockfile D01 resolved; gate 4's macOS half is observed rather than inferred from a 0.13.0 adopter
+PASS D04: the resolved Cargo.lock pins are exactly: mockall 0.15.0; mockall_derive 0.15.0; httpmock 0.8.3 — the versions this decision recommends are the ones that built above
+PASS D05: cargo tree -i mockall with the feature off exits non-zero with 1 'did not match any packages' line, and with the feature on exits 0 printing 1 'mockall v0.15.0' root (counts by /usr/bin/grep -c) — the off-by-default gate keeps mockall out of the build graph, and the check can fail, because the two invocations differ
+#
+#
+RESULT: all checks passed (0 FAIL)
+# ========== r48-r2-citations-check.sh ==========
+#
+PASS E01: tokio-rs/tokio declares mockall = "0.13.0" and runs CI on macos-latest — corroborating adopter evidence for mockall on macOS, at 0.13.0 and NOT at the recommended 0.15.0, which is why revision 2 closes gate 4 for 0.15.0 by executed compile instead (see r48-r2-msrv-macos-spike.log D03) (1 matching manifest line and at least one macos-latest occurrence in the project's own CI, counts by /usr/bin/grep -c)
+PASS E02: matrix-org/matrix-rust-sdk declares wiremock = { version = "0.6.5" } and runs CI on macos-latest — the adopter evidence behind wiremock's gate-4 sentence, which stands even though wiremock is excluded on gate 2 (1 matching manifest line and at least one macos-latest occurrence in the project's own CI, counts by /usr/bin/grep -c)
+PASS E03: apache/iceberg-rust declares mockito = "1" and names macos-latest in its own CI — the adopter evidence behind mockito's gate-4 disposition; that its macOS lanes are build-only and its tests job is ubuntu-only is carried from the opus report, 2026-09-17, and is NOT asserted here (1 matching manifest line and at least one macos-latest occurrence in the project's own CI, counts by /usr/bin/grep -c)
+PASS E04: newest non-yanked version and declared rust-version for every candidate: mockall=0.15.0:1.77.0 httpmock=0.8.3:1.88.0 mockito=1.7.2:1.70 unimock=0.6.8:1.70 faux=0.1.13:1.65 wiremock=0.6.5:NONE httptest=0.16.4:NONE mry=0.14.0:NONE double=0.2.4:NONE stubr=0.6.2:NONE rvcr=0.2.1:NONE — five declare a version inside the 1.96 floor and clear gate 2 (mockall, httpmock, mockito, unimock, faux); six declare none and therefore fail gate 2 under the strict reading the programme applies (wiremock, httptest, mry, double, stubr, rvcr)
+PASS E05: shellcheck reports no findings and exits 0 for all 3 evidence scripts in this run (r48-claims-check.sh, r48-r2-msrv-macos-spike.sh, r48-r2-citations-check.sh); its output was 0 lines long
+#
+RESULT: all checks passed (0 FAIL)
+# ========== r48-r3-tree-msrv-relabel.sh ==========
+#
+PASS G00: probe crate is built in a temporary directory outside the repository and removed when this script exits; no template, seam or scaffold is created inside the repository
+PASS G01: cargo +1.96.0 test (feature off) exit 0, 1 'test result: ok. 1 passed' line, 1 'Compiling httpmock v0.8.3' line, 0 'Compiling mockall v' lines and 0 'Compiling mockall_derive v' lines (counts by /usr/bin/grep -c) — this run establishes that HTTPMOCK's resolved dependency tree compiles at the msrv-policy floor, and establishes NOTHING about mockall's, which is behind an off-by-default feature and absent from this build graph
+PASS G02: cargo +1.96.0 test --features mock exit 0, 2 'test result: ok. 1 passed' lines, 1 'Compiling mockall v0.15.0' line, 1 'Compiling mockall_derive v0.15.0' line and 1 'test generated_mock_is_send_sync_and_dyn_erasable ... ok' line (counts by /usr/bin/grep -c) — THIS is the run that establishes mockall 0.15.0's resolved dependency tree compiles at the msrv-policy floor, and that the generated mock is Send + Sync and erases to Arc<dyn ProbePort>
+PASS G03: shellcheck reports no findings and exits 0 for all 4 evidence scripts in this run (r48-claims-check.sh, r48-r2-msrv-macos-spike.sh, r48-r2-citations-check.sh, r48-r3-tree-msrv-relabel.sh); its output was 0 lines long
+#
+#
+RESULT: all checks passed (0 FAIL)
+# ========== r48-r4-c14-narrow.sh ==========
+#
+PASS H01: contentauth/c2pa-rs sdk/Cargo.toml declares 1 'mockall = "0.15.0"' version-requirement line and 1 'httpmock = "0.8.3"' version-requirement line (counts by /usr/bin/grep -c) — both members are co-declared in one shipping manifest as semver requirements, which is compatibility evidence short of a jointly resolved lockfile
+PASS H02: api.github.com repos/contentauth/c2pa-rs main tree: truncated = false, 0 paths ending in Cargo.lock — the repository commits no lockfile, so the H01 requirement lines are semver requirements with no jointly resolved pins to cite, and C14's 'resolve in one lockfile' wording is superseded
+PASS H03: shellcheck reports no findings and exits 0 for all 5 evidence scripts in this run (r48-claims-check.sh, r48-r2-msrv-macos-spike.sh, r48-r2-citations-check.sh, r48-r3-tree-msrv-relabel.sh, r48-r4-c14-narrow.sh); its output was 0 lines long
+#
+RESULT: all checks passed (0 FAIL)

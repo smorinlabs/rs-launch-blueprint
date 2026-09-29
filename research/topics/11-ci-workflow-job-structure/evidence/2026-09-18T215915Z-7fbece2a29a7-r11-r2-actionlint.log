@@ -1,0 +1,23 @@
+PASS R2-L0 actionlint version is 1.7.12 at /opt/homebrew/bin/actionlint
+PASS R2-L1 actionlint exits 0 with zero diagnostics on ci.candidate.r2.yml (264 lines)
+PASS R2-L2 the fixture declares exactly six job ids, unchanged from revision 1: plan hygiene workflow-lint check msrv-floor install-smoke
+PASS R2-L3 each of check's 7 cargo steps runs under if: ${{ !cancelled() }}, so a clippy failure no longer hides the test, build and doc results in the same run
+PASS R2-L4 zero negated needs-output predicates and zero on.<event>.paths filters
+PASS R2-L5 NC2 re-run on the current fixture: every == 'true' gate rewritten to the negated != 'false' - eight occurrences on eight lines, five of them live job or step conditions and three slot comments, none carrying two (8 lines changed, 5 of them live) - still lints with exit 0 and zero diagnostics - the positive-predicate rule must still travel in prose
+PASS R2-L6 every job id, runs-on, needs edge, matrix os list and rust-cache step is identical between ci.candidate.yml and ci.candidate.r2.yml (21 non-comment lines), so revision 1's cache arithmetic (r11-cache-budget.sh: 4 job-runner pairs, 3 cache-bearing ids on the busier runner) holds for revision 2 unchanged
+PASS R3-L1 the fixture no longer carries the withdrawn msrv-floor cache-key ground, and its ci-ok slot is conditional on R12 aggregating rather than a prescribed needs list
+PASS R4-L1 the fixture's 5 conditions that read plan's outputs (4 job-level: workflow-lint, check, msrv-floor, install-smoke; 1 step-level: install-smoke's web step) carry no status function, in the positive form and in the NC2-negated form alike - so the implicit success() skips every one of them when plan fails or is skipped, under either polarity
+PASS R4-L2 against the revision-3 bytes (ci.candidate.r3-audited.yml), revision 4 (ci.candidate.r4-audited.yml) rewrites 6 lines, and every removed and added line is a comment, and the line count is unchanged (222) - the graph, the detector logic and the conditions are revision 3's
+PASS R5-L1 against revision 4's bytes (ci.candidate.r4-audited.yml, 222 lines), revision 5 (ci.candidate.r5-audited.yml, 236 lines) differs only inside the detector markers and in comment lines - every job, runner, needs edge, condition and step outside the plan job's detector body is revision 4's
+PASS R6-L1 against revision 5's bytes (ci.candidate.r5-audited.yml), revision 6 (ci.candidate.r6-audited.yml, 256 lines) changes the detector body and, outside it, only comments, the workflow-lint step name (R29 and R20 removed from it) and two slot steps added to hygiene (R29's non-code formatting, R20's pin checks) - no job, runner, needs edge or condition moves
+PASS R7-L1 against revision 6's bytes (ci.candidate.r6-audited.yml), revision 7 (264 lines) keeps the detector body byte-identical and, outside it, adds only R82's link-check step to hygiene (plus comments); hygiene and that step carry no needs: and no if:, so the step runs on every pull request whatever plan's outputs are - no job, runner, needs edge or condition moves
+PASS R7-L2 revision 6's preserved bytes carry ten occurrences of == 'true' on nine lines, five of them live job or step conditions and four slot comments, one of which carries two - the figure the empirical audit EA6-1 found stale in revision 6's prose; revision 7's F1 change removes that doubled comment line (R2-L5)
+PASS R6-L2 actionlint exits 0 on the repository, then exits 1 on the unchanged workflow file when only .github/actions/setup/action.yml renames its input - a local action's metadata is workflow-lint's input
+PASS R6-L3 with the action restored, removing only .github/actionlint.yaml makes actionlint exit 1 on the unchanged workflow file (label "my-label" is unknown) - the linter's config is workflow-lint's input
+PASS R2-L10 the Codex leg's topology probe (62 lines, extracted from raw lines 508-569) lints with exit 0 and no diagnostics - its executed claim reproduces
+PASS R2-L11 the Codex leg's negative control exits 1 with the expression error it recorded - its control reproduces
+PASS R2-L12 py-ci.yml at its source pin lints with exit 0 and no diagnostics - the Codex leg's precedent-lint claim reproduces
+PASS R2-L13 py-lint.yml at its source pin lints with exit 0 and no diagnostics - the Codex leg's precedent-lint claim reproduces
+PASS R2-L14 ts-ci.yml at its source pin lints with exit 0 and no diagnostics - the Codex leg's precedent-lint claim reproduces
+
+PASS=21 FAIL=0 SKIP=0 TOTAL=21

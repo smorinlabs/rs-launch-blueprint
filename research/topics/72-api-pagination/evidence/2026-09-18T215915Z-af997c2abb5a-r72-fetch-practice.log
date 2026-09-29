@@ -1,0 +1,24 @@
+## environment
+curl: curl 8.7.1 (x86_64-apple-darwin25.0) libcurl/8.7.1 (SecureTransport) LibreSSL/3.3.6 zlib/1.2.12 nghttp2/1.68.0
+retrieved (UTC): 2026-09-22T01:16:18Z
+
+## the Rust project s own registry service, pinned to a commit rather than
+## to a moving branch so the line numbers this decision quotes stay valid
+crates.io pagination.rs newest commit: 30c4ed7fd9b79eba10e42d5c173e9bdd8aab1b4c
+crates.io pagination.rs                        200  https://raw.githubusercontent.com/rust-lang/crates.io/30c4ed7fd9b79eba10e42d5c173e9bdd8aab1b4c/src/controllers/helpers/pagination.rs
+
+## api-bones, the envelope the Doxa perplexity leg proposes borrowing
+source api-bones 6.12.0                        200  https://static.crates.io/crates/api-bones/api-bones-6.12.0.crate
+
+## dropshot, the other production framework with a first-party page type
+dropshot ResultsPage                           200  https://docs.rs/dropshot/0.17.1/dropshot/struct.ResultsPage.html
+
+## the CI configuration of the one crate this decision adds, so gate 4
+## rests on a read platform list rather than on an inference. The project
+## uses CircleCI, not GitHub Actions: repos/.../contents/.github/workflows
+## answers 404 and .github holds only ISSUE_TEMPLATE.
+base64 .circleci/config.yml                    200  https://raw.githubusercontent.com/marshallpierce/rust-base64/master/.circleci/config.yml
+
+## totals
+OK 4
+GAP 0
