@@ -10,19 +10,37 @@
 # Line prefixes and what each promises:
 #   CHECK   — one observed result printed by the probe's own test binary.
 #   FIGURE  — a measurement of this host at this moment. Build seconds do NOT
-#             reproduce and are labelled; byte sizes on an unchanged toolchain
-#             do, and are asserted.
+#             reproduce and are labelled. Byte sizes and the resolved tree
+#             reproduce only for the same toolchain AND the committed lockfiles
+#             below; the sizes are printed, and asserted only as bounds.
 #   ASSERT  — a content assertion. `ASSERT FAIL` sets exit status 1.
 #   SKIP    — a check that could not run, with the reason named.
 #
-# Needs: network (to resolve the crates) or a warm Cargo registry cache, and
+# Needs: network (to download the crates) or a warm Cargo registry cache, and
 # the toolchain printed below. Needs no `.git`, so it runs unchanged from a
 # clean `git archive HEAD` extraction. Everything it writes lives under one
-# directory created with mktemp inside $TMPDIR and removed on exit; the probe
-# is created with `cargo new --vcs none`, so no nested Git repository is ever
-# created and no target/ tree is ever left behind.
+# directory created with mktemp inside $TMPDIR and removed on exit; no nested
+# Git repository is ever created and no target/ tree is ever left behind.
+#
+# Revision 3 (2026-09-27) made this probe deterministic, after the empirical
+# audit of revision 2 found that it resolved whatever transitive versions were
+# newest on the day (hyper-util 0.1.21, published 2026-09-24, moved the tree's
+# maximum rust-version from 1.80 to 1.85) and that it aborted when the caller
+# exported CARGO_TARGET_DIR:
+#   * every arm builds from a lockfile committed under snapshots/, copied in
+#     before any cargo call, and every cargo call carries --locked. Set
+#     R76_RECORD_LOCKS=1 to regenerate those lockfiles from the registry
+#     instead; that mode is how they were first written and is not the
+#     normal run.
+#   * CARGO_TARGET_DIR and CARGO_BUILD_TARGET_DIR are unset, so each arm
+#     builds into its own target/ under the mktemp directory and the "clean
+#     build" figures really are clean and per arm. CARGO_HOME is left alone.
 
 set -euo pipefail
+unset CARGO_TARGET_DIR CARGO_BUILD_TARGET_DIR
+
+HERE="$(cd "$(dirname "$0")" && pwd)"
+LOCKS="$HERE/snapshots"
 
 GREP=/usr/bin/grep
 
@@ -221,9 +239,26 @@ RUSTEOF
 cp "$WORK/with/tests/cors.rs" "$WORK/v06/tests/cors.rs"
 
 # ---------------------------------------------------------------------------
-echo "--- A. resolve the probe: can this host reach the crates it needs? ---"
-if ! (cd "$WORK/with" && cargo generate-lockfile -q 2>"$WORK/lock.err"); then
-  skip "the whole probe: cargo could not resolve the manifest (no network and no warm registry cache)"
+echo "--- A. the committed lockfiles: every arm resolves exactly the recorded tree ---"
+for d in with v06 without; do
+  if [ "${R76_RECORD_LOCKS:-0}" = "1" ]; then
+    (cd "$WORK/$d" && cargo generate-lockfile -q)
+    cp "$WORK/$d/Cargo.lock" "$LOCKS/probe-$d.Cargo.lock"
+    echo "RECORD wrote snapshots/probe-$d.Cargo.lock from the registry"
+  elif [ -f "$LOCKS/probe-$d.Cargo.lock" ]; then
+    cp "$LOCKS/probe-$d.Cargo.lock" "$WORK/$d/Cargo.lock"
+  else
+    skip "the whole probe: snapshots/probe-$d.Cargo.lock is missing, so no arm can build --locked"
+    echo
+    echo "=== RESULT ==="
+    echo "PASS=${pass} FAIL=${failn} SKIP=${skipn} TOTAL=$((pass + failn + skipn))"
+    echo "RESULT: PASS (nothing ran)"
+    exit 0
+  fi
+  echo "LOCK  snapshots/probe-$d.Cargo.lock sha256 = $(shasum -a 256 "$WORK/$d/Cargo.lock" | cut -d' ' -f1)"
+done
+if ! (cd "$WORK/with" && cargo metadata --locked --format-version 1 >/dev/null 2>"$WORK/lock.err"); then
+  skip "the whole probe: cargo could not fetch the locked crates (no network and no warm registry cache)"
   sed 's/^/  /' "$WORK/lock.err" | head -5
   echo
   echo "=== RESULT ==="
@@ -239,7 +274,7 @@ echo
 
 # ---------------------------------------------------------------------------
 echo "--- B. the twelve observations, on tower-http 0.7.1 ---"
-(cd "$WORK/with" && cargo test -q --test cors -- --nocapture --test-threads=1) > "$WORK/out71.txt" 2>&1 || {
+(cd "$WORK/with" && cargo test -q --locked --test cors -- --nocapture --test-threads=1) > "$WORK/out71.txt" 2>&1 || {
   cat "$WORK/out71.txt"; echo "ASSERT FAIL the probe's own test binary did not pass"; exit 1; }
 "$GREP" '^CHECK ' "$WORK/out71.txt" | sed 's/^/  /'
 O="$WORK/out71.txt"
@@ -278,7 +313,7 @@ echo
 
 # ---------------------------------------------------------------------------
 echo "--- C. what 0.7.0's cors change is observable as: the same probe on 0.6.11 ---"
-if ! (cd "$WORK/v06" && cargo test -q --test cors -- --nocapture --test-threads=1) > "$WORK/out06.txt" 2>&1; then
+if ! (cd "$WORK/v06" && cargo test -q --locked --test cors -- --nocapture --test-threads=1) > "$WORK/out06.txt" 2>&1; then
   skip "C: the 0.6.11 arm did not build, so the version comparison was not measured"
   sed 's/^/  /' "$WORK/out06.txt" | head -5
 else
@@ -305,8 +340,8 @@ echo
 
 # ---------------------------------------------------------------------------
 echo "--- D. what the dependency line actually adds to the resolved graph ---"
-(cd "$WORK/with" && cargo metadata --format-version 1 --all-features 2>/dev/null) > "$WORK/md-with.json"
-(cd "$WORK/without" && cargo metadata --format-version 1 --all-features 2>/dev/null) > "$WORK/md-without.json"
+(cd "$WORK/with" && cargo metadata --locked --format-version 1 --all-features 2>/dev/null) > "$WORK/md-with.json"
+(cd "$WORK/without" && cargo metadata --locked --format-version 1 --all-features 2>/dev/null) > "$WORK/md-without.json"
 jq -r '.packages[] | "\(.name) \(.version)"' "$WORK/md-with.json" | sort > "$WORK/pkg-with.txt"
 jq -r '.packages[] | "\(.name) \(.version)"' "$WORK/md-without.json" | sort > "$WORK/pkg-without.txt"
 NW=$(wc -l < "$WORK/pkg-with.txt" | tr -d ' ')
@@ -321,14 +356,19 @@ assert "$(eq "$ADDED" "bitflags 2.13.2;tower-http 0.7.1;")" \
   "the dependency line adds exactly two packages, tower-http 0.7.1 and bitflags 2.13.2, and nothing else moves"
 REMOVED=$(comm -13 "$WORK/pkg-with.txt" "$WORK/pkg-without.txt" | wc -l | tr -d ' ')
 assert "$(eq "$REMOVED" "0")" "and removes none, so this is a pure addition to R69's accepted graph"
-echo "the highest declared rust-version among the resolved dependencies:"
-jq -r '[.packages[] | select(.rust_version != null) | select(.name != "r76probe") | "\(.rust_version) \(.name)"]
-       | sort | .[-3:] | .[]' "$WORK/md-with.json" | sed 's/^/  /'
-MAXRV=$(jq -r '[.packages[] | select(.rust_version != null) | select(.name != "r76probe") | .rust_version]
-               | sort | .[-1]' "$WORK/md-with.json")
-echo "FIGURE maximum declared rust-version in the resolved dependency tree = ${MAXRV}"
-assert "$(eq "$MAXRV" "1.80")" \
-  "gate 2 over the tree, not just the crate: the highest declared rust-version among the dependencies is axum 0.8.9's 1.80, well inside the 1.96 floor"
+# Versions are compared numerically, component by component, never as strings:
+# as text "1.100" would sort below "1.96". A missing component counts as 0.
+echo "the highest declared rust-version among the resolved dependencies (numeric order):"
+RVSORT='[.packages[] | select(.rust_version != null) | select(.name != "r76probe")
+         | {n: .name, v: .rust_version, k: (.rust_version | split(".") | map(tonumber) | . + [0, 0, 0] | .[0:3])}]
+        | sort_by(.k)'
+jq -r "$RVSORT"' | .[-3:] | .[] | "\(.v) \(.n)"' "$WORK/md-with.json" | sed 's/^/  /'
+MAXRV=$(jq -r "$RVSORT"' | .[-1].v' "$WORK/md-with.json")
+MAXRV_PKG=$(jq -r "$RVSORT"' | .[-1].n' "$WORK/md-with.json")
+MAXRV_OK=$(jq -r "$RVSORT"' | if (.[-1].k <= [1, 96, 0]) then 1 else 0 end' "$WORK/md-with.json")
+echo "FIGURE maximum declared rust-version in the resolved dependency tree = ${MAXRV} (${MAXRV_PKG}), under the committed lockfile"
+assert "$MAXRV_OK" \
+  "gate 2 over the tree, not just the crate: the highest declared rust-version among the locked dependencies (${MAXRV}, ${MAXRV_PKG}) is at or below the 1.96 floor, compared numerically"
 UNDECL=$(jq -r '[.packages[] | select(.rust_version == null) | .name] | sort | join(", ")' "$WORK/md-with.json")
 NUND=$(jq -r '[.packages[] | select(.rust_version == null)] | length' "$WORK/md-with.json")
 echo "FIGURE packages declaring no rust-version (${NUND}): ${UNDECL}"
@@ -337,18 +377,18 @@ UNDECL_NOTH=$(jq -r '[.packages[] | select(.rust_version == null) | .name]
 assert "$(eq "$UNDECL_NOTH" "0")" \
   "neither package this item adds is among the undeclared ones — every undeclared package arrives with axum or tokio, which R69 already accepted"
 echo "where tower sits in the non-dev graph:"
-(cd "$WORK/with" && cargo tree -e normal -i tower 2>/dev/null) | sed 's/^/  /'
-TOWER_VIA_AXUM=$( (cd "$WORK/with" && cargo tree -e normal -i tower 2>/dev/null) | "$GREP" -c 'axum v0.8.9' || true)
+(cd "$WORK/with" && cargo tree --locked -e normal -i tower 2>/dev/null) | sed 's/^/  /'
+TOWER_VIA_AXUM=$( (cd "$WORK/with" && cargo tree --locked -e normal -i tower 2>/dev/null) | "$GREP" -c 'axum v0.8.9' || true)
 assert "$(if [ "$TOWER_VIA_AXUM" -gt 0 ]; then echo 1; else echo 0; fi)" \
   "tower 0.5.3 is already in the non-dev graph through axum, so this item's dependency line neither adds it nor promotes it — tower stays declared as crates/web's dev-dependency, which is the value R69 fixed"
 echo "which tower features axum already activates:"
-(cd "$WORK/with" && cargo tree -e features -i tower 2>/dev/null) | "$GREP" -m2 'tower feature' | sed 's/^/  /'
-UTIL=$( (cd "$WORK/with" && cargo tree -e features -i tower 2>/dev/null) | "$GREP" -c 'tower feature "util"' || true)
+(cd "$WORK/with" && cargo tree --locked -e features -i tower 2>/dev/null) | "$GREP" -m2 'tower feature' | sed 's/^/  /'
+UTIL=$( (cd "$WORK/with" && cargo tree --locked -e features -i tower 2>/dev/null) | "$GREP" -c 'tower feature "util"' || true)
 assert "$(if [ "$UTIL" -gt 0 ]; then echo 1; else echo 0; fi)" \
   "axum already activates tower's util feature, so option_layer costs no crate and no feature — its only cost is a DIRECT tower dependency declaration on crates/web, which is the precise price of the rejected alternative C"
 echo "what tower-http itself pulls in (normal edges, depth 1):"
-(cd "$WORK/with" && cargo tree -e normal -p tower-http --depth 1 2>/dev/null) | sed 's/^/  /'
-TOKIO_EDGE=$( (cd "$WORK/with" && cargo tree -e normal -p tower-http --depth 1 2>/dev/null) | "$GREP" -c 'tokio' || true)
+(cd "$WORK/with" && cargo tree --locked -e normal -p tower-http --depth 1 2>/dev/null) | sed 's/^/  /'
+TOKIO_EDGE=$( (cd "$WORK/with" && cargo tree --locked -e normal -p tower-http --depth 1 2>/dev/null) | "$GREP" -c 'tokio' || true)
 assert "$(eq "$TOKIO_EDGE" "0")" \
   "gate 5: with only the cors feature on, tower-http has no tokio edge, so the layer is executor-agnostic and adds no async-runtime coupling"
 echo
@@ -357,7 +397,8 @@ echo
 echo "--- E. gate 6: what the dependency costs in build time and bytes ---"
 # Two clean release builds per arm. Build seconds are wall-clock on a shared
 # machine and are printed, never asserted. Stripped byte sizes are
-# deterministic for a fixed toolchain and ARE asserted against each other.
+# deterministic only for a fixed toolchain and the committed lockfiles; they
+# are printed as figures and asserted only as bounds.
 cat > "$WORK/with/src/main.rs" <<'EOF'
 use axum::Router;
 use axum::http::HeaderValue;
@@ -406,7 +447,7 @@ for arm in without with; do
   for run in 1 2; do
     rm -rf "$WORK/$arm/target"
     S=$(python3 -c 'import time;print(time.time())')
-    (cd "$WORK/$arm" && cargo build -q --release) >/dev/null 2>&1
+    (cd "$WORK/$arm" && cargo build -q --locked --release) >/dev/null 2>&1
     E=$(python3 -c 'import time;print(time.time())')
     SECS=$(python3 -c "print(f'{float('$E')-float('$S'):.1f}')")
     echo "FIGURE clean release build, arm=${arm}, run ${run}: ${SECS} s   (wall clock on a shared host; VARIES between runs and is never asserted)"

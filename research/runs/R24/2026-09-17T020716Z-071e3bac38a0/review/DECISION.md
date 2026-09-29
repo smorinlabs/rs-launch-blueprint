@@ -1,4 +1,33 @@
-# 2026-09-18 — R24 — changelog-section-mapping (pattern, Light) — decision (revision 1)
+# 2026-09-28 — R24 — changelog-section-mapping (pattern, Light) — decision (revision 2)
+
+**What revision 2 changes, and why. The recommendation does not move: the
+eleven-entry array, its order, its headings, the ledger row, the runner-up and
+the five `- assumes` lines are byte-identical to revision 1.** Revision 1
+(sha256 `bc5dcafa1ac0a864ce458bdc45dee92f02385cb28ebde7e8af364a5b04683a52`,
+preserved as `review/R24-r1-snapshot.md`) was rejected by its judgment audit
+(`review/audit-fable.md.v2`) on two blocking findings and one minor one; the
+filed empirical audit `review/audit-claude.md` approved. This revision repairs exactly those three. **Finding
+1 — engine account.** Revision 1 named Codex as the absent required leg. The
+item's required engine is now Muse, under owner decision Q5.A's bulk
+substitution, and a Muse report exists that disagrees on three memberships.
+`## Engines` now names Muse, represents its position, and adjudicates the
+three disagreements (`refactor`, `docs`, a scope-routed `Dependencies`
+section) with evidence; Muse's four scope routes are filtered against R19
+rather than adopted. **Finding 2 — the `deps` and schema questions.** Revision
+1 concluded that dependency bumps are hidden "under every candidate array",
+which holds only because a reachable alternative was not considered: a
+`{"type": "chore", "scope": "deps", "section": "Dependencies"}` entry. This
+revision answers the schema question on the `scope` axis, executes the
+config-file loader to confirm the key survives it (new probe
+`review/evidence/probe/loader.cjs`, new checks 7d and 9a–9f), and re-argues
+dependency visibility against that entry on both audience cost and the
+mechanism-5 release-cadence effect. It rejects the entry, for reasons under
+*Across all three — dependency bumps*. The check 3h log header is reworded so
+that it asserts only what its greps check. **Finding 3 — run C line
+numbers.** `### style` and `### Features` are on lines 9 and 14 of
+`snap/rendered/C-ts.md`, not 11 and 16; the ordering claim and check 4a stand.
+The evidence log was regenerated after the final text of this revision was
+fixed: 146 assertions, all `PASS` (`## Empirical check`).
 
 ## Decision
 
@@ -11,9 +40,11 @@ validate. A decision that does not survive implementation is revised against
 this recorded research, not researched again from scratch. **Nothing was built
 for this decision**: no `release-please-config.json`, no `CHANGELOG.md`, no
 workflow and no template scaffold was written anywhere in this repository, and
-release-please was never run against a repository. The one thing that was
-executed is release-please's own rendering code, called as a library inside a
-throwaway directory under `$TMPDIR` that the check script deletes on exit.
+release-please was never run against a repository. What was executed is
+release-please's own rendering code and, in revision 2, its config-file loader,
+called as a library inside a throwaway directory under `$TMPDIR` that the check
+script deletes on exit; the loader reads its two files from an in-memory
+stand-in for GitHub, not from a repository.
 
 **Fitness gate 1 (licence compatibility) is `inapplicable — owner ruling
 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or
@@ -142,8 +173,8 @@ t.section)` and sorts groups by `commitGroupOrder.indexOf(a.title)` (checks
 3g-group-order-from-array, 3g-sort-by-indexof). `indexOf` returns `-1` for a
 title absent from the array, so an unmapped type's breaking-change group sorts
 **above Features**. Executed run C shows precisely that: under ts's array a
-`style!:` commit renders as `### style` at line 11 of the entry, above `###
-Features` at line 16 (checks 4a-raw-lowercase-heading, 4a-sorted-above-features).
+`style!:` commit renders as `### style` at line 9 of the entry, above `###
+Features` at line 14 (checks 4a-raw-lowercase-heading, 4a-sorted-above-features).
 
 *Mechanism 4 — the Rust strategy sets no fallback, so the preset default is the
 whole default.* `src/strategies/rust.ts` extends `BaseStrategy` and contains zero
@@ -250,24 +281,99 @@ published crate those commits are not even compiled — which reinforces hiding
 them rather than arguing for a section.
 
 *Across all three — dependency bumps.* R19's published decision fixes
-Dependabot's `commit-message` to `prefix: "chore"` with `include: "scope"`, and
-py's own `.github/dependabot.yml` at pin `b08bccfb` sets the same two keys on
-every ecosystem entry (lines 24–27, 57–59, 74–77), so every bot bump arrives as
-`chore(deps): …`. Under **every** candidate array those commits are hidden, and
-py's `{"type": "deps", "section": "Dependencies"}` entry never matches one,
-because the preset's type lookup matches on `type` and the commit's type is
-`chore`. Executed: no run renders the `chore(deps): bump serde …` fixture commit,
-py's run included, and py's run produces no `Dependencies` section at all (checks
-4g-no-bump ×4, 4g-py-no-dependencies-section). The `deps` entry is unreachable
-configuration. A bump that actually changes the public surface — an MSRV raise, a
-re-exported type — is a `feat`/`fix`/`!` commit under
-`commit-message-convention`'s enum and is visible on that basis.
+Dependabot's `commit-message` to `prefix: "chore"` with `include: "scope"` on
+both of its entries, `cargo` and `github-actions` (check 9f), and py's own
+`.github/dependabot.yml` at pin `b08bccfb` sets the same two keys on every
+ecosystem entry (lines 24–27, 57–59, 74–77), so every bot bump arrives as
+`chore(deps): …`. py's `{"type": "deps", "section": "Dependencies"}` entry never
+matches one, because the commit's type is `chore`. Executed: none of runs A–D
+renders the `chore(deps): bump serde …` fixture commit, py's run included, and
+py's run produces no `Dependencies` section at all (checks 4g-no-bump ×4,
+4g-py-no-dependencies-section). **The bare `deps` entry is unreachable
+configuration. A reachable way to show bumps does exist, and revision 1 did not
+evaluate it.**
+
+*The scope-routed alternative.* The preset's type lookup matches on `scope` as
+well as `type` whenever an entry declares one: `findTypeEntry` rejects an entry
+`if (entry.scope && entry.scope !== commit.scope)` (check 9a). So the entry
+`{"type": "chore", "scope": "deps", "section": "Dependencies"}`, placed before
+the bare `chore` entry because the lookup takes the first match, captures
+exactly the bot bumps. Three facts make it a real option. (1) **The schema
+leaves `scope` undocumented but does not reject it.** An entry's declared
+properties are `type`, `section` and `hidden`, with `type` and `section`
+required, and no `scope` (checks 3h, 9b). The entry object also declares no
+`additionalProperties` (check 9b-entry-no-additional-properties), so under JSON
+Schema an entry carrying `scope` still validates. release-please exports that
+schema as `configSchema` (`build/src/index.js:36`), and — read, not executed —
+nothing under `build/src` validates a configuration against it on load. (2)
+**The config-file loader passes the key through unchanged.**
+`review/evidence/probe/loader.cjs` gives release-please's own
+`Manifest.fromManifest` a `release-please-config.json` carrying the entry,
+beside R25's three keys, over an in-memory GitHub stand-in. The path it drives
+is `parseConfig` → `extractReleaserConfig` → `mergeReleaserConfig` →
+`getStrategiesByPath`, and the Rust strategy it builds holds twelve entries
+with the scoped entry intact (checks 9c). (3) **The strategy renders it.** That
+strategy's own `buildReleaseNotes` puts the bump under `### Dependencies`
+(checks 9d-dependencies-heading, 9d-bump-rendered). This agrees with the
+revision-1 judgment audit's scratch render, which called `buildNotes` directly.
+
+*Only one scope route is reachable under R19.* Muse's report proposes four
+routes: `chore(deps)`, `chore(deps-dev)`, `build(deps)` and `build(deps-dev)`.
+Both R19 entries fix `prefix: "chore"`, so neither `build(…)` route can match a
+bot commit (check 9f-r19-prefix-chore). R19 records that `include: "scope"`
+"can only ever append `deps` for a Cargo entry"
+(`research/topics/19-dependabot-config-shape/DECISION.md:134`, check
+9f-r19-cargo-deps-only), so `chore(deps-dev)` is unreachable for the `cargo`
+entry. R19 records nothing about `deps-dev` for its `github-actions` entry;
+that case is unrecorded here, not shown unreachable. The alternative that needs
+evaluating is therefore the single `chore(deps)` entry.
+
+*Why that entry is rejected — the release-cadence effect.* Mechanism 5 applies
+to it directly. The push that opens no release pull request under the
+recommendation — `test:` + `ci:` + `chore(deps):` — renders a one-line body
+through the loaded strategy, and `changelogEmpty` returns `true` (check
+9d-recommended-empty-true). Under the scope-routed entry the same push renders
+a six-line body with a `Dependencies` section, and `changelogEmpty` returns
+`false` (checks 9d-scope-routed-lines, 9d-scope-routed-empty-false). The guard
+therefore does not fire, and release-please goes on to build a release pull
+request. What was executed is the predicate on that body; that
+`buildReleasePullRequest` then builds a pull request is read at the call site
+(checks 3e), exactly as for mechanism 5 in general. R19 schedules both
+ecosystems weekly, each with one catch-all group, so any week in which either
+ecosystem's grouped pull request is merged puts a `chore(deps)` commit on
+`main`. Under the
+scope-routed entry, each such week makes a release pull request proposable from
+dependency activity alone. Two costs follow. First, a pending release pull
+request stops meaning "a consumer-visible change is waiting", which is the
+property the next paragraph calls wanted. Second, essential behaviour 4 — bot
+bumps do not dominate the entry — fails in exactly the releases that contain
+nothing else: an entry proposed only because of bumps consists only of bumps.
+Merging stays a human act, so bumps would *open* release pull requests, not
+*force* releases; the cost is the lost signal and a recurring bumps-only
+release proposal, not an automatic publish.
+
+*What rejecting it costs — the audience side.* Muse argues that visible bumps
+carry a transitive and MSRV signal. The MSRV half is thin: `msrv-policy`
+declares the MSRV "tested in CI", so a bump that breaks it fails a check on the
+bump's own pull request instead of waiting for a changelog reader. The real
+cost is different, and revision 1 overstated its absence. Revision 1 said that
+a bump which changes the public surface "is a `feat`/`fix`/`!` commit … and is
+visible on that basis". A Dependabot commit cannot type itself: it is always
+`chore(deps): …`. Such a change therefore reaches the changelog only if a
+person commits it, or a follow-up to it, under a visible type. Hiding bumps
+accepts that dependence on a person, as the price of behaviour 4 and of the
+cadence property. **Condition under which the scope-routed entry wins:** the
+owner prefers every dependency move to be visible and accepts a release pull
+request that is proposable most weeks. Then add the one entry
+`{"type": "chore", "scope": "deps", "section": "Dependencies"}` immediately
+before the `chore` entry; nothing else in the array changes.
 
 *Across all three — a consequence of mechanism 5 that is wanted rather than
 tolerated.* Because hidden types cannot open a release on their own, a week whose
 only commits are Dependabot bumps, CI adjustments and test work produces no
-release pull request. That is the behaviour under every shape except "show
-everything", it keeps the release cadence tied to consumer-visible change rather
+release pull request. That is the behaviour under every shape that hides
+dependency bumps — every shape except "show everything" and the scope-routed
+entry above — it keeps the release cadence tied to consumer-visible change rather
 than to bot activity, and it is why the empty-entry worry does not arise.
 
 **Observable acceptance criteria.** Each is marked with what this decision did
@@ -280,7 +386,7 @@ a repository and a release cycle that do not exist during P02.
 | A2 | A breaking commit of an otherwise-hidden type appears under that type's declared section heading, not under a raw lowercase type string, and not above `Features` | **executed here** — runs C and D, checks 4a and 4c |
 | A3 | A non-breaking `revert:` commit appears under `Reverts` | **executed here** — checks 4b (its failure under ts's array) and 4d |
 | A4 | A `chore(deps): …` commit produced under R19's Dependabot configuration produces no changelog line | **executed here** — check 4g |
-| A5 | `release-please-config.json` validates against the `$schema` it declares, and the array's `type` values are exactly `commit-message-convention`'s enum, by set equality | **partly executed** — the schema's entry shape is asserted (check 3h); set equality between the array and the live registry enum is asserted here (checks 1a–1c). Validating a real config file against the real schema is **P03** |
+| A5 | `release-please-config.json` validates against the `$schema` it declares, and the array's `type` values are exactly `commit-message-convention`'s enum, by set equality | **partly executed** — the schema's entry shape is asserted (checks 3h, 9b); set equality between the array and the live registry enum is asserted here (checks 1a–1c). Validating a real config file against the real schema is **P03** |
 | A6 | A push containing only hidden-type commits opens no release pull request; a push containing at least one visible-type commit opens one | **partly executed** — release-please's own emptiness predicate is executed over release-please's own rendered bodies (checks 5a–5c). The `return undefined` it guards is read, not driven: end-to-end confirmation is **P03** |
 
 **What P03 must build and prove.** (1) A `release-please release-pr --dry-run`
@@ -396,10 +502,11 @@ recorded under `## Decision`.
 **Toolchain and host.** No Rust toolchain is involved and none was required:
 this item adds no crate and no Rust source, so `rustc --version` and `cargo
 --version` have no subject here. Both are recorded in
-`review/evidence/toolchain.txt` all the same — `rustc 1.98.0 (88d9e12ae
-2026-08-18) (Homebrew)` and `cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)` —
-and neither is used by any check. The check runs on macOS `arm64`
-(`Darwin 25.4.0`) with `node v26.5.0`, `npm 12.0.1`, `shellcheck 0.11.0`,
+`review/evidence/toolchain.txt` all the same — at the revision-2 run,
+`rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)` and `cargo 1.98.1 (797e8a9bc
+2026-08-05) (Homebrew)` — and neither is used by any check. The revision-2 run
+is on macOS `arm64` (`Darwin 25.4.0`) with `node v26.9.0`, `npm 12.0.1`,
+`shellcheck 0.11.0`,
 `gh` reading its own keyring credential, and `/usr/bin/grep` —
 `grep (BSD grep, GNU compatible) 2.6.0-FreeBSD` — as the counting binary. The
 exact strings are written to `review/evidence/toolchain.txt` rather than to the
@@ -417,9 +524,10 @@ modifies; the log is not.
 bash r24-checks.sh > r24-checks.log 2>&1
 ```
 
-**Result: exit 0 — 125 assertions, 125 `PASS`, 0 `FAIL`, 0 `SKIP`.** Full output: `review/evidence/r24-checks.log`. The
-script is `shellcheck`-clean at 0.11.0 (exit 0, with one documented `SC2329`
-disable on the `EXIT`-trap cleanup function). It carries `set -euo pipefail` at
+**Result: exit 0 — 146 assertions, 146 `PASS`, 0 `FAIL`, 0 `SKIP`.** Full output: `review/evidence/r24-checks.log`. The
+script is `shellcheck`-clean at 0.11.0 (exit 0, with two documented disables:
+`SC2329` on the `EXIT`-trap cleanup function, and `SC2016` on check
+9f-r19-cargo-deps-only, whose backticks are literal text in R19's decision). It carries `set -euo pipefail` at
 the top, every probe that can be absent runs inside a guarded branch so that a
 missing tool prints a named `SKIP` instead of aborting the run, every check
 asserts on expected **content** rather than on an exit code alone, and
@@ -449,6 +557,19 @@ they do not — the bullets carry the commit subjects, because
 `parseConventionalCommits` assigns the subject as the note text for a bare `!`
 (checks 4j-first-bullet, 4j-second-bullet, 4j-no-empty-bullet).
 
+Revision 2 adds `review/evidence/probe/loader.cjs`, which reaches the renderer
+the way a repository does rather than by handing `buildNotes` an array. It
+calls `Manifest.fromManifest` from `build/src/manifest.js` over an in-memory
+GitHub stand-in that serves exactly two files, `release-please-config.json` and
+`.release-please-manifest.json`, and makes no network call. It then takes the
+Rust strategy from `getStrategiesByPath`, renders the mechanism-5 push through
+that strategy's own `buildReleaseNotes`, and applies
+`BaseStrategy.prototype.changelogEmpty` to the body. It does this twice: once
+with the recommended array and once with the scope-routed entry added. Its two
+outputs are `snap/rendered/loader.txt` and
+`snap/rendered/G-scope-routed-hidden-only.md`. It does not call
+`buildReleasePullRequest`, which needs a repository's `Cargo.toml`.
+
 Six bodies were rendered: four arrays over one fixture (the preset default, py's
 twelve entries at its pin, ts's seven at its pin, and the recommendation), plus
 the two mechanism-5 pushes. The four heading sets:
@@ -473,7 +594,7 @@ the two mechanism-5 pushes. The four heading sets:
 | 3e | Mechanism 5 — the guard reads the rendered notes, logs `No user facing commits found since `, returns `undefined`, and its predicate is `changelogEntry.split('\n').length <= 1` | PASS ×6 |
 | 3f | A bare `!` takes its breaking-note text from the commit subject and is pushed only when non-empty | PASS ×2 |
 | 3g | Mechanisms 2 and 3 in the preset — the `discard` rule, the two breaking clears, the group rename, the positional order and the `indexOf` sort | PASS ×5 |
-| 3h | The published `schemas/config.json` requires `type` and `section` per entry, allows `hidden`, and declares **no** `scope` key | PASS ×4 |
+| 3h | In `schemas/config.json`, from the first `"changelog-sections"` key to the end of the file: that key occurs twice, `"required": ["type", "section"]` once, `"hidden"` once, and `"scope"` zero times | PASS ×4 |
 | 4a–4b | ts's array: `### style` renders above `### Features`, no `### Styles` heading exists, no `### Reverts` section exists, and the revert subject appears 0 times | PASS ×5 |
 | 4c–4e | The recommended array: 0 raw lowercase headings, `### Styles` below `### Documentation`, `### Reverts` and its subject present, `### Documentation` present, and the eight headings in exactly the declared order | PASS ×7 |
 | 4f | The six non-breaking hidden-type subjects each appear 0 times in run D | PASS ×6 |
@@ -482,8 +603,14 @@ the two mechanism-5 pushes. The four heading sets:
 | 4j | The two breaking bullets carry their commit subjects and 0 empty bullets appear | PASS ×3 |
 | 5a–5c | `changelogEmpty` taken off `BaseStrategy.prototype`: an all-hidden push renders a one-line, section-free body and the predicate returns `true`; one `fix:` added makes it `false` and produces `### Bug Fixes` | PASS ×7 |
 | 6a–6c | py at `b08bccfb`: 12 entries, array opening at line 22, a `deps` entry, `refactor` visible, `docs` hidden. ts at `cb1cbcb2`: 7 entries, array opening at line 11, and 0 entries for `revert`, `style`, `build`, `ci`. Both snapshots byte-identical to `git show` at the pin | PASS ×13 |
-| 7a–7c | A fresh `npm install release-please@17.11.2` resolves `release-please@17.11.2`, `conventional-changelog-conventionalcommits@6.1.0` and `conventional-changelog-writer@6.0.1`; the eight snapshotted upstream files are byte-identical to that install; re-rendering reproduces all seven saved outputs byte-for-byte | PASS ×16 |
+| 7a–7d | A fresh `npm install release-please@17.11.2` resolves `release-please@17.11.2`, `conventional-changelog-conventionalcommits@6.1.0` and `conventional-changelog-writer@6.0.1`; the eight snapshotted upstream files are byte-identical to that install; re-rendering reproduces all seven saved outputs byte-for-byte; re-running the loader probe reproduces its two saved outputs byte-for-byte | PASS ×18 |
 | 8a–8b | `v17.11.2` is release-please's latest published release (not a draft, not a prerelease, published 2026-08-24T21:20:30Z); `release-please-action` `v5.0.0` — the action F063 names — declares `"release-please": "^17.6.0"`, which `17.11.2` satisfies | PASS ×6 |
+| 9a | The preset's `findTypeEntry` also matches on `scope` when an entry declares one | PASS ×1 |
+| 9b | The `"changelog-sections"` property block alone (22 lines): `"required": ["type", "section"]`, no `"scope"` key, no `"additionalProperties"` | PASS ×4 |
+| 9c | Through `Manifest.fromManifest`: the recommended strategy holds 11 entries; the scope-routed configuration loads the scoped entry and its strategy holds 12 entries with the scoped entry intact | PASS ×4 |
+| 9d | The mechanism-5 push through the loaded strategy: `changelogEmpty` `true` under the recommendation; under scope routing a six-line body, `changelogEmpty` `false`, a `### Dependencies` heading carrying the bump, and `test`/`ci` still absent | PASS ×6 |
+| 9e | py's array at pin `b08bccfb` carries no `"scope"` key | PASS ×1 |
+| 9f | R19's decision: `prefix: "chore"` twice, `include: "scope"` twice, and the sentence that Cargo scope can only be `deps` | PASS ×3 |
 
 **Endpoints and retrieval dates.** Everything but section 8 comes from the npm
 registry: `npm install release-please@17.11.2`, whose package ships both the
@@ -502,15 +629,14 @@ through the programme's pins with `git show`, never from a working tree. Every
 snapshot's origin is recorded in `review/evidence/snap/RETRIEVED.txt` with its
 retrieval date.
 
-**Reproducibility, stated as a rule after re-running rather than asserted.** The
-log was produced, then the script was re-run twice and both outputs `diff`ed
-against it:
-
-- a plain rerun in place — **byte-identical**;
-- a rerun from a **clean `git archive HEAD` extraction** of commit
-  `9fce93c43cd66000bf320bb7b7ca1ba74f7a59c6`, which has no `.git` at all (the
-  extraction was tested with `[ -e .git ]`, because this repository's own `.git`
-  is a worktree *file*, not a directory) — **byte-identical**.
+**Reproducibility, stated as a rule after re-running rather than asserted.** For
+revision 2 the log was produced after this document's final text was fixed,
+then the script was re-run in place and the output compared with `cmp` —
+**byte-identical**. Revision 1's log was additionally reproduced from a clean
+`git archive HEAD` extraction of commit
+`9fce93c43cd66000bf320bb7b7ca1ba74f7a59c6`, which has no `.git` at all; that is
+a revision-1 result. Revision 2's new files are not yet committed, so it has
+not been repeated for them.
 
 The rule: **the log is byte-identical on any rerun on this host while `./snap/`
 is present and `node`, `npm` and the npm registry are reachable.** Two classes of
@@ -518,19 +644,18 @@ line can legitimately differ elsewhere, and they are named rather than glossed.
 (1) On a host whose `/usr/bin/grep` reports a different `--version` line, every
 `PASS` line differs in its trailing `counting binary:` field, because this
 decision's brief requires the version beside every count; the verdicts do not
-move. (2) Without `node`, `npm` or the network, section 7's sixteen assertions
-become three named `SKIP`s — demonstrated below — and the log differs by those
+move. (2) Without `node`, `npm` or the network, section 7's eighteen assertions
+become four named `SKIP`s — demonstrated below — and the log differs by those
 lines alone.
 
 **A named-skip control, so the `SKIP` paths are shown to work rather than
 asserted to.** The same script was re-run from the same clean extraction with
 `PATH` restricted to `/usr/bin:/bin:/usr/sbin:/sbin`, which removes `node` and
-`npm`: `review/evidence/r24-checks-skip-control.log` records 109 `PASS`, **3 named `SKIP`s** and 0 `FAIL` at exit 0, each
-naming what was missing (`7a-install`, `7b-upstream-bytes`, `7c-rendered-bytes`
-— all three `node is not on PATH`). The control was re-run twice and both
-outputs `diff`ed against the saved log — once in place and once from the same
-clean `git archive HEAD` extraction — **byte-identical** both times. The exact
-invocation is:
+`npm`: `review/evidence/r24-checks-skip-control.log` records 128 `PASS`, **4 named `SKIP`s** and 0 `FAIL` at exit 0, each
+naming what was missing (`7a-install`, `7b-upstream-bytes`, `7c-rendered-bytes`,
+`7d-loader-bytes` — all four `node is not on PATH`). For revision 2 the control
+was re-run in place and compared with `cmp` against the saved log —
+**byte-identical**. The exact invocation is:
 
 ```bash
 PATH=/usr/bin:/bin:/usr/sbin:/sbin bash r24-checks.sh
@@ -571,31 +696,122 @@ recommendation: the recommendation rests on sections 1–8 above.
 - That `release-plz` and `cocogitto` were named to complete the landscape bin and
   their own default type maps were **not** read — an omission the report states
   and this decision keeps stated.
+- From `raw/muse.md`, retrieved by that report on 2026-09-22: that
+  `conventional-changelog-conventionalcommits@10.4.0` keeps the `scope` match
+  (`src/utils.js:70`); the tokio and clap changelog shapes; release-please's own
+  `release-please-config.json` carrying no `changelog-sections`; and the
+  rendered sections of py's and ts's `CHANGELOG.md` files, which that report read
+  from the working trees rather than at the programme pins. None of them
+  selects the recommendation or the rejection of the scope-routed entry.
 
 ## Engines
 
-- Claude Opus 5 — `raw/opus.md`, sha256
+- **Muse — the item's required engine.** `raw/muse.md`, sha256
+  `9b8bd88503fc00b0b22d0cc9a22353669af4e636080bba6f0b2c43d9f0e6a9ad`, read in
+  full for this revision. At this writing it is on disk but not registered: the
+  revision-1 judgment audit records `operations/muse.json` in state
+  `submitting` with no `raw_sha256`, and registration is the controller's step,
+  not this document's. The same audit records why Muse is required:
+  `manifest.json` carries `required_engines: ["muse"]` and a migration event at
+  `2026-09-21T23:06:19Z` from `codex` to `muse`, reason "muse bulk substitution
+  (owner decision Q5.A 2026-09-21)", and the prompt's `- engines: muse` line is
+  authoritative. **Muse's position:** a total, explicit fifteen-entry array over
+  R38's eleven types with release-please's `DEFAULT_HEADINGS` titles — `feat`,
+  `fix`, `perf`, `refactor`, `revert` visible in that order; dependency bumps
+  routed to a visible `Dependencies` section by four scope entries
+  (`chore(deps)`, `chore(deps-dev)`, `build(deps)`, `build(deps-dev)`); and
+  `docs`, `test`, `build`, `ci`, `style`, `chore` explicitly hidden. Its
+  runner-up is the same array with `docs` visible. It executed its cases on
+  2026-09-22 through release-please's own `parseConventionalCommits` and
+  `buildNotes` at 17.11.2 in a scratch directory. It carries no `CONFLICT:` and
+  no `BASELINE-REVIEW:` line.
+- **Claude Opus 5.** `raw/opus.md`, sha256
   `70f25e538ae4bf34494ca1202ef653b57b98c9f3c6bf8fa1414d538239be1a75`, registered
   as `raw/opus-70f25e53….md`, 15 H3 fields, validated as a `pattern` answer by
   `validate_answer_text(text, "pattern")` from `scripts/research_validation.py`
   (0 diagnostics). Recommends the total ordered type map adopted above; carries
   no `CONFLICT:` and no `BASELINE-REVIEW:` line.
-- Codex (gpt-5.6-luna) — **absent.** The light-tier Codex research leg failed on
-  the Codex account's usage limit on 2026-09-17 and produced no report; the
-  `raw/codex-*.txt` files are its timing stubs, not evidence, and
-  `raw/codex-transcript.txt` is gitignored. The controller deferred the leg under
-  owner ruling **W1-CODEX3** of 2026-09-18, which says proceed without Codex.
-  The Terra evidence check the prompt's `evidence-checks: terra` names is
-  likewise unavailable for the same reason.
+- **Codex (gpt-5.6-luna) — no longer a required leg; recorded as history.** The
+  light-tier Codex research leg failed on the Codex account's usage limit on
+  2026-09-17 and produced no report; the `raw/codex-*.txt` files are its timing
+  stubs, not evidence, and `raw/codex-transcript.txt` is gitignored. Revision 1
+  was written under owner ruling **W1-CODEX3** of 2026-09-18, which says proceed
+  without Codex, and recorded the Terra evidence check as unavailable for the
+  same reason. Owner decision Q5.A then substituted Muse for Codex on this item,
+  as recorded above.
 
-**So this decision is synthesized from a single engine, and the synthesizer
-re-verified every load-bearing claim at source rather than relying on that one
-report.** There is no second engine to disagree with, so the section that would
-record engine disagreements records instead what the re-verification found. This
-is the material uncertainty in the decision and it is stated plainly: a
-single-engine synthesis has no independent lens on the *framing* — which
-questions were asked, which alternatives were considered — even where every
-factual claim has been re-executed.
+**Where the two reports agree, and this decision with them.** Both recommend a
+total, explicit map over R38's eleven types rather than relying on the preset's
+default for unmapped types. Both use release-please's `DEFAULT_HEADINGS` titles.
+Both show `feat`, `fix`, `perf` and `revert`, and hide `test`, `build`, `ci`,
+`style` and `chore`. Both find py's bare `deps` entry dead. Muse reproduced,
+independently, the two defects run C shows — an unmapped breaking commit
+rendering under a raw lowercase heading above `Features` (for `ci!` and
+`style!`), and ts's array dropping a revert-only release to a header-only body —
+and the mechanism-5 predicate on a hidden-only push.
+
+**Three disagreements between Muse and this decision, each adjudicated.**
+
+1. **`refactor` — Muse visible, this decision hidden. Hidden stands.** Muse's
+   evidence is that both sources show `refactor`, and that py's rendered
+   `Refactor` section carries upgrade-relevant entries such as "remove legacy
+   py-projects CLI". Removing a command a consumer uses is a breaking change.
+   Under `commit-message-convention` it carries `!` or a `BREAKING CHANGE`
+   footer, and a breaking commit renders under `⚠ BREAKING CHANGES` and under
+   its type's own section heading whatever that entry's `hidden` flag says
+   (mechanism 2; executed for `style!:` under a hidden `style` entry in run D,
+   checks 4c and 4j). So a hidden `refactor` loses no removal notice that is
+   typed correctly; Muse's example argues for typing removals as breaking, not
+   for showing every refactor. That both sources show `refactor` is precedent,
+   which this programme treats as evidence rather than a winner; Muse itself
+   records the cost it accepts, "occasional internal-rename noise", and that is
+   the cost this decision declines.
+2. **`docs` — Muse hidden, this decision visible. Visible stands.** Muse's
+   evidence is that ts's rendered `Documentation` section is port-process
+   chatter ("log D-034 model-tier routing", 18 or more entries in ts 0.1.2),
+   and that doc-only commits carry no upgrade signal. Muse accepts that Rust
+   documentation ships through docs.rs on publish, but does not apply mechanism
+   5 to `docs`: with `docs` hidden, a documentation-only period opens no release
+   pull request, so corrected rustdoc cannot reach docs.rs until an unrelated
+   `feat` or `fix` ships. Muse applies that same mechanism to `revert` and calls
+   the result release-suppressing. Muse's noise evidence is
+   repository-meta documentation, which is exactly what migration item (3)
+   routes to `chore:` and what the runner-up's second winning condition names.
+   It therefore strengthens that condition; it does not select the runner-up.
+   The two engines are one boolean apart on this row: Muse's own runner-up is
+   the `docs`-visible variant.
+3. **A `Dependencies` section — Muse visible via four scope routes, this
+   decision none. Rejected, after filtering Muse's routes against R19.** Only
+   `chore(deps)` is reachable under R19; the single-entry alternative is
+   executed and then rejected on the release-cadence effect and behaviour 4,
+   with its audience cost stated and the condition under which it wins, all
+   under `## Decision`, *Across all three — dependency bumps*.
+
+**What the re-verification found wrong in `raw/muse.md`.** Three corrections,
+none of which moves the recommendation:
+
+1. **py's scope routes are not at the programme pin.** Muse describes py's
+   array as `release-please-config.json:22-39` with four scope routes, and its
+   `### Sources` names the working-tree path
+   `/Users/stevemorin/c/py-launch-blueprint/release-please-config.json`. At pin
+   `b08bccfb` the array holds twelve entries on lines 23–34 and no `"scope"` key
+   (checks 6a, 6c, 9e). The four routes are present in py's working tree at this
+   writing (file read 2026-09-28), so Muse's "py's mechanism, executed" is py's
+   practice after the pin, not the programme's source evidence. The mechanism
+   itself is real, and is executed here (checks 9a–9d).
+2. **R19 is decided.** Muse lists R19 as "undecided" and anticipates a
+   `build(deps)` shape. R19's published decision (revision 5, 2026-09-15) fixes
+   `prefix: "chore"` with `include: "scope"` on both entries (check 9f).
+3. **Three of Muse's four routes are unreachable, or not shown reachable, under
+   R19.** Both `build(…)` routes are unreachable while the prefix is `chore`;
+   `chore(deps-dev)` is unreachable for the `cargo` entry; R19 records nothing
+   about `deps-dev` for the `github-actions` entry. Muse calls the extra entries
+   "inert … harmless"; they are inert, but carrying configuration that cannot
+   fire is the defect this decision already declines in py's bare `deps` entry.
+
+Muse also states that `scope` is schema-valid because entries carry no
+`additionalProperties: false`, and that it is undocumented; both agree with
+checks 3h and 9b. Muse did not test the config-file loader; checks 9c do.
 
 **What the re-verification found wrong in `raw/opus.md`.** Three corrections,
 none of which moves the recommendation:
@@ -620,8 +836,8 @@ none of which moves the recommendation:
    removes the artifact: the bullets carry their commit subjects (checks 4j).
    The report's diagnosis of the cause was right.
 
-**What could not be reproduced, and what was reproduced beyond the report.** No
-claim of the report failed to reproduce. One claim the report stated as read
+**What could not be reproduced, and what was reproduced beyond `raw/opus.md`.** No
+claim of that report failed to reproduce. One claim the report stated as read
 rather than executed — mechanism 5, that the visible set is the releasable set —
 is executed here at the predicate level, with release-please's own
 `changelogEmpty` function object taken off `BaseStrategy.prototype` and applied
@@ -641,14 +857,16 @@ linter's type enum in sync; and the `style!:` regression test whose failure mode
 is silent. The four items are stated with their commands under `## Decision`,
 *What P03 must build and prove*.
 
-**Where the evidence is incomplete.** The landscape figures carried from the
-report (crates.io download counts, star and issue counts, git-cliff's shipped
+**Where the evidence is incomplete.** The landscape figures carried from
+`raw/opus.md` (crates.io download counts, star and issue counts, git-cliff's shipped
 default, the docs.rs quotations) were not re-retrieved here; they are enumerated
 under `## Empirical check` with their retrieval date, and none of them selects
 the recommendation. `release-plz`'s and `cocogitto`'s own default type maps were
-read by neither the report nor this check, so the strength of the
+read by neither `raw/opus.md`, `raw/muse.md` nor this check, so the strength of the
 "show-everything" position rests on git-cliff's shipped default alone — carried
-at that strength, and it is the position this decision rejects anyway. Finally,
-the report computed no issue-responsiveness figure for release-please; that
+at that strength, and it is the position this decision rejects anyway. Muse's
+executed scratch runs were not re-run as Muse ran them; the claims this
+decision takes from them are re-executed by its own checks, and the rest are
+listed as carried under `## Empirical check`. Finally, `raw/opus.md` computed no issue-responsiveness figure for release-please; that
 figure would bear on whether to *keep* release-please, which F063/F066/F073 close
 as `COMMON → REUSE` and this item's `## Out of scope` excludes.

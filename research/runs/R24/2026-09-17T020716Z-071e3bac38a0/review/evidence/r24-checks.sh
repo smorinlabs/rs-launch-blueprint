@@ -15,8 +15,9 @@
 #   * Section 7 is the reproduction leg: it re-installs release-please@17.11.2
 #     into a throwaway directory under $TMPDIR, diffs the eight upstream files
 #     against the snapshots, re-runs ./probe/render.cjs and diffs all seven
-#     rendered outputs against the snapshots. Without node, npm or the network
-#     it prints named SKIPs instead of failing.
+#     rendered outputs against the snapshots, then (revision 2) re-runs
+#     ./probe/loader.cjs and diffs its two outputs. Without node, npm or the
+#     network it prints named SKIPs instead of failing.
 #   * Nothing machine-dependent reaches stdout. Host versions and the scratch
 #     path go to ./toolchain.txt. So a rerun on this host, in place or from a
 #     clean `git archive HEAD` extraction, diffs clean against r24-checks.log.
@@ -235,7 +236,7 @@ assert '3g-entry-renames-group' '1' "$(countf 'if (entry) commit.type = entry.se
 assert '3g-group-order-from-array' '1' "$(countf 'const commitGroupOrder = config.types.flatMap(t => t.section)' "$PRE")"
 assert '3g-sort-by-indexof' '1' "$(countf 'const gRankA = commitGroupOrder.indexOf(a.title)' "$PRE")"
 
-claim '3h the published schema supports type/section/hidden and nothing else per entry'
+claim '3h schema, first "changelog-sections" key to end of file: the key twice, one required [type, section], one "hidden", no "scope"'
 assert '3h-has-changelog-sections' '2' "$(countf '"changelog-sections"' "$RPS")"
 CS_BLOCK=$(/usr/bin/sed -n '/"changelog-sections"/,/^      "changelog-path"/p' "$RPS")
 assert '3h-requires-type-and-section' '1' "$(printf '%s' "$CS_BLOCK" | countf '"required": ["type", "section"]' /dev/stdin)"
@@ -375,10 +376,12 @@ if ! command -v node >/dev/null 2>&1; then
   skip '7a-install' 'node is not on PATH'
   skip '7b-upstream-bytes' 'node is not on PATH'
   skip '7c-rendered-bytes' 'node is not on PATH'
+  skip '7d-loader-bytes' 'node is not on PATH'
 elif ! command -v npm >/dev/null 2>&1; then
   skip '7a-install' 'npm is not on PATH'
   skip '7b-upstream-bytes' 'npm is not on PATH'
   skip '7c-rendered-bytes' 'npm is not on PATH'
+  skip '7d-loader-bytes' 'npm is not on PATH'
 else
   SCRATCH=$(/usr/bin/mktemp -d "${TMPDIR:-/tmp}/r24.XXXXXX")
   printf 'scratch (deleted on exit): %s\n' "$SCRATCH" >> "$EVID/toolchain.txt"
@@ -430,10 +433,24 @@ else
     else
       skip '7c-rendered-bytes' 'the probe exited non-zero; see the scratch render log'
     fi
+
+    claim '7d re-running the config-loader probe reproduces its two saved outputs byte-for-byte'
+    if node "$EVID/probe/loader.cjs" "$SCRATCH" "$SCRATCH/out-loader" >"$SCRATCH/loader.log" 2>&1; then
+      for f in loader.txt G-scope-routed-hidden-only.md; do
+        if /usr/bin/diff -q "$SCRATCH/out-loader/$f" "$SNAP/rendered/$f" >/dev/null 2>&1; then
+          assert "7d-$f" 'identical' 'identical'
+        else
+          assert "7d-$f" 'identical' 'DIFFERENT'
+        fi
+      done
+    else
+      skip '7d-loader-bytes' 'the loader probe exited non-zero; see the scratch loader log'
+    fi
   else
     skip '7a-resolved-versions' 'npm install failed (no network, or the registry refused)'
     skip '7b-upstream-bytes' 'npm install failed (no network, or the registry refused)'
     skip '7c-rendered-bytes' 'npm install failed (no network, or the registry refused)'
+    skip '7d-loader-bytes' 'npm install failed (no network, or the registry refused)'
   fi
 fi
 
@@ -453,6 +470,52 @@ assert '8a-published' '1' "$(countf '"published_at":"2026-08-24T21:20:30Z"' "$GH
 claim '8b release-please-action v5.0.0 - the pin F063 names - resolves release-please ^17.6.0, which 17.11.2 satisfies'
 assert '8b-action-version' '1' "$(countf '"version": "5.0.0"' "$GHA")"
 assert '8b-dependency-range' '1' "$(countf '"release-please-dep": "^17.6.0"' "$GHA")"
+
+# ---------------------------------------------------------------------------
+section '9 - revision 2: the scope axis - a scope-routed Dependencies entry'
+# ---------------------------------------------------------------------------
+
+LDR="$SNAP/rendered/loader.txt"
+G="$SNAP/rendered/G-scope-routed-hidden-only.md"
+R19_DECISION="$REPO/research/topics/19-dependabot-config-shape/DECISION.md"
+
+claim '9a the preset type lookup also matches on scope when an entry declares one'
+assert '9a-find-type-entry-scope-match' '1' "$(countf 'if (entry.scope && entry.scope !== commit.scope) {' "$PRE")"
+
+claim '9b schema, the changelog-sections property block only: required [type, section], no "scope" key, no "additionalProperties"'
+CS_ENTRY=$(/usr/bin/sed -n '/^        "changelog-sections": {$/,/^        },$/p' "$RPS")
+assert '9b-entry-block-lines' '22' "$(printf '%s\n' "$CS_ENTRY" | /usr/bin/wc -l | /usr/bin/tr -d ' ')"
+assert '9b-entry-requires-type-and-section' '1' "$(printf '%s' "$CS_ENTRY" | countf '"required": ["type", "section"]' /dev/stdin)"
+assert '9b-entry-no-scope-key' '0' "$(printf '%s' "$CS_ENTRY" | countf '"scope"' /dev/stdin)"
+assert '9b-entry-no-additional-properties' '0' "$(printf '%s' "$CS_ENTRY" | countf '"additionalProperties"' /dev/stdin)"
+
+claim '9c config-loader path (Manifest.fromManifest -> strategy): the scope key survives to the strategy'
+assert '9c-recommended-strategy-entries' '1' "$(countf 'recommended strategy entries: 11' "$LDR")"
+assert '9c-scope-routed-loaded' '1' "$(countf 'scope-routed loaded scoped entry: {"type":"chore","scope":"deps","section":"Dependencies"}' "$LDR")"
+assert '9c-scope-routed-strategy-entries' '1' "$(countf 'scope-routed strategy entries: 12' "$LDR")"
+assert '9c-scope-routed-strategy' '1' "$(countf 'scope-routed strategy scoped entry: {"type":"chore","scope":"deps","section":"Dependencies"}' "$LDR")"
+
+claim '9d the mechanism-5 push through that strategy: hidden under the recommendation, a Dependencies section and a non-empty body under scope routing'
+assert '9d-recommended-empty-true' '1' "$(countf 'recommended hidden-only changelogEmpty: true' "$LDR")"
+assert '9d-scope-routed-lines' '1' "$(countf 'scope-routed hidden-only lines: 6' "$LDR")"
+assert '9d-scope-routed-empty-false' '1' "$(countf 'scope-routed hidden-only changelogEmpty: false' "$LDR")"
+assert '9d-dependencies-heading' '1' "$(count '^### Dependencies$' "$G")"
+assert '9d-bump-rendered' '1' "$(countf '* **deps:** bump serde from 1.0.230 to 1.0.231' "$G")"
+assert '9d-test-and-ci-still-hidden' '0' "$(count 'integration test\|macos-latest' "$G")"
+
+claim '9e py at b08bccfb carries no scope-routed entry'
+assert '9e-py-pin-no-scope' '0' "$(countf '"scope"' "$PYC")"
+
+claim '9f R19 fixes prefix chore with include scope on both entries, and records Cargo scope as deps only'
+if [ -f "$R19_DECISION" ]; then
+  assert '9f-r19-prefix-chore' '2' "$(countf '      prefix: "chore"' "$R19_DECISION")"
+  assert '9f-r19-include-scope' '2' "$(countf '      include: "scope"' "$R19_DECISION")"
+  # shellcheck disable=SC2016
+  #   The backticks are literal text in R19's decision, not an expansion.
+  assert '9f-r19-cargo-deps-only' '1' "$(countf 'can only ever append `deps` for a Cargo entry' "$R19_DECISION")"
+else
+  skip '9f-r19' "R19 decision absent at $R19_DECISION"
+fi
 
 # ---------------------------------------------------------------------------
 section 'summary'

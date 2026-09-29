@@ -1,71 +1,16 @@
-16d15
-<    Compiling futures-core v0.3.34
-17a17
->    Compiling futures-core v0.3.34
-18a19
->    Compiling httparse v1.10.1
-21,23d21
-<    Compiling httparse v1.10.1
-<    Compiling tower-service v0.3.3
-<    Compiling zmij v1.0.23
-25c23,24
-<    Compiling futures-channel v0.3.34
+17c17
+<     Finished `test` profile [unoptimized + debuginfo] target(s) in 1.46s
 ---
->    Compiling zmij v1.0.23
->    Compiling tower-service v0.3.3
-27,28c26,27
-<    Compiling slab v0.4.12
-<    Compiling httpdate v1.0.3
+>     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.67s
+36c36
+<     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.68s
 ---
->    Compiling futures-channel v0.3.34
->    Compiling futures-task v0.3.34
-30d28
-<    Compiling atomic-waker v1.1.2
-32c30
-<    Compiling futures-task v0.3.34
+>     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.73s
+53c53
+<     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.54s
 ---
->    Compiling percent-encoding v2.3.2
-33a32,34
->    Compiling slab v0.4.12
->    Compiling httpdate v1.0.3
->    Compiling atomic-waker v1.1.2
-35,38d35
-<    Compiling percent-encoding v2.3.2
-<    Compiling futures-util v0.3.34
-<    Compiling memchr v2.8.3
-<    Compiling mime v0.3.17
-39a37
->    Compiling futures-util v0.3.34
-40a39,40
->    Compiling mime v0.3.17
->    Compiling memchr v2.8.3
-43d42
-<    Compiling tracing v0.1.44
-45,47c44,45
-<    Compiling errno v0.3.14
-<    Compiling socket2 v0.6.5
-<    Compiling mio v1.2.3
+>     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.50s
+74c74
+< test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
 ---
->    Compiling tracing v0.1.44
->    Compiling syn v3.0.6
-49d46
-<    Compiling signal-hook-registry v1.4.8
-51d47
-<    Compiling syn v3.0.6
-52a49,52
->    Compiling errno v0.3.14
->    Compiling mio v1.2.3
->    Compiling socket2 v0.6.5
->    Compiling signal-hook-registry v1.4.8
-64c64
-<     Finished `test` profile [unoptimized + debuginfo] target(s) in 18.95s
----
->     Finished `test` profile [unoptimized + debuginfo] target(s) in 15.73s
-83c83
-<     Finished `test` profile [unoptimized + debuginfo] target(s) in 1.19s
----
->     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.82s
-100c100
-<     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.77s
----
->     Finished `test` profile [unoptimized + debuginfo] target(s) in 0.62s
+> test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

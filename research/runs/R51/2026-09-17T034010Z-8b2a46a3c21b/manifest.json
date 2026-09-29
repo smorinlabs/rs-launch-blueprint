@@ -141,6 +141,15 @@
       },
       "provider": "muse",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-09-28T02:24:34Z",
+      "publication": {
+        "acceptance_sha256": "460bdb0685975d1c0eedb4e5ab0f8efe908d0c8eefa52aaf3f0a6d5f89b0f901",
+        "decision_sha256": "6cc29e7badb1dbd8ad2c6434764706402f50843b2d577ba01b50e022e3c5bb47",
+        "transaction": "c1c845a3c5e94bb78c8fe537af339f33"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -190,6 +199,11 @@
     }
   },
   "prompt_source": "research/topics/51-container-image/prompts/container-image.prompt.md",
+  "publication": {
+    "acceptance_sha256": "460bdb0685975d1c0eedb4e5ab0f8efe908d0c8eefa52aaf3f0a6d5f89b0f901",
+    "decision_sha256": "6cc29e7badb1dbd8ad2c6434764706402f50843b2d577ba01b50e022e3c5bb47",
+    "transaction": "c1c845a3c5e94bb78c8fe537af339f33"
+  },
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
     "muse",
@@ -197,7 +211,7 @@
   ],
   "run_id": "2026-09-17T034010Z-8b2a46a3c21b",
   "schema_version": 1,
-  "state": "collected",
+  "state": "published",
   "tier": "focused",
-  "updated_at": "2026-09-22T01:34:43Z"
+  "updated_at": "2026-09-28T02:24:34Z"
 }

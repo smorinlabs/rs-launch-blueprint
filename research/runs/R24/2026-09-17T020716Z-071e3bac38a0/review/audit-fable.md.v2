@@ -1,0 +1,102 @@
+actor: fable
+model: claude-opus-5-5
+family: anthropic
+decision-sha256: bc5dcafa1ac0a864ce458bdc45dee92f02385cb28ebde7e8af364a5b04683a52
+verdict: reject
+unresolved-findings:
+1. JF-2/JF-3 — the decision's engine account no longer matches the item's current required engine, and the required engine's report is not adjudicated.
+2. JF-10/JF-2 — the `deps` MEDIUM question (and the schema MEDIUM question) was closed on an incomplete alternative set; a reachable scope-routed `Dependencies` section exists in the code the decision snapshotted.
+3. JF-4 (minor, not load-bearing) — run C line numbers cited off by two.
+
+# R24 changelog-section-mapping — judgment audit (fable), decision revision 1
+
+Target: `research/runs/R24/2026-09-17T020716Z-071e3bac38a0/review/DECISION.md`.
+`shasum -a 256` recomputed before any other read:
+`bc5dcafa1ac0a864ce458bdc45dee92f02385cb28ebde7e8af364a5b04683a52`, equal to the
+expected value. Audit date 2026-09-26. Read: the decision; `inputs/prompt.md`
+(working tree); `inputs/prerequisites.json`; `manifest.json`; `operations/*.json`;
+`research/RUNBOOK.md` §2 and §5; `raw/opus.md` (pinned, sha256
+`70f25e53…be1a75`, equal to `raw/opus-70f25e53….md` and to `operations/opus.json`
+`raw_sha256`); `raw/muse.md` (present, not pinned — see finding 1); evidence
+script, both logs, snapshots and rendered outputs; prerequisite and neighbour
+decisions under `research/topics/{19,25,38,49,69}-*/DECISION.md`. No audit file of
+any seat or revision and no snapshot review file was read. No git write and no
+runner command was made.
+
+## Check results
+
+| Check | Result | Evidence |
+|---|---|---|
+| JF-1 internal consistency | pass | Array (lines 41–53), ledger row (line 60), run D table (line 461) and check 1c agree: 5 visible in order `feat, fix, perf, revert, docs`, 6 hidden. Runner-up "differs by exactly one boolean" (line 318) is consistent with run A vs run D heading sets. Per-section assertion table sums to 125, matching the stated total. |
+| JF-2 questions and constraints | **fail** | All six prompt questions receive an answer, and gate 1 is correctly recorded `inapplicable` under the 2026-09-12 owner ruling. Two failures: the current prompt's `- engines: muse` constraint is not reflected (finding 1); the MEDIUM `deps` and MEDIUM schema questions are answered without the scope-routing option (finding 2). |
+| JF-3 `## Engines` fidelity | **fail** | Opus's position is represented faithfully (total ordered map; the three corrections — gate 1, off-by-one line citations, empty-bullet artifact — are accurate; I confirmed `raw/opus.md` hash). But `## Engines` names Codex as the absent required leg; the item's required engine is now Muse, and a Muse report that disagrees on three memberships exists and is not adjudicated (finding 1). |
+| JF-4 load-bearing claims trace | pass with minor finding | Spot-checked: `findTypeEntry`/`discard`/`indexOf` in `snap/preset-6.1.0/writer-opts.js.snapshot:60-102,165-166`; schema entry shape `snap/rp-17.11.2/schemas-config.json.snapshot:31-52`; run C/D heading sets in `snap/rendered/C-ts.md`, `D-recommended.md` match the decision's table; 4g/5b/6a log lines present. One off-by-two line citation (finding 3). |
+| JF-5 couplings | pass | R25 cadence effect recorded, not decided (lines 359–364); CONTRIBUTING guidance labelled "proposed, not required" (lines 306–311); R38 enum consumed unchanged; F063/F066/F073 left untouched. |
+| JF-6 assumes lines vs live registry | pass | Each of the five `- assumes` values found verbatim (fixed-string match of the full value) in `docs/port/PARAMETERS.md`; `commit-message-convention` row at `PARAMETERS.md:13`. |
+| JF-7 prereq/published values | pass | `inputs/prerequisites.json` R38 hashes equal `shasum` of `research/topics/38-commit-message-linter/DECISION.md` (`c2e9b6e1…`) and `acceptance.json` (`d141a0a6…`). R19 `prefix: "chore"` + `include: "scope"` at `topics/19-*/DECISION.md:34-35`; R25 three keys at `topics/25-*/DECISION.md:126`; R69 off-by-default `web` feature at `PARAMETERS.md:17`; R49 `[package] include` list with `/CHANGELOG.md` at `topics/49-*/DECISION.md:695`. |
+| JF-8 evidence scripts and counts | pass | `r24-checks.sh`, `probe/render.cjs` exist. `r24-checks.log` summary `PASS 125 FAIL 0 SKIP 0 TOTAL 125`; `r24-checks-skip-control.log` summary `PASS 109 FAIL 0 SKIP 3 TOTAL 112` — both as the decision states. |
+| JF-9 decision shape | pass | H2s `## Decision` (with `### Principles and implementation`, settled F067 row, `re-verify:` line 366), `## Parameters`, `## Empirical check`, `## Engines`; no reversal, so no `## Supersedes`. |
+| JF-10 recommendation follows | **fail** | The membership argument (docs visible for artifact membership and mechanism 5; refactor hidden by definition) follows from its evidence. The `deps` conclusion does not: it rests on "under every candidate array those commits are hidden", which holds only because a reachable alternative was not considered (finding 2). |
+
+## Findings
+
+### Finding 1 — engine account stale against the current required engine (JF-2, JF-3; blocking)
+
+**Failed claim** (`## Engines`, lines 583–589): "Codex (gpt-5.6-luna) — **absent.** … The controller deferred the leg under owner ruling **W1-CODEX3** of 2026-09-18, which says proceed without Codex. The Terra evidence check the prompt's `evidence-checks: terra` names is likewise unavailable". And line 591: "this decision is synthesized from a single engine".
+
+**Evidence.**
+- `inputs/prompt.md` line 22 now reads `- engines: muse`, and line 68 adds "This item substitutes Muse (Meta) for Codex under the `engine_overrides` pilot; its mirrored `- engines:` line is authoritative." The committed version at the decision's commit read `- engines: codex`; the decision was faithful to the prompt as it stood on 2026-09-18.
+- `manifest.json`: `required_engines: ["muse"]`; migration event at `2026-09-21T23:06:19Z`, `from: codex`, `to: muse`, reason "muse bulk substitution (owner decision Q5.A 2026-09-21)"; `operations/muse.json` state `submitting`, no `raw_sha256`.
+- `research/RUNBOOK.md` §2 lists R24 in the Muse bulk substitution set; §5 makes "current consumed values and prerequisite decisions" and complete evidence a condition of acceptance.
+- `raw/muse.md` exists on disk (untracked, sha256 `9b8bd88503fc00b0b22d0cc9a22353669af4e636080bba6f0b2c43d9f0e6a9ad`, not registered in the manifest). I did **not** treat it as a pinned report. I read it only to establish whether the missing leg would be a no-op. It is not: its `### Recommendation` differs from the decision on three memberships — `refactor` visible (decision: hidden), `docs` hidden (decision: visible; Muse ranks docs-visible as its runner-up), and a scope-routed visible `Dependencies` section (decision: none).
+
+**Why it fails.** The decision states what it was synthesized from and which required leg is missing. Under the item's current inputs both statements are false: the required leg is Muse, not Codex, and a Muse answer that disagrees on the decision's central membership choices now exists. `## Engines` must list all reports and adjudicate each disagreement with evidence (RUNBOOK §5); the decision cannot do that for a leg it does not name.
+
+**Repair.** Collect and register the Muse leg (hash in `manifest.json`/`operations/muse.json`). Issue revision 2 whose `## Engines` names Muse as the required engine, represents its position, and adjudicates the three disagreements (refactor, docs, Dependencies routing) with evidence. When adjudicating Muse's four scope routes, note that `deps-dev` is unreachable under R19 for this template — R19's decision states `include: scope` "can only ever append `deps` for a Cargo entry" (`topics/19-*/DECISION.md:134`) — and that the `build(deps)` routes are unreachable while R19 fixes `prefix: "chore"`. A revision must filter Muse's array against R19, not adopt it wholesale.
+
+### Finding 2 — `deps` and schema questions closed without the reachable scope-routing option (JF-10, JF-2; blocking)
+
+**Failed claims.**
+- Lines 256–262: "Under **every** candidate array those commits are hidden, and py's `{"type": "deps", "section": "Dependencies"}` entry never matches one … The `deps` entry is unreachable configuration."
+- Line 476, check 3h, together with its log header at `r24-checks.log:91`: "--- 3h the published schema supports type/section/hidden and nothing else per entry ---".
+
+**Evidence.**
+- The preset the decision snapshotted matches on scope as well as type: `snap/preset-6.1.0/writer-opts.js.snapshot:60-72`, `findTypeEntry`, line 66: `if (entry.scope && entry.scope !== commit.scope) { return false }`.
+- The schema the decision snapshotted declares entry `properties` `type`, `section`, `hidden` and `required: ["type","section"]`, with **no** `additionalProperties: false` (`snap/rp-17.11.2/schemas-config.json.snapshot:31-52`). A `scope` key therefore validates. It is simply undocumented.
+- My scratch run showed the preset honouring `scope`. The run used a fresh `npm install release-please@17.11.2` in `mktemp -d /tmp/r24audit.XXXXXX`, which resolved `release-please 17.11.2` and preset `6.1.0`. It called release-please's own `parseConventionalCommits` and `DefaultChangelogNotes.buildNotes` with `changelogSections` = `[{feat,Features},{fix,Bug Fixes},{type:"chore",scope:"deps",section:"Dependencies"},{chore,Miscellaneous Chores,hidden}]`. Its input was the messages `fix: correct exit code`, `chore(deps): bump serde from 1.0.230 to 1.0.231` and `chore: tidy the justfile`. Output (verbatim, dates as rendered):
+  ```
+  ### Bug Fixes
+
+  * correct exit code ([1111111](…))
+
+
+  ### Dependencies
+
+  * **deps:** bump serde from 1.0.230 to 1.0.231 ([2222222](…))
+  ```
+  The scratch directory was deleted afterwards.
+- **Strength of this evidence.** It proves that the rendering path honours `scope`. It does not prove that release-please's config-file loader (`manifest` → strategy → `changelogSections`) passes a `scope` key through unchanged. That was not tested here. The decision's own mechanism 1 (`config.types = options.changelogSections`, check 3a) suggests pass-through, but the repair must confirm it.
+
+**Why it fails.** The prompt asks (MEDIUM) whether `deps` should be its own visible section, and (MEDIUM) whether the schema supports configuration "beyond a flat visible/hidden split". The decision answers the first by showing that py's `type: deps` entry is dead. It then generalises to "under every candidate array those commits are hidden". That generalisation holds for runs A–D only. A scope-routed entry is a real option that makes `chore(deps): …` commits visible. It also changes mechanism 5's releasability conclusion: bumps would then open release PRs. The decision never evaluates this option. Check 3h's "nothing else per entry" framing also overstates what the schema constrains and what the runtime does. The recommendation to hide dependency bumps may still be right, but it is not argued against the alternative that exists.
+
+**Repair.** In revision 2:
+- Answer the schema MEDIUM question on the scope axis. State that `scope` is undocumented in the schema but not rejected by it, and that the preset honours it.
+- Confirm through the config-loader path, for example with a `release-please release-pr --dry-run` or a `Manifest`-level probe, whether the key survives.
+- Re-argue `deps` visibility against a `{"type":"chore","scope":"deps","section":"Dependencies"}` entry, covering both the audience cost and the release-cadence effect under mechanism 5. Adopt it or reject it with reasons.
+- Reword the 3h log header so that it asserts only what the grep checks.
+
+### Finding 3 — run C line numbers off by two (JF-4; minor, not load-bearing)
+
+**Failed claim** (lines 144–146): "a `style!:` commit renders as `### style` at line 11 of the entry, above `### Features` at line 16".
+
+**Evidence.** In `snap/rendered/C-ts.md`, `### style` is at line 9 and `### Features` at line 14. Lines 11 and 16 are the bullet lines beneath those headings. The script's `lineno` calls at `r24-checks.sh:256-257` read the same file, and check 4a asserts only the order ("above"), which holds.
+
+**Repair.** Correct the citation to lines 9 and 14. The ordering claim and check 4a stand.
+
+## What is sound and should carry into revision 2
+
+- Mechanisms 1–5, and the total-ordered-map shape (C) over inherit (A) and partial override (B), are well evidenced.
+- The execution of mechanism 5 at the predicate level, and its honest read/executed split, are sound.
+- The corrections to `raw/opus.md` are accurate.
+- The parameter lines, the prerequisite hashes, the coupling discipline and the reproducibility claims all hold.
+- The docs-in/refactor-out argument is coherent on its own evidence. Once finding 1 is repaired, it needs adjudication against Muse's opposite call, not replacement.

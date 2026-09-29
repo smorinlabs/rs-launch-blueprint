@@ -16,6 +16,13 @@
 #            revision contract imposes — that every revision-1 script, log and
 #            probe source is still BYTE-IDENTICAL.
 #
+# Revision 4 re-baselined this script against the current decision (audits
+# EA-1, EA-3 and EA-4 of revision 3): C1 pins the revision-4 bytes of the
+# revision-1 artifacts it guards, C2 and C4 pin the current H1 and override
+# name, C9 expects the re-baselined offline script to pass outright, the r2
+# probe workspace builds --locked from a committed lockfile, and no assertion
+# pipes a variable into an early-exiting `grep -q`.
+#
 # Usage: bash check-standard-r2.sh [repo-root]
 # Exit status: 0 when no check FAILs, 1 otherwise.
 
@@ -68,7 +75,7 @@ rule() {
     return 0
   fi
   got="$(sed -n "${line}p" "$STD")"
-  if printf '%s' "$got" | $GREP -qF -- "$needle"; then
+  if $GREP -qF -- "$needle" <<<"$got"; then
     printf '  %s @ line %s: %s\n' "$id" "$line" "$got"
     pass "$id" "$why"
   else
@@ -162,18 +169,22 @@ else
   cp "$HERE/probe/manifests-b/facade.toml" "$WORK/Cargo.toml"
   cp "$HERE/probe/manifests-b/core.toml" "$WORK/crates/core/Cargo.toml"
   cp "$HERE/probe/manifests-b/web.toml" "$WORK/crates/web/Cargo.toml"
+  cp "$HERE/probe/manifests-b/Cargo.lock" "$WORK/Cargo.lock"
   # The facade's dev-dependency test needs a file; supply the r1 one unchanged so
   # the manifest resolves, but never run it here.
   mkdir -p "$WORK/tests"
   cp "$HERE/probe/facade-tests/version_hazard.rs" "$WORK/tests/version_hazard.rs"
 
-  CARGO_FLAGS="--offline"
-  if ! (cd "$WORK" && cargo metadata $CARGO_FLAGS --format-version 1 >/dev/null 2>&1); then
-    echo "NOTE: --offline metadata failed; retrying without it"
-    CARGO_FLAGS=""
+  # --offline needs a warm local registry cache; from a cold cache the online
+  # fallback is expected, and --locked holds the committed resolution either way.
+  CARGO_FLAGS=(--locked --offline)
+  if ! (cd "$WORK" && cargo metadata "${CARGO_FLAGS[@]}" --format-version 1 >/dev/null 2>&1); then
+    echo "NOTE: --offline metadata failed; retrying online, still --locked"
+    CARGO_FLAGS=(--locked)
   fi
+  echo "cargo network flags: '${CARGO_FLAGS[*]}'"
   set +e
-  (cd "$WORK" && cargo test $CARGO_FLAGS -p probe-web --test conformance -- --nocapture --test-threads=1) \
+  (cd "$WORK" && cargo test "${CARGO_FLAGS[@]}" -p probe-web --test conformance -- --nocapture --test-threads=1) \
     >"$WORK/p.log" 2>&1
   P_STATUS=$?
   set -e
@@ -229,12 +240,16 @@ fi
 
 echo "--- C: this decision's own revision-2 claims ---"
 
-# C1 — every revision-1 script, log and probe source byte-identical.
+# C1 — every revision-1 script, log and probe source byte-identical to the
+# bytes revision 4 re-recorded (revision 4 rewrote two scripts and their logs
+# under audit repair orders EA-1/EA-3/EA-4; the rest are unchanged), except
+# check-offline.sh and its log, which revision 7 moved to R69 revision 11
+# (O3, O5) and which are pinned at their revision-7 bytes.
 declare -a R1_ARTIFACTS=(
-  "895f21ed93212e065b33dce21a91ffe8bf06d2d08a23f627cb18b56936eaa612 check-offline.sh"
-  "64fc4499d80e738477a1f8522c9dc0e4dbf504a647a87d4820c6aeaf3fd7b224 check-offline.log"
-  "9af1a7554e7f91189289a79ac8e6bbb02ec66fc6e256cd1bb42818cdec4c3b8b check-probe.sh"
-  "b7e074048b45e712ae13ada9f23f94f4222805ef7e00c3315ab7d727efa89c46 check-probe.log"
+  "fccff1b713954954766e3dc01a7be6ebe72fac99df7b4094116ab553db1ca82d check-offline.sh"
+  "020fdbd7c299a18e790c4cdcf2ce629083afaf592e38f761eaa26bb9526cb759 check-offline.log"
+  "6a8ffed8dfc3f9be69ecbdbc4805572641cd88111c556f8691b272bbaea75f51 check-probe.sh"
+  "c2fb16f6322303049f25f91800d3592d75004236fcf9227429941a76bedb342d check-probe.log"
   "fb08bb557f110fd48c55bd591fdcfbe367442ce52c4a1dfd3351449297129f8f check-live.sh"
   "2a2183f8c15f651b70bdc0036c3385561be254b711dfb0200c25ca543541b749 check-live.log"
   "74e9db37ec4aad2348402b646fd6363f5c304095e8d29e4e3e6b454167f8eafc shellcheck.log"
@@ -259,17 +274,18 @@ for entry in "${R1_ARTIFACTS[@]}"; do
   fi
 done
 if [ "$C1_BAD" -eq 0 ]; then
-  pass C1 "all twelve revision-1 scripts, logs and probe sources are byte-identical to the bytes revision 1 was accepted-pending on — this revision adds files, it does not rewrite evidence"
+  pass C1 "all twelve revision-1-era scripts, logs and probe sources are byte-identical to the bytes revision 4 cites, check-offline.sh and its log at the bytes revision 7 cites"
 else
-  fail C1 "$C1_BAD revision-1 artifact(s) changed; a pre-audit revision must leave revision 1's evidence untouched"
+  fail C1 "$C1_BAD revision-1-era artifact(s) changed since revision 4 recorded them"
 fi
 
 # C2..C8 — the decision text.
 if [ -f "$DECISION" ]; then
-  if head -1 "$DECISION" | $GREP -qF '# 2026-09-18 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 2)'; then
-    pass C2 "the H1 is the date-first revision-2 title the revision rules prescribe"
+  IFS= read -r H1 <"$DECISION" || true
+  if [ "$H1" = '# 2026-09-27 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 7)' ]; then
+    pass C2 "the H1 is the date-first title of the current revision, 7"
   else
-    fail C2 "the H1 is not the prescribed revision-2 title"
+    fail C2 "the H1 is not the prescribed revision-7 title"
   fi
 
   if $GREP -qF 'W2-REST' "$DECISION" && $GREP -qF '71bd813c1cf61286586b4ee41ed83ff065e5c8d9' "$DECISION"; then
@@ -278,14 +294,14 @@ if [ -f "$DECISION" ]; then
     fail C3 "the decision does not name W2-REST and the pinned blob"
   fi
 
-  OV="$($GREP -c 'OVERRIDE (OV-04)' "$DECISION" || true)"
+  OV="$($GREP -c 'OVERRIDE (OV-05)' "$DECISION" || true)"
   ARG="$($GREP -c '^\*\*Argument:\*\*' "$DECISION" || true)"
   OPT="$($GREP -c '^\*\*Options:\*\*' "$DECISION" || true)"
-  echo "  OVERRIDE (OV-04) mentions: $OV; Argument blocks: $ARG; Options blocks: $OPT"
+  echo "  OVERRIDE (OV-05) mentions: $OV; Argument blocks: $ARG; Options blocks: $OPT"
   if [ "$OV" -ge 1 ] && [ "$ARG" -eq 1 ] && [ "$OPT" -eq 1 ]; then
-    pass C4 "the decision records exactly one OVERRIDE (OV-04) with one **Argument:** and one **Options:** block, the shape AGENTS.md and the standard's section 1.9 require"
+    pass C4 "the decision records exactly one OVERRIDE (OV-05) with one **Argument:** and one **Options:** block, the shape AGENTS.md and the standard's section 1.9 require"
   else
-    fail C4 "the override block is missing or malformed (OV-04 $OV, Argument $ARG, Options $OPT)"
+    fail C4 "the override block is missing or malformed (OV-05 $OV, Argument $ARG, Options $OPT)"
   fi
 
   if $GREP -qF 'Standard: rest-api-standard v2.0.0' "$DECISION" &&
@@ -330,10 +346,10 @@ PYEOF
   set -e
   echo "$C7_OUT"
   if [ "$C7_STATUS" -eq 0 ] &&
-     printf '%s' "$C7_OUT" | $GREP -qF 'h2_unfenced=5' &&
-     printf '%s' "$C7_OUT" | $GREP -qF 'supersedes=1' &&
-     printf '%s' "$C7_OUT" | $GREP -qF 'reverify=1' &&
-     printf '%s' "$C7_OUT" | $GREP -qF 'current_h2=Decision|Parameters|Empirical check|Engines'; then
+     $GREP -qF 'h2_unfenced=5' <<<"$C7_OUT" &&
+     $GREP -qF 'supersedes=1' <<<"$C7_OUT" &&
+     $GREP -qF 'reverify=1' <<<"$C7_OUT" &&
+     $GREP -qF 'current_h2=Decision|Parameters|Empirical check|Engines' <<<"$C7_OUT"; then
     pass C7 "revision 2's shape is right, counted outside code fences as the publication validator counts: five H2 sections, one '## Supersedes', one 're-verify:' line, and the current entry's four H2s in the required order"
   else
     fail C7 "revision 2's shape is wrong (see the counts above)"
@@ -350,27 +366,22 @@ else
   for id in C2 C3 C4 C5 C6 C7 C8; do skip "$id" "DECISION.md is absent"; done
 fi
 
-# C9 — revision 1's own shape check, O25, was written for a FIRST revision:
-# "no '## Supersedes', exactly four H2 sections". Revision 2 legitimately has
-# both a Supersedes section and a fifth H2, so O25 must now fail. The revision-1
-# script is not edited (C1 forbids it) and its log is not overwritten; instead
-# this check asserts that re-running it today produces EXACTLY ONE failure and
-# that it is O25 — so a second, real regression cannot hide behind the expected
-# one. C7 above is the assertion that replaces O25 for revision 2.
+# C9 — the offline script re-run into a separate file must pass outright.
+# Through revision 3 this check expected exactly one FAIL (O25, a first-revision
+# shape rule); revision 4 re-baselined O25 to the current shape, so the re-run
+# must now yield all 28 PASS and 0 FAIL, and any FAIL is a real regression.
 if [ -x "$HERE/check-offline.sh" ] || [ -f "$HERE/check-offline.sh" ]; then
   set +e
   bash "$HERE/check-offline.sh" "$ROOT" >"$HERE/check-offline.r2-rerun.log" 2>&1
   set -e
   C9_FAILS="$($GREP -c '^FAIL ' "$HERE/check-offline.r2-rerun.log" || true)"
   C9_PASSES="$($GREP -c '^PASS ' "$HERE/check-offline.r2-rerun.log" || true)"
-  echo "  revision-1 offline script re-run under revision 2: $C9_PASSES PASS, $C9_FAILS FAIL"
+  echo "  offline script re-run into a separate file: $C9_PASSES PASS, $C9_FAILS FAIL"
   $GREP '^FAIL ' "$HERE/check-offline.r2-rerun.log" | sed 's/^/    /' || true
-  if [ "$C9_FAILS" -eq 1 ] && [ "$C9_PASSES" -eq 27 ] &&
-     $GREP -q '^FAIL O25 — DECISION.md shape is wrong: re-verify lines 1, Supersedes 1, H2 sections 6' \
-       "$HERE/check-offline.r2-rerun.log"; then
-    pass C9 "re-running revision 1's unedited offline script against revision 2 yields 27 of its 28 checks PASS and exactly one FAIL — O25, whose first-revision shape rule (no Supersedes, four H2s) revision 2 is entitled to break and check C7 replaces. Every other revision-1 assertion, the seven byte-identical assumes lines included, still holds"
+  if [ "$C9_FAILS" -eq 0 ] && [ "$C9_PASSES" -eq 28 ]; then
+    pass C9 "re-running the offline script into check-offline.r2-rerun.log yields all 28 checks PASS and 0 FAIL — the seven byte-identical assumes lines and the identity-bound O17 included"
   else
-    fail C9 "re-running the revision-1 offline script did not yield exactly 27 PASS and the single expected O25 failure ($C9_PASSES PASS, $C9_FAILS FAIL)"
+    fail C9 "re-running the offline script did not yield exactly 28 PASS and 0 FAIL ($C9_PASSES PASS, $C9_FAILS FAIL)"
   fi
 else
   skip C9 "revision 1's check-offline.sh is absent"

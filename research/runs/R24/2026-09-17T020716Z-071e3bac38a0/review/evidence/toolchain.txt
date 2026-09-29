@@ -1,13 +1,13 @@
 Host toolchain and paths for r24-checks.sh (kept off stdout so the log reproduces)
-date (UTC): 2026-09-18T22:41:25Z
+date (UTC): 2026-09-28T20:01:21Z
 uname: Darwin 25.4.0 arm64
 grep: /usr/bin/grep (grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
-node: v26.5.0
+node: v26.9.0
 npm: 12.0.1
-rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
-cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+cargo: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
 shellcheck: version: 0.11.0
 evidence dir: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R24/2026-09-17T020716Z-071e3bac38a0/review/evidence
 repository root: /Users/stevemorin/c/rs-launch-blueprint-p02-plan
 TMPDIR: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/
-scratch (deleted on exit): /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r24.WVZAag
+scratch (deleted on exit): /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r24.H8SCGb

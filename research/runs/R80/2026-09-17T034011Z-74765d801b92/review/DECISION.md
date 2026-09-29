@@ -1,4 +1,184 @@
-# 2026-09-18 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 3)
+# 2026-09-27 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 7)
+
+**Revision note (revision 7) — a flag-day parameter swap; the recommendation does not move.**
+Owner decision Q3.A (flag day now) re-binds every consumer of R69's
+`web-extra-surface` at once. R69 revision 11
+(`research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md`, sha256
+`2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815`) is approved
+for re-accept under Q3.A. R69's owned value changed at revision 10 under owner
+ruling W1-R02: the web surface is the workspace member `crates/web`, whose
+`axum` and `tokio` are non-optional in `crates/web/Cargo.toml`, and the root
+package reaches it through `web = ["dep:rs-launch-blueprint-web"]`. Revision 11
+carries that value unchanged at its line 1885. Revision 6 of this decision still
+assumed revision 9's text. Revision 7 adopts W1-R02's shape through R69
+revision 11. Revision 6 is preserved byte-for-byte as
+`review/R80-r6-snapshot.md` (sha256 `4b63412a…`, check `V1`). This revision was
+written on 2026-09-27 by an Opus-seat context (`claude-opus-5-5`) that produced
+none of this item's raw reports, under the Q23 scope of RUNBOOK section 7: the
+swap and its dependent prose only.
+
+| What | Revision 6 | Revision 7 | Check |
+|---|---|---|---|
+| `- assumes web-extra-surface = ` | revision 9's value: `src/web/`, `web = ["dep:axum", "dep:tokio"]` with both crates optional, file-level `cfg` on the web tests | R69 revision 11's line-1885 value, byte-identical after the prefix: `crates/web/src/`, `web = ["dep:rs-launch-blueprint-web"]`, `axum` and `tokio` non-optional in `crates/web/Cargo.toml`, web tests in `crates/web/tests/` with no file-level `cfg` | `O3`, `O5` |
+| The `CONFLICT:` paragraph and the prose note beside that line | the line held the registry's revision-9 bytes; R69 revision 10 was unpublished; a publication lag | the line holds R69 revision 11's bytes under Q3.A, ahead of the registry row, which the flag-day publication rewrites | `O5` |
+| Citations of R69's owned line | line 1791 of revision 10 | line 1885 of revision 11 | `O5`, `V6` |
+
+**The revision-11 value breaks no claim.** This decision's design already used
+revision 10's paths — `crates/web/src/routes/ops.rs`, `crates/web/src/lib.rs`,
+`crates/web/tests/`, `crates/web/Cargo.toml` — and revision 11 moves none of
+them. Only the description of the line changes. The recommendation
+`probe-contract/v1`, every finding, verdict and figure the prose states, and
+the `re-verify:` line are unchanged.
+
+**Evidence touched, and why.** `O3` compared all seven `- assumes` values with
+the registry. The registry row still carries revision 9's text until the
+flag-day publication. `O3` therefore now compares six values with the registry
+and `web-extra-surface` with R69 revision 11's line 1885, bound by the sha256
+above, and prints the registry row's current form as information. `O5` now
+asserts that owned line at 1885, bound the same way, and no longer asserts the
+registry's revision-9 form. `V6` reads line 1885. The header bump re-baselines
+the three H1 checks, `C2`, `R1` and `V1`, and `V1` also pins the revision-6
+snapshot. The digest tables `C1`, `R6` and `V13` re-pin the edited scripts and
+the re-recorded logs. The four logs were re-recorded in the order
+`## Empirical check` states, and `shellcheck` on the four edited scripts is
+recorded in `shellcheck-r7.log`, which is empty. The four logs' reproduction
+was repeated, and its eight rerun diffs replace the prior files of those names. The check counts
+do not move: 14 in
+`check-standard-r4.sh` and 113 across the six scripts. `check-probe.sh` and
+`check-live.sh` assert nothing about the value and were neither edited nor
+re-run.
+
+**Two failures recorded, not repaired.** `check-standard-r4.log` now records
+**12 PASS, 2 FAIL, 0 SKIP**. `V3` and `V4` fail on drift outside this item's
+`review/` directory. The controller's Q23 pack re-freeze (2026-09-28T03:12:17Z)
+added a second migration event to `manifest.json` that carries no `from` key.
+`V3`'s reader raises `KeyError: 'from'` on it, and `V3` also expects exactly one
+migration event. `V4` reads the manifest's prompt hash from `V3`'s output, which
+the exception cut short. The frozen prompt is byte-identical to the live prompt
+(both `584f0994…`). Under RUNBOOK section 7.1 this is drift, so it is recorded
+here and not repaired by this revision.
+
+**Rerun logs rewritten.** `check-offline.r2-rerun.log`,
+`check-standard-r2.r3-rerun.log` and `check-standard-r3.r4-rerun.log` are
+rewritten by every run of their parent scripts, so revision 6's bytes of them
+are gone. No check pins them.
+
+**Revision note (revision 6) — an evidence repair; the recommendation does not move.**
+The empirical audit of revision 5 (sha256
+`6ee8ad17642a847856766e914b45eac8727525f64a9f6f7159f6e1e7be97a6d9`),
+`review/audit-codex.r5.md`, returned `reject` on two findings. The judgment
+audit of revision 5 approved. Revision 6 repairs both findings and changes no
+finding, verdict or recommendation. Revision 5 is preserved byte-for-byte as
+`review/R80-r5-snapshot.md` (check `V1`). This revision was resynthesized on
+2026-09-27 by a fresh Opus-seat context (`claude-opus-5-5`) that produced none
+of this item's raw reports. It read the empirical audit in full, revision 5,
+line 9 of `review/audit-claude.r4.md`, the run's evidence and RUNBOOK section 5.
+
+| Finding | What was wrong | Repair | Where, and the check that holds it |
+|---|---|---|---|
+| Codex finding 1, observed failure | `V3` indexed `empirical_auditor_overrides.R80` in `research/EXECUTION.json`. The live policy no longer lists R80 in that map, so `V3` raised `KeyError: 'R80'` and failed, and `check-standard-r4.sh` returned 13 PASS and 1 FAIL against a log that said 14 and 0. `## Engines` also named a `claude` empirical seat that the live policy no longer assigns | `V3` now reads the seat the way `scripts/research_validation.py` line 705 does, `seat_overrides.get(item, "codex")`, and expects `codex`. `## Engines` states that R80 has no seat override and so takes the default `codex` empirical seat. `check-standard-r4.sh` was re-run and its log re-recorded at **14 PASS, 0 FAIL, 0 SKIP** | `## Engines`; `check-standard-r4.sh`, `check-standard-r4.log`; `V3` |
+| Codex finding 2, evidence support | Revision 5's EF-1 row said revision 4's log recorded the grep error "six times" and bound that count only to "the audit". The revision-4 log was never committed and was re-recorded in place, so the count had no named record | The count now cites its one surviving record, `review/audit-claude.r4.md` line 9, which quotes the error at the revision-4 log's lines 32, 34, 36, 38, 40 and 42 | revision 5's note, EF-1 row; no check, because the record is an audit file |
+
+**The header bump again forces the three H1 checks and the two digest tables to
+move.** `C2`, `R1` and `V1` now pin the revision-6 title, and `V1` also pins
+`review/R80-r5-snapshot.md` by its sha256 and its H1. `R6` re-pins
+`check-standard-r2.sh` and `check-standard-r2.log`; `V13` re-pins those two
+plus `check-standard-r3.sh` and `check-standard-r3.log`. The three standard
+scripts' logs were re-recorded, and their reproduction repeated, in the order
+`## Empirical check` states. Every other script, pinned log, snapshot and
+probe source is unchanged, and no other check was edited.
+
+**What did not change:** the recommendation `probe-contract/v1` and everything
+revision 5's note lists as unchanged; every figure the prose states; and the
+check counts, 14 in `check-standard-r4.sh` and 113 across the six scripts.
+
+**Revision note (revision 5) — an evidence repair; the recommendation does not move.**
+The empirical audit of revision 4 (sha256
+`f0320a3a8b61064ab5072aeafcf7f24a9a51e68cc2f76fe4073af0c46d3295b8`),
+`review/audit-claude.r4.md`, returned `reject` on one finding, EF-1. The
+judgment audit of revision 4 approved. Revision 5 repairs EF-1 and changes no
+finding, verdict or recommendation. Revision 4 is preserved byte-for-byte as
+`review/R80-r4-snapshot.md` (check `V1`). This revision was resynthesized on
+2026-09-27 by a fresh Opus-seat context (`claude-opus-5-5`) that produced none
+of this item's raw reports. It read the empirical audit in full, revision 4, the
+run's evidence and RUNBOOK section 5.
+
+| Finding | What was wrong | Repair | Where, and the check that holds it |
+|---|---|---|---|
+| EF-1, evidence support | `V8`, which revision 4 cited as the static proof for EA-3, could not fail. Each of its two patterns began with an unescaped pipe character, which ERE reads as an empty alternative. `/usr/bin/grep` rejected the pattern with `empty (sub)expression` and exit status 2 and printed no count. A fallback that ignored grep's status hid the error, and the empty count added as 0. Revision 4's `check-standard-r4.log` recorded the error six times, next to six blank counts, at its lines 32, 34, 36, 38, 40 and 42, as `review/audit-claude.r4.md` line 9 quotes them. Revision 5 re-recorded that log in place, and the revision-4 log was never committed, so that audit line is the only surviving record of the failing run | Both leading pipes are escaped. A grep status of 2 or more, or a non-numeric count, now fails `V8`. A positive control, one here-string line that pipes into `grep -q`, must count exactly 1 | `check-standard-r4.sh`, `check-standard-r4.log`; `V8` |
+
+**What the repaired `V8` observed.** The positive control counts **1** with grep
+status 0. Each of the six scans prints a count of **0** with grep status 1,
+which is grep's "no line matched" status. The re-recorded
+`check-standard-r4.log` contains no grep error. The property `V8` asserts
+therefore held in revision 4 as well: no assertion in the six scripts pipes into
+an early-exiting grep. The audit's independent scan found the same 0 in each
+script. Only the evidence for that property was vacuous, and revision 5 makes
+it executable.
+
+**The header bump forces three re-baselined checks and two re-pinned digest
+tables.** Three checks compare the H1 with a literal title: `C2` in
+`check-standard-r2.sh`, `R1` in `check-standard-r3.sh` and `V1` in
+`check-standard-r4.sh`. Revision 5's H1 falsifies all three, so each now pins
+the revision-5 title. `V1` also pins `review/R80-r4-snapshot.md` by its sha256
+and its H1. Editing the revision-2 and revision-3 scripts changes their
+digests. `R6` therefore re-pins `check-standard-r2.sh` and
+`check-standard-r2.log`, and `V13` re-pins those two plus
+`check-standard-r3.sh` and `check-standard-r3.log`. The three logs of the
+standard scripts were re-recorded in the order `## Empirical check` states. The
+other 18 artifacts `V13` pins are the bytes revision 4 recorded, unchanged.
+`shellcheck-r4.log` is still empty after `shellcheck` re-ran on all six scripts,
+so its pinned digest holds.
+
+**What did not change:** the recommendation `probe-contract/v1` and everything
+revision 4's note lists as unchanged; every figure the prose states; and the
+check counts. `check-standard-r4.sh` still carries 14 checks and the six scripts
+113, because revision 5 repairs `V8` rather than removing it.
+
+**Revision note (revision 4) — an audit repair; the recommendation does not move.**
+Both audits of revision 3 (sha256
+`184d2b1714f8eb26a7b4df43b6020feb280662e85fcf3668a7fb0938d0d230c8`) returned
+`reject`. The judgment audit, `review/audit-fable.md`, raised four findings. The
+empirical audit, `review/audit-claude.md`, raised five. Revision 4 repairs all
+nine. Revision 3 is preserved byte-for-byte as `review/R80-r3-snapshot.md`
+(check `V1`). This revision was resynthesized on 2026-09-27 by a fresh
+Opus-seat context (`claude-opus-5-5`) that produced none of this item's raw
+reports. It read both audits in full, both engine reports, revision 3, the
+run's evidence and RUNBOOK section 5.
+
+| Finding | What was wrong | Repair | Where, and the check that holds it |
+|---|---|---|---|
+| Judgment 1 (JF-2, JF-3, JF-9), blocking | `## Engines` described a Codex + Opus run. The manifest and the prompt require Muse + Opus, and `raw/muse.md` sat on disk unadjudicated | The substitution is recorded with its authority. The Muse leg is represented with its digest and its collection gap. Its five material disagreements, and four lesser ones, are adjudicated with evidence this decision already held | `## Engines`; `V2`–`V5` |
+| Judgment 2 (JF-5, JF-7), blocking | R22 was called open with no decision. R22 revision 1 is owner-accepted, and its constant sits in the facade, which `crates/web` cannot import under R69 revision 10 | R22's accepted revision is cited. R02 revision 2 is recorded as having fired R22's own re-verify trigger. The package question is handed to R22 and R02 with two options and decided by neither | the version paragraph under `### Principles and implementation`, the migration table, `re-verify:`; `V6` |
+| Judgment 3 (JF-1, JF-8), low | three miscounts in `## Empirical check` | corrected, and each figure is now asserted against its artifact | `## Empirical check`; `V10`, `V11` |
+| Judgment 4 (JF-7), low | R55 and R57 were described as unpublished | now "published", and `O28` reads the published texts | `### Principles and implementation`, `## Engines`; `O28`, `V7` |
+| EA-1, observed failure | `O17` read R05's mutable H1. R05's working file now holds an unaccepted later revision, so three scripts failed | `O17` binds R02, R05 and R03 by the sha256 their owner-acceptance rows record. `re-verify:` gains a re-bind trigger | `check-offline.sh`; `O17` |
+| EA-2, evidence support | the `q=liveness` denominator was misquoted, 9 higher than the log and the snapshot, which both say 28,347 | corrected at both sites, and "advance continuously" is withdrawn, because that figure fell | `## Empirical check`, `## Engines`; `V10` |
+| EA-3, observed failure | 33 assertions in three scripts piped a variable into `grep -q` under `set -o pipefail`, which is a SIGPIPE race | every site reads a here-string or a file, and a static check proves none remains | `check-offline.sh`, `check-standard-r2.sh`, `check-standard-r3.sh`; `V8` |
+| EA-4, reproducibility | no committed `Cargo.lock`, so the stated "`--offline` from the warm cache" build did not reproduce and two transitive crates drifted | lockfiles are committed, pinned to revision 1's measured `hyper-util 0.1.20` and `smallvec 1.16.1`, and every cargo call passes `--locked` | `probe/manifests-a/Cargo.lock`, `probe/manifests-b/Cargo.lock`; `V9` |
+| EA-5, evidence support | the prose said the override heading appears 10 times; the log said 11 | the prose states the current count, and a check compares it with the file | `## Empirical check`; `V10` |
+
+**The byte-identity promise ends here, by the audits' own repair orders.**
+Revisions 2 and 3 each promised that every earlier evidence artifact stayed
+byte-identical. EA-1, EA-3 and EA-4 require editing four of those scripts:
+`check-offline.sh`, `check-probe.sh`, `check-standard-r2.sh` and
+`check-standard-r3.sh`. Revision 4 edits them in place and re-records their
+logs. It also re-baselines the checks that pinned an earlier revision's text:
+`O25` (shape), `C2` and `R1` (the H1), `C4` (the override name), and the digest
+tables in `C1` and `R6`. The re-runs `C9` and `R7` previously expected named
+failures and now expect none. The earlier bytes remain in git at revision 3's
+commit `53b13f45`. The new `check-standard-r4.sh` pins every revision-4 artifact
+by sha256 in check `V13`, which restarts the promise for any later revision.
+`check-live.sh` has no racy site, so its script and its log are unchanged.
+
+**What did not change:** the recommendation `probe-contract/v1`; the stack and
+every version pin; `run_diagnostics` in `crates/core`, its signature and its
+three-state `CheckStatus`; the latch; the `spawn_blocking` bridge; the liveness
+field list and the declined uptime field; every architectural alternative and
+its disposition; every rule verdict, the conformance note, and the override's
+argument and four options; the seven `- assumes` lines; and the absence of any
+`- owns` or `CONFLICT:` line. Muse's alternative stack is answered by evidence
+this decision already held, so nothing was researched again.
 
 **Revision note (revision 3) — a mechanical renumber, and nothing else.**
 Revision 2 and R77's revision 2 each ran a scoped "next free override number"
@@ -67,7 +247,8 @@ and the live `docs/port/PARAMETERS.md`, `inputs/owner-reference-axum-companion-s
 with `docs/planning/p02/owner-decisions.md` section 11, `docs/port/README.md` for
 its closed verdict vocabulary (`ADOPT` for F308; `DIVERGENT` for F328 and F329),
 `docs/port/COMMONALITY.md` rows F303/F308/F320/F328/F329/F337, `research/CLAUDE.md`,
-and the single registered engine report `raw/opus.md`. No template code exists in
+and the single engine report then registered, `raw/opus.md`. Revision 4 adds the
+Muse report, `raw/muse.md`; see its note above and `## Engines`. No template code exists in
 this repository and none was written here; every executed check runs against a
 throwaway workspace created under `$TMPDIR` and deleted, or against a live source.
 
@@ -89,8 +270,9 @@ Concretely:
 
 - `GET /healthz` is a **stateless** handler — it declines axum's `State`, so it
   can reach no dependency, no lock and no pool by construction — answering `200`
-  with `{"status":"ok","version":…,"os":…,"arch":…}`, built from a version
-  accessor defined once in `crates/core` (the mechanism is R22's) and
+  with `{"status":"ok","version":…,"os":…,"arch":…}`, built from R22's accepted
+  `VERSION` constant, evaluated so that it reports the distributed artifact's
+  version (which package holds it is handed to R22 and R02 below), and
   `std::env::consts::{OS, ARCH}`, under `Cache-Control: no-cache` (R7.1, check
   `P1`).
 - `GET /readyz` reads the readiness latch, then calls
@@ -123,7 +305,7 @@ The reason is that the owner struck the
 gate from every item's evaluation, knowingly extending it to crates compiled into
 the shipped artifact (`docs/port/OWNER-REVIEW.md`, asserted by check `O11`). The
 licence strings in the figures table below are recorded as facts about the crates,
-not as a compatibility verdict. `raw/opus.md` answers gate 1 per candidate; those
+not as a compatibility verdict. `raw/opus.md` and `raw/muse.md` each answer gate 1 per candidate; those
 verdicts are **not carried**. What the ruling does not touch is untouched here:
 this repository's own `license = MIT OR Apache-2.0` expression stands, and nothing
 in this recommendation commits a third-party file into the repository.
@@ -204,10 +386,12 @@ axum, the six-feature list R69 owns for tokio, `derive` only for serde; the
 async-runtime coupling is tokio, and this item adds no feature to any of them.
 Gate 6: qualitatively, axum and tokio dominate the gated surface's compile time,
 and this item adds two handler functions, three structs and one `AtomicBool` to
-it. The probe workspace's own cold compile from a warm registry cache printed
-`Finished \`test\` profile [unoptimized + debuginfo] target(s) in 16.48s` in
-`check-probe.log`; that figure is an **observation, not an assertion** — it is one
-of the lines that differs between reruns, and no check depends on it. **No latency, throughput,
+it. Revision 1's cold compile of the probe workspace printed
+`Finished \`test\` profile [unoptimized + debuginfo] target(s) in 16.48s`.
+Revision 4's recorded run shared a private `CARGO_TARGET_DIR` with earlier runs,
+so its dependencies were already built, and `check-probe.log` shows `1.46s`. Both
+figures are **observations, not assertions** — they are lines that differ between
+reruns, and no check depends on them. **No latency, throughput,
 memory or binary-size figure is claimed anywhere in this decision; none was
 measured.**
 
@@ -340,11 +524,12 @@ ship a readiness endpoint whose diagnostic half can never return 503. The latch
 gives the endpoint one state it can genuinely report, and the check list stays open
 for whatever later items add. **Which checks can reach `CheckStatus::Error` in Rust
 is not decided here, and no accepted decision defines one**: R55
-(`config-error-tolerance`, accepted at revision 3, unpublished) and R57
-(`xdg-directory-set`, accepted at revision 2, unpublished) are the two items whose
+(`config-error-tolerance`, published at revision 3) and R57
+(`xdg-directory-set`, published at revision 2) are the two items whose
 subject matter could produce one, and **neither names `run_diagnostics`, `doctor`,
 `readyz` or `CheckStatus` on any line — 0 hits and 0 hits, counted rather than
-read** (check `O28`). R55's typed `Vec<ConfigWarning>` is diagnostic-adjacent and
+read** in the published texts (check `O28`; check `V7` confirms they are the
+accepted bytes). R55's typed `Vec<ConfigWarning>` is diagnostic-adjacent and
 is not the same thing: it is a config-load warning list, not a check in this
 report. The check list is unowned; this decision names that gap rather than
 filling it.
@@ -425,7 +610,7 @@ preserves that principle with facts it already carries for free:
 ```rust
 #[derive(Serialize)] pub struct LivenessReport {
     pub status:  LiveStatus,     // "ok"
-    pub version: &'static str,   // the crate version, via R22's accessor defined once in core
+    pub version: &'static str,   // R22's VERSION constant, from whichever package R22 and R02 settle on
     pub os:      &'static str,   // std::env::consts::OS
     pub arch:    &'static str,   // std::env::consts::ARCH
 }
@@ -447,14 +632,43 @@ Executed as check `A`: with the facade at `0.4.2` and the web member at `0.1.0`,
 the macro read inside the web member reports **`0.1.0`** — the endpoint would
 report the wrong version, correctly, forever. Check `B` shows the repair:
 `[workspace.package] version` plus `version.workspace = true` on every member
-makes all three packages report `0.4.2`. **The accessor's mechanism is R22's**
-(`runtime-version-accessor`, open; `research/runs/R22/2026-09-17T020715Z-d93731e7353c/review/`
-holds no `DECISION.md`). What this item fixes is narrower and is a genuine
-constraint on R22's answer: **`/healthz` reports the version of the distributed
-artifact, and the accessor is evaluated in `crates/core` — or in a package that
-inherits `[workspace.package] version` — never at the web member's own call site.**
-R22's own MEDIUM question asks for exactly that, so this is a hand-off with a
-stated requirement, not a conflict.
+makes all three packages report `0.4.2`.
+
+**The constant is R22's, and R22's accepted placement cannot be read from
+`crates/web` as the workspace now stands.** R22 (`runtime-version-accessor`)
+revision 1 is owner-accepted: `docs/port/OWNER-ACCEPTANCES.md:79` records it at
+sha256 `0e7ea78e…` on 2026-09-18, under owner ruling W1-R22 option A
+(`docs/planning/p02/owner-decisions.md:516`). Its accepted text puts one
+`pub const VERSION: &str = env!("CARGO_PKG_VERSION");` in `src/lib.rs` of the
+single `[lib]` `rs_launch_blueprint`. It says that the optional web surface's
+health response reads `rs_launch_blueprint::VERSION`, and its AC3 asks for
+*"one value, one symbol"* (check `V6`). Two accepted decisions have since moved
+the ground under that text:
+
+- **R02 revision 2** makes the workspace four packages. That is the event R22
+  revision 1's own `re-verify:` line names: *"R02
+  (`crate-boundary-enforcement`, still `open`) selecting a multi-crate
+  workspace"*. The trigger has fired.
+- **R69 revision 10** declares `web = ["dep:rs-launch-blueprint-web"]` on the
+  root package (its owned value, carried unchanged by revision 11 at line 1885). The facade therefore depends on
+  `crates/web`, and `crates/web` cannot import `rs_launch_blueprint::VERSION`
+  without a dependency cycle, which Cargo refuses.
+
+R22's run directory also holds unaccepted revisions 2 to 5. This decision relies
+on none of them.
+
+**Handed to R22 and R02, decided by neither here.** This item's own requirement
+is narrow: `/healthz` reports the distributed artifact's version, never the web
+member's (check `A`). Either of two placements meets it:
+
+| Option | Mechanism | R22 revision 1's AC3, "one value, one symbol" | Cost |
+|---|---|---|---|
+| (a) | the constant moves to `crates/core`, which inherits `[workspace.package] version`; the facade re-exports it, so `rs_launch_blueprint::VERSION` still resolves; `crates/web` and `crates/cli` read `rs_launch_blueprint_core::VERSION` | met: one value and one symbol, re-exported | R22's "where it goes" paragraph changes package |
+| (b) | every member inherits `[workspace.package] version` with `version.workspace = true`, and each package evaluates `env!("CARGO_PKG_VERSION")` itself | met for the value (check `B`), not for the symbol | several call sites evaluate the macro; the version-consistency test proposed below is what would catch a member that stops inheriting |
+
+The design here works under either option, and its code sketch names neither.
+This is a coupling, not a `CONFLICT:` line, because R22 owns
+no registry parameter.
 
 **Uptime: asked by the prompt, and declined, with the cost stated.** It is cheap —
 one `Instant` at startup and one monotonic subtraction — and it is not
@@ -707,8 +921,8 @@ envelope that "adds one extension member and no more"** — `code` — plus an o
 `O12`). Those two sentences are in tension, and R70 is being researched in
 parallel, so this item **states the requirement and decides nothing**: the
 diagnostic report must be reachable from the 503 response. Three ways satisfy it —
-a second extension member named `diagnostics`; the report folded into the existing
-`errors` map; or a `detail` string that names the failing checks with the full
+a second extension member named `diagnostics`; the report folded into a
+structured error-detail member of R70's envelope; or a `detail` string that names the failing checks with the full
 report left to the logs. R70 owns the choice. **Until R70 publishes, the executed
 probe's 503 body is a plain JSON stand-in, and this decision claims nothing about
 the envelope's member names.**
@@ -784,7 +998,7 @@ whoever specifies `doctor` must reuse one of those or add a row through R67's
 append-only process, and that today — with no check able to reach `error` —
 `doctor` would exit `0` on every machine.
 
-re-verify: when the REST API Design Standard moves off blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9, in particular any change to R2.1, R2.2, R2.3, R2.6, R4.10, R5.11, R5.13, R5.16, R5.17, R7.1, R7.3, R9.1 or R11.7, or the addition of any rule naming health, readiness or liveness, which would retire or reshape OVERRIDE (OV-05); when the owner rules on OV-05, which is requested and not granted; when R69 republishes web-extra-surface at revision 10, which fixes every file path in this decision's migration table and is the single most likely trigger; when R70 publishes the problem envelope, which decides how the 503 body carries the diagnostic report; when R71 publishes and requires a schema derive, which must meet the no-OpenAPI-derive-in-crates/core constraint; when R22 publishes the version accessor, which must be core-defined and workspace-safe as check A demonstrates; when R55, R57 or any later item publishes a diagnostics check that can reach CheckStatus::Error; when R77 publishes a readiness-propagation pause or moves the drain deadline; when R51 publishes the container probe client; when R75 publishes the middleware order; when R79 publishes /metrics as a third unversioned ops route; when R05 is reopened to an async core, which deletes the spawn_blocking hop; when GET https://crates.io/api/v1/crates/axum/versions stops giving 0.8.9 as the newest non-yanked version in a release that changes MethodRouter's 405/Allow behaviour or Json's IntoResponse; when https://rustsec.org/packages/axum.html, .../serde.html or .../tokio.html changes status while the atty control holds at 200; when GET https://crates.io/api/v1/crates/shadow-rs/versions or .../git-version/versions begins returning a non-null rust_version, which reverses a gate-2 exclusion; when the Kubernetes probe documentation changes the quoted sentences; or by 2027-03-18, whichever comes first
+re-verify: when the REST API Design Standard moves off blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9, in particular any change to R2.1, R2.2, R2.3, R2.6, R4.10, R5.11, R5.13, R5.16, R5.17, R7.1, R7.3, R9.1 or R11.7, or the addition of any rule naming health, readiness or liveness, which would retire or reshape OVERRIDE (OV-05); when the owner rules on OV-05, which is requested and not granted; when R69 republishes web-extra-surface at revision 10, which fixes every file path in this decision's migration table and is the single most likely trigger; when R70 publishes the problem envelope, which decides how the 503 body carries the diagnostic report; when R71 publishes and requires a schema derive, which must meet the no-OpenAPI-derive-in-crates/core constraint; when R22 or R02 settles which package holds the VERSION constant — option (a), crates/core re-exported by the facade, or option (b), workspace version inheritance — which must stay workspace-safe as check A demonstrates; when any item, R55 and R57 included, adds a diagnostics check that can reach CheckStatus::Error; when R77 publishes a readiness-propagation pause or moves the drain deadline; when R51 publishes the container probe client; when R75 publishes the middleware order; when R79 publishes /metrics as a third unversioned ops route; when R05 is reopened to an async core, which deletes the spawn_blocking hop; when R02, R05 or R03 is re-bound to a new accepted revision, which check O17 detects by sha256 against docs/port/OWNER-ACCEPTANCES.md and which obliges this decision to re-cite that item (R05's run already holds unaccepted revisions 4 and 5); when the controller collects the Muse operation and the registered digest differs from 395c1426cd8db1e2d46588dcd364caac86a0beca6ca3119d5b7a56333672b012; when GET https://crates.io/api/v1/crates/axum/versions stops giving 0.8.9 as the newest non-yanked version in a release that changes MethodRouter's 405/Allow behaviour or Json's IntoResponse; when https://rustsec.org/packages/axum.html, .../serde.html or .../tokio.html changes status while the atty control holds at 200; when GET https://crates.io/api/v1/crates/shadow-rs/versions or .../git-version/versions begins returning a non-null rust_version, which reverses a gate-2 exclusion; when the Kubernetes probe documentation changes the quoted sentences; or by 2027-03-18, whichever comes first
 
 ## Parameters
 
@@ -808,34 +1022,34 @@ character.
 - assumes license = MIT OR Apache-2.0
 - assumes build-tool-output-shape = no build backend or bundler crate; Cargo's own manifest is the entire declaration surface. Artifacts land in Cargo's default workspace-root target/ directory - target/debug/ for the dev and test profiles, target/release/ for release and bench, target/<name>/ for a user-defined profile, gaining a target/<triple>/<profile>/ level whenever --target is passed - relocatable by CARGO_TARGET_DIR, build.target-dir or --target-dir. Library target: exactly one, declared explicitly as [lib] with path src/lib.rs and Cargo's default crate name rs_launch_blueprint (the package name with dashes replaced by underscores); doctest is not set here and is R82's. Binary target: exactly one, declared explicitly as [[bin]] with path src/main.rs and name rslbp, a different string from the package name rs-launch-blueprint, so cargo install rs-launch-blueprint installs the command rslbp and integration tests resolve it through CARGO_BIN_EXE_rslbp; autobins = false so no src/bin/*.rs file becomes a second published command without a manifest edit; default-run unset while there is one binary; no build.rs and no build-orchestration crate. Packaged-file scope: an explicit [package] include allow-list - /src, /README.md, /LICENSE-MIT, /LICENSE-APACHE, /CHANGELOG.md - never exclude, the two being mutually exclusive; Cargo.toml and any license-file are included whatever include or exclude says, and a minimized Cargo.lock is likewise outside include/exclude selection - cargo package adds it, generating one when none is on disk - but not unconditionally: cargo package --exclude-lockfile omits it, an override cargo publish has no flag for and this template never passes. The optional web surface adds no target here: it is a Cargo feature per F017, and whether it also gets a second [[bin]] carrying required-features is R69's
 - assumes http-transport-injection-seam = trait-object port erased at the composition root: the driven-I/O contract is a dyn-compatible Rust trait (pub trait ProjectsPort: Send + Sync; no async fn, generic methods, associated consts or non-receiver Self) with a blanket impl for Arc<T>; the use case is generic over it (ProjectsService<P: ProjectsPort>); the composition root (plain functions, no DI container) erases the production adapter to Arc<dyn ProjectsPort> and hands the single ProjectsService<Arc<dyn ProjectsPort>> to the CLI and the web layer; fakes and test doubles are injected as any ProjectsPort implementor (the shipped InMemoryProjectsPort), never as injected function values and never by patching a transport; under an async R05 the trait keeps dyn compatibility with async-trait 0.1.92
-- assumes web-extra-surface = one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files
+- assumes web-extra-surface = one additive, off-by-default Cargo feature named web, declared on the root package rs-launch-blueprint; web = ["dep:rs-launch-blueprint-web"], with axum 0.8.9 declared non-optionally in crates/web/Cargo.toml and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 declared non-optionally in crates/web/Cargo.toml with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is crates/web's dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module crates/web/src/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests in crates/web/tests/, with no file-level #![cfg(feature = "web")] because the whole member is optional, and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated crates/web/src/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on crates/web/**, the serve binary's source file and the web test files
 
 **`CONFLICT:` lines: none.** No consumed value needs to change for this
 recommendation. The two places a reader might expect one, and why neither is: R49's
 `build-tool-output-shape` no-`build.rs` clause **excludes** `built`, `vergen` and
 `shadow-rs`, and this decision declines all three rather than asking for the clause
-to move; and R69's `web-extra-surface` differs between the registry and the
-accepted revision, which is a publication lag, not a needed change.
+to move; and this decision's `web-extra-surface` line carries R69 revision 11's
+owned value ahead of the registry row, which is the Q3.A flag day, not a needed
+change.
 
-**Prose note beside the `web-extra-surface` line, required because the registry and
-the accepted revision disagree about paths.** The line above carries the registry's
-current bytes, which are **revision 9's**: it names the library module `src/web/`,
-gates the web tests file-level with `#![cfg(feature = "web")]`, and declares
-`web = ["dep:axum", "dep:tokio"]` with both crates optional on one manifest.
-**R69 revision 10 is owner-accepted and unpublished**
-(`research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md`, its
-`- owns web-extra-surface` line at **line 1791**, verified by check `O5` together
-with the registry's surviving `src/web/` form): it moves the tree to the optional
-workspace member `crates/web/`, declares `web = ["dep:rs-launch-blueprint-web"]` on
-the root package, declares `axum` and `tokio` **non-optionally** in
-`crates/web/Cargo.toml`, and puts the web tests in `crates/web/tests/` with **no**
-file-level `cfg` because the whole member is optional. **This decision's design
-uses revision 10's paths** — `crates/web/src/routes/ops.rs`,
-`crates/web/src/lib.rs`, `crates/core/src/diagnostics.rs` — and the executed probe
-workspace is built in that shape. **This is not a `CONFLICT:`**: the recommendation
-needs nothing in R69's value changed, only the accepted revision's paths, which R69
-will publish itself. **R69's republication is a re-verify trigger** for every file
-path in the migration table below.
+**Prose note beside the `web-extra-surface` line, required because the line runs
+ahead of the registry.** The line above carries **R69 revision 11's** owned value,
+copied byte-for-byte from the `- owns web-extra-surface` line at **line 1885** of
+`research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md` (sha256
+`2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815`, verified by
+checks `O3` and `O5`). Revision 11 is approved for re-accept under owner decision
+Q3.A (flag day now). Its value changed at revision 10 under owner ruling W1-R02: it
+puts the tree in the optional workspace member `crates/web/`, declares
+`web = ["dep:rs-launch-blueprint-web"]` on the root package, declares `axum` and
+`tokio` **non-optionally** in `crates/web/Cargo.toml`, and puts the web tests in
+`crates/web/tests/` with **no** file-level `cfg` because the whole member is
+optional. The registry row still carries revision 9's `src/web/` form until the
+flag-day publication rewrites it. **This decision's design uses these paths** —
+`crates/web/src/routes/ops.rs`, `crates/web/src/lib.rs`,
+`crates/core/src/diagnostics.rs` — and the executed probe workspace is built in
+that shape. **This is not a `CONFLICT:`**: the recommendation needs nothing in
+R69's value changed. **R69's republication is a re-verify trigger** for every file
+path in the migration table below; revision 11 moves none of them.
 
 **Two further published values bind the recommendation without being consumed as
 values**, so they are named here rather than given an `assumes` line. **R67's
@@ -860,7 +1074,7 @@ four-package workspace and R69 revision 10's accepted paths.
 | `crates/web/src/lib.rs` | a `Readiness(Arc<AtomicBool>)` newtype with `accepting()`, `is_accepting()`, `begin_draining()`; one `readiness: Readiness` field on `AppState`; one `readiness.begin_draining()` call inside `shutdown_signal()`, **before** that future resolves. `build_router`'s `.merge(ops::router())` line is already in R69's recorded snippet |
 | `crates/web/tests/web_api.rs` | the eight probe tests `T1`–`T8`, adapted to the template's types |
 | `crates/web/Cargo.toml` | **gains `serde = { version = "1.0.229", features = ["derive"] }`**, and `serde_json` only if R70's envelope is constructed in this member directly. R69 revision 10's manifest row for that member lists only `axum`, `tokio` and the `tower` dev-dependency, because R66 places `serde` in the *library* crate, which under R02's topology is `crates/core`. The executed probe workspace had to add exactly these rows to compile the `#[derive(Serialize)]` on `LivenessReport`; a manifest written from "no change" would not build |
-| `Cargo.toml` (root) | **no change from this item.** If R22 selects workspace version inheritance — which check `A` shows is required for `/healthz` to report the artifact's version — the `[workspace.package] version` key and each member's `version.workspace = true` are R22's and R02's edit |
+| `Cargo.toml` (root) | **no change from this item.** Check `A` shows that `/healthz` reports the artifact's version only if the constant is evaluated in a package carrying it. Under either option of the R22/R02 hand-off, the `[workspace.package] version` key, each member's `version.workspace = true`, and under option (a) the facade's `pub use` of `rs_launch_blueprint_core::VERSION`, are R22's and R02's edit |
 
 **Not created by this item**, named so a later reader does not look for them here:
 the problem envelope `/readyz`'s 503 reuses (R70); the OpenAPI annotations on these
@@ -872,28 +1086,67 @@ exit code (unowned); and any check capable of reaching `CheckStatus::Error`.
 
 ## Empirical check
 
-**Toolchain and host.** `rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)`,
-`cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)`, macOS 26.4 (`Darwin 25.4.0`)
-on `arm64`, `grep (BSD grep, GNU compatible) 2.6.0-FreeBSD` at `/usr/bin/grep`,
-`Python 3.13.9`, `curl 8.7.1`, `jq-1.8.2`, `shellcheck` on `PATH`. Working
-directory for every command: the repository root,
+**Toolchain and host, as observed for revision 4.** `rustc 1.98.1 (48a229cea
+2026-09-01) (Homebrew)`, `cargo 1.98.1 (797e8a9bc 2026-08-05)`, macOS 26.4
+(`Darwin 25.4.0`) on `arm64`, `grep (BSD grep, GNU compatible) 2.6.0-FreeBSD` at
+`/usr/bin/grep`, `Python 3.14.7`, `ShellCheck 0.11.0`, `curl 8.7.1` and
+`jq-1.8.2`. Revisions 1 to 3 ran on `rustc 1.98.0`. The compiler is recorded as
+observed, not required: every probe manifest declares `rust-version = "1.96"`,
+and no check asserts a patch release. Cargo ran with a private `CARGO_HOME` that
+started empty and a private `CARGO_TARGET_DIR` shared across this revision's runs.
+Revision 5 re-ran the three standard scripts on the same host, compiler, grep,
+Python and ShellCheck, with its own private `CARGO_HOME` and
+`CARGO_TARGET_DIR`. Working directory for every command: the repository root,
 `/Users/stevemorin/c/rs-launch-blueprint-p02-plan`. **No template code exists in
 this repository and none was written**: the recommendation is verified, never
 implemented.
 
-**Five scripts, 99 checks** — revision 1's three (50), revision 2's one (42) and revision 3's one (7). Revisions 1 and 2's five scripts are unchanged and were not re-run into their own logs for revision 3; check `R6` proves it by digest. Each asserts on content, not on an exit code; each
-carries `set -euo pipefail`; each counts PASS/FAIL/SKIP and exits non-zero on any
-FAIL. A check that could not fail is not counted as evidence.
+**Six scripts, 113 checks, every one re-run for revision 4.** Revisions 1 and 2
+wrote four scripts between them (three and one), revision 3 wrote one, and
+revision 4 adds one. Each asserts on content, not on an exit code; each carries
+`set -euo pipefail`; each counts PASS/FAIL/SKIP and exits non-zero on any FAIL.
+A check that could not fail is not counted as evidence. Revision 4's `V8` was
+such a check, and revision 5 repaired it so it can fail (audit EF-1). The totals
+stand because `V8` was repaired, not dropped.
+
+| Script | Checks | Added by | In revision 4 | Paired log | Result |
+|---|---|---|---|---|---|
+| `check-offline.sh` | 28: `O1`–`O28` | revision 1 | edited: EA-1, EA-3, published R55/R57, `O25`; revision 7 moved `O3` and `O5` to R69 revision 11 | `check-offline.log` | **28 PASS, 0 FAIL, 0 SKIP** |
+| `check-probe.sh` | 13: `A`, `B`, `T1`–`T8`, `C9`–`C11` | revision 1 | edited: EA-4 | `check-probe.log` | **13 / 0 / 0** |
+| `check-live.sh` | 9: `L1`–`L9` | revision 1 | unchanged | `check-live.log` (revision 1's), plus `check-live.r4-fetch.log` and `check-live.r4-snapshots.log` | **9 / 0 / 0** in all three |
+| `check-standard-r2.sh` | 42: `S1`–`S27`, `P1`–`P6`, `C1`–`C9` | revision 2 | edited: EA-3, EA-4, re-baselined; revision 5 re-baselined `C2`; revision 6 re-baselined `C2`; revision 7 re-baselined `C2`, re-pinned `C1` and re-worded its message | `check-standard-r2.log` | **42 / 0 / 0** |
+| `check-standard-r3.sh` | 7: `R1`–`R7` | revision 3 | edited: EA-3, re-baselined; revision 5 re-baselined `R1`, re-pinned `R6`; revision 6 re-baselined `R1`, re-pinned `R6`; revision 7 re-baselined `R1`, re-pinned `R6` | `check-standard-r3.log` | **7 / 0 / 0** |
+| `check-standard-r4.sh` | 14: `V1`–`V14` | revision 4 | new; revision 5 repaired `V8` (EF-1), re-baselined `V1`, re-pinned `V13`; revision 6 repaired `V3` (Codex finding 1), re-baselined `V1`, re-pinned `V13`; revision 7 re-baselined `V1`, moved `V6` to line 1885, re-pinned `V13` | `check-standard-r4.log` | **12 / 2 / 0** since revision 7 (`V3`, `V4`: manifest drift) |
 
 ```bash
 cd /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R80/2026-09-17T034011Z-74765d801b92/review/evidence
-bash check-offline.sh   # 28 checks O1..O28  -> check-offline.log
-bash check-probe.sh     # 13 checks A,B,T1..T8,C9..C11 -> check-probe.log
-bash check-live.sh      #  9 checks L1..L9   -> check-live.log
-bash check-standard-r2.sh  # 42 checks S1..S27, P1..P6, C1..C9 -> check-standard-r2.log
-bash check-standard-r3.sh  #  7 checks R1..R7                   -> check-standard-r3.log
-shellcheck check-offline.sh check-probe.sh check-live.sh check-standard-r2.sh check-standard-r3.sh   # exit 0
+bash check-offline.sh "$ROOT"      > check-offline.log       # ROOT = the repository root
+bash check-probe.sh                > check-probe.log
+bash check-standard-r2.sh "$ROOT"  > check-standard-r2.log 2>&1   # C9 re-runs check-offline.sh into check-offline.r2-rerun.log
+bash check-standard-r3.sh "$ROOT"  > check-standard-r3.log 2>&1   # R7 re-runs check-standard-r2.sh into check-standard-r2.r3-rerun.log
+shellcheck check-offline.sh check-probe.sh check-live.sh check-standard-r2.sh check-standard-r3.sh check-standard-r4.sh > shellcheck-r4.log   # exit 0, empty
+bash check-standard-r4.sh "$ROOT"  > check-standard-r4.log 2>&1   # V14 re-runs check-standard-r3.sh into check-standard-r3.r4-rerun.log
+# check-live.sh ran from a copy of evidence/ under $TMPDIR, because fetch mode rewrites ./snapshots:
+bash "$COPY/check-live.sh"              > check-live.r4-fetch.log
+bash "$COPY/check-live.sh" --snapshots  > check-live.r4-snapshots.log
 ```
+
+**Order matters, because logs are pinned.** `C1` pins revision 1's scripts and
+logs, `R6` pins those plus revision 2's, and `V13` pins everything. So the
+scripts ran once, in the order above, and each digest table was filled in from
+the bytes just written before the next script ran. The shared files that a
+later script rewrites on every run — `check-offline.r2-rerun.log`,
+`check-standard-r2.r3-rerun.log` and `check-standard-r3.r4-rerun.log` — are
+pinned nowhere. Revision 1's `shellcheck.log` and revisions 2 and 3's
+`shellcheck-r2.log` and `shellcheck-r3.log` describe earlier script bytes and are
+kept as history; `shellcheck-r4.log` is the current record. Revision 5 repeated
+that sequence's `check-standard-r2.sh`, `check-standard-r3.sh`, `shellcheck` and `check-standard-r4.sh` lines, in that order, with
+stderr merged into each log so that a grep error cannot go unrecorded again.
+Revision 6 repeated the same four lines, in the same order, with a warm
+private `CARGO_HOME` and `CARGO_TARGET_DIR`; `shellcheck` again printed nothing,
+so `shellcheck-r4.log` is unchanged.
+The logs of the first three scripts were not re-recorded; `check-offline.sh`
+still re-ran nested, through `C9`, into its unpinned `check-offline.r2-rerun.log`.
 
 **`check-offline.sh` — 28 checks, all offline.** It re-verifies at source the
 claims of `raw/opus.md` that need no network: the registered report's digest
@@ -901,26 +1154,41 @@ claims of `raw/opus.md` that need no network: the registered report's digest
 `validate_answer_text(text, "bundle")` from `scripts/research_validation.py`,
 including the `### Members` window rule that keeps every H5 field inside a named
 member (`O2`, **0 errors**); the byte-identity of all seven `- assumes` values in
-this decision against the live registry, compared character for character by a
-table parser rather than by eye (`O3`); the absence of any `- owns` line (`O4`);
-R69 revision 10's owned value at line 1791 *and* the registry's surviving
-revision-9 `src/web/` form, which is what earns the publication-lag note (`O5`);
+this decision, compared character for character by a table parser rather than
+by eye — six against the live registry and, since revision 7, `web-extra-surface`
+against R69 revision 11's owned value at line 1885 (`O3`); the absence of any
+`- owns` line (`O4`); R69 revision 11's owned value at line 1885, bound by sha256,
+which is what earns the prose note beside the line (`O5`);
 R49's no-`build.rs` clause (`O6`); the F308/F328/F329 ledger rows (`O7`); R60's
 recorded ruling (b) (`O8`); the acceptance rows for R55, R57, R02, R05, R03 and
 R56 (`O9`); the W1-CODEX3 ruling (`O10`); the owner's licence ruling (`O11`); the
 in-flight coupling facts in R70's, R51's, R79's and R77's raw reports
 (`O12`–`O15`); R67's catalog rows and the absence of a diagnostics row (`O16`);
-the accepted revision numbers of R02, R05 and R03 (`O17`); R02's `crates/core`
+the accepted revisions of R02, R05 and R03 (`O17`); R02's `crates/core`
 (`O18`); R05's `spawn_blocking` (`O19`); py's `/healthz`, `readyz` and 503 at the
 pin (`O20`); py's one-function-two-callers pattern (`O21`); **both** of py's
 readyz tests including the monkeypatched 503 (`O22`); py's four checks with
 exactly one error-capable status (`O27`); ts's zero matches (`O23`); the owner
-reference's C15 sentence and its edition 2021 line (`O24`); and this decision's
-own shape — exactly one `re-verify:` line, no `## Supersedes`, exactly four H2
-sections (`O25`) — and its gate-1 wording (`O26`); and the counted absence of any
-diagnostics term in R55's and R57's accepted decisions (`O28`).
+reference's C15 sentence and its edition 2021 line (`O24`); this decision's own
+shape — exactly one `re-verify:` line, one `## Supersedes`, and six `^## ` lines,
+one of them inside the conformance note's fence (`O25`); its gate-1 wording
+(`O26`); and the counted absence of any diagnostics term in R55's and R57's
+published decisions (`O28`).
 
-Result in place: **28 PASS, 0 FAIL, 0 SKIP**, exit 0, saved as
+**`O17` now binds by identity (EA-1).** Revision 3's `O17` checked that each
+coupled decision's H1 named the cited revision. R05's working file has since
+become an unaccepted later revision, so the check failed and cascaded into
+`C9` and `R7`. `O17` now pins each decision to the (revision, sha256) its row in
+`docs/port/OWNER-ACCEPTANCES.md` records — R02 revision 2 `9e8f8e8c…` (line
+71), R05 revision 3 `3ca4b81a…` (line 75) and R03 revision 1 `610e3338…` (line
+70) — asserts that each row still says so, and then finds the file whose bytes
+hash to it. The file is the live `DECISION.md` or the `R##-r<N>-snapshot.md` a
+later revision preserved. For R05 it is `R05-r3-snapshot.md`. `O18` and `O19`
+read the files `O17` located. No `.git` is needed, so the check survives an
+archive extraction. A re-bind to a new accepted revision changes the row and
+fails `O17`, which is the re-verify trigger this revision adds.
+
+Result: **28 PASS, 0 FAIL, 0 SKIP**, exit 0, saved as
 `review/evidence/check-offline.log`.
 
 **`check-probe.sh` — 13 checks against a throwaway axum workspace.** The workspace
@@ -929,9 +1197,17 @@ is created by `mktemp -d` under `$TMPDIR` from the committed sources in
 `target/` tree and no nested git repository is ever committed. It resolves
 **axum 0.8.9 · tokio 1.53.1 · serde 1.0.229 · serde_json 1.0.151 · tower 0.5.3**
 (dev-dependency, for the `ServiceExt::oneshot` idiom R69 selects), edition **2024**
-throughout, `rust-version = "1.96"` on every manifest, and builds `--offline` from
-the warm registry cache. It **measures**; it does not assert a latency or a
-throughput, and it does not build the template.
+throughout, and `rust-version = "1.96"` on every manifest. **It builds
+`--locked` from a committed lockfile (EA-4):** `probe/manifests-a/Cargo.lock`
+and `probe/manifests-b/Cargo.lock`, which differ only in the two local packages'
+versions. Both pin the transitive crates at the versions revision 1 measured,
+`hyper-util 0.1.20` and `smallvec 1.16.1`; a fresh resolution on 2026-09-27
+picked `0.1.21` and `1.16.2`. `--offline` succeeds only from a warm local
+registry cache, so the script tries it first and falls back to an online fetch,
+still `--locked`, when the cache is cold. The recorded run printed
+`cargo network flags: '--locked'`: the offline attempt failed and the online path
+ran, holding the committed resolution. It **measures**; it does not assert a
+latency or a throughput, and it does not build the template.
 
 | Check | What it asserts | Observed |
 |---|---|---|
@@ -949,155 +1225,194 @@ throughput, and it does not build the template.
 | `C10` | `--features web` brings it back | the optional member and `axum v0.8.9` reappear |
 | `C11` | the member holding the shared function names no web crate | `probe-core` → `serde v1.0.229` → `serde_core` + `serde_derive`; `axum|tokio|hyper|tower` matched on **0** lines |
 
-Result in place: **13 PASS, 0 FAIL, 0 SKIP**, exit 0, saved as
+Result: **13 PASS, 0 FAIL, 0 SKIP**, exit 0, saved as
 `review/evidence/check-probe.log`. `T6` is the check that matters most: because it
 drives the pure `readiness_response` function rather than the handler, the 503
 branch is provable on any machine in any environment — which is exactly the
 property py has to reach with a monkeypatch.
 
-**`check-live.sh` — 9 checks against the live sources.** `L1` the eight crates'
-`max_stable_version` against the pins this decision names; `L2` the declared-MSRV
-facts that decide gate 2 (`shadow-rs` and `git-version` still `rust_version: null`;
-`built` 1.87; `vergen` 1.96.0); `L3` the RustSec picture with `atty` as a 200
-control; `L4` `RUSTSEC-2025-0023`'s open-ended `>=1.44.2` patched range; `L5` the
-four Kubernetes sentences quoted in this decision, the back-end-dependency caution
-included; `L6` the build-script requirement in
-`built`'s, `vergen`'s and `shadow-rs`'s own READMEs and `git-version`'s git-binary
-requirement; `L7` the two production probe implementations read at
-`raw.githubusercontent.com`; `L8` the crates.io census; `L9` the four
-build-metadata repositories through keyring-authenticated `gh api`, **never faster
-than one call per 20 s** (the script enforces the spacing itself), with the
-`git-version` HTTP 422 reproduced and recorded absent. No token bytes and no
-personal email address appear in any script, log, snapshot or User-Agent; the
-User-Agent is
+**`check-live.sh` — 9 checks against the live sources, script unchanged.** `L1`
+the eight crates' `max_stable_version` against the pins this decision names;
+`L2` the declared-MSRV facts that decide gate 2 (`shadow-rs` and `git-version`
+still `rust_version: null`; `built` 1.87; `vergen` 1.96.0); `L3` the RustSec
+picture with `atty` as a 200 control; `L4` `RUSTSEC-2025-0023`'s open-ended
+`>=1.44.2` patched range; `L5` the four Kubernetes sentences quoted in this
+decision, the back-end-dependency caution included; `L6` the build-script
+requirement in `built`'s, `vergen`'s and `shadow-rs`'s own READMEs and
+`git-version`'s git-binary requirement; `L7` the two production probe
+implementations read at `raw.githubusercontent.com`; `L8` the crates.io census;
+`L9` the four build-metadata repositories through keyring-authenticated `gh api`,
+**never faster than one call per 20 s** (the script enforces the spacing itself),
+with the `git-version` HTTP 422 reproduced and recorded absent. No token bytes
+and no personal email address appear in any script, log, snapshot or User-Agent;
+the User-Agent is
 `rs-launch-blueprint-research (+https://github.com/smorinlabs/rs-launch-blueprint)`.
+Revision 1's `check-live.log` stays the paired log. For revision 4 the script ran
+twice more from a copy under `$TMPDIR`: in fetch mode against the live sources on
+2026-09-27, saved as `check-live.r4-fetch.log`, and in `--snapshots` mode against
+the committed snapshots, saved as `check-live.r4-snapshots.log`. Result:
+**9 PASS, 0 FAIL, 0 SKIP** in each.
 
-Result in place: **9 PASS, 0 FAIL, 0 SKIP**, exit 0, saved as
-`review/evidence/check-live.log`.
-
-**`check-standard-r2.sh` — 42 checks, added by revision 2 and touching nothing of
-revision 1's.** `S1`–`S26` read the pinned blob with
+**`check-standard-r2.sh` — 42 checks, added by revision 2.** `S1`–`S26` read the
+pinned blob with
 `git -C /Users/stevemorin/c/rest-standards show 71bd813c1cf61286586b4ee41ed83ff065e5c8d9`
 and assert each quoted rule **at its recorded line number**, printing the line it
 found, so a rule whose text moves FAILs rather than being silently re-read;
 `S27` counts rule lines naming health, readiness or liveness and asserts **0**,
 which is what makes the argument-from-general-rules necessary rather than lazy.
 `P1`–`P6` build an r2 probe workspace under `$TMPDIR` from
-`review/evidence/probe-r2/` — reusing revision 1's facade, core and manifests
-unchanged, with only the r2 handler source and the r2 test file — and measure
-axum 0.8.9: `P1` and `P2` assert the moved `Cache-Control: no-cache` on liveness
-and on **both** readiness branches; `P3` measures `GET /healthz/` answering `404`
-with no `Location` where R2.6 prefers `308`; `P4` measures
+`review/evidence/probe-r2/`, with revision 1's facade, core and `manifests-b`
+unchanged, the committed `manifests-b/Cargo.lock`, and `--locked`. They measure
+axum 0.8.9: `P1` and `P2` assert the moved `Cache-Control: no-cache` on
+liveness and on **both** readiness branches; `P3` measures `GET /healthz/`
+answering `404` with no `Location` where R2.6 prefers `308`; `P4` measures
 `Accept: application/xml` answering `200` with JSON where R4.10 prefers `406`;
 `P5` measures the handlers emitting no `request-id`, which is the evidence behind
 the obligation handed to R75; `P6` re-asserts `405` with `Allow: GET,HEAD` now
-that R5.11 makes it a MUST. `C1`–`C9` assert this decision's own revision-2
-claims. `C1` is the one that matters for a pre-audit revision: it compares the
-sha256 of **all twelve** revision-1 scripts, logs and probe sources against the
-digests recorded literally in the script, so a rewritten revision-1 artifact
-FAILs. Revision 1's `probes.rs` is deliberately **not** re-run here — its own
-committed log stays the artifact it was produced from.
+that R5.11 makes it a MUST. `C1`–`C9` assert this decision's own claims. `C1`
+compares the sha256 of the twelve revision-1-era scripts, logs and probe sources
+against digests recorded in the script. `C2` pins the current H1 and `C4` the
+override name. `C7` counts headings outside code fences the way the publication
+validator counts them, because the conformance note embeds the standard's own
+section 1.9 template, whose first line is an H2 inside a fence. `C9` re-runs the
+offline script into `check-offline.r2-rerun.log` and now expects **28 PASS and
+0 FAIL**; through revision 3 it expected one named failure, `O25`.
 
-**`C9` records the one revision-1 assertion that revision 2 breaks, rather than
-hiding it.** Check `O25` was written for a *first* revision and asserts "no
-`## Supersedes`, exactly four H2 sections". Revision 2 is entitled to both, so
-`O25` must now fail. The revision-1 script is not edited — `C1` forbids it — and
-its committed log is not overwritten; instead `C9` re-runs the unedited script
-into a separate file, `check-offline.r2-rerun.log`, and asserts that the re-run
-produces **27 of its 28 checks passing and exactly one failure, which is `O25`**.
-That is what keeps a second, real regression from hiding behind an expected one:
-every other revision-1 assertion, the seven byte-identical `- assumes` lines
-included, still holds today. Check `C7` is the shape assertion that replaces
-`O25` for revision 2, and it counts headings outside code fences the way the
-publication validator counts them — the conformance note embeds the standard's
-own section 1.9 template, whose first line is an H2 inside a fence.
+Result: **42 PASS, 0 FAIL, 0 SKIP**, exit 0, saved as
+`review/evidence/check-standard-r2.log`.
 
-Result in place: **42 PASS, 0 FAIL, 0 SKIP**, exit 0, saved as
-`review/evidence/check-standard-r2.log`. Revision 1's three scripts were **not
-re-run into their own logs** for revision 2 and those logs are unchanged; `C1`
-proves it by digest and `C9` re-runs one of them into a separate file.
+**`check-standard-r3.sh` — 7 checks, added by revision 3.** `R1` pins the
+current H1. `R2` counts the override heading: the old heading appears **0** times
+and `OVERRIDE (OV-05)` appears **11** times in revision 4, its own H4
+included. Revision 3's prose said 10 where its own log said 11; check `V10` now
+compares the number stated in this sentence with the file, so the two cannot
+diverge again. `R3` accounts for every surviving bare mention of the old number
+by region — 11 occurrences, all in the revision-3 note, the allocation paragraph
+or the history, **0** stray; revision 4's note names the old number 0 times.
+`R4` re-measures the decision's shape outside code fences, and `R5` re-counts the
+seven `- assumes` lines, the absent `- owns` line, the single
+`**Argument:**`/`**Options:**` pair and the gate-1 wording. `R6` compares the
+seventeen artifacts of revisions 1 and 2 by sha256. `R7` re-runs the revision-2
+script into `check-standard-r2.r3-rerun.log` and now expects **42 PASS and 0
+FAIL**; through revision 3 it expected exactly `C2` and `C4` to fail.
 
-**`check-standard-r3.sh` — 7 checks, the renumber and nothing else.** `R1` pins
-the revision-3 H1. `R2` is the narrow claim the renumber has to make: the old
-override heading appears **0** times and `OVERRIDE (OV-05)` appears 10, its own
-H4 included. `R3` accounts for every surviving bare mention of the old number by
-region — 11 occurrences, all in the revision-3 note, the allocation paragraph or
-the history,
-**0** stray — so a missed one in the rule table or the conformance note cannot
-hide inside a legitimate total. `R4` re-measures the decision's shape outside
-code fences, and `R5` re-counts the seven `- assumes` lines, the absent `- owns`
-line, the single `**Argument:**`/`**Options:**` pair and the gate-1 wording, so a
-renumber that quietly moved something else would fail. `R6` compares **all
-seventeen** artifacts of revisions 1 and 2 by sha256. `R7` re-runs revision 2's
-**unedited** script into a separate file, `check-standard-r2.r3-rerun.log`, and
-asserts that exactly **two** of its 42 checks now fail, both by name: `C2`, which
-pins the revision-2 H1 this revision retitles, and `C4`, which counts the old
-override heading. `R1` and `R2` are their replacements. **That is the whole
-blast radius of the renumber, measured rather than asserted** — and `R2` earned
-its keep: an earlier draft of the revision-3 note spelled the old heading out in
-the very sentence claiming it was gone, which made the claim count itself, and
-`R2` failed until the sentence was rewritten.
+Result: **7 PASS, 0 FAIL, 0 SKIP**, exit 0, saved as
+`review/evidence/check-standard-r3.log`.
 
-Result in place: **7 PASS, 0 FAIL, 0 SKIP**, exit 0, saved as
-`review/evidence/check-standard-r3.log`; its `shellcheck` record is
-`shellcheck-r3.log`, kept separate because revisions 1 and 2's shellcheck logs
-are two of the seventeen artifacts `R6` compares by digest.
+**`check-standard-r4.sh` — 14 checks, new, one per repair.** `V1` pins the
+current H1, now revision 6's, the revision-3 snapshot's sha256, and, since
+revision 5, the revision-4 snapshot's sha256 and H1, and, since revision 6, the
+revision-5 snapshot's. `V2` asserts the Muse leg's
+digest, its bundle shape (0 errors) and its retrieval date, and accepts its
+operation in one of two states: uncollected (`submitting`, no `raw_sha256`), as
+on 2026-09-27, or collected at exactly this digest. `V3` asserts the engine set: the
+manifest's one migration event (`codex` → `muse`, Q5.A), `required_engines`
+`muse, opus`, the live `engine_overrides` row, and RUNBOOK section 2's Q9.B and
+Q17.A sentences. Since revision 6 it also asserts the empirical seat R80 takes
+from the live policy, `codex`, read as the validator reads it, with no
+`empirical_auditor_overrides` entry meaning the default. `V4` is the I-prompt check: `inputs/prompt.md` is
+byte-identical to the live topic prompt and to the manifest's recorded prompt
+hash `7596eda6…`, and reads `- engines: muse, opus`; it also prints whether the
+other frozen inputs equal their live files. `V5` anchors each Muse disagreement
+at source in `raw/muse.md`. `V6` asserts R22 revision 1's acceptance row, its
+placement text, its re-verify trigger, and R69's facade→web edge at line 1885
+of revision 11. `V7` asserts R55 and R57 published at their accepted bytes. `V8` is
+the static proof for EA-3: across all six scripts, **0** lines pipe into
+`grep -q`. As revision 4 recorded it, `V8` could not fail (audit EF-1). Since
+revision 5 its patterns escape the leading pipe, a grep status of 2 or more
+fails the check, and a positive control must count **1**. `V9` asserts both lockfiles' seven pins, `--locked` on both cargo
+paths of both build scripts, and both logs recording it. `V10` asserts that the
+override count and the three census denominators this prose states equal the
+logged ones. `V11` asserts the archive assertion-diff sizes stated below. `V12`
+asserts the one `re-verify:` line and its three new triggers. `V13` pins 22
+artifacts by sha256. `V14` re-runs the revision-3 script into
+`check-standard-r3.r4-rerun.log` and expects **7 PASS and 0 FAIL**, which nests
+the revision-2 and offline re-runs, so one call exercises the whole chain.
 
-**Reproduction, stated exactly rather than asserted.** Every log cited above was
-rerun and diffed before this sentence was written; the diffs are committed, and
-what varies is named rather than smoothed over. Two lines cannot repeat and are
-normalised out of every comparison: the `date(UTC):` stamp, and the `mktemp`
-workspace path the probe prints and `cargo tree` echoes back. **`check-offline.log`
-then reproduces byte-for-byte** — `check-offline.rerun.diff` is **0 bytes**. **For
-`check-probe.log` the assertion lines reproduce byte-for-byte and the rest does
-not**: `check-probe.rerun.assertions.diff` (every `PASS`/`FAIL`/`SKIP` and the
-totals line) is **0 bytes**, while `check-probe.rerun.diff` (the whole log) carries
-differing lines that are **every one of them a cargo `Compiling` / `Blocking
-waiting for file lock` / `Finished` progress line** — **`0` differing lines are
-anything else**, which is the assertion; the number of progress lines itself
-varies with build scheduling and is 44 in the committed diff.
+Result through revision 6: **14 PASS, 0 FAIL, 0 SKIP**, exit 0. Revision 7's
+re-recording of `review/evidence/check-standard-r4.log`: **12 PASS, 2 FAIL,
+0 SKIP**, exit 1; `V3` and `V4` fail on the `manifest.json` drift revision 7's note
+records, and every other check passes. Through revision 6, `shellcheck` on all six scripts exits 0
+with no output, recorded in `shellcheck-r4.log`. Revision 5's re-recording gives
+the same totals, and its log contains no grep error. Revision 6's re-recording
+gives the same totals, and `V3` prints `policy_empirical_auditor_R80=codex`.
 
-**`check-standard-r2.log` reproduces on the same rule as the probe log.** Rerun
-in place, its assertion-line diff — `check-standard-r2.rerun.assertions.diff` —
-is **0 bytes**, and its full diff `check-standard-r2.rerun.diff` differs only on
-cargo progress lines, with **`0` differing lines that are anything else** (30
-progress lines in the committed diff). Its own `shellcheck` run is recorded in
-`shellcheck-r2.log`, kept separate because revision 1's `shellcheck.log` is one
-of the twelve artifacts `C1` compares by digest.
+**Reproduction, stated exactly rather than asserted.** Every re-recorded log was
+re-run once more from a copy of `evidence/` under `$TMPDIR`, against the same
+repository root, and diffed against the committed log. Two kinds of line cannot
+repeat and are normalised out of every comparison: the `date(UTC):` stamp, and
+the `mktemp` workspace path the probe prints and `cargo tree` echoes back. The
+diffs are committed as `*.rerun.diff` (the whole log) and
+`*.rerun.assertions.diff` (every `PASS`/`FAIL`/`SKIP` line and the totals line),
+replacing revision 1's files of those names. The same two
+kinds of file were also written for `check-standard-r4.log` and
+`check-live.r4-snapshots.log`.
+**`check-offline.log`, `check-standard-r3.log`, `check-standard-r4.log` and
+`check-live.r4-snapshots.log` reproduce byte-for-byte** after normalisation: each
+`.rerun.diff` is **0 bytes**. **For `check-probe.log` and `check-standard-r2.log`
+the assertion lines reproduce byte-for-byte and the rest does not**: each
+`.rerun.assertions.diff` is **0 bytes**, while the whole-log diffs carry 8 and 4
+differing lines. Every one of them is a cargo `Finished` timing line or the test
+harness's `finished in` duration, and **0 differing lines are anything else**.
+Because the target directory was already warm, no `Compiling` line differs.
+`check-live.r4-fetch.log` has no rerun diff: fetch mode reads moving counters by
+design (below).
+Revision 5 repeated this reproduction for its three re-recorded logs, with the
+same normalisation, and its six rerun diffs replaced revision 4's files of those
+names. `check-standard-r3.log` and `check-standard-r4.log` reproduce
+byte-for-byte: each `.rerun.diff` is **0 bytes**. For `check-standard-r2.log`
+the `.rerun.assertions.diff` is **0 bytes**, and the whole-log diff carries
+**4** differing lines, two before-and-after pairs: the cargo `Finished` timing
+line and the `finished in` duration.
+Revision 6 repeated it once more for the same three logs, and its six rerun
+diffs replace revision 5's. `check-standard-r3.log` and `check-standard-r4.log`
+reproduce byte-for-byte: each `.rerun.diff` is **0 bytes**. For
+`check-standard-r2.log` the `.rerun.assertions.diff` is **0 bytes**, and the
+whole-log diff carries **2** differing lines, one before-and-after pair: the
+cargo `Finished` timing line.
+Revision 7 repeated it for its four re-recorded logs, `check-offline.log`,
+`check-standard-r2.log`, `check-standard-r3.log` and `check-standard-r4.log`,
+and its eight rerun diffs replace the prior files of those names. The
+normalisation also maps the probe's `r80-probe-r2.*` workspace path, which the
+`Compiling` lines echo, to one placeholder. `check-offline.log`,
+`check-standard-r3.log` and `check-standard-r4.log` reproduce byte-for-byte:
+each `.rerun.diff` is **0 bytes**. For `check-standard-r2.log` the
+`.rerun.assertions.diff` is **0 bytes**, and the whole-log diff carries **4**
+differing lines, two before-and-after pairs: the cargo `Finished` timing line
+and the `finished in` duration.
 
-**All three revision-1 scripts were rerun from a clean `git archive HEAD` extraction
-into a fresh `$TMPDIR` directory, after the commit that carries them**, and all
-**50 checks passed there with 0 FAIL and — the point of naming them — 0 SKIP**:
-28 + 13 + 9. The extraction has no `.git` at all, which the offline script reports
-rather than assumes (it tests with `-e`, not `-d`, because a worktree's `.git` is a
-file). The archive diffs are committed: `check-offline.archive.diff` differs on
-**exactly one line**, `git metadata: present` versus
-`git metadata: absent (archive extraction)`; `check-probe.archive.diff` again
-differs only on cargo progress lines, with **`0` differing lines that are anything
-else** (40 progress lines in the committed diff); and
-`check-live.archive.assertions.diff` differs on **exactly one line**, the
-`mode: fetch` versus `mode: snapshots` banner. The committed `*.archive.diff`
-files were produced from the extraction of commit `f940e56`; a later extraction
-reproduces the same assertion lines and a different set of cargo progress lines,
-which is what "0 differing lines are anything else" is written to survive. The three
-`*.archive.assertions.diff` files — every `PASS`/`FAIL`/`SKIP` line and every
-totals line of all three scripts — are **0 bytes**. The archive run's live log is
-committed as `check-live.archive-snapshots.log`. **`check-live.sh` cannot reproduce byte-for-byte
-and this decision does not claim that it does**: crates.io download counters and
-search denominators advance continuously. Its assertions are therefore written on
+**Revision 1's archive diffs are history, and one of revision 3's statements
+about them was wrong.** The `*.archive.diff` and `*.archive.assertions.diff`
+files come from a `git archive` extraction of revision 1's commit `f940e56`, and
+they describe revision-1 logs. Of the three `*.archive.assertions.diff` files,
+two, for the offline and probe scripts, are 0 bytes. The third,
+`check-live.archive.assertions.diff`, is **96 bytes**: it holds the single
+`mode: fetch` versus `mode: snapshots` banner line (check `V11`). Revision 3 said
+all three were 0 bytes. **No archive reproduction exists for revision 4.** This
+seat may not commit, and a `git archive` of `HEAD` would extract revision 3's
+scripts, not these.
+
+**`check-live.sh` cannot reproduce byte-for-byte, and this decision does not claim
+that it does.** crates.io download counters and search denominators move between
+reads, and not only upward. Its assertions are therefore written on
 **structure and pins** — version strings, `rust_version` null-ness, HTTP status
 codes, quoted sentences — and never on a counter; every moving figure is *printed*
-beside its endpoint so a reader can see what it was. The three census denominators
-had already moved between `raw/opus.md`'s collection and this one, on the same day:
+beside its endpoint so a reader can see what it was. Revision 1's log recorded the
+three census denominators on 2026-09-18, a few hours after `raw/opus.md` read them:
 `q=health` 6,487 → **6,488**, `q=probe` 5,271 → **5,273**, `q=liveness` 28,351 →
-**28,356**. Every reduced response body it read is snapshotted under
-`review/evidence/snapshots/`, and `bash check-live.sh --snapshots` re-runs every
-assertion against those committed bytes with no network at all — which is how the
-archive extraction reruns it deterministically. The snapshots of crates.io JSON and
-of the two kubernetes.io pages are **reduced in place** by a projection the script
-documents and applies before any assertion, so the committed artifact and the
-artifact the assertions read are the same bytes in both modes; nothing else is
-reduced.
+**28,347**. The liveness denominator fell by 4. Revision 3 printed a figure 9 higher,
+which no artifact supports. The 2026-09-27 fetch-mode run read
+6,657 for health, 5,567 for probe and 29,607 for liveness, and
+`check-live.r4-snapshots.log` reproduces the committed snapshots' 6,488, 5,273 and
+28,347 exactly. Every
+reduced response body the script reads is snapshotted under
+`review/evidence/snapshots/`, and `--snapshots` mode re-runs every assertion
+against those committed bytes with no network at all. The snapshots of crates.io
+JSON and of the two kubernetes.io pages are **reduced in place** by a projection
+the script documents and applies before any assertion, so the committed artifact
+and the artifact the assertions read are the same bytes in both modes; nothing
+else is reduced. The revision-4 fetch-mode run wrote its refreshed snapshots into
+the `$TMPDIR` copy, never into `evidence/snapshots/`.
 
 **Not run, and why.** No `ubuntu-latest` execution: every check above ran on macOS
 only, so each member's gate-4 Linux answer rests on the crates' own CI and on R66's
@@ -1108,7 +1423,8 @@ bridge. No issue-responsiveness figure for seven of the eight crates: each needs
 roughly eleven GitHub calls at the mandated one-per-20-seconds, and no member's
 verdict turns on it — the figure `raw/opus.md` did compute, for `lukaslueg/built`
 (median 0 days, about 3.4 hours, 0 of 4 unanswered), is **carried without
-re-collection**.
+re-collection**. No archive reproduction for revision 4, for the reason above.
+No re-collection of `raw/muse.md`'s 2026-09-25 figures.
 
 **Proposed for the template's CI, not run here** (job wiring is R11's, tiers are
 R32's): `cargo test --features web` and `cargo build --features web --bin
@@ -1116,36 +1432,158 @@ R32's): `cargo test --features web` and `cargo build --features web --bin
 integration tests through `oneshot` and once against a real listener; a
 version-consistency test asserting `GET /healthz`'s `version` equals what
 `--version` prints, the Rust analogue of py's `tests/meta/test_version_consistency.py`,
-which fails loudly if the accessor is ever evaluated in the wrong package; a
+which fails loudly if the constant is ever evaluated in the wrong package; a
 `cargo check` leg pinned to the declared `rust-version`; and the AC11 `SIGTERM`
 test. None of these can run today: no Rust code exists in this repository.
 
 ## Engines
 
-- **opus** `raw/opus.md`, sha256
+**Engine set: Muse and Opus. Codex was substituted, not skipped.** The binding
+prompt reads `- engines: muse, opus` and says that this item substitutes Muse
+(Meta) for Codex and that its mirrored `- engines:` line is authoritative
+(`inputs/prompt.md:25` and `:74`; the file is byte-identical to the live topic
+prompt, check `V4`). The run's `manifest.json` records the substitution as its
+one migration event, at 2026-09-21T23:06:21Z: `from` `codex`, `to` `muse`, reason
+*"muse bulk substitution (owner decision Q5.A 2026-09-21)"*, previous engines
+`codex, opus`, now `required_engines: ["muse", "opus"]`, state `partial` (check
+`V3`). Owner decision Q9.B then retired Codex from P02 altogether. The live
+`engine_overrides` map in `research/EXECUTION.json`, as last amended under Q17.A
+on 2026-09-27, lists R80 as `muse, opus`. Its `empirical_auditor_overrides`
+map has no R80 entry, so R80 takes the default `codex` empirical seat
+(`scripts/research_validation.py` line 705, `seat_overrides.get(item, "codex")`). The
+rulings are recorded in `research/RUNBOOK.md` section 2 (lines 70–76) and in the
+execution ledger, `docs/planning/p02/execution-ledger.md`: the entry *"Owner
+decision (2026-09-21, Q5.A)"* (line 1114), the 2026-09-22 entry carrying
+*"Owner decision (Q9.B)"* (line 1121), and *"Q17.A IMPLEMENTED (2026-09-27)"*
+(line 1215). Other sessions edit the ledger, so the entry titles govern if the
+line numbers move. Revision 3 said that the Codex leg was deferred
+under W1-CODEX3 and that this was a single-engine synthesis. That described the
+run before the substitution and is withdrawn. W1-CODEX3
+(`docs/planning/p02/owner-decisions.md:488`, check `O10`) remains the reason the
+Opus leg ran alone at first. **Three frozen inputs are stale.**
+`inputs/prompt.md` equals the live prompt, but `inputs/EXECUTION.json`,
+`inputs/CLAUDE.md` and `inputs/PARAMETERS.md` differ from their live files
+(`V4` prints each comparison). This decision reads the live registry for every
+`- assumes` value (`O3`). Re-freezing `inputs/` is the controller's; this seat
+may not write there.
+
+- **opus** — `raw/opus.md`, sha256
   `dd3bdeae9566ae10ea300c1c2e6727264075523cb2ccce1e95eea9eccc06a0fb` (Claude Opus
   5, collected 2026-09-18T22:26:40Z, registered in `manifest.json`; digest and
   bundle answer shape re-verified here by checks `O1` and `O2`).
-- **codex** — **absent.** The Focused tier's Codex research leg was **deferred by
-  the controller under owner ruling W1-CODEX3 of 2026-09-18** (the Codex account is
-  at its usage limit; the owner's instruction was to test it and, if unavailable,
-  "do without it"), recorded in `docs/planning/p02/owner-decisions.md` section 12
-  and asserted by check `O10`. The run's `manifest.json` still lists
-  `required_engines: ["codex", "opus"]` and its state is `partial`.
+- **muse** — `raw/muse.md`, sha256
+  `395c1426cd8db1e2d46588dcd364caac86a0beca6ca3119d5b7a56333672b012` (Muse Spark,
+  Meta, `model: muse-spark` in the operation record; live figures retrieved
+  2026-09-25). It passes the bundle answer shape with 0 errors:
+  `scripts/check-answer-shape.sh raw/muse.md bundle` printed
+  `OK: validation passed`, and check `V2` re-asserts it through
+  `validate_answer_text`. **It is present but not collected.**
+  `operations/muse.json` is still in state `submitting` (request
+  `9d63b9c66e354800a931ac35871f647d`) with no `raw_sha256`, and the file is not
+  tracked by git. Collecting and registering it is the controller's work. This
+  decision adjudicates the bytes on disk and names their digest, so a collected
+  file with a different digest is a re-verify trigger.
 
-**This is therefore a single-engine synthesis, and there is no second engine to
-disagree with.** The cross-check a second engine would have supplied is replaced
-here by re-verification at source: every load-bearing claim was re-executed or
-re-read rather than carried on the report's authority. The two lists below say
-exactly which.
+**Where the two reports agree.** Muse and Opus agree on the shape of the answer,
+and this decision carries each point on its own evidence:
+
+| Point | Muse | Opus | This decision's evidence |
+|---|---|---|---|
+| one synchronous diagnostics function, called by the CLI `doctor` command and by `/readyz` | yes | yes | F329; py's pattern (`O21`) |
+| `serde`-derived response bodies rather than a hand-written literal (the prompt's MEDIUM question) | yes | yes | Apollo Router's derive (`L7`); py's `response_model` comment |
+| `/readyz` needs no crate beyond the envelope, the framework and `serde` (the other MEDIUM question) | yes | yes | the members table: zero added crates |
+| no maintained probe crate worth adopting (the LOW question) | yes | yes | the census (`L8`) |
+| both paths unversioned under F308 | yes | yes | `O7` |
+| the 503 carries R70's problem envelope | yes | yes | py's `problem_response` (`O20`) |
+| open issues: `built` 8, `vergen` 4, `serde` 319 | yes | yes | the figures table |
+
+**Where they disagree, and what resolved each.** Muse recommends a different
+stack: `built` 0.8.1 as a build-dependency with a `build.rs`, a liveness body
+carrying `rustc_version`, `git_sha` and `uptime_seconds`, a two-state check, and
+no readiness latch. Each point is answered by evidence this decision already
+held, and none required new research. The anchors in `raw/muse.md` are asserted
+by check `V5`.
+
+1. **Stack: `built` 0.8.1 with a `build.rs`. Rejected on fit, and Muse's own
+   parameter claim is corrected.** Muse's migration plan adds a `build.rs` calling
+   `built::write_built_file()`. R49's published `build-tool-output-shape`, which
+   this decision assumes, says *"no build.rs and no build-orchestration crate"*
+   (check `O6`), and R22's accepted revision 1 repeats "no `build.rs`" for the
+   version itself. Muse's recommendation therefore needs R49's value changed,
+   which is the case RUNBOOK section 4 says a `CONFLICT:` line must record. Muse
+   raises none and states *"No `CONFLICT:` lines — the recommendation fits all
+   consumed values."* That statement is wrong. This decision does not raise the
+   `CONFLICT:` on Muse's behalf, because its own recommendation needs no such
+   change: Cargo's version and `std::env::consts` realize the liveness principle
+   with no build script (checks `A`, `T1`). Muse's runner-up `vergen` and its
+   up-and-comer `vergen-gitcl` fall on the same clause (check `L6`).
+2. **Liveness fields: `rustc_version`, `git_sha`, `uptime_seconds`.** Muse itself
+   concedes that *"`rustc --version` via `RUSTC_VERSION` is not built-in — it
+   needs a build script"*; a git SHA needs the same mechanism, so both fall with
+   point 1. The principle both fields serve, identifying the build that answers,
+   is met by `version`, `os` and `arch` (the liveness-payload paragraph above).
+   Uptime is declined for the three reasons stated there: it destroys AC2's byte
+   stability (check `T2`), it forces a redaction into R33's snapshot tests, and
+   neither surveyed production system emits it (check `L7`). Muse argues for it
+   from availability only. Muse also says the prompt's HIGH question *"explicitly
+   asks `/healthz` to report"* the toolchain version and git SHA. That overstates
+   the prompt, which asks *what* the endpoint reports and lists "binary version,
+   build metadata, uptime, Rust/toolchain version" as candidates
+   (`inputs/prompt.md:36`).
+3. **Check status: `ok: bool` versus `CheckStatus { Ok, Warn, Error }`.** A
+   boolean must fold `warn` into one side. Folded into failure, a missing config
+   file or credential would remove every replica from traffic on a fresh install.
+   py treats both as warnings (*"Missing token/config are warnings, not errors, so
+   readiness holds"*, check `O22`), and AC4 requires the same (executed as `T3`).
+   Folded into success, the CLI `doctor` loses the warning. py itself uses three
+   statuses (check `O27`). The three-state type stays.
+4. **Lifecycle: no readiness latch.** Muse proposes alternative A alone, re-running
+   the diagnostics on every probe. The two arguments for alternative C answer it:
+   only a latch can report the drain state (checks `T4`, `T5`; AC6, AC7), and
+   without one the 503 branch is unreachable from a real environment (checks
+   `O22`, `O27`). Muse's own validation plan reaches 503 by toggling a stub check,
+   which is the same substitution py's test needs.
+5. **Fitness gates.** Muse answers gate 1 per candidate. Those answers are not
+   carried, for the reason recorded under `## Decision` (checks `O11`, `O26`).
+   Muse says `built` *"passes all six fitness gates"*. On gates 2 to 6 this
+   decision agrees: `built` declares `rust-version` 1.87 (check `L2`) and has no
+   RustSec entry (check `L3`). Its exclusion is on fit, labelled as not a gate.
+
+Four lesser disagreements:
+
+6. **Placement.** Muse puts the module at `src/core/diagnostics.rs` in a single
+   library crate, with `run_diagnostics()` taking no argument. R02 revision 2's
+   accepted four-package workspace puts it in `crates/core` (check `O18`), and it
+   takes `&Config` because the config-file check reads configuration.
+7. **Bridge.** Muse calls `spawn_blocking` "only if a check blocks". This decision
+   always does, following R05 revision 3 (check `O19`), for the consistency and
+   extensibility reasons in the bridge paragraph.
+8. **Standard.** Muse's report does not weigh the REST API Design Standard, which
+   binds under owner ruling W2-REST, and emits no `Cache-Control`. R7.1's header
+   and R5.17's redaction stand (checks `P1`, `P2`).
+9. **Figures.** Muse's 2026-09-25 crates.io counters are a week later than this
+   decision's 2026-09-18 table and larger, as download counters grow: `built`
+   19,003,082 in 90 days and 65,076,989 all-time, `vergen` 9,061,345 and
+   53,257,922, `serde` 324,724,704 and 1,439,926,984. They are carried as Muse's
+   and not re-collected; no verdict turns on them. Muse records GitHub stars,
+   `archived` and `pushed_at` as a gap after a rate limit; this decision has them
+   for `built` and `vergen` (check `L9`).
+
+**Muse claims carried, and claims corrected.** Carried at Muse's own confidence:
+the agreement points above, and its reverse-dependency totals (`serde` 124,928,
+`built` 237, `vergen` 203), which were not re-collected. Corrected: its claim that
+the recommendation fits all consumed values (point 1), its reading of the prompt
+(point 2), its gate-1 answers (point 5), and its single-crate placement (point 6).
 
 **Re-verified here, with the check that did it.** The registered report's digest
 and shape (`O1`, `O2`). The seven `- assumes` values against the live registry
-(`O3`). R69 revision 10's owned value and the registry's lag (`O5`). R49's
+(`O3`), `web-extra-surface` against R69 revision 11 since revision 7. R69
+revision 11's owned value at line 1885 (`O5`). R49's
 no-`build.rs` clause (`O6`). The ledger rows (`O7`). R60's ruling (`O8`). The
 acceptance record (`O9`). The W1-CODEX3 and licence rulings (`O10`, `O11`). The
 four in-flight couplings (`O12`–`O15`). R67's catalog (`O16`). The accepted
-revisions and clauses of R02, R05 and R03 (`O17`–`O19`). The py and ts source
+revisions of R02, R05 and R03, bound by sha256, and their clauses
+(`O17`–`O19`). The py and ts source
 precedent at the programme pins, including both readyz tests and the error-capable
 check count (`O20`–`O22`, `O27`, `O23`). The counted absence of a diagnostics
 check in R55's and R57's accepted decisions (`O28`). The owner reference's two
@@ -1157,7 +1595,11 @@ graph (`A`, `B`, `T1`–`T8`, `C9`–`C11`). The crates.io pins and MSRV facts, 
 RustSec picture with its control, the Kubernetes sentences, the build-script
 requirement in three maintainers' own READMEs, the two production probe
 implementations, the census, and the four build-metadata repositories' GitHub
-rows (`L1`–`L9`).
+rows (`L1`–`L9`). Revision 4's repairs: the Muse leg's digest, shape and
+collection state, the engine substitution, the frozen prompt, the Muse
+disagreement anchors, R22's accepted text and R69's facade→web edge, R55's and
+R57's published bytes, the absence of any racy pipeline, the lockfiles, and the
+figures this decision states (`V1`–`V12`).
 
 **Carried from `raw/opus.md` without re-verification, and therefore held at the
 report's own confidence.** The GitHub rows for `serde`, `serde_json`, `axum` and
@@ -1189,9 +1631,9 @@ than carried.**
    3** (`3ca4b81a…`), both evidence-only re-binds whose substance is unchanged
    (check `O17`). This decision cites the current revisions.
 3. **Wrong status.** The report calls **R55 and R57 "open"**. Both are
-   **owner-accepted and unpublished** — W1-R55 at revision 3 (2026-09-17) and
-   W1-R57 at revision 2 (2026-09-16) (check `O9`). The substantive point survives
-   in a stronger form: neither accepted decision names `run_diagnostics`,
+   **owner-accepted and now published** — W1-R55 at revision 3 (2026-09-17) and
+   W1-R57 at revision 2 (2026-09-16) (checks `O9`, `V7`). The substantive point
+   survives in a stronger form: neither published decision names `run_diagnostics`,
    `doctor`, `readyz` or `CheckStatus` on any line (check `O28`), so the check list
    that could reach `CheckStatus::Error` is **unowned**, not merely unpublished.
 4. **Overstated.** *"R77 owns the window's value"* for the pre-drain
@@ -1209,8 +1651,9 @@ than carried.**
    was available. This decision states the requirement three ways and leaves the
    choice to R70.
 7. **Drift, not error.** The census denominators moved between the report's
-   collection and this one on the same day (6,487→6,488, 5,271→5,273,
-   28,351→28,356). The comparison rule is under `## Empirical check`.
+   collection and revision 1's on the same day, in both directions (6,487→6,488,
+   5,271→5,273, and 28,351→28,347, a fall of 4). The comparison rule is under
+   `## Empirical check`.
 8. **Probe fidelity, stated so it is not mistaken for the recommendation.** The
    executed probe's shared function takes `(&Path, bool)` rather than the
    recommendation's `&Config`, because no published item defines `Config` yet; and
@@ -1247,7 +1690,8 @@ the exit, with the in-flight request completing and the process exiting 143 — 
 a running binary; the latch itself is executed, its interaction with R69's
 `shutdown_signal()` and `serve_until` is reasoned from R69's recorded snippet). The
 nonzero pre-drain pause that makes the latch observable to a fresh-connection probe
-(needs an owner first). Every member's gate-4 answer on `ubuntu-latest`. The
+(needs an owner first). The package that holds R22's `VERSION` constant (R22's and
+R02's). The Muse operation's collection and registration (the controller's). Every member's gate-4 answer on `ubuntu-latest`. The
 concurrency cost of the `spawn_blocking` hop. And the 503 body's exact member names,
 which are R70's to fix.
 
@@ -1262,9 +1706,26 @@ uptime is a judgement with a stated cost, and adding a commit SHA is a one-field
 change — and for the initial check set, which later items will extend. **Low
 confidence is claimed nowhere**, and two figures are explicitly absent rather than
 estimated: `git-version`'s open-issue count (HTTP 422, reproduced) and issue
-responsiveness for seven of the eight crates.
+responsiveness for seven of the eight crates. The Muse report disagrees on the
+liveness field list and the check type; both disagreements are answered above on
+this decision's evidence, and neither moves a confidence level.
 
 ## Supersedes
+
+**Revision 3, 2026-09-18, sha256
+`184d2b1714f8eb26a7b4df43b6020feb280662e85fcf3668a7fb0938d0d230c8`, commit
+`53b13f45`; superseded 2026-09-27 by two audit rejections.** Revision 3 is
+preserved verbatim as `review/R80-r3-snapshot.md`. It was the controller's
+override renumber and nothing else. It was audited — `review/audit-fable.md`
+(judgment) and `review/audit-claude.md` (empirical), both `reject` — and never
+published. **What revision 4 changed** is listed exhaustively in its revision
+note: `## Engines` rewritten around the Muse + Opus engine set, with the Muse
+report adjudicated; the R22 coupling rebuilt on R22's accepted revision; the
+`re-verify:` line extended; three miscounts, one misquoted figure and the R55/R57
+status corrected; four evidence scripts edited and their logs re-recorded; one
+new script, two lockfiles and two live re-run logs added. **What it did not
+change:** the recommendation and everything listed under "What did not change"
+in the revision-4 note.
 
 **Revision 2, 2026-09-18, sha256
 `9d3e0a0791182aa62d04ab7b9d7960b8011b2a0ce4fa75243e77384e70deac88`, commit

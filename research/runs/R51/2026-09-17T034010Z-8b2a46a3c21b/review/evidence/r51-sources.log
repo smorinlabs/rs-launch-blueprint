@@ -1,5 +1,5 @@
 === R51 source and shape checks
-date-utc: 2026-09-27T19:24:26Z
+date-utc: 2026-09-28T05:49:27Z
 grep:     grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
 root:     /Users/stevemorin/c/rs-launch-blueprint-p02-plan
 mode:     in-place worktree (.git is a file)
@@ -14,11 +14,15 @@ PASS  S1h — review/R51-r2-snapshot.md (revision 2, preserved) present
 PASS  S1i — review/R51-r3-snapshot.md is revision 3's bytes: 938c8db852769655d6f13ce1f0161173251009015ab77e07a0d464da7f72edd6
 PASS  S2a — parameter lines extracted from the live registry: 5
 PASS  S2b — - assumes lines in the decision: 5
-PASS  S2c — every - assumes value is byte-identical to its live registry row (diff empty)
+FAIL  S2c — the - assumes lines differ from the registry:
+1c1
+< - assumes web-extra-surface = one additive, off-by-default Cargo feature named web, declared on whichever crate hosts the binary targets (R02 decides which); web = ["dep:axum", "dep:tokio"], with axum 0.8.9 optional and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 optional with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is a dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module src/web/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests, gated file-level with #![cfg(feature = "web")], and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated src/web/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on src/web/**, the serve binary's source file and the web test files
+---
+> - assumes web-extra-surface = one additive, off-by-default Cargo feature named web, declared on the root package rs-launch-blueprint; web = ["dep:rs-launch-blueprint-web"], with axum 0.8.9 declared non-optionally in crates/web/Cargo.toml and its default features on (form, http1, json, matched-path, original-uri, query, tokio, tower-log, tracing) and tokio 1.53.1 declared non-optionally in crates/web/Cargo.toml with features rt-multi-thread, net, signal, macros, time, sync; tower 0.5.3 is crates/web's dev-dependency only, for the ServiceExt::oneshot in-process test idiom, and is not gated by the feature; the feature gates exactly four things and nothing else - (1) the library module crates/web/src/ containing AppState, build_router, the per-resource route modules, the handlers, shutdown_signal and serve_until, (2) one additional binary target [[bin]] name = "<app>-serve" with required-features = ["web"], the production entrypoint, which carries the org CLI Design Standard v1.4.14 R4.1 required global core and nothing beyond it - -h/--help and -V/--version printing to stdout and exiting 0, -v/--verbose, -q/--quiet, --config and --debug, parsed with the parser crate R60 selects for the CLI binary, which is a non-optional dependency of the package whichever crate R60 picks, so this feature adds none - while every service knob such as host, port, log format and drain deadline stays an environment variable named by R77, and which exits with the integers R67's accepted taxonomy has already settled: 143 after a SIGTERM-initiated drain, 130 after a SIGINT-initiated drain, 1 on an I/O failure, and 0 otherwise, returned as ExitCode from main rather than by calling process::exit, with the drain-deadline branch deliberately left out of this value pending R67's disposition of the request recorded under the Decision section, (3) the web integration tests in crates/web/tests/, with no file-level #![cfg(feature = "web")] because the whole member is optional, and (4) every later web layer - R70's error envelope, R71's OpenAPI generation, R72 to R76's middleware, R77's settings, R80's probes - as modules inside that same gated crates/web/src/ tree, so they are on when web is on and absent when it is off; it does not gate the CLI binary, the core library, R01's port and adapter seam, serde, serde_json, or the contributor-installed bacon 3.25.0 dev watcher, which is not a Cargo dependency; heavier opt-ins nest on top rather than widening it, as separate features that require web - otel = ["web", ...] for R78 and metrics = ["web", ...] for R79 - mirroring py's web plus otel extras; consumers select the surface with --features web or --all-features and detect it by that feature name, and path-based skip-gating keys on crates/web/**, the serve binary's source file and the web test files
 PASS  S2d — - owns lines (R51 owns no registry parameter): 0
 PASS  S2e — registry rows owned by R51: 0
 PASS  S2f — registry rows owned by R69 (positive control for S2e): 1
-PASS  S3a — decision title line: # 2026-09-27 — R51 — container-image (bundle, Focused) — decision (revision 5)
+PASS  S3a — decision title line: # 2026-09-27 — R51 — container-image (bundle, Focused) — decision (revision 6)
 PASS  S3b — exactly the four role-contract H2 headings, in order
 PASS  S3g — published research/topics/11 DECISION.md carries the same four H2s in order
 PASS  S3c — ## Supersedes headings (RUNBOOK section 5: only for a reversal; this revision reverses nothing): 0
@@ -33,7 +37,7 @@ PASS  S5c — validate_answer_text diagnostics on raw/opus.md (bundle): 0
 PASS  S5d — validate_answer_text diagnostics on raw/muse.md (bundle): 0
 PASS  S6a — synthesis files (decision, snapshot, evidence/) containing an address-shaped string: 0
 PASS  S6b — synthesis files (decision, snapshot, evidence/) containing a token-shaped string: 0
-PASS  S6c — the recursive search reaches 19 files (S6a/S6b's zeros are not vacuous)
+PASS  S6c — the recursive search reaches 21 files (S6a/S6b's zeros are not vacuous)
 PASS  S6-Cargo.toml — files named Cargo.toml anywhere in the run directory: 0
 PASS  S6-Cargo.lock — files named Cargo.lock anywhere in the run directory: 0
 PASS  S6-*.rs — files named *.rs anywhere in the run directory: 0
@@ -58,14 +62,14 @@ PASS  S8f — numbered rules naming health, liveness, readiness or containers: 0
 PASS  S8g — the same pattern finds 139 numbered rules (S8f's zero is not vacuous)
 PASS  S8h — lines in section 8 carrying any form of 'terminat': 0
 PASS  S8k — the same pattern matches 5 lines elsewhere (R5.12 and section 13), so S8h is not vacuous
-override-scan-files: 176
+override-scan-files: 199
 override-numbers-in-use: OVERRIDE (OV-01) OVERRIDE (OV-02) OVERRIDE (OV-03) OVERRIDE (OV-04) OVERRIDE (OV-05) OVERRIDE (OV-07) OVERRIDE (OV-08) OVERRIDE (OV-09) OVERRIDE (OV-10) OVERRIDE (OV-11) OVERRIDE (OV-13) OVERRIDE (OV-14) OVERRIDE (OV-16) OVERRIDE (OV-17) 
 PASS  S9-01 — OV-01 is in use, so S9a's zero for OV-14 is not a failed search
 PASS  S9-02 — OV-02 is in use, so S9a's zero for OV-14 is not a failed search
 PASS  S9-03 — OV-03 is in use, so S9a's zero for OV-14 is not a failed search
 PASS  S9-04 — OV-04 is in use, so S9a's zero for OV-14 is not a failed search
-PASS  S9a — OTHER decisions or port records declaring OV-14 (this file is excluded): 0
-PASS  S9c — the scan covered 176 decision and port files
+FAIL  S9a — OTHER decisions or port records declaring OV-14 (this file is excluded): expected [0], got [1]
+PASS  S9c — the scan covered 199 decision and port files
 PASS  S9b — R77 revision 3 declares OV-04, the R8.1 plaintext-listener override (R77-r3-snapshot.md:806)
 PASS  S9d — R80 revision 3 declares OV-05 (11 lines) and declares OV-04 on 0 lines
 PASS  S9e — the controller's allocation table gives OV-04 to R77 (execution-ledger.md:1073)
@@ -81,9 +85,9 @@ PASS  S10-R54 — cited input decision present
 PASS  S10-R56 — cited input decision present
 PASS  S10-R57 — cited input decision present
 PASS  S10-R05 — cited input decision present
-PASS  S10a — R69 revision 10's owned value at the line the task message names (DECISION.md:1791)
-PASS  S10b — revision 10 carries the crates/web tree this design's paths use
-PASS  S10c — revision 10 keeps the serve binary's 'nothing beyond it' clause (option C stays rejected)
+PASS  S10a — R69 revision 11's owned value at the line the task message names (DECISION.md:1885)
+PASS  S10b — revision 11 carries the crates/web tree this design's paths use
+PASS  S10c — revision 11 keeps the serve binary's 'nothing beyond it' clause (option C stays rejected)
 PASS  S10d — the registry row is still revision 9's src/web/ form — republication is a re-verify trigger
 PASS  S10e — R77 revision 3 assigns the container host variable to R51 (R77-r3-snapshot.md:931)
 PASS  S10f — R77 revision 3's host and port defaults (R77-r3-snapshot.md:678)
@@ -91,11 +95,11 @@ PASS  S10i — R77's run decision is at revision 3 (R77-r3-snapshot.md:1)
 PASS  S10j — R77's decision bytes equal the revision-3 sha256 the ledger records (line 1082): 5985ee47d5c714fdc317d5b8a8c58aff9c01b3f552834de8ac0b9c5282bb92fd
 PASS  S10k — R77's rejected option (c): the coupling that makes the image's 0.0.0.0 line R51's (R77-r3-snapshot.md:847)
 PASS  S10l — the approving R77 audit binds revision 2 only (execution-ledger.md:1083)
-observed-r77-live-title: 2026-09-27 — R77 — web-env-settings (crate, Focused) — decision (revision 4)
-observed-r77-live-host-line: line(s) 1091 
-observed-r77-live-defaults: line(s) 782 
-observed-r77-live-ov04-heading: line(s) 959 
-observed-r77-live-option-c: line(s) 1000 
+observed-r77-live-title: 2026-09-27 — R77 — web-env-settings (crate, Focused) — decision (revision 6)
+observed-r77-live-host-line: line(s) 1163 
+observed-r77-live-defaults: line(s) 854 
+observed-r77-live-ov04-heading: line(s) 1031 
+observed-r77-live-option-c: line(s) 1072 
 PASS  S10g — published R11 keeps the image build out of ci.yml (DECISION.md:270)
 PASS  S10m — R11 is published at revision 7 (DECISION.md:1)
 PASS  S10n — R11's path-filter caveat that member 5 hands to R12 (DECISION.md:165)
@@ -105,12 +109,12 @@ PASS  S10p — R80's run decision is at revision 3 (R80-r3-snapshot.md:1)
 PASS  S10q — R80 revision 3 reaches the same no-probe-rule conclusion (R80-r3-snapshot.md:548)
 PASS  S10r — lines of R80 revision 3 naming R8.6 (the row this item hands to R80): 0
 PASS  S10s — R80 revision 3 names /healthz on 32 lines (S10r's zero is not a failed read)
-observed-r80-live-title: 2026-09-27 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 6)
-observed-r80-live-no-probe-rule: line(s) 699 
+observed-r80-live-title: 2026-09-27 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 7)
+observed-r80-live-no-probe-rule: line(s) 762 
 observed-r80-live-healthz-lines: 33
 observed-r80-live-r86-lines: 0
-PASS  S10t — R02's run decision is at revision 2 (DECISION.md:1)
-PASS  S10u — R02 revision 2's four-package topology (DECISION.md:22)
+FAIL  S10t — R02's run decision is at revision 2: DECISION.md:1 does not contain [decision (revision 2)]
+FAIL  S10u — R02 revision 2's four-package topology: DECISION.md:22 does not contain [root-package workspace** of four packages]
 PASS  S10x — the owner accepted R68 at revision 1, whose sha256 prefix is 070b7ae1 (execution-ledger.md:981)
 PASS  S10w — R68-r1-snapshot.md is the owner-accepted revision-1 bytes: 070b7ae10b4a3de48d8b1a1d7cb4799c18d4bfec92713f7d30776128e4578fd7
 PASS  S10y — the bound R68 file is revision 1 (R68-r1-snapshot.md:1)
@@ -119,7 +123,7 @@ PASS  S10z — R68 revision 1's [profile.release] lto, which the image build inh
 PASS  S10-cgu — R68 revision 1's [profile.release] codegen-units (R68-r1-snapshot.md:53)
 PASS  S10-targets — R68 revision 1's targets: one Linux triple and the two macOS triples (R68-r1-snapshot.md:27)
 PASS  S10-mold — R68 revision 1 declines the mold/lld linker (R68-r1-snapshot.md:77)
-observed-r68-live-title: 2026-09-27 — R68 — release-binary-artifacts (crate, Deep) — decision (revision 6)
+observed-r68-live-title: 2026-09-27 — R68 — release-binary-artifacts (crate, Deep) — decision (revision 7)
 observed-r68-live-premise-lines: 0
 PASS  S11a — R19's docker-ecosystem condition (DECISION.md:66)
 PASS  S11b — R49's include allow-list is the five entries this decision reads (Dockerfile not among them)
@@ -142,7 +146,7 @@ PASS  S14a — raw/opus.md sha256 matches the manifest's registered value: c74cb
 PASS  S14c — raw/muse.md sha256 matches the manifest's registered value: a60d11907445c99889150f41233bf5f8f31608465bff0ba4bf3069402164fecf
 PASS  S14b — registered research operations (opus and muse): 2
 PASS  S14d — the two operations' states (opus, muse): succeeded succeeded
-PASS  S14e — the run manifest's state: collected
+FAIL  S14e — the run manifest's state: expected [collected], got [published]
 PASS  S14f — the manifest's engine migration event: codex->muse
 PASS  S15a — py's Dockerfile line count at pin b08bccfb: 32
 PASS  S15b — py's non-root switch (F336) (py.Dockerfile:21)
@@ -166,8 +170,8 @@ PASS  S18b — R11: a Cargo.lock-only change must set web (DECISION.md:198)
 PASS  S18c — R11: a crates/core-only change must set web (DECISION.md:197)
 PASS  S18d — R11's policy for any gate on a compiling or web-surface job (DECISION.md:184)
 PASS  S18e — R11's decision, evidence, prompts and raw reports name neither Dockerfile nor .dockerignore (0 files; control: ci.yml in 15 files)
-PASS  S18f — R69 revision 10 places the serve binary's source in the root package (DECISION.md:1608)
-PASS  S18g — R69 revision 10's three skip-gating keys (DECISION.md:1791)
+FAIL  S18f — R69 revision 10 places the serve binary's source in the root package: DECISION.md:1608 does not contain [`src/bin/<app>-serve.rs` (new, in the root package)]
+PASS  S18g — R69 revision 11's three skip-gating keys (DECISION.md:1885)
 PASS  S18h — member 5's gate is R11's web rule and names the serve binary's source and Cargo.lock as covered
 PASS  S18l — lines of this decision carrying revision 3's allow-list gate: 0
 PASS  S18i — Opus survey table: uv's cache mounts serve apt (opus.md:51)
@@ -180,4 +184,4 @@ PASS  S16b — shellcheck.log records exit 0 for the scripts it lists
 PASS  S16a — the recommended Dockerfile is committed as a fixture beside these scripts
 
 grep-version: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
-SUMMARY: PASS=162 FAIL=0 SKIP=0 TOTAL=162
+SUMMARY: PASS=156 FAIL=6 SKIP=0 TOTAL=162

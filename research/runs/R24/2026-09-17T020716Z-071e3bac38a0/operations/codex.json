@@ -3,6 +3,8 @@
   "at": "2026-09-17T04:39:18Z",
   "model": "gpt-5.6-luna",
   "provider": "codex",
+  "reason": "reconcile: intent recorded while Codex unavailable; no provider submission made (op=None); fresh attempt follows on Codex return (Q2.A)",
   "request_id": "166585ce6e4d42d7805f9c8b70565737",
-  "state": "submitting"
+  "state": "unknown",
+  "unknown_at": "2026-09-19T21:36:42Z"
 }

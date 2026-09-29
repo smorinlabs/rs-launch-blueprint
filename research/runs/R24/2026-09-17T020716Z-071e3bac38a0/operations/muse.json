@@ -1,0 +1,16 @@
+{
+  "actor": "research-muse-2026-09-17T020716Z-071e3bac38a0",
+  "actual_model": "muse-spark",
+  "actual_provider": "muse",
+  "at": "2026-09-21T23:06:53Z",
+  "collected_at": "2026-09-29T04:59:22Z",
+  "model": "muse-spark",
+  "operation_id": "agent:research-muse-2026-09-17T020716Z-071e3bac38a0:9b8bd88503fc00b0",
+  "provider": "muse",
+  "raw": "research/runs/R24/2026-09-17T020716Z-071e3bac38a0/raw/muse.md",
+  "raw_sha256": "9b8bd88503fc00b0b22d0cc9a22353669af4e636080bba6f0b2c43d9f0e6a9ad",
+  "reason": "",
+  "request_id": "3a36d6e07678440d9f15405fae6cff25",
+  "returned_at": "2026-09-29T04:59:22Z",
+  "state": "succeeded"
+}

@@ -1,28 +1,29 @@
 === R76 decision self-check ===
-date(UTC): 2026-09-27T19:35:29Z
+date(UTC): 2026-09-28T05:31:23Z
 grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
 decision:  /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R76/2026-09-17T034010Z-d958540e8834/review/DECISION.md
-decision sha256: c732bf24633eb386db07c186324af00a74c7d43f9932e4327c519a37aa40d641
+decision sha256: fd1647b8f46f66adb1817f6387f5b1a977cd58c76e32c319e839fe05deb84278
 raw:       /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R76/2026-09-17T034010Z-d958540e8834/raw/opus.md
 registry:  /Users/stevemorin/c/rs-launch-blueprint-p02-plan/docs/port/PARAMETERS.md
 
 --- A. the document's shape, which the revision rules fix exactly ---
-H1: # 2026-09-27 — R76 — cors-middleware (crate, Focused) — decision (revision 4)
+H1: # 2026-09-27 — R76 — cors-middleware (crate, Focused) — decision (revision 5)
 ASSERT ok   the H1 is the date-first form the revision rules require, naming the item, kind, tier and revision
 H2 headings: ## Decision|## Parameters|## Empirical check|## Engines|
 ASSERT ok   the four required H2 sections appear exactly once each, in the required order, and no other H2 was added
 ASSERT ok   no Supersedes section heading: revision 3 reverses nothing, so the rules say it must not carry one
 ASSERT ok   the Decision section carries its one required H3 heading, exactly once
 ASSERT ok   and one OVERRIDE (OV-08) heading, the written R4.17 preflight deviation, exactly once
-trigger line at 755; Parameters heading at 757
+trigger line at 773; Parameters heading at 775
 ASSERT ok   exactly one line begins with the re-verify marker, which is the rule
 ASSERT ok   and it is the closing line of the Decision section rather than floating elsewhere in the document
 ASSERT ok   that line carries a dated horizon as well as its event triggers
 
 --- B. the parameter lines, compared byte-for-byte with the live registry ---
+ASSERT ok   R69 revision 11's decision is present at sha256 2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815, the flag-day source of the web-extra-surface value
 registry rows extracted: 6
 assumes lines in the decision: 6
-ASSERT ok   every '- assumes' line is byte-identical to its docs/port/PARAMETERS.md row, in the same order — the comparison the packaging validator performs
+ASSERT ok   every '- assumes' line is byte-identical to its source, in the same order: web-extra-surface to R69 revision 11's '- owns' line 1885 (flag day, registry row pending republication), the other five to their docs/port/PARAMETERS.md rows
 ASSERT ok   the decision records exactly six assumed parameters: the four owner-fixed ones plus the two researched values the design rests on
 ASSERT ok   no '- owns' line: the prompt's Couplings block carries an empty '- owns:' and the registry names no R76-owned row, so inventing one would be a registry edit
 ASSERT ok   no CONFLICT: line, which matches the decision's own statement that no consumed parameter has to change
@@ -33,10 +34,10 @@ ASSERT ok   and so does target-os-matrix
 ASSERT ok   gate 1 is recorded with the required 'inapplicable — owner ruling 2026-09-12 (Q7.B)' string rather than deleted
 ASSERT ok   and the string is completed by 'not evaluated for any dependency or tool', so the row states the ruling in full
 lines containing 'licen' (case-insensitive) = 4; enumerated:
-  182:1. **Licence — `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is
-  184:   `docs/port/OWNER-REVIEW.md`, section *"2026-09-12 — no licence check for anything the
-  774:- assumes license = MIT OR Apache-2.0
-  798:it is also why no Windows behaviour was exercised. `license` is recorded and, per the
+  200:1. **Licence — `inapplicable — owner ruling 2026-09-12 (Q7.B): licence compatibility is
+  202:   `docs/port/OWNER-REVIEW.md`, section *"2026-09-12 — no licence check for anything the
+  792:- assumes license = MIT OR Apache-2.0
+  817:it is also why no Windows behaviour was exercised. `license` is recorded and, per the
 ASSERT ok   exactly four lines mention a licence: the two that carry the inapplicable string and its source, the bare '- assumes license' registry line, and the prose that says the parameter is recorded and evaluated against nothing — no candidate is selected or excluded on a licence ground anywhere
 ASSERT ok   the decision contains no 'MulanPSL' reasoning, which the owner ruling struck
 ASSERT ok   the decision contains no 'copyleft' reasoning, which the owner ruling struck
@@ -130,8 +131,8 @@ ASSERT ok   muse-adjudication.log records no ASSERT FAIL line
   SUMMARY local=5 py=3 external=15 unresolved=0
 ASSERT ok   every path:line citation resolves: each local file exists with at least the cited line, each py-launch-blueprint path exists at pin b08bccfb, and each other path is a named published-artifact path another script reads
 ASSERT ok   and the local set is non-empty, so the check exercised the repository and not only the allowlist
-ASSERT ok   the prose citation of R69 revision 10's '- owns web-extra-surface' line at line 1791 resolves to that line
+ASSERT ok   the prose citation of R69 revision 11's '- owns web-extra-surface' line at line 1885 resolves to that line
 
 === RESULT ===
-PASS=73 FAIL=0 SKIP=0 TOTAL=73
+PASS=74 FAIL=0 SKIP=0 TOTAL=74
 RESULT: PASS

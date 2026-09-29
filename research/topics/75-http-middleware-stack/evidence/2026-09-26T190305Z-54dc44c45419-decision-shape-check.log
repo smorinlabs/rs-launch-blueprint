@@ -1,0 +1,139 @@
+== E6 decision-shape-check — 2026-09-28T06:04:13Z (UTC)
+== DECISION sha256 8a547d171a02d50d12abe62855d4b983a0a74cb012871593a012700098110e25, 854 lines
+PASS S01 H2 set equals published R69's: ## Decision|## Parameters|## Empirical check|## Engines|
+PASS S02 title line
+PASS S03 revision-1 actor/model line
+PASS S04 exactly one re-verify: line
+PASS S05 ### Principles and implementation inside ## Decision
+PASS S06 no ## Supersedes (nothing published)
+PASS S07 settled F rows stated
+PASS S08 no home-directory path in the decision
+PASS P-msrv-policy byte-identical to inputs/parameters.json
+PASS P-msrv-policy-md value matches inputs/PARAMETERS.md row
+PASS P-rust-edition byte-identical to inputs/parameters.json
+PASS P-rust-edition-md value matches inputs/PARAMETERS.md row
+PASS P-target-os-matrix byte-identical to inputs/parameters.json
+PASS P-target-os-matrix-md value matches inputs/PARAMETERS.md row
+PASS P-license byte-identical to inputs/parameters.json
+PASS P-license-md value matches inputs/PARAMETERS.md row
+PASS P-logging-pipeline-contract byte-identical to inputs/parameters.json
+PASS P-logging-pipeline-contract-md value matches inputs/PARAMETERS.md row
+PASS P10 assumes-line count equals consumed+fixed parameter count
+PASS P11 no owns line (prompt owns: empty)
+PASS P12 no CONFLICT: line
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/inputs/prompt.md:23
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/inputs/prompt.md:24
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/inputs/prompt.md:8
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/inputs/prompt.md:9
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-gemini.normalized.md:223
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-gemini.normalized.md:224
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-gemini.normalized.md:29
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-gemini.normalized.md:53
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-gemini.normalized.md:69
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-openai.normalized.md:108
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-openai.normalized.md:131
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-openai.normalized.md:218
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-openai.normalized.md:26
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-openai.normalized.md:31
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-openai.normalized.md:55
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-openai.normalized.md:57
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-openai.normalized.md:64
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-openai.normalized.md:95
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/muse.md:123
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/muse.md:124
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/muse.md:126
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/muse.md:130
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/muse.md:174
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/muse.md:181
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/muse.md:22
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/muse.md:238
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/muse.md:245
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/muse.md:267
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/muse.md:3
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/muse.md:826
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/muse.md:909
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/muse.md:956
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:132
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:135
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:224
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:288
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:290
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:292
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:297
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:3
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:379
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:391
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:391
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:397
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:397
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:46
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:538
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:572
+PASS C-auto research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:587
+PASS C-r69 research/topics/69-web-framework-stack/DECISION.md:943
+PASS C-r69 research/topics/69-web-framework-stack/DECISION.md:1424
+PASS C-r69 research/topics/69-web-framework-stack/DECISION.md:1586
+PASS C-r69 research/topics/69-web-framework-stack/DECISION.md:2197
+PASS C01 research/runs/R75/2026-09-26T190305Z-54dc44c45419/inputs/prompt.md:9 ~ /response.headers\["x-request-id"\] = request_id/
+PASS C02 research/runs/R75/2026-09-26T190305Z-54dc44c45419/inputs/prompt.md:9 ~ /set unconditionally, including HSTS over plain http in dev/
+PASS C03 research/runs/R75/2026-09-26T190305Z-54dc44c45419/inputs/prompt.md:23 ~ /^- owns:$/
+PASS C04 research/runs/R75/2026-09-26T190305Z-54dc44c45419/inputs/prompt.md:24 ~ /^- consumes: R58: logging-pipeline-contract/
+PASS C05 research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/muse.md:181 ~ /Sees every response/
+PASS C06 research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/muse.md:174 ~ /overriding/
+PASS C07 research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:538 ~ /setdefault.*middleware.py:120/
+PASS C08 research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:290 ~ /innermost/
+PASS C09 research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:291 ~ /TraceLayer. \*\*outside\*\*/
+PASS C10 research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:391 ~ /BASELINE-REVIEW: F317/
+PASS C11 research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:397 ~ /BASELINE-REVIEW: F321/
+PASS C12 research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/opus.md:379 ~ /BASELINE-REVIEW: F327/
+PASS C13 research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-openai.normalized.md:95 ~ /does not overwrite/
+PASS C14 research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-openai.normalized.md:108 ~ /Do not substitute .if_not_present/
+PASS C15 research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-openai.normalized.md:138 ~ /Uri::path/
+PASS C16 research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-gemini.normalized.md:223 ~ /owns web-middleware-stack/
+PASS C17 research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-gemini.normalized.md:224 ~ /assumes rust-version = 1.80/
+PASS C18 research/runs/R75/2026-09-26T190305Z-54dc44c45419/raw/doxa-gemini.normalized.md:53 ~ /outside\* of the tracing middleware/
+PASS C19 research/topics/69-web-framework-stack/DECISION.md:694 ~ /tower-http. \(R75's to select\)/
+PASS C20 research/topics/69-web-framework-stack/DECISION.md:943 ~ /per-request layer is R75's to decide/
+PASS C21 research/topics/69-web-framework-stack/DECISION.md:1586 ~ /web = \["dep:axum", "dep:tokio"\]/
+PASS C22 research/topics/69-web-framework-stack/DECISION.md:1586 ~ /tower 0.5.3 is a dev-dependency only/
+PASS C23 research/topics/69-web-framework-stack/DECISION.md:2197 ~ /^\| C11 \| Middleware order/
+PASS C24 research/topics/69-web-framework-stack/DECISION.md:2210 ~ /owner ruling 2026-09-12 \(Q7.B\)/
+PASS C25 research/topics/69-web-framework-stack/DECISION.md:1424 ~ /middleware.rs. \(R75\)/
+PASS C26 /tmp/cargo-s78-r75/registry/src/index.crates.io-1949cf8c6b5b557f/tower-http-0.7.1/src/request_id.rs:454 ~ /if let Some\(current_id\) = response.headers\(\)/
+PASS C27 /tmp/cargo-s78-r75/registry/src/index.crates.io-1949cf8c6b5b557f/tower-http-0.7.1/src/set_header/response/mod.rs:174 ~ /SetMultipleResponseHeadersLayer/
+PASS C28 /tmp/cargo-s78-r75/registry/src/index.crates.io-1949cf8c6b5b557f/tower-http-0.7.1/src/set_header/response/multiple_headers.rs:69 ~ /pub fn if_not_present/
+PASS C29 /tmp/cargo-s78-r75/registry/src/index.crates.io-1949cf8c6b5b557f/tower-http-0.7.1/src/lib.rs:200 ~ /deny\(unsafe_code\)/
+PASS C30 /tmp/cargo-s78-r75/registry/src/index.crates.io-1949cf8c6b5b557f/tower-http-0.7.1/Cargo.toml:14 ~ /rust-version = "1.65"/
+PASS C31 /tmp/cargo-s78-r75/registry/src/index.crates.io-1949cf8c6b5b557f/tower-http-0.7.1/src/timeout/service.rs:145 ~ /Response::new\(B::default\(\)\)/
+PASS C32 /tmp/cargo-s78-r75/registry/src/index.crates.io-1949cf8c6b5b557f/tower-http-0.7.1/src/catch_panic.rs:351 ~ /INTERNAL_SERVER_ERROR/
+PASS C33 /tmp/cargo-s78-r75/registry/src/index.crates.io-1949cf8c6b5b557f/axum-0.8.9/src/routing/mod.rs:311 ~ /fallback_router: this.fallback_router.layer/
+PASS C34 /tmp/cargo-s78-r75/registry/src/index.crates.io-1949cf8c6b5b557f/axum-0.8.9/src/routing/mod.rs:303 ~ /L: Layer<Route> \+ Clone \+ Send \+ Sync/
+PASS C35 /tmp/cargo-s78-r75/registry/src/index.crates.io-1949cf8c6b5b557f/axum-0.8.9/src/serve/listener.rs:156 ~ /error!\("accept error/
+PASS C36 /tmp/cargo-s78-r75/registry/src/index.crates.io-1949cf8c6b5b557f/axum-0.8.9/src/serve/mod.rs:369 ~ /trace!\("connection/
+PASS C37 /tmp/cargo-s78-r75/registry/src/index.crates.io-1949cf8c6b5b557f/axum-0.8.9/src/docs/middleware.md:61 ~ /bottom to top/
+PASS C38 research/topics/75-http-middleware-stack/prompts/http-middleware-stack.prompt.md:26 ~ /^- engines: muse, opus, doxa$/
+FAIL C39 research/runs/R75/2026-09-26T190305Z-54dc44c45419/inputs/prompt.md:26 lacks /^- engines: codex, opus, doxa$/
+PASS C50 research/RUNBOOK.md:72 ~ /Q17.A/
+FAIL C51 snapshot vs canonical prompt: exactly two changed lines
+FAIL C52 the changed lines are 26 and 76
+PASS C40 E1 16/16 on both toolchains
+PASS C41 E2 12/12
+PASS C42 E3 6/6 and the axum::serve TRACE tally
+PASS C43 E4 no gaps; tower-http 0.7.1 newest
+PASS C44 E0 58 packages, 5 only via tower-http
+PASS C45 lockfile hash in log and decision agree
+PASS C46 408 precedent in axum example and crates.io
+PASS C47 tower-http CI covers macos-latest
+PASS C48 every evidence .sh has a .log
+PASS C49 every evidence .sh is shellcheck-clean
+PASS C53 R58r2 sha256 is the adopted revision
+PASS C54 research/topics/58-logging-pipeline-architecture/DECISION.md:246 ~ /ruling out `X-Request-Id`/
+PASS C55 research/topics/58-logging-pipeline-architecture/DECISION.md:252 ~ /R11.7 \(MUST\).*`request-id` correlation header/
+PASS C56 research/topics/58-logging-pipeline-architecture/DECISION.md:253 ~ /R11.8 \(MUST\).*traceparent. MUST be propagated/
+PASS C57 research/topics/58-logging-pipeline-architecture/DECISION.md:276 ~ /must still accept and forward/
+PASS C58 research/topics/58-logging-pipeline-architecture/DECISION.md:105 ~ /\(R75, F320, F327\)/
+PASS C59 research/topics/58-logging-pipeline-architecture/DECISION.md:658 ~ /R75 owns F320 and F327/
+PASS C60 research/topics/58-logging-pipeline-architecture/DECISION.md:1175 ~ /F327 is R75's row/
+PASS C61 research/topics/58-logging-pipeline-architecture/DECISION.md:1249 ~ /named \*\*`request_id`\*\*/
+PASS C62 assumes line equals R58r2 :1485 owned value
+== 133 pass, 3 fail

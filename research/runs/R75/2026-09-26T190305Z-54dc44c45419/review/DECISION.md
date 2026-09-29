@@ -1,4 +1,55 @@
-# 2026-09-27 — R75 — http-middleware-stack (bundle, Deep) — decision (revision 2)
+# 2026-09-27 — R75 — http-middleware-stack (bundle, Deep) — decision (revision 3)
+
+**Revision note, revision 3.** Revision 3 is a directed repair under RUNBOOK §7 (owner decision
+Q23). It applies owner decision Q4.A, two S1 rulings and the adoption of R58's published value,
+and nothing else. Revision 2 has sha256
+`98f574432fe565bdc77588aed42d171689585392667d6cebd51d62beaa7b31c7` and is preserved
+byte-identical at `review/R75-r2-snapshot.md`. Its two audits (`review/audit-codex.r2.md`,
+`review/audit-fable.r2.md`) both approved it with no unresolved findings, and none of their
+observations is repaired here. R58 published after revision 2: **R58r2** below means
+`research/topics/58-logging-pipeline-architecture/DECISION.md`, sha256
+`8dc8ce955c58abd508d45bd74a6b2c3f9eb96bde5c43ae20538f2439c8867aae`, publication transaction
+`56c651f1c1bf43f39b6acba61d7c991a`, cited as R58r2 `:<line>`.
+
+| Repair | Authority | What changed |
+|---|---|---|
+| **1. F318 wire header** | Owner decision Q4.A | The canonical header is `request-id`: the L1 layer's header argument, the constant (renamed `REQUEST_ID`), the L3 overwrite echo, and the prose that depends on them. **This departs from py.** py reads and echoes `x-request-id` (`inputs/prompt.md:9`, a quoted source fact that stays as it is), and all four raw legs followed py. R75 departs on R58r2's REST grounding: REST R11.7 (MUST) requires "the `request-id` correlation header (§1.10)", and §1.10 names the lowercase `request-id` because RFC 6648 deprecates new `X-` fields (R58r2 `:246`, `:252`, `:267-272`, `:1249-1251`). This wire value is the only place the recommendation moves. The tower-http Cargo feature `request-id` is a crate feature name and is unchanged |
+| **2. F327 panic hook** | S1 ruling | R58r2 assigns F327 to R75 (`:105-112`, `:658`, `:1175`) and defines no panic hook. F327 therefore now **defines** the process-wide hook, `install_panic_hook()`: it emits the panic message and location as one `ERROR` event and suppresses std's default stderr line. The serve binary's `main` installs it once, right after `telemetry::init`. Revision 2's assumption 4 and its hand-off of the hook to R58 are withdrawn |
+| **3. `traceparent` passthrough** | S1 ruling | REST R11.8 (MUST) requires `traceparent` propagation, and R58r2 keeps propagation outside the `otel` feature (`:253`, `:273-278`, `:650-651`, `:1916-1917`), so R78 cannot provide it with `otel` off. New slot **L3b**, `propagate_traceparent`: it forwards the inbound header opaquely (a request extension plus a task-local read by outbound adapters), with no OpenTelemetry crate. Nothing is parsed or generated. The header is **not echoed** on the response, because neither R11.8 nor W3C Trace Context defines a response echo; S1 can rule otherwise. R78's propagator and extraction operate with `otel` on, in slot L4 |
+| **4. R58r2 adoption** | This repair's brief | `- assumes logging-pipeline-contract = —` becomes R58r2's owned value verbatim (R58r2 `:1485`, byte-identical to `inputs/parameters.json` and `inputs/PARAMETERS.md`). The four placeholder assumptions become citations of the published value. Gap 1 and the re-verify trigger are updated |
+| **5. Evidence** | This repair's brief | `probe-crate.sh` moves every header use, adds the hook and the passthrough, and adds A15, F05 and an E0 OpenTelemetry count. `framework-log-foldin.sh` counts plain-text panic lines as F06. `decision-shape-check.sh` moves S02's title baseline to revision 3 (the obsolete baseline S1 disposed of in `audit-fable.r2.md`), updates C40 and C42 to the new counts, and adds the R58r2 checks C53–C62. Its P-checks and C62 now compare with `awk` through `ENVIRON` instead of `grep -xF`, because macOS BSD grep 2.6.0 exits 2 ("out of memory") on a fixed-string pattern as long as R58's 6,796-character value. A one-byte mutation of the value still fails the comparison (tested). E0, E1, E2, E3 and E6 were re-recorded; E4 and E5 are untouched and were not rerun. A12's `duration_ms` now reads 202.8 (host) / 203.1 (1.96.0); the 202.0 / 202.2 in the revision-2 note below are revision 2's log |
+
+**Honest E3 history.** Revision 2's E3 ran without a hook. Its `framework-log-foldin.log`,
+before this revision re-recorded it, held the pre-fix residual verbatim:
+`thread 'tokio-rt-worker' (<tid>) panicked at tests/common/mod.rs:100:5:`. Revision 2's text
+describes that residual at `review/R75-r2-snapshot.md:308-311` and `:532`. Revision 3's E3
+installs the hook and records no such line (F06).
+
+**Observations recorded, not fixed** (Q23: never fixed silently):
+
+- A py-style client that sends only `x-request-id` now gets a fresh UUID in `request-id`. No
+  fallback that accepts `x-request-id` was added, because it would be new behaviour.
+- R11.8 also caps `tracestate` ("accepted subject to a published size and entry cap"); no
+  enumerated repair covers it, and L3b forwards only `traceparent`.
+- "Opaque" means that L3b also forwards a malformed `traceparent`, where W3C Trace Context
+  says to restart the trace.
+- R58r2 `:660-662` fixes an "OV-09 obligation not to log a raw request URI without its own
+  policy". The access event logs `path` (never the query), and no written policy for that
+  field exists in this decision.
+- Three sentences still describe R58's formatter as missing: the access-event bullet and the
+  confidence paragraph in `## Decision`, and disagreement 2 in `## Engines`. R58r2's published
+  key order (`:1247-1251`) supports the recommendation they justify (see `## Parameters`), so
+  the recommendation holds. They are not edited because no enumerated repair names them.
+- **E6 is not fully green, because of input drift.** `inputs/prompt.md` was reconciled to the
+  canonical prompt after revision 2 was audited (`diff` now shows no difference);
+  `manifest.json` still lists `required_engines` as codex, opus and doxa.
+  The revision-2 empirical audit ran C39, C51 and C52 green; now they fail. The record note
+  under revision 1 and gap 9 describe the snapshot as it was then. Under RUNBOOK §7.7 this is
+  disclosed, not repaired: neither the note nor the three checks is edited, because no
+  enumerated repair names them. If S1 wants them re-based, §7.5 approve-with-repair is the
+  route.
+- One handler panic now produces two `ERROR` events: the hook's `<crate>::panic` event and
+  `tower_http::catch_panic`'s (E3 tally). Both carry the request's id.
 
 **Revision note, revision 2.** Revision 2 is fix round 1. It answers the round-1 judgment audit
 (`review/audit-fable.md`, verdict `reject`, three findings) and changes **nothing in the
@@ -65,17 +116,18 @@ outside the repository (`## Empirical check`).
 
 `rs-launch-blueprint`'s web service composes its HTTP middleware as **per-concern `tower` layers
 on R69's `axum` 0.8.9 `Router`, applied by one function in a fixed outermost-to-innermost order**.
-The stack adds **one crate, `tower-http` 0.7.1**, plus about 75 lines of template code (the header table and four functions):
+The stack adds **one crate, `tower-http` 0.7.1**, plus template code whose condensed form is the 87-line example under `### Principles and implementation` (the header table, one extension type and seven functions):
 
 | Member | Ledger rows | Mechanism | Version |
 |---|---|---|---|
-| Request id | F318 | `tower_http::request_id::SetRequestIdLayer::new(x-request-id, MakeRequestUuid)` at L1; a template `from_fn(echo_request_id)` at L3 that **overwrites** the response's `x-request-id` with the edge-selected id | `tower-http` **0.7.1**, feature `request-id` (brings `uuid` 1.26.1, `v4`) |
+| Request id | F318 | `tower_http::request_id::SetRequestIdLayer::new(REQUEST_ID, MakeRequestUuid)` at L1, where `REQUEST_ID` is the lowercase wire header `request-id` (REST R11.7 and §1.10, per R58r2 `:252`; py uses `x-request-id`, see difference 6 below); a template `from_fn(echo_request_id)` at L3 that **overwrites** the response's `request-id` with the edge-selected id | `tower-http` **0.7.1**, feature `request-id` (brings `uuid` 1.26.1, `v4`) |
+| Trace-context passthrough (REST R11.8) | — (no ledger row; R58r2 `:273-278`) | a template `from_fn(propagate_traceparent)` at L3b: the inbound `traceparent` is kept as opaque bytes in a request extension and in a `tokio::task_local!` scoped around the inner service; outbound adapters read it through `inbound_traceparent()`. Nothing is parsed, generated or echoed | `axum` 0.8.9 + `tokio` 1.53.1 (`rt`, on through R69's `rt-multi-thread`); **no OpenTelemetry crate** (E0) |
 | Security headers | F321 | one `SetMultipleResponseHeadersLayer::<Response>::if_not_present(..)` at L2 with py's four values; a handler's own value wins | `tower-http` 0.7.1, feature `set-header` |
 | Canonical access event | F319, F320 | a template `axum::middleware::from_fn(access_log)` at L5: one `INFO` event, message `http_request`, target `<crate>::http_access`, fields `request_id`, `method`, `route`, `path`, `status`, `duration_ms`, all on the event; events are skipped when the **matched route template** is in `ACCESS_LOG_EXCLUDED_ROUTES = ["/healthz", "/readyz", "/metrics"]` | `axum` 0.8.9 (R69) + `tracing` 0.1.44 (the facade, R58's to place) |
 | Failure containment, so F319 holds on panics | F319 | `tower_http::catch_panic::CatchPanicLayer::new()` at L6 | `tower-http` 0.7.1, feature `catch-panic` |
 | Per-request timeout (R69's hand-off) | — (no ledger row; R69 `DECISION.md:943-944`) | `tower_http::timeout::TimeoutLayer::with_status_code(StatusCode::REQUEST_TIMEOUT, d)` at L9; `d` is R77's environment variable | `tower-http` 0.7.1, feature `timeout` |
 | Ordering contract | F317 | `apply_middleware(router, ..)` in `src/web/middleware.rs`, applied once, last, to the fully merged router, as chained `Router::layer` calls written innermost-first, with named slots for R73, R74, R76, R78 and R79 | code; no crate |
-| Framework/server log fold-in | F327 | **no silencing step**: axum and hyper ship no access logger, axum's own output is `tracing` events, and `tracing`'s `log` fallback is inert once R58's subscriber is set; the one residual is the std default panic hook, handed to R58 | code; no crate |
+| Framework/server log fold-in | F327 | **no silencing step**: axum and hyper ship no access logger, axum's own output is `tracing` events, and `tracing`'s `log` fallback is inert once R58's subscriber is set. **Plus one process-wide panic hook, defined here**: `install_panic_hook()` replaces std's default hook, emits the panic message and location as one `ERROR` event (target `<crate>::panic`) in the current span, and so suppresses the std default stderr line. The serve binary's `main` calls it once, right after R58's `telemetry::init` | code; no crate |
 
 **Settled ledger rows: F317, F318, F319, F320, F321, F327.**
 
@@ -87,7 +139,8 @@ passes them in reverse):
 | L1 | `SetRequestIdLayer` | R75 | The id exists before anything logs or short-circuits |
 | L2 | security headers, `if_not_present` | R75 | Stamps every response an inner layer produces: 404, 405, 408, 429, preflight, panic-500 |
 | L3 | `echo_request_id` (overwrite) | R75 | The response id always equals the id the access event and the handler's span carry |
-| L4 | *slot* | R78 / R79 | Inside L1, so the id exists; outside L5, so the access event nests in the request trace |
+| L3b | `propagate_traceparent` (opaque) | R75 | Scopes the inbound `traceparent` before any inner layer or handler runs, with `otel` on or off; outside L4, so R78's otel-on extraction runs inside the scope |
+| L4 | *slot* | R78 / R79 | Inside L1, so the id exists; outside L5, so the access event nests in the request trace. R78's propagator and extraction run here with `otel` on only |
 | L5 | `access_log` | R75 | Outside every short-circuiting layer, so 404s, 408s, 429s, preflights and panics are each logged once |
 | L6 | `CatchPanicLayer` | R75 | Turns a handler panic into a 500 that L1–L5 treat as a normal response |
 | L7 | *slot*: CORS, when configured | R76 | Outside L8, so a cross-origin 429 carries `Access-Control-Allow-Origin` |
@@ -99,7 +152,7 @@ passes them in reverse):
 `tower_http::trace::TraceLayer` as the access log (ranked runner-up), stock
 `PropagateRequestIdLayer` for the response echo, a local force-echo *layer type* (the `from_fn`
 does the same in six lines), `SetResponseHeaderLayer::overriding` / the multiple-header
-`overriding` constructor, four single-header layers, a route-level probe opt-out (merging an
+`overriding` constructor, four single-header layers, a response echo of `traceparent`, a route-level probe opt-out (merging an
 unlogged probe router), a raw-path exclusion list, `tower::ServiceBuilder` as the production
 spelling (runtime-identical, but it needs `tower` as a normal dependency), `tower-helmet` 0.3.0,
 `axum-helmet` 1.0.2 / `helmet-core` 1.0.1, `tower-request-id` 0.3.0, `tower-default-headers`
@@ -113,14 +166,16 @@ ledger row). Each is the opus leg's line, re-derived here:
 - `BASELINE-REVIEW: F317 — id/security-header layers outermost so short-circuits still carry them — keep that, and additionally fix the inner order CORS ⊃ rate-limit, so a cross-origin 429 carries Access-Control-Allow-Origin — evidence: py app.py:137-146 per raw/opus.md:391-396 (inherited, not re-verified); executed here as A09 (review/evidence/stack-acceptance.log).`
   **Adopted in this stack**, because the contract places R76 at L7 outside R74 at L8. The py
   change is a follow-on. Affected items: R74, R76, py.
-- `BASELINE-REVIEW: F327 — the server's own output flows through the shared pipeline and no second access line exists — record F327 in rs as satisfied by construction rather than by a silencing step; the one plain-text residual, std's default panic hook, is handed to R58 — evidence: axum-0.8.9 src/serve/listener.rs:156 and src/serve/mod.rs:369; E3 F01-F03 and its panic-hook line (review/evidence/framework-log-foldin.log).`
-  **Adopted.** Affected items: R58 (F263 split).
+- `BASELINE-REVIEW: F327 — the server's own output flows through the shared pipeline and no second access line exists — record F327 in rs as satisfied by construction rather than by a silencing step, plus the one process-wide panic hook F327 defines, because std's default hook is the one plain-text residual — evidence: axum-0.8.9 src/serve/listener.rs:156 and src/serve/mod.rs:369; E3 F01-F06 (review/evidence/framework-log-foldin.log).`
+  **Adopted.** R58r2 assigns F327 to R75 (R58r2 `:105-112`, `:658`, `:1175`), so the hook is
+  defined in F327 (*Framework log fold-in*, below) and is not handed to R58. Affected items:
+  R75 only; R58's F263 split is unchanged.
 - `BASELINE-REVIEW: F321 — conservative security headers on every API response, handler value wins — add Content-Security-Policy: frame-ancestors 'none' and Cache-Control: no-store to py's four — evidence: OWASP REST Security Cheat Sheet §Security Headers per raw/opus.md:397-404 (inherited, not re-verified).`
   **Open for owner disposition.** This decision ships py's four values. Accepting the finding is
   a two-line addition to `security_header_values()`. `if_not_present` keeps R71's HTML docs route
   and R72/R80's cacheable routes able to set their own values. Affected items: R71, R72, R80, py.
 
-re-verify: 2026-12-26, or earlier on any of — R58 publishing `logging-pipeline-contract` (field names, span flattening, per-target levels, panic hook); R73, R74 or R76 publishing a layer whose error type is not `Infallible` or which needs a slot other than L10, L8 or L7; R78 deciding whether its OTel span replaces the `request` span; R69 republishing its `web` feature list or its `tower` dev-only clause; the owner ruling on `BASELINE-REVIEW: F321`; a `tower-http` release above 0.7.1 or an `axum` 0.9 release; a RustSec advisory against `tower-http`, `tracing` or `uuid`; hyper stabilising its `tracing` cfg
+re-verify: 2026-12-26, or earlier on any of — R58 revising `logging-pipeline-contract` (field names, formatter key order, the `otel` propagation boundary); R73, R74 or R76 publishing a layer whose error type is not `Infallible` or which needs a slot other than L10, L8 or L7; R78 deciding whether its OTel span replaces the `request` span; R69 republishing its `web` feature list or its `tower` dev-only clause; the owner ruling on `BASELINE-REVIEW: F321`; a `tower-http` release above 0.7.1 or an `axum` 0.9 release; a RustSec advisory against `tower-http`, `tracing` or `uuid`; hyper stabilising its `tracing` cfg
 
 ### Principles and implementation
 
@@ -141,11 +196,11 @@ mechanism.
 | Row | Must agree (level) | May vary | rs realization | Evidence |
 |---|---|---|---|---|
 | F317 | **Architectural pattern**: the id and header layers wrap everything that can short-circuit | how order is spelled in code | L1–L3 outside L5–L10 | A08–A12, N01 |
-| F318 | **Capability + wire value**: accept inbound `x-request-id` or generate one; bind it to the log context; echo it on the response, the echoed value being the logged value | id format | `SetRequestIdLayer` + span + overwrite echo | A01–A03, A14, N03 |
+| F318 | **Capability**: accept an inbound request id or generate one; bind it to the log context; echo it on the response, the echoed value being the logged value. The wire name follows the standard that governs each surface: py `x-request-id` (source fact, `inputs/prompt.md:9`), rs `request-id` (REST R11.7, §1.10) | id format; header name | `SetRequestIdLayer` + span + overwrite echo | A01–A03, A14, N03 |
 | F319 | **Policy**: one `http_request` event per request with route template, status, `duration_ms` and request id, also on failure | emitting mechanism; field serialization (R58) | `from_fn(access_log)` at L5 + `CatchPanicLayer` at L6 | A01b, A06–A12, N02, N04 |
 | F320 | **Policy**: `/healthz`, `/readyz`, `/metrics` produce no access event | raw path vs matched template | matched-template list | A04–A07 |
 | F321 | **Policy**: py's four headers on every response; a handler-set value wins | the header set may be improved (owner) | `if_not_present` at L2 | A01, A04–A13, N05 |
-| F327 | **Principle**: server output flows through the one pipeline; no second access line | framework-specific | nothing to silence; panic hook to R58 | E3 F01–F04 |
+| F327 | **Principle**: server output flows through the one pipeline; no second access line | framework-specific | nothing to silence; one process-wide panic hook, defined in F327 | E3 F01–F06 |
 
 **Differences from py that preserve the principle**, each justified rather than accidental:
 
@@ -163,10 +218,17 @@ mechanism.
    routing and also wraps the fallback (`axum-0.8.9/src/routing/mod.rs:311-316`).
 4. **F327 needs no step.** py clears `uvicorn`'s handlers (`inputs/prompt.md:9`, py
    `web/logging.py:71`). axum and hyper ship no access logger, so there is nothing to clear
-   (E3; see *Framework log fold-in* below).
+   (E3). The one residual, std's default panic hook, is replaced by F327's hook (see
+   *Framework log fold-in* below).
 5. **A handler panic is logged through `CatchPanicLayer` rather than a `try/except`.** Without the
    layer, the panic unwinds through the access layer and neither an event nor a response exists
    (N04).
+6. **The wire header is `request-id`, not py's `x-request-id`** (owner decision Q4.A). py's
+   name is a source fact (`inputs/prompt.md:9`). The rs HTTP surface is bound by the REST API
+   Design Standard: R11.7 (MUST) requires "the `request-id` correlation header (§1.10)", and
+   §1.10 rules out `X-Request-Id` because RFC 6648 deprecates new `X-` fields (R58r2 `:246`,
+   `:252`, `:267-272`). The capability and the log field `request_id` (R58r2 `:1249-1251`) are
+   unchanged, so the principle holds.
 
 **Is the layered-`Service` model the idiomatic analogue of `add_middleware`? Yes** (HIGH question
 1). axum documents the same onion for `Router::layer`, "middleware being executed from bottom to
@@ -184,9 +246,12 @@ as its claim, not verified here.
 **Ready-made versus hand-written** (HIGH question 1, second half). The ecosystem ships
 ready-made layers for request ids, security headers, panic containment and timeouts, all in
 `tower-http`. Two pieces are template code, each because a stock layer provably misses the
-contract:
+contract (the echo and the access event, below). Revision 3 adds two more, for which no stock
+candidate exists: the `traceparent` passthrough, because with `otel` off no OpenTelemetry crate
+may be involved; and F327's panic hook, because std's hook is process-global and no `tower`
+layer can replace it:
 
-- **The response echo.** Stock `PropagateRequestIdLayer` keeps any `x-request-id` already on the
+- **The response echo.** Stock `PropagateRequestIdLayer` keeps any `request-id` already on the
   response (`tower-http-0.7.1/src/request_id.rs:454-461`). py assigns
   (`response.headers["x-request-id"] = request_id`, quoted verbatim at `inputs/prompt.md:9`). In
   this stack one inner writer is plausible: R73's idempotency store replaying a stored response.
@@ -213,11 +278,12 @@ contract:
 | E. Framework registry (loco's `Vec<Box<dyn MiddlewareLayer>>`) | Rejected for fit | Dynamic dispatch and a registry for fewer than ten layers; R69 already rejected registry patterns (F331). Loco evidence is the opus leg's, inherited |
 | F. OTel-first request span (`axum-tracing-opentelemetry`) | Out of scope | R78's; slot L4 is reserved for it |
 
-**Minimal realistic example.** This is the executed probe's library, condensed; the header table
-and the four functions are the whole of the template code R75 adds:
+**Minimal realistic example.** This is the executed probe's library, condensed; the header table,
+the `InboundTraceparent` type and the seven functions are the whole of the template code R75 adds:
 
 ```rust
-pub const X_REQUEST_ID: HeaderName = HeaderName::from_static("x-request-id");
+pub const REQUEST_ID: HeaderName = HeaderName::from_static("request-id"); // REST §1.10, R11.7
+pub const TRACEPARENT: HeaderName = HeaderName::from_static("traceparent");
 pub const ACCESS_LOG_EXCLUDED_ROUTES: &[&str] = &["/healthz", "/readyz", "/metrics"];
 
 pub fn security_headers() -> SetMultipleResponseHeadersLayer<Response> {
@@ -233,8 +299,24 @@ pub fn security_headers() -> SetMultipleResponseHeadersLayer<Response> {
 pub async fn echo_request_id(req: Request, next: Next) -> Response {
     let id = req.extensions().get::<RequestId>().map(|id| id.header_value().clone());
     let mut res = next.run(req).await;
-    if let Some(id) = id { res.headers_mut().insert(X_REQUEST_ID, id); }
+    if let Some(id) = id { res.headers_mut().insert(REQUEST_ID, id); }
     res
+}
+
+tokio::task_local! { static INBOUND_TRACEPARENT: Option<HeaderValue>; }
+
+#[derive(Clone, Debug)]
+pub struct InboundTraceparent(pub HeaderValue); // opaque: never parsed, never generated
+
+pub async fn propagate_traceparent(mut req: Request, next: Next) -> Response {
+    let inbound = req.headers().get(TRACEPARENT).cloned();
+    if let Some(v) = &inbound { req.extensions_mut().insert(InboundTraceparent(v.clone())); }
+    INBOUND_TRACEPARENT.scope(inbound, next.run(req)).await
+}
+
+/// What an outbound adapter forwards as `traceparent`, if the current request carried one.
+pub fn inbound_traceparent() -> Option<HeaderValue> {
+    INBOUND_TRACEPARENT.try_with(Clone::clone).ok().flatten()
 }
 
 pub async fn access_log(req: Request, next: Next) -> Response {
@@ -256,7 +338,21 @@ pub async fn access_log(req: Request, next: Next) -> Response {
     res
 }
 
-/// Outermost -> innermost: L1 SetRequestId, L2 security headers, L3 id echo, [L4 R78/R79],
+/// F327. Called once by the serve binary's `main`, right after `telemetry::init`; never by
+/// library code. Replacing std's default hook is what suppresses its stderr line.
+pub fn install_panic_hook() {
+    std::panic::set_hook(Box::new(|info| {
+        let p = info.payload();
+        let message = p.downcast_ref::<&str>().copied()
+            .or_else(|| p.downcast_ref::<String>().map(String::as_str)).unwrap_or("Box<dyn Any>");
+        let location = info.location().map(|l| format!("{}:{}:{}", l.file(), l.line(), l.column()));
+        tracing::error!(target: "rs_launch_blueprint::panic", panic_message = message,
+            location = location.as_deref(), "panic");
+    }));
+}
+
+/// Outermost -> innermost: L1 SetRequestId, L2 security headers, L3 id echo,
+/// L3b traceparent passthrough, [L4 R78/R79],
 /// L5 access log, L6 catch-panic, [L7 R76 CORS], [L8 R74 rate limit], L9 timeout,
 /// [L10 R73 idempotency]. Written innermost-first: each `.layer()` wraps all before it.
 pub fn apply_middleware(router: Router, settings: &WebSettings, slots: Slots) -> Router {
@@ -268,9 +364,10 @@ pub fn apply_middleware(router: Router, settings: &WebSettings, slots: Slots) ->
     r.layer(CatchPanicLayer::new())                                              // L6
         .layer(middleware::from_fn(access_log))                                  // L5
         // L4: R78 / R79
+        .layer(middleware::from_fn(propagate_traceparent))                       // L3b
         .layer(middleware::from_fn(echo_request_id))                             // L3
         .layer(security_headers())                                               // L2
-        .layer(SetRequestIdLayer::new(X_REQUEST_ID, MakeRequestUuid))            // L1
+        .layer(SetRequestIdLayer::new(REQUEST_ID, MakeRequestUuid))              // L1
 }
 ```
 
@@ -305,10 +402,24 @@ subscriber recording every event at every level (E3):
   forwards to `log` only when no `tracing` subscriber is set.
 - **hyper 1.11.1 emits nothing**: its enabled features are `default`, `http1` and `server`, with
   no `tracing` (`probe-crate.log`).
-- **One plain-text line bypassed the pipeline**: the std default panic hook's
-  `thread '…' panicked at …` line (`framework-log-foldin.log`). It is process-global, so it is
-  R58's to route into `tracing`; the web side's only obligation is to keep axum's default
-  `tracing` feature on, which R69's value already does.
+- **Without a hook, one plain-text line bypasses the pipeline**: std's default panic hook
+  writes `thread '…' panicked at …` to stderr. Revision 2's E3 recorded exactly that line; it
+  was the one residual.
+- **With F327's hook installed, that line is gone** (F06: 0 plain-text lines), and the panic
+  arrives as one `r75probe::panic` `ERROR` event with `panic_message="boom"`, a `location`,
+  and the request span's `request_id`, equal to the 500's `request-id` (F05).
+
+**F327's panic hook, defined.** R58r2 assigns F327 to R75 (`:105-112`, `:658`, `:1175`) and
+defines no hook, so F327 owns one. `install_panic_hook()` (in the example above) replaces
+std's process-wide hook. It emits the panic message (a `&str` or `String` payload) and its
+location as one `ERROR` event, target `<crate>::panic`, in whatever span is current. For a
+handler panic the hook fires on the panicking thread before `CatchPanicLayer` catches the
+unwind, so the event carries the request's id. Because the default hook is replaced, std's
+stderr line is never written. The serve binary's `main` installs the hook once, **right after**
+R58's `telemetry::init`, so a subscriber exists when it fires. Library code and shared test
+code never install it, which keeps R58r2's rule that nothing is installed by a party that does
+not own it (`:1485`, INITIALISATION). The web side must also keep axum's default `tracing`
+feature on, which R69's value already does.
 
 So the answer to "does F327 depend on R69's pick" is **no, for any tower-based framework**. It
 would for `actix-web`, whose `Logger` writes through `log` (`raw/doxa-openai.normalized.md:26`);
@@ -396,14 +507,17 @@ policy surface F321 does not ask for, `tower-helmet` has had no release since 20
 `tower-request-id` generates ULIDs beside py's UUIDs.
 
 **Cross-repo agreement** (HIGH question 3). No shared low-level *value* is recommended except the
-owner-level policy constants, which keep cross-service log queries uniform: the header name
-`x-request-id`, the event message `http_request`, the probe list and the security-header set. py
+owner-level policy constants, which keep cross-service log queries uniform: the event message
+`http_request`, the probe list and the security-header set. **The request-id header name is not
+shared**: py uses `x-request-id` (`inputs/prompt.md:9`), and rs uses `request-id` because REST
+R11.7 and §1.10 bind the rs HTTP surface (owner decision Q4.A; R58r2 `:246`, `:252`). The log
+field `request_id` is the same in both, so log queries stay uniform. py
 carries two accidental drifts against current guidance, handed to the py follow-on: rate limit
 outside CORS (`BASELINE-REVIEW: F317`), and the header set, pending the owner's F321 disposition.
 
 **Hand-offs, one line each.**
 
-- **R73.** Slot L10. Either strip `x-request-id` from stored responses or rely on L3's overwrite
+- **R73.** Slot L10. Either strip `request-id` from stored responses or rely on L3's overwrite
   (N03, A14). The layer must satisfy `Router::layer`'s bounds (`Clone + Send + Sync + 'static`,
   error `Into<Infallible>`; `axum-0.8.9/src/routing/mod.rs:303-309`), with a fallible layer
   wrapped in `HandleErrorLayer` in the same slot.
@@ -418,11 +532,15 @@ outside CORS (`BASELINE-REVIEW: F317`), and the header set, pending the owner's 
   500 (`catch_panic.rs:351`). Neither is a problem document. Whether R70 re-maps them is R70's
   call; `RequestId` is in request extensions if R70 echoes the id.
 - **R78 / R79.** Slot L4. R78 decides whether its OTel span replaces the `request` span.
+  R78's propagator and extraction operate with `otel` on only; they run inside L3b's scope
+  and may read `InboundTraceparent`. With `otel` off, L3b alone meets REST R11.8, and R78
+  must not move propagation behind its feature (R58r2 `:273-278`, `:650-651`).
 - **R80.** `/healthz` and `/readyz` are excluded by template; a route R80 renames must be renamed
   in `ACCESS_LOG_EXCLUDED_ROUTES` too.
-- **R58.** Owns the subscriber, the JSON field rendering of the event, the level policy for the
-  `<crate>::http_access` target (it must stay visible at `INFO`), a panic hook that routes std's
-  panic message into `tracing`, and optionally an `EnvFilter` cap on framework targets.
+- **R58.** Published (R58r2); this stack consumes its value (`## Parameters`). R58r2 owns the
+  subscriber, the formatter and the level policy. The panic hook is **not** R58's: F327
+  defines it here, because R58r2 assigns F327 to R75 (`:658`, `:1175`). The optional
+  `EnvFilter` cap on framework targets remains a defence-in-depth request.
 - **R69.** See `## Parameters`: `dep:tower-http` joins the `web` feature list.
 
 **Migration implications.**
@@ -430,10 +548,12 @@ outside CORS (`BASELINE-REVIEW: F317`), and the header set, pending the owner's 
 | File | Change |
 |---|---|
 | `Cargo.toml` | `tower-http = { version = "0.7.1", optional = true, default-features = false, features = ["request-id", "set-header", "catch-panic", "timeout"] }`; `dep:tower-http` in `web` (see `## Parameters`); keep axum's default features (`tracing`, `tower-log`); `tower` stays dev-only; `tracing` placed by R58 |
-| `src/web/middleware.rs` (new; the name R69 reserves, `DECISION.md:1424`) | `X_REQUEST_ID`, `ACCESS_LOG_EXCLUDED_ROUTES`, `security_header_values()`/`security_headers()`, `echo_request_id`, `access_log`, `apply_middleware` with the L1–L10 doc comment |
+| `src/web/middleware.rs` (new; the name R69 reserves, `DECISION.md:1424`) | `REQUEST_ID`, `TRACEPARENT`, `ACCESS_LOG_EXCLUDED_ROUTES`, `security_header_values()`/`security_headers()`, `echo_request_id`, `InboundTraceparent`, `propagate_traceparent`, `inbound_traceparent()`, `access_log`, `install_panic_hook()`, `apply_middleware` with the L1–L10 doc comment (L3b included) |
+| the serve binary's `main` (R69's `<app>-serve`) | call `install_panic_hook()` once, immediately after R58's `telemetry::init` |
+| outbound HTTP adapters (R01's `http-transport-injection-seam`) | set `traceparent` from `inbound_traceparent()` when it returns a value |
 | `src/web/mod.rs` (R69's `build_router`) | call `apply_middleware` once, **last**, after every `merge`/`nest`, so no route escapes the stack |
 | `src/web/cors.rs`, `rate_limit.rs`, `idempotency.rs` | R76, R74 and R73 expose a layer (or `None`) for slots L7, L8 and L10 |
-| `tests/web_middleware.rs` (new; `#![cfg(feature = "web")]`) | the A01–A14 contract and the N01/N03/N04 negative controls, rewritten against the real router |
+| `tests/web_middleware.rs` (new; `#![cfg(feature = "web")]`) | the A01–A15 contract, E3's F05/F06 panic-hook checks and the N01/N03/N04 negative controls, rewritten against the real router |
 | `docs/` web section | the outermost-first contract, the exclusion list and the header set |
 
 **Validation strategy.** *Executed* (this synthesis; `## Empirical check`): the whole contract on
@@ -442,9 +562,12 @@ the host toolchain and on the 1.96.0 floor, the six variants, and the real-liste
 macos-latest via `cargo test --features web`; (2) an end-to-end check against the serve binary:
 `curl -si -X OPTIONS -H 'Origin: https://app.example' -H 'Access-Control-Request-Method: GET'
 http://127.0.0.1:$PORT/v1/projects` and `curl -si http://127.0.0.1:$PORT/healthz`, expecting
-`x-request-id` and the four headers on both, exactly one `http_request` JSON line for the first
-and none for the second; (3) with R73, R74 and R76's real layers in their slots, rerun A08–A10 and
-A14; (4) after R58's panic hook lands, rerun E3 and expect no plain-text line.
+`request-id` (and no `x-request-id`) and the four headers on both, exactly one `http_request`
+JSON line for the first and none for the second; (3) with R73, R74 and R76's real layers in their
+slots, rerun A08–A10, A14 and A15; (4) rerun E3 against the serve binary, which installs F327's
+panic hook, and expect one `<crate>::panic` event and no plain-text line; (5) R58r2's validation
+item 6 (`:1916-1917`): with `otel` off, an inbound `traceparent` reaches an outbound request
+byte-for-byte.
 
 **Confidence.** **High** for the layer model and its direction, the L1–L3 envelope, F327, and
 the exclusion mechanism. **Medium-high** for the hand-written access event over `TraceLayer`,
@@ -457,24 +580,37 @@ R73 publish.
 - assumes rust-edition = 2024
 - assumes target-os-matrix = ubuntu-latest, macos-latest
 - assumes license = MIT OR Apache-2.0
-- assumes logging-pipeline-contract = —
+- assumes logging-pipeline-contract = logging-pipeline/v1: STACK - tracing 0.1.44 is the only diagnostic facade any package may name, taken default-features = false, features = ["std"] by rs-launch-blueprint-core and rs-launch-blueprint-web and with its defaults (std, attributes) by the root package rs-launch-blueprint and rs-launch-blueprint-cli; tracing-subscriber 0.3.23 with features = ["env-filter"] over its default set (smallvec, fmt, ansi, tracing-log, std) is declared on the root package only, with the json feature OFF because the template owns the structured formatter and the feature adds exactly two crates (serde, tracing-serde) for a formatter it replaces, and with local-time NEVER enabled because the crate's own documentation says the local-offset lookup may be unsound or fail; timestamps are UTC ISO-8601; tracing-log 0.2.0 enters through tracing-subscriber's default tracing-log feature and is never declared directly; no other logging crate is added; crates/core, crates/cli and crates/web must not name tracing-subscriber, enforced by R02's cargo deny --all-features check bans [bans] deny[].wrappers rule and its crates/core allow-list test; the version floor is 0.3.20, RUSTSEC-2025-0055's patched floor. INITIALISATION - exactly one telemetry::init(Profile) -> Init in the root package's src/telemetry.rs, called first in each binary's main before anything that can log; it builds Registry::default() with a reload::Layer<EnvFilter> and one fmt layer whose writer is stderr, and first checks tracing::dispatcher::has_been_set(): if a dispatcher is already set, a host owns diagnostics, nothing is installed and init returns Init::HostOwned; otherwise it installs with SubscriberInitExt::try_init() and NEVER init(), which is try_init().expect(..), returning Init::Installed(Handles { level: reload::Handle<EnvFilter, Registry>, log_bridge_refused: false }) on Ok and Init::Installed(Handles { level, log_bridge_refused: true }) on Err, because try_init sets the global dispatcher before it installs the log bridge, so an Err after a clear check means only that a host already owns the log logger while the template's dispatcher is live; init never panics, never replaces and never tears down anything; template code never calls tracing_log::LogTracer::init(), because try_init already installs the bridge with the subscriber's max-level hint and a second installation fails with SetLoggerError; tests and embedders use the scoped set_default guard instead of the global path. RECONFIGURATION - the level is swappable after the configuration file is read, through the returned reload::Handle, which is how F274's config tier is reached without logging being absent while the configuration file is parsed; the format and the writer are fixed at init and are not reloadable, a deliberate departure from py's handler-replacement model recorded as a migration risk. STRUCTURED-FIELD AND REDACTION CONTRACT - key-based masking is applied at format time, not event time, because a tracing::Event is immutable, RecordFields is a sealed trait and no Layer can rewrite an event; the key vocabulary is F252's verbatim (token, password, secret, authorization, api_key, apikey, credential, cookie, matched as an ASCII-lowercased substring) and the mask is [REDACTED]; the human profile uses a template-owned FormatFields wrapping DefaultFields, and the structured profile uses a template-owned FormatEvent plus a template-owned JSON FormatFields, because tracing-subscriber's stock Format<Json> serialises event fields itself through tracing_serde in both its flattened and non-flattened branches and uses its N: FormatFields parameter only for span fields, so a redacting field formatter under .json() leaks every event field and panics if its output is not valid JSON; secrecy::SecretString (R56 revision 2) is the type-level first line of defence and the key match is the second; the structured line's key order is level, target, the R78 trace-correlation slot, the event's own fields, then span; the HTTP correlation field is named request_id, matching CLI Design Standard R7.8's spelling, while the wire header stays request-id per REST API Design Standard R11.7 and section 1.10; redaction is a property of rendered output, so any later exporter layer must apply the policy itself; and the residual gap - a secret carried inside a non-sensitive field's value is not masked - is recorded as OVERRIDE (OV-09) against CLI Design Standard R5.6. PROFILES (one engine, two policies; one subscriber per process, since each front end is its own binary) - Profile::Cli for the CLI binary R49 names: format auto, console or json, where auto resolves to console when std::io::stderr().is_terminal() and to json otherwise, colour from R65's resolved anstream::ColorChoice passed to .with_ansi(bool), default level WARN; Profile::Service { level, format } for the serve binary R69 gates: format from RSLBP_WEB_LOG_FORMAT, whose value set is json (the default) or console with no auto and no TTY test, any other value rejected by the FromStr R77's WebSettings::from_env() calls as R67's RSLB203 before init runs; default level INFO; no file sink; level and format are the values R77's WebSettings::from_env() parsed from RSLBP_WEB_LOG_LEVEL and RSLBP_WEB_LOG_FORMAT and passes in, and telemetry reads no environment variable itself; plus R75's request-span layer. LEVEL LADDER (F274), one total order, highest first, with every command-line flag above the environment variable as CLI Design Standard R5.1 requires - --debug (TRACE plus internal detail: target, file, line, thread) > --log-level with the values off, error, warn, info, debug and trace > --quiet/-q (ERROR) > -v/-vv/-vvv (INFO/DEBUG/TRACE) > RSLBP_LOG_LEVEL > config-file [logging].level > default WARN; --log-format with the values auto, console and json, plus RSLBP_LOG_FORMAT, selects the render mode by the same deterministic flag-to-environment mapping. STREAMS - every diagnostic byte goes to stderr and stdout is never written by the pipeline, per CLI Design Standard R7.1 and R67's requirement that stdout stays byte-empty on the error path; the pipeline never emits R67's error envelope, which the error boundary owns. EXTENSION INTERFACE - two declared slots with nothing decided in them: a layer slot in telemetry::init where R78's tracing-opentelemetry layer attaches under an otel = ["web", ...] feature nesting on R69's web, with a matching trace_id/span_id serialisation point in the owned FormatEvent, and with W3C traceparent propagation deliberately NOT gated by that feature because REST API Design Standard R11.8 requires it unconditionally on the HTTP surface; and a sink slot where R59's file sink attaches as a second Layer with its own MakeWriter and its own per-layer Filter, which is how a sink gets a level independent of the console.
 
 **This item owns no parameter** (the prompt's `- owns:` is empty, `inputs/prompt.md:23`). The five
 `assumes` lines are byte-identical to `inputs/PARAMETERS.md` and `inputs/parameters.json`
 (`review/evidence/decision-shape-check.log`). **No `CONFLICT:` line is raised.**
 
-**What this decision assumes of R58**, since `logging-pipeline-contract` is still `—` (RUNBOOK §1
-requires a conditional answer to state its assumptions):
+**What R58's published value fixes for this stack.** Revision 2 consumed
+`logging-pipeline-contract` as `—` and stated four placeholder assumptions. R58r2 now owns the
+value above (R58r2 `:1485`), and this decision consumes it verbatim. Each former assumption
+resolves as follows:
 
-1. one global `tracing` subscriber, installed by the binary, never by the library;
-2. flat event fields rendered, so `request_id`, `method`, `route`, `path`, `status` and
-   `duration_ms` reach the sink with the event;
-3. the `<crate>::http_access` target visible at `INFO` in the web profile;
-4. a process-wide panic hook that emits the panic message as a `tracing` event and suppresses the
-   std default stderr line.
+1. **One global subscriber, installed by the binary.** Owned: "exactly one
+   telemetry::init(Profile) -> Init in the root package's src/telemetry.rs, called first in each
+   binary's main" (`:1485`, INITIALISATION).
+2. **Event fields rendered with the event.** Owned: the structured line's key order is "level,
+   target, the R78 trace-correlation slot, the event's own fields, then span" (`:1485`;
+   `:1247-1251`). The access event's six fields are event fields, so they render at the top
+   level. A `TraceLayer` design would put `route`, `method`, `path` and `request_id` under
+   `span`. R58r2 does not flatten the span into the event, so `TraceLayer` stays the runner-up.
+   The correlation field is `request_id` and the wire header is `request-id` (`:267-272`).
+3. **The `<crate>::http_access` target visible at `INFO`.** Owned: `Profile::Service` has
+   "default level INFO", plus "R75's request-span layer" (`:1485`, PROFILES). R58r2 fixes no
+   per-target directive, so an operator who sets `RSLBP_WEB_LOG_LEVEL` above `INFO` hides the
+   access event by choice.
+4. **The panic hook.** Not R58's. R58r2 defines none and assigns F327 to R75 (`:105-112`,
+   `:658`, `:1175`), so F327 defines it (*Framework log fold-in*). This assumption is
+   withdrawn.
 
-If R58 publishes a formatter that always flattens the current span into each event, the
-`TraceLayer` runner-up becomes viable; that is a re-verify trigger, not a conflict.
+The same value places `traceparent` propagation outside the `otel` feature ("W3C traceparent
+propagation deliberately NOT gated by that feature", `:1485`, EXTENSION INTERFACE). Slot L3b
+realizes that with `otel` off.
 
 **`web-extra-surface` is not an `assumes` line**, because the prompt consumes only R58
 (`inputs/prompt.md:24`, `inputs/parameters.json`). R69's value is followed in prose, as R69 and
@@ -501,7 +637,9 @@ only, stays intact.
 `R75_PROBE_DIR`), materialized from heredocs by `review/evidence/probe-crate.sh`. It is outside the
 repository, and **no Rust file was written into the repository**. The first run resolved and
 downloaded from crates.io into the private `CARGO_HOME` this run was given; every later cargo
-command runs `--offline --locked`. `Cargo.lock` sha256
+command runs `--offline --locked`. Revision 3's re-records ran with
+`R75_PROBE_DIR=/tmp/r75-r3-probe`, seeded with the same `Cargo.lock`, under a fresh private
+`CARGO_HOME`, whose first fetch went to crates.io. `Cargo.lock` sha256
 `5e89a57d3a9d8513487aeee2fa4e2f07afde2eddc7c3584ae90c3be7b01d43cb`. Resolved: `axum` 0.8.9,
 `tokio` 1.53.1, `tower-http` 0.7.1, `tower` 0.5.3 (dev), `tracing` 0.1.44, `uuid` 1.26.1,
 `hyper` 1.11.1.
@@ -526,21 +664,22 @@ re-observes rather than reproduces their numbers.
 
 | Check | Script | Result |
 |---|---|---|
-| E0 resolution and version matrix | `probe-crate.sh` | resolves; 58 unique normal-tree packages, 5 only through `tower-http`; highest dependency `rust-version` 1.85; `hyper` features `default`, `http1`, `server`; `tracing`'s `log` feature via axum `tower-log` → `tower/log`; the only duplicates are the proc-macro `syn` 2 / 3 split |
-| E1 the contract | `stack-acceptance.sh` | **15 pass, 0 fail on 1.98.1; 15 pass, 0 fail on 1.96.0** |
+| E0 resolution and version matrix | `probe-crate.sh` | resolves; 58 unique normal-tree packages, 5 only through `tower-http`; highest dependency `rust-version` 1.85; `hyper` features `default`, `http1`, `server`; `tracing`'s `log` feature via axum `tower-log` → `tower/log`; the only duplicates are the proc-macro `syn` 2 / 3 split; **0 `opentelemetry*` packages**; tokio's `rt` feature on (L3b's `task_local!`) |
+| E1 the contract | `stack-acceptance.sh` | **16 pass, 0 fail on 1.98.1; 16 pass, 0 fail on 1.96.0** |
 | E2 the variants | `negative-controls.sh` | **12 pass, 0 fail** (each asserts what the variant does, including its failures) |
-| E3 F327 under a real listener | `framework-log-foldin.sh` | **4 pass, 0 fail**; tally `axum::serve` TRACE 7, `r75probe::http_access` INFO 3, `tower_http::catch_panic` ERROR 1; 0 `log` records; one std panic-hook stderr line |
+| E3 F327 under a real listener | `framework-log-foldin.sh` | **6 pass, 0 fail**; tally `axum::serve` TRACE 7, `r75probe::http_access` INFO 3, `r75probe::panic` ERROR 1, `tower_http::catch_panic` ERROR 1; 0 `log` records; **0 plain-text lines** with F327's hook installed (revision 2, without it, recorded one) |
 | E4 figures | `figures.sh` | every endpoint answered; **0 gaps** |
 | E5 practice and gate items | `practice-check.sh` | 6 upstream files read at their commit SHAs; `unsafe` census of 4 crates |
-| E6 shape, parameters and citations | `decision-shape-check.sh` | **all pass, 0 fail**: H2 set equal to R69's, the five `assumes` lines byte-identical, every `raw/`, `inputs/` and R69 citation resolving, and the load-bearing ones matching their quoted text |
+| E6 shape, parameters and citations | `decision-shape-check.sh` | **133 pass, 3 fail**: H2 set equal to R69's, the five `assumes` lines byte-identical, every `raw/`, `inputs/`, R69 and R58r2 citation resolving (C53–C62 for R58r2), and the load-bearing ones matching their quoted text. The 3 failures, C39, C51 and C52, are **point-in-time input drift** (RUNBOOK §7.7): `inputs/prompt.md` was reconciled to the canonical prompt after revision 2, so the record note's two differing lines no longer differ. The revision-2 empirical audit ran them green |
 
 **E1, case by case** (`stack-acceptance.log`; `oneshot` against the composed router, stand-ins in
-slots L7, L8 and L10):
+slots L7, L8 and L10). Every "id present" below means `request-id` is present **and**
+`x-request-id` is absent:
 
 | Case | Request | Observed |
 |---|---|---|
 | A01 / A01b | `GET /v1/projects/7` | 200; UUID v4 id; all four headers; one event with `route="/v1/projects/{id}"`, `status=200`, `method=GET`, `request_id` equal to the header |
-| A02 | inbound `x-request-id: abc-123` | echoed; the event's `request_id` is `abc-123` |
+| A02 | inbound `request-id: abc-123` | echoed; the event's `request_id` is `abc-123` |
 | A03 | handler emits its own event | the handler event's span carries the request's id |
 | A04 / A05 | `/healthz`, `/healthz?probe=1` | 200, 0 events, id and headers present |
 | A06 / A07 | `/nope`, `/healthz/` | 404 through the fallback, 1 event each, no `route`, id and headers present |
@@ -548,9 +687,10 @@ slots L7, L8 and L10):
 | A09 | cross-origin 429 | `access-control-allow-origin: *` present |
 | A10 | CORS preflight (real `CorsLayer`) | 200, id, headers and allow-origin present, 1 event |
 | A11 | handler panic | 500, headers present, 1 event, 1 `tower_http::catch_panic` ERROR whose span id equals the response id |
-| A12 | 5 s handler, 200 ms timeout | 408, headers present, 1 event, `duration_ms` 202.0 (host) / 202.2 (1.96.0) |
+| A12 | 5 s handler, 200 ms timeout | 408, headers present, 1 event, `duration_ms` 202.8 (host) / 203.1 (1.96.0) |
 | A13 | handler sets `X-Frame-Options: SAMEORIGIN` | preserved; the other three present |
-| A14 | L10 stand-in replays a response carrying `x-request-id: original-111` | the echoed id is the new request's UUID and equals the event's |
+| A14 | L10 stand-in replays a response carrying `request-id: original-111` | the echoed id is the new request's UUID and equals the event's |
+| A15 | inbound `traceparent: 00-4bf92f3577b34da6a3ce929d0e0e4736-00f067aa0ba902b7-01`, then none | the handler's `InboundTraceparent` and the outbound accessor both return the inbound bytes unchanged; without the header both return none; neither response carries `traceparent` |
 
 **E2, the variants** (`negative-controls.log`):
 
@@ -569,7 +709,8 @@ slots L7, L8 and L10):
 |---|---|
 | ubuntu-latest | **Not executed.** `tower-http`'s own CI covers it; the template's CI (R11) must |
 | R73, R74 and R76's real layers in L10, L8 and L7 | **Stand-ins only.** A09, A10 use a real `CorsLayer`; the 429 and the replay are stand-ins |
-| R58's field rendering, level policy and panic hook | **Assumed** (`## Parameters`); E3's capture layer is a test double |
+| R58's field rendering and level policy in the real `telemetry::init` | **Published, not executed here** (`## Parameters`); E3's capture layer is a test double. The panic hook is executed (E3 F05, F06) |
+| `traceparent` through a real outbound call | **Not executed.** A15 shows the value reaching the extension and the task-local an outbound adapter reads; R58r2's validation item 6 is the P03 test |
 | py's `setdefault` at `web/middleware.py:120`, py's HSTS value, py's order at `web/app.py:137-146` | **Inherited from the legs, not re-verified** (read constraint) |
 | The owner reference's C11 text | **Not read**; N01 is built from the opus leg's quotation |
 | Performance | **Not benchmarked.** The openai leg's benchmark design (`raw/doxa-openai.normalized.md:218-229`) is the plan if a cost question arises |
@@ -591,9 +732,13 @@ engine. Both `.normalized.md` twins passed the shape validator with no changes
 (`operations/doxa/normalization.json`).
 
 **All four agree** on the load-bearing core: `tower-http` 0.7.1 for the request-id and header
-layers, `SetRequestIdLayer` outermost, `x-request-id` with UUID v4, CORS outside rate limiting,
+layers, `SetRequestIdLayer` outermost with UUID v4, CORS outside rate limiting,
 idempotency innermost, the probe list, and no framework access logger to install or clear under
-axum.
+axum. All four also name the header `x-request-id`, following py. **Revision 3 departs from all
+four on that value** by owner decision Q4.A, on R58r2's REST grounding, which was published after
+the legs ran (R58r2 `:246`, `:252`). This is a resolution by a published prerequisite, not by
+count or by a rerun of the legs' evidence. No leg proposed a `traceparent` passthrough; L3b was
+added by S1 ruling on R58r2 `:273-278`.
 
 **Disagreements, each resolved by evidence rather than by count.**
 
@@ -688,7 +833,9 @@ recommendation.
 
 **Gaps recorded.**
 
-1. R58's `logging-pipeline-contract` is missing; four assumptions stand in for it.
+1. Closed in revision 3: R58's `logging-pipeline-contract` is published (R58r2) and consumed
+   verbatim. R58r2's real `telemetry::init` under this stack is still unexecuted (see the table
+   above).
 2. ubuntu-latest was not executed.
 3. py and the owner reference were not read by this synthesizer; four facts are inherited from
    the legs (the `setdefault` mechanism, the HSTS value, py's CORS/rate-limit order, and the C11

@@ -1,5 +1,5 @@
 === R80 check-standard-r2.sh ===
-date(UTC): 2026-09-19T01:33:14Z
+date(UTC): 2026-09-28T05:51:54Z
 grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
 standard: /Users/stevemorin/c/rest-standards blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9 (commit 0850d43e45d919ef5e37f7174c4212b46013c49f)
 blob lines: 3427
@@ -60,62 +60,13 @@ PASS S26 — R11.7 binds the probe responses too, so R75's correlation middlewar
   rule lines naming health/readiness/liveness: 0
 PASS S27 — no rule in the standard names health, readiness or liveness (0 matching rule lines, counted with grep (BSD grep, GNU compatible) 2.6.0-FreeBSD) — there is no ops carve-out, so the probe surface is judged by the general rules above
 --- P: axum 0.8.9 measured in an r2 probe workspace ---
-workspace: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r80-probe-r2.w6ZDasa9 (deleted on exit)
-   Compiling proc-macro2 v1.0.107
-   Compiling quote v1.0.47
-   Compiling unicode-ident v1.0.26
-   Compiling libc v0.2.189
-   Compiling itoa v1.0.18
-   Compiling pin-project-lite v0.2.17
-   Compiling futures-core v0.3.34
-   Compiling serde_core v1.0.229
-   Compiling bytes v1.12.1
-   Compiling once_cell v1.21.4
-   Compiling serde v1.0.229
-   Compiling httparse v1.10.1
-   Compiling zmij v1.0.23
-   Compiling tower-service v0.3.3
-   Compiling log v0.4.34
-   Compiling futures-channel v0.3.34
-   Compiling smallvec v1.16.1
-   Compiling serde_json v1.0.151
-   Compiling percent-encoding v2.3.2
-   Compiling slab v0.4.12
-   Compiling futures-task v0.3.34
-   Compiling httpdate v1.0.3
-   Compiling tracing-core v0.1.36
-   Compiling atomic-waker v1.1.2
-   Compiling tower-layer v0.3.3
-   Compiling sync_wrapper v1.0.2
-   Compiling futures-util v0.3.34
-   Compiling form_urlencoded v1.2.2
-   Compiling memchr v2.8.3
-   Compiling mime v0.3.17
-   Compiling ryu v1.0.23
-   Compiling matchit v0.8.4
-   Compiling tracing v0.1.44
-   Compiling http v1.5.0
-   Compiling errno v0.3.14
-   Compiling socket2 v0.6.5
-   Compiling mio v1.2.3
-   Compiling signal-hook-registry v1.4.8
-   Compiling syn v3.0.6
-   Compiling http-body v1.1.0
-   Compiling http-body-util v0.1.5
-   Compiling axum-core v0.5.6
-   Compiling serde_path_to_error v0.1.20
-   Compiling tokio-macros v2.7.2
-   Compiling serde_derive v1.0.229
-   Compiling tokio v1.53.1
-   Compiling serde_urlencoded v0.7.1
-   Compiling probe-core v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe-r2.w6ZDasa9/crates/core)
-   Compiling hyper v1.11.1
-   Compiling tower v0.5.3
-   Compiling hyper-util v0.1.20
-   Compiling axum v0.8.9
-   Compiling probe-web v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe-r2.w6ZDasa9/crates/web)
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 23.95s
-     Running tests/conformance.rs (target/debug/deps/conformance-52e5310abcfde3f1)
+workspace: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r80-probe-r2.kefkFlFY (deleted on exit)
+NOTE: --offline metadata failed; retrying online, still --locked
+cargo network flags: '--locked'
+   Compiling probe-core v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe-r2.kefkFlFY/crates/core)
+   Compiling probe-web v0.4.2 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r80-probe-r2.kefkFlFY/crates/web)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.93s
+     Running tests/conformance.rs (/tmp/cargo-s76-R80-r7-target/debug/deps/conformance-72823ef2c97b156b)
 
 running 6 tests
 test p1_liveness_carries_cache_control ... P1 GET /healthz status=200 OK cache-control=Some("no-cache") content-type=Some("application/json")
@@ -131,7 +82,7 @@ ok
 test p6_method_not_allowed_still_carries_allow ... P6 POST /healthz status=405 Method Not Allowed allow=Some("GET,HEAD") (R5.11 requires Allow on 405)
 ok
 
-test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
 
 PASS P1 — R7.1 and R4.10 CONFORM after the move: GET /healthz answers 200 with Cache-Control: no-cache and Content-Type: application/json
 PASS P2 — R7.1 CONFORMS on both readiness branches, including the 503 a cache must never serve stale
@@ -152,11 +103,11 @@ PASS P6 — R5.11 CONFORMS: axum 0.8.9 supplies the Allow header the rule makes 
   unchanged  probe/web-tests/probes.rs
   unchanged  probe/facade-src/lib.rs
   unchanged  probe/facade-tests/version_hazard.rs
-PASS C1 — all twelve revision-1 scripts, logs and probe sources are byte-identical to the bytes revision 1 was accepted-pending on — this revision adds files, it does not rewrite evidence
-FAIL C2 — the H1 is not the prescribed revision-2 title
+PASS C1 — all twelve revision-1-era scripts, logs and probe sources are byte-identical to the bytes revision 4 cites, check-offline.sh and its log at the bytes revision 7 cites
+PASS C2 — the H1 is the date-first title of the current revision, 7
 PASS C3 — the revision note names owner ruling W2-REST and pins the standard by blob
-  OVERRIDE (OV-04) mentions: 0; Argument blocks: 1; Options blocks: 1
-FAIL C4 — the override block is missing or malformed (OV-04 0, Argument 1, Options 1)
+  OVERRIDE (OV-05) mentions: 11; Argument blocks: 1; Options blocks: 1
+PASS C4 — the decision records exactly one OVERRIDE (OV-05) with one **Argument:** and one **Options:** block, the shape AGENTS.md and the standard's section 1.9 require
 PASS C5 — the decision carries a conformance note in the standard's own section 1.9 template, declaring all four applicability switches
 PASS C6 — the decision states plainly that the recommendation moved, and names the header R7.1 forced onto it
 h2_unfenced=5
@@ -165,8 +116,7 @@ reverify=1
 current_h2=Decision|Parameters|Empirical check|Engines
 PASS C7 — revision 2's shape is right, counted outside code fences as the publication validator counts: five H2 sections, one '## Supersedes', one 're-verify:' line, and the current entry's four H2s in the required order
 PASS C8 — the parameter block is unchanged in shape: seven '- assumes' lines and no '- owns' line (their byte-identity against the live registry is check O3's, re-run unchanged)
-  revision-1 offline script re-run under revision 2: 27 PASS, 1 FAIL
-    FAIL O25 — DECISION.md shape is wrong: re-verify lines 1, Supersedes 1, H2 sections 6
-PASS C9 — re-running revision 1's unedited offline script against revision 2 yields 27 of its 28 checks PASS and exactly one FAIL — O25, whose first-revision shape rule (no Supersedes, four H2s) revision 2 is entitled to break and check C7 replaces. Every other revision-1 assertion, the seven byte-identical assumes lines included, still holds
+  offline script re-run into a separate file: 28 PASS, 0 FAIL
+PASS C9 — re-running the offline script into check-offline.r2-rerun.log yields all 28 checks PASS and 0 FAIL — the seven byte-identical assumes lines and the identity-bound O17 included
 
-=== 40 PASS, 2 FAIL, 0 SKIP ===
+=== 42 PASS, 0 FAIL, 0 SKIP ===

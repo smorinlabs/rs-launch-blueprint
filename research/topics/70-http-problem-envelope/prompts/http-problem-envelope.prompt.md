@@ -20,7 +20,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - owns:
 - consumes: R67: error-taxonomy-exit-codes
 - effort: focused
-- engines: codex, opus
+- engines: muse, opus
 - evidence-checks:
 - acceptance-after:
 - related (not a registry dependency): R69 (`web-framework-stack`) decides which framework hosts this envelope's error-handling extension point (F303); this item's envelope pattern must work with whichever framework R69 picks — treat R69's choice as open, do not block on it. R71 (`openapi-generation-pipeline`) owns the OpenAPI schema post-processing that keeps the generated error shape in sync with this envelope (F307); this item defines the envelope contract that R71 must document, not the sync step itself.
@@ -66,7 +66,7 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 6. binary-size and compile-time cost stated qualitatively.
 
 Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
-- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception. This item substitutes Muse (Meta) for Codex under the `engine_overrides` pilot; its mirrored `- engines:` line is authoritative.
 - This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
 - Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member.
 - The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.

@@ -1,0 +1,104 @@
+# R77 sources — 2026-09-28T05:37:05Z
+# /usr/bin/grep version: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+PASS repository root resolves from this script's own location
+## IN-REPO — ledger, index, owner rulings, prompt
+PASS COMMONALITY F324 is this item's row, DIVERGENT, py-only
+PASS COMMONALITY F330 is R69's row (the lazy-load fallback)
+PASS COMMONALITY F303 records that ts has no web service
+PASS research index R77 row: crate, py-only, DIVERGENT, owns —
+PASS OWNER-REVIEW carries the 2026-09-12 licence ruling heading
+PASS owner-decisions records the withdrawal of the lenient MSRV-gate reading
+PASS owner-decisions section 11 makes the reference architecture a standing input
+PASS the binding prompt's owns line is empty (R77 owns no parameter)
+PASS the binding prompt's consumes line is empty
+
+## IN-REPO — the owner-supplied reference architecture rows this decision answers
+PASS reference line 16 assigns C9 (config and secrets) to R77
+PASS reference C9 Config row names figment 0.10.x over config-rs
+PASS reference C9 prose: layered defaults -> TOML file -> env
+PASS reference C9 secrets: --set-secrets env-var injection is the default
+PASS reference C13: AppState holds config; FromRef hands sub-state to extractors
+PASS reference C13: dependency injection via traits behind concrete types
+PASS reference sample Cargo.toml puts figment in the manifest
+PASS reference sample layout has src/config.rs as figment layered config
+PASS reference sample main.rs loads once at startup
+PASS reference C15 runbook: SIGTERM then a 10 second period then SIGKILL
+
+## IN-REPO — accepted-but-unpublished decisions this answer is designed against
+PASS R69 revision 11 owns web-extra-surface with the crates/web tree
+PASS R69 revision 10 reserves the AppState slot this item fills
+PASS R69 revision 10 declares FromRef for that slot
+PASS R69 revision 10 hands R77 the Cloud Run drain datum
+PASS R69 revision 10 carries BASELINE-REVIEW: F330 (drop py's lazy-load fallback)
+PASS R69's owned value makes every service knob an environment variable named by R77
+PASS R57 revision 2 fixes the single namespace segment this prefix derives from
+PASS R54 revision 3's recorded ground for rejecting a layering engine (quoted in alternative A1)
+PASS R56 revision 2 fixes the credential chain that keeps the token out of WebSettings
+PASS R53 revision 2 chose serde with no validation crate — the house shape argument
+PASS R67 requires hint to be able to name the offending input
+
+## IN-REPO — items researched in parallel, whose knobs this item only names
+PASS R76 (cors) states that R77 owns the variable name and the parse
+PASS R76 wants a possibly-empty ordered collection of allowed origins
+PASS R80 (probes) states that R77 owns the shutdown window's value
+PASS R80 requires the window to hold BOTH the readiness delay and the drain
+PASS R79 (metrics) needs no environment knob of its own
+
+## PINNED-EXT — the org CLI Design Standard v1.4.14 at its blob
+PASS standard R5.1 heading at line 287
+PASS standard R5.2 heading at line 302
+PASS standard R5.4 heading at line 321
+PASS standard R5.4 requires the uppercase TOOL_* prefix and a deterministic mapping
+PASS standard R5.4 forbids auto-exposing every flag as an env var
+PASS standard R5.4 limits environment reading to a curated subset
+PASS standard R5.5 forbids secrets in argv
+PASS standard R5.6 requires secret redaction in output
+PASS standard required-global-core row for --config at line 246
+
+## PINNED-EXT — the py and ts source pins
+PASS py settings.py:38 derives the prefix from APP_NAME
+PASS py paths.py:58 is the single app-name source
+PASS py docstring states the fork-rename and fail-loudly-at-boot intent
+PASS py docstring fixes JSON as py's list encoding
+PASS py default host is loopback
+PASS py default port is 8000
+PASS py drain default is 10 seconds — the value this item departs from
+PASS py has the lazy-load fallback R69's BASELINE-REVIEW F330 drops
+PASS py WebSettings declares 12 fields — the set this item renames (12)
+PASS ts pin has no web/ or server/ source tree (F303) — ts is not a harmonization target (0)
+
+## PINNED-EXT — candidate sources at their exact published versions
+PASS figment 0.10.19 Env::raw takes no source argument
+PASS figment 0.10.19 Env::prefixed takes only a prefix
+PASS figment 0.10.19 reads the real process environment and offers no injection point
+PASS figment 0.10.19 Jail mutates the process environment (the edition-2024 hazard)
+PASS envy 0.4.2 splits sequences on a comma
+PASS envy 0.4.2 has a free from_iter injection seam
+PASS envy 0.4.2 has a prefixed from_iter injection seam
+PASS confique 0.4.0 builder().env() takes no argument — no injection seam
+PASS confique 0.4.0 generated code calls std::env::var directly
+PASS gate 3b: config-0.15.25 has no unsafe in src/ (0)
+PASS gate 3b: confique-0.4.0 has no unsafe in src/ (0)
+PASS gate 3b: envy-0.4.2 has no unsafe in src/ (0)
+PASS gate 3b: figment-0.10.19 has no unsafe in src/ (0)
+PASS gate 3b: envconfig-0.11.1 has no unsafe in src/ (0)
+PASS gate 3b: serde-env-0.3.0 has no unsafe in src/ (0)
+PASS gate 3b: envious-0.3.0 has no unsafe in src/ (0)
+PASS gate 3b: serde 1.0.229 has exactly 2 unsafe blocks (R53 revision 2's figure, re-audited here) (2)
+PASS gate 3b: both serde unsafe blocks are str::from_utf8_unchecked (str::from_utf8_unchecked)
+
+## PARAMETERS — every assumes line byte-identical to the live registry row
+PASS assumes msrv-policy is byte-identical to docs/port/PARAMETERS.md (142 bytes)
+PASS assumes rust-edition is byte-identical to docs/port/PARAMETERS.md (29 bytes)
+PASS assumes target-os-matrix is byte-identical to docs/port/PARAMETERS.md (56 bytes)
+PASS assumes license is byte-identical to docs/port/PARAMETERS.md (37 bytes)
+PASS R69 revision 11 DECISION.md sha256 is pinned 2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815
+PASS assumes web-extra-surface is byte-identical to R69 revision 11 :1885 (2813 bytes)
+PASS assumes error-taxonomy-exit-codes is byte-identical to docs/port/PARAMETERS.md (4095 bytes)
+PASS DECISION.md declares no owned parameter (the prompt's owns line is empty) (0)
+PASS DECISION.md declares exactly 6 assumes lines (6)
+PASS DECISION.md records fitness gate 1 with the owner's exact ruling string
+PASS DECISION.md carries exactly one re-verify: line (1)
+PASS DECISION.md has no Supersedes section (this is revision 1) (0)
+
+PASS=85 FAIL=0 SKIP=0 TOTAL=85

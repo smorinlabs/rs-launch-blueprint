@@ -88,7 +88,7 @@ PASS 3g-entry-renames-group (expected 1, got 1; counting binary: /usr/bin/grep, 
 PASS 3g-group-order-from-array (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
 PASS 3g-sort-by-indexof (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
 
---- 3h the published schema supports type/section/hidden and nothing else per entry ---
+--- 3h schema, first "changelog-sections" key to end of file: the key twice, one required [type, section], one "hidden", no "scope" ---
 PASS 3h-has-changelog-sections (expected 2, got 2; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
 PASS 3h-requires-type-and-section (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
 PASS 3h-hidden-is-boolean (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
@@ -186,6 +186,7 @@ PASS 6c-ts-matches-pin (expected identical, got identical; counting binary: /usr
 SKIP 7a-install - node is not on PATH
 SKIP 7b-upstream-bytes - node is not on PATH
 SKIP 7c-rendered-bytes - node is not on PATH
+SKIP 7d-loader-bytes - node is not on PATH
 
 ========== 8 - the pin is current, and it is the version the action resolves ==========
 
@@ -199,6 +200,39 @@ PASS 8a-published (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD 
 PASS 8b-action-version (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
 PASS 8b-dependency-range (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
 
+========== 9 - revision 2: the scope axis - a scope-routed Dependencies entry ==========
+
+--- 9a the preset type lookup also matches on scope when an entry declares one ---
+PASS 9a-find-type-entry-scope-match (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 9b schema, the changelog-sections property block only: required [type, section], no "scope" key, no "additionalProperties" ---
+PASS 9b-entry-block-lines (expected 22, got 22; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 9b-entry-requires-type-and-section (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 9b-entry-no-scope-key (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 9b-entry-no-additional-properties (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 9c config-loader path (Manifest.fromManifest -> strategy): the scope key survives to the strategy ---
+PASS 9c-recommended-strategy-entries (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 9c-scope-routed-loaded (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 9c-scope-routed-strategy-entries (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 9c-scope-routed-strategy (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 9d the mechanism-5 push through that strategy: hidden under the recommendation, a Dependencies section and a non-empty body under scope routing ---
+PASS 9d-recommended-empty-true (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 9d-scope-routed-lines (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 9d-scope-routed-empty-false (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 9d-dependencies-heading (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 9d-bump-rendered (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 9d-test-and-ci-still-hidden (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 9e py at b08bccfb carries no scope-routed entry ---
+PASS 9e-py-pin-no-scope (expected 0, got 0; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
+--- 9f R19 fixes prefix chore with include scope on both entries, and records Cargo scope as deps only ---
+PASS 9f-r19-prefix-chore (expected 2, got 2; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 9f-r19-include-scope (expected 2, got 2; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+PASS 9f-r19-cargo-deps-only (expected 1, got 1; counting binary: /usr/bin/grep, grep (BSD grep, GNU compatible) 2.6.0-FreeBSD)
+
 ========== summary ==========
-PASS 109  FAIL 0  SKIP 3  TOTAL 112
+PASS 128  FAIL 0  SKIP 4  TOTAL 132
 RESULT: PASS

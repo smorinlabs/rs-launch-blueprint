@@ -1,0 +1,87 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "rs-launch-blueprint example API",
+    "version": "0.1.0",
+    "license": { "name": "MIT OR Apache-2.0", "identifier": "MIT OR Apache-2.0" }
+  },
+  "paths": {
+    "/healthz": {
+      "get": {
+        "operationId": "ops-healthz",
+        "tags": ["ops"],
+        "responses": {
+          "200": { "description": "alive", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Health" } } } }
+        }
+      }
+    },
+    "/v1/projects": {
+      "get": {
+        "operationId": "projects-list_projects",
+        "tags": ["projects"],
+        "parameters": [
+          { "name": "cursor", "in": "query", "required": false, "schema": { "type": "string" } },
+          { "name": "limit", "in": "query", "required": false, "schema": { "type": "integer", "minimum": 1, "maximum": 100 } }
+        ],
+        "responses": {
+          "200": { "description": "a page", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/ProjectPage" } } } }
+        }
+      }
+    },
+    "/v1/projects/{project_id}": {
+      "get": {
+        "operationId": "projects-get_project",
+        "tags": ["projects"],
+        "parameters": [
+          { "name": "project_id", "in": "path", "required": true, "schema": { "type": "string" } }
+        ],
+        "responses": {
+          "200": { "description": "the project", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Project" } } } },
+          "404": { "description": "not found", "content": { "application/problem+json": { "schema": { "$ref": "#/components/schemas/Problem" } } } }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Health": {
+        "type": "object",
+        "required": ["status"],
+        "properties": { "status": { "type": "string" } }
+      },
+      "ProjectState": { "type": "string", "enum": ["active", "archived"] },
+      "Visibility": {
+        "anyOf": [ { "type": "string", "enum": ["public", "private"] }, { "type": "string" } ]
+      },
+      "Project": {
+        "type": "object",
+        "required": ["id", "name", "state", "visibility"],
+        "properties": {
+          "id": { "type": "string" },
+          "name": { "type": "string" },
+          "state": { "$ref": "#/components/schemas/ProjectState" },
+          "visibility": { "$ref": "#/components/schemas/Visibility" },
+          "description": { "type": ["string", "null"] }
+        }
+      },
+      "ProjectPage": {
+        "type": "object",
+        "required": ["items"],
+        "properties": {
+          "items": { "type": "array", "items": { "$ref": "#/components/schemas/Project" } },
+          "next_cursor": { "type": ["string", "null"] }
+        }
+      },
+      "Problem": {
+        "type": "object",
+        "required": ["type", "title", "status"],
+        "properties": {
+          "type": { "type": "string" },
+          "title": { "type": "string" },
+          "status": { "type": "integer" },
+          "detail": { "type": "string" }
+        }
+      }
+    }
+  }
+}

@@ -34,7 +34,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R28 | linter-and-editor-tooling | bundle | different | DIVERGENT | — | [prompt](topics/28-linter-and-editor-tooling/prompts/linter-and-editor-tooling.prompt.md) | open |
 | R29 | non-code-file-formatting | bundle | py-only | DIVERGENT | — | [prompt](topics/29-non-code-file-formatting/prompts/non-code-file-formatting.prompt.md) | open |
 | R30 | type-check-gate | bundle | different | DIVERGENT | — | [prompt](topics/30-type-check-gate/prompts/type-check-gate.prompt.md) | open |
-| R31 | standalone-security-analyzer | bundle | py-only | DIVERGENT | — | [prompt](topics/31-standalone-security-analyzer/prompts/standalone-security-analyzer.prompt.md) | open |
+| R31 | standalone-security-analyzer | bundle | py-only | DIVERGENT | — | [prompt](topics/31-standalone-security-analyzer/prompts/standalone-security-analyzer.prompt.md) | resolved |
 | R32 | test-harness-and-execution | bundle | different | DIVERGENT | — | [prompt](topics/32-test-harness-and-execution/prompts/test-harness-and-execution.prompt.md) | open |
 | R33 | property-and-snapshot-testing | bundle | py-only | DIVERGENT | — | [prompt](topics/33-property-and-snapshot-testing/prompts/property-and-snapshot-testing.prompt.md) | resolved |
 | R34 | scheduled-freshness-lanes | bundle | py-only | DIVERGENT | — | [prompt](topics/34-scheduled-freshness-lanes/prompts/scheduled-freshness-lanes.prompt.md) | resolved |
@@ -60,7 +60,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R55 | config-error-tolerance | bundle | different | DIVERGENT | — | [prompt](topics/55-config-error-tolerance/prompts/config-error-tolerance.prompt.md) | resolved |
 | R56 | config-secret-policy | bundle | different | DIVERGENT | — | [prompt](topics/56-config-secret-policy/prompts/config-secret-policy.prompt.md) | resolved |
 | R57 | xdg-directory-set | pattern | py-only | DIVERGENT | — | [prompt](topics/57-xdg-directory-set/prompts/xdg-directory-set.prompt.md) | resolved |
-| R58 | logging-pipeline-architecture | bundle | py-only | DIVERGENT | logging-pipeline-contract | [prompt](topics/58-logging-pipeline-architecture/prompts/logging-pipeline-architecture.prompt.md) | open |
+| R58 | logging-pipeline-architecture | bundle | py-only | DIVERGENT | logging-pipeline-contract | [prompt](topics/58-logging-pipeline-architecture/prompts/logging-pipeline-architecture.prompt.md) | resolved |
 | R59 | file-log-sink | bundle | py-only | DIVERGENT | — | [prompt](topics/59-file-log-sink/prompts/file-log-sink.prompt.md) | open |
 | R60 | cli-parsing-framework | bundle | different | DIVERGENT | — | [prompt](topics/60-cli-parsing-framework/prompts/cli-parsing-framework.prompt.md) | resolved |
 | R61 | interactive-prompts | bundle | py-only | DIVERGENT | — | [prompt](topics/61-interactive-prompts/prompts/interactive-prompts.prompt.md) | open |
@@ -78,11 +78,11 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R73 | idempotency-middleware | bundle | py-only | DIVERGENT | — | [prompt](topics/73-idempotency-middleware/prompts/idempotency-middleware.prompt.md) | open |
 | R74 | rate-limiting-middleware | bundle | py-only | DIVERGENT | — | [prompt](topics/74-rate-limiting-middleware/prompts/rate-limiting-middleware.prompt.md) | open |
 | R75 | http-middleware-stack | bundle | py-only | DIVERGENT | — | [prompt](topics/75-http-middleware-stack/prompts/http-middleware-stack.prompt.md) | open |
-| R76 | cors-middleware | crate | py-only | DIVERGENT | — | [prompt](topics/76-cors-middleware/prompts/cors-middleware.prompt.md) | open |
+| R76 | cors-middleware | crate | py-only | DIVERGENT | — | [prompt](topics/76-cors-middleware/prompts/cors-middleware.prompt.md) | resolved |
 | R77 | web-env-settings | crate | py-only | DIVERGENT | — | [prompt](topics/77-web-env-settings/prompts/web-env-settings.prompt.md) | resolved |
 | R78 | opentelemetry-integration | crate | py-only | DIVERGENT | — | [prompt](topics/78-opentelemetry-integration/prompts/opentelemetry-integration.prompt.md) | open |
 | R79 | prometheus-metrics | crate | py-only | DIVERGENT | — | [prompt](topics/79-prometheus-metrics/prompts/prometheus-metrics.prompt.md) | resolved |
-| R80 | health-probe-endpoints | bundle | py-only | DIVERGENT | — | [prompt](topics/80-health-probe-endpoints/prompts/health-probe-endpoints.prompt.md) | open |
+| R80 | health-probe-endpoints | bundle | py-only | DIVERGENT | — | [prompt](topics/80-health-probe-endpoints/prompts/health-probe-endpoints.prompt.md) | resolved |
 | R81 | docs-delivery-model | bundle | different | DIVERGENT | — | [prompt](topics/81-docs-delivery-model/prompts/docs-delivery-model.prompt.md) | resolved |
 | R82 | docs-correctness-gate | bundle | different | DIVERGENT | — | [prompt](topics/82-docs-correctness-gate/prompts/docs-correctness-gate.prompt.md) | open |
 | R83 | openapi-contract-fuzzing | crate | py-only | DIVERGENT | — | [prompt](topics/83-openapi-contract-fuzzing/prompts/openapi-contract-fuzzing.prompt.md) | resolved |

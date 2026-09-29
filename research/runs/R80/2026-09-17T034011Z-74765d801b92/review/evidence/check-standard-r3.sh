@@ -14,6 +14,13 @@
 #           exactly which two of its assertions the renumber breaks and why — the
 #           same pattern check C9 used for O25 one revision earlier.
 #
+# Revision 4 re-baselined this script against the current decision (audits
+# EA-3 and EA-5 of revision 3): R1 pins the current H1, R6 pins the revision-4
+# bytes of the seventeen artifacts it guards, R7 expects the re-baselined
+# revision-2 script to pass outright, and no assertion pipes a variable into an
+# early-exiting `grep -q`. The exact OVERRIDE (OV-05) count the prose states is
+# asserted by check V10 in check-standard-r4.sh.
+#
 # Usage: bash check-standard-r3.sh [repo-root]
 # Exit status: 0 when no check FAILs, 1 otherwise.
 
@@ -53,10 +60,11 @@ if [ ! -f "$DECISION" ]; then
   for id in R1 R2 R3 R4 R5; do skip "$id" "DECISION.md is absent"; done
 else
   # ------------------------------------------------------------- R1 --------
-  if head -1 "$DECISION" | $GREP -qF '# 2026-09-18 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 3)'; then
-    pass R1 "the H1 is the date-first revision-3 title"
+  IFS= read -r H1 <"$DECISION" || true
+  if [ "$H1" = '# 2026-09-27 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 7)' ]; then
+    pass R1 "the H1 is the date-first title of the current revision, 7"
   else
-    fail R1 "the H1 is not the prescribed revision-3 title"
+    fail R1 "the H1 is not the prescribed revision-7 title"
   fi
 
   # ------------------------------------------------------------- R2 --------
@@ -104,10 +112,10 @@ PYEOF
   set -e
   indent "$R3_OUT"
   if [ "$R3_STATUS" -eq 0 ] &&
-     printf '%s' "$R3_OUT" | $GREP -qF 'ov04_lines=11' &&
-     printf '%s' "$R3_OUT" | $GREP -qF 'ov04_occurrences=11' &&
-     printf '%s' "$R3_OUT" | $GREP -qF 'stray=none'; then
-    pass R3 "all eleven surviving OV-04 occurrences sit in the revision-3 note, the allocation paragraph or the history — the three places that name R77's override, revision 2's superseded choice or the collision. None is in the rule table, the conformance note or the override's argument"
+     $GREP -qF 'ov04_lines=11' <<<"$R3_OUT" &&
+     $GREP -qF 'ov04_occurrences=11' <<<"$R3_OUT" &&
+     $GREP -qF 'stray=none' <<<"$R3_OUT"; then
+    pass R3 "all eleven surviving OV-04 occurrences sit in the revision-3 note (revision 4's note, above it, names the old number 0 times), the allocation paragraph or the history — the three places that name R77's override, revision 2's superseded choice or the collision. None is in the rule table, the conformance note or the override's argument"
   else
     fail R3 "a bare OV-04 survives outside the three regions that may carry it, or the counts moved"
   fi
@@ -135,10 +143,10 @@ PYEOF
   set -e
   indent "$R4_OUT"
   if [ "$R4_STATUS" -eq 0 ] &&
-     printf '%s' "$R4_OUT" | $GREP -qF 'h2_unfenced=5' &&
-     printf '%s' "$R4_OUT" | $GREP -qF 'supersedes=1' &&
-     printf '%s' "$R4_OUT" | $GREP -qF 'reverify=1' &&
-     printf '%s' "$R4_OUT" | $GREP -qF 'current_h2=Decision|Parameters|Empirical check|Engines'; then
+     $GREP -qF 'h2_unfenced=5' <<<"$R4_OUT" &&
+     $GREP -qF 'supersedes=1' <<<"$R4_OUT" &&
+     $GREP -qF 'reverify=1' <<<"$R4_OUT" &&
+     $GREP -qF 'current_h2=Decision|Parameters|Empirical check|Engines' <<<"$R4_OUT"; then
     pass R4 "the decision's shape is unmoved, counted outside code fences as the publication validator counts: five H2s, one Supersedes, one re-verify line, and the current entry's four H2s in order"
   else
     fail R4 "the renumber moved the decision's shape (see the counts above)"
@@ -159,13 +167,14 @@ PYEOF
 fi
 
 # --------------------------------------------------------------- R6 --------
-# Every artifact of revisions 1 and 2, by digest. Revision 3 adds files; it
-# rewrites none.
+# Every artifact of revisions 1 and 2, by digest, at the bytes revision 4
+# re-recorded under its audit repair orders; revisions 5 and 6 each re-baselined
+# C2 in the revision-2 script to their H1 and re-recorded that script's log.
 declare -a PRIOR=(
-  "895f21ed93212e065b33dce21a91ffe8bf06d2d08a23f627cb18b56936eaa612 check-offline.sh"
-  "64fc4499d80e738477a1f8522c9dc0e4dbf504a647a87d4820c6aeaf3fd7b224 check-offline.log"
-  "9af1a7554e7f91189289a79ac8e6bbb02ec66fc6e256cd1bb42818cdec4c3b8b check-probe.sh"
-  "b7e074048b45e712ae13ada9f23f94f4222805ef7e00c3315ab7d727efa89c46 check-probe.log"
+  "fccff1b713954954766e3dc01a7be6ebe72fac99df7b4094116ab553db1ca82d check-offline.sh"
+  "020fdbd7c299a18e790c4cdcf2ce629083afaf592e38f761eaa26bb9526cb759 check-offline.log"
+  "6a8ffed8dfc3f9be69ecbdbc4805572641cd88111c556f8691b272bbaea75f51 check-probe.sh"
+  "c2fb16f6322303049f25f91800d3592d75004236fcf9227429941a76bedb342d check-probe.log"
   "fb08bb557f110fd48c55bd591fdcfbe367442ce52c4a1dfd3351449297129f8f check-live.sh"
   "2a2183f8c15f651b70bdc0036c3385561be254b711dfb0200c25ca543541b749 check-live.log"
   "74e9db37ec4aad2348402b646fd6363f5c304095e8d29e4e3e6b454167f8eafc shellcheck.log"
@@ -174,8 +183,8 @@ declare -a PRIOR=(
   "419751b3de90f4caf26536b63b2d8ee66082ee1ed74f03c4bbb7dcd4c631a3b1 probe/web-tests/probes.rs"
   "e99cdf289ec32f4410284a0430de3c60b060b6d2386c93a985f5a698f08d03b6 probe/facade-src/lib.rs"
   "c9d539a22585de8bb9a4707bdd0fe10c6a1079bcf6ac3fc69dfd790e3743d364 probe/facade-tests/version_hazard.rs"
-  "9ba3ca8c53fee9947b01a345b21b5e5da4662b79b9cd50a5ab154be1d747b2d7 check-standard-r2.sh"
-  "3e57151e56b956cbea7bba9811c81e1f586bfe74a759955f772b53699186ef28 check-standard-r2.log"
+  "e74254d547eb78da768b2b4c9c83ba5ad863e277790d4054a4f2809484f5267f check-standard-r2.sh"
+  "49ae8df9206f8b741805691a2ca1d25f9e7f4d09e0bbd7773364f235bf7ff3e6 check-standard-r2.log"
   "f227ee8602ab12b10e267d85b228fd65247d9b6218bea73859c9cee8c384239c probe-r2/web-src/lib.rs"
   "4542f02ea972c4cb15dec5a399b05f4770aa66160aad435d0f9b42b15865f80c probe-r2/web-tests/conformance.rs"
   "e6f054b46927e6c9fcd0104b9c0e3032be715524227f8718ddef3c145e418b00 shellcheck-r2.log"
@@ -195,33 +204,27 @@ for entry in "${PRIOR[@]}"; do
   fi
 done
 if [ "$R6_BAD" -eq 0 ]; then
-  pass R6 "all seventeen artifacts of revisions 1 and 2 — three scripts plus the revision-2 script, their logs, the shellcheck records and all seven probe sources — are byte-identical; revision 3 adds files and rewrites none"
+  pass R6 "all seventeen artifacts of revisions 1 and 2 — three scripts plus the revision-2 script, their logs, the shellcheck records and all seven probe sources — are byte-identical to the bytes revision 7 cites"
 else
-  fail R6 "$R6_BAD prior artifact(s) changed; a renumber revision must rewrite no evidence"
+  fail R6 "$R6_BAD prior artifact(s) changed since revision 7 recorded them"
 fi
 
 # --------------------------------------------------------------- R7 --------
-# The controlled re-run: revision 2's C4 asserts the literal string
-# `OVERRIDE (OV-04)` in the decision, so the renumber MUST break it. The
-# revision-2 script is not edited (R6 forbids it) and its log is not
-# overwritten; instead it is re-run into a separate file and the failure is
-# asserted to be exactly that one.
+# The controlled re-run of the revision-2 script into a separate file. Through
+# revision 3 it expected exactly C2 and C4 to FAIL; revision 4 re-baselined both
+# to the current H1 and override name, so the re-run must now pass outright.
 if [ -f "$HERE/check-standard-r2.sh" ]; then
   set +e
   bash "$HERE/check-standard-r2.sh" "$ROOT" >"$HERE/check-standard-r2.r3-rerun.log" 2>&1
   set -e
   R7_FAILS="$($GREP -c '^FAIL ' "$HERE/check-standard-r2.r3-rerun.log" || true)"
   R7_PASSES="$($GREP -c '^PASS ' "$HERE/check-standard-r2.r3-rerun.log" || true)"
-  echo "  revision-2 script re-run under revision 3: $R7_PASSES PASS, $R7_FAILS FAIL"
+  echo "  revision-2 script re-run into a separate file: $R7_PASSES PASS, $R7_FAILS FAIL"
   $GREP '^FAIL ' "$HERE/check-standard-r2.r3-rerun.log" | sed 's/^/    /' || true
-  if [ "$R7_FAILS" -eq 2 ] && [ "$R7_PASSES" -eq 40 ] &&
-     $GREP -q '^FAIL C2 — the H1 is not the prescribed revision-2 title' \
-       "$HERE/check-standard-r2.r3-rerun.log" &&
-     $GREP -q '^FAIL C4 — the override block is missing or malformed (OV-04 0, Argument 1, Options 1)' \
-       "$HERE/check-standard-r2.r3-rerun.log"; then
-    pass R7 "re-running revision 2's unedited script against revision 3 yields 40 of its 42 checks PASS and exactly two FAILs, both expected and both named: C2, which pins the revision-2 H1 this revision retitles, and C4, which counts the old override heading the controller's renumber replaced. Checks R1 and R2 above are their replacements, and the Argument and Options blocks C4 also counts are still 1 and 1 — so the renumber broke the identifier and nothing else"
+  if [ "$R7_FAILS" -eq 0 ] && [ "$R7_PASSES" -eq 42 ]; then
+    pass R7 "re-running the revision-2 script into check-standard-r2.r3-rerun.log yields all 42 checks PASS and 0 FAIL, its nested offline re-run (C9) included"
   else
-    fail R7 "re-running the revision-2 script did not yield exactly 40 PASS and the two expected C2/C4 failures ($R7_PASSES PASS, $R7_FAILS FAIL)"
+    fail R7 "re-running the revision-2 script did not yield exactly 42 PASS and 0 FAIL ($R7_PASSES PASS, $R7_FAILS FAIL)"
   fi
 else
   skip R7 "revision 2's check-standard-r2.sh is absent"

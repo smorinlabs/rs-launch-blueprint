@@ -1,0 +1,62 @@
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+snapshot: /Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R74/2026-09-18T215916Z-14066395aaea/review/evidence/snapshots/rest-api-standard.md (2815 non-empty lines of 3427 total)
+
+=== 0. the pin ===
+PASS  P0a blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9 exists in the local clone
+PASS  P0b commit 0850d43e45d919ef5e37f7174c4212b46013c49f exists in the local clone
+PASS  P0c rest-api-standard.md at that commit IS that blob
+PASS  P0d the snapshot is byte-identical to the pinned blob
+PASS  P0-control line 1 does not carry R11.2's text, so the locators below are positional and can fail
+
+=== 1. rules this decision CONFORMS to ===
+PASS  R11.2  line 1686 carries: An API MUST apply rate limits and communicate exhaustion via
+PASS  R11.2b  line 1687 carries: 429 Too Many Requests
+PASS  R11.2c  line 1688 carries: deliberate tightening of RFC 6585
+PASS  R11.3  line 1701 carries: in the syntax of
+PASS  R11.3b  line 1702 carries: draft-ietf-httpapi-ratelimit-headers-11
+PASS  R11.3c  line 1703 carries: unpublished Internet-Draft, not a standard
+PASS  R11.4  line 1707 carries: Any proprietary quota headers MUST be documented explicitly
+PASS  R11.5  line 1724 carries: 429` signals quota exhaustion
+PASS  R11.5b  line 1725 carries: both MUST carry
+PASS  R5.12  line 1019 carries: MUST be capable of returning every error response the
+PASS  R5.12-carve  line 1023 carries: reverse proxies, CDNs, WAFs, rate limiters, load balancers terminating
+PASS  R5.13  line 1049 carries: MUST carry
+PASS  R5.14  line 1098 carries: RFC 7807 MUST NOT be cited
+PASS  R5.16  line 1114 carries: MUST publish a catalog of every problem
+PASS  R12.2  line 1784 carries: Clients MUST honor
+PASS  R1.8-sec  line 301 carries: ### 1.10 Reserved names
+PASS  R1.8  line 312 carries: **R1.8 — Reservation discipline.** A conforming API MUST NOT use a reserved
+PASS  R1.8-hdr  line 352 carries: Mandatory on
+PASS  R1.8-rl  line 353 carries: SHOULD advertise quota state
+PASS  R1.8-noX  line 362 carries: No new
+PASS  R1.6-sec  line 227 carries: ### 1.8 Applicability switches
+PASS  R1.6  line 229 carries: **R1.6** Rules that only make sense for APIs with a given capability are
+PASS  R1.6b  line 231 carries: A rule scoped to a switch binds only
+PASS  R1.6-vocab  line 237 carries: The switch vocabulary:
+
+=== 2. the rule this decision DEPARTS from, and the deviation shape ===
+PASS  R8.10  line 1387 carries: Each axis below carries a ratified default and named
+PASS  R8.10b  line 1388 carries: threat-model flip triggers. An API MUST adopt each axis default unless a
+PASS  R8.10c  line 1389 carries: named trigger applies, and MUST record any flip in its conformance note.
+PASS  R8.10-axis  line 1397 carries: Multi-dimensional tiered posture, published: per-principal sustained + token-bucket burst
+PASS  R8.10-num  line 1397 carries: 100 rps/account, 25 rps/endpoint
+PASS  R8.10-unauth  line 1397 carries: unauthenticated per-IP an order of magnitude lower
+PASS  R1.7-sec  line 269 carries: ### 1.9 Deviations and the conformance note
+PASS  R1.7  line 271 carries: **R1.7 — No silent deviation.**
+PASS  R1.7b  line 273 carries: A deviation from a **MUST** makes the API
+PASS  R1.7c  line 274 carries: nonconformant unless it is recorded as an approved exception in the
+PASS  R1.7d  line 275 carries: silent deviation from any rule strength is nonconformance
+PASS  R1.7e  line 276 carries: regardless of the deviation's merits.
+PASS  R1.9-shape  line 291 carries: rule strength
+
+=== 3. the §1.8 (R1.6) switch vocabulary has no rate-limiting member ===
+PASS  S3a §11.2 carries no applicability-switch scoping, so R11.2 binds unconditionally
+PASS  S3b the switch vocabulary (webhooks, async-operations, bulk-operations, streaming) has no rate-limiting member
+
+=== 4. the standard's own 429 example, for the body this item renders through R70 ===
+PASS  E9a  line 3198 carries: HTTP/1.1 429 Too Many Requests
+PASS  E9b  line 3199 carries: Retry-After: 30
+PASS  E9c  line 3208 carries: rate_limit_exceeded
+PASS  S4a R5.13 fixes the problem-code grammar as the snake_case regex [a-z][a-z0-9_]*
+
+CHECKS RUN: 48  PASS: 48  FAILURES: 0  SKIPPED: 0

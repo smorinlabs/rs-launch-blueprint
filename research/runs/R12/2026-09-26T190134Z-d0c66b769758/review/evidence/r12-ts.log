@@ -1,0 +1,15 @@
+PASS T-ts-pin snapshot r12-ts-ci.yml is byte-identical to ts e5100b4:.github/workflows/ci.yml
+jobs: ['bun-lane', 'ci']
+PASS T-ts-jobs2 ts ci.yml has exactly two jobs: ci, bun-lane
+ci name: continuous-integration node-version: ['24.x', '26.x'] continue-on-error: None
+PASS T-ts-ci-matrix ci is continuous-integration over node-version [24.x, 26.x], no continue-on-error
+bun-lane name: bun-lane (advisory, non-gating) continue-on-error: True needs: None
+PASS T-ts-bunlane bun-lane is named advisory/non-gating with continue-on-error true, no matrix
+voting: ['ci'] advisory: ['bun-lane']
+PASS T-ts-voting jobs minus continue-on-error:true is exactly {ci}; advisory is exactly {bun-lane}
+triggers: ['pull_request', 'push']
+PASS T-ts-nomg ts triggers lack merge_group
+ts rule types: ['deletion', 'non_fast_forward', 'pull_request']
+PASS T-ts-noqueue ts main has no merge_queue and no required_status_checks rule
+PASS T-f025 COMMONALITY F025 is py-only ADOPT
+RESULT PASS=8 FAIL=0 SKIP=0

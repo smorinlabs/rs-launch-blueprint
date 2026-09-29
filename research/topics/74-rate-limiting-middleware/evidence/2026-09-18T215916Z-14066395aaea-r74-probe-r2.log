@@ -1,0 +1,188 @@
+toolchain: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+cargo:     cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+os:        Darwin arm64 / macOS 26.4
+grep:      grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+workdir:   /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r74-probe.juHnaaBz (deleted on exit)
+cargo home: /tmp/cargo-s26-R74-r2
+
+=== L. lockfiles: every probe crate resolves from a committed lock, then fetches ===
+PASS  L probe_design resolves from probe-locks/probe_design.lock under --locked and fetches
+PASS  L probe_tg resolves from probe-locks/probe_tg.lock under --locked and fetches
+PASS  L probe_baseline resolves from probe-locks/probe_baseline.lock under --locked and fetches
+PASS  L probe_tracing resolves from probe-locks/probe_tracing.lock under --locked and fetches
+PASS  L probe_tg_nodefault resolves from probe-locks/probe_tg_nodefault.lock under --locked and fetches
+PASS  L probe_tg_default resolves from probe-locks/probe_tg_default.lock under --locked and fetches
+PASS  L probe_trl resolves from probe-locks/probe_trl.lock under --locked and fetches
+PASS  L probe_sources resolves from probe-locks/probe_sources.lock under --locked and fetches
+     lockfile sha256:
+       082ff666d909878136bae629593a849acc5e0e31a72ffa80ba17963e479571de  ./probe_baseline.lock
+       7bb65eadb18e96a51ca542dc2a39d0bd6346ac05fa0f367d33d6122374faf312  ./probe_design.lock
+       b4fde3f3c96a75790bc193019423a5d132e9e289da2cb5a31eaa4174370d7eda  ./probe_sources.lock
+       df25fe29272795eb427fa55eed93c328abc75f6d712f0997d6363735abef7feb  ./probe_tg_default.lock
+       9e32cb61d9f8e76acc826f7607d4d9e2de9be49b74d00424ae516987d472e2fb  ./probe_tg_nodefault.lock
+       9c072a8ee5ebe020933aa86976e9849679e89580dc9439d15b8f8ae8481a54a6  ./probe_tg.lock
+       840906e84f176c658c44b758eed172133a01e790ad1ca82720e07de5c8fee574  ./probe_tracing.lock
+       5e4242a5e16139974c3971625a7fe791f11e13c993174b7ba27dbb4f39210dde  ./probe_trl.lock
+
+=== T. toolchain ===
+PASS  T1 the probe toolchain (rustc 1.98) is at or above the 1.96 MSRV floor
+
+=== D. gate 2: declared rust-version in the published manifests ===
+PASS  D-rv tower_governor-0.8.0 == NONE
+PASS  D-ed tower_governor-0.8.0 == 2021
+PASS  D-rv governor-0.10.4 == NONE
+PASS  D-ed governor-0.10.4 == 2018
+PASS  D-rv axum-governor-2.1.0 == 1.95
+PASS  D-ed axum-governor-2.1.0 == 2024
+PASS  D-rv gcra-0.6.0 == 1.80.0
+PASS  D-ed gcra-0.6.0 == 2021
+PASS  D-rv axum-0.8.9 == 1.80
+PASS  D-ed axum-0.8.9 == 2021
+PASS  D-rv tower-0.5.3 == 1.64.0
+PASS  D-ed tower-0.5.3 == 2018
+PASS  D-rv tower-resilience-ratelimiter-0.13.0 == 1.85.0
+PASS  D-ed tower-resilience-ratelimiter-0.13.0 == 2021
+PASS  D-control: reader finds a declared rust-version
+
+=== D2. tower_governor 0.8.0 source facts ===
+PASS  D2a wait_time is computed with .as_secs() (truncating) at 2 sites in src/lib.rs
+PASS  D2b retry-after IS inserted (correcting the 'x-ratelimit-after only' claim)
+PASS  D2c a new X- prefixed quota header is emitted
+PASS  D2d PeerIpKeyExtractor returns UnableToExtractKey when ConnectInfo is absent
+PASS  D2e UnableToExtractKey renders INTERNAL_SERVER_ERROR
+PASS  D2f the 429 body is a plain string, not problem+json
+PASS  D2g tonic is in tower_governor's default feature set
+
+=== A. the recommended zero-crate GCRA design (9 tests) ===
+--- design test output ---
+   Compiling probe_design v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r74-probe.juHnaaBz/probe-design)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 4.42s
+     Running unittests src/lib.rs (/tmp/cargo-s26-R74-r2-target/debug/deps/probe_design-1b802084cb2b7cb9)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/tmp/cargo-s26-R74-r2-target/debug/deps/probe_design-6ca0ac072c6d9b02)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/acceptance.rs (/tmp/cargo-s26-R74-r2-target/debug/deps/acceptance-1a81e17fec16d6ba)
+
+running 9 tests
+test retry_after_is_never_zero ... ok
+test policy_grammar_matches_py_limits_notation ... ok
+test third_request_is_429_with_an_accurate_retry_after ... ok
+test keys_are_isolated_and_the_store_is_bounded ... ok
+test the_shipped_default_posture_is_on_and_limits ... ok
+test conditional_registration_is_the_gate ... ok
+test settings_values_tune_but_never_disable ... ok
+test off_by_default_is_the_absence_of_the_layer ... ok
+test rate_and_burst_are_independent_over_simulated_time ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+   Doc-tests probe_design
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+PASS  A off_by_default_is_the_absence_of_the_layer
+PASS  A conditional_registration_is_the_gate
+PASS  A third_request_is_429_with_an_accurate_retry_after
+PASS  A keys_are_isolated_and_the_store_is_bounded
+PASS  A the_shipped_default_posture_is_on_and_limits
+PASS  A settings_values_tune_but_never_disable
+PASS  A rate_and_burst_are_independent_over_simulated_time
+PASS  A policy_grammar_matches_py_limits_notation
+PASS  A retry_after_is_never_zero
+PASS  A-total 9 passed 0 failed
+PASS  A-sig the shipped install_rate_limit takes a RateLimitPolicy, not an Option
+PASS  A-sig-control the design's tests never call install_rate_limit( with None
+PASS  A-clippy clean under -D warnings
+
+=== B. tower_governor 0.8.0 — the two measured defects ===
+--- tower_governor observation output ---
+   Compiling probe_tg v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r74-probe.juHnaaBz/probe-tg)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 3.53s
+     Running unittests src/lib.rs (/tmp/cargo-s26-R74-r2-target/debug/deps/probe_tg-4c5e891faa142a19)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/tmp/cargo-s26-R74-r2-target/debug/deps/probe_tg-320e1816a357e5ba)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/observed.rs (/tmp/cargo-s26-R74-r2-target/debug/deps/observed-71124aad513e5309)
+
+running 2 tests
+test without_connect_info_the_default_key_extractor_returns_500 ... ok
+test with_connect_info_the_third_request_is_429_and_carries_retry_after ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.21s
+
+   Doc-tests probe_tg
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+PASS  B without_connect_info_the_default_key_extractor_returns_500
+PASS  B with_connect_info_the_third_request_is_429_and_carries_retry_after
+PASS  B-total 2 passed 0 failed
+
+=== C. non-dev dependency-tree deltas (pinned by the committed lockfiles) ===
+baseline=50 design=50 tracing=50 tg_nodefault=87 tg_default=99
+PASS  C0 baseline non-dev package count (axum 0.8.9 + tokio 1.53.1) == 50
+PASS  C1 the recommended design adds 0 packages == 0
+PASS  C2 tracing(default-features=false,std) adds 0 packages == 0
+PASS  C3 tower_governor --no-default-features +axum adds == 37
+PASS  C4 tower_governor with its default features adds == 49
+PASS  C5 design vs baseline non-dev package set: diff empty (50 packages each)
+PASS  C5-control tg package set differs from baseline, so C5's empty diff is not vacuous
+PASS  C6 tower_governor pulls in governor v0.10.4
+PASS  C6 tower_governor pulls in dashmap
+PASS  C6 tower_governor pulls in quanta
+PASS  C6 tower_governor pulls in parking_lot
+PASS  C6 tower_governor pulls in getrandom
+PASS  C7 tower_governor's default features pull in tonic
+PASS  C8 the recommended design pulls in no governor
+PASS  C9a tower_governor drags thiserror 1.x
+PASS  C9b tower_governor drags thiserror 2.x
+
+=== E. tower-rate-limiter 0.1.6 (the openai leg's pick) ===
+PASS  E1 declared rust-version == 1.96.0
+PASS  E2 declared edition == 2024
+PASS  E3 the store is a FIXED WINDOW, not GCRA
+PASS  E4 it emits the draft-11 RateLimit fields
+PASS  E5 tower-rate-limiter with its default features adds == 18
+PASS  E6 its default feature set pulls in moka
+
+=== F. the Muse leg's source readings, and axum-governor's Retry-After ===
+PASS  F1a tower_governor src/lib.rs truncates with .as_secs() (Muse :125-127) (line 127)
+PASS  F1b tower_governor src/lib.rs truncates with .as_secs() (Muse :293-295) (line 295)
+PASS  F1c tower_governor inserts retry-after (Muse :143-144) (line 144)
+PASS  F1d tower_governor inserts retry-after (Muse :312-313) (line 313)
+PASS  F1e missing ConnectInfo -> UnableToExtractKey (Muse key_extractor.rs:76) (line 76)
+PASS  F1f missing key -> UnableToExtractKey (Muse key_extractor.rs:113) (line 113)
+PASS  F1g UnableToExtractKey -> 500 (Muse errors.rs:58-61) (line 61)
+PASS  F2a tower-rate-limiter maps a key-extraction error to 500 (Muse, response.rs) (line 62)
+PASS  F2b ... and the arm's status is INTERNAL_SERVER_ERROR (line 63)
+PASS  F3a axum-governor depends on governor (Muse: '[dependencies.governor] version = "0.10"')
+PASS  F3b ... at version 0.10, the gate-excluded engine
+PASS  F3c axum-governor emits the draft-11 RateLimit field (Muse, src/headers.rs)
+PASS  F3d axum-governor also emits a new X- quota header
+PASS  F3e axum-governor's Retry-After is wait.as_secs() — truncating, not exact (line 496)
+PASS  F3f ... floored at 1, so 29.99 s renders as 29 (line 497)
+PASS  F4a tower-resilience-ratelimiter's rate-limited error carries no retry-after (Muse)
+PASS  F4b its docs leave the 429 to the caller (Muse: 'could' be returned)
+PASS  F-control the line locator is positional and can fail
+
+CHECKS RUN: 87  PASS: 87  FAILURES: 0  SKIPPED: 0

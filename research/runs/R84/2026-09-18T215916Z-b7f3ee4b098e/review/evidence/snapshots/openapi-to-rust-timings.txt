@@ -1,0 +1,5 @@
+cargo install openapi-to-rust 0.17.0: 116 s
+clean cargo check of generated client, stable: 44 s
+clean cargo check of generated client, 1.96.0: 16 s
+clean build+run of the section-12 probe, stable: 35 s
+advisory-db HEAD at audit: e2111519ba6d14a5da59a7b2e5c8083ae8a37c01

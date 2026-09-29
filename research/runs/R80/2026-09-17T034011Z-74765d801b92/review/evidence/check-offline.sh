@@ -8,6 +8,12 @@
 # the clauses of the coupled decisions the recommendation rests on, the ledger
 # rows, and the pinned py/ts source precedent.
 #
+# Revision 4 re-baselined this script against the current decision (audits
+# EA-1 and EA-3 of revision 3): O17 binds the coupled decisions by sha256 rather
+# than by their mutable H1, O25 asserts the revision-4 shape, O9/O28 read R55
+# and R57 as published, and no assertion pipes a variable into an early-exiting
+# `grep -q` (a SIGPIPE race under `set -o pipefail`); here-strings are used.
+#
 # Usage: bash check-offline.sh [repo-root]
 # Exit status: 0 when no check FAILs, 1 otherwise.
 
@@ -80,7 +86,7 @@ PY
   O2_STATUS=$?
   set -e
   echo "$O2_OUT"
-  if [ "$O2_STATUS" -eq 0 ] && [ "$(printf '%s' "$O2_OUT" | head -1)" = "errors=0" ]; then
+  if [ "$O2_STATUS" -eq 0 ] && [ "${O2_OUT%%$'\n'*}" = "errors=0" ]; then
     pass O2 "validate_answer_text(raw/opus.md, \"bundle\") returns no shape errors"
   else
     fail O2 "validate_answer_text reported shape errors or did not run (exit $O2_STATUS)"
@@ -92,12 +98,22 @@ fi
 # --------------------------------------------------------------- O3 ----------
 # Every '- assumes <param> = <value>' line in THIS decision must be byte-identical
 # to the live registry's value column. Publication fails on any divergence.
-if [ -f "$DECISION" ] && [ -f "$REGISTRY" ]; then
+# Revision 7 (owner decision Q3.A, flag day): web-extra-surface is compared with
+# R69 revision 11's owned value at line 1885, bound by sha256, because the
+# registry row carries revision 9's text until the flag-day publication.
+R69R11="$ROOT/research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md"
+R69R11_SHA=2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815
+if [ -f "$DECISION" ] && [ -f "$REGISTRY" ] && [ -f "$R69R11" ]; then
   set +e
-  O3_OUT="$(python3 - "$DECISION" "$REGISTRY" <<'PY' 2>&1
-import pathlib, sys
+  O3_OUT="$(python3 - "$DECISION" "$REGISTRY" "$R69R11" "$R69R11_SHA" <<'PY' 2>&1
+import hashlib, pathlib, sys
 decision = pathlib.Path(sys.argv[1]).read_text(encoding="utf-8").splitlines()
 registry = pathlib.Path(sys.argv[2]).read_text(encoding="utf-8").splitlines()
+r69_bytes = pathlib.Path(sys.argv[3]).read_bytes()
+r69_ok = hashlib.sha256(r69_bytes).hexdigest() == sys.argv[4]
+print("r69_r11_sha256_ok=%s" % r69_ok)
+r69_line = r69_bytes.decode("utf-8").splitlines()[1884]
+OWNS = "- owns web-extra-surface = "
 rows = {}
 for line in registry:
     if line.startswith("| ") and line.count("|") >= 6:
@@ -110,9 +126,17 @@ for line in decision:
         name, value = line[len("- assumes "):].split(" = ", 1)
         claimed.append((name.strip(), value))
 print("assumes_lines=%d" % len(claimed))
-bad = 0
+bad = 0 if r69_ok and r69_line.startswith(OWNS) else 1
 for name, value in claimed:
-    if name not in rows:
+    if name == "web-extra-surface":
+        want = r69_line[len(OWNS):]
+        reg = rows.get(name, "")
+        print("  info: registry row form: %s" % ("revision 9 (src/web/)" if "src/web/" in reg else "revision 11" if reg == want else "other"))
+        if value == want:
+            print("BYTE-IDENTICAL %s to R69 revision 11 line 1885 (%d chars)" % (name, len(value)))
+        else:
+            print("MISMATCH %s against R69 revision 11 line 1885" % name); bad += 1
+    elif name not in rows:
         print("MISSING-ROW %s" % name); bad += 1
     elif rows[name] != value:
         print("MISMATCH %s" % name)
@@ -128,14 +152,14 @@ PY
   set -e
   echo "$O3_OUT"
   if [ "$O3_STATUS" -eq 0 ] &&
-     printf '%s' "$O3_OUT" | $GREP -qF 'assumes_lines=7' &&
-     printf '%s' "$O3_OUT" | $GREP -qF 'mismatches=0'; then
-    pass O3 "all seven '- assumes' values in DECISION.md are byte-identical to their docs/port/PARAMETERS.md rows"
+     $GREP -qF 'assumes_lines=7' <<<"$O3_OUT" &&
+     $GREP -qF 'mismatches=0' <<<"$O3_OUT"; then
+    pass O3 "all seven '- assumes' values in DECISION.md are byte-identical to their sources: six to their docs/port/PARAMETERS.md rows, and web-extra-surface to R69 revision 11's owned value at line 1885 (sha256 2806a1f0…)"
   else
-    fail O3 "the '- assumes' lines do not match the registry, or there are not seven of them"
+    fail O3 "the '- assumes' lines do not match their sources, or there are not seven of them"
   fi
 else
-  skip O3 "DECISION.md or docs/port/PARAMETERS.md is absent"
+  skip O3 "DECISION.md, docs/port/PARAMETERS.md or R69 revision 11 is absent"
 fi
 
 # --------------------------------------------------------------- O4 ----------
@@ -153,23 +177,28 @@ else
 fi
 
 # --------------------------------------------------------------- O5 ----------
-# The web-extra-surface publication lag: the live registry still carries revision
-# 9's `src/web/` form while R69 revision 10 (owner-accepted, unpublished) moves
-# the tree to `crates/web/`. Both halves are asserted so the prose note is earned.
-R69R10="$ROOT/research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md"
-if [ -f "$R69R10" ] && [ -f "$REGISTRY" ]; then
-  R69_OWNS="$($GREP -n '^- owns web-extra-surface = ' "$R69R10" | head -1 || true)"
+# The web-extra-surface source (revision 7, owner decision Q3.A): R69 revision
+# 11, bound by sha256, owns the crates/web/ value (W1-R02) at line 1885, the
+# line this decision's prose note cites. The registry's form is information only.
+if [ -f "$R69R11" ]; then
+  R69_OWNS="$($GREP -n -m 1 '^- owns web-extra-surface = ' "$R69R11" || true)"
   R69_LINE="${R69_OWNS%%:*}"
-  if [ "$R69_LINE" = "1791" ] &&
-     printf '%s' "$R69_OWNS" | $GREP -qF 'crates/web/Cargo.toml' &&
-     printf '%s' "$R69_OWNS" | $GREP -qF 'web = ["dep:rs-launch-blueprint-web"]' &&
-     $GREP -q '^| web-extra-surface | researched | R69 |.*src/web/' "$REGISTRY"; then
-    pass O5 "R69 revision 10's '- owns web-extra-surface' sits at line 1791 and names crates/web/, while the live registry row still carries revision 9's src/web/ form — the publication lag this decision records in prose"
+  if [ -f "$REGISTRY" ] && $GREP -q '^| web-extra-surface | researched | R69 |.*src/web/' "$REGISTRY"; then
+    echo "  info: the registry row still carries revision 9's src/web/ form"
   else
-    fail O5 "the R69 revision-10 owns line or the registry's src/web/ form is not where this decision says it is (owns line: ${R69_LINE:-none})"
+    echo "  info: the registry row no longer carries revision 9's src/web/ form"
+  fi
+  if [ "$(shasum -a 256 "$R69R11" | cut -d' ' -f1)" = "$R69R11_SHA" ] &&
+     [ "$R69_LINE" = "1885" ] &&
+     $GREP -qF 'crates/web/Cargo.toml' <<<"$R69_OWNS" &&
+     $GREP -qF 'web = ["dep:rs-launch-blueprint-web"]' <<<"$R69_OWNS" &&
+     $GREP -qF 'crates/web/tests/' <<<"$R69_OWNS"; then
+    pass O5 "R69 revision 11 (sha256 2806a1f0…) carries '- owns web-extra-surface' at line 1885, naming crates/web/Cargo.toml, crates/web/tests/ and web = [\"dep:rs-launch-blueprint-web\"] — the source this decision's prose note cites"
+  else
+    fail O5 "R69 revision 11's owns line is not where, or what, this decision says it is (owns line: ${R69_LINE:-none})"
   fi
 else
-  skip O5 "R69 revision 10 or the registry is absent"
+  skip O5 "R69 revision 11 is absent"
 fi
 
 # --------------------------------------------------------------- O6 ----------
@@ -206,7 +235,8 @@ else
 fi
 
 # --------------------------------------------------------------- O9 ----------
-# R55 and R57 are owner-accepted (unpublished), NOT open as raw/opus.md states.
+# R55 and R57 are owner-accepted, NOT open as raw/opus.md states (both have since
+# been published; O28 reads the published texts).
 OWNERDEC="$ROOT/docs/planning/p02/owner-decisions.md"
 if [ -f "$OWNERDEC" ]; then
   MISSING=""
@@ -214,7 +244,7 @@ if [ -f "$OWNERDEC" ]; then
     $GREP -qF "$row" "$OWNERDEC" || MISSING="$MISSING $row"
   done
   if [ -z "$MISSING" ]; then
-    pass O9 "owner-decisions section 13 records acceptances for R55, R57, R02, R05, R03 and R56 — so R55 and R57 are accepted-but-unpublished, not open"
+    pass O9 "owner-decisions section 13 records acceptances for R55, R57, R02, R05, R03 and R56 — so R55 and R57 are accepted, not open (both since published)"
   else
     fail O9 "missing acceptance rows:$MISSING"
   fi
@@ -304,23 +334,46 @@ else
 fi
 
 # -------------------------------------------------------------- O17 ----------
-# The accepted revision numbers of the four unpublished inputs this decision
-# rests on. raw/opus.md cites R02 revision 1 and R05 revision 2, both superseded
-# by evidence-only re-binds.
-R02="$ROOT/research/runs/R02/2026-09-17T033527Z-40929a603f91/review/DECISION.md"
-R05="$ROOT/research/runs/R05/2026-09-17T033527Z-bfacc9e801a5/review/DECISION.md"
-R03="$ROOT/research/runs/R03/2026-09-17T033527Z-cd9e6a9555b6/review/DECISION.md"
-if [ -f "$R02" ] && [ -f "$R05" ] && [ -f "$R03" ]; then
-  if head -1 "$R02" | $GREP -qF '(revision 2)' &&
-     head -1 "$R05" | $GREP -qF '(revision 3)' &&
-     head -1 "$R03" | $GREP -qF '(revision 1)' &&
-     $GREP -qF 'Revision 2 is evidence-only' "$R02"; then
-    pass O17 "the accepted-but-unpublished inputs stand at R02 revision 2 (evidence-only re-bind of revision 1), R05 revision 3 and R03 revision 1 — raw/opus.md cites R02 r1 and R05 r2, which this decision corrects"
-  else
-    fail O17 "the coupled decisions are not at the revisions this decision cites"
-  fi
+# Revision 4 (audit EA-1): bound to IDENTITY, not to a mutable H1. Each coupled
+# decision is pinned to the (revision, sha256) its row in
+# docs/port/OWNER-ACCEPTANCES.md records. The check asserts the row still says
+# so, then finds the file in that run's review/ directory - the live DECISION.md
+# or the R##-r<N>-snapshot.md a later revision preserved - whose bytes hash to
+# it. A re-bind to a new accepted revision changes the row and FAILs here, which
+# is this decision's re-verify trigger. raw/opus.md cites R02 revision 1 and R05
+# revision 2, both superseded by evidence-only re-binds.
+ACCEPT="$ROOT/docs/port/OWNER-ACCEPTANCES.md"
+R02_DIR="$ROOT/research/runs/R02/2026-09-17T033527Z-40929a603f91"
+R05_DIR="$ROOT/research/runs/R05/2026-09-17T033527Z-bfacc9e801a5"
+R03_DIR="$ROOT/research/runs/R03/2026-09-17T033527Z-cd9e6a9555b6"
+R02_SHA=9e8f8e8c11ffb9b383819b2de1b05eab71a32e3af358b75ea8475d48f3c9707f
+R05_SHA=3ca4b81abf4df024d39698815da3820321f91532da52403f8bf7dc07060934ca
+R03_SHA=610e33381016a64c05efd6a1ba1196eb37807abb18d18c68e0d4e7d987586226
+accepted_file() { # item, run-dir, revision, sha256 -> prints the path whose bytes match
+  local f got
+  for f in "$2/review/DECISION.md" "$2/review/$1-r$3-snapshot.md"; do
+    [ -f "$f" ] || continue
+    got="$(shasum -a 256 "$f" | cut -d' ' -f1)"
+    if [ "$got" = "$4" ]; then printf '%s\n' "$f"; return 0; fi
+  done
+  return 1
+}
+R02="$(accepted_file R02 "$R02_DIR" 2 "$R02_SHA" || true)"
+R05="$(accepted_file R05 "$R05_DIR" 3 "$R05_SHA" || true)"
+R03="$(accepted_file R03 "$R03_DIR" 1 "$R03_SHA" || true)"
+O17_ROWS=0
+if [ -f "$ACCEPT" ]; then
+  if $GREP -qF "| R02 | 2 | \`$R02_SHA\` | accept |" "$ACCEPT"; then O17_ROWS=$((O17_ROWS + 1)); fi
+  if $GREP -qF "| R05 | 3 | \`$R05_SHA\` | accept |" "$ACCEPT"; then O17_ROWS=$((O17_ROWS + 1)); fi
+  if $GREP -qF "| R03 | 1 | \`$R03_SHA\` | accept |" "$ACCEPT"; then O17_ROWS=$((O17_ROWS + 1)); fi
+fi
+echo "acceptance rows matching the pinned (revision, sha256): $O17_ROWS of 3"
+echo "accepted bytes found at: R02 r2 ${R02#"$ROOT"/}; R05 r3 ${R05#"$ROOT"/}; R03 r1 ${R03#"$ROOT"/}"
+if [ "$O17_ROWS" -eq 3 ] && [ -n "$R02" ] && [ -n "$R05" ] && [ -n "$R03" ] &&
+   $GREP -qF 'Revision 2 is evidence-only' "$R02"; then
+  pass O17 "the owner-acceptance rows still record R02 revision 2 (9e8f8e8c…, an evidence-only re-bind of revision 1), R05 revision 3 (3ca4b81a…) and R03 revision 1 (610e3338…), and a file with exactly those bytes is on disk for each — raw/opus.md cites R02 r1 and R05 r2, which this decision corrects"
 else
-  skip O17 "one of R02/R05/R03's run decisions is absent"
+  fail O17 "the coupled decisions are not at the accepted (revision, sha256) this decision cites (rows matched $O17_ROWS of 3; R02 '${R02:-none}', R05 '${R05:-none}', R03 '${R03:-none}')"
 fi
 
 # -------------------------------------------------------------- O18 ----------
@@ -329,7 +382,7 @@ want O18 "$R02" 'crates/core' \
 
 # -------------------------------------------------------------- O19 ----------
 want O19 "$R05" 'spawn_blocking' \
-  "R05 revision 3 routes the web feature's async handlers to the synchronous core through tokio::task::spawn_blocking"
+  "R05 revision 3 (the accepted bytes O17 located) routes the web feature's async handlers to the synchronous core through tokio::task::spawn_blocking"
 
 # ----------------------------------------------------- O20..O24: py/ts pins ---
 PY_REPO="$HOME/c/py-launch-blueprint"
@@ -346,18 +399,18 @@ if [ -d "$PY_REPO/.git" ] || [ -e "$PY_REPO/.git" ]; then
   TEST="$(py_show tests/web/test_app.py)"; TEST_STATUS=$?
   CLI="$(py_show src/py_launch_blueprint/cli/main.py)"; CLI_STATUS=$?
   set -e
-  if [ $APP_STATUS -eq 0 ] && printf '%s' "$APP" | $GREP -qF '@app.get("/healthz"' &&
-     printf '%s' "$APP" | $GREP -qF 'async def readyz(' &&
-     printf '%s' "$APP" | $GREP -qF 'status_code=503'; then
+  if [ $APP_STATUS -eq 0 ] && $GREP -qF '@app.get("/healthz"' <<<"$APP" &&
+     $GREP -qF 'async def readyz(' <<<"$APP" &&
+     $GREP -qF 'status_code=503' <<<"$APP"; then
     pass O20 "py at $PY_PIN serves /healthz and a readyz that answers 503 — the source precedent F328/F329 record"
   else
     fail O20 "py's web/app.py at the pin does not carry /healthz, readyz and the 503 (git show exit $APP_STATUS)"
   fi
 
   if [ $DIAG_STATUS -eq 0 ] && [ $CLI_STATUS -eq 0 ] &&
-     printf '%s' "$DIAG" | $GREP -qF 'def run_diagnostics(' &&
-     printf '%s' "$APP" | $GREP -qF 'run_diagnostics' &&
-     printf '%s' "$CLI" | $GREP -qF 'run_diagnostics'; then
+     $GREP -qF 'def run_diagnostics(' <<<"$DIAG" &&
+     $GREP -qF 'run_diagnostics' <<<"$APP" &&
+     $GREP -qF 'run_diagnostics' <<<"$CLI"; then
     pass O21 "py's run_diagnostics is defined once in core/diagnostics.py and called from BOTH web/app.py and cli/main.py — the 'one source of truth with the CLI' pattern this item ports"
   else
     fail O21 "py's shared-diagnostics pattern is not as stated (diagnostics exit $DIAG_STATUS, cli exit $CLI_STATUS)"
@@ -368,10 +421,10 @@ if [ -d "$PY_REPO/.git" ] || [ -e "$PY_REPO/.git" ]; then
   # 503 branch, but only by SUBSTITUTING run_diagnostics, which is itself the
   # evidence that no real environment reaches it.
   if [ $TEST_STATUS -eq 0 ] &&
-     printf '%s' "$TEST" | $GREP -qF 'Missing token/config are warnings, not errors, so readiness holds' &&
-     printf '%s' "$TEST" | $GREP -qF 'def test_readyz_failure_is_a_problem_with_diagnostics(' &&
-     printf '%s' "$TEST" | $GREP -qF 'monkeypatch.setattr(app_module, "run_diagnostics", lambda _config: failing)' &&
-     printf '%s' "$TEST" | $GREP -qF 'assert response.status_code == 503'; then
+     $GREP -qF 'Missing token/config are warnings, not errors, so readiness holds' <<<"$TEST" &&
+     $GREP -qF 'def test_readyz_failure_is_a_problem_with_diagnostics(' <<<"$TEST" &&
+     $GREP -qF 'monkeypatch.setattr(app_module, "run_diagnostics", lambda _config: failing)' <<<"$TEST" &&
+     $GREP -qF 'assert response.status_code == 503' <<<"$TEST"; then
     pass O22 "py's web test DOES cover the 503 branch (test_readyz_failure_is_a_problem_with_diagnostics), and reaches it only by monkeypatching run_diagnostics with a hand-built failing report — raw/opus.md's claim that no such test exists is wrong, while its underlying point (no real environment reaches the branch) is what the substitution demonstrates"
   else
     fail O22 "py's tests/web/test_app.py does not carry both readyz tests in the form stated (git show exit $TEST_STATUS)"
@@ -382,13 +435,13 @@ if [ -d "$PY_REPO/.git" ] || [ -e "$PY_REPO/.git" ]; then
   if [ $DIAG_STATUS -eq 0 ]; then
     PY_NAMES=0
     for check_name in python platform config-file token; do
-      if printf '%s' "$DIAG" | $GREP -qF "name=\"$check_name\""; then PY_NAMES=$((PY_NAMES + 1)); fi
+      if $GREP -qF "name=\"$check_name\"" <<<"$DIAG"; then PY_NAMES=$((PY_NAMES + 1)); fi
     done
-    PY_ERROR="$(printf '%s' "$DIAG" | $GREP -cF 'status="ok" if py_ok else "error"' || true)"
-    PY_OTHER_ERROR="$(printf '%s' "$DIAG" | $GREP -cE 'status="error"' || true)"
+    PY_ERROR="$($GREP -cF 'status="ok" if py_ok else "error"' <<<"$DIAG" || true)"
+    PY_OTHER_ERROR="$($GREP -cE 'status="error"' <<<"$DIAG" || true)"
     echo "py distinct check names found: $PY_NAMES of 4; error-capable statuses: $PY_ERROR; unconditional error statuses: $PY_OTHER_ERROR"
     if [ "$PY_NAMES" -eq 4 ] && [ "$PY_ERROR" -eq 1 ] && [ "$PY_OTHER_ERROR" -eq 0 ] &&
-       printf '%s' "$DIAG" | $GREP -qF 'MIN_PYTHON = (3, 12)'; then
+       $GREP -qF 'MIN_PYTHON = (3, 12)' <<<"$DIAG"; then
       pass O27 "py's run_diagnostics builds all four named checks (python, platform, config-file, token) and exactly one of them — python, gated on MIN_PYTHON = (3, 12) — can be error (counted with $($GREP --version | head -1)); Rust has no runtime-toolchain analogue to port"
     else
       fail O27 "py's check set is not the four named checks with exactly one error-capable status (names found: $PY_NAMES of 4, error-capable: $PY_ERROR)"
@@ -440,30 +493,33 @@ fi
 # This decision states that neither R55's nor R57's owner-accepted decision
 # defines a diagnostics check. That is an absolute claim, so it is counted rather
 # than read: neither file may name run_diagnostics, doctor, readyz or CheckStatus.
-R55="$ROOT/research/runs/R55/2026-09-17T020714Z-62a04ad8fee1/review/DECISION.md"
-R57="$ROOT/research/runs/R57/2026-09-17T020714Z-8fdb5c2010e7/review/DECISION.md"
+# Both are now published; the topic files carry the accepted bytes.
+R55="$ROOT/research/topics/55-config-error-tolerance/DECISION.md"
+R57="$ROOT/research/topics/57-xdg-directory-set/DECISION.md"
 if [ -f "$R55" ] && [ -f "$R57" ]; then
   R55_HITS="$($GREP -ciE 'run_diagnostics|doctor|readyz|CheckStatus' "$R55" || true)"
   R57_HITS="$($GREP -ciE 'run_diagnostics|doctor|readyz|CheckStatus' "$R57" || true)"
   echo "R55 diagnostics-term hits: $R55_HITS; R57: $R57_HITS"
   if [ "$R55_HITS" -eq 0 ] && [ "$R57_HITS" -eq 0 ]; then
-    pass O28 "neither R55 revision 3 nor R57 revision 2 names run_diagnostics, doctor, readyz or CheckStatus on any line (0 and 0, counted with $($GREP --version | head -1)) — the check list that could reach CheckStatus::Error is unowned, not merely unpublished"
+    pass O28 "neither R55's published revision 3 nor R57's published revision 2 names run_diagnostics, doctor, readyz or CheckStatus on any line (0 and 0, counted with $($GREP --version | head -1)) — the check list that could reach CheckStatus::Error is unowned"
   else
     fail O28 "R55 or R57 does name a diagnostics term (R55 $R55_HITS, R57 $R57_HITS); the unowned-check-list claim must be softened"
   fi
 else
-  skip O28 "R55's or R57's accepted decision is absent"
+  skip O28 "R55's or R57's published decision is absent"
 fi
 
 # -------------------------------------------------------------- O25 ----------
-# The decision must carry exactly one re-verify line and must not carry a
-# Supersedes section (this is revision 1).
+# The decision must carry exactly one re-verify line and, from revision 2 on,
+# exactly one Supersedes section. The naive '^## ' count is six: five real H2s
+# plus the one inside the conformance note's fenced template (C7 in
+# check-standard-r2.sh counts outside fences, as the publication validator does).
 if [ -f "$DECISION" ]; then
   RV="$($GREP -c '^re-verify: ' "$DECISION" || true)"
   SUP="$($GREP -c '^## Supersedes' "$DECISION" || true)"
   H2="$($GREP -c '^## ' "$DECISION" || true)"
-  if [ "$RV" -eq 1 ] && [ "$SUP" -eq 0 ] && [ "$H2" -eq 4 ]; then
-    pass O25 "DECISION.md carries exactly one 're-verify:' line, no '## Supersedes' and exactly four H2 sections (counted with $($GREP --version | head -1))"
+  if [ "$RV" -eq 1 ] && [ "$SUP" -eq 1 ] && [ "$H2" -eq 6 ]; then
+    pass O25 "DECISION.md carries exactly one 're-verify:' line, one '## Supersedes' and six '^## ' lines, one of them inside the conformance note's fence (counted with $($GREP --version | head -1))"
   else
     fail O25 "DECISION.md shape is wrong: re-verify lines $RV, Supersedes $SUP, H2 sections $H2"
   fi

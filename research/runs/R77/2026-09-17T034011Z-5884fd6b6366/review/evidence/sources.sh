@@ -7,7 +7,10 @@
 #                local Cargo registry cache. These live outside this repository,
 #                so a missing one is a named SKIP, never a FAIL.
 #   PARAMETERS — every `- assumes` line in DECISION.md is compared byte-for-byte
-#                with the value column of the live docs/port/PARAMETERS.md row.
+#                with the value column of the live docs/port/PARAMETERS.md row,
+#                except web-extra-surface (revision 6, owner decision Q3.A flag
+#                day), which is compared with R69 revision 11's owned line at
+#                :1885 after the prefix swap, R69's sha256 pinned.
 #
 # No personal email address and no token byte is read, printed or written by
 # this script: the registry-cache checks read src/ files only, never a
@@ -95,7 +98,7 @@ file_has "reference C15 runbook: SIGTERM then a 10 second period then SIGKILL" "
 echo
 echo '## IN-REPO — accepted-but-unpublished decisions this answer is designed against'
 r69="$root/research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md"
-line_has "R69 revision 10 owns web-extra-surface with the crates/web tree" "$r69" 1791 "- owns web-extra-surface = one additive, off-by-default Cargo feature named web, declared on the root package rs-launch-blueprint"
+line_has "R69 revision 11 owns web-extra-surface with the crates/web tree" "$r69" 1885 "- owns web-extra-surface = one additive, off-by-default Cargo feature named web, declared on the root package rs-launch-blueprint"
 file_has "R69 revision 10 reserves the AppState slot this item fills" "$r69" "pub config:   Arc<WebConfig>,                 // the typed settings struct is R77's"
 file_has "R69 revision 10 declares FromRef for that slot" "$r69" "impl FromRef<AppState> for Arc<WebConfig>"
 file_has "R69 revision 10 hands R77 the Cloud Run drain datum" "$r69" "a drain deadline is honoured only if it is strictly shorter than 10 seconds"
@@ -255,12 +258,24 @@ row = v.get(sys.argv[2])
 print("- assumes %s = %s" % (sys.argv[2], row["value"] if row else "!!MISSING!!"))
 PY
 )
+    if [ "$p" = web-extra-surface ]; then
+      # Q3.A flag day: R69 revision 11's owned line, not the registry row.
+      r69=$root/research/runs/R69/2026-09-18T020601Z-f304731ab06f/review/DECISION.md
+      r69sha=2806a1f04517a09334afde96eea1063e3da799d0e3bd66268e433baf56bc1815
+      got=$(/usr/bin/shasum -a 256 "$r69" | /usr/bin/cut -d' ' -f1)
+      if [ "$got" = "$r69sha" ]; then ok "R69 revision 11 DECISION.md sha256 is pinned $r69sha"
+      else no "R69 DECISION.md sha256 is $got, pinned $r69sha"; fi
+      reg=$(/usr/bin/sed -n '1885p' "$r69" | /usr/bin/sed 's/^- owns web-extra-surface = /- assumes web-extra-surface = /')
+      src="R69 revision 11 :1885"
+    else
+      src="docs/port/PARAMETERS.md"
+    fi
     dec=$(/usr/bin/grep -m1 "^- assumes $p = " "$decision" || true)
     if [ "$reg" = "$dec" ]; then
-      ok "assumes $p is byte-identical to docs/port/PARAMETERS.md (${#reg} bytes)"
+      ok "assumes $p is byte-identical to $src (${#reg} bytes)"
     else
-      no "assumes $p differs from the registry row"
-      printf '     registry: %s\n     decision: %s\n' "$reg" "$dec"
+      no "assumes $p differs from $src"
+      printf '     source:   %s\n     decision: %s\n' "$reg" "$dec"
     fi
   done
   n=$(/usr/bin/grep -c '^- owns ' "$decision" || true)

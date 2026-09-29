@@ -37,7 +37,14 @@ Origin of every file under ./snap:
        cb1cbcb2e88b898e8c081b0abbfabc1630079c00:release-please-config.json`
       Both read through the programme's pins, never from a working tree.
 
-  rendered/*.md, rendered/mech5.txt
+  rendered/loader.txt, rendered/G-scope-routed-hidden-only.md
+      Added in revision 2 (2026-09-28). Output of ./probe/loader.cjs against a
+      fresh `npm install release-please@17.11.2` into a throwaway directory
+      under /tmp: the config-loader path (Manifest.fromManifest over an
+      in-memory GitHub stub, no network). The header date is normalised the
+      same way as below.
+
+  rendered/A-*.md through rendered/F-*.md, rendered/mech5.txt
       Output of ./probe/render.cjs against that install. The release-header
       date is normalised to `(<release-date>)` by the probe, because
       conventional-changelog-writer stamps the machine's current date and

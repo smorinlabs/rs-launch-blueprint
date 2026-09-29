@@ -1,6 +1,105 @@
-# 2026-09-18 — R70 — http-problem-envelope (bundle, Focused) — decision (revision 2)
+# 2026-09-27 — R70 — http-problem-envelope (bundle, Focused) — decision (revision 5)
 
 ## Decision
+
+**Revision note (revision 5).** Both audits of revision 4 (sha256
+`7a9345c67b42d504501e2039214fd42d9d31b69d61402c958c62c5bf7448a410`, preserved
+byte-identical at `review/R70-r4-snapshot.md`) rejected it. The judgment audit
+(`review/audit-fable.r4.md`) rejected it on F-1 and F-2. The empirical audit
+(`review/audit-claude.r4.md`) rejected it on EA-1. Separately, R80 published
+revision 6 (`research/topics/80-health-probe-endpoints/DECISION.md`), which
+hands this item the choice of how `/readyz`'s 503 carries R80's diagnostic
+report: "R70 owns the choice" (R80 revision 6, `:859-865`). Revision 5 applies
+only the repairs the coordinator's repair brief enumerates. **The recommendation
+does not move except for the one choice R80 assigned here: the carrier is a
+`diagnostics` extension member**, with the rationale under `## Engines`, "The
+`/readyz` diagnostic carrier". No criterion changes, and OV-06 is still unused.
+
+| Finding or event | What was wrong in revision 4 | What revision 5 does |
+|---|---|---|
+| R80 revision 6 (carrier) | The R80 coupling said R80 was "being researched in parallel" and that a fifth extension member was "R80's to justify"; the trigger set waited on "R80 justifying a fifth extension member" | R80 is published and deferred the choice to this item. The coupling and the trigger now state the accepted choice, a `diagnostics` extension member that R80's `/readyz` route appends under the contract's append-only rule. `## Engines` records the choice among R80's three ways and why the other two fail this decision's own rules |
+| F-1 (1) | The `/upstream` body's redaction proof was attributed to revision 1's `AC5` | Attributed to `R8` (`probe-r2.sh:979-990`) plus the whole-file negative (`probe-r2.sh:1309`) |
+| F-1 (2) | "AC16 walks twelve hand-listed requests" | "`R24` walks fourteen hand-listed requests (twelve failing, two succeeding)" (`probe-r2.sh:1225-1262`) |
+| F-1 (3) | The W5 rule "executed here as AC3" | "executed here as `R3`" (`probe-r2.sh:914`) |
+| F-2 | "Both … reject a derive and a runtime type map (`:136`)" credited the Opus report with a rejection it never makes | Both reject a derive, each cited; Muse alone rejects a runtime `HashMap<TypeId, StatusCode>` |
+| EA-1 | `engines-r4.sh:181` pinned line 20 of R80's mutable working-tree `DECISION.md`, which has since moved | The R80 check reads R80's published revision 6 and pins the `OVERRIDE (OV-05)` heading at its `:790`. The revision-5 rerun found the same failure class at the R02 check: R02's `DECISION.md` is now revision 3, and "Depends on `core` only" has left `:29`. That check now reads R02's committed revision-2 snapshot, `review/R02-r2-snapshot.md`, whose sha256 `9e8f8e8c…` is the revision this decision cites. No decision text changes for it |
+| Stale op-state gate (S1 ruling) | `engines-r4.sh:87-95` asserted `operations.muse.state` is `submitting` and the run state `partial`. The controller has ruled these states intent paperwork; both legs are verified on disk (`execution-ledger.md:1380`, commit `3b0d45a3`) | Those three assertions now check that both legs are present and well-shaped, and that the Opus receipt matches its file. The manifest still reads `submitting`, so the `## Engines` sentence reporting that state still holds; the evidence no longer gates on it |
+
+Three places change only because a repair above changed what they describe,
+and each is listed here so none changes silently. The `engines-r4.sh`
+description under `## Empirical check` said the script asserts "the manifest's
+missing receipt"; it now says the Muse leg's presence and shape. The same
+section's result row for `engines-r4.sh` is restated from the regenerated log,
+because the script gained the carrier checks. The revision history below gains a
+revision-5 entry.
+
+**Checked and holding, so not edited.** The revision-4 table's JF-1 (5) row still
+reads that R80 "now claims" OV-05; R80 revision 6 carries the heading
+`#### OVERRIDE (OV-05)` at `:790`. The number paragraph's "R80 took it" (OV-04)
+still describes what happened; R80 revision 6 records the collision and its
+renumbering at `:792-798`. "`/readyz`'s failure payload (R80)" under "Not created
+by this item" still holds: this item chooses the member, and R80 builds the
+report it carries. Five passages still describe nine members and four extensions:
+the envelope contract table, the R1.8 conformance row, the R71 coupling's "four
+extensions", the performance paragraph's "at most nine members", and the
+`ProblemExt` field list in the migration table. All five describe the base
+contract this item ships, which is unchanged. The `diagnostics` member is scoped
+to one route and arrives with R80's implementation. These passages are not
+edited under the enumerated-repairs rule and are flagged for the controller.
+
+**Revision note (revision 4).** Both audits of revision 3 (sha256
+`802e5292157c97b8530445a7a5c637d8ebcb71c4a3fe232eadd882c7dea5cc8b`, preserved
+byte-identical at `review/R70-r3-snapshot.md`) rejected it. The judgment audit
+(`review/audit-fable.r1.md`) rejected it on JF-3, JF-1 and JF-2. The empirical
+audit (`review/audit-claude.md`) rejected it on EF-1 and EF-2. Both audits found
+the recommendation supported and every executed figure reproducing; every finding
+is a fidelity or prose defect. **The recommendation does not move, no criterion
+changes, and OV-06 is still unused.** Each repair, and where it lands:
+
+| Finding | What was wrong in revision 3 | What revision 4 does |
+|---|---|---|
+| JF-3 | `## Engines` said the item had one engine and no inter-engine disagreements. The pinned prompt names `muse, opus`, and a Muse report (`raw/muse.md`) that recommends a different crate was neither listed nor adjudicated | `## Engines` names both engines under the Q5.A substitution, lists `raw/muse.md` with its sha256 and collection record, states the manifest's unwritten receipt, and adjudicates Muse's three divergent positions as Disagreements 1–3. The Codex/W1-CODEX3 framing survives only as revision-1 history. The single-engine weakening paragraph, the corrections lead-in and the confidence paragraph are requalified |
+| JF-1 (1) | "Twelve carry … **Twelve are new**" and "revision 1's twelve surviving behaviours" | **Thirteen** carried (`R1`–`R3`, `R7`–`R10`, `R12`–`R17`) and **eleven** new (`R4`–`R6`, `R11`, `R18`–`R24`), the partition `probe-r2.sh` defines. `engines-r4.sh` derives both counts from the script |
+| JF-1 (2) | "The five items under 'What these checks do not prove'" | "The nine items", counted by `engines-r4.sh` |
+| JF-1 (3) | J6: "The fourteen executed criteria prove …" | "The twenty-four executed criteria, `R1`–`R24`, prove …" |
+| JF-1 (4) and EF-2 | "The four bodies, captured verbatim by this run:" introduced two revision-1 bodies and six revision-2 bodies | The sentence is deleted. Each of the two body blocks keeps its own attributed lead-in |
+| JF-1 (5) | Group C described as the control "for OV-05 and OV-06 being free" | "for OV-06 being free". `rest-r2.sh:255-264` asserts nothing about OV-05, which R80 now claims |
+| JF-2 | The prompt's LOW question had no answer | Answered under `### Principles and implementation`, "The prompt's LOW question" |
+| EF-1 | R67's "silent refactor" sentence cited at `DECISION.md:135` | Cited at `:136`, the A4 row where it appears |
+
+Two new evidence scripts back the repairs. `review/evidence/engines-r4.sh`
+asserts every source fact the new `## Engines` text and the corrected counts
+cite. `review/evidence/rerun-r4.sh` reruns all five earlier scripts without
+writing over any committed log. Both are reported under `## Empirical check`.
+The reruns found one source-side drift: IANA now spells the media-type reference
+`[RFC 9457]` rather than `[RFC9457]`, which trips one literal-match check in
+`registry.sh`. The registration itself is unchanged and re-asserted; the drift
+moves nothing.
+
+**Found while repairing, not raised by either audit.** Revision 3 placed
+`impl ProblemSource for <domain error>` in `crates/core/src/error.rs`, in three
+places: the migration table's row, its lead-in, and the minimal-example
+sentence. That is impossible. The trait is defined in `crates/web`, and
+`crates/web` depends on `crates/core` (R02 revision 2, `:29`), so `crates/core`
+cannot name the trait without a dependency cycle. It also contradicted this
+decision's own R02 coupling, which already puts the trait in `crates/web`.
+Revision 4 moves the impl to `crates/web/src/problems.rs`, where the probe
+already has it (`probe-r2.sh:359`); `crates/core` now needs no change. This is
+prose only and moves no recommendation.
+
+**Revision note (revision 3).** The first judgment audit
+(`review/audit-fable.md`, verdict **reject**) found revision 2's recommendation
+sound and its evidence reproducing, but blocked publication on **JF-1**: three
+revision-1 sentences surviving into revision 2 and contradicting move M-2, the
+envelope's member count, and R80's extension-member arithmetic. This revision
+rewrites all three to the revision-2 truth and folds in the sentence-level
+repairs for **JF-2 through JF-7** (the `R5` claim, the run-date sentence, the
+missing R5.10 N/A bullet, the §4.2 sweep, the C1 citation, the unexercised body
+carriage of `stream`); JF-8 through JF-10 are recorded and untouched. **No
+evidence moves, no criterion changes, and the recommendation is untouched**:
+`rest-r2.sh` re-runs PASS 79 / FAIL 0 / SKIP 0 and `probe-r2.sh` PASS 25 /
+FAIL 0 / SKIP 0, verdicts identical to the committed logs. Revision 2 is
+preserved byte-identical at `review/R70-r2-snapshot.md` (sha256 `fe895588…`).
 
 **Revision note (revision 2).** Owner ruling **W2-REST** (2026-09-18,
 `docs/port/OWNER-REVIEW.md`, "2026-09-18 — the REST API Design Standard binds the
@@ -56,12 +155,25 @@ zeros from being vacuous.
 `c41ff27`, `28d9f76` and `f010b8e`): first synthesis from the single Opus report,
 the Codex leg deferred under W1-CODEX3; 65 registry checks, 33 probe checks, 11
 archive-rerun checks; no audit has run against it. **Revision 2**, 2026-09-18
-(this file): the five moves above under W2-REST. **Every revision-1 script and log
+(sha256 `fe8955887eb29d3f22c06506fecfea5b4af732096da198eff98429afa0b2c3f1`):
+the five moves above under W2-REST; judgment-audited at that hash, verdict
+reject on JF-1. **Between revisions 2 and 3**, owner decision Q5.A
+(2026-09-21) substituted Muse for Codex on this item, and the Muse leg was
+collected on 2026-09-23 (`raw/muse.md`); revision 3 did not represent it.
+**Revision 3**, 2026-09-27 (sha256 `802e5292…`, preserved at
+`review/R70-r3-snapshot.md`): the JF-1 rewrite plus the JF-2–JF-7 repairs, prose
+only; rejected by both audits. **Revision 4**, 2026-09-27 (sha256 `7a9345c6…`,
+preserved at `review/R70-r4-snapshot.md`): the Muse leg represented and
+adjudicated, the count and citation repairs, and two new evidence scripts;
+rejected by both audits. **Revision 5**, 2026-09-27 (this file): the `/readyz`
+carrier choice R80 revision 6 assigned here, the F-1, F-2 and EA-1 repairs, and
+`engines-r4.sh` rebound off mutable state. **Every revision-1 script and log
 is carried byte-identical and none is re-run** — `registry.sh`, `registry.log`,
 `registry-figures.log`, `probe.sh`, `probe.log`, `archive-check.sh`,
 `archive-check.log`, `registry-archive.log` and `probe-archive.log`, each pinned
-by sha256 in `rest-r2.sh` group B. The new evidence is two new files,
+by sha256 in `rest-r2.sh` group B. Revision 2's new evidence is two files,
 `review/evidence/rest-r2.sh` and `review/evidence/probe-r2.sh`, with their logs.
+Revision 4 adds `engines-r4.sh` and `rerun-r4.sh`, with their logs.
 No `## Supersedes` section is added: this item is not yet published.
 
 **`rs-launch-blueprint`'s optional `web` surface renders every non-2xx response —
@@ -239,11 +351,13 @@ at `:653-662`). This decision adopts that unchanged and **verified it in both
 directions**: with the enum in the same crate the `_` arm drew
 `warning: unreachable pattern … no value can reach this`; with the enum behind a
 crate boundary the identical arm compiled silently (`probe.log`, section 5). A
-trait method on the domain type was rejected on layering — it would put
+trait method **defined in `crates/core`** was rejected on layering — it would put
 `http::StatusCode` in `crates/core`, which `crates/cli` also depends on under R02's
-topology. A derive was rejected on R67's own ground: "A variant rename is a
-compiler-checked, silent refactor in Rust — which is exactly why a derived code is
-dangerous" (`…/67-…/DECISION.md:135`).
+topology. A trait defined in `crates/web` and implemented there for R67's type
+avoids that objection; it is the Muse report's proposal and is adjudicated as
+Disagreement 3 under `## Engines`. A derive was rejected on R67's own ground: "A
+variant rename is a compiler-checked, silent refactor in Rust — which is exactly
+why a derived code is dangerous" (`…/67-…/DECISION.md:136`).
 
 ### The funnel, and the two header obligations it must not drop
 
@@ -311,6 +425,7 @@ deviation rather than an exemption.
 | R4.3 | `:762` | MUST | an object at the top level | **conform** — `R21` |
 | R4.4 | `:768` | MUST | snake_case body properties, `^[a-z_][a-z_0-9]*$` | **conform** — `R21` checks every member name on nine distinct bodies, including the `errors[]` entries' fields |
 | R4.8 | `:818` | MUST | the contract states how null and omission differ | **conform, and stronger** — no member is ever `null`; absent means omitted. `R21` |
+| R4.5, R4.6, R4.7, R4.9, R4.16 | `:792`, `:798`, `:804`, `:826`, `:779` | — | identifiers as JSON strings; RFC 3339 timestamps; no floating-point money; enum additions documented non-breaking; path placeholders | **N/A** — the body carries no timestamp, monetary amount or path placeholder; `code` and `catalog_code` are already JSON strings; R4.9 is discharged by the append-only contract plus the generated R5.16 catalog |
 | R4.10 | `:846` | *no BCP 14 keyword* | default media type `application/json`; no `format` parameter; 406 for an unsatisfiable `Accept` | **conform; no deviation to record.** The standard rules at `:2218` that this clause "carries no BCP 14 keyword", and R1.1 (`:128`) binds only all-capitals keywords. R5.12 (`:1035`) contemplates this exact design. No `format` parameter exists; 406 is a SHOULD this item does not reach, since it negotiates nothing |
 | R4.11 | `:856` | MUST | `Vary` on any response whose content a request header selected | **conform through its own exception** (`:858`, "responses with no negotiation") — nothing here is selected by a request header |
 | R4.12–R4.15 | `:880`–`:899` | SHOULD/MAY | structured header fields, registered link relations, URI templates, `Prefer` | **N/A** — this item defines no new header, expresses no link relation, describes no URI family and supports no `Prefer` |
@@ -349,6 +464,8 @@ N/A declarations:
 - R5.4, R5.5 · no 410 row and no redirect in the error map
 - R5.6, R5.7 · success statuses belong to the route items, not to this one
 - R5.8 · bulk-operations=off
+- R5.10 · no P02 item implements authorization; the masking 404 is
+  `resource_not_found`/`RSLB301` when one does
 - R5.11 (428 limb) · no conditional operation is defined
 - R4.12–R4.15 · no new header, link relation, URI template or Prefer support
 - R4.17 · this item emits the headers; R76 owns the CORS exposure list
@@ -361,13 +478,13 @@ Separated so a reviewer can accept or reject them independently.
 
 | # | What is decided | Force | Ground |
 |---|---|---|---|
-| J1 | RFC 9457 rather than a house shape | **Recommended, and checked against a counter-example** | The RFC is an IETF Proposed Standard on the IETF stream with both media types IANA-registered citing `[RFC9457]` (`registry.log`, section 5); ISRG's `divviup/janus` declares `http-api-problem = "0.60.0"` in its workspace manifest (re-fetched, `registry.log` section 7). Against: Oxide's `dropshot` ships a bespoke `HttpErrorResponseBody { request_id, error_code, message }` and no problem+json (re-fetched, same section). Its three ideas map onto this design without contradiction — its `error_code` is this design's `code`, its `message` this design's `detail`; the disagreement is about the wrapper, not about what a client needs |
+| J1 | RFC 9457 rather than a house shape | **Recommended, and checked against a counter-example** | The RFC is an IETF Proposed Standard on the IETF stream with both media types IANA-registered citing RFC 9457 (`registry.log`, section 5, where the registry spelled it `[RFC9457]` on 2026-09-18; on 2026-09-27 it spells it `[RFC 9457]`, asserted in `rerun-r4.log`); ISRG's `divviup/janus` declares `http-api-problem = "0.60.0"` in its workspace manifest (re-fetched, `registry.log` section 7). Against: Oxide's `dropshot` ships a bespoke `HttpErrorResponseBody { request_id, error_code, message }` and no problem+json (re-fetched, same section). Its three ideas map onto this design without contradiction — its `error_code` is this design's `code`, its `message` this design's `detail`; the disagreement is about the wrapper, not about what a client needs |
 | J2 | Take `problem_details` 0.10.0 rather than hand-roll the ~50-line struct | **Recommended, and the closest call in this decision** | Measured: one added crate in the resolved tree (`http-serde` v2.1.1 — executed as a tree diff against a control member with the identical dependencies minus `problem_details`, `probe.log` section 4); declared `rust-version = "1.85"` against a 1.96 floor; `#![forbid(unsafe_code)]`; no RustSec page; a `utoipa` `ToSchema` derive already on the struct for R71. Against: **bus factor 1** — 10 stars, 1 subscriber, 1 maintainer. Answered structurally, not verbally: the crate is named only from `crates/web/src/problems.rs`, so the replacement is a struct behind an unchanged module surface |
 | J3 | `code` is a snake_case value space this item owns, with R67's token beside it as `catalog_code` | **Forced by R5.13.1's grammar, then chosen among three conforming shapes** | `RSLB301` fails `^[a-z][a-z0-9_]*$`, so it cannot be `code`. Three shapes conform: (a) this one; (b) `code: "rslb301"`, a mechanical lowercasing — **ranked runner-up**, rejected because it makes `type` URIs and the R5.16 catalog opaque and tautological, and the standard's own worked example (`…/validation-failed`, `code: validation_failed`) is semantic; (c) an `OVERRIDE` keeping `RSLB301` verbatim — rejected because the deviation is **not needed**, and R1.7 makes an unnecessary recorded exception a cost with no benefit |
 | J7 | The two per-endpoint reserved-parameter guards are this envelope's to render | **Forced** | R1.6 (`:258`) states that "a switch never waives a guard" and that R1.9 and R13.3 bind **per endpoint**, not per API. A mutating request carrying `dry_run` — or a request carrying `stream` — to an endpoint that does not implement it MUST be rejected with `400` (R1.9, `:318`), and that rejection is an error response, so it is this envelope. Criterion `R20` executes all three forms. Where the guard *lives* (middleware or handler) is R75's |
 | J4 | The table is a free `const fn` over `ErrorCode`, not an inline `match` in `into_response` | **Recommended, on testability** | A table inside a response method cannot be called by a test iterating `ErrorCode::ALL` without building a `Response` per code. The three coverage tests here are plain `#[test]` functions with no runtime, no router and no request |
 | J5 | No content negotiation; JSON only | **Recommended, on scope** | R69's accepted surface has no templating, static assets or HTML route, and R69 revision 10 records templating as having "No P02 item; pending owner scoping". Adding negotiation would settle a scoping question this item does not own. `impl IntoResponse for WebError` is the single place a later item adds it |
-| J6 | The individual status rows | **Proposals the owner may revise without touching anything verified** | Calibrated against py's five mappings and R67's exit semantics. The fourteen executed criteria prove one envelope can cover domain, router, extractor and panic failures at these versions on a supported OS; they do not prove that `RSLB102` should be 502 rather than 504 |
+| J6 | The individual status rows | **Proposals the owner may revise without touching anything verified** | Calibrated against py's five mappings and R67's exit semantics. The twenty-four executed criteria, `R1`–`R24`, prove one envelope can cover domain, router, extractor and panic failures at these versions on a supported OS; they do not prove that `RSLB102` should be 502 rather than 504 |
 
 **W5 — the disclosure rule, and the real opposition it resolves.** The config
 items require the *opposite* of redaction for a terminal user (R55's "the warning
@@ -378,17 +495,21 @@ message is produced exactly as the CLI items require and written to the log, and
 `detail_is_public(code)` decides whether that same text reaches the client.
 `WebError::log_detail()` exists for that split. The mechanical enforcement is a
 test — **no code whose status is 5xx may be marked detail-public** — executed here
-as AC3.
+as `R3` (`probe-r2.sh:914`; revision 1's `AC3`).
 
 ### Corrections to `raw/opus.md`
 
-This decision is synthesized from **one** engine (the Codex leg is deferred under
-owner ruling W1-CODEX3), so every load-bearing claim was re-checked at source.
-Three things were found wrong or unreproducible; everything else reproduced.
+This decision is synthesized from **two** engine reports, Opus and Muse (see
+`## Engines`). Only the Opus report executed anything: every check in the Muse
+report is marked "Proposed, not executed" (`raw/muse.md:37`). The Opus report's
+load-bearing claims were therefore re-checked at source, and they are the ones
+corrected here. Three things were found wrong or unreproducible; everything else
+reproduced. The Muse report's divergent positions are adjudicated under
+`## Engines`, not here.
 
 | # | The report's claim | What the source says | Effect |
 |---|---|---|---|
-| C1 | The envelope table cites **§3.1.2 for `title`** and **§3.1.3 for `status`** (`raw/opus.md:735-736`) | RFC 9457 numbers them the other way round: §3.1.2 is `"status"` and §3.1.3 is `"title"`. Asserted line-by-line for all five members (`registry.log`, section 5) | **Corrected above.** No behavioural effect — the member names and rules are unchanged |
+| C1 | The envelope table cites **§3.1.2 for `title`** and **§3.1.3 for `status`** (`raw/opus.md:737-738`) | RFC 9457 numbers them the other way round: §3.1.2 is `"status"` and §3.1.3 is `"title"`. Asserted line-by-line for all five members (`registry.log`, section 5) | **Corrected above.** No behavioural effect — the member names and rules are unchanged |
 | C2 | "R69 records `axum-extra` as an open hand-off (`…/R69/…:2342`)" | Line 2342 of R69 revision 10 is about the `bacon` dev watcher. The `axum-extra` hand-off is at **`:214`** (Disagreement 3, row 10); R69's own change table at `:97` is what carries the stale `2342` | **Corrected above** to `:214`. The substance — `axum-extra` is R69's open hand-off — is confirmed |
 | C3 | "exactly one: `http-serde` 2.1.1 … (executed: `cargo tree -p problem_details --edges normal`)" | True, and now proved a stronger way. `cargo tree -p problem_details` shows that crate's own subtree, which cannot by itself show what is *added* to a tree that already has axum. The check here diffs the resolved trees of two workspace members differing only in `problem_details` | **Method strengthened, conclusion unchanged**: `http-serde v2.1.1` and `problem_details v0.10.0`, nothing else |
 
@@ -413,8 +534,9 @@ with both 2019 advisories patched in `>= 0.1.20`; upstream CI ubuntu-only with a
 ### Couplings
 
 - **R67 `error-and-exit-code-contract`** (published, sha256 `16947ab1…`) — consumed.
-  This item maps R67's seventeen catalog rows onto statuses and carries
-  `ErrorCode::as_str()` verbatim as `code`. **No `CONFLICT:` is raised**, and the
+  This item maps R67's seventeen catalog rows onto statuses and codes, carrying
+  `ErrorCode::as_str()` verbatim as `catalog_code` beside the owned snake_case
+  `code` (M-2). **No `CONFLICT:` is raised**, and the
   pressure point is named rather than hidden: R67's catalog, written for a CLI, has
   no code meaning "the client's request body failed validation". The resolution is
   py's own structure — a framework rejection keeps axum's status and carries
@@ -465,13 +587,19 @@ with both 2019 advisories patched in `>= 0.1.20`; upstream CI ubuntu-only with a
   and R1.9's `dry_run` guard is naturally a layer rather than a per-handler check,
   which is why criterion `R20` proves the *behaviour* here and leaves the
   *placement* to R75.
-- **Being researched in parallel; stated as couplings, decided here only where
-  this item owns the answer.** Their raw reports all assume this envelope and none
-  contradicts it: **R80** wants `/readyz`'s 503 to reuse it and names a
-  `diagnostics` extension member as its requirement on this item
-  (`research/runs/R80/2026-09-17T034011Z-74765d801b92/raw/opus.md:356`) — a third
-  extension member is R80's to justify, and this contract's append-only rule
-  permits it; **R72** hands this item a pagination rejection type and records that
+- **Stated as couplings, decided here only where this item owns the answer.**
+  None of these items contradicts this envelope. **R80** is resolved: its
+  published revision 6 (`research/topics/80-health-probe-endpoints/DECISION.md`)
+  has `/readyz`'s 503 reuse this envelope, requires its diagnostic report to be
+  reachable from that response, names three ways to satisfy that, and states
+  "R70 owns the choice" (`:859-865`). **This item's choice is a `diagnostics`
+  extension member**, appended by R80's `/readyz` route under
+  `problem+json/v1`'s append-only rule; the nine-member base this item ships is
+  unchanged. It is present only on `/readyz`'s 503 and omitted everywhere
+  else, and it is never `null`. The report it carries, and that report's R5.17
+  redaction, are R80's (`:1007`). The rationale, and why the other two ways fail
+  this decision's own rules, is under `## Engines`, "The `/readyz` diagnostic
+  carrier"; **R72** hands this item a pagination rejection type and records that
   axum's `Query` rejection today is `text/plain` and "neither RFC 9457 nor R67's
   envelope" (`…/R72/…/raw/opus.md:277,903-905`); **R73** hands over five bodies
   (400 / 409 / 413 / 422 / 503) and notes the IETF idempotency draft still cites
@@ -533,12 +661,15 @@ criteria and added two, `AC1`–`AC16`, all passing; `probe.log` is carried
 byte-identical and is **not** re-run, because those criteria bind revision 1's
 envelope. Revision 2 states its own twenty-four, `R1`–`R24`, in
 `review/evidence/probe-r2.sh`, and all twenty-four pass at the 1.96 MSRV floor and
-on the host toolchain. Twelve carry revision 1's behaviour forward unchanged
+on the host toolchain. Thirteen carry revision 1's behaviour forward unchanged
 (`R1`–`R3` the table's totality, redaction and the unreachable rows; `R7`–`R10`
 and `R12`–`R17` the four funnel sources, the `Allow` and `WWW-Authenticate`
-obligations, the 2xx pass-through and the blocking-bridge panic). **Twelve are new
+obligations, the 2xx pass-through and the blocking-bridge panic). **Eleven are new
 and exist because of the standard**: `R4` the `code` map is total, injective and
-matches `^[a-z][a-z0-9_]*$`; `R5` `catalog_code` is R67's token verbatim; `R6`
+matches `^[a-z][a-z0-9_]*$`; `R5` checks the `catalog_code` token shape (`RSLB`
+prefix, length 7) across `ALL`, while verbatim-ness holds by construction
+(`catalog()` inserts `code.as_str()` directly) and is executed by `R23`
+(`catalog_codes_unique 17`, `rslb_ok`) and on real bodies by `R7`/`R8`; `R6`
 every `type` is `https`, template-bound and never `about:blank`; `R11` `errors` is
 an array of `{pointer, code, detail}`; `R18` no offending request **value** is
 echoed into the body; `R19` `instance` carries no query fragment; `R20` the
@@ -574,6 +705,18 @@ ISRG using it; a template whose purpose is to be copied, where a documented
 standard beats a house shape; and R71 must publish a schema for the error body
 either way, so a standard shape is the one a generated client already understands.
 **Keep the pattern.**
+
+**The prompt's LOW question — does a published template or style guide name
+this pattern?** No published Rust web-service template was found that names a
+"one envelope for every non-2xx response" policy. That is the Muse report's
+stated negative result, retrieved 2026-09-25 ("No published Rust template found
+that names a 'one envelope for every non-2xx response' policy verbatim",
+`raw/muse.md:19`), and the Opus report does not address the question. The
+adopting projects cited under J1 (`divviup/janus`, `oxidecomputer/dropshot`) are
+practice evidence, not templates or style guides. One style guide does require
+the pattern: the org REST API Design Standard v2.0.0, R5.12 (`:1019`), requires
+every application-generated error to be servable as `application/problem+json`,
+and owner ruling W2-REST makes that standard bind this template.
 
 **The landscape, and the one fact that decides how to weigh it.** The category has
 four RFC 9457 crates and **no dominant one**: the largest by all-time downloads
@@ -623,7 +766,7 @@ own dev-dependency suite, which tests against `axum` 0.8 and `utoipa-axum` 0.2 �
 the exact pairings R69 and R71 need.
 
 **Performance.** No latency or throughput figure is claimed and none was measured.
-The envelope is a single `serde_json` serialization of a struct with at most seven
+The envelope is a single `serde_json` serialization of a struct with at most nine
 members, on a path taken only by failing requests, behind the same `Json` writer
 axum uses for success bodies. A throughput comparison between this and a
 hand-rolled struct would be measuring `serde_json`, not this decision.
@@ -649,7 +792,8 @@ And the row this decision explicitly does **not** rule on: `:53`'s
 "garde + axum-valid 0.24" validation stack — see the C4 coupling above.
 
 **Minimal realistic example.** `crates/web/src/problems.rs` plus two lines in
-`build_router` and one `impl ProblemSource` in the core crate. Its executable
+`build_router`, with the one `impl ProblemSource` for the domain error inside
+`problems.rs`. Its executable
 acceptance check is the twenty-four criteria `R1`–`R24` in `## Empirical check`;
 what they prove and what they do not is stated there.
 
@@ -657,8 +801,8 @@ what they prove and what they do not is stated there.
 send a reader back to part of this decision, and they are recorded where they
 belong rather than piled into one line: R69 republishing `web-extra-surface` moves
 the file paths only (`## Parameters`); R71 selecting an OpenAPI generator, R75
-publishing its layer stack, R80 justifying a third extension member and the owner
-settling C4 validation each land in `### Couplings`; a RustSec advisory against
+publishing its layer stack, R80 building `/readyz` on the accepted `diagnostics`
+carrier and the owner settling C4 validation each land in `### Couplings`; a RustSec advisory against
 `problem_details` or `http-serde`, `http-api-problem` publishing a version that
 declares `rust-version`, and an axum minor release changing a rejection's default
 status are each noted at the gate or criterion they would move. **Three events
@@ -721,15 +865,15 @@ R02 revision 2 (sha256 `9e8f8e8c…`) fixes the four-package workspace and
 fixes the synchronous core reached through `tokio::task::spawn_blocking`.
 
 **Migration implications, at R69 revision 10's paths.** Nothing outside
-`crates/web` changes except one trait impl.
+`crates/web` changes.
 
 | Path | Change |
 |---|---|
 | `crates/web/Cargo.toml` | one `[dependencies]` line: `problem_details = { version = "0.10.0", features = ["axum", "json"] }`. No `optional = true` — the whole member is already optional at the root |
-| `crates/web/src/problems.rs` | **new**, and the only file that names `problem_details`. `ProblemExt` (`code`, `catalog_code`, `documentation`, `errors`), `FieldError` (`pointer`, `code`, `detail`), `pub type Problem`, `pub trait ProblemSource`, `pub struct WebError` with its builders and `log_detail`, `impl IntoResponse for WebError`, `pub const fn http_status`, **`pub const fn http_code`**, **`problem_type`**, `pub const fn detail_is_public`, `pub const NOT_REQUEST_REACHABLE`, `From<JsonRejection>`/`From<PathRejection>`/`From<QueryRejection>`, `ProblemJson<T>`/`ProblemPath<T>`/`ProblemQuery<T>`, `not_found`, `method_not_allowed`, **`reserved_parameter_guard`**, **`catalog()`**, `join_error_to_web_error`, and the `headers` field with its `with_header` builder that RFC 9110's `WWW-Authenticate` obligation requires. The bolded items are new in revision 2 |
+| `crates/web/src/problems.rs` | **new**, and the only file that names `problem_details`. `ProblemExt` (`code`, `catalog_code`, `documentation`, `errors`), `FieldError` (`pointer`, `code`, `detail`), `pub type Problem`, `pub trait ProblemSource` and its `impl` for the domain error, `pub struct WebError` with its builders and `log_detail`, `impl IntoResponse for WebError`, `pub const fn http_status`, **`pub const fn http_code`**, **`problem_type`**, `pub const fn detail_is_public`, `pub const NOT_REQUEST_REACHABLE`, `From<JsonRejection>`/`From<PathRejection>`/`From<QueryRejection>`, `ProblemJson<T>`/`ProblemPath<T>`/`ProblemQuery<T>`, `not_found`, `method_not_allowed`, **`reserved_parameter_guard`**, **`catalog()`**, `join_error_to_web_error`, and the `headers` field with its `with_header` builder that RFC 9110's `WWW-Authenticate` obligation requires. The bolded items are new in revision 2 |
 | `crates/web/src/lib.rs` | `mod problems;` plus re-exports, and two lines in `build_router`: `.fallback(problems::not_found)` and `.method_not_allowed_fallback(problems::method_not_allowed)` |
 | `crates/web/src/routes/*.rs` | handler return types become `Result<Json<T>, WebError>`; input extractors become the `Problem*` newtypes; the `spawn_blocking` join result maps through `join_error_to_web_error` |
-| `crates/core/src/error.rs` | one `impl ProblemSource for <domain error>` — about six lines, **the only change outside `crates/web`**. If a strict reading of R02's "depends on `core` only" is preferred, the impl moves into `crates/web`, since the trait is defined there |
+| `crates/core/src/error.rs` | **no change.** The `impl ProblemSource for <domain error>`, about six lines, lives in `crates/web/src/problems.rs` beside the trait, because `crates/core` cannot depend on `crates/web` (R02 revision 2, `:29`). This is where `probe-r2.sh:359` puts it |
 | `crates/web/tests/problems.rs` | **new**: the twenty-four criteria `R1`–`R24`, retargeted at R67's real catalog and at the deployment's declared problem-type base |
 | `docs/` | the **R5.16 catalog** — one row per `ErrorCode::ALL` member with its `type`, `code`, `catalog_code` and status — generated from the same list the coverage test walks, so it cannot drift. Publishing it is a **MUST**, not a nicety; the delivery surface is R81's and the content is this item's |
 | the web surface's settings | one **required** value with no default: the problem-type base URI (R5.13.1). Named and loaded by R77; the serve binary refuses to start without it |
@@ -742,14 +886,21 @@ its `errors` report (ownership unresolved, above).
 
 **Verification, not implementation.** Nothing here builds the template. The probe
 is a throwaway two-crate workspace created under `$TMPDIR` and deleted on exit,
-whose only purpose is to decide whether what the single raw report asserts is true.
+whose only purpose is to decide whether what the Opus report asserts is true.
 
 **Toolchain and host.** macOS 26.4, `aarch64-apple-darwin`.
 `rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)`,
 `cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)`, and `rustc 1.96.0 (ac68faa20
 2026-05-25)` via `rustup run 1.96.0` for the MSRV-floor build.
 `grep (BSD grep, GNU compatible) 2.6.0-FreeBSD` at `/usr/bin/grep`,
-`curl 8.7.1`, `Python 3.14.7`, `ShellCheck 0.11.0`. All runs 2026-09-18 UTC.
+`curl 8.7.1`, `Python 3.14.7`, `ShellCheck 0.11.0`. Revision-1 runs are
+2026-09-18 UTC; the two revision-2 logs are bannered 2026-09-19T01:16:49Z
+(`probe-r2.log`) and 2026-09-19T01:25:52Z (`rest-r2.log`). Neither revision-2
+script retrieves from a network, so no figure turns on the date. Revision 4's
+two scripts ran on 2026-09-27 UTC on the same host, whose stable toolchain has
+since moved to `rustc 1.98.1 (48a229cea 2026-09-01)` and `cargo 1.98.1`; the
+1.96.0 MSRV toolchain is unchanged, and `rerun-r4.log`'s banner records both.
+Cargo ran with a private `CARGO_HOME`.
 Working directory for every command:
 `research/runs/R70/2026-09-17T034010Z-31ad2ef28df7/review/evidence/`.
 
@@ -760,6 +911,45 @@ Working directory for every command:
 | `archive-check.sh` | `./archive-check.sh > archive-check.log 2>&1` | **PASS 11, FAIL 0, SKIP 0, exit 0** | `review/evidence/archive-check.log`, with the reruns at `registry-archive.log` and `probe-archive.log` |
 | **`rest-r2.sh`** (new) | `./rest-r2.sh > rest-r2.log 2>&1` | **PASS 79, FAIL 0, SKIP 0, exit 0** | `review/evidence/rest-r2.log` |
 | **`probe-r2.sh`** (new) | `./probe-r2.sh > probe-r2.log 2>&1` | **PASS 25, FAIL 0, SKIP 0, exit 0** | `review/evidence/probe-r2.log` |
+| **`engines-r4.sh`** (revision 4, extended in revision 5) | `./engines-r4.sh > engines-r4.log 2>&1` | **PASS 87, FAIL 0, SKIP 0, exit 0** | `review/evidence/engines-r4.log` |
+| **`rerun-r4.sh`** (revision 4) | `./rerun-r4.sh > rerun-r4.log 2>&1` | **PASS 30, FAIL 0, SKIP 0, exit 0**, with the one IANA drift pinned | `review/evidence/rerun-r4.log` |
+
+**Revision 4 adds two scripts and reruns all five earlier ones, writing over no
+committed log.** `engines-r4.sh` is read-only and offline. It asserts every
+source fact that the revision-4 `## Engines` text and the corrected counts cite:
+the two reports' hashes, the prompt's engine line and substitution sentence, the
+policy and manifest engine lists, the Q5.A migration, the ledger's collection
+entry, the Muse leg's presence and shape, the Muse report at each cited line, the
+evidence settling Disagreements 1–3, and the 13/11 criterion partition, nine
+unproven items and 2 + 6 quoted bodies. Revision 5 binds its R80 and R02 checks
+to fixed revisions rather than to those items' working files: R80's published
+revision 6, and R02's committed revision-2 snapshot (sha256 `9e8f8e8c…`). It
+also adds group F, which asserts the R80 revision-6 lines behind the `/readyz`
+carrier choice. `rerun-r4.sh` runs `archive-check.sh`,
+which itself reruns `registry.sh` and `probe.sh` from a `git archive HEAD`
+extraction, inside a throwaway clone of HEAD. It runs `probe-r2.sh` and
+`rest-r2.sh` in place with their output captured under `$TMPDIR`; `rest-r2.sh`
+must run in place, because its group C reads the current `DECISION.md`. It
+hashes all thirteen committed evidence files before and after, and asserts that
+none moved.
+
+**What the reruns found:**
+
+- `probe.sh` reproduced: 33 of 33, every verdict and body identical.
+- `probe-r2.sh` reproduced: 25 of 25, every verdict, body and catalog line
+  identical, under rustc 1.98.1 on the host and 1.96.0 at the floor.
+- `rest-r2.sh` reproduced: 79 of 79 against this revision's text. Group C still
+  finds OV-01 to OV-04 claimed, OV-06 free, and no `OVERRIDE` heading here.
+- **`registry.sh` drifted on one of 65 checks.** Its check "IANA problem+json
+  cites RFC9457" (`registry.sh:251`) greps the literal `RFC9457`. IANA's
+  `application.csv` now reads `problem+json,application/problem+json,[RFC 9457]`,
+  with a space. The substance still holds: `rerun-r4.sh` re-fetches the CSV and
+  asserts, with a whitespace-tolerant match, that both `problem+json` and
+  `problem+xml` cite RFC 9457. It also asserts that the rerun differs from the
+  committed `registry.log` on that one verdict and on the summary line, and
+  nowhere else. The committed `registry.sh` is not edited, because group B pins
+  it. `archive-check.sh` therefore now reports 9 of 11: its two failures are
+  that drift and the non-zero exit it causes. Both are pinned by `rerun-r4.sh`.
 
 **Revision 2 adds two scripts and re-runs none of revision 1's.** The five
 revision-1 scripts and their four logs are carried **byte-identical**, asserted by
@@ -767,7 +957,7 @@ sha256 in `rest-r2.sh` group B (9 checks) rather than by inspection. Two of them
 could not be meaningfully re-run in any case: `probe.sh` builds revision 1's
 envelope, whose shape R5.13 has since forbidden, and `archive-check.sh` pins
 `probe.log`'s summary line. `probe-r2.sh` is the revision-2 successor and carries
-revision 1's twelve surviving behaviours forward as `R1`–`R3`, `R7`–`R10` and
+revision 1's thirteen surviving behaviours forward as `R1`–`R3`, `R7`–`R10` and
 `R12`–`R17`, so nothing revision 1 proved is dropped rather than re-proved.
 
 **`rest-r2.sh` — 79 checks in three groups.** Group A (63) extracts the standard
@@ -779,7 +969,7 @@ sentence spans line breaks. It also pins the standard's own worked error body fr
 appendix E, which is the shape this revision adopts rather than interprets.
 Group B (9) is the revision-1 byte-identity. Group C (7) is the `OVERRIDE`
 numbering search, with OV-01 through OV-04 asserted **claimed** as the
-non-vacuous control for OV-05 and OV-06 being free, and an assertion that this
+non-vacuous control for OV-06 being free, and an assertion that this
 decision declares no `OVERRIDE` heading.
 
 **`probe-r2.sh` — 25 checks over a rebuilt three-member workspace.** Same topology
@@ -795,9 +985,9 @@ template-bound; and re-runs the tree diff, which still shows the moved envelope
 adding exactly `http-serde v2.1.1` and `problem_details v0.10.0` and
 `problem_details` named from `problems.rs` alone.
 
-All five are `set -euo pipefail` with `set -o pipefail` restated, assert on
+All seven are `set -euo pipefail` with `set -o pipefail` restated, assert on
 content rather than on exit status, count PASS/FAIL/SKIP, sum them and exit
-non-zero on any FAIL. All five are `shellcheck` 0.11.0 clean. No script contains a
+non-zero on any FAIL. All seven are `shellcheck` 0.11.0 clean. No script contains a
 personal email address or a token; the `User-Agent` sent to crates.io is the
 repository URL `https://github.com/smorinlabs/rs-launch-blueprint`. GitHub REST is
 reached through keyring-authenticated `gh api` at no more than one call per 20 s.
@@ -847,8 +1037,6 @@ dependencies **minus** `problem_details`), then:
    `method_not_allowed_fallback` at `:374`, and that **no** crate in the framework
    tree mentions `problem+json`.
 
-The four bodies, captured verbatim by this run:
-
 Revision 1's bodies, kept as the record of what the standard changed:
 
 ```
@@ -879,9 +1067,11 @@ POST /projects?dry_run=true -> 400 Bad Request application/problem+json
 ```
 
 The `/upstream` handler's domain message is
-`GET https://api.example.com/x?token=s3cret failed: 500`; AC5 asserts that neither
-`s3cret` nor `api.example.com` occurs anywhere in the response body, and neither
-does. That is the executed form of py's SEC-4 rule.
+`GET https://api.example.com/x?token=s3cret failed: 500`; `R8` asserts
+(`probe-r2.sh:979-990`), and a whole-file negative over every captured body
+confirms (`probe-r2.sh:1309`), that neither `s3cret` nor `api.example.com`
+occurs anywhere in the response body, as revision 1's `AC5` did for its own
+envelope, and neither does. That is the executed form of py's SEC-4 rule.
 
 **Reproduction, stated as a claim that can be kept.** `archive-check.sh` extracts
 `git archive HEAD` into a clean `$TMPDIR` tree — asserting first that the worktree
@@ -911,8 +1101,8 @@ one RFC 9110 phrase; the log was regenerated and the comparison re-run.
 - **No feature-off tree.** The probe has no Cargo feature, so "the crate is absent
   from a default build" is inherited from R69's and R05's measurements, not
   re-measured here.
-- **No route-walk over a real router.** AC16 walks twelve hand-listed requests, not
-  an enumeration of `build_router`'s routes. The mechanical form of W3 is a P03
+- **No route-walk over a real router.** `R24` walks fourteen hand-listed requests
+  (twelve failing, two succeeding), not an enumeration of `build_router`'s routes. The mechanical form of W3 is a P03
   test.
 - **No `cargo-deny` run.** Advisories were verified by RustSec page and
   `advisory-db` raw file, not by R13's tool, which is not yet wired.
@@ -920,6 +1110,11 @@ one RFC 9110 phrase; the log was regenerated and the comparison re-run.
 - **No `request-id` header.** §1.10 reserves it on every response including
   errors, but nothing in this item emits it and no middleware exists to set it, so
   "the error path does not drop it" is a P03 check, not one run here.
+- **No body-carried `stream`.** `R20` loops over three *query* strings
+  (`dry_run=true`, `dry_run`, `stream=1`), but §1.10 reserves `stream` "in
+  **either** carriage — query parameter or request-body member" (`:339`); a
+  `stream` member inside a request body is untested. The guard's *placement* is
+  R75's either way.
 - **The `type` base URI is a probe constant, not a setting.** `PROBLEM_BASE` is a
   `const` in the probe. That the base can be *required* at startup, and that the
   binary refuses to start without it, is R77's to build and P03's to prove.
@@ -929,30 +1124,176 @@ one RFC 9110 phrase; the log was regenerated and the comparison re-run.
 
 ## Engines
 
-`opus raw/opus.md` — Claude Opus 5, sha256
-`82538638b5f54017c22853eb9e52e6d4e6c71b78e35fad8ed6ea68be3fefe39e`, written
-2026-09-18, shape-checked against the bundle template with four `####` members.
+**Two engines produced raw reports: Muse and Opus.** The pinned prompt
+(`inputs/prompt.md`, sha256 `b47f8a26…`, equal to the manifest's
+`input_hashes.prompt`) reads `- engines: muse, opus` (`:23`) and states "This
+item substitutes Muse (Meta) for Codex under the `engine_overrides` pilot; its
+mirrored `- engines:` line is authoritative" (`:69`). `research/EXECUTION.json`
+records both `engine_overrides.R70` and `items.R70.engines` as
+`["muse", "opus"]`. The substitution is owner decision **Q5.A** (2026-09-21):
+"Muse-bulk all 17 remaining legs" (`docs/planning/p02/execution-ledger.md:1114`).
+The manifest applies it to this run as a migration event at
+2026-09-21T23:06:20Z, `from: codex`, `to: muse`, citing "owner decision Q5.A
+2026-09-21".
+
+| Engine | Report | sha256 | Model | Dated | Shape |
+|---|---|---|---|---|---|
+| **Opus** | `raw/opus.md`, byte-identical to the collected `raw/opus-82538638….md` | `82538638b5f54017c22853eb9e52e6d4e6c71b78e35fad8ed6ea68be3fefe39e` | `claude-opus-5` (manifest `actual_model`) | written 2026-09-18 | bundle template, four `####` members |
+| **Muse** | `raw/muse.md` | `989725675cb0f0c7d0dbb975435097d4d0f837e0ec32c137fc4cf64b3c4a7249` | `muse-spark` requested; the resolved model is not recorded (below) | live figures retrieved 2026-09-25 (`raw/muse.md:3`) | `scripts/check-answer-shape.sh raw/muse.md bundle` prints `OK: validation passed`; two `####` members |
+
+**The Muse leg's collection record, and the receipt the manifest lacks.** The
+controller's ledger records the leg as collected: "R70 sha 98972567 (218 lines,
+bundle OK) — http-api-problem 0.60.0 envelope + HttpStatus trait"
+(`execution-ledger.md:1157`, in the entry headed "R58 + R70 MUSE LEGS COLLECTED
+(retries), 2026-09-23"). `98972567` is the leading digits of `raw/muse.md`'s
+sha256. The run manifest has not caught up: `operations.muse.state` is still
+`submitting`, with no `raw_sha256` and no `actual_model`; `operations/muse.json`
+says the same; and the run `state` is `partial`. So the collection receipt exists
+only in the ledger, and the model behind the requested `muse-spark` label is
+recorded nowhere in the run. This synthesis treats `raw/muse.md` as the collected
+Muse leg on the ledger's authority. Writing the manifest receipt is a runner
+operation outside a synthesis, so the missing receipt is recorded as a gap for
+the controller.
+
+**Why revisions 1 to 3 described one engine.** Revision 1 was written when this
+item's engines were `codex` and `opus` and the Codex leg was deferred under owner
+ruling W1-CODEX3 (2026-09-18). That framing is history only: the pinned prompt
+supersedes it, and owner decision Q9.B has since retired Codex from P02
+(`research/RUNBOOK.md:72-73`).
+
+**Where the two engines agree.** Both recommend one RFC 9457
+`application/problem+json` envelope for every non-2xx response (`raw/muse.md:41`).
+Both route framework 404/405 through the router's fallback and reshape extractor
+rejections into the same envelope (`:27`, `:124`). Both keep the status table
+hand-written and reject a derive (`raw/muse.md:136`; `raw/opus.md:288-289`,
+`:868-872`); Muse alone also rejects a runtime `HashMap<TypeId, StatusCode>`
+(`raw/muse.md:136`), an option the Opus report does not consider. Both rank
+`problemdetails` 0.7.0 as runner-up (`:61`, `:81`). Neither raises a `CONFLICT:`
+or a `BASELINE-REVIEW:` line (`:25`, `:89`, `:160`).
+
+**The three disagreements, each settled by evidence this decision already
+carries.** None moves the recommendation.
+
+**Disagreement 1 — the envelope crate.** Muse makes `http-api-problem` 0.60.0 its
+dominant choice and recommendation (`raw/muse.md:57`, `:77`) and states "None of
+the envelope-crate candidates fails a fitness gate" (`:65`). It does not survey
+`problem_details` at all. Opus and this decision recommend `problem_details`
+0.10.0 and exclude `http-api-problem` by gate 2. The crux is gate 2's wording in
+the prompt: "crate and dependency-tree MSRV within `stable minus 2 minor
+versions, raised only in a minor release, declared as rust-version in Cargo.toml
+and tested in CI`" (`inputs/prompt.md:62`). Muse itself records that the crate
+"declares no rust-version (None)" (`raw/muse.md:73`). It applied the "within"
+half of the gate and not the "declared as rust-version" half. `registry.log:24`
+asserts that zero published versions declare one. **Resolved for this decision:**
+`http-api-problem` stays excluded by gate 2. Muse's adoption figures agree with
+this decision's own reading that it is the strongest candidate on every other
+axis (`### Principles and implementation`, "Excluded by gate"). Because Muse
+never weighed `problem_details`, it supplies no evidence against the recommended
+crate. The trigger that would reopen this, `http-api-problem` publishing a version
+that declares `rust-version`, is already in the trigger set.
+
+**Disagreement 2 — how totality is enforced.** Muse's status table is an
+"exhaustive `match` over variants (no wildcard arm)" (`raw/muse.md:124`), so that
+"adding a domain variant without a mapping fails to compile" (`:29`), with a
+planned negative check expecting that compile error (`:209`). This decision holds
+that this is impossible across the crate boundary, because R67's `ErrorCode` is
+`#[non_exhaustive]`. The evidence is executed in both directions at
+`probe.log:46-48`: in one crate the `_` arm draws `unreachable pattern`; across a
+crate boundary the same arm compiles with no warning. R67 anticipated this
+consumer and prescribed the `ErrorCode::ALL` coverage test
+(`research/topics/67-error-and-exit-code-contract/DECISION.md:148-153`, resolved
+at `:653-662`). Muse designed against an undecided R67: its `assumes` line for
+`error-taxonomy-exit-codes` is a placeholder, "(R67 undecided; …)"
+(`raw/muse.md:187`), which the prompt's own wording "(not yet decided)"
+(`inputs/prompt.md:34`) invited, although `inputs/prerequisites.json` pins R67's
+published decision `16947ab1…`. **Resolved for this decision:** Muse's planned
+negative check would compile silently rather than fail, so totality is enforced
+by the `ALL` test, as R67 prescribes.
+
+**Disagreement 3 — the seam.** Muse puts the table behind a trait,
+`HttpStatus::status_code(&self) -> StatusCode`, "template-owned in
+`web::problems`" (`raw/muse.md:128`) and implemented for R67's type (`:124`,
+`:148`). This decision uses a free `pub const fn http_status(ErrorCode) ->
+StatusCode`. The layering objection in `### The domain-code-to-HTTP-status table`
+does **not** refute Muse's form: it applies to a trait defined in `crates/core`,
+and a trait defined in `crates/web` and implemented there for a foreign type is
+legal Rust with no `StatusCode` in `crates/core`. This decision already uses that
+seam shape for a different job, `ProblemSource` (`probe-r2.sh:349`, implemented at
+`:359`). The free function is kept on three grounds that do survive:
+
+1. Muse's reason for a trait is genericity over an R67 that had not decided
+   (`raw/muse.md:124`, `:160`). R67 has since published one `#[non_exhaustive]`
+   enum, `ErrorCode`, so the trait would have one implementor and adds indirection
+   with no second implementation to serve.
+2. Muse's payoff for the trait body, compiler-checked totality, is removed by
+   Disagreement 2. The body needs the same `_ =>` arm, so totality is the `ALL`
+   test either way.
+3. Implemented on the domain *error* type, as Muse's `impl HttpStatus for
+   R67Error` reads (`:124`), the trait cannot serve a `JoinError` mapped to
+   `RSLB000` or a framework rejection carrying `RSLB201`, because neither is a
+   domain error value. Implemented on `ErrorCode` instead, it is the free function
+   called with method syntax.
+
+**Resolved for this decision:** this is a close call on form, not on behaviour.
+The free `const fn` is kept. An owner who prefers method syntax can wrap it in a
+web-local trait on `ErrorCode` without changing any status row or any criterion's
+verdict.
+
+**Other Muse positions, none load-bearing.** Muse's figures are dated
+2026-09-25 and this decision's 2026-09-18, so they differ (for example,
+`problemdetails` at 48,464 all-time downloads in `raw/muse.md:13`). Muse values
+`http-api-problem`'s many optional framework integrations because R69 was open
+(`:73`); R69 revision 10 has since fixed axum 0.8.9, so that breadth buys nothing
+here. Muse's envelope field list for R71 is `type`, `title`, `status`, `detail`
+and `instance` (`:199`); W2-REST's R5.13 has since made `code` mandatory and
+`type` always present, which this decision's contract carries. Neither engine was
+prompted with the REST standard. Muse's `assumes` lines for
+`error-taxonomy-exit-codes` and `web-framework-stack` (`:187-188`) are
+placeholders rather than registry values, and bind nothing; this decision's five
+`- assumes` lines are the registry's.
+
+**The `/readyz` diagnostic carrier — this item's choice under R80 revision 6.**
+R80's published revision 6 requires that "the diagnostic report must be
+reachable from the 503 response", names three ways to satisfy it, and states
+"R70 owns the choice"
+(`research/topics/80-health-probe-endpoints/DECISION.md:859-865`). Neither
+engine report addresses the question, because R80 raised it after both legs
+ran; the choice rests on this decision's own rules and R80's published text.
+**Chosen: (a), a `diagnostics` extension member.** Each way is tested against a
+rule this decision already states:
+
+| R80's way | Verdict | Ground |
+|---|---|---|
+| (a) a second extension member named `diagnostics` | **chosen** | It is py's own shape: `extensions={"diagnostics": report.model_dump(mode="json")}` (R80 revision 6, `:853`). R80's executed probe already carries the report under that name (`T4`, `:1155`). The name is snake_case (R4.4), and the pinned standard contains no occurrence of `diagnostics` (`git cat-file -p 71bd813c…` in the standard's repository, then a case-insensitive search: 0 matches; checked by hand, not by a script, because `engines-r4.sh` reads only this repository), so it repurposes no reserved name (R1.8). `problem+json/v1` is append-only, so R80's `/readyz` route may append the member; the nine-member base this item ships, the grammar and every criterion are unchanged |
+| (b) the report folded into a structured error-detail member | rejected | The only structured member is `errors`, whose entries each carry an RFC 6901 `pointer` to an offending *input* location (R5.15, the contract table). A health check has no input location, so folding the report into `errors` would give a member the standard registers a different meaning (R1.8) |
+| (c) a `detail` string naming the failing checks, the full report left to the logs | rejected | The W5 rule, executed as `R3`, forbids any 5xx code from being detail-public, so a 503's `detail` is replaced by the fixed generic string and could not name the failing checks. Choosing (c) would require an exception to an executed criterion |
+
+The member follows the contract's omission rules: it is omitted when absent,
+which is on every response except `/readyz`'s 503, and it is never `null`. This
+item owns the member's name and its omission rule. R80 owns the report's
+content and its R5.17 redaction, which R80 revision 6 builds "redacted at its
+source" (`:1007`).
 
 **What revision 2 changed, and on whose authority.** The five moves under
 `### Conformance to the REST API Design Standard v2.0.0` come from the standard
-at its pinned blob, not from a second engine. No new research leg ran. Every move
+at its pinned blob, not from an engine report. No research leg ran for revision 2
+(2026-09-18). The Muse leg ran afterwards, and it touches none of the five moves,
+because neither engine was prompted with the REST standard. Every move
 is traceable to a rule asserted at its line, and each is executed: M-1 by `R6`,
-M-2 by `R4` and `R5`, M-3 by `R11`, M-4 by `R18`, M-5 by `R22` and `R23`. **The
+M-2 by `R4`, `R5` and `R23`, M-3 by `R11`, M-4 by `R18`, M-5 by `R22` and `R23`. **The
 single most consequential finding is M-4**: revision 1's design placed axum's
 rejection text — which renders the offending request *value* — into the response
 body, and R8.12 forbids exactly that. It was found by reading the rule, not by
 the probe, and only then made executable.
 
-**The Codex leg is absent by the controller's deferral under owner ruling
-W1-CODEX3 (2026-09-18)** — the Codex account is at its usage limit and the ruling
-is to proceed without it. This item's policy tier is Focused, whose engines are
-`codex` and `opus`, so **this decision is synthesized from a single engine and
-there are no inter-engine disagreements to settle.** That is a real weakening of
-the evidence: nothing here was independently checked by a different model family
-before synthesis. The compensation is that the synthesizer re-verified every
-load-bearing claim at source rather than carrying it — 65 registry checks and 33
-probe checks, listed above — and the three things that came back wrong are
-tabled under `### Corrections to raw/opus.md`.
+**How much the second engine adds, stated plainly.** Muse is a different model
+family (Meta) from Opus and from this synthesizer, so the design now has a second
+family's independent judgment behind it, and that judgment agrees on the pattern.
+It is judgment, not replication: Muse executed nothing ("Proposed, not executed",
+`raw/muse.md:37`; gap 5 at `:218`). Every executed fact in this decision still
+comes from this synthesis's own re-verification — 65 registry checks and 33 probe
+checks in revision 1, 79 and 25 in revision 2 — and the three things in the Opus
+report that came back wrong are tabled under `### Corrections to raw/opus.md`.
 
 **Re-verified by this synthesis** (claim → where it was checked): every crates.io
 figure and every gate-2 exclusion; the RustSec posture of all five crates; the
@@ -965,10 +1306,11 @@ sources; the crate's ubuntu-only CI and its 1.85 MSRV job; the absence of
 problem-details support anywhere in the framework tree; the cited line numbers in
 the vendored `problem_details` and `axum` sources; the cross-crate
 `#[non_exhaustive]` behaviour, in both directions; the dependency cost, by tree
-diff against a control member; and all fourteen acceptance criteria, re-run from
-an independently written probe, plus two additions — and **better than the report
-on one axis**, because the suite also compiled and ran at the 1.96 MSRV floor,
-which the report explicitly could not do.
+diff against a control member; and, in revision 1, all fourteen of the Opus
+report's acceptance criteria, re-run from an independently written probe, plus two
+additions (`AC1`–`AC16`), which revision 2 replaced with `R1`–`R24` — and
+**better than the Opus report on one axis**, because both suites also compiled and
+ran at the 1.96 MSRV floor, which the report explicitly could not do.
 
 **Carried from revision 1 unchanged**, and therefore still resting on revision
 1's evidence: the crate selection and all six fitness gates, every status row,
@@ -977,7 +1319,7 @@ and the whole owner-reference tally. W2-REST reaches the body's *shape*, not the
 crate, and `probe-r2.sh` confirms the crate carries the moved shape with no new
 dependency.
 
-**Carried from the report without independent re-verification**, each with what
+**Carried from the Opus report without independent re-verification**, each with what
 would prove it:
 
 | Carried claim | What would prove it |
@@ -987,7 +1329,7 @@ would prove it:
 | The report's own compile-cost figures (0.75 s dev build, 224,880-byte debug rlib) | a timed `cargo clean -p && cargo build -p`; this synthesis measured the dependency *count* instead, which is the figure the decision actually uses |
 | That `explicit-error-http`, `problem-details-mapper` and `zekurix-server` are the only reverse dependents | re-reading the `reverse_dependencies` endpoint; the adopter *gap* is what the decision relies on, and that is stated as a gap either way |
 
-**Unproven, and left for P03 to prove in the real template.** The five items under
+**Unproven, and left for P03 to prove in the real template.** The nine items under
 "What these checks do not prove" above, and specifically: `cargo build --features
 web` and `cargo test --features web` against the real crate; `cargo tree -i
 problem_details` with `web` off, showing the crate absent from the default tree; a
@@ -1004,7 +1346,9 @@ Confidence is **medium-high** on `problem_details` as the document type: six gat
 cleared, one of them by execution rather than by upstream CI, with the residual
 risk concentrated and named — one maintainer, 10 stars, 1 subscriber, no
 well-regarded public adopter — and mitigated structurally by the containment rule
-rather than verbally. Confidence is **medium** on the individual status rows, which
+rather than verbally. The two engines split on this crate, and the split is
+settled by gate 2's wording and an executed registry check (Disagreement 1), not
+by counting reports. Confidence is **medium** on the individual status rows, which
 are proposals, and **medium** on the funnel's completeness, because
 middleware-originated errors belong to R75 and were not exercised. The single
 question this decision deliberately leaves to the owner is who owns C4 validation.

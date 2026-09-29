@@ -1,0 +1,64 @@
+=== R70 probe: acceptance criteria re-run ===
+date (UTC): 2026-09-18T23:00:27Z
+os: macOS 26.4 (arm64)
+host rustc: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+host cargo: cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+grep: grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+MSRV toolchain: rustc 1.96.0 (ac68faa20 2026-05-25)
+scratch: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r70-probe.lrxVE6 (deleted on exit)
+
+--- 1. build and test at the MSRV floor (1.96.0)
+PASS  cargo test --workspace compiled and ran under rustc 1.96.0
+PASS  MSRV run: 16 integration tests passed
+PASS  cargo resolved the tree against Rust 1.96 (Locking 56 packages to latest Rust 1.96 compatible versions)
+
+--- 2. build and test on the host stable toolchain
+PASS  cargo test --workspace compiled and ran under the host toolchain
+PASS  host run: 16 integration tests passed
+PASS  host build emitted no warning
+
+--- 3. the four response bodies raw/opus.md captures
+PASS  the dump example printed the four bodies
+      GET /projects/demo -> 404 Not Found application/problem+json
+      {"status":404,"title":"Not Found","detail":"project 'demo' not found","instance":"/projects/demo","code":"RSLB301"}
+      GET /upstream -> 502 Bad Gateway application/problem+json
+      {"status":502,"title":"Bad Gateway","detail":"An unexpected error occurred.","instance":"/upstream","code":"RSLB103"}
+      POST /projects -> 422 Unprocessable Entity application/problem+json
+      {"status":422,"title":"Unprocessable Entity","detail":"Request validation failed.","code":"RSLB201","errors":{"body":["Failed to deserialize the JSON body into the target type: name: invalid type: integer `42`, expected a string at line 1 column 11"]}}
+      DELETE /ok -> 405 Method Not Allowed application/problem+json
+      {"status":405,"title":"Method Not Allowed","detail":"This method is not allowed for this path.","code":"RSLB201"}
+PASS  AC4 body verbatim
+PASS  AC5 body verbatim
+PASS  AC8 body carries errors.body
+PASS  AC7 body verbatim
+PASS  no body carries a type member
+PASS  no body carries a null
+PASS  every problem body is application/problem+json
+
+--- 4. dependency cost: what problem_details actually adds
+PASS  crates added to an axum+serde+tokio tree by problem_details == http-serde v2.1.1 problem_details v0.10.0
+PASS  resolved axum version is R69's pin
+PASS  resolved tokio version is R69's pin
+PASS  resolved problem_details version
+PASS  only problems.rs names the crate (containment rule) == r70web/src/problems.rs
+
+--- 5. the structural claim: #[non_exhaustive] across a crate boundary
+PASS  same-crate match: the _ arm draws 'unreachable pattern'
+PASS  same-crate match: compiler says no value can reach it
+PASS  cross-crate match: the same _ arm is reachable and draws no warning
+
+--- 6. the crate source claims raw/opus.md makes
+PASS  problem_details forbids unsafe
+PASS  problem_details warns on missing docs
+PASS  problem_details CONTENT_TYPE constant
+PASS  problem_details.rs:117 is the utoipa ToSchema derive == #[cfg_attr(feature = "utoipa", derive(utoipa::ToSchema))]
+PASS  problem_details.rs:170 is schema(inline) on extensions ==     #[cfg_attr(feature = "utoipa", schema(inline))]
+PASS  axum rejection.rs:11 — JsonDataError is 422 ==     #[status = UNPROCESSABLE_ENTITY]
+PASS  axum rejection.rs:23 — JsonSyntaxError is 400 ==     #[status = BAD_REQUEST]
+PASS  axum rejection.rs:34 — MissingJsonContentType is 415 ==     #[status = UNSUPPORTED_MEDIA_TYPE]
+PASS  axum routing/mod.rs:345 — Router::fallback ==     pub fn fallback<H, T>(self, handler: H) -> Self
+PASS  axum routing/mod.rs:374 — Router::method_not_allowed_fallback ==     pub fn method_not_allowed_fallback<H, T>(self, handler: H) -> Self
+PASS  no framework crate mentions problem+json (the envelope is not first-party) == 
+
+=== summary ===
+PASS 33  FAIL 0  SKIP 0  TOTAL 33

@@ -1,0 +1,84 @@
+=== crates.io: crate endpoints ===
+SAVED cio-crate-tower-rate-limiter.json  <- https://crates.io/api/v1/crates/tower-rate-limiter
+SAVED cio-crate-tower_governor.json  <- https://crates.io/api/v1/crates/tower_governor
+SAVED cio-crate-governor.json  <- https://crates.io/api/v1/crates/governor
+SAVED cio-crate-axum-governor.json  <- https://crates.io/api/v1/crates/axum-governor
+SAVED cio-crate-axum_gcra.json  <- https://crates.io/api/v1/crates/axum_gcra
+SAVED cio-crate-gcra.json  <- https://crates.io/api/v1/crates/gcra
+SAVED cio-crate-axum.json  <- https://crates.io/api/v1/crates/axum
+SAVED cio-crate-tower.json  <- https://crates.io/api/v1/crates/tower
+SAVED cio-crate-tower-resilience-ratelimiter.json  <- https://crates.io/api/v1/crates/tower-resilience-ratelimiter
+SAVED cio-crate-loco-rs.json  <- https://crates.io/api/v1/crates/loco-rs
+=== crates.io: versions endpoints ===
+SAVED cio-versions-tower-rate-limiter.json  <- https://crates.io/api/v1/crates/tower-rate-limiter/versions
+SAVED cio-versions-tower_governor.json  <- https://crates.io/api/v1/crates/tower_governor/versions
+SAVED cio-versions-governor.json  <- https://crates.io/api/v1/crates/governor/versions
+SAVED cio-versions-axum-governor.json  <- https://crates.io/api/v1/crates/axum-governor/versions
+SAVED cio-versions-axum_gcra.json  <- https://crates.io/api/v1/crates/axum_gcra/versions
+SAVED cio-versions-gcra.json  <- https://crates.io/api/v1/crates/gcra/versions
+SAVED cio-versions-axum.json  <- https://crates.io/api/v1/crates/axum/versions
+SAVED cio-versions-tower.json  <- https://crates.io/api/v1/crates/tower/versions
+SAVED cio-versions-tower-resilience-ratelimiter.json  <- https://crates.io/api/v1/crates/tower-resilience-ratelimiter/versions
+=== crates.io: reverse-dependency totals ===
+SAVED cio-revdeps-tower-rate-limiter.json  <- https://crates.io/api/v1/crates/tower-rate-limiter/reverse_dependencies?per_page=1
+SAVED cio-revdeps-tower_governor.json  <- https://crates.io/api/v1/crates/tower_governor/reverse_dependencies?per_page=1
+SAVED cio-revdeps-governor.json  <- https://crates.io/api/v1/crates/governor/reverse_dependencies?per_page=1
+SAVED cio-revdeps-axum-governor.json  <- https://crates.io/api/v1/crates/axum-governor/reverse_dependencies?per_page=1
+SAVED cio-revdeps-axum_gcra.json  <- https://crates.io/api/v1/crates/axum_gcra/reverse_dependencies?per_page=1
+SAVED cio-revdeps-gcra.json  <- https://crates.io/api/v1/crates/gcra/reverse_dependencies?per_page=1
+=== RustSec package pages (status code only) ===
+SAVED rustsec-status.txt  <- https://rustsec.org/packages/<name>.html
+=== current stable toolchain ===
+SAVED channel-rust-stable-pkg-rust.txt  <- https://static.rust-lang.org/dist/channel-rust-stable.toml
+=== GitHub REST (20 s apart) ===
+SAVED gh-repo-boinkor-net-governor.json  <- https://api.github.com/repos/boinkor-net/governor
+SAVED gh-repo-benwis-tower-governor.json  <- https://api.github.com/repos/benwis/tower-governor
+SAVED gh-repo-nivek-ph-tower-rate-limiter.json  <- https://api.github.com/repos/nivek-ph/tower-rate-limiter
+SAVED gh-repo-canmi21-axum-governor.json  <- https://api.github.com/repos/canmi21/axum-governor
+SAVED gh-contents-governor-Cargo.toml.json  <- https://api.github.com/repos/boinkor-net/governor/contents/governor/Cargo.toml
+SAVED gh-contents-tower-governor-Cargo.toml.json  <- https://api.github.com/repos/benwis/tower-governor/contents/Cargo.toml
+SAVED gh-contents-trl-Cargo.toml.json  <- https://api.github.com/repos/nivek-ph/tower-rate-limiter/contents/Cargo.toml
+SAVED gh-issues-open-tower-governor.json  <- https://api.github.com/search/issues?q=repo:benwis/tower-governor+is:issue+is:open
+SAVED gh-issues-open-tower-rate-limiter.json  <- https://api.github.com/search/issues?q=repo:nivek-ph/tower-rate-limiter+is:issue+is:open
+=== org REST API Design Standard — pinned blob excerpts ===
+SAVED rest-api-standard.md  <- git -C /Users/stevemorin/c/rest-standards cat-file blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9
+
+Snapshot manifest:
+file	endpoint	retrieved_utc
+cio-crate-tower-rate-limiter.json	https://crates.io/api/v1/crates/tower-rate-limiter	2026-09-19T01:09:40Z
+cio-crate-tower_governor.json	https://crates.io/api/v1/crates/tower_governor	2026-09-19T01:09:41Z
+cio-crate-governor.json	https://crates.io/api/v1/crates/governor	2026-09-19T01:09:43Z
+cio-crate-axum-governor.json	https://crates.io/api/v1/crates/axum-governor	2026-09-19T01:09:44Z
+cio-crate-axum_gcra.json	https://crates.io/api/v1/crates/axum_gcra	2026-09-19T01:09:45Z
+cio-crate-gcra.json	https://crates.io/api/v1/crates/gcra	2026-09-19T01:09:47Z
+cio-crate-axum.json	https://crates.io/api/v1/crates/axum	2026-09-19T01:09:48Z
+cio-crate-tower.json	https://crates.io/api/v1/crates/tower	2026-09-19T01:09:50Z
+cio-crate-tower-resilience-ratelimiter.json	https://crates.io/api/v1/crates/tower-resilience-ratelimiter	2026-09-19T01:09:51Z
+cio-crate-loco-rs.json	https://crates.io/api/v1/crates/loco-rs	2026-09-19T01:09:53Z
+cio-versions-tower-rate-limiter.json	https://crates.io/api/v1/crates/tower-rate-limiter/versions	2026-09-19T01:09:54Z
+cio-versions-tower_governor.json	https://crates.io/api/v1/crates/tower_governor/versions	2026-09-19T01:09:55Z
+cio-versions-governor.json	https://crates.io/api/v1/crates/governor/versions	2026-09-19T01:09:56Z
+cio-versions-axum-governor.json	https://crates.io/api/v1/crates/axum-governor/versions	2026-09-19T01:09:58Z
+cio-versions-axum_gcra.json	https://crates.io/api/v1/crates/axum_gcra/versions	2026-09-19T01:09:59Z
+cio-versions-gcra.json	https://crates.io/api/v1/crates/gcra/versions	2026-09-19T01:10:00Z
+cio-versions-axum.json	https://crates.io/api/v1/crates/axum/versions	2026-09-19T01:10:02Z
+cio-versions-tower.json	https://crates.io/api/v1/crates/tower/versions	2026-09-19T01:10:03Z
+cio-versions-tower-resilience-ratelimiter.json	https://crates.io/api/v1/crates/tower-resilience-ratelimiter/versions	2026-09-19T01:10:05Z
+cio-revdeps-tower-rate-limiter.json	https://crates.io/api/v1/crates/tower-rate-limiter/reverse_dependencies?per_page=1	2026-09-19T01:10:06Z
+cio-revdeps-tower_governor.json	https://crates.io/api/v1/crates/tower_governor/reverse_dependencies?per_page=1	2026-09-19T01:10:07Z
+cio-revdeps-governor.json	https://crates.io/api/v1/crates/governor/reverse_dependencies?per_page=1	2026-09-19T01:10:08Z
+cio-revdeps-axum-governor.json	https://crates.io/api/v1/crates/axum-governor/reverse_dependencies?per_page=1	2026-09-19T01:10:10Z
+cio-revdeps-axum_gcra.json	https://crates.io/api/v1/crates/axum_gcra/reverse_dependencies?per_page=1	2026-09-19T01:10:11Z
+cio-revdeps-gcra.json	https://crates.io/api/v1/crates/gcra/reverse_dependencies?per_page=1	2026-09-19T01:10:13Z
+rustsec-status.txt	https://rustsec.org/packages/<name>.html	2026-09-19T01:10:22Z
+channel-rust-stable-pkg-rust.txt	https://static.rust-lang.org/dist/channel-rust-stable.toml	2026-09-19T01:10:22Z
+gh-repo-boinkor-net-governor.json	https://api.github.com/repos/boinkor-net/governor	2026-09-19T01:10:43Z
+gh-repo-benwis-tower-governor.json	https://api.github.com/repos/benwis/tower-governor	2026-09-19T01:11:04Z
+gh-repo-nivek-ph-tower-rate-limiter.json	https://api.github.com/repos/nivek-ph/tower-rate-limiter	2026-09-19T01:11:25Z
+gh-repo-canmi21-axum-governor.json	https://api.github.com/repos/canmi21/axum-governor	2026-09-19T01:11:46Z
+gh-contents-governor-Cargo.toml.json	https://api.github.com/repos/boinkor-net/governor/contents/governor/Cargo.toml	2026-09-19T01:12:07Z
+gh-contents-tower-governor-Cargo.toml.json	https://api.github.com/repos/benwis/tower-governor/contents/Cargo.toml	2026-09-19T01:12:28Z
+gh-contents-trl-Cargo.toml.json	https://api.github.com/repos/nivek-ph/tower-rate-limiter/contents/Cargo.toml	2026-09-19T01:12:48Z
+gh-issues-open-tower-governor.json	https://api.github.com/search/issues?q=repo:benwis/tower-governor+is:issue+is:open	2026-09-19T01:13:09Z
+gh-issues-open-tower-rate-limiter.json	https://api.github.com/search/issues?q=repo:nivek-ph/tower-rate-limiter+is:issue+is:open	2026-09-19T01:13:30Z
+rest-api-standard.md	git -C /Users/stevemorin/c/rest-standards cat-file blob 71bd813c1cf61286586b4ee41ed83ff065e5c8d9	2026-09-19T01:13:30Z

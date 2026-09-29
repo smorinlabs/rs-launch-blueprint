@@ -1,41 +1,41 @@
 === R51 reproduction record
-date-utc: 2026-09-27T19:24:31Z
+date-utc: 2026-09-28T05:49:31Z
 grep:     grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
 scripts rerun: r51-sources
 
 --- r51-sources.sh: fresh run against the committed r51-sources.log
-fresh exit code: 0
-fresh    SUMMARY: PASS=162 FAIL=0 SKIP=0 TOTAL=162
-committed SUMMARY: PASS=162 FAIL=0 SKIP=0 TOTAL=162
+fresh exit code: 1
+fresh    SUMMARY: PASS=156 FAIL=6 SKIP=0 TOTAL=162
+committed SUMMARY: PASS=156 FAIL=6 SKIP=0 TOTAL=162
 RESULT r51-sources: identical outside the volatile classes
 volatile lines, committed then fresh:
-  c: date-utc: 2026-09-27T19:24:26Z
-  c: PASS  S6c — the recursive search reaches 19 files (S6a/S6b's zeros are not vacuous)
-  c: override-scan-files: 176
+  c: date-utc: 2026-09-28T05:49:27Z
+  c: PASS  S6c — the recursive search reaches 21 files (S6a/S6b's zeros are not vacuous)
+  c: override-scan-files: 199
   c: override-numbers-in-use: OVERRIDE (OV-01) OVERRIDE (OV-02) OVERRIDE (OV-03) OVERRIDE (OV-04) OVERRIDE (OV-05) OVERRIDE (OV-07) OVERRIDE (OV-08) OVERRIDE (OV-09) OVERRIDE (OV-10) OVERRIDE (OV-11) OVERRIDE (OV-13) OVERRIDE (OV-14) OVERRIDE (OV-16) OVERRIDE (OV-17) 
-  c: PASS  S9c — the scan covered 176 decision and port files
-  c: observed-r77-live-title: 2026-09-27 — R77 — web-env-settings (crate, Focused) — decision (revision 4)
-  c: observed-r77-live-host-line: line(s) 1091 
-  c: observed-r77-live-defaults: line(s) 782 
-  c: observed-r77-live-option-c: line(s) 1000 
-  c: observed-r80-live-title: 2026-09-27 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 6)
-  c: observed-r80-live-no-probe-rule: line(s) 699 
+  c: PASS  S9c — the scan covered 199 decision and port files
+  c: observed-r77-live-title: 2026-09-27 — R77 — web-env-settings (crate, Focused) — decision (revision 6)
+  c: observed-r77-live-host-line: line(s) 1163 
+  c: observed-r77-live-defaults: line(s) 854 
+  c: observed-r77-live-option-c: line(s) 1072 
+  c: observed-r80-live-title: 2026-09-27 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 7)
+  c: observed-r80-live-no-probe-rule: line(s) 762 
   c: observed-r80-live-healthz-lines: 33
-  c: observed-r68-live-title: 2026-09-27 — R68 — release-binary-artifacts (crate, Deep) — decision (revision 6)
+  c: observed-r68-live-title: 2026-09-27 — R68 — release-binary-artifacts (crate, Deep) — decision (revision 7)
   c: observed-r68-live-premise-lines: 0
-  f: date-utc: 2026-09-27T19:24:31Z
-  f: PASS  S6c — the recursive search reaches 19 files (S6a/S6b's zeros are not vacuous)
-  f: override-scan-files: 176
+  f: date-utc: 2026-09-28T05:49:31Z
+  f: PASS  S6c — the recursive search reaches 21 files (S6a/S6b's zeros are not vacuous)
+  f: override-scan-files: 199
   f: override-numbers-in-use: OVERRIDE (OV-01) OVERRIDE (OV-02) OVERRIDE (OV-03) OVERRIDE (OV-04) OVERRIDE (OV-05) OVERRIDE (OV-07) OVERRIDE (OV-08) OVERRIDE (OV-09) OVERRIDE (OV-10) OVERRIDE (OV-11) OVERRIDE (OV-13) OVERRIDE (OV-14) OVERRIDE (OV-16) OVERRIDE (OV-17) 
-  f: PASS  S9c — the scan covered 176 decision and port files
-  f: observed-r77-live-title: 2026-09-27 — R77 — web-env-settings (crate, Focused) — decision (revision 4)
-  f: observed-r77-live-host-line: line(s) 1091 
-  f: observed-r77-live-defaults: line(s) 782 
-  f: observed-r77-live-option-c: line(s) 1000 
-  f: observed-r80-live-title: 2026-09-27 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 6)
-  f: observed-r80-live-no-probe-rule: line(s) 699 
+  f: PASS  S9c — the scan covered 199 decision and port files
+  f: observed-r77-live-title: 2026-09-27 — R77 — web-env-settings (crate, Focused) — decision (revision 6)
+  f: observed-r77-live-host-line: line(s) 1163 
+  f: observed-r77-live-defaults: line(s) 854 
+  f: observed-r77-live-option-c: line(s) 1072 
+  f: observed-r80-live-title: 2026-09-27 — R80 — health-probe-endpoints (bundle, Focused) — decision (revision 7)
+  f: observed-r80-live-no-probe-rule: line(s) 762 
   f: observed-r80-live-healthz-lines: 33
-  f: observed-r68-live-title: 2026-09-27 — R68 — release-binary-artifacts (crate, Deep) — decision (revision 6)
+  f: observed-r68-live-title: 2026-09-27 — R68 — release-binary-artifacts (crate, Deep) — decision (revision 7)
   f: observed-r68-live-premise-lines: 0
 
 --- r51-container.log (the revision-2 run, carried unchanged) against r51-container.r1.log (revision 1)

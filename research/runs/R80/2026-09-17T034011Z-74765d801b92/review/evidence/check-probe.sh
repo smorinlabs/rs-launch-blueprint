@@ -65,22 +65,28 @@ install_variant() { # variant letter
   cp "$PROBE_SRC/manifests-$1/facade.toml" "$WORK/Cargo.toml"
   cp "$PROBE_SRC/manifests-$1/core.toml" "$WORK/crates/core/Cargo.toml"
   cp "$PROBE_SRC/manifests-$1/web.toml" "$WORK/crates/web/Cargo.toml"
+  # Revision 4 (audit EA-4): each variant carries its committed lockfile and
+  # every cargo call below passes --locked, so the measured tree is rebuildable
+  # from the committed bytes whether or not the registry cache is warm.
+  cp "$PROBE_SRC/manifests-$1/Cargo.lock" "$WORK/Cargo.lock"
 }
 
-CARGO_FLAGS="--offline"
+# --offline succeeds only from a warm local registry cache; from a cold cache the
+# online fallback is expected, and --locked holds the resolution either way.
+CARGO_FLAGS=(--locked --offline)
 install_variant a
-if ! (cd "$WORK" && cargo metadata $CARGO_FLAGS --format-version 1 >/dev/null 2>"$WORK/metadata.err"); then
-  echo "NOTE: --offline metadata failed; retrying without it"
+if ! (cd "$WORK" && cargo metadata "${CARGO_FLAGS[@]}" --format-version 1 >/dev/null 2>"$WORK/metadata.err"); then
+  echo "NOTE: --offline metadata failed; retrying online, still --locked"
   cat "$WORK/metadata.err" >&2 || true
-  CARGO_FLAGS=""
+  CARGO_FLAGS=(--locked)
 fi
-echo "cargo network flags: '${CARGO_FLAGS:-<online>}'"
+echo "cargo network flags: '${CARGO_FLAGS[*]}'"
 
 # ---------------------------------------------------------------- check A ----
 # Variant a: literal per-member versions. The facade is 0.4.2, the members 0.1.0.
 set +e
 (cd "$WORK" && R80_EXPECTED_MEMBER_VERSION=0.1.0 \
-  cargo test $CARGO_FLAGS -p facade --test version_hazard -- --nocapture) >"$WORK/a.log" 2>&1
+  cargo test "${CARGO_FLAGS[@]}" -p facade --test version_hazard -- --nocapture) >"$WORK/a.log" 2>&1
 A_STATUS=$?
 set -e
 echo "--- variant a (no [workspace.package] version) ---"
@@ -106,7 +112,7 @@ fi
 install_variant b
 set +e
 (cd "$WORK" && R80_EXPECTED_MEMBER_VERSION=0.4.2 \
-  cargo test $CARGO_FLAGS -p facade --test version_hazard -- --nocapture) >"$WORK/b.log" 2>&1
+  cargo test "${CARGO_FLAGS[@]}" -p facade --test version_hazard -- --nocapture) >"$WORK/b.log" 2>&1
 B_STATUS=$?
 set -e
 echo "--- variant b ([workspace.package] version + version.workspace = true) ---"
@@ -123,7 +129,7 @@ fi
 
 # ------------------------------------------------------------- T1 .. T8 -----
 set +e
-(cd "$WORK" && cargo test $CARGO_FLAGS -p probe-web --test probes -- --nocapture --test-threads=1) \
+(cd "$WORK" && cargo test "${CARGO_FLAGS[@]}" -p probe-web --test probes -- --nocapture --test-threads=1) \
   >"$WORK/t.log" 2>&1
 T_STATUS=$?
 set -e
@@ -206,7 +212,7 @@ fi
 
 # ------------------------------------------------------------ C9 .. C11 -----
 set +e
-(cd "$WORK" && cargo tree $CARGO_FLAGS -p facade --edges normal) >"$WORK/c9.log" 2>&1
+(cd "$WORK" && cargo tree "${CARGO_FLAGS[@]}" -p facade --edges normal) >"$WORK/c9.log" 2>&1
 C9_STATUS=$?
 set -e
 echo "--- C9: cargo tree -p facade --edges normal (feature off) ---"
@@ -219,7 +225,7 @@ else
 fi
 
 set +e
-(cd "$WORK" && cargo tree $CARGO_FLAGS -p facade --features web --edges normal) >"$WORK/c10.log" 2>&1
+(cd "$WORK" && cargo tree "${CARGO_FLAGS[@]}" -p facade --features web --edges normal) >"$WORK/c10.log" 2>&1
 C10_STATUS=$?
 set -e
 echo "--- C10: cargo tree -p facade --features web --edges normal ---"
@@ -232,7 +238,7 @@ else
 fi
 
 set +e
-(cd "$WORK" && cargo tree $CARGO_FLAGS -p probe-core --edges normal) >"$WORK/c11.log" 2>&1
+(cd "$WORK" && cargo tree "${CARGO_FLAGS[@]}" -p probe-core --edges normal) >"$WORK/c11.log" 2>&1
 C11_STATUS=$?
 set -e
 echo "--- C11: cargo tree -p probe-core --edges normal ---"

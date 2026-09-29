@@ -1,14 +1,14 @@
-== R75 probe crate: /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r75-synth-probe
-== generated: 2026-09-27T04:08:52Z (UTC)
+== R75 probe crate: /tmp/r75-r3-probe
+== generated: 2026-09-28T05:53:40Z (UTC)
 == toolchains: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew) | rustc 1.96.0 (ac68faa20 2026-05-25)
 == Cargo.lock sha256: 5e89a57d3a9d8513487aeee2fa4e2f07afde2eddc7c3584ae90c3be7b01d43cb
 == source sha256:
 e1d715657e4a5c54dd9b2970d18067a243daa855f8495a9bb01d1f9403055384  Cargo.toml
-4a24abb5dbbb27db233d45fa5bc936b6645823f772ac172137fe734f036afba1  src/lib.rs
-4301fd5f5fd8f4839f16c58bf49c51f5e24b893b5697eaf73d75ff85e4883321  tests/common/mod.rs
-19b34cd25a556bb30837abb199df599f67904f9db852e1583a789a404e770f68  tests/acceptance.rs
-fff87e533b24eff5e39801b828fd65882ac3b92153ca51052156c9969b7cc6ce  tests/negative.rs
-cf90767ff68119bd2edce36950ca85685666cd9de0c190c24fde7da80be540aa  tests/foldin.rs
+a29e0b7c3cf1739e64079875e37d47c3712c822846751a25a1fc0a3324fb6538  src/lib.rs
+3f5da62795f69a4196ef4d2e0b7c08fd072b83fd5305d8444d13524498884209  tests/common/mod.rs
+42b6edf56a284cb3691ae5aa0ac25c3a5eb1a85eb7f5c4ea06aa426748a0d179  tests/acceptance.rs
+362792a99cbf7f513c930c2c6f579435389564d9db24f797f23a4067df426fa3  tests/negative.rs
+d49335a880c59c651adc7c752bb6fdf3d361ab52b042e3f2efb82a62dd8fd132  tests/foldin.rs
 == resolved versions (normal edges, the shipped tree)
 axum v0.8.9
 axum-core v0.5.6
@@ -34,14 +34,14 @@ syn v2.0.119
 └── tracing-attributes v0.1.31 (proc-macro)
     └── tracing v0.1.44
         ├── axum v0.8.9
-        │   └── r75probe v0.0.0 ($TMPDIR/r75-synth-probe)
+        │   └── r75probe v0.0.0 (/private/tmp/r75-r3-probe)
         ├── axum-core v0.5.6
         │   └── axum v0.8.9 (*)
-        ├── r75probe v0.0.0 ($TMPDIR/r75-synth-probe)
+        ├── r75probe v0.0.0 (/private/tmp/r75-r3-probe)
         ├── tower v0.5.3
         │   └── axum v0.8.9 (*)
         └── tower-http v0.7.1
-            └── r75probe v0.0.0 ($TMPDIR/r75-synth-probe)
+            └── r75probe v0.0.0 (/private/tmp/r75-r3-probe)
 
 syn v3.0.6
 └── tokio-macros v2.7.2 (proc-macro)
@@ -52,7 +52,7 @@ syn v3.0.6
         │   └── hyper-util v0.1.21
         │       └── axum v0.8.9 (*)
         ├── hyper-util v0.1.21 (*)
-        ├── r75probe v0.0.0 ($TMPDIR/r75-synth-probe)
+        ├── r75probe v0.0.0 (/private/tmp/r75-r3-probe)
         ├── tower v0.5.3 (*)
         └── tower-http v0.7.1 (*)
 == highest declared rust-version among normal-tree packages:
@@ -91,6 +91,9 @@ hyper v1.11.1
 ├── tower-http feature "timeout"
 ├── tower-http feature "tracing"
 └── tower-http feature "uuid"
+== opentelemetry packages in the normal tree (the traceparent passthrough needs none): 0
+== tokio "rt" feature enabled (tokio::task_local! for the passthrough needs it):
+├── tokio feature "rt"
 == packages reachable in the normal tree ONLY through tower-http (full tree minus --prune tower-http):
 bitflags v2.13.2
 cfg-if v1.0.5

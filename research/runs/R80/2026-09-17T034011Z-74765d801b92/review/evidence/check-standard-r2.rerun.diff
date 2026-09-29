@@ -1,48 +1,8 @@
-73d72
-<    Compiling httparse v1.10.1
-76,77c75
-<    Compiling tower-service v0.3.3
-<    Compiling zmij v1.0.23
+67c67
+<     Finished `test` profile [unoptimized + debuginfo] target(s) in 1.99s
 ---
->    Compiling httparse v1.10.1
-79,80c77,78
-<    Compiling tower-layer v0.3.3
-<    Compiling atomic-waker v1.1.2
+>     Finished `test` profile [unoptimized + debuginfo] target(s) in 2.72s
+84c84
+< test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
 ---
->    Compiling zmij v1.0.23
->    Compiling tower-service v0.3.3
-82,86d79
-<    Compiling slab v0.4.12
-<    Compiling sync_wrapper v1.0.2
-<    Compiling tracing-core v0.1.36
-<    Compiling futures-task v0.3.34
-<    Compiling smallvec v1.16.1
-87a81
->    Compiling sync_wrapper v1.0.2
-88a83,84
->    Compiling tracing-core v0.1.36
->    Compiling tower-layer v0.3.3
-90c86,89
-<    Compiling futures-util v0.3.34
----
->    Compiling smallvec v1.16.1
->    Compiling atomic-waker v1.1.2
->    Compiling futures-task v0.3.34
->    Compiling slab v0.4.12
-91a91
->    Compiling futures-util v0.3.34
-93d92
-<    Compiling ryu v1.0.23
-95d93
-<    Compiling matchit v0.8.4
-97a96,97
->    Compiling ryu v1.0.23
->    Compiling matchit v0.8.4
-103d102
-<    Compiling socket2 v0.6.5
-104a104
->    Compiling socket2 v0.6.5
-117c117
-<     Finished `test` profile [unoptimized + debuginfo] target(s) in 16.01s
----
->     Finished `test` profile [unoptimized + debuginfo] target(s) in 16.54s
+> test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

@@ -1,0 +1,276 @@
+toolchain: rustc 1.98.0 (88d9e12ae 2026-08-18) (Homebrew)
+cargo:     cargo 1.98.0 (797e8a9bc 2026-08-05) (Homebrew)
+os:        Darwin arm64 / macOS 26.4
+grep:      grep (BSD grep, GNU compatible) 2.6.0-FreeBSD
+workdir:   /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r74-probe.2rhajo7v (deleted on exit)
+
+=== D. gate 2: declared rust-version in the published manifests ===
+PASS  D-rv tower_governor-0.8.0 == NONE
+PASS  D-ed tower_governor-0.8.0 == 2021
+PASS  D-rv governor-0.10.4 == NONE
+PASS  D-ed governor-0.10.4 == 2018
+PASS  D-rv axum-governor-2.1.0 == 1.95
+PASS  D-ed axum-governor-2.1.0 == 2024
+PASS  D-rv gcra-0.6.0 == 1.80.0
+PASS  D-ed gcra-0.6.0 == 2021
+PASS  D-rv axum-0.8.9 == 1.80
+PASS  D-ed axum-0.8.9 == 2021
+PASS  D-rv tower-0.5.3 == 1.64.0
+PASS  D-ed tower-0.5.3 == 2018
+PASS  D-control: reader finds a declared rust-version
+
+=== D2. tower_governor 0.8.0 source facts ===
+PASS  D2a wait_time is computed with .as_secs() (truncating) at 2 sites in src/lib.rs
+PASS  D2b retry-after IS inserted (correcting the 'x-ratelimit-after only' claim)
+PASS  D2c a new X- prefixed quota header is emitted
+PASS  D2d PeerIpKeyExtractor returns UnableToExtractKey when ConnectInfo is absent
+PASS  D2e UnableToExtractKey renders INTERNAL_SERVER_ERROR
+PASS  D2f the 429 body is a plain string, not problem+json
+PASS  D2g tonic is in tower_governor's default feature set
+
+=== A. the recommended zero-crate GCRA design (7 tests) ===
+--- design test output ---
+     Locking 54 packages to latest Rust 1.96 compatible versions
+   Compiling libc v0.2.189
+   Compiling proc-macro2 v1.0.107
+   Compiling itoa v1.0.18
+   Compiling unicode-ident v1.0.26
+   Compiling quote v1.0.47
+   Compiling pin-project-lite v0.2.17
+   Compiling futures-core v0.3.34
+   Compiling serde_core v1.0.229
+   Compiling bytes v1.12.1
+   Compiling once_cell v1.21.4
+   Compiling httparse v1.10.1
+   Compiling serde v1.0.229
+   Compiling zmij v1.0.23
+   Compiling tower-service v0.3.3
+   Compiling log v0.4.34
+   Compiling httpdate v1.0.3
+   Compiling serde_json v1.0.151
+   Compiling futures-channel v0.3.34
+   Compiling tracing-core v0.1.36
+   Compiling slab v0.4.12
+   Compiling tower-layer v0.3.3
+   Compiling futures-task v0.3.34
+   Compiling sync_wrapper v1.0.2
+   Compiling atomic-waker v1.1.2
+   Compiling smallvec v1.16.1
+   Compiling percent-encoding v2.3.2
+   Compiling futures-util v0.3.34
+   Compiling ryu v1.0.23
+   Compiling http v1.5.0
+   Compiling tracing v0.1.44
+   Compiling form_urlencoded v1.2.2
+   Compiling memchr v2.8.3
+   Compiling mime v0.3.17
+   Compiling matchit v0.8.4
+   Compiling http-body v1.1.0
+   Compiling http-body-util v0.1.5
+   Compiling axum-core v0.5.6
+   Compiling syn v3.0.6
+   Compiling errno v0.3.14
+   Compiling socket2 v0.6.5
+   Compiling mio v1.2.3
+   Compiling signal-hook-registry v1.4.8
+   Compiling serde_path_to_error v0.1.20
+   Compiling serde_urlencoded v0.7.1
+   Compiling tokio-macros v2.7.2
+   Compiling tokio v1.53.1
+   Compiling hyper v1.11.1
+   Compiling tower v0.5.3
+   Compiling hyper-util v0.1.20
+   Compiling axum v0.8.9
+   Compiling probe_design v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r74-probe.2rhajo7v/probe-design)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 05s
+     Running unittests src/lib.rs (target/debug/deps/probe_design-b86a8b38fdb2fa8a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/probe_design-136012d75527c55f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/acceptance.rs (target/debug/deps/acceptance-fe5250a6e70fed73)
+
+running 7 tests
+test policy_grammar_matches_py_limits_notation ... ok
+test third_request_is_429_with_an_accurate_retry_after ... ok
+test retry_after_is_never_zero ... ok
+test the_shipped_default_posture_is_on_and_limits ... ok
+test conditional_registration_is_the_gate ... ok
+test keys_are_isolated_and_the_store_is_bounded ... ok
+test off_by_default_is_the_absence_of_the_layer ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+   Doc-tests probe_design
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+PASS  A off_by_default_is_the_absence_of_the_layer
+PASS  A conditional_registration_is_the_gate
+PASS  A third_request_is_429_with_an_accurate_retry_after
+PASS  A keys_are_isolated_and_the_store_is_bounded
+PASS  A policy_grammar_matches_py_limits_notation
+PASS  A retry_after_is_never_zero
+PASS  A the_shipped_default_posture_is_on_and_limits
+PASS  A-total 7 passed 0 failed
+PASS  A-clippy clean under -D warnings
+
+=== B. tower_governor 0.8.0 — the two measured defects ===
+--- tower_governor observation output ---
+     Locking 109 packages to latest Rust 1.96 compatible versions
+   Compiling proc-macro2 v1.0.107
+   Compiling unicode-ident v1.0.26
+   Compiling libc v0.2.189
+   Compiling quote v1.0.47
+   Compiling pin-project-lite v0.2.17
+   Compiling itoa v1.0.18
+   Compiling futures-core v0.3.34
+   Compiling cfg-if v1.0.5
+   Compiling once_cell v1.21.4
+   Compiling serde_core v1.0.229
+   Compiling smallvec v1.16.1
+   Compiling bytes v1.12.1
+   Compiling zerocopy v0.8.57
+   Compiling getrandom v0.3.4
+   Compiling crossbeam-utils v0.8.23
+   Compiling httparse v1.10.1
+   Compiling parking_lot_core v0.9.12
+   Compiling scopeguard v1.2.0
+   Compiling lock_api v0.4.14
+   Compiling futures-sink v0.3.34
+   Compiling tracing-core v0.1.36
+   Compiling log v0.4.34
+   Compiling serde v1.0.229
+   Compiling futures-task v0.3.34
+   Compiling slab v0.4.12
+   Compiling zmij v1.0.23
+   Compiling tower-service v0.3.3
+   Compiling futures-channel v0.3.34
+   Compiling futures-util v0.3.34
+   Compiling atomic-waker v1.1.2
+   Compiling portable-atomic v1.15.0
+   Compiling thiserror v1.0.69
+   Compiling percent-encoding v2.3.2
+   Compiling tower-layer v0.3.3
+   Compiling serde_json v1.0.151
+   Compiling http v1.5.0
+   Compiling sync_wrapper v1.0.2
+   Compiling httpdate v1.0.3
+   Compiling form_urlencoded v1.2.2
+   Compiling mime v0.3.17
+   Compiling allocator-api2 v0.2.21
+   Compiling foldhash v0.2.0
+   Compiling ryu v1.0.23
+   Compiling equivalent v1.0.2
+   Compiling hashbrown v0.14.5
+   Compiling syn v2.0.119
+   Compiling syn v3.0.6
+   Compiling memchr v2.8.3
+   Compiling thiserror v2.0.20
+   Compiling spinning_top v0.3.0
+   Compiling nonempty v0.7.0
+   Compiling matchit v0.8.4
+   Compiling web-time v1.1.0
+   Compiling futures-timer v3.0.4
+   Compiling errno v0.3.14
+   Compiling mio v1.2.3
+   Compiling socket2 v0.6.5
+   Compiling signal-hook-registry v1.4.8
+   Compiling hashbrown v0.16.1
+   Compiling rand_core v0.9.5
+   Compiling quanta v0.12.6
+   Compiling nonzero_ext v0.3.0
+   Compiling dashmap v6.2.1
+   Compiling parking_lot v0.12.5
+   Compiling http-body v1.1.0
+   Compiling http-body-util v0.1.5
+   Compiling serde_path_to_error v0.1.20
+   Compiling serde_urlencoded v0.7.1
+   Compiling tokio-macros v2.7.2
+   Compiling thiserror-impl v2.0.20
+   Compiling tokio v1.53.1
+   Compiling ppv-lite86 v0.2.21
+   Compiling tracing-attributes v0.1.31
+   Compiling thiserror-impl v1.0.69
+   Compiling pin-project-internal v1.1.13
+   Compiling rand_chacha v0.9.0
+   Compiling rand v0.9.5
+   Compiling pin-project v1.1.13
+   Compiling tracing v0.1.44
+   Compiling governor v0.10.4
+   Compiling forwarded-header-value v0.1.1
+   Compiling axum-core v0.5.6
+   Compiling hyper v1.11.1
+   Compiling tower v0.5.3
+   Compiling hyper-util v0.1.20
+   Compiling axum v0.8.9
+   Compiling tower_governor v0.8.0
+   Compiling probe_tg v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r74-probe.2rhajo7v/probe-tg)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 09s
+     Running unittests src/lib.rs (target/debug/deps/probe_tg-cd6dac2bcee05208)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/debug/deps/probe_tg-f749489b06efb5ee)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/observed.rs (target/debug/deps/observed-e7d16c0aab059601)
+
+running 2 tests
+test without_connect_info_the_default_key_extractor_returns_500 ... ok
+test with_connect_info_the_third_request_is_429_and_carries_retry_after ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.26s
+
+   Doc-tests probe_tg
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+PASS  B without_connect_info_the_default_key_extractor_returns_500
+PASS  B with_connect_info_the_third_request_is_429_and_carries_retry_after
+PASS  B-total 2 passed 0 failed
+
+=== C. non-dev dependency-tree deltas ===
+baseline=50 design=50 tracing=50 tg_nodefault=87 tg_default=99
+PASS  C0 baseline non-dev package count (axum 0.8.9 + tokio 1.53.1) == 50
+PASS  C1 the recommended design adds 0 packages == 0
+PASS  C2 tracing(default-features=false,std) adds 0 packages == 0
+PASS  C3 tower_governor --no-default-features +axum adds == 37
+PASS  C4 tower_governor with its default features adds == 49
+PASS  C5 design vs baseline non-dev package set: diff empty (50 packages each)
+PASS  C5-control tg package set differs from baseline, so C5's empty diff is not vacuous
+PASS  C6 tower_governor pulls in governor v0.10.4
+PASS  C6 tower_governor pulls in dashmap
+PASS  C6 tower_governor pulls in quanta
+PASS  C6 tower_governor pulls in parking_lot
+PASS  C6 tower_governor pulls in getrandom
+PASS  C7 tower_governor's default features pull in tonic
+PASS  C8 the recommended design pulls in no governor
+PASS  C9a tower_governor drags thiserror 1.x
+PASS  C9b tower_governor drags thiserror 2.x
+
+=== E. tower-rate-limiter 0.1.6 (the openai leg's pick) ===
+PASS  E1 declared rust-version == 1.96.0
+PASS  E2 declared edition == 2024
+PASS  E3 the store is a FIXED WINDOW, not GCRA
+PASS  E4 it emits the draft-11 RateLimit fields
+PASS  E5 tower-rate-limiter with its default features adds == 18
+PASS  E6 its default feature set pulls in moka
+
+CHECKS RUN: 54  PASS: 54  FAILURES: 0  SKIPPED: 0

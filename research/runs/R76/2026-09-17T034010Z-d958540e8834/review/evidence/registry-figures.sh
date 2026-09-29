@@ -22,7 +22,13 @@
 # personal address is printed or sent. Needs no `.git`, so it runs unchanged
 # from a clean `git archive HEAD` extraction.
 #
-# GitHub API calls are spaced at least 21 s apart (three calls, two waits).
+# GitHub API calls are spaced at least 21 s apart (four calls, three waits).
+#
+# Revision 3 (2026-09-27) changed two sections and nothing else: section G adds
+# the source lines showing tower-http applies Access-Control-Expose-Headers
+# only on non-preflight responses (the ground of OVERRIDE (OV-08)), and
+# section H reads rust-lang/crates.io's Cargo.toml at a resolved commit sha
+# instead of at a moving default branch, so the cited line is addressable.
 
 set -euo pipefail
 
@@ -287,6 +293,12 @@ else
   N=$("$GREP" -c 'fn update_vary_header' "$WORK/tower-http-0.6.11/src/cors/mod.rs" || true)
   assert "$(eq "$N" "0")" \
     "0.6.11 has no such derivation: its Vary default is the fixed preflight_request_headers() list, which is the difference the probe measures"
+  echo "PINNED tower-http-0.7.1/src/cors/mod.rs, where Cors::call splits preflight from non-preflight:"
+  sed -n '715p;727,729p' "$C/src/cors/mod.rs" | sed 's/^/  /'
+  assert "$(eq "$(sed -n '715p' "$C/src/cors/mod.rs")" '        if parts.method == Method::OPTIONS {')" \
+    "mod.rs:715 branches on Method::OPTIONS, so every OPTIONS request takes the preflight path"
+  assert "$(eq "$(sed -n '728,729p' "$C/src/cors/mod.rs" | tr -s ' ')" "$(printf ' // This header is applied only to non-preflight requests\n headers.extend(self.layer.expose_headers.to_header(&parts));')")" \
+    "mod.rs:728-729 extend Access-Control-Expose-Headers only in the non-preflight branch, so no CorsLayer configuration puts the expose list on a preflight response — the structural ground of OVERRIDE (OV-08)"
 fi
 echo
 
@@ -312,11 +324,18 @@ else
   echo "FIGURE open issues (total_count, the field the prompt requires) = ${OPEN}"
   assert "$(gt0 "$OPEN")" "the open-issue search resolved; the decision quotes this number with today's date"
   sleep 21
-  gh api "repos/rust-lang/crates.io/contents/Cargo.toml" > "$WORK/gh-cratesio.json"
+  # Resolve the default branch to a commit first, then read the file AT that
+  # commit, so the line number printed below addresses fixed bytes.
+  gh api "repos/rust-lang/crates.io/commits/HEAD" > "$WORK/gh-cratesio-head.json"
+  CIO_SHA=$(jq -r '.sha' "$WORK/gh-cratesio-head.json")
+  echo "endpoint: GET https://api.github.com/repos/rust-lang/crates.io/commits/HEAD"
+  echo "FIGURE rust-lang/crates.io default-branch commit = ${CIO_SHA}"
+  sleep 21
+  gh api "repos/rust-lang/crates.io/contents/Cargo.toml?ref=${CIO_SHA}" > "$WORK/gh-cratesio.json"
   jq -r '.content' "$WORK/gh-cratesio.json" | base64 -d > "$WORK/cratesio-Cargo.toml"
-  echo "endpoint: GET https://api.github.com/repos/rust-lang/crates.io/contents/Cargo.toml (default branch)"
-  echo "HEAD  the Rust project's own registry service pins tower-http at:"
-  "$GREP" -n '^tower-http = ' "$WORK/cratesio-Cargo.toml" | sed 's/^/  /'
+  echo "endpoint: GET https://api.github.com/repos/rust-lang/crates.io/contents/Cargo.toml?ref=${CIO_SHA}"
+  echo "HEAD  the Rust project's own registry service pins tower-http at (Cargo.toml@${CIO_SHA}:<line>):"
+  "$GREP" -n '^tower-http = ' "$WORK/cratesio-Cargo.toml" | sed "s|^|  Cargo.toml@${CIO_SHA}:|"
   N=$("$GREP" -c '^tower-http = { version = "=0.7.1"' "$WORK/cratesio-Cargo.toml" || true)
   assert "$(gt0 "$N")" \
     "rust-lang/crates.io pins tower-http at exactly =0.7.1 in production, which is the practice evidence for recommending the 0.7 line over the owner reference's 0.6"

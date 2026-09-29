@@ -1,0 +1,101 @@
+# Candidate ci.yml skeleton for R12 (revision 1, S11 synthesis).
+#
+# Jobs plan/hygiene/workflow-lint/check/msrv-floor/install-smoke are R11's graph
+# with placeholder steps; R11 owns their real contents. R12 owns exactly two
+# things in this file: the `ci-ok` job and the `ci-ok folds in every other
+# ci.yml job` step of `workflow-lint`. The checkout ref below is a placeholder;
+# R20's pinning rule governs the real value.
+name: CI
+"on":
+  pull_request:
+  push:
+    branches: [main]
+  merge_group:
+permissions: {}
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.sha }}
+  cancel-in-progress: true
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      code: ${{ steps.detect.outputs.code }}
+      web: ${{ steps.detect.outputs.web }}
+      workflows: ${{ steps.detect.outputs.workflows }}
+      docs: ${{ steps.detect.outputs.docs }}
+    steps:
+      - id: detect
+        run: |
+          for k in code web workflows docs; do echo "$k=true" >> "$GITHUB_OUTPUT"; done
+  hygiene:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - run: echo "R11 hygiene steps"
+  workflow-lint:
+    needs: plan
+    if: needs.plan.outputs.workflows == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: ci-ok folds in every other ci.yml job
+        run: |
+          set -euo pipefail
+          yq -o=json '.jobs' .github/workflows/ci.yml | jq -e '
+            (keys - ["ci-ok"]) as $jobs
+            | (.["ci-ok"].needs | if type == "string" then [.] else . end) as $needs
+            | if ($jobs - $needs) == [] and ($needs - $jobs) == [] then true
+              else ("missing from ci-ok needs: \($jobs - $needs); unknown in needs: \($needs - $jobs)\n" | halt_error(1)) end' > /dev/null
+  check:
+    needs: plan
+    if: needs.plan.outputs.code == 'true'
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    permissions:
+      contents: read
+    steps:
+      - run: echo "R11 check steps"
+  msrv-floor:
+    needs: plan
+    if: needs.plan.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - run: echo "R11 msrv-floor steps"
+  install-smoke:
+    needs: plan
+    if: needs.plan.outputs.code == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - run: echo "R50 install-smoke steps"
+  ci-ok:
+    name: ci-ok
+    needs: [plan, hygiene, workflow-lint, check, msrv-floor, install-smoke]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions: {}
+    steps:
+      - name: Fold every needed job's result into one required check
+        env:
+          NEEDS_JSON: ${{ toJSON(needs) }}
+        run: |
+          set -euo pipefail
+          jq -r 'to_entries[] | "\(.key): \(.value.result)"' <<< "$NEEDS_JSON"
+          if ! jq -e 'length > 0 and all(.[]; .result == "success" or .result == "skipped")' <<< "$NEEDS_JSON" > /dev/null; then
+            echo "::error::ci-ok: a needed job ended failure or cancelled (or needs is empty)"
+            exit 1
+          fi

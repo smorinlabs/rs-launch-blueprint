@@ -1407,3 +1407,59 @@ Evidence: r10 note W1-R02 ruling; packager refusal naming all 11; assumes-line b
 Revisit when: any touch-up reports the r11 value breaks (not renames) a claim.
 ## 2026-09-28 Batch-4: 6 published (65/85) — R58r2 txn 56c651f1 (cork out) + R50/R08/R39/R44/R86. 5 refused in 3 classes: (1) R27/R28/R30 r3s audited all-Claude-family, packager needs openai empirical seat → S73 jobs 7-9; (2) R75/R78 assumed logging-pipeline-contract as "—" placeholder → r3 adoption rounds (S74); (3) R69r11 re-accept triggers 11-consumer cascade (r9→r10 value change was owner-ruled W1-R02, carried correctly by EF-1-only r11; assumes lines are full 2666-byte copies) → Q3 owner call (flag day vs defer). R61r8 producer unrecoverable from artifacts → operator info request. S66 6/6 OK → S73 jobs 1-6. S69 3/3 approve. S70 6/10 (S1 resolved R44/R86/R69 seats from launch lines). S71: R84 failures are index.crates.io DNS, green 36/0/0 repro — needs approve-verdict file to pack (S1 stages micro-verify next). S72 staged (R70r5 live, R74r3 gated on Q3's R69 pin).
 ## 2026-09-28 S68 HANDOFF: R84-rv2 DISPUTED again, 8/11, now with REAL failures — public-net probe 25/4/0 (T11/T12 compile FAIL, T14 + R03-R10 consequent; verbatim in r5vo2:44-91). DNS fixed everything it touched (source 60/0/0 IDENTICAL, progenitor 6/0/0, registry ok); scripts stable 5/5. Toolchain ruled out (rustc 1.98.1 both runs, verified). Per Q2.A: pack nothing; S71 debug staged (unsuppressed cargo diagnostics → root cause + repair sketch, no repairs). S66+S67 live. S69 audit wave (R58r2/R14r3/R73r4 evr) + S70 packprep (10 identities) staged. R24 PULLED from pack queue: audit-fable.md.v2 (Sep 26, NEWER) rejects the current sha while audit-fable.md (Sep 18) approves — S1 adjudication owed before R24 packs.
+
+## 2026-09-28 — S80 triage: R78-r3 STOP upheld, S75 scope-(b) skip found
+- S80 worker STOPped: no named tracing-opentelemetry exception in R58r3. Verified: R58r3 :1595 still names
+  tracing-subscriber only; /tmp/s75-r58-r3.out has zero deny/exception mentions — S75's R58 worker silently
+  skipped scope (b).
+- Disposition: STOP correct. Fold the deny exception into the already-planned R58r4 micro (with the :1005
+  illustration fix); restage R78r3 after R58r4 publishes.
+
+## 2026-09-28 — S82 triage: R24-r2 ACCEPT
+- Verified: review/R24-r1-snapshot.md == git r1 (bc5dcafa1ac0); review/DECISION.md = bdad4359d5ea; raw/muse.md =
+  9b8bd88503fc (matches, needs S1 manifest/ops registration); scope sections present (F3 runC L176-177, F2 deps
+  L283+, engines L707+); figures 146/0/0 + control 128/4, shellcheck clean; EXECUTION.json at dispatch hash.
+- Deps entry rebutted with reasons (cadence+behaviour-4), recommendation unmoved, no Supersedes. 11 observations
+  filed (obs 11 truncated mid-sentence in the .out file; substance already in decision §320). inputs/manifest/ops
+  dirt is not the worker's. Ready for S1 pack.
+
+## 2026-09-28 — S79 triage: 9 approve ACCEPT; R28 E1 + R30 B-1/B-2 ruled
+- ACCEPT: R70/R74/R51/R76/R77/R80/R75 evr + R29/R12 redo (all approve, blocking=0; priors untouched per operator verify).
+- R28 E1 (inputs-vs-provenance): inputs-drift class, same as S73's 4 — decision claim was snapshot-true, all 59
+  empirical outcomes identical. Ruled OBS per standing evr rule; pack R28.
+- R30 B-1/B-2 (wiring-cost/severity not run — strict /tmp-fixture-git reading): scripts unrunned, claims unverified.
+  Ruled micro-rerun with explicit /tmp-fixture-git permission; cannot accept on sibling evidence alone.
+
+## 2026-09-28 — S81 triage: R71r4 STOP upheld + repair adopted; R59r4 ACCEPT
+- R71r4 STOP correct: regen command finds no test target + expectorate path resolves into crates/web under r11 layout.
+  S1 adopts worker's prototyped repair (CARGO_MANIFEST_DIR-anchored SNAPSHOT + --workspace command; A13 scoped per R11).
+  Restage R71r4 directed, no worker design choice.
+- R59r4 ACCEPT (be55fb782196): contract :746, reload slot, telemetry::init, format-key verified; 137 assertions/0 fail.
+  Deviation (r1 log bytes overwritten, run dir fully untracked so unrecoverable): outcomes identical, drift disclosed
+  in replay note, r1-citing prose preserved in r3 snapshot — keep-prose (a) accepted. Process fix: commit run dirs promptly.
+
+## 2026-09-28 — S83 triage: R58-r4 ACCEPT (04a4100ddfb1)
+- Verified: sha matches; snapshot = rev3 bytes (675ec4c1563a), never overwritten; probe 33/0/0, figures 161/0/0,
+  standards 46/2/0 with the same 2 disclosed r3 fails carried. Operator verified illustration + 3 exception sites.
+- S1 confirms R58 owned value byte-identical r2→r4. R78r3 restaged as S86 against R58r4 (exception :660/:1117/:1642).
+
+## 2026-09-28 — S86 triage: R78-r3 ACCEPT (35c4b50a71c6)
+- Verified: sha matches; snapshot = r2 (45458354b105); assumes byte-matches R58r4 owned value; redaction in exporter
+  + traceparent split docs present (:242-251); 47 tracing-opentelemetry mentions.
+- Figures 32/33 (V04): live registry drift (axum-tracing-opentelemetry newest → OTel ^0.33), pre-accepted as OBS-1 in
+  r2 codex audit ("recommendation still holds"); V06 still green. Committed 33/33 log correctly left unchanged (§5).
+
+## 2026-09-28 — S85 triage: R30-r3c ACCEPT (021e94fd3aea)
+- Verified: .r3c binds decision sha, verdict approve-with-observations, B-1/B-2 resolved (17/0 + 8/0, outcomes match
+  committed); .r3b untouched (f3c0a9b677d3). Seat note disposition: Opus-driving-Codex-seat was S1-prompt-authorized
+  (S74-proven pattern) and disclosed in r3c — accepted, no action.
+
+## 2026-09-28 — S84 triage: R71-r4 ACCEPT (2084932b3cb9)
+- Verified: sha matches; snapshot = r3 (0743a12544a2); adopted repair verbatim (CARGO_MANIFEST_DIR SNAPSHOT const +
+  --workspace regen command); A13 scoped; assumes + re-point + evidence per handoff. STOP never fired.
+
+## 2026-09-28 Batch-5: 4 published (70/85) — R70r5 txn 8b63367e + R74r3 txn 214dbfac + R75r3 txn 16ad8f6a + R84r5 txn 5d674d0b
+- Pack attempted 9 (all S79-approve empiricals + S1 judgment memos Q23 §7.4; S1 identities for R12/R70/R74/R84, repointed R51/R75/R76/R77/R80).
+- 5 refused in 3 classes: (1) R51/R76/R77/R80 — same-run republication forbidden (runner line 542; precedent R01 used a NEW run per rev; needs owner new-run decision, count-neutral since already published); (2) R12 — Q5.A prompt+policy edit post-dates run prep (working-tree prompt dirt is the authorized muse substitution, uncommitted; manifest hashes match HEAD); needs fresh run or owner override; (3) none pending CAS — R74/R75/R84 needed sequential rebuild+apply after R70 moved research/CLAUDE.md.
+- Held out of pack for missing bound empirical (S1 never covers empirical — uniform precedent): R24r2, R59r4, R58r4, R71r4, R78r3 (no r-bound evr), R28 (r3b blocked), R30 (r3c approve-with-observations), R29 (r2b list-format header unparseable by AUDIT_FIELD regex).
+- R24 muse leg registered (succeeded, 9b8bd885). check-research-tree.sh green pre-commit.

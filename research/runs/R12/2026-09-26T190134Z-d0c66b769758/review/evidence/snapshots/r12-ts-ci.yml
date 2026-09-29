@@ -1,0 +1,196 @@
+# Copyright (c) 2025, Steve Morin
+#
+# Permission is hereby granted, free of charge, to any person obtaining a copy of
+# this software and associated documentation files (the "Software"), to deal in
+# the Software without restriction, including without limitation the rights to
+# use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of
+# the Software, and to permit persons to whom the Software is furnished to do so,
+# subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in all
+# copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS
+# FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR
+# COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
+# IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
+# CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+
+# CI — quality gates for the TypeScript port (D-022(1)).
+#
+# Dual enforcement (mirrors the Python source's ci.yaml shape): the individual
+# quality gates run as named `just` recipes AND the whole hook suite is re-run
+# on every file, so the committed pre-commit discipline is exercised in CI, not
+# just the recipes. The `just`-recipe steps map 1:1 to the source's explicit
+# per-check steps (mypy / ruff / pre-commit-run) in TS idiom.
+
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+# Deny-all baseline (D-022(10)); the job below re-grants only what it needs.
+permissions: {}
+
+jobs:
+  ci:
+    name: continuous-integration
+    runs-on: ubuntu-latest
+    permissions:
+      # Read-only checkout of the repository; nothing here writes.
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        # D-027 / D-011(2): Active-LTS floor (24.x) + Current (26.x) — the
+        # source's "test the floor and the next version" compatibility signal.
+        node-version: ['24.x', '26.x']
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          # No job here pushes; drop the persisted token (zizmor artipacked).
+          persist-credentials: false
+
+      # pnpm MUST be on PATH before setup-node so its cache:'pnpm' can find the
+      # store (D-035). Third-party action → full-SHA pin + version comment
+      # (D-022(9)); kept fresh by the Dependabot github-actions ecosystem.
+      - name: Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10.34.3
+
+      - name: Set up Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v7
+        with:
+          node-version: ${{ matrix.node-version }}
+          # setup-node's built-in cache keyed to the committed pnpm-lock.yaml
+          # (D-022(3); pnpm per D-035).
+          cache: 'pnpm'
+
+      # Third-party action → full-SHA pin + version comment (D-022(9));
+      # kept fresh by the Dependabot github-actions ecosystem.
+      - name: Install just
+        uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4.0.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install shell lint tools
+        run: |
+          just install-shell-tools
+          echo "$HOME/.local/bin" >> "$GITHUB_PATH"
+
+      - name: Check shell scripts and workflows
+        run: just check-shell check-workflows
+
+      # --- Direct quality gates as named just recipes (source per-check steps) ---
+      - name: Check formatting
+        run: just format-check
+
+      - name: Lint
+        run: just lint
+
+      - name: Type check
+        run: just typecheck
+
+      - name: Test
+        run: just test
+
+      - name: Docs link check
+        run: just docs-check
+
+      - name: Build
+        run: just build
+
+      # --- Dual enforcement: re-run the WHOLE hook suite on all files, mirroring
+      #     the source's `just pre-commit-run` step (D-022(1)). ---
+      - name: Run pre-commit hook suite (all files)
+        run: pnpm exec lefthook run pre-commit --all-files
+
+      # ============================================================
+      # Commented scaffolding — uncomment-to-enable (executable docs),
+      # preserved from the source ci.yaml's disabled-but-documented intent.
+      # ============================================================
+
+      # Coverage upload — enable once a Codecov token / OIDC is configured:
+      # - name: Upload coverage to Codecov
+      #   uses: codecov/codecov-action@v5
+      #   with:
+      #     files: ./coverage/coverage-final.json
+
+      # Always-on SCA gate (D-022(7)): PM-native audit — no third-party action,
+      # no secret. The same-repo fork guard mirrors the source's security job so
+      # it never runs in a forked-PR context (where secrets/attack surface
+      # differ). Uncomment to enforce:
+      # - name: Audit dependencies (SCA)
+      #   if: github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository
+      #   run: pnpm audit --audit-level high
+
+      # Publish job — owned by the release topic (release-please publish.yml,
+      # D-022(13)); intentionally not defined here.
+
+  # ADVISORY, NON-GATING Bun dev/test lane (D-036). `continue-on-error: true`
+  # means this job can never block a PR or push: Bun tracks Node v23 parity —
+  # one major behind this template's engines.node >=24 floor — so it is a
+  # forward-compatibility signal, not a required gate. Three hard rules mirror
+  # the local `just test-bun` recipe: installs stay pnpm-only (never
+  # `bun install`, which would fork a bun.lock and drift from pnpm-lock.yaml);
+  # the runner is Vitest driven by `bun run vitest` (never bare `bun test`,
+  # which invokes Bun's own runner); tests/e2e.test.ts is excluded because it
+  # spawns process.execPath to assert the published Node signal contract
+  # (SIGINT->130/SIGTERM->143), which under Bun would exercise Bun's signal
+  # emulation instead. The published package + engines are unchanged.
+  bun-lane:
+    name: bun-lane (advisory, non-gating)
+    runs-on: ubuntu-latest
+    continue-on-error: true
+    permissions:
+      # Read-only checkout; nothing here writes.
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          # No push here; drop the persisted token (zizmor artipacked).
+          persist-credentials: false
+
+      # pnpm on PATH before setup-node so cache:'pnpm' finds the store (D-035).
+      - name: Install pnpm
+        uses: pnpm/action-setup@0ebf47130e4866e96fce0953f49152a61190b271 # v6.0.9
+        with:
+          version: 10.34.3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: 'pnpm'
+
+      # Third-party action → full-SHA pin + version comment (D-022(9)).
+      - name: Install just
+        uses: extractions/setup-just@53165ef7e734c5c07cb06b3c8e7b647c5aa16db3 # v4.0.0
+
+      # Third-party action → full-SHA pin + version comment (D-022(9)); pinned
+      # to the exact Bun release this lane is verified against (D-036).
+      - name: Install Bun
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version: 1.3.14
+
+      # Installs stay pnpm-only — never `bun install` (would fork a bun.lock).
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build (Node)
+        run: just build
+
+      # Vitest is the runner (never bare `bun test`); e2e stays Node-only.
+      - name: Test under Bun (non-e2e tiers)
+        run: bun run vitest run --exclude tests/e2e.test.ts
