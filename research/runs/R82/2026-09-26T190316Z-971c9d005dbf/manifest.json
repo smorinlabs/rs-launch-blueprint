@@ -1,0 +1,76 @@
+{
+  "actor": "controller-fable-5-1",
+  "authorization_ref": "OWNER-2026-09-05-P02-EXEC",
+  "created_at": "2026-09-26T19:03:16Z",
+  "events": [
+    {
+      "actor": "controller-fable-5-1",
+      "at": "2026-09-26T19:03:16Z",
+      "state": "ready"
+    },
+    {
+      "actor": "s1-controller",
+      "at": "2026-10-01T05:43:55Z",
+      "migration": {
+        "from": "codex",
+        "previous_input_hashes": {
+          "parameters": "85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa",
+          "parameters_semantic": "78f2bd3d7fec49ef65d84aa885aea3ef2f62630f5639ce0d4c12a92e06637789",
+          "parameters_semantic_file": "c12e516fefd16f4be87fe44781fba844ba94b287d1a0aea79b73b8f7cc66bead",
+          "policy": "2a3ca15597691bfc55f211b97c09f342c242532d378482ffba2c5d1df742fd58",
+          "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+          "prerequisites": "563bd3ba8b8eaff5915d0f50638e10aedceef7126301f8adad641a64a35a029e",
+          "prompt": "3757ab1f78a45dce3392498af344a413dcc64952960247655c16b63131d64932",
+          "registry": "6b86e81ab06093bf1fced2b6bc79d157cc7ce86ce07f6827d6390339ab8d1f0c"
+        },
+        "previous_required_engines": [
+          "codex",
+          "opus"
+        ],
+        "previous_tier": "focused",
+        "reason": "Q5.A bulk substitution (owner 2026-09-21); migrate run to current muse-era policy per owner 1.A",
+        "to": "muse"
+      },
+      "model": "muse-spark",
+      "state": "ready"
+    },
+    {
+      "at": "2026-10-01T05:53:22Z",
+      "publication": {
+        "acceptance_sha256": "140797f2c5e11b14b784ea0fc8fbc4ae41f988880c1abdf5d9bede05853db37e",
+        "decision_sha256": "edd8134100747cece06310b69bcb394e08538ea055c3213f52ed8210e0876502",
+        "transaction": "d8de585d25cc416781cfcae515598e84"
+      },
+      "state": "published"
+    }
+  ],
+  "input_hashes": {
+    "parameters": "0b1fdc5f3bc2ffbf8f5d6eae74b3c46629fa1b69666d002a9560dd0a2a6e5bd6",
+    "parameters_semantic": "78f2bd3d7fec49ef65d84aa885aea3ef2f62630f5639ce0d4c12a92e06637789",
+    "parameters_semantic_file": "c12e516fefd16f4be87fe44781fba844ba94b287d1a0aea79b73b8f7cc66bead",
+    "policy": "988a774d75b00455052cae5582b82b945177acdbe18b14030dfb17cff333e210",
+    "policy_item": "0f765bdaf1b9f40e1a3e04984d6213c8508fb87b63c9ed425a5f393ef16f2631",
+    "prerequisites": "563bd3ba8b8eaff5915d0f50638e10aedceef7126301f8adad641a64a35a029e",
+    "prompt": "7cba7ab7ab2e26816127aedbe74f43f5c80002b008c4a68d3313dadb5bc000f8",
+    "registry": "855dd35531a7aa9e5b7284360d90d99af18a602365b14f0625c4bbb774834ea3"
+  },
+  "item": "R82",
+  "model": "claude-fable-5-1",
+  "operations": {},
+  "prompt_source": "research/topics/82-docs-correctness-gate/prompts/docs-correctness-gate.prompt.md",
+  "publication": {
+    "acceptance_sha256": "140797f2c5e11b14b784ea0fc8fbc4ae41f988880c1abdf5d9bede05853db37e",
+    "decision_sha256": "edd8134100747cece06310b69bcb394e08538ea055c3213f52ed8210e0876502",
+    "transaction": "d8de585d25cc416781cfcae515598e84"
+  },
+  "remaining_budget": "no paid engine (Focused tier)",
+  "required_engines": [
+    "muse",
+    "opus"
+  ],
+  "run_id": "2026-09-26T190316Z-971c9d005dbf",
+  "schema_version": 1,
+  "state": "published",
+  "tier": "focused",
+  "updated_at": "2026-10-01T05:53:22Z"
+}

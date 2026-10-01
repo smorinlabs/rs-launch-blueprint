@@ -1,0 +1,22 @@
+INFO fixture=/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R12/2026-09-26T190134Z-d0c66b769758/review/evidence/ci.candidate.yml
+INFO bash=5.3.20(1)-release
+PASS L0 actionlint is /opt/homebrew/bin/actionlint 1.7.12
+PASS L1 candidate lints clean (exit 0, no diagnostics)
+PASS L2 naive shape (no always()) still lints — lint does not enforce the rule
+PASS L3 incomplete needs: (plan dropped) still lints — lint does not enforce completeness
+extracted guard bytes: 373 verdict bytes: 303
+PASS L4 extracted guard + verdict bodies are shellcheck-clean
+PASS L5-needs ci-ok needs lists all six R11 ids incl plan
+PASS L5-always ci-ok carries if: always()
+PASS L5-perm ci-ok carries permissions: {}
+PASS L5-time ci-ok carries timeout-minutes: 5
+PASS L5-runner ci-ok runs on ubuntu-latest
+PASS L5-name ci-ok has explicit name: ci-ok
+PASS L5-merge triggers include merge_group
+PASS L5-env verdict reads needs through env, not interpolation
+PASS L5-guard guard step lives in workflow-lint
+PASS L5-rule verdict is the allow-list with length guard
+PASS L5-nopaths no trigger-level paths/paths-ignore filter
+PASS L5-pos four positive plan predicates (gated jobs)
+PASS L5-nointerp verdict run body carries no expression interpolation
+RESULT PASS=18 FAIL=0 SKIP=0

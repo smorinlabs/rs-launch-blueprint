@@ -1,0 +1,127 @@
+INFO run=/Users/stevemorin/c/rs-launch-blueprint-p02-plan/research/runs/R32/2026-09-26T190208Z-55160c36e3d0 root=/Users/stevemorin/c/rs-launch-blueprint-p02-plan
+INFO 96 distinct line citations in DECISION.md
+PASS E10-cover — the token table covers exactly the cited set (missing [], extra [])
+PASS E10 R11 DECISION.md:282 — carries 'the tier names inside `check`'
+PASS E10 R11 DECISION.md:294 — carries "**The rustdoc part is `check`'s doc build step**"
+PASS E10 cargo-targets.md:126-127 — carries 'will run them serially'
+PASS E10 inputs/prompt.md:23 — carries '- owns:'
+PASS E10 inputs/prompt.md:26 — carries '- engines: codex, opus, doxa'
+PASS E10 inputs/prompt.md:58 — carries '| Issue responsiveness | 10 most recently opened issues |'
+PASS E10 inputs/prompt.md:8-9 — carries 'F173 opt-in pre-push full-suite hook'
+PASS E10 partitioning.md:31 — carries '`--partition slice:m/n`'
+PASS E10 partitioning.md:55 — carries '`--partition hash:m/n`'
+PASS E10 partitioning.md:57 — carries 'completely deterministic'
+PASS E10 partitioning.md:63 — carries '`--partition count:m/n`'
+PASS E10 partitioning.md:8 — carries 'using the `--partition` option'
+PASS E10 raw/doxa-gemini.normalized.md:166 — carries 'Command::cargo_bin("rs-launch-blueprint")'
+PASS E10 raw/doxa-gemini.normalized.md:176 — carries '19,468,971'
+PASS E10 raw/doxa-gemini.normalized.md:178 — carries '127+'
+PASS E10 raw/doxa-gemini.normalized.md:188-198 — carries '`owns F117 = cargo-nextest`'
+PASS E10 raw/doxa-gemini.normalized.md:199-203 — carries '`assumes ci-job-structure = open`'
+PASS E10 raw/doxa-gemini.normalized.md:207 — carries 'slow-timeout = "60s"'
+PASS E10 raw/doxa-gemini.normalized.md:208 — carries 'predicates = "3.0.1"'
+PASS E10 raw/doxa-gemini.normalized.md:209 — carries 'A flat, non-subdirected `tests/` directory'
+PASS E10 raw/doxa-gemini.normalized.md:21-23 — carries 'Architectural Pattern'
+PASS E10 raw/doxa-gemini.normalized.md:211 — carries 'RS_PROJECTS_PREPUSH_TESTS=1'
+PASS E10 raw/doxa-gemini.normalized.md:27 — carries 'BASELINE-REVIEW: F124'
+PASS E10 raw/doxa-gemini.normalized.md:29 — carries 'BASELINE-REVIEW: F125'
+PASS E10 raw/doxa-gemini.normalized.md:31 — carries "Nextest's `setup-scripts`"
+PASS E10 raw/doxa-gemini.normalized.md:33 — carries 'both the default `cargo test` runner and `cargo-nextest` parallelize'
+PASS E10 raw/doxa-openai.normalized.md:130-157 — carries '├── slow.rs'
+PASS E10 raw/doxa-openai.normalized.md:14 — carries '`test-r`; `cargo-maelstrom`'
+PASS E10 raw/doxa-openai.normalized.md:157 — carries '#[path = "..."]'
+PASS E10 raw/doxa-openai.normalized.md:227 — carries 'CARGO_BIN_EXE_rs-launch'
+PASS E10 raw/doxa-openai.normalized.md:273 — carries 'BASELINE-REVIEW: F124'
+PASS E10 raw/doxa-openai.normalized.md:275 — carries 'BASELINE-REVIEW: F128'
+PASS E10 raw/doxa-openai.normalized.md:285 — carries '`cargo-nextest 0.9.145`'
+PASS E10 raw/doxa-openai.normalized.md:295 — carries 'serial default; opt-in `parallel` profile'
+PASS E10 raw/doxa-openai.normalized.md:297 — carries 'R32-owned Cargo dev-dependencies:** **none**'
+PASS E10 raw/doxa-openai.normalized.md:37 — carries '`test-r 3.0.12`'
+PASS E10 raw/doxa-openai.normalized.md:42 — carries 'were inaccessible to the research transport'
+PASS E10 raw/doxa-openai.normalized.md:50 — carries 'bounded, reproducible confidence'
+PASS E10 raw/doxa-openai.normalized.md:553 — carries '`serial_test` is not needed as a baseline dependency'
+PASS E10 raw/doxa-openai.normalized.md:627 — carries 'Add `assert_cmd` if the process tier grows'
+PASS E10 raw/doxa-openai.normalized.md:718 — carries 'RS_LAUNCH_PREPUSH_TESTS'
+PASS E10 raw/doxa-openai.normalized.md:728 — carries 'git config core.hooksPath .githooks'
+PASS E10 raw/doxa-openai.normalized.md:828-838 — carries 'owns test-runner = cargo-nextest 0.9.145'
+PASS E10 raw/doxa-openai.normalized.md:840-846 — carries 'CONFLICT: none'
+PASS E10 raw/doxa-openai.normalized.md:86 — carries 'test-threads = 1'
+PASS E10 raw/muse.md:134 — carries '`tempfile 3.27.0`'
+PASS E10 raw/muse.md:220-221 — carries 'terminate-after-2 bounds a hung test at ~3 min'
+PASS E10 raw/muse.md:3 — carries 'Engine: muse (Meta). Model family: meta'
+PASS E10 raw/muse.md:42-45 — carries 'Cargo nextest does not support doctest'
+PASS E10 raw/muse.md:440-445 — carries 'R33'
+PASS E10 raw/muse.md:467 — carries 'serial_test = { version = "3", default-features = false }'
+PASS E10 raw/muse.md:47-49 — carries 'assert_cmd = "1.0.8"'
+PASS E10 raw/muse.md:52-55 — carries 'serial_test 155.1M'
+PASS E10 raw/muse.md:543-545 — carries 'F129 layout: flat tier-named files'
+PASS E10 raw/muse.md:555-556 — carries 'F131: NO flag'
+PASS E10 raw/muse.md:556 — carries 'sharding uses nextest `--partition` (CI concern, not template default)'
+PASS E10 raw/muse.md:559-561 — carries "Rust-side var name is R37's"
+PASS E10 raw/muse.md:661-663 — carries 'tokio runs nextest'
+PASS E10 raw/muse.md:687 — carries 'assumes `ci-job-structure = <accepted R11 value'
+PASS E10 raw/muse.md:692 — carries 'No `CONFLICT:` lines'
+PASS E10 raw/muse.md:71-93 — carries 'P-budget'
+PASS E10 raw/opus.md:1038 — carries 'RS_PROJECTS_PREPUSH_TESTS:-0'
+PASS E10 raw/opus.md:1114-1117 — carries '`astral-sh/uv` uses `cargo-nextest`'
+PASS E10 raw/opus.md:1118-1120 — carries 'cargo test --doc'
+PASS E10 raw/opus.md:1144 — carries '`CONFLICT: R11 ci-job-structure'
+PASS E10 raw/opus.md:119-122 — carries 'The default test run is fast, hermetic, order-independent'
+PASS E10 raw/opus.md:1238-1240 — carries 'are each one to seven lines off'
+PASS E10 raw/opus.md:151-160 — carries 'ts accidental drift'
+PASS E10 raw/opus.md:196-198 — carries 'It offers *partitioning*'
+PASS E10 raw/opus.md:209-214 — carries '`ntest`'
+PASS E10 raw/opus.md:3 — carries 'claude-opus-5-5'
+PASS E10 raw/opus.md:317-324 — carries 'none — cargo test already parallelizes test binaries by default'
+PASS E10 raw/opus.md:325 — carries 'BASELINE-REVIEW: F129'
+PASS E10 raw/opus.md:418 — carries 'ubuntu-latest, ubuntu-24.04-arm, macos-latest, windows-latest'
+PASS E10 raw/opus.md:425 — carries 'median 0.18 days'
+PASS E10 raw/opus.md:436-448 — carries 'Under M1, `#[serial]` would silently'
+PASS E10 raw/opus.md:452-458 — carries '`test-r` 3.0.12'
+PASS E10 raw/opus.md:55-61 — carries '`ntest` 0.9.5'
+PASS E10 raw/opus.md:62-64 — carries '`libtest2-mimic` 0.0.4'
+PASS E10 raw/opus.md:689 — carries 'ubuntu-latest, windows-latest, macos-latest'
+PASS E10 raw/opus.md:696 — carries 'median 0 days'
+PASS E10 raw/opus.md:701-702 — carries '`escargot` is not excluded but is unnecessary'
+PASS E10 raw/opus.md:789-793 — carries '`tests/cli/main.rs` declares'
+PASS E10 raw/opus.md:94-111 — carries '`.config/nextest.toml`'
+PASS E10 raw/opus.md:96 — carries '`Cargo.toml:369` `assert_cmd`'
+PASS E10 raw/opus.md:96-102 — carries 'oxidecomputer/omicron'
+PASS E10 research/RUNBOOK.md:73-76 — carries 'Q17.A (2026-09-27)'
+PASS E10 research/topics/01-ports-and-adapters-seam/DECISION.md:3 — carries 'struck fitness gate 1'
+PASS E10 research/topics/11-ci-workflow-job-structure/DECISION.md:320 — carries 'cargo test with the feature off scoped by -p to the non-web packages'
+PASS E10 research/topics/11-ci-workflow-job-structure/DECISION.md:329 — carries 'crates/web/tests/'
+PASS E10 research/topics/49-build-target-declaration/DECISION.md:13 — carries 'R32 resolves the built binary'
+PASS E10 research/topics/49-build-target-declaration/DECISION.md:727-731 — carries 'is then not set for integration tests'
+PASS E10 research/topics/69-web-framework-stack/DECISION.md:2310-2316 — carries "**That call is R32's**"
+PASS E10 running.md:58 — carries 'Doctests are currently'
+PASS E10 test-groups.md:21 — carries 'you can emulate them by using test groups'
+PASS E10 tests/index.md:211-213 — carries '#89583'
+PASS E10-assumes-n — nine assumes lines (9)
+PASS E10-assumes msrv-policy — byte-identical to inputs/parameters.json
+PASS E10-assumes rust-edition — byte-identical to inputs/parameters.json
+PASS E10-assumes target-os-matrix — byte-identical to inputs/parameters.json
+PASS E10-assumes license — byte-identical to inputs/parameters.json
+PASS E10-assumes http-transport-injection-seam — byte-identical to inputs/parameters.json
+PASS E10-assumes ci-job-structure — byte-identical to inputs/parameters.json
+PASS E10-assumes package-manager-invocation — byte-identical to inputs/parameters.json
+PASS E10-assumes build-tool-output-shape — byte-identical to inputs/parameters.json
+PASS E10-assumes web-extra-surface — byte-identical to inputs/parameters.json
+PASS E10-owns — no owns line (the prompt owns nothing)
+PASS E10-conflict — exactly one CONFLICT line, against R11
+PASS E10-pre R01 DECISION.md — matches inputs/prerequisites.json
+PASS E10-pre R01 acceptance.json — matches inputs/prerequisites.json
+PASS E10-pre R11 DECISION.md — matches inputs/prerequisites.json
+PASS E10-pre R11 acceptance.json — matches inputs/prerequisites.json
+PASS E10-pre R42 DECISION.md — matches inputs/prerequisites.json
+PASS E10-pre R42 acceptance.json — matches inputs/prerequisites.json
+PASS E10-pre R49 DECISION.md — matches inputs/prerequisites.json
+PASS E10-pre R49 acceptance.json — matches inputs/prerequisites.json
+PASS E10-pre R69 DECISION.md — matches inputs/prerequisites.json
+PASS E10-pre R69 acceptance.json — matches inputs/prerequisites.json
+PASS E10-h2 — H2 set ['Decision', 'Parameters', 'Empirical check', 'Engines']
+PASS E10-title — title line with date and revision 2
+PASS E10-principles — ### Principles and implementation under ## Decision
+PASS E10-reverify — re-verify: line at the end of ## Decision
+PASS E10-placeholders — no unfilled placeholder
+RESULT PASS=124 FAIL=0

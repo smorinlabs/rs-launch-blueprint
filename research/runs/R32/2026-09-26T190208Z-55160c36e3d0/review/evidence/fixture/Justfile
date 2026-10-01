@@ -1,0 +1,14 @@
+# Test recipes (R32). R42: cargo <sub> form, no runner prefix, no Cargo alias.
+test *options:
+    cargo nextest run --locked --features web {{options}}
+    cargo test --doc --locked --features web
+
+test-slow:
+    cargo nextest run --locked --run-ignored only -E 'test(/(^|::)slow::/)'
+
+test-live:
+    cargo nextest run --locked --run-ignored only -E 'test(/(^|::)live::/)'
+
+test-all:
+    cargo nextest run --locked --features web --run-ignored all
+    cargo test --doc --locked --features web

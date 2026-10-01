@@ -1,0 +1,12 @@
+shellcheck version: 0.11.0 at /opt/homebrew/bin/shellcheck, default severity, 2026-09-28T04:41:40Z
+r35-install.sh: exit=0
+r35-coverage.sh: exit=0
+r35-flags.sh: exit=0
+r35-toolchain.sh: exit=0
+r35-sources.sh: exit=0
+r35-tarpaulin.sh: exit=0
+r35-inputs.sh: exit=0
+disable directives:
+r35-flags.sh:129:# shellcheck disable=SC2016  # the backticks are literal Markdown in the README, not substitutions
+r35-flags.sh:138:# shellcheck disable=SC2016  # the backticks are literal Markdown in the README, not substitutions
+r35-inputs.sh:14:# shellcheck disable=SC2016  # file-wide: every single-quoted phrase is literal Markdown (backticks) or a bash -c body reading "$1"; nothing is meant to expand

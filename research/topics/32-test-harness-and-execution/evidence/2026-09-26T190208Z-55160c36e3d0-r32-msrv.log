@@ -1,0 +1,38 @@
+INFO scratch copy of fixture/ at /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r32-msrv.QC28Ro; CARGO_TARGET_DIR=/tmp/cargo-s13-R32-target/r32-msrv
+INFO rustc: rustc 1.96.0 (ac68faa20 2026-05-25); cargo-nextest 0.9.146 (8af696ddc 2026-09-21)
+INFO toolchain under test: rustc 1.96.0 (ac68faa20 2026-05-25); cargo cargo 1.96.0 (30a34c682 2026-05-25)
+PASS E7a — rustc on PATH is 1.96.0 (the declared rust-version floor)
+INFO      Compiling rs-launch-blueprint v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r32-msrv.QC28Ro)
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 1.09s
+INFO   ────────────
+INFO    Nextest run ID 307af42e-ab1e-4bfc-aff6-7d87f6f9c5b5 with nextest profile: default
+INFO       Starting 6 tests across 5 binaries (2 tests skipped)
+INFO           PASS [   0.015s] (1/6) rs-launch-blueprint::cli in_process::projects_lists_names_in_process
+INFO           PASS [   0.015s] (2/6) rs-launch-blueprint::web health_is_ok_in_process
+INFO           PASS [   0.015s] (3/6) rs-launch-blueprint::cli in_process::unknown_command_is_usage_error_in_process
+INFO           PASS [   2.679s] (4/6) rs-launch-blueprint::cli binary::binary_lists_projects
+INFO           PASS [   2.681s] (5/6) rs-launch-blueprint::cli binary::binary_usage_error_exits_2_with_empty_stdout
+INFO           PASS [   2.993s] (6/6) rs-launch-blueprint::web serve_binary_starts
+INFO   ────────────
+INFO        Summary [   2.993s] 6 tests run: 6 passed, 2 skipped
+PASS E7b — cargo nextest run --features web exits 0 on 1.96.0
+PASS E7c — ... 6 run, 6 passed, 2 skipped
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.07s
+INFO      Doc-tests rs_launch_blueprint
+INFO   
+INFO   running 1 test
+INFO   test src/lib.rs - run (line 36) ... ok
+INFO   
+INFO   test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+INFO   
+INFO   all doctests ran in 2.57s; merged doctests compilation took 0.69s
+PASS E7d — cargo test --doc passes on 1.96.0 (merged doctests, edition 2024)
+PASS E7e — the build nextest drove used rustc 1.96.0 (target dir's .rustc_info.json)
+INFO   predicates v3.1.4
+INFO   └── assert_cmd v2.2.2
+INFO       [dev-dependencies]
+INFO       └── rs-launch-blueprint v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r32-msrv.QC28Ro)
+INFO   [dev-dependencies]
+INFO   └── rs-launch-blueprint v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r32-msrv.QC28Ro)
+PASS E7f — predicates 3.1.4 is a normal dependency of assert_cmd 2.2.2 (the explicit dev-dep adds no crate)
+RESULT PASS=6 FAIL=0

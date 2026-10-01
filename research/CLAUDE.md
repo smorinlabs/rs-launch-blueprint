@@ -15,7 +15,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R09 | self-hosted-runner-indirection | bundle | py-only | DIVERGENT | — | [prompt](topics/09-self-hosted-runner-indirection/prompts/self-hosted-runner-indirection.prompt.md) | resolved |
 | R10 | dependency-cache-action | crate | same | COMMON → SUBSTITUTE | — | [prompt](topics/10-dependency-cache-action/prompts/dependency-cache-action.prompt.md) | resolved |
 | R11 | ci-workflow-job-structure | bundle | py-only | DIVERGENT | ci-job-structure | [prompt](topics/11-ci-workflow-job-structure/prompts/ci-workflow-job-structure.prompt.md) | resolved |
-| R12 | aggregate-required-status-check | pattern | py-only | DIVERGENT | — | [prompt](topics/12-aggregate-required-status-check/prompts/aggregate-required-status-check.prompt.md) | open |
+| R12 | aggregate-required-status-check | pattern | py-only | DIVERGENT | — | [prompt](topics/12-aggregate-required-status-check/prompts/aggregate-required-status-check.prompt.md) | resolved |
 | R13 | dependency-vulnerability-scanning | bundle | py-only | DIVERGENT | — | [prompt](topics/13-dependency-vulnerability-scanning/prompts/dependency-vulnerability-scanning.prompt.md) | resolved |
 | R14 | large-file-guard-strategy | bundle | py-only | DIVERGENT | — | [prompt](topics/14-large-file-guard-strategy/prompts/large-file-guard-strategy.prompt.md) | resolved |
 | R15 | template-drift-receipt-guard | pattern | py-only | DIVERGENT | — | [prompt](topics/15-template-drift-receipt-guard/prompts/template-drift-receipt-guard.prompt.md) | resolved |
@@ -32,13 +32,13 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R26 | packed-artifact-content-guard | bundle | ts-only | DIVERGENT | — | [prompt](topics/26-packed-artifact-content-guard/prompts/packed-artifact-content-guard.prompt.md) | resolved |
 | R27 | formatter-config-surface | bundle | different | DIVERGENT | — | [prompt](topics/27-formatter-config-surface/prompts/formatter-config-surface.prompt.md) | resolved |
 | R28 | linter-and-editor-tooling | bundle | different | DIVERGENT | — | [prompt](topics/28-linter-and-editor-tooling/prompts/linter-and-editor-tooling.prompt.md) | resolved |
-| R29 | non-code-file-formatting | bundle | py-only | DIVERGENT | — | [prompt](topics/29-non-code-file-formatting/prompts/non-code-file-formatting.prompt.md) | open |
+| R29 | non-code-file-formatting | bundle | py-only | DIVERGENT | — | [prompt](topics/29-non-code-file-formatting/prompts/non-code-file-formatting.prompt.md) | resolved |
 | R30 | type-check-gate | bundle | different | DIVERGENT | — | [prompt](topics/30-type-check-gate/prompts/type-check-gate.prompt.md) | resolved |
 | R31 | standalone-security-analyzer | bundle | py-only | DIVERGENT | — | [prompt](topics/31-standalone-security-analyzer/prompts/standalone-security-analyzer.prompt.md) | resolved |
-| R32 | test-harness-and-execution | bundle | different | DIVERGENT | — | [prompt](topics/32-test-harness-and-execution/prompts/test-harness-and-execution.prompt.md) | open |
+| R32 | test-harness-and-execution | bundle | different | DIVERGENT | — | [prompt](topics/32-test-harness-and-execution/prompts/test-harness-and-execution.prompt.md) | resolved |
 | R33 | property-and-snapshot-testing | bundle | py-only | DIVERGENT | — | [prompt](topics/33-property-and-snapshot-testing/prompts/property-and-snapshot-testing.prompt.md) | resolved |
 | R34 | scheduled-freshness-lanes | bundle | py-only | DIVERGENT | — | [prompt](topics/34-scheduled-freshness-lanes/prompts/scheduled-freshness-lanes.prompt.md) | resolved |
-| R35 | coverage-tooling | bundle | different | DIVERGENT | — | [prompt](topics/35-coverage-tooling/prompts/coverage-tooling.prompt.md) | open |
+| R35 | coverage-tooling | bundle | different | DIVERGENT | — | [prompt](topics/35-coverage-tooling/prompts/coverage-tooling.prompt.md) | resolved |
 | R37 | hook-manager-distribution | bundle | different | DIVERGENT | — | [prompt](topics/37-hook-manager-distribution/prompts/hook-manager-distribution.prompt.md) | resolved |
 | R38 | commit-message-linter | crate | same | COMMON → SUBSTITUTE | commit-message-convention | [prompt](topics/38-commit-message-linter/prompts/commit-message-linter.prompt.md) | resolved |
 | R39 | secret-scanning-hooks | bundle | py-only | DIVERGENT | — | [prompt](topics/39-secret-scanning-hooks/prompts/secret-scanning-hooks.prompt.md) | resolved |
@@ -61,7 +61,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R56 | config-secret-policy | bundle | different | DIVERGENT | — | [prompt](topics/56-config-secret-policy/prompts/config-secret-policy.prompt.md) | resolved |
 | R57 | xdg-directory-set | pattern | py-only | DIVERGENT | — | [prompt](topics/57-xdg-directory-set/prompts/xdg-directory-set.prompt.md) | resolved |
 | R58 | logging-pipeline-architecture | bundle | py-only | DIVERGENT | logging-pipeline-contract | [prompt](topics/58-logging-pipeline-architecture/prompts/logging-pipeline-architecture.prompt.md) | resolved |
-| R59 | file-log-sink | bundle | py-only | DIVERGENT | — | [prompt](topics/59-file-log-sink/prompts/file-log-sink.prompt.md) | open |
+| R59 | file-log-sink | bundle | py-only | DIVERGENT | — | [prompt](topics/59-file-log-sink/prompts/file-log-sink.prompt.md) | resolved |
 | R60 | cli-parsing-framework | bundle | different | DIVERGENT | — | [prompt](topics/60-cli-parsing-framework/prompts/cli-parsing-framework.prompt.md) | resolved |
 | R61 | interactive-prompts | bundle | py-only | DIVERGENT | — | [prompt](topics/61-interactive-prompts/prompts/interactive-prompts.prompt.md) | resolved |
 | R62 | clipboard-integration | bundle | ts-only | DIVERGENT | — | [prompt](topics/62-clipboard-integration/prompts/clipboard-integration.prompt.md) | resolved |
@@ -84,7 +84,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R79 | prometheus-metrics | crate | py-only | DIVERGENT | — | [prompt](topics/79-prometheus-metrics/prompts/prometheus-metrics.prompt.md) | resolved |
 | R80 | health-probe-endpoints | bundle | py-only | DIVERGENT | — | [prompt](topics/80-health-probe-endpoints/prompts/health-probe-endpoints.prompt.md) | resolved |
 | R81 | docs-delivery-model | bundle | different | DIVERGENT | — | [prompt](topics/81-docs-delivery-model/prompts/docs-delivery-model.prompt.md) | resolved |
-| R82 | docs-correctness-gate | bundle | different | DIVERGENT | — | [prompt](topics/82-docs-correctness-gate/prompts/docs-correctness-gate.prompt.md) | open |
+| R82 | docs-correctness-gate | bundle | different | DIVERGENT | — | [prompt](topics/82-docs-correctness-gate/prompts/docs-correctness-gate.prompt.md) | resolved |
 | R83 | openapi-contract-fuzzing | crate | py-only | DIVERGENT | — | [prompt](topics/83-openapi-contract-fuzzing/prompts/openapi-contract-fuzzing.prompt.md) | resolved |
 | R84 | openapi-typed-client-generation | crate | py-only | DIVERGENT | — | [prompt](topics/84-openapi-typed-client-generation/prompts/openapi-typed-client-generation.prompt.md) | resolved |
 | R85 | rich-terminal-row-niceties | pattern | py-only | DIVERGENT | — | [prompt](topics/85-rich-terminal-row-niceties/prompts/rich-terminal-row-niceties.prompt.md) | resolved |

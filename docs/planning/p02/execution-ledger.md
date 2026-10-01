@@ -1498,3 +1498,9 @@ Revisit when: any touch-up reports the r11 value breaks (not renames) a claim.
 ## 2026-09-28 Batch-6: 8 published (78/85) — R61 c0d31ba2 + R27 1868bfa1 + R28 c420e862 + R30 c2141edc + R03 bf3901cf + R14 7f1b32c6 + R73 bf7abfac + R78 de723ac1
 - S87 empiricals (claude seat via override) + S1 judgment memos; S1 identities R24(unused this batch)/R29(held)/R03/R14/R35(held)/R73/R61 + repoints R59(held)/R78/R28/R30.
 - Held: R59/R29/R35 (Q5.A prompt dirt) + R12/R32/R82 (same) + R24 (terra policy). Re-pubs + flag-day await new-run policy.
+
+## 2026-09-28 Batch-7: 6 published (84/85) — R59 ff4a6d84 + R29 629863a8 + R35 7bf91b84 + R12 4166b9be + R32 484b7a9f + R82 d8de585d
+- Unblocked by owner 1.A via the designed bridge (NOT a revert): Q5.A prompt mirrors restored + `run migrate-engines codex→muse`
+  on all 6 runs (empty ops, codex-era required — migration refreshed snapshots to muse-era). S1 correction recorded: a pure
+  prompt revert breaks prompt-vs-policy validation; migration is the coherent path. R32 doxa points at the openai leg (no combined report; disclosed).
+- Only R24 remains (terra leg in flight as S90). Re-pubs + flag-day still await new-run policy.

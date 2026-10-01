@@ -1,0 +1,11 @@
+# Opt-in, default-skip pre-push full suite (R32, F173). The hook manager and
+# this file's location are R37's; the job body is R32's.
+pre-push:
+  jobs:
+    - name: test
+      run: |
+        if [ "${RS_PROJECTS_PREPUSH_TESTS:-0}" = "1" ]; then
+          just test
+        else
+          echo "pre-push tests skipped (opt-in: RS_PROJECTS_PREPUSH_TESTS=1)"
+        fi

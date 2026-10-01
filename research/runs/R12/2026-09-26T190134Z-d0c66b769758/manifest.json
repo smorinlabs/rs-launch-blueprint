@@ -7,30 +7,70 @@
       "actor": "controller-fable-5-1",
       "at": "2026-09-26T19:01:34Z",
       "state": "ready"
+    },
+    {
+      "actor": "s1-controller",
+      "at": "2026-10-01T05:43:55Z",
+      "migration": {
+        "from": "codex",
+        "previous_input_hashes": {
+          "parameters": "85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa",
+          "parameters_semantic": "e3fdc2b0f6f0b9f47b364042cc2f730b0806cd3292555bf083d968af77db3e82",
+          "parameters_semantic_file": "15e7e98ec46a110e555959e48c1b87e042f43397d6264a5d82ae17b848b231cd",
+          "policy": "2a3ca15597691bfc55f211b97c09f342c242532d378482ffba2c5d1df742fd58",
+          "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+          "prerequisites": "63a5620cfc9d15f77870d405f34fadf5be1a5f7fe0b0b6ffcfbee2590ce864b8",
+          "prompt": "3da9f7d26af89f1406eb86f608d1add3b0f31e6876a4328998fb16de154dabe8",
+          "registry": "6b86e81ab06093bf1fced2b6bc79d157cc7ce86ce07f6827d6390339ab8d1f0c"
+        },
+        "previous_required_engines": [
+          "codex",
+          "opus"
+        ],
+        "previous_tier": "focused",
+        "reason": "Q5.A bulk substitution (owner 2026-09-21); migrate run to current muse-era policy per owner 1.A",
+        "to": "muse"
+      },
+      "model": "muse-spark",
+      "state": "ready"
+    },
+    {
+      "at": "2026-10-01T05:50:28Z",
+      "publication": {
+        "acceptance_sha256": "d50539c665916b9060d3de6f2ef4aaa4b2b83522ae5ef7b47d333a28632e5855",
+        "decision_sha256": "23e5a61fb9f3a228823803c71e1291fdc1629a7cd2686c945e5f9abe14d0d48c",
+        "transaction": "4166b9be4eb841e7adf91998ba3c27e2"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
-    "parameters": "85f998c1dd5f72db561205710a3923ffe688ab2b760c7d32cdf3340279e9e7fa",
+    "parameters": "0b1fdc5f3bc2ffbf8f5d6eae74b3c46629fa1b69666d002a9560dd0a2a6e5bd6",
     "parameters_semantic": "e3fdc2b0f6f0b9f47b364042cc2f730b0806cd3292555bf083d968af77db3e82",
     "parameters_semantic_file": "15e7e98ec46a110e555959e48c1b87e042f43397d6264a5d82ae17b848b231cd",
-    "policy": "2a3ca15597691bfc55f211b97c09f342c242532d378482ffba2c5d1df742fd58",
-    "policy_item": "5cee8de3b81a17586094d3c9fd92b2b035193878501fd8cb63e6b42d895974df",
+    "policy": "988a774d75b00455052cae5582b82b945177acdbe18b14030dfb17cff333e210",
+    "policy_item": "0f765bdaf1b9f40e1a3e04984d6213c8508fb87b63c9ed425a5f393ef16f2631",
     "prerequisites": "63a5620cfc9d15f77870d405f34fadf5be1a5f7fe0b0b6ffcfbee2590ce864b8",
-    "prompt": "3da9f7d26af89f1406eb86f608d1add3b0f31e6876a4328998fb16de154dabe8",
-    "registry": "6b86e81ab06093bf1fced2b6bc79d157cc7ce86ce07f6827d6390339ab8d1f0c"
+    "prompt": "999cde0721211613e0efcd4424e3c809448d04c9c41991b74ae78aa123f6cbaa",
+    "registry": "855dd35531a7aa9e5b7284360d90d99af18a602365b14f0625c4bbb774834ea3"
   },
   "item": "R12",
   "model": "claude-fable-5-1",
   "operations": {},
   "prompt_source": "research/topics/12-aggregate-required-status-check/prompts/aggregate-required-status-check.prompt.md",
+  "publication": {
+    "acceptance_sha256": "d50539c665916b9060d3de6f2ef4aaa4b2b83522ae5ef7b47d333a28632e5855",
+    "decision_sha256": "23e5a61fb9f3a228823803c71e1291fdc1629a7cd2686c945e5f9abe14d0d48c",
+    "transaction": "4166b9be4eb841e7adf91998ba3c27e2"
+  },
   "remaining_budget": "no paid engine (Focused tier)",
   "required_engines": [
-    "codex",
+    "muse",
     "opus"
   ],
   "run_id": "2026-09-26T190134Z-d0c66b769758",
   "schema_version": 1,
-  "state": "ready",
+  "state": "published",
   "tier": "focused",
-  "updated_at": "2026-09-26T19:01:34Z"
+  "updated_at": "2026-10-01T05:50:28Z"
 }

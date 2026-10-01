@@ -1,0 +1,131 @@
+INFO scratch copy of fixture/ at /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r32-isolation.6lQ34B; CARGO_TARGET_DIR=/tmp/cargo-s13-R32-target/r32-isolation
+INFO rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew); cargo-nextest 0.9.146 (8af696ddc 2026-09-21)
+INFO      Compiling rs-launch-blueprint v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r32-isolation.6lQ34B)
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.86s
+INFO        Running tests/order.rs (/tmp/cargo-s13-R32-target/r32-isolation/debug/deps/order-f639e05c61a55ef5)
+INFO   
+INFO   running 2 tests
+INFO   test a_leaves_residue ... ok
+INFO   test b_passes_only_after_a ... ok
+INFO   
+INFO   test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+INFO   
+PASS E4a — libtest, one thread, alphabetical: the residue-dependent test passes (coupling hidden)
+PASS E4b1 — nextest run 1/3: the residue-dependent test fails (coupling surfaced, every run)
+PASS E4b2 — nextest run 2/3: the residue-dependent test fails (coupling surfaced, every run)
+PASS E4b3 — nextest run 3/3: the residue-dependent test fails (coupling surfaced, every run)
+INFO      Compiling rs-launch-blueprint v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r32-isolation.6lQ34B)
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 1.22s
+INFO   ────────────
+INFO    Nextest run ID 9bb6bf7a-1c1a-48ca-b3b9-57f3f1ef141f with nextest profile: default
+INFO       Starting 2 tests across 1 binary (4 binaries skipped)
+INFO           PASS [   0.020s] (1/2) rs-launch-blueprint::order a_leaves_residue
+INFO           FAIL [   0.021s] (2/2) rs-launch-blueprint::order b_passes_only_after_a
+INFO     stdout ───
+INFO   
+INFO       running 1 test
+INFO       test b_passes_only_after_a ... FAILED
+INFO   
+INFO       failures:
+INFO   
+INFO       failures:
+INFO           b_passes_only_after_a
+INFO   
+INFO       test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.00s
+INFO   
+INFO     stderr ───
+INFO   
+INFO       thread 'b_passes_only_after_a' (1020726631) panicked at tests/order.rs:11:5:
+INFO       depends on residue left by a_leaves_residue
+INFO       note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+INFO   
+INFO     Cancelling due to test failure: 
+INFO   ────────────
+INFO        Summary [   0.023s] 2 tests run: 1 passed, 1 failed, 0 skipped
+INFO           FAIL [   0.021s] (2/2) rs-launch-blueprint::order b_passes_only_after_a
+INFO   error: test run failed
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+INFO        Running tests/order.rs (/tmp/cargo-s13-R32-target/r32-isolation/debug/deps/order-f639e05c61a55ef5)
+INFO   error: The "shuffle" flag is only accepted on the nightly compiler with -Z unstable-options
+INFO   error: test failed, to rerun pass `--test order`
+PASS E4c — libtest --shuffle is rejected on stable (exit 101)
+PASS E4d — ... 'only accepted on the nightly compiler'
+INFO adding serial_test =3.5.0 with default-features = false (the Muse leg's exact recommendation)
+INFO       Updating crates.io index
+INFO         Adding serial_test =3.5.0 to dev-dependencies
+INFO                Features:
+INFO                - async
+INFO                - docsrs
+INFO                - file_locks
+INFO                - logging
+INFO                - test_logging
+INFO       Updating crates.io index
+INFO        Locking 13 packages to latest Rust 1.96 compatible versions
+INFO         Adding bitflags v2.13.2
+INFO         Adding cfg-if v1.0.5
+INFO         Adding lock_api v0.4.14
+INFO         Adding once_cell v1.21.4
+INFO         Adding parking_lot v0.12.5
+INFO         Adding parking_lot_core v0.9.12
+INFO         Adding redox_syscall v0.5.18
+INFO         Adding scopeguard v1.2.0
+INFO         Adding serial_test v3.5.0 (available: v4.0.1)
+INFO         Adding serial_test_derive v3.5.0
+INFO         Adding smallvec v1.16.2
+INFO         Adding syn v2.0.119
+INFO         Adding windows-link v0.2.1
+INFO      Compiling rs-launch-blueprint v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r32-isolation.6lQ34B)
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.45s
+INFO        Running tests/contend.rs (/tmp/cargo-s13-R32-target/r32-isolation/debug/deps/contend-2a781d8f4e4b478b)
+INFO   
+INFO   running 2 tests
+INFO   test first_holder ... ok
+INFO   test second_holder ... ok
+INFO   
+INFO   test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.01s
+INFO   
+PASS E4e — #[serial] under cargo test (one process, threads): both holders pass
+INFO      Compiling rs-launch-blueprint v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r32-isolation.6lQ34B)
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 1.46s
+INFO   ────────────
+INFO    Nextest run ID 25008348-db47-4e23-a448-883e43089539 with nextest profile: default
+INFO       Starting 2 tests across 1 binary (5 binaries skipped)
+INFO           FAIL [   0.054s] (1/2) rs-launch-blueprint::contend first_holder
+INFO     stdout ───
+INFO   
+INFO       running 1 test
+INFO       test first_holder ... FAILED
+INFO   
+INFO       failures:
+INFO   
+INFO       failures:
+INFO           first_holder
+INFO   
+INFO       test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 1 filtered out; finished in 0.01s
+INFO   
+INFO     stderr ───
+INFO   
+INFO       thread 'first_holder' (1020730621) panicked at tests/contend.rs:7:5:
+INFO       another test holds "/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r32-isolation.6lQ34B/contend.h1s5/held": Err(Os { code: 17, kind: AlreadyExists, message: "File exists" })
+INFO       note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+INFO   
+INFO     Cancelling due to test failure: 1 test still running
+INFO           PASS [   1.525s] (2/2) rs-launch-blueprint::contend second_holder
+INFO   ────────────
+INFO        Summary [   1.526s] 2 tests run: 1 passed, 1 failed, 0 skipped
+INFO           FAIL [   0.054s] (1/2) rs-launch-blueprint::contend first_holder
+INFO   error: test run failed
+PASS E4f — #[serial] under cargo nextest run: the run fails
+PASS E4g — ... one holder finds the other's marker (no cross-process exclusion)
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+INFO   ────────────
+INFO    Nextest run ID 53104970-f8d3-4a34-813f-4e3ffbd741bd with nextest profile: default
+INFO       Starting 2 tests across 1 binary (5 binaries skipped)
+INFO           PASS [   1.536s] (1/2) rs-launch-blueprint::contend first_holder
+INFO           PASS [   1.521s] (2/2) rs-launch-blueprint::contend second_holder
+INFO   ────────────
+INFO        Summary [   3.059s] 2 tests run: 2 passed, 0 skipped
+PASS E4h — nextest [test-groups] serial = { max-threads = 1 }: both holders pass
+PASS E4i — ... 2 run, 2 passed
+PASS E4j — ... with no warning or unknown-key line
+RESULT PASS=12 FAIL=0

@@ -1,0 +1,18 @@
+INFO host: Darwin 25.4.0 arm64
+INFO rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+INFO cargo: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew)
+INFO fetched https://crates.io/api/v1/crates/cargo-nextest/versions at 2026-09-27T03:36:20Z
+INFO newest three non-yanked cargo-nextest versions (num created_at rust_version license):
+INFO   0.9.146 2026-09-21T18:39:40.614185Z 1.91 Apache-2.0 OR MIT
+INFO   0.9.145 2026-09-16T21:43:03.300275Z 1.91 Apache-2.0 OR MIT
+INFO   0.9.144 2026-09-10T21:06:04.671392Z 1.91 Apache-2.0 OR MIT
+PASS E1a — crates.io newest non-yanked cargo-nextest is 0.9.146 (not 0.9.145)
+PASS E1b — 0.9.145 exists and is older than 0.9.146
+PASS E1c — 0.9.146 declares rust_version 1.91, a tool below the 1.96 floor
+INFO cargo install cargo-nextest --version 0.9.146 --locked (registry index.crates.io, downloads static.crates.io)
+INFO        Ignored package `cargo-nextest v0.9.146` is already installed, use --force to override
+INFO install step took 0s (full output: r32-install.cargo-install.txt)
+INFO cargo nextest --version: cargo-nextest 0.9.146 (8af696ddc 2026-09-21)
+PASS E1d — cargo nextest (R42 cargo <sub> form) resolves to 0.9.146
+PASS E1e — command -v cargo-nextest finds the executable (R42 presence test)
+RESULT PASS=5 FAIL=0

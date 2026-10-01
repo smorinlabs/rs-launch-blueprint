@@ -1,0 +1,64 @@
+INFO 2026-09-27T03:39:53Z GET https://api.github.com/repos/nextest-rs/nextest/contents/site/src/docs/running.md?ref=cargo-nextest-0.9.146 -> snapshots/nx-running.md
+INFO 2026-09-27T03:39:53Z GET https://api.github.com/repos/nextest-rs/nextest/contents/site/src/docs/features/slow-tests.md?ref=cargo-nextest-0.9.146 -> snapshots/nx-slow-tests.md
+INFO 2026-09-27T03:39:53Z GET https://api.github.com/repos/nextest-rs/nextest/contents/site/src/docs/configuration/test-groups.md?ref=cargo-nextest-0.9.146 -> snapshots/nx-test-groups.md
+INFO 2026-09-27T03:39:54Z GET https://api.github.com/repos/nextest-rs/nextest/contents/nextest-runner/default-config.toml?ref=cargo-nextest-0.9.146 -> snapshots/nx-default-config.toml
+INFO 2026-09-27T03:39:54Z GET https://api.github.com/repos/nextest-rs/nextest/contents/site/src/docs/design/why-process-per-test.md?ref=cargo-nextest-0.9.146 -> snapshots/nx-why-process-per-test.md
+INFO 2026-09-27T03:39:55Z GET https://api.github.com/repos/nextest-rs/nextest/contents/site/src/docs/integrations/test-coverage.md?ref=cargo-nextest-0.9.146 -> snapshots/nx-test-coverage.md
+INFO 2026-09-27T03:39:55Z GET https://api.github.com/repos/nextest-rs/nextest/contents/site/src/docs/configuration/setup-scripts.md?ref=cargo-nextest-0.9.146 -> snapshots/nx-setup-scripts.md
+INFO 2026-09-27T03:39:55Z GET https://api.github.com/repos/rust-lang/cargo/contents/doc/book/src/reference/cargo-targets.md?ref=07b80494920f3824e2515e536b76ff282e23993e -> snapshots/cargo-targets.md
+INFO 2026-09-27T03:39:56Z GET https://api.github.com/repos/rust-lang/rust/contents/src/doc/rustc/src/tests/index.md?ref=1.98.1 -> snapshots/rustc-tests-index.md
+INFO 2026-09-27T03:39:56Z GET https://api.github.com/repos/palfrey/serial_test/contents/README.md?ref=v3.5.0 -> snapshots/serial_test-README.md
+PASS E9a — nextest does not run doc-tests; run cargo test --doc separately (nx-running.md:58)
+PASS E9b — timeout: SIGTERM to the test's process group, then SIGKILL after a grace period (nx-slow-tests.md:94)
+PASS E9c — in-process mutexes are not supported; emulate them with test groups (nx-test-groups.md:21)
+PASS E9d — shipped default test-threads = num-cpus (parallel by default) (nx-default-config.toml:25)
+PASS E9e — shipped default slow-timeout has no terminate-after (marks, never kills) (nx-default-config.toml:63)
+PASS E9f — process-per-test is permanent (nx-why-process-per-test.md:8)
+PASS E9p — R35 compatibility: cargo-llvm-cov supports nextest (nx-test-coverage.md:13)
+PASS E9q — setup scripts (Gemini leg's F128 mechanism) are experimental at 0.9.146 (nx-setup-scripts.md:14)
+PASS E9g — each integration test is a separate binary and cargo test runs them serially (cargo-targets.md:127)
+PASS E9h — libtest --shuffle is unstable, needs -Z unstable-options (rustc-tests-index.md:211)
+PASS E9i — ... tracking issue #89583 (rustc-tests-index.md:213)
+PASS E9j — serial_test: separate-process tests need file_serial, not serial (serial_test-README.md:34)
+INFO 2026-09-27T03:39:57Z GET https://crates.io/api/v1/crates/cargo-nextest -> snapshots/crates-cargo-nextest.json
+INFO 2026-09-27T03:39:57Z GET https://crates.io/api/v1/crates/cargo-nextest/versions -> snapshots/crates-cargo-nextest-versions.json
+INFO cargo-nextest: 90-day downloads 1867747; all-time 12951672; newest 0.9.146 2026-09-21 rust_version 1.91 Apache-2.0 OR MIT
+INFO 2026-09-27T03:39:58Z GET https://crates.io/api/v1/crates/assert_cmd -> snapshots/crates-assert_cmd.json
+INFO 2026-09-27T03:39:59Z GET https://crates.io/api/v1/crates/assert_cmd/versions -> snapshots/crates-assert_cmd-versions.json
+INFO assert_cmd: 90-day downloads 17910361; all-time 86407589; newest 2.2.2 2026-05-11 rust_version 1.85 MIT OR Apache-2.0
+INFO 2026-09-27T03:40:00Z GET https://crates.io/api/v1/crates/predicates -> snapshots/crates-predicates.json
+INFO 2026-09-27T03:40:00Z GET https://crates.io/api/v1/crates/predicates/versions -> snapshots/crates-predicates-versions.json
+INFO predicates: 90-day downloads 41338519; all-time 230472045; newest 3.1.4 2026-02-11 rust_version 1.74 MIT OR Apache-2.0
+INFO 2026-09-27T03:40:01Z GET https://crates.io/api/v1/crates/serial_test -> snapshots/crates-serial_test.json
+INFO 2026-09-27T03:40:02Z GET https://crates.io/api/v1/crates/serial_test/versions -> snapshots/crates-serial_test-versions.json
+INFO serial_test: 90-day downloads 31246816; all-time 155139546; newest 4.0.1 2026-07-25 rust_version 1.93.1 MIT
+PASS E9k — assert_cmd newest non-yanked is 2.2.2
+PASS E9l — predicates newest non-yanked is 3.1.4
+INFO serial_test newest: 4.0.1 2026-07-25 rust_version 1.93.1 MIT (the Muse leg pinned 3.5.0; Opus read 4.0.1)
+INFO 2026-09-27T03:40:03Z GET https://api.github.com/repos/nextest-rs/nextest -> snapshots/gh-nextest-rs_nextest.json
+INFO nextest-rs/nextest: stars 3303; archived False; pushed_at 2026-09-26T06:14:54Z
+PASS E9m-nextest — nextest-rs/nextest is not archived
+INFO 2026-09-27T03:40:04Z GET https://api.github.com/repos/assert-rs/assert_cmd -> snapshots/gh-assert-rs_assert_cmd.json
+INFO assert-rs/assert_cmd: stars 563; archived False; pushed_at 2026-09-01T13:05:47Z
+PASS E9m-assert_cmd — assert-rs/assert_cmd is not archived
+INFO 2026-09-27T03:40:06Z GET https://api.github.com/repos/assert-rs/predicates-rs -> snapshots/gh-assert-rs_predicates-rs.json
+INFO assert-rs/predicates-rs: stars 213; archived False; pushed_at 2026-09-14T23:59:30Z
+PASS E9m-predicates-rs — assert-rs/predicates-rs is not archived
+INFO 2026-09-27T03:40:06Z GET https://api.github.com/repos/palfrey/serial_test -> snapshots/gh-palfrey_serial_test.json
+INFO palfrey/serial_test: stars 296; archived False; pushed_at 2026-09-05T20:28:09Z
+PASS E9m-serial_test — palfrey/serial_test is not archived
+INFO 2026-09-27T03:40:07Z GET https://api.github.com/search/issues?q=repo:nextest-rs/nextest+is:issue+is:open&per_page=1 -> snapshots/gh-issues-nextest-rs_nextest.json
+INFO nextest-rs/nextest open issues (search total_count): 76
+INFO 2026-09-27T03:40:08Z GET https://api.github.com/search/issues?q=repo:assert-rs/assert_cmd+is:issue+is:open&per_page=1 -> snapshots/gh-issues-assert-rs_assert_cmd.json
+INFO assert-rs/assert_cmd open issues (search total_count): 24
+INFO 2026-09-27T03:40:08Z GET https://rustsec.org/packages/cargo-nextest.html -> HTTP 404
+PASS E9o-cargo-nextest — no RustSec advisory page for cargo-nextest (HTTP 404)
+INFO 2026-09-27T03:40:09Z GET https://rustsec.org/packages/assert_cmd.html -> HTTP 404
+PASS E9o-assert_cmd — no RustSec advisory page for assert_cmd (HTTP 404)
+INFO 2026-09-27T03:40:09Z GET https://rustsec.org/packages/predicates.html -> HTTP 404
+PASS E9o-predicates — no RustSec advisory page for predicates (HTTP 404)
+INFO 2026-09-27T03:40:09Z GET https://rustsec.org/packages/serial_test.html -> HTTP 404
+PASS E9o-serial_test — no RustSec advisory page for serial_test (HTTP 404)
+INFO 2026-09-27T03:40:10Z GET https://rustsec.org/packages/time.html -> HTTP 200
+PASS E9n — method control: rustsec.org/packages/time.html exists (HTTP 200)
+RESULT PASS=23 FAIL=0

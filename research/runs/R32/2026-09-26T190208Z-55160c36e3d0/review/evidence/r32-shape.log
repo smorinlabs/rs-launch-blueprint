@@ -1,0 +1,7 @@
+INFO   OK: validation passed
+PASS E11-muse — scripts/check-answer-shape.sh raw/muse.md bundle exits 0
+PASS E11-muse-ok — ... and prints 'OK: validation passed'
+INFO   OK: validation passed
+PASS E11-opus — scripts/check-answer-shape.sh raw/opus.md bundle exits 0
+PASS E11-opus-ok — ... and prints 'OK: validation passed'
+RESULT PASS=4 FAIL=0

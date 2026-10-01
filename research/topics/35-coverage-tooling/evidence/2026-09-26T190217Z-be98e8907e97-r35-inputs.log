@@ -1,0 +1,134 @@
+INFO date_utc=2026-09-28T04:43:10Z root=/Users/stevemorin/c/rs-launch-blueprint-p02-plan
+PASS R-M3 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:3-3 contains "research/topics/33-property-and-snapshot-testing/raw/opus-2026-09-17T012441Z-a1424f847040.md:3"
+PASS R-M5 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:5-5 contains "S_STABLE"
+PASS R-M24 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:24-24 contains "S_ADOPTERS"
+PASS R-M27 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:27-27 contains "S_ADOPTERS_DETAIL"
+PASS R-M33 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:33-33 contains "capability + policy"
+PASS R-M41 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:41-41 contains "1,696,594"
+PASS R-M45 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:45-45 contains "No check in this report was executed"
+PASS R-M47 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:47-47 contains "**BASELINE-REVIEW findings:** none"
+PASS R-M51a — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:51-51 contains "Doc-tests are included via the tool's `--doc` flag (S_DOC_NOTE)"
+PASS R-M51b — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:51-51 contains "terminal summary + `lcov.info` artifact in CI"
+PASS R-M72 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:72-72 contains "S_G_STATE"
+PASS R-M84 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:84-84 contains "the ts two-file convention is preserved as the documented `--ignore-filename-regex` escape hatch"
+PASS R-M88 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:88-88 contains "`cargo llvm-cov --workspace --lcov --output-path lcov.info --fail-under-lines 80`"
+PASS R-M37a — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:37-37 contains "compiler-inserted counters, source-accurate regions/branches"
+PASS R-M37b — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:37-37 contains "less accurate on optimized/inlined code"
+PASS R-M96 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:96-96 contains "source-accurate regions/branches"
+PASS R-M104a — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:104-104 contains "recipe mirroring the CI flags"
+PASS R-M104b — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:104-104 contains "`.gitignore` gains `lcov.info`"
+PASS R-M125 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:125-125 contains "#### coverage-threshold-and-gate"
+PASS R-M133a — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:133-133 contains "the flag and the failure are the same process exit code"
+PASS R-M133b — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:133-133 contains "the only *enforced* numeric threshold in either source repo is py's 80% (patch)"
+PASS R-M141 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:141-141 contains "S_CODECOV_TOKENLESS_SHORT"
+PASS R-M154 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:154-154 contains "the tool's own CI proves both runners"
+PASS R-M158 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:158-158 contains "`--fail-under-lines 80` in the required `coverage` CI job"
+PASS R-M158b — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:158-158 contains "Required-check status (blocking the PR) is part of this recommendation"
+PASS R-M174 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:174-174 contains "any second threshold declaration that could drift from the flag"
+PASS R-M178 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:178-178 contains "grep -r fail-under-lines"
+PASS R-M225 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:225-225 contains "research/topics/33-property-and-snapshot-testing/raw/opus-2026-09-17T012441Z-a1424f847040.md:3"
+PASS R-M199 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/muse.md:199-199 contains "assumes ci-job-structure = one .github/workflows/ci.yml"
+PASS R-O5 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:5-5 contains "**Evidence drift:**"
+PASS R-O7 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:7-7 contains "Rust 1.98.1 (48a229cea 2026-09-01)"
+PASS R-O9 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:9-9 contains "Nothing in this leg was executed against coverage tooling."
+PASS R-O23 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:23-23 contains "`actions/upload-code-coverage` (GitHub)"
+PASS R-O26 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:26-26 contains "The Rust annual survey does not ask about coverage tooling"
+PASS R-O35 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:35-35 contains "of 28 projects"
+PASS R-O51 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:51-51 contains "**6 use `cargo-llvm-cov`**"
+PASS R-O53 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:52-52 contains "**None of the 8 uses an in-repo `--fail-under` gate.**"
+PASS R-O59 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:59-59 contains "**Shared requirement.**"
+PASS R-O63 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:63-63 contains "test code is not counted (F135)"
+PASS R-O86 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:86-86 contains "Recommendation: **A as the gate**"
+PASS R-O92 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:92-92 contains "Linux x86_64 default: ptrace breakpoints"
+PASS R-O94 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:94-94 contains "`--fail-under <PERCENTAGE>` (line only"
+PASS R-O95 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:95-95 contains "| Branch metric on stable |"
+PASS R-O96 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:96-96 contains "| Doc tests on stable |"
+PASS R-O99a — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:99-99 contains "| Accuracy notes | precise line/region data (README:11)"
+PASS R-O99b — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:99-99 contains "ptrace: "may still contain minor inaccuracies", signals interfere"
+PASS R-O106 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:106-106 contains "One file holds the values (AC4)"
+PASS R-O110 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:110-110 contains "**This is expected behavior, not verified in this leg**"
+PASS R-O112 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:112-112 contains "`--fail-under-lines 95`, `--fail-under-functions 95`, `--fail-under-regions 90`"
+PASS R-O115 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:112-116 contains "`branches 90` → **regions 90**"
+PASS R-O119 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:119-119 contains "this item only guarantees the job fails"
+PASS R-O121 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:121-121 contains "**F138 — report formats.**"
+PASS R-O123 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:123-123 contains "On stable, doc tests are **not** covered"
+PASS R-O135 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:135-140 contains "    cargo llvm-cov report --html"
+PASS R-O140 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:135-140 contains "    cargo llvm-cov report --show-missing-lines {{coverage_fail_under}}"
+PASS R-O143 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:143-143 contains "`--all-features` turns on the one feature the template declares"
+PASS R-O167 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:167-167 contains "failed to find llvm-tools-preview, please install llvm-tools-preview, or set LLVM_COV and LLVM_PROFDATA environment variables"
+PASS R-O169 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:169-169 contains "deliberately does **not** add `llvm-tools-preview`"
+PASS R-O213 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:213-213 contains "Gate 2 is **undeclared**"
+PASS R-O219 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:219-219 contains "**macOS is tested, but on nightly only**"
+PASS R-O225 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:225-229 contains "`at-risk`"
+PASS R-O234 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:234-234 contains "`actions/upload-code-coverage`"
+PASS R-O276 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:276-276 contains "`.gitignore`: nothing new"
+PASS R-O305 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:305-305 contains "#### llvm-tools-preview"
+PASS R-O388 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:388-388 contains "**Shared adopters:**"
+PASS R-O397 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:397-397 contains "assumes ci-job-structure = R11's registered value"
+PASS R-O398 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:398-398 contains "assumes package-manager-invocation ="
+PASS R-O399 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/raw/opus.md:399-399 contains "assumes web-extra-surface ="
+PASS R-P4 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/inputs/prompt.md:4-4 contains "the coverage-tool dev-dependency"
+PASS R-P8 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/inputs/prompt.md:8-8 contains "Ledger rows: F134, F135, F136, F137, F138"
+PASS R-P9a — research/runs/R35/2026-09-26T190217Z-be98e8907e97/inputs/prompt.md:9-9 contains "`.codecov.yml:14` (`target: auto`, project)"
+PASS R-P9b — research/runs/R35/2026-09-26T190217Z-be98e8907e97/inputs/prompt.md:9-9 contains "`.codecov.yml:18` (`target: 80%`, patch)"
+PASS R-P9c — research/runs/R35/2026-09-26T190217Z-be98e8907e97/inputs/prompt.md:9-9 contains "`vitest.config.ts:20` (in-repo `thresholds`: 95/95/90/95"
+PASS R-P9d — research/runs/R35/2026-09-26T190217Z-be98e8907e97/inputs/prompt.md:9-9 contains "`.github/workflows/ci.yml:95` (`run: just test`, no `--coverage`"
+PASS R-P9e — research/runs/R35/2026-09-26T190217Z-be98e8907e97/inputs/prompt.md:9-9 contains "`vitest.config.ts:19` (`exclude` two thin I/O-adapter files)"
+PASS R-P11 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/inputs/prompt.md:11-11 contains "thresholds lines 95 / functions 95 / branches 90 / statements 95 enforced in CI"
+PASS R-P31 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/inputs/prompt.md:31-31 contains "instrumentation mechanisms (LLVM source-based coverage vs. ptrace-based), accuracy, and CI-runtime-cost"
+PASS R-P20 — inputs/prompt.md:20 is the empty owns line
+PASS R-P21 — inputs/prompt.md:21 consumes only R11's ci-job-structure
+PASS R-PA12 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/inputs/PARAMETERS.md:12-12 contains "| ci-job-structure | researched | R11 |"
+PASS R-PA12b — research/runs/R35/2026-09-26T190217Z-be98e8907e97/inputs/PARAMETERS.md:12-12 contains "needing its own toolchain, its own runner or a target/ it must not share"
+PASS R-PA14 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/inputs/PARAMETERS.md:14-14 contains "rustup component list --installed for a tool rustup installs, never command -v for a rustup component"
+PASS R-PA17b — research/runs/R35/2026-09-26T190217Z-be98e8907e97/inputs/PARAMETERS.md:17-17 contains "otel = ["web", ...] for R78 and metrics = ["web", ...] for R79"
+PASS R-PA17 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/inputs/PARAMETERS.md:17-17 contains "consumers select the surface with --features web or --all-features"
+PASS P1 — R11 DECISION.md sha256 equals prerequisites.json (410e88e5195a08def126037e9c451988633b1e48437ac82edca0a08c7a62418c)
+PASS R-11-82 — research/topics/11-ci-workflow-job-structure/DECISION.md:82-82 contains "owner ruling 2026-09-12 (Q7.B): licence compatibility is not evaluated for any dependency or tool"
+PASS R-11-86 — research/topics/11-ci-workflow-job-structure/DECISION.md:86-86 contains "**proposal validated in the implementation phase** (owner ruling, 2026-09-10)"
+PASS R-11-278 — research/topics/11-ci-workflow-job-structure/DECISION.md:278-278 contains "counted against a ceiling of roughly six cache-bearing job ids per runner"
+PASS R-11-283 — research/topics/11-ci-workflow-job-structure/DECISION.md:283-283 contains "a failed `plan` must fail a required check"
+PASS R-11-290 — research/topics/11-ci-workflow-job-structure/DECISION.md:290-290 contains "one more cache-bearing id on `ubuntu-latest`"
+PASS R-11-291 — research/topics/11-ci-workflow-job-structure/DECISION.md:291-291 contains "| R35 coverage-tooling | the `coverage` slot |"
+PASS R-11-407 — research/topics/11-ci-workflow-job-structure/DECISION.md:407-407 contains "against this design's 3 and 4"
+PASS R-S-ci57 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/sources/cargo-llvm-cov-ci.yml:57-57 contains "- rust: '1.87'"
+PASS R-S-ci62 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/sources/cargo-llvm-cov-ci.yml:61-62 contains "os: macos-latest"
+PASS R-S-ci73 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/sources/cargo-llvm-cov-ci.yml:73-73 contains "runs-on: ${{ matrix.os || 'ubuntu-24.04' }}"
+PASS R-S-ci90 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/sources/cargo-llvm-cov-ci.yml:90-90 contains "name: Test cargo llvm-cov nextest"
+PASS R-S-ci94 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/sources/cargo-llvm-cov-ci.yml:90-99 contains "cargo llvm-cov nextest --text --fail-under-lines 50"
+PASS R-T14 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/cargo-tarpaulin-0.37.4-README.md:14-14 contains "may still contain  minor inaccuracies"
+PASS R-T19 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/cargo-tarpaulin-0.37.4-README.md:19-21 contains "default tracing backend is still Ptrace"
+PASS R-T21 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/cargo-tarpaulin-0.37.4-README.md:19-21 contains "For Mac and Windows, this is the default collection"
+PASS R-T73 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/cargo-tarpaulin-0.37.4-README.md:73-73 contains "This is now the default behaviour"
+PASS R-T113 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/cargo-tarpaulin-0.37.4-README.md:113-119 contains "### Note on tests using signals"
+PASS R-T115 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/cargo-tarpaulin-0.37.4-README.md:115-116 contains "may not work with"
+PASS R-T118 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/cargo-tarpaulin-0.37.4-README.md:113-119 contains "`--forward` option results in forwarding the signals"
+PASS R-T123 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/cargo-tarpaulin-0.37.4-README.md:123-123 contains "Despite generally being far more accurate"
+PASS R-S-rd14 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/cargo-llvm-cov-0.9.1-README.md:14-14 contains "requires nightly"
+PASS R-S-rd618 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/cargo-llvm-cov-0.9.1-README.md:618-618 contains "`aarch64-pc-windows-msvc`"
+PASS R-S-rd917 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/cargo-llvm-cov-0.9.1-README.md:917-917 contains "Support for doc tests is unstable"
+PASS R-S-cc49 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/sources/codecov-action-README.md:49-49 contains "Tokenless uploading is unsupported. However, PRs made from forks to the upstream public repos will support tokenless"
+PASS R-S-rb125 — research/runs/R35/2026-09-26T190217Z-be98e8907e97/review/evidence/snapshots/sources/rustc-book-instrument-coverage.md:125-125 contains "This component is the recommended path"
+PASS X0-muse — the Engines table records raw/muse.md's sha256 (583d7df2fbae57b9036f5f4c3792280c36c78569dd35d1119eb9b943a56c1638)
+PASS X0-opus — the Engines table records raw/opus.md's sha256 (6884140168ad55b6eea9125513b951edf177702b17c3e7e08686add0d09cc1fd)
+PASS X1 — check-answer-shape.sh raw/muse.md bundle prints OK
+PASS X2 — check-answer-shape.sh raw/opus.md bundle prints OK
+INFO Muse placeholders: 43 distinct tokens on 26 lines
+PASS X3 — raw/muse.md carries 43 distinct S_* placeholder tokens on 26 lines
+PASS X4 — H2s are exactly Decision, Parameters, Empirical check, Engines, in order (no Supersedes)
+PASS X5 — exactly one '### Principles and implementation' inside Decision
+PASS X6 — exactly one line beginning 're-verify:' inside Decision
+INFO revision notes found: 1 2 3 4 (N=4)
+PASS X7a — the revision notes run 1..N in order with no gap (N=4)
+PASS X7 — the first line is the dated title of revision N=4
+PASS X8 — Parameters carries no owns line
+PASS X9 — the five assumes lines are byte-identical to inputs/parameters.json
+PASS X10 — no @@ template token remains in the DECISION
+PASS X11 — the DECISION's recipe lines equal the Justfile r35-coverage.sh executed
+INFO recipe lines compared: 6
+INFO check IDs cited: 83
+PASS X12 — every check ID the DECISION cites is a PASS line in a committed log
+PASS X13 — no committed evidence log carries a FAIL line
+PASS X14 — raw/muse.md makes no unix-signal claim (every 'signal' in it means evidence, e.g. 'adoption signal')
+PASS X15 — the rerun figures the DECISION quotes (13 s, 11 s, 49 s, 1685922, 296308, 1367) are in rerun-2026-09-27/ logs, which carry no FAIL line
+SUMMARY PASS=128 FAIL=0

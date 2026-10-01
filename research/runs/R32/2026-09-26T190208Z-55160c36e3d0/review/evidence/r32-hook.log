@@ -1,0 +1,116 @@
+INFO scratch copy of fixture/ at /var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T//r32-hook.J4SpTe; CARGO_TARGET_DIR=/tmp/cargo-s66-R32-target/r32-hook
+INFO rustc: rustc 1.98.1 (48a229cea 2026-09-01) (Homebrew); cargo-nextest 0.9.146 (8af696ddc 2026-09-21)
+INFO lefthook 2.1.14; just just 1.57.0; git git version 2.50.1 (Apple Git-155)
+INFO   [38;2;0;0;0m╭[38;2;6;6;6m─[38;2;12;12;12m─[38;2;17;17;17m─[38;2;20;20;20m─[38;2;24;24;24m─[38;2;27;27;27m─[38;2;31;31;31m─[38;2;34;34;34m─[38;2;38;38;38m─[38;2;41;41;41m─[38;2;45;45;45m─[38;2;48;48;48m─[38;2;52;52;52m─[38;2;56;56;56m─[38;2;56;56;56m─[38;2;52;52;52m─[38;2;48;48;48m─[38;2;45;45;45m─[38;2;41;41;41m─[38;2;38;38;38m─[38;2;34;34;34m─[38;2;31;31;31m─[38;2;27;27;27m─[38;2;24;24;24m─[38;2;20;20;20m─[38;2;17;17;17m─[38;2;12;12;12m─[38;2;6;6;6m─[38;2;0;0;0m─[38;2;0;0;0m─[38;2;6;6;6m─[38;2;12;12;12m─[38;2;17;17;17m─[38;2;20;20;20m─[38;2;24;24;24m─[38;2;27;27;27m─[38;2;31;31;31m─[38;2;34;34;34m─[38;2;38;38;38m─[38;2;41;41;41m─[38;2;45;45;45m╮[m
+INFO   [38;2;0;0;0m│[m 🥊 lefthook  v2.1.14   hook:  [1mpre-push[m [38;2;56;56;56m│[m
+INFO   [38;2;6;6;6m╰[38;2;12;12;12m─[38;2;17;17;17m─[38;2;20;20;20m─[38;2;24;24;24m─[38;2;27;27;27m─[38;2;31;31;31m─[38;2;34;34;34m─[38;2;38;38;38m─[38;2;41;41;41m─[38;2;45;45;45m─[38;2;48;48;48m─[38;2;52;52;52m─[38;2;56;56;56m─[38;2;56;56;56m─[38;2;52;52;52m─[38;2;48;48;48m─[38;2;45;45;45m─[38;2;41;41;41m─[38;2;38;38;38m─[38;2;34;34;34m─[38;2;31;31;31m─[38;2;27;27;27m─[38;2;24;24;24m─[38;2;20;20;20m─[38;2;17;17;17m─[38;2;12;12;12m─[38;2;6;6;6m─[38;2;0;0;0m─[38;2;0;0;0m─[38;2;6;6;6m─[38;2;12;12;12m─[38;2;17;17;17m─[38;2;20;20;20m─[38;2;24;24;24m─[38;2;27;27;27m─[38;2;31;31;31m─[38;2;34;34;34m─[38;2;38;38;38m─[38;2;41;41;41m─[38;2;45;45;45m─[38;2;48;48;48m╯[m
+INFO   sync hooks: ✔️(pre-push)
+INFO   ┃  test ❯ 
+INFO   pre-push tests skipped (opt-in: RS_PROJECTS_PREPUSH_TESTS=1)
+INFO   
+INFO   [38;2;56;56;56m  ────────────────────────────────────[m
+INFO   summary: (done in 0.05 seconds)
+INFO   ✔️ test (0.05 seconds)
+PASS E8a — variable unset: the hook exits 0
+PASS E8b — ... prints the skip notice
+PASS E8c — ... and starts no test
+INFO   [38;2;0;0;0m╭[38;2;6;6;6m─[38;2;12;12;12m─[38;2;17;17;17m─[38;2;20;20;20m─[38;2;24;24;24m─[38;2;27;27;27m─[38;2;31;31;31m─[38;2;34;34;34m─[38;2;38;38;38m─[38;2;41;41;41m─[38;2;45;45;45m─[38;2;48;48;48m─[38;2;52;52;52m─[38;2;56;56;56m─[38;2;56;56;56m─[38;2;52;52;52m─[38;2;48;48;48m─[38;2;45;45;45m─[38;2;41;41;41m─[38;2;38;38;38m─[38;2;34;34;34m─[38;2;31;31;31m─[38;2;27;27;27m─[38;2;24;24;24m─[38;2;20;20;20m─[38;2;17;17;17m─[38;2;12;12;12m─[38;2;6;6;6m─[38;2;0;0;0m─[38;2;0;0;0m─[38;2;6;6;6m─[38;2;12;12;12m─[38;2;17;17;17m─[38;2;20;20;20m─[38;2;24;24;24m─[38;2;27;27;27m─[38;2;31;31;31m─[38;2;34;34;34m─[38;2;38;38;38m─[38;2;41;41;41m─[38;2;45;45;45m╮[m
+INFO   [38;2;0;0;0m│[m 🥊 lefthook  v2.1.14   hook:  [1mpre-push[m [38;2;56;56;56m│[m
+INFO   [38;2;6;6;6m╰[38;2;12;12;12m─[38;2;17;17;17m─[38;2;20;20;20m─[38;2;24;24;24m─[38;2;27;27;27m─[38;2;31;31;31m─[38;2;34;34;34m─[38;2;38;38;38m─[38;2;41;41;41m─[38;2;45;45;45m─[38;2;48;48;48m─[38;2;52;52;52m─[38;2;56;56;56m─[38;2;56;56;56m─[38;2;52;52;52m─[38;2;48;48;48m─[38;2;45;45;45m─[38;2;41;41;41m─[38;2;38;38;38m─[38;2;34;34;34m─[38;2;31;31;31m─[38;2;27;27;27m─[38;2;24;24;24m─[38;2;20;20;20m─[38;2;17;17;17m─[38;2;12;12;12m─[38;2;6;6;6m─[38;2;0;0;0m─[38;2;0;0;0m─[38;2;6;6;6m─[38;2;12;12;12m─[38;2;17;17;17m─[38;2;20;20;20m─[38;2;24;24;24m─[38;2;27;27;27m─[38;2;31;31;31m─[38;2;34;34;34m─[38;2;38;38;38m─[38;2;41;41;41m─[38;2;45;45;45m─[38;2;48;48;48m╯[m
+INFO   ┃  test ❯ 
+INFO   cargo nextest run --locked --features web 
+INFO      Compiling rs-launch-blueprint v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r32-hook.J4SpTe)
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.44s
+INFO   ────────────
+INFO    Nextest run ID 7081b156-dbe2-4af1-ac73-90a266f31d50 with nextest profile: default
+INFO       Starting 6 tests across 5 binaries (2 tests skipped)
+INFO           PASS [   0.012s] (1/6) rs-launch-blueprint::web health_is_ok_in_process
+INFO           PASS [   0.012s] (2/6) rs-launch-blueprint::cli in_process::projects_lists_names_in_process
+INFO           PASS [   0.012s] (3/6) rs-launch-blueprint::cli in_process::unknown_command_is_usage_error_in_process
+INFO           PASS [   0.411s] (4/6) rs-launch-blueprint::cli binary::binary_lists_projects
+INFO           PASS [   0.411s] (5/6) rs-launch-blueprint::cli binary::binary_usage_error_exits_2_with_empty_stdout
+INFO           PASS [   0.895s] (6/6) rs-launch-blueprint::web serve_binary_starts
+INFO   ────────────
+INFO        Summary [   0.895s] 6 tests run: 6 passed, 2 skipped
+INFO   cargo test --doc --locked --features web
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.02s
+INFO      Doc-tests rs_launch_blueprint
+INFO   
+INFO   running 2 tests
+INFO   test src/lib.rs - web::health (line 74) ... ok
+INFO   test src/lib.rs - run (line 36) ... ok
+INFO   
+INFO   test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+INFO   
+INFO   all doctests ran in 0.54s; merged doctests compilation took 0.23s
+INFO   
+INFO   [38;2;56;56;56m  ────────────────────────────────────[m
+INFO   summary: (done in 3.98 seconds)
+INFO   ✔️ test (3.98 seconds)
+PASS E8d — RS_PROJECTS_PREPUSH_TESTS=1: the hook exits 0 on a green tree
+PASS E8e — ... runs the feature-on nextest suite (just test): 6 run, 6 passed, 2 skipped
+PASS E8e2 — ... including the web tier's tests
+PASS E8f — ... and the doc-tests
+PASS E8f2 — ... including the doc example inside the web module
+PASS E8f3 — ... because the doc-test step receives the same --features web as the nextest step
+INFO      Compiling rs-launch-blueprint v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r32-hook.J4SpTe)
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.12s
+INFO      Doc-tests rs_launch_blueprint
+INFO   
+INFO   running 1 test
+INFO   test src/lib.rs - run (line 36) ... ok
+INFO   
+INFO   test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+INFO   
+INFO   all doctests ran in 0.48s; merged doctests compilation took 0.22s
+PASS E8f4 — control: a feature-off cargo test --doc runs the non-web doc example
+PASS E8f5 — ... and does not run the web-module example
+INFO   [38;2;0;0;0m╭[38;2;6;6;6m─[38;2;12;12;12m─[38;2;17;17;17m─[38;2;20;20;20m─[38;2;24;24;24m─[38;2;27;27;27m─[38;2;31;31;31m─[38;2;34;34;34m─[38;2;38;38;38m─[38;2;41;41;41m─[38;2;45;45;45m─[38;2;48;48;48m─[38;2;52;52;52m─[38;2;56;56;56m─[38;2;56;56;56m─[38;2;52;52;52m─[38;2;48;48;48m─[38;2;45;45;45m─[38;2;41;41;41m─[38;2;38;38;38m─[38;2;34;34;34m─[38;2;31;31;31m─[38;2;27;27;27m─[38;2;24;24;24m─[38;2;20;20;20m─[38;2;17;17;17m─[38;2;12;12;12m─[38;2;6;6;6m─[38;2;0;0;0m─[38;2;0;0;0m─[38;2;6;6;6m─[38;2;12;12;12m─[38;2;17;17;17m─[38;2;20;20;20m─[38;2;24;24;24m─[38;2;27;27;27m─[38;2;31;31;31m─[38;2;34;34;34m─[38;2;38;38;38m─[38;2;41;41;41m─[38;2;45;45;45m╮[m
+INFO   [38;2;0;0;0m│[m 🥊 lefthook  v2.1.14   hook:  [1mpre-push[m [38;2;56;56;56m│[m
+INFO   [38;2;6;6;6m╰[38;2;12;12;12m─[38;2;17;17;17m─[38;2;20;20;20m─[38;2;24;24;24m─[38;2;27;27;27m─[38;2;31;31;31m─[38;2;34;34;34m─[38;2;38;38;38m─[38;2;41;41;41m─[38;2;45;45;45m─[38;2;48;48;48m─[38;2;52;52;52m─[38;2;56;56;56m─[38;2;56;56;56m─[38;2;52;52;52m─[38;2;48;48;48m─[38;2;45;45;45m─[38;2;41;41;41m─[38;2;38;38;38m─[38;2;34;34;34m─[38;2;31;31;31m─[38;2;27;27;27m─[38;2;24;24;24m─[38;2;20;20;20m─[38;2;17;17;17m─[38;2;12;12;12m─[38;2;6;6;6m─[38;2;0;0;0m─[38;2;0;0;0m─[38;2;6;6;6m─[38;2;12;12;12m─[38;2;17;17;17m─[38;2;20;20;20m─[38;2;24;24;24m─[38;2;27;27;27m─[38;2;31;31;31m─[38;2;34;34;34m─[38;2;38;38;38m─[38;2;41;41;41m─[38;2;45;45;45m─[38;2;48;48;48m╯[m
+INFO   ┃  test ❯ 
+INFO   cargo nextest run --locked --features web 
+INFO      Compiling rs-launch-blueprint v0.0.0 (/private/var/folders/23/311glm5s6f918wv29gx_0xzm0000gn/T/r32-hook.J4SpTe)
+INFO       Finished `test` profile [unoptimized + debuginfo] target(s) in 0.13s
+INFO   ────────────
+INFO    Nextest run ID ce5fd957-ceb6-42d9-9756-02fbec23af4e with nextest profile: default
+INFO       Starting 7 tests across 6 binaries (2 tests skipped)
+INFO           PASS [   0.054s] (1/7) rs-launch-blueprint::web health_is_ok_in_process
+INFO           PASS [   0.054s] (2/7) rs-launch-blueprint::cli in_process::projects_lists_names_in_process
+INFO           PASS [   0.054s] (3/7) rs-launch-blueprint::cli in_process::unknown_command_is_usage_error_in_process
+INFO           FAIL [   0.054s] (4/7) rs-launch-blueprint::red red
+INFO     stdout ───
+INFO   
+INFO       running 1 test
+INFO       test red ... FAILED
+INFO   
+INFO       failures:
+INFO   
+INFO       failures:
+INFO           red
+INFO   
+INFO       test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+INFO   
+INFO     stderr ───
+INFO   
+INFO       thread 'red' (1042919225) panicked at tests/red.rs:3:5:
+INFO       deliberately failing
+INFO       note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+INFO   
+INFO     Cancelling due to test failure: 3 tests still running
+INFO           PASS [   0.515s] (5/7) rs-launch-blueprint::cli binary::binary_lists_projects
+INFO           PASS [   0.515s] (6/7) rs-launch-blueprint::cli binary::binary_usage_error_exits_2_with_empty_stdout
+INFO           PASS [   0.659s] (7/7) rs-launch-blueprint::web serve_binary_starts
+INFO   ────────────
+INFO        Summary [   0.660s] 7 tests run: 6 passed, 1 failed, 2 skipped
+INFO           FAIL [   0.054s] (4/7) rs-launch-blueprint::red red
+INFO   error: test run failed
+INFO   error: recipe `test` failed on line 3 with exit code 100
+INFO   
+INFO   exit status 100
+INFO   [38;2;56;56;56m  ────────────────────────────────────[m
+INFO   summary: (done in 1.44 seconds)
+INFO   🥊 test (1.44 seconds)
+PASS E8g — opted in with a failing test: the hook exits non-zero (push blocked)
+PASS E8h — not opted in with the same failing test: exit 0 (never forced)
+RESULT PASS=13 FAIL=0

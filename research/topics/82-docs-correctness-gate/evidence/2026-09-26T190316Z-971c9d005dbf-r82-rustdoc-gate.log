@@ -1,0 +1,240 @@
+# r82-rustdoc-gate — run 2026-09-27T03:05:10Z
+# host: Darwin 25.4.0 arm64
+# CARGO_HOME set: yes (private); CARGO_NET_OFFLINE=true
+# stable-homebrew: cargo 1.98.1 (797e8a9bc 2026-08-05) (Homebrew) | rustdoc 1.98.1 (48a229cea 2026-09-01) (Homebrew)
+# floor-1.96.0: cargo 1.96.0 (30a34c682 2026-05-25) | rustdoc 1.96.0 (ac68faa20 2026-05-25)
+
+## toolchain stable-homebrew
+### G0 rustdoc lint inventory (rustdoc -W help)
+G0   rustdoc:: lints: 11 (allow: 4, warn: 7)
+     | warn-by-default rustdoc::bare-urls
+     | warn-by-default rustdoc::broken-intra-doc-links
+     | warn-by-default rustdoc::invalid-codeblock-attributes
+     | warn-by-default rustdoc::invalid-html-tags
+     | warn-by-default rustdoc::invalid-rust-codeblocks
+     | warn-by-default rustdoc::private-intra-doc-links
+     | warn-by-default rustdoc::redundant-explicit-links
+### G1 baseline and the -D warnings gate (both legs agree)
+G1a  stable-homebrew  layout=A mut=none               RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=0
+G1b  stable-homebrew  layout=A mut=m_core_broken      RUSTDOCFLAGS=-            cargo doc --locked --workspace --no-deps --all-features
+     exit=0
+     | warning: `rslb-core` (lib doc) generated 1 warning
+     | warning: unresolved link to `Nope`
+G1c  stable-homebrew  layout=A mut=m_core_broken      RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=101
+     |   = note: `-D rustdoc::broken-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb-core`
+     | error: unresolved link to `Nope`
+     | warning: build failed, waiting for other jobs to finish...
+### G2 --workspace (the Muse command omits it; broken link in member crates/core)
+G2a  stable-homebrew  layout=A mut=m_core_broken      RUSTDOCFLAGS=-D\ warnings cargo doc --no-deps --all-features
+     exit=0
+G2b  stable-homebrew  layout=A mut=m_core_broken      RUSTDOCFLAGS=-D\ warnings cargo doc --locked --no-deps --all-features
+     exit=0
+G2c  stable-homebrew  layout=B mut=m_core_broken_b    RUSTDOCFLAGS=-D\ warnings cargo doc --locked --no-deps --all-features
+     exit=0
+G2d  stable-homebrew  layout=B mut=m_core_broken_b    RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=101
+     |   = note: `-D rustdoc::broken-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb-core`
+     | error: unresolved link to `Nope`
+     | warning: build failed, waiting for other jobs to finish...
+### G3 feature-gated in-crate module (layout A, R69 revision 9)
+G3a  stable-homebrew  layout=A mut=m_web_broken       RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps
+     exit=0
+G3b  stable-homebrew  layout=A mut=m_web_broken       RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --features web
+     exit=101
+     |   = note: `-D rustdoc::broken-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb`
+     | error: unresolved link to `crate::Missing`
+G3c  stable-homebrew  layout=A mut=m_web_broken       RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=101
+     |   = note: `-D rustdoc::broken-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb`
+     | error: unresolved link to `crate::Missing`
+### G4 facade link into the web re-export (layout B)
+G4a  stable-homebrew  layout=B mut=m_facade_webref    RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps
+     exit=101
+     |    = note: `-D rustdoc::broken-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb`
+     | error: unresolved link to `web::serve`
+G4b  stable-homebrew  layout=B mut=m_facade_webref    RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --features web
+     exit=0
+G4c  stable-homebrew  layout=B mut=m_facade_webref    RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=0
+### G5 nested feature (otel = ["web"], stands in for R78): --features web vs --all-features
+G5a  stable-homebrew  layout=B mut=m_otel_broken      RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --features web
+     exit=0
+G5b  stable-homebrew  layout=B mut=m_otel_broken      RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=101
+     |    = note: `-D rustdoc::broken-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb`
+     | error: unresolved link to `crate::NoExporter`
+### G6 private items
+G6a  stable-homebrew  layout=A mut=m_private_broken   RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=0
+G6b  stable-homebrew  layout=A mut=m_private_broken   RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features --document-private-items
+     exit=101
+     |    = note: `-D rustdoc::broken-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb-core`
+     | error: unresolved link to `AlsoNope`
+     | warning: build failed, waiting for other jobs to finish...
+G6c  stable-homebrew  layout=A mut=m_pub_to_private   RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=101
+     |    = note: `-D rustdoc::private-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb-core`
+     | error: public documentation for `exposed` links to private item `hidden`
+     | warning: `rslb-core` (lib) generated 1 warning
+     | warning: build failed, waiting for other jobs to finish...
+     | warning: function `hidden` is never used
+G6d  stable-homebrew  layout=A mut=m_pub_to_private   RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features --document-private-items
+     exit=101
+     |    = note: `-D rustdoc::private-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb-core`
+     | error: public documentation for `exposed` links to private item `hidden`
+     | warning: `rslb-core` (lib) generated 1 warning
+     | warning: build failed, waiting for other jobs to finish...
+     | warning: function `hidden` is never used
+### G7 does -D warnings on the doc build deny rustc lints (Muse claim)? unused import
+G7a  stable-homebrew  layout=A mut=m_unused_import    RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=0
+     | warning: `rslb-core` (lib) generated 1 warning (run `cargo fix --lib -p rslb-core` to apply 1 suggestion)
+     | warning: unused import: `std::collections::HashMap`
+G7b  stable-homebrew  layout=A mut=m_unused_import    RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features --document-private-items
+     exit=0
+     | warning: `rslb-core` (lib) generated 1 warning (run `cargo fix --lib -p rslb-core` to apply 1 suggestion)
+     | warning: unused import: `std::collections::HashMap`
+### G8 bare URL (warn-by-default rustdoc lint)
+G8a  stable-homebrew  layout=A mut=m_bare_url         RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=101
+     |    = note: `-D rustdoc::bare-urls` implied by `-D warnings`
+     | error: could not document `rslb-core`
+     | error: this URL is not a hyperlink
+     | warning: build failed, waiting for other jobs to finish...
+### G9 RUSTDOCFLAGS reaches the doctest step (job-level env would leak into it)
+G9a  stable-homebrew  layout=A mut=m_bare_url         RUSTDOCFLAGS=-            cargo test --locked --doc -p rslb-core
+     exit=0
+G9b  stable-homebrew  layout=A mut=m_bare_url         RUSTDOCFLAGS=-D\ warnings cargo test --locked --doc -p rslb-core
+     exit=0
+G9c  stable-homebrew rustdoc --test argv lines carrying -D warnings: 1
+### G10 --features web vs --all-features share one doc unit when they resolve to the same feature set (layout A)
+G10  stable-homebrew second run (--all-features after --features web): Fresh=2 Documenting=0
+
+## toolchain floor-1.96.0
+### G0 rustdoc lint inventory (rustdoc -W help)
+G0   rustdoc:: lints: 11 (allow: 4, warn: 7)
+     | warn-by-default rustdoc::bare-urls
+     | warn-by-default rustdoc::broken-intra-doc-links
+     | warn-by-default rustdoc::invalid-codeblock-attributes
+     | warn-by-default rustdoc::invalid-html-tags
+     | warn-by-default rustdoc::invalid-rust-codeblocks
+     | warn-by-default rustdoc::private-intra-doc-links
+     | warn-by-default rustdoc::redundant-explicit-links
+### G1 baseline and the -D warnings gate (both legs agree)
+G1a  floor-1.96.0     layout=A mut=none               RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=0
+G1b  floor-1.96.0     layout=A mut=m_core_broken      RUSTDOCFLAGS=-            cargo doc --locked --workspace --no-deps --all-features
+     exit=0
+     | warning: `rslb-core` (lib doc) generated 1 warning
+     | warning: unresolved link to `Nope`
+G1c  floor-1.96.0     layout=A mut=m_core_broken      RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=101
+     |   = note: `-D rustdoc::broken-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb-core`
+     | error: unresolved link to `Nope`
+     | warning: build failed, waiting for other jobs to finish...
+### G2 --workspace (the Muse command omits it; broken link in member crates/core)
+G2a  floor-1.96.0     layout=A mut=m_core_broken      RUSTDOCFLAGS=-D\ warnings cargo doc --no-deps --all-features
+     exit=0
+G2b  floor-1.96.0     layout=A mut=m_core_broken      RUSTDOCFLAGS=-D\ warnings cargo doc --locked --no-deps --all-features
+     exit=0
+G2c  floor-1.96.0     layout=B mut=m_core_broken_b    RUSTDOCFLAGS=-D\ warnings cargo doc --locked --no-deps --all-features
+     exit=0
+G2d  floor-1.96.0     layout=B mut=m_core_broken_b    RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=101
+     |   = note: `-D rustdoc::broken-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb-core`
+     | error: unresolved link to `Nope`
+     | warning: build failed, waiting for other jobs to finish...
+### G3 feature-gated in-crate module (layout A, R69 revision 9)
+G3a  floor-1.96.0     layout=A mut=m_web_broken       RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps
+     exit=0
+G3b  floor-1.96.0     layout=A mut=m_web_broken       RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --features web
+     exit=101
+     |   = note: `-D rustdoc::broken-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb`
+     | error: unresolved link to `crate::Missing`
+G3c  floor-1.96.0     layout=A mut=m_web_broken       RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=101
+     |   = note: `-D rustdoc::broken-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb`
+     | error: unresolved link to `crate::Missing`
+### G4 facade link into the web re-export (layout B)
+G4a  floor-1.96.0     layout=B mut=m_facade_webref    RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps
+     exit=101
+     |    = note: `-D rustdoc::broken-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb`
+     | error: unresolved link to `web::serve`
+G4b  floor-1.96.0     layout=B mut=m_facade_webref    RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --features web
+     exit=0
+G4c  floor-1.96.0     layout=B mut=m_facade_webref    RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=0
+### G5 nested feature (otel = ["web"], stands in for R78): --features web vs --all-features
+G5a  floor-1.96.0     layout=B mut=m_otel_broken      RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --features web
+     exit=0
+G5b  floor-1.96.0     layout=B mut=m_otel_broken      RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=101
+     |    = note: `-D rustdoc::broken-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb`
+     | error: unresolved link to `crate::NoExporter`
+### G6 private items
+G6a  floor-1.96.0     layout=A mut=m_private_broken   RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=0
+G6b  floor-1.96.0     layout=A mut=m_private_broken   RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features --document-private-items
+     exit=101
+     |    = note: `-D rustdoc::broken-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb-core`
+     | error: unresolved link to `AlsoNope`
+     | warning: build failed, waiting for other jobs to finish...
+G6c  floor-1.96.0     layout=A mut=m_pub_to_private   RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=101
+     |    = note: `-D rustdoc::private-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb-core`
+     | error: public documentation for `exposed` links to private item `hidden`
+     | warning: `rslb-core` (lib) generated 1 warning
+     | warning: build failed, waiting for other jobs to finish...
+     | warning: function `hidden` is never used
+G6d  floor-1.96.0     layout=A mut=m_pub_to_private   RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features --document-private-items
+     exit=101
+     |    = note: `-D rustdoc::private-intra-doc-links` implied by `-D warnings`
+     | error: could not document `rslb-core`
+     | error: public documentation for `exposed` links to private item `hidden`
+     | warning: `rslb-core` (lib) generated 1 warning
+     | warning: build failed, waiting for other jobs to finish...
+     | warning: function `hidden` is never used
+### G7 does -D warnings on the doc build deny rustc lints (Muse claim)? unused import
+G7a  floor-1.96.0     layout=A mut=m_unused_import    RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=0
+     | warning: `rslb-core` (lib) generated 1 warning (run `cargo fix --lib -p rslb-core` to apply 1 suggestion)
+     | warning: unused import: `std::collections::HashMap`
+G7b  floor-1.96.0     layout=A mut=m_unused_import    RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features --document-private-items
+     exit=0
+     | warning: `rslb-core` (lib) generated 1 warning (run `cargo fix --lib -p rslb-core` to apply 1 suggestion)
+     | warning: unused import: `std::collections::HashMap`
+### G8 bare URL (warn-by-default rustdoc lint)
+G8a  floor-1.96.0     layout=A mut=m_bare_url         RUSTDOCFLAGS=-D\ warnings cargo doc --locked --workspace --no-deps --all-features
+     exit=101
+     |    = note: `-D rustdoc::bare-urls` implied by `-D warnings`
+     | error: could not document `rslb-core`
+     | error: this URL is not a hyperlink
+     | warning: build failed, waiting for other jobs to finish...
+### G9 RUSTDOCFLAGS reaches the doctest step (job-level env would leak into it)
+G9a  floor-1.96.0     layout=A mut=m_bare_url         RUSTDOCFLAGS=-            cargo test --locked --doc -p rslb-core
+     exit=0
+G9b  floor-1.96.0     layout=A mut=m_bare_url         RUSTDOCFLAGS=-D\ warnings cargo test --locked --doc -p rslb-core
+     exit=0
+G9c  floor-1.96.0 rustdoc --test argv lines carrying -D warnings: 1
+### G10 --features web vs --all-features share one doc unit when they resolve to the same feature set (layout A)
+G10  floor-1.96.0 second run (--all-features after --features web): Fresh=2 Documenting=0
+

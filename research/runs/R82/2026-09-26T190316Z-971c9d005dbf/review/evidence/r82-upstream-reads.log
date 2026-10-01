@@ -1,0 +1,226 @@
+# r82-upstream-reads — run 2026-09-27T03:09:04Z
+# gh gh version 2.101.0 (2026-09-15)
+
+## U1 lycheeverse/lychee-action tag v2.9.0 -> commit
+ref=refs/tags/v2.9.0 object.type=commit object.sha=e7477775783ea5526144ba13e8db5eec57747ce8
+## U1b releases (newest 3)
+v2.9.0 published=2026-07-09T15:31:00Z prerelease=false
+v2.8.0 published=2026-02-25T07:55:40Z prerelease=false
+v2.7.0 published=2025-10-29T15:47:52Z prerelease=false
+
+## U2 lychee-action action.yml at v2.9.0
+sha256=4ec6e0eb3dcbd3d0cd91aa1ffa5ee1dc37d34071e7f9e06e3092ea713a5cd592 lines=133
+4:  args:
+6-    default: "--verbose --no-progress './**/*.md' './**/*.html' './**/*.rst'"
+12:  fail:
+14-    default: true
+16:  failIfEmpty:
+18-    default: true
+24:  jobSummary:
+26-    default: true
+28:  lycheeVersion:
+30-    default: v0.24.2
+40:  token:
+41-    description: "Your GitHub Access Token, defaults to: {{ github.token }}"
+42-    default: ${{ github.token }}
+installer lines (curl/tar/sha256/checksum):
+89:        curl -sfLO "${DOWNLOAD_URL}"
+92:        tar -xvzf "${FILENAME}"
+
+## U3 lychee-bin/src/client.rs at tag lychee-v0.24.2 (offline scheme restriction)
+sha256=c54b67ac25865433c447999a7d2682cd2f8ece2471b9aaf9f0b533b1a1225c7d
+21-
+22-    // Offline mode overrides the scheme
+23:    let schemes = if cfg.offline() {
+24-        vec!["file".to_string()]
+25-    } else {
+26-        cfg.scheme.clone()
+27-    };
+
+## U4 lychee-lib/src/filter/mod.rs at tag lychee-v0.24.2 (scheme filter -> Excluded)
+sha256=8488f3f1d98cad764967e298e4a6caf697cd0afe88e8150a575f35e55e0034ac
+127:    /// Only check URIs with the given schemes (e.g. `https` and `http`)
+128:    // TODO: includes_scheme and excludes_scheme
+129:    // TODO: excludes_mail should be an alias for exclude_scheme=mailto
+130:    pub schemes: HashSet<String>,
+172:    /// Whether the scheme of the given URI is excluded
+173:    pub fn is_scheme_excluded(&self, uri: &Uri) -> bool {
+174:        if self.schemes.is_empty() {
+177:        !self.schemes.contains(uri.scheme())
+208:    ///   - If the scheme of URI is not the allowed scheme.
+221:        // Skip mail address, specific IP, specific host and scheme
+222:        if self.is_scheme_excluded(uri)
+
+## U5 lychee-bin/Cargo.toml at tag lychee-v0.24.2
+7:edition = "2024"
+9:license = "Apache-2.0 OR MIT"
+13:rust-version = "1.88.0"
+
+## U6 lychee README at tag lychee-v0.24.2: flags the recommendation uses
+sha256=51aaf3283aafbfa56cea37811b60455dbba08e8f949e0a91b13a1a97b9e63d09 lines=907
+--offline[               650:      --offline[=<false|true>]
+--include-fragments[     566:      --include-fragments[=<none|anchor-only|text-only|full>]
+--root-dir <             694:      --root-dir <ROOT_DIR>
+--max-retries <          623:      --max-retries <MAX_RETRIES>
+--retry-wait-time <      683:  -r, --retry-wait-time <RETRY_WAIT_TIME>
+--timeout <              719:  -t, --timeout <TIMEOUT>
+--accept <               331:  -a, --accept <ACCEPT>
+--cache[                 394:      --cache[=<false|true>]
+--max-cache-age <        613:      --max-cache-age <MAX_CACHE_AGE>
+--cache-exclude-status < 397:      --cache-exclude-status <CACHE_EXCLUDE_STATUS>
+--config <               386:  -c, --config <FILE_PATH>
+--exclude-path <         450:      --exclude-path <EXCLUDE_PATH>
+--no-progress[           640:  -n, --no-progress[=<false|true>]
+exit-code section:
+746:### Exit codes
+747-
+748-0   Success. The operation was completed successfully as instructed.
+749-
+750-1   Missing inputs or any unexpected runtime failures or configuration errors
+751-
+752-2   Link check failures. At least one non-excluded link failed the check.
+753-
+754-3   Encountered errors in the config file.
+755-
+756-### Ignoring and excluding links
+757-
+758-You can exclude links from getting checked by specifying regex patterns
+default config file name / lychee.toml mentions:
+392:          [default: lychee.toml]
+
+README: gitignore handling, default extensions, fragments, private-address exclusion
+434:  -E, --exclude-all-private[=<false|true>]
+456:      --extensions <EXTENSIONS>
+644:      --no-ignore[=<false|true>]
+645:          Do not skip files that would otherwise be ignored by '.gitignore', '.ignore', or the global ignore file
+      --include-fragments[=<none|anchor-only|text-only|full>]
+          Enable the checking of fragments in links.
+
+          Use `none` to disable fragment checks, `anchor-only` for anchor fragments
+          like `#section`, `text-only` for text fragments like `#:~:text=example`,
+          or `full` to check both.
+
+          If provided without a value, defaults to `anchor-only`.
+
+      --include-mail[=<false|true>]
+          Also check email addresses
+
+      --include-verbatim[=<false|true>]
+
+## U6b lychee-action README at v2.9.0: --root-dir form and cache example
+81:    args: --root-dir "$(pwd)" --verbose --no-progress './**/*.md' './**/*.html' './**/*.rst'
+108:    path: .lycheecache
+110:    restore-keys: cache-lychee-
+115:    args: "--root-dir "$(pwd)" --cache --max-cache-age 1d ."
+129:    path: .lycheecache
+131:    restore-keys: cache-lychee-
+136:    args: "--root-dir "$(pwd)" --cache --max-cache-age 1d ."
+142:    path: .lycheecache
+
+## U10 practice examples each leg relies on (default branch at retrieval; blob sha recorded)
+-- lycheeverse/lychee .github/workflows/links.yml (blob fc66f13ad689d7ebfa942acfd437f7bd2df58db2)
+3:on:
+4:  repository_dispatch:
+5:  workflow_dispatch:
+6:  schedule:
+7:    - cron: "00 18 * * *"
+-- lycheeverse/lychee .github/workflows/ci.yml (blob b166fa3a74f656a574bef37de0d4a0c07f69f66a)
+19:  RUSTDOCFLAGS: -D warnings
+68:        run: cargo doc --workspace --no-deps
+70:          RUSTDOCFLAGS: -D warnings
+-- ZcashFoundation/zebra .github/workflows/advisory.yml (blob 111ff181d0116ffccf06751d81cce5c2d08c7b23)
+4:  schedule:
+5:    - cron: "0 8 * * 1"
+6:  workflow_dispatch:
+34:          path: .lycheecache
+35:          key: cache-lychee-${{ github.sha }}
+36:          restore-keys: cache-lychee-
+38:        uses: lycheeverse/lychee-action@8646ba30535128ac92d33dfc9133794bfdd9b411 #v2.8.0
+44:            --config .lychee.toml
+-- BurntSushi/ripgrep .github/workflows/ci.yml (blob 4b88a75b9b9db4c8453087062bbe760654236c08)
+245:          RUSTDOCFLAGS: -D warnings
+246:        run: cargo doc --no-deps --document-private-items --workspace
+-- tokio-rs/axum .github/workflows/CI.yml (blob eb64995749fe1d5fee40447421d98a44672d046c)
+42:      - name: cargo doc -p axum-core
+43:        run: cargo doc --package axum-core --all-features --no-deps
+44:      - name: cargo doc -p axum
+45:        run: cargo doc --package axum --all-features --no-deps
+46:      - name: cargo doc -p axum-extra
+47:        run: cargo doc --package axum-extra --all-features --no-deps
+49:      RUSTDOCFLAGS: "-D rustdoc::all -A rustdoc::private-doc-tests"
+
+## U7 crates.io: lychee newest non-yanked version
+num=0.24.2 created_at=2026-05-01T15:41:34.001507Z rust_version=1.88.0 license=Apache-2.0 OR MIT
+
+## U8 issue responsiveness, 10 most recently opened issues (PRs excluded), two counting methods
+#   method M (maintainer): first comment whose author_association is OWNER, MEMBER or COLLABORATOR (the prompt's 'first maintainer response')
+#   method N (any non-opener): first comment by anyone other than the issue's author
+lycheeverse/lychee: M answered=7/10 median_days=0.09 | N answered=7/10 median_days=0.09
+   #2309 opened 2026-09-22  M=0.09  N=0.09
+   #2308 opened 2026-09-22  M=0.85  N=0.85
+   #2305 opened 2026-09-21  M=1.64  N=1.64
+   #2303 opened 2026-09-18  M=None  N=None
+   #2302 opened 2026-09-16  M=None  N=None
+   #2297 opened 2026-09-07  M=8.28  N=8.28
+   #2292 opened 2026-09-02  M=0.01  N=0.01
+   #2287 opened 2026-08-19  M=0.05  N=0.05
+   #2278 opened 2026-08-10  M=0.05  N=0.05
+   #2275 opened 2026-08-07  M=None  N=None
+becheran/mlc: M answered=2/10 median_days=4.67 | N answered=2/10 median_days=4.67
+   #158 opened 2026-03-24  M=None  N=None
+   #108 opened 2025-11-03  M=None  N=None
+   #107 opened 2025-09-21  M=None  N=None
+   #106 opened 2025-09-01  M=None  N=None
+   #105 opened 2025-06-15  M=None  N=None
+   #104 opened 2025-06-03  M=None  N=None
+   #103 opened 2025-05-23  M=6.39  N=6.39
+   #101 opened 2025-05-08  M=None  N=None
+   #100 opened 2025-02-05  M=2.95  N=2.95
+   #99 opened 2025-02-04  M=None  N=None
+deadlinks/cargo-deadlinks: M answered=0/10 median_days=None | N answered=4/10 median_days=2.42
+   #165 opened 2025-12-18  M=None  N=None
+   #164 opened 2025-12-05  M=None  N=None
+   #163 opened 2025-06-16  M=None  N=None
+   #162 opened 2025-05-30  M=None  N=None
+   #161 opened 2023-01-09  M=None  N=None
+   #159 opened 2022-11-04  M=None  N=22.23
+   #158 opened 2022-09-27  M=None  N=4.69
+   #157 opened 2021-11-05  M=None  N=None
+   #152 opened 2021-10-12  M=None  N=0.14
+   #148 opened 2021-08-30  M=None  N=0.02
+untitaker/hyperlink: M answered=8/10 median_days=0.15 | N answered=7/10 median_days=0.29
+   #203 opened 2026-07-01  M=0.5  N=0.5
+   #200 opened 2026-06-21  M=0.0  N=0.0
+   #199 opened 2026-06-12  M=0.0  N=0.0
+   #198 opened 2026-06-11  M=0.29  N=0.29
+   #197 opened 2026-06-06  M=0.0  N=None
+   #196 opened 2026-06-04  M=0.01  N=0.01
+   #194 opened 2026-02-13  M=15.63  N=15.63
+   #193 opened 2026-02-13  M=15.63  N=15.63
+   #192 opened 2026-02-13  M=None  N=None
+   #191 opened 2025-12-18  M=None  N=None
+Michael-F-Bryan/mdbook-linkcheck: M answered=0/10 median_days=None | N answered=4/10 median_days=58.51
+   #99 opened 2026-09-02  M=None  N=None
+   #97 opened 2025-11-24  M=None  N=None
+   #96 opened 2025-11-24  M=None  N=9.91
+   #95 opened 2025-11-18  M=None  N=None
+   #94 opened 2025-10-20  M=None  N=35.17
+   #93 opened 2025-03-21  M=None  N=81.84
+   #92 opened 2025-03-07  M=None  N=90.28
+   #91 opened 2025-01-06  M=None  N=None
+   #90 opened 2024-11-13  M=None  N=None
+   #89 opened 2024-10-19  M=None  N=None
+
+## U8b mdbook-linkcheck issues the Opus leg cites as the at-risk signal
+#92 state=open opened=2025-03-07T03:53:44Z title=RenderContext parsing error: unknown variant `2024`
+#96 state=open opened=2025-11-24T17:42:11Z title=fails on mdbook 0.5
+repo archived=false pushed_at=2024-08-15T13:00:47Z
+
+## U9 rustsec.org package pages (404 = no advisory recorded; time.html is the positive control)
+lychee             HTTP 404
+lychee-lib         HTTP 404
+mlc                HTTP 404
+cargo-deadlinks    HTTP 404
+mdbook-linkcheck   HTTP 404
+hyperlink          HTTP 404
+time               HTTP 200
