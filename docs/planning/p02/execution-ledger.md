@@ -1504,3 +1504,6 @@ Revisit when: any touch-up reports the r11 value breaks (not renames) a claim.
   on all 6 runs (empty ops, codex-era required — migration refreshed snapshots to muse-era). S1 correction recorded: a pure
   prompt revert breaks prompt-vs-policy validation; migration is the coherent path. R32 doxa points at the openai leg (no combined report; disclosed).
 - Only R24 remains (terra leg in flight as S90). Re-pubs + flag-day still await new-run policy.
+
+## 2026-09-28 Batch-8: R24 published (85/85) — txn f7b109c8. P02 COMPLETE.
+- S90 terra leg landed 10/10/0 clean (0a0ba523f5d2; coordinator noted a BLOCKED transcript tail with the file complete at teardown — S1 verified header+10 entries+sha, accepted). S1 wired evidence_checks.terra; build+apply clean.

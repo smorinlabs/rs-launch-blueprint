@@ -27,7 +27,7 @@ One row per research item (spec §3 `Item`, §4 D4). `kind` ∈ crate | pattern 
 | R21 | contributors-bot-credential-source | pattern | different | DIVERGENT | — | [prompt](topics/21-contributors-bot-credential-source/prompts/contributors-bot-credential-source.prompt.md) | resolved |
 | R22 | runtime-version-accessor | pattern | different | DIVERGENT | — | [prompt](topics/22-runtime-version-accessor/prompts/runtime-version-accessor.prompt.md) | resolved |
 | R23 | lockfile-version-sync | pattern | different | DIVERGENT | — | [prompt](topics/23-lockfile-version-sync/prompts/lockfile-version-sync.prompt.md) | resolved |
-| R24 | changelog-section-mapping | pattern | different | DIVERGENT | — | [prompt](topics/24-changelog-section-mapping/prompts/changelog-section-mapping.prompt.md) | open |
+| R24 | changelog-section-mapping | pattern | different | DIVERGENT | — | [prompt](topics/24-changelog-section-mapping/prompts/changelog-section-mapping.prompt.md) | resolved |
 | R25 | semver-bump-strategy | pattern | ts-only | DIVERGENT | — | [prompt](topics/25-semver-bump-strategy/prompts/semver-bump-strategy.prompt.md) | resolved |
 | R26 | packed-artifact-content-guard | bundle | ts-only | DIVERGENT | — | [prompt](topics/26-packed-artifact-content-guard/prompts/packed-artifact-content-guard.prompt.md) | resolved |
 | R27 | formatter-config-surface | bundle | different | DIVERGENT | — | [prompt](topics/27-formatter-config-surface/prompts/formatter-config-surface.prompt.md) | resolved |

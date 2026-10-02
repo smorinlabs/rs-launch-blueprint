@@ -167,6 +167,15 @@
       },
       "provider": "muse",
       "state": "succeeded"
+    },
+    {
+      "at": "2026-10-02T02:58:52Z",
+      "publication": {
+        "acceptance_sha256": "99c08da40473808b4c287f8d71c57e021de3ac2b114c9cfca92394fb13441308",
+        "decision_sha256": "bdad4359d5eaeadf61f10a5f92ecb2f377c624773fd5ce7be3009edc7361fc0b",
+        "transaction": "f7b109c865f6455b8aebb4f1666c4df4"
+      },
+      "state": "published"
     }
   ],
   "input_hashes": {
@@ -208,13 +217,18 @@
     }
   },
   "prompt_source": "research/topics/24-changelog-section-mapping/prompts/changelog-section-mapping.prompt.md",
+  "publication": {
+    "acceptance_sha256": "99c08da40473808b4c287f8d71c57e021de3ac2b114c9cfca92394fb13441308",
+    "decision_sha256": "bdad4359d5eaeadf61f10a5f92ecb2f377c624773fd5ce7be3009edc7361fc0b",
+    "transaction": "f7b109c865f6455b8aebb4f1666c4df4"
+  },
   "remaining_budget": "no paid engine (Light tier)",
   "required_engines": [
     "muse"
   ],
   "run_id": "2026-09-17T020716Z-071e3bac38a0",
   "schema_version": 1,
-  "state": "partial",
+  "state": "published",
   "tier": "light",
-  "updated_at": "2026-09-21T23:06:53Z"
+  "updated_at": "2026-10-02T02:58:52Z"
 }
