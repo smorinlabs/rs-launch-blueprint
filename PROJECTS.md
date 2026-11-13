@@ -69,7 +69,7 @@ $ scripts/test-check-research-tree.sh | tail -1
 - [ ] [P02-T04] Write `audit-codex.md` and `audit-fable.md` for every item; distinct fresh auditors approve the exact decision revision with no unresolved findings, and neither auditor produced raw evidence or synthesis
 - [ ] [P02-T05] Copy every `owns <param> = <value>` into `docs/port/PARAMETERS.md` and set the row's `owner` value column
 - [x] [P02-T06] Flip every index row to `resolved`; `scripts/check-research-tree.sh --require-owner-review` exits 0
-- [ ] [P02-T07] PR, owner review, merge (merge commit), `pull --ff-only`, tag `v0.2.0`
+- [x] [P02-T07] PR, owner review, merge (merge commit), `pull --ff-only`, tag `v0.2.0` — PR #6 merged 2026-11-12 as `4deb25c8`; `v0.2.0` tagged on it
 - [ ] [P02-TS01] Every `DECISION.md` has an `## Empirical check` whose command was actually executed and whose output is pasted
 - [ ] [P02-TS02] A reviewer verifies the principle-to-design mapping and agreement level in every decision, then re-reads every OVERRIDE item's "Override justified" field; any `no` flips the ledger row back to the inherited verdict and records the reversal under `### OV-nn`
 - [ ] Regression Test Status
