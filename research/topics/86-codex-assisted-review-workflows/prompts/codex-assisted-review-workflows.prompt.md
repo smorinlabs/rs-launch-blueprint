@@ -25,7 +25,7 @@ Consumer: the implementation plan for `rs-launch-blueprint`, a Rust template sha
 - owns:
 - consumes:
 - effort: deep
-- engines: codex, opus, doxa
+- engines: muse, opus, doxa
 - evidence-checks:
 - acceptance-after:
 - related (not a registry dependency): R18 (`ai-assisted-review-workflows`) decides the Claude review and assistant pair, published at revision 5 and recorded as requiring a revision for the 2026-09-12 amendment; it owns the Claude-lane configuration and this item mirrors its shape without deciding it. R20 (`third-party-action-pinning-policy`) owns how any third-party action reference in these files is pinned; this item names the action and version it evaluated and leaves the pin format to R20. R45 (`pr-comment-bot-trigger-block`) owns whether the pull-request template documents on-demand trigger commands; this item states the trigger vocabulary, not its documentation placement.
@@ -80,7 +80,7 @@ Fitness gates, answered per candidate **before** popularity is weighed; a failed
 6. binary-size and compile-time cost stated qualitatively.
 
 Tier execution guidance (approved 2026-09-04; the mirrored research/EXECUTION.json policy is authoritative):
-- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception.
+- Light runs Codex for the raw answer and a fresh Terra evidence check; Focused runs Codex and Opus; Deep runs Codex, Opus, and Doxa. R38 is Focused with all three engines as the pilot exception. This item substitutes Muse (Meta) for Codex under the `engine_overrides` pilot; its mirrored `- engines:` line is authoritative.
 - This item's effort tier changes execution breadth only. It does not remove any prompt section, approved question, owner requirement, shared principle, acceptance criterion, or applicable fitness gate.
 - Apply every fitness gate above. If a metric is inapplicable to this item kind, state `inapplicable` and the reason in the answer; do not omit it silently. Crate candidates require the crate figures; pattern candidates use the pattern fields and explain why crate figures do not apply; bundle members require the crate figures for each crate member. A GitHub Action or hosted-service candidate that publishes no crate states `inapplicable` per crate figure with the reason, and substitutes the repository figures, the vendor's own versioning and support statement, and the licence of the action's own source tree.
 - The item-specific empirical acceptance check remains mandatory. `acceptance-after` records a post-research integration prerequisite and does not replace research evidence or acceptance.
