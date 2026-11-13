@@ -45,7 +45,7 @@ $ scripts/test-check-research-tree.sh | tail -1
 ### Manual Verification
 - Every `OVERRIDE` row in `COMMONALITY.md` reads as a genuine Rust-specific argument, not a preference
 
-## [ ] Project P02: Execute research program (v0.2.0)
+## [~] Project P02: Execute research program (v0.2.0)
 **Goal/Requirement**: Run every research item the owner accepted in Phase 3.5 under `research/RUNBOOK.md`, producing one audited `DECISION.md` per item and a filled `docs/port/PARAMETERS.md`. Each decision demonstrates the intended principle at its declared agreement level with an appropriate native design and a realistic acceptance example.
 - Gate: P01 merged and tagged `v0.1.0` (satisfied 2026-09-05); paid batches authorized in `docs/planning/p02/APPROVAL.md` (pilot USD 40; bulk Deep ceiling USD 300). Only items with disposition `accept`, `narrow` or `force` in `docs/port/OWNER-REVIEW.md` are run.
 - Engines and invocation: `research/EXECUTION.json` and `research/RUNBOOK.md` §2 define the approved 6 Light / 53 Focused / 25 Deep allocation and three-engine R38 pilot. Durable wrappers save results to files; fresh contexts synthesize and audit. Doxa batches require separate spend approval.
