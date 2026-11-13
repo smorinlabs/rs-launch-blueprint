@@ -203,9 +203,12 @@ fi
 while IFS="$US" read -r id st link; do
   [ "$st" = resolved ] || continue
   tdir="$root/research/${link%/prompts/*}"
-  for need in DECISION.md audit-codex.md audit-fable.md; do
+  for need in DECISION.md audit-fable.md; do
     [ -s "$tdir/$need" ] || err "index $id: resolved but $(rel "$tdir")/$need is missing or empty"
   done
+  # Either empirical seat file satisfies the presence guard; the strict
+  # validator enforces which seat each item's override requires.
+  { [ -s "$tdir/audit-codex.md" ] || [ -s "$tdir/audit-claude.md" ]; } || err "index $id: resolved but no empirical audit (audit-codex.md or audit-claude.md) is present and non-empty"
   if [ -s "$tdir/DECISION.md" ]; then
     for s in "## Decision" "## Parameters" "## Empirical check"; do
       grep -Fxq "$s" "$tdir/DECISION.md" || err "index $id: DECISION.md lacks '$s'"

@@ -132,7 +132,10 @@ p2="$t/research/topics/02-web-framework/prompts/web-framework.prompt.md"
 
 fresh; expect_ok "valid tree"
 fresh; expect_ok "valid tree with owner review" --require-owner-review
-fresh; printf '\n```\n## Not a section\n```\n' >> "$p2"; expect_ok "H2 inside a fence is ignored"
+fresh
+# The backticks are a literal Markdown fence.
+# shellcheck disable=SC2016
+printf '\n```\n## Not a section\n```\n' >> "$p2"; expect_ok "H2 inside a fence is ignored"
 
 # index / prompts
 fresh; mkdir -p "$t/research/topics/09-x/prompts"; prompt R09 > "$t/research/topics/09-x/prompts/x.prompt.md"; expect_fail "orphan prompt" "prompt not linked from index"
@@ -191,9 +194,26 @@ fresh; sub "$led" "| web-service | none |" "| web | none |"; expect_fail "unknow
 fresh; sub "$led" "| ID | Feature | Area | Origin | Verdict | Item | Notes |" "| Feature | Area | Origin | Verdict | Item | Notes | Extra |"; expect_fail "ledger missing ID column" "table lacks column 'ID'"
 
 # resolved items
-fresh; rm "$t/research/topics/01-async-runtime/audit-codex.md"; expect_fail "resolved without audit-codex" "audit-codex.md is missing or empty"
+fresh; rm "$t/research/topics/01-async-runtime/audit-codex.md"; expect_fail "resolved without empirical audit" "no empirical audit (audit-codex.md or audit-claude.md) is present and non-empty"
 fresh; : > "$t/research/topics/01-async-runtime/DECISION.md"; expect_fail "resolved with empty DECISION" "DECISION.md is missing or empty"
 fresh; sub "$t/research/topics/01-async-runtime/DECISION.md" "## Empirical check" "## Checked"; expect_fail "DECISION without empirical section" "lacks '## Empirical check'"
+fresh; mv "$t/research/topics/01-async-runtime/audit-codex.md" "$t/research/topics/01-async-runtime/audit-claude.md"; python3 - "$t" <<'PY'
+import hashlib, json, pathlib, sys
+d = pathlib.Path(sys.argv[1]); topic = d / 'research/topics/01-async-runtime'
+audit = topic / 'audit-claude.md'
+audit.write_text(audit.read_text().replace('family: openai', 'family: anthropic'))
+sha = hashlib.sha256(audit.read_bytes()).hexdigest()
+acc_path = topic / 'acceptance.json'; acc = json.loads(acc_path.read_text())
+for a in acc['audits']:
+    if a['kind'] == 'empirical':
+        a['path'] = str((topic / 'audit-claude.md').relative_to(d)); a['sha256'] = sha; a['identity']['family'] = 'anthropic'
+acc['empirical']['executed_by']['family'] = 'anthropic'
+acc_path.write_text(json.dumps(acc))
+pol_path = d / 'research/EXECUTION.json'; pol = json.loads(pol_path.read_text())
+pol['empirical_auditor_overrides'] = {'R01': 'claude'}
+pol_path.write_text(json.dumps(pol))
+PY
+expect_ok "resolved with claude empirical seat"
 
 # owner review
 fresh; rm "$rev"; expect_fail "owner review file missing" "missing docs/port/OWNER-REVIEW.md" --require-owner-review
