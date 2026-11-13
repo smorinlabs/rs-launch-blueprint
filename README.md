@@ -39,6 +39,9 @@ installer preserves existing hooks and custom hook configurations.
 
 Run `bash scripts/check-shell.sh` to check all tracked
 `.sh` and `.bash` files, or pass explicit paths to check selected scripts.
+Recorded evidence scripts under `research/runs/` that predate the check are
+listed with their SHA-256 in `scripts/shellcheck-evidence-baseline.txt`; each
+is skipped only while its bytes match, and new or edited evidence is checked.
 CI runs the same check alongside the research validator and its regression
 suite. The hook uses Git directly and requires no hook-manager dependency.
 Re-run the installer after hook updates; if it reports an existing different

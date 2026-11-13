@@ -18,7 +18,8 @@ set -uo pipefail
 run="${1:?usage: codex-thread-for.sh <absolute run dir> [ordinal]}"
 n="${2:-1}"
 
-for f in $(ls ~/.codex/sessions/*/*/*/rollout-*.jsonl 2>/dev/null | sort); do
+for f in ~/.codex/sessions/*/*/*/rollout-*.jsonl; do
+  [ -e "$f" ] || continue
   cwd=$(head -1 "$f" | grep -o '"cwd":"[^"]*"' | head -1 | cut -d'"' -f4)
   if [ "$cwd" = "$run" ]; then
     basename "$f" .jsonl | sed -E 's/^rollout-[0-9T-]+-//'

@@ -19,6 +19,8 @@ jobs:
           echo "$HOME/.local/bin" >> "$GITHUB_PATH"
       - name: Check shell scripts
         run: bash scripts/check-shell.sh
+      - name: Test shell check baseline
+        run: bash scripts/test-check-shell.sh
       - name: Check research structure
         run: bash scripts/check-research-tree.sh
       - name: Test research checks
