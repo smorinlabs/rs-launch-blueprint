@@ -70,7 +70,8 @@ $ scripts/test-check-research-tree.sh | tail -1
       2026-09-07: three items published (R23, R47, R04) through `research_runner.py publication apply`; all 32 prerequisite-free items have their Codex report collected; R06 awaits synthesis; R41 and R46 have revision 2 awaiting fresh audit pairs. Execution record: `docs/planning/p02/execution-ledger.md`; handoff: `docs/handoffs/2026-09-07-p02-research-execution.md`
       2026-11-13: 84 of 85 items published; R69's revision-11 flag-day update is deferred out of `v0.2.0` (owner Q2.A; `docs/planning/p02/execution-ledger.md`)
 - [ ] [P02-T03] Resolve every `CONFLICT:` line by the `RUNBOOK.md` §4 rule (registry first, owner prompt re-run, consumer re-run)
-- [ ] [P02-T04] Write `audit-codex.md` and `audit-fable.md` for every item; distinct fresh auditors approve the exact decision revision with no unresolved findings, and neither auditor produced raw evidence or synthesis
+- [x] [P02-T04] Write `audit-codex.md` and `audit-fable.md` for every item; distinct fresh auditors approve the exact decision revision with no unresolved findings, and neither auditor produced raw evidence or synthesis
+      2026-11-13: all 85 items have `audit-fable.md` and an empirical audit; 18 use `audit-claude.md` under `empirical_auditor_overrides` in `research/EXECUTION.json`; `check-research-tree.sh --require-owner-review` passes
 - [ ] [P02-T05] Copy every `owns <param> = <value>` into `docs/port/PARAMETERS.md` and set the row's `owner` value column
 - [x] [P02-T06] Flip every index row to `resolved`; `scripts/check-research-tree.sh --require-owner-review` exits 0
 - [x] [P02-T07] PR, owner review, merge (merge commit), `pull --ff-only`, tag `v0.2.0` — PR #6 merged 2026-11-12 as `4deb25c8`; `v0.2.0` tagged on it
