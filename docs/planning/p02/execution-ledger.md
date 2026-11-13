@@ -1507,3 +1507,11 @@ Revisit when: any touch-up reports the r11 value breaks (not renames) a claim.
 
 ## 2026-09-28 Batch-8: R24 published (85/85) — txn f7b109c8. P02 COMPLETE.
 - S90 terra leg landed 10/10/0 clean (0a0ba523f5d2; coordinator noted a BLOCKED transcript tail with the file complete at teardown — S1 verified header+10 entries+sha, accepted). S1 wired evidence_checks.terra; build+apply clean.
+
+## 2026-11-12 — P02-T06 gate green on committed code; R69 r11 flag-day deferred out of v0.2.0
+- Owner answered Q1.A, Q2.A, Q3.A (2026-11-12). Committed 562675cd (gate presence check accepts the audit-claude.md seat named by
+  `empirical_auditor_overrides`) and 12266042 (PARAMETERS.md rows ci-job-structure/logging-pipeline-contract and five prompt engine
+  mirrors synced to committed policy). `check-research-tree.sh --require-owner-review` exits 0 on committed code.
+- KNOWN GAP: R69 is REOPENED (`research_scan.py --todo`: run at revision 11, published copy differs). The r11 flag-day atomic commit
+  (S91 accepted 6/6, S92 for R84r7 never run) is NOT in v0.2.0; its edits stay uncommitted in the p02-plan worktree for a follow-up.
+  v0.2.0 therefore ships 84/85 done, not the 85/85 claimed by 27dc3395.
