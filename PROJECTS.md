@@ -56,6 +56,8 @@ $ scripts/test-check-research-tree.sh | tail -1
 - Unrecorded changes to ledger verdicts; evidence-backed baseline corrections follow `RUNBOOK.md` §4 (A5), and OVERRIDE reversals follow P02-TS02
 - Items dropped in Phase 3.5
 
+**TDD: not applicable** — TS01 and TS02 verify finished research, so they cannot precede the work tasks.
+
 ### Tests & Tasks
 - [x] [P02-T08] Review and approve the tiered execution method; owner approval 2026-09-04 (`docs/planning/p02/APPROVAL.md`)
 - [x] [P02-T09] Reconcile spec, runbook, all prompts and policy; validate strict acceptance, durable recovery and shared publication locally; prepare the complete diff (`docs/planning/p02/implementation-review.md`, 100 tests passed); committed 2026-09-04 under the owner's commit direction, which replaced per-commit approval (`docs/planning/p02/APPROVAL.md` addendum)
